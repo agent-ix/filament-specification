@@ -4,9 +4,9 @@ title: "Numeric domain"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-007
+  - target: ix://agent-ix/filament-specification/FR-007
     type: specifies
 ---
 # FR-206: Numeric domain
@@ -45,9 +45,9 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   dimensionless rational type (FR-044).
 - **bounds** (where authored) — inclusive. A sound guard narrowing every
   potentially evaluated result within inclusive bounds permits checking
-  (FR-044-AC-1). Where `quire.state.core/v1` is selected without
-  `quire.value.complete/v1`, a minimum-only integer remains unadmitted without
-  inventing a maximum (FR-044-AC-4); where `quire.value.complete/v1` is
+  (FR-044-AC-1). Where `filament.state.core/v1` is selected without
+  `filament.value.complete/v1`, a minimum-only integer remains unadmitted without
+  inventing a maximum (FR-044-AC-4); where `filament.value.complete/v1` is
   selected, a minimum-only or wholly unbounded integer declaration is admitted
   as a mathematical integer (FR-044-AC-8).
 
@@ -88,7 +88,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 - [FR-007](../../functional/foundation/FR-007-prove-integer-definedness.md) establishes
   bounded integer definedness.
 - [FR-205](FR-205-exact-rational-value.md) is admitted into a numeric domain.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 
 ## Status
 

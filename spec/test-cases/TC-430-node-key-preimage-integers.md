@@ -3,7 +3,7 @@ id: TC-430
 title: "Withdrawn: node-key preimage integers"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 

@@ -3,19 +3,19 @@ id: FR-428
 title: "Check replicated roles and per-trigger protocol activation"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
 ---
 
@@ -161,6 +161,6 @@ obligation identity.
 
 ## References
 
-- Design: quire-spec-language ADR-027 AE-1 to AE-4, RR-1 to RR-4, ST-13 to
+- Design: filament-spec-language ADR-027 AE-1 to AE-4, RR-1 to RR-4, ST-13 to
   ST-15 and QS-11.
 - Tickets: Linear STD-140; paired QSL-396.

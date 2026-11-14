@@ -4,9 +4,9 @@ title: "Selected snapshot"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: references
 ---
 # FR-265: Selected snapshot
@@ -84,7 +84,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   establishes the snapshot/window distinction and the refusal cases.
 - [FR-266](FR-266-event-time-window.md) types the other selected bounds subject.
 - [FR-263](FR-263-declared-population.md) is the population the snapshot bounds.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Snapshot boundary
@@ -95,4 +95,4 @@ timestamp-derived causal or total order.
 
 ## Status
 
-Proposed snapshot identity closure for `quire-specification#40`.
+Proposed snapshot identity closure for `filament-specification#40`.

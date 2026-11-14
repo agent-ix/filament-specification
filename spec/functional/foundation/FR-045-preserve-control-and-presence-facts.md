@@ -3,7 +3,7 @@ id: FR-045
 title: "Preserve conditional evaluation and exact optional-value facts"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -34,8 +34,8 @@ And/or/implies evaluate their left operand once and skip right for false/true/fa
 
 ## Dependencies
 
-- [Detailed draft contract](../../../proposals/quire-v1/state-contract.md).
-- [Shared grammar](../../../proposals/quire-v1/shared-grammar.md).
+- [Detailed draft contract](../../../proposals/filament-v1/state-contract.md).
+- [Shared grammar](../../../proposals/filament-v1/shared-grammar.md).
 
 Accepted by FS03. Historical definitions and their acceptance remain separate;
 this artifact does not establish implementation coverage.

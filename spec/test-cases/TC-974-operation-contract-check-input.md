@@ -3,15 +3,15 @@ id: TC-974
 title: "Operation-contract check input: invariant, clause, frame, relation and simulation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-485
+  - target: ix://agent-ix/filament-specification/FR-485
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-468
+  - target: ix://agent-ix/filament-specification/FR-468
     type: verifies
 ---
 

@@ -3,35 +3,35 @@ id: FR-370
 title: "Checked-package temporal clause body and temporal operation identities"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-048
+  - target: ix://agent-ix/filament-specification/FR-048
     type: references
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-481
+  - target: ix://agent-ix/filament-specification/FR-481
     type: references
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: references
-  - target: ix://agent-ix/quire-specification/FR-466
+  - target: ix://agent-ix/filament-specification/FR-466
     type: references
-  - target: ix://agent-ix/quire-specification/FR-414
+  - target: ix://agent-ix/filament-specification/FR-414
     type: references
-  - target: ix://agent-ix/quire-specification/FR-402
+  - target: ix://agent-ix/filament-specification/FR-402
     type: references
 ---
 
@@ -39,9 +39,9 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` node has `node_tag: "temporal"` and
+When a `filament.checked-semantic-graph/v2` node has `node_tag: "temporal"` and
 `semantic_form: "temporal_clause"`, the producer SHALL encode its `body` as one
-application of `quire.op.temporal.clause` whose formula argument references a
+application of `filament.op.temporal.clause` whose formula argument references a
 tree of `temporal`/`formula` nodes, each the application of one temporal
 operation catalogued below with its own operation identity. The reader SHALL refuse a node whose rules below do
 not hold, with the first refusal in the reader order below.
@@ -49,7 +49,7 @@ not hold, with the first refusal in the reader order below.
 ## Properties
 
 - **body** — an `application` term with `operator: "temporal"` and
-  `operation.identity: "quire.op.temporal.clause"`, `laws` exactly one
+  `operation.identity: "filament.op.temporal.clause"`, `laws` exactly one
   `temporal_profile` law equal to the lock's `profile_selections` row of that
   role, `member` `null`, `mode` `null` and `leaves` empty. Its `arguments` are
   exactly, in this order:
@@ -65,7 +65,7 @@ not hold, with the first refusal in the reader order below.
   4. **captures** — an `aggregate` with one binding per capture in source
      order, named by the capture and holding its initializer term;
   5. **fairness** — an `aggregate` of `reference`s to `temporal`/`fairness`
-     nodes, each the body root of one `quire.op.temporal.fair` application,
+     nodes, each the body root of one `filament.op.temporal.fair` application,
      one per member of the resolved fairness set
      ([FR-362](../../functional/temporal/FR-362-apply-fairness-constraints.md)),
      in fairness-set order; empty for a clause with none;
@@ -103,15 +103,15 @@ operand position except a nested temporal operator's.
 
 | Identity | Operator class | Operands | Result | Member |
 | --- | --- | --- | --- | --- |
-| `quire.op.temporal.clause` | `temporal` | `reference`, `text`, `aggregate`, `aggregate`, `aggregate`, `temporal` | `clause` (declared Boolean) | none |
-| `quire.op.temporal.holds` | `temporal_formula` | `boolean` | `temporal` | none |
-| `quire.op.temporal.aggregate` | `temporal_formula` | `aggregate` | `temporal` | none |
-| `quire.op.temporal.true`, `quire.op.temporal.false` | `temporal_formula` | none | `temporal` | none |
-| `quire.op.temporal.not` | `temporal_formula` | `temporal` | `temporal` | none |
-| `quire.op.temporal.and`, `quire.op.temporal.or`, `quire.op.temporal.implies` | `temporal_formula` | `temporal`, `temporal` | `temporal` | none |
-| `quire.op.temporal.eventually`, `quire.op.temporal.always`, `quire.op.temporal.once`, `quire.op.temporal.historically` | `temporal_formula` | `temporal` | `temporal` | `temporal_interval` |
-| `quire.op.temporal.until`, `quire.op.temporal.release`, `quire.op.temporal.since`, `quire.op.temporal.triggered` | `temporal_formula` | `temporal`, `temporal` | `temporal` | `temporal_interval` |
-| `quire.op.temporal.fair` | `temporal_fairness` | none | `temporal` | `fairness` |
+| `filament.op.temporal.clause` | `temporal` | `reference`, `text`, `aggregate`, `aggregate`, `aggregate`, `temporal` | `clause` (declared Boolean) | none |
+| `filament.op.temporal.holds` | `temporal_formula` | `boolean` | `temporal` | none |
+| `filament.op.temporal.aggregate` | `temporal_formula` | `aggregate` | `temporal` | none |
+| `filament.op.temporal.true`, `filament.op.temporal.false` | `temporal_formula` | none | `temporal` | none |
+| `filament.op.temporal.not` | `temporal_formula` | `temporal` | `temporal` | none |
+| `filament.op.temporal.and`, `filament.op.temporal.or`, `filament.op.temporal.implies` | `temporal_formula` | `temporal`, `temporal` | `temporal` | none |
+| `filament.op.temporal.eventually`, `filament.op.temporal.always`, `filament.op.temporal.once`, `filament.op.temporal.historically` | `temporal_formula` | `temporal` | `temporal` | `temporal_interval` |
+| `filament.op.temporal.until`, `filament.op.temporal.release`, `filament.op.temporal.since`, `filament.op.temporal.triggered` | `temporal_formula` | `temporal`, `temporal` | `temporal` | `temporal_interval` |
+| `filament.op.temporal.fair` | `temporal_fairness` | none | `temporal` | `fairness` |
 
 The `temporal_interval` member is `{kind: "temporal_interval", interval}`,
 where `interval` is one of:
@@ -123,7 +123,7 @@ where `interval` is one of:
   `{lower, upper: null}` for a lower-bounded operator `[a,*]`; both ends are
   closed;
 - the **timed form** `{lower, upper, lower_end, upper_end}`, used only under
-  `quire.temporal.timed/v1`: `lower` and `upper` are exact non-negative
+  `filament.temporal.timed/v1`: `lower` and `upper` are exact non-negative
   rationals `{numerator, denominator}` in the clock binding's time unit,
   in lowest terms with a positive denominator as every other checked-package
   rational is, and `lower_end` and `upper_end` are each `closed` or `open`,
@@ -131,7 +131,7 @@ where `interval` is one of:
   ([FR-255](../temporal/FR-255-bounded-temporal-interval.md)). The upper
   bound is present, a timed interval being finite, except in a hybrid claim
   ([FR-481](FR-481-checked-package-hybrid-model-nodes.md) "Hybrid claims")
-  under `quire.temporal.timed/v1`, where `upper` `null` with `upper_end`
+  under `filament.temporal.timed/v1`, where `upper` `null` with `upper_end`
   `open` is the interval `[q, *]`. `lower <= upper`,
   and `lower < upper` when either end is `open`.
 
@@ -174,7 +174,7 @@ resolved form, so `fair Op` and
 ## Window aggregate atom
 
 A window aggregate atom ([FR-414](../../functional/temporal/FR-414-evaluate-window-aggregates.md))
-is a `temporal`/`formula` node whose body is a `quire.op.temporal.aggregate`
+is a `temporal`/`formula` node whose body is a `filament.op.temporal.aggregate`
 application: operator class `temporal_formula`, no law, `member` `null`,
 `mode` `null`, `leaves` empty, `result_type` the package's
 `scalar_type`/`boolean` node, and exactly one argument, an `aggregate` of
@@ -228,8 +228,8 @@ reaches, in ascending node-id order, at the pointers `B` = `/semantic_graph/node
 and `M` = `A/members/{m}`, and reports the first defect:
 
 1. **Profile.** The clause's `temporal_profile` law names
-   `quire.temporal.event-position.false-extension/v1` or
-   `quire.temporal.timestamped-event.finite-window/v1`, else
+   `filament.temporal.event-position.false-extension/v1` or
+   `filament.temporal.timestamped-event.finite-window/v1`, else
    `invalid_package`/`invalid-value` at `B`.
 2. **Names and order**, in member order. A member that is not a `binding`
    or whose name is not in the table refuses `invalid_package`/
@@ -311,17 +311,17 @@ proceeds in this order:
    more refuse `ambiguous_declaration`/`ambiguous-name`, and none refuses
    `missing_declaration`/`missing-name`.
 
-Strong previous is `quire.op.temporal.once` with interval `{lower: "1",
+Strong previous is `filament.op.temporal.once` with interval `{lower: "1",
 upper: "1"}`; it has no identity of its own.
 
 ## Placement and profile fit
 
-- A `quire.op.temporal.clause` application is the body root of a
+- A `filament.op.temporal.clause` application is the body root of a
   `temporal`/`temporal_clause` node and stands nowhere else.
 - A `temporal_formula` application stands only as the body root of a
   `temporal`/`formula` node, and that node is referenced only from a clause's
   formula argument or as an operand of another `temporal_formula` application.
-  A `quire.op.temporal.fair` application stands only as the body root of a
+  A `filament.op.temporal.fair` application stands only as the body root of a
   `temporal`/`fairness` node, referenced only from a clause's fairness
   argument or as a `reference` member of a quantifier Group of a
   `claim`/`hyperproperty` node's `quantifiers` binding
@@ -344,13 +344,13 @@ argument fit the clause's `temporal_profile` law as this table states:
 
 | Profile ([FR-250](../temporal/FR-250-temporal-semantic-profile.md)) | Admitted `interval` | Fairness argument |
 | --- | --- | --- |
-| `quire.temporal.infinite-trace/v1` | `null`, integer `[a,*]`, integer `[a,b]` | empty or non-empty |
-| `quire.temporal.timed/v1` | `null`, timed `[a,b]` with either end open or closed | empty or non-empty |
-| `quire.temporal.event-position.false-extension/v1`, `quire.temporal.fixed-sample.false-extension/v1`, `quire.temporal.timestamped-event.finite-window/v1` | integer `[a,b]` | empty |
+| `filament.temporal.infinite-trace/v1` | `null`, integer `[a,*]`, integer `[a,b]` | empty or non-empty |
+| `filament.temporal.timed/v1` | `null`, timed `[a,b]` with either end open or closed | empty or non-empty |
+| `filament.temporal.event-position.false-extension/v1`, `filament.temporal.fixed-sample.false-extension/v1`, `filament.temporal.timestamped-event.finite-window/v1` | integer `[a,b]` | empty |
 
 A hybrid claim (FR-481) fits this table, with one addition: under
-`quire.temporal.timed/v1` it also admits the timed `[q, *]`, `upper` `null`
-with `upper_end` `open`. Under `quire.temporal.timed/v1` a lower-bounded
+`filament.temporal.timed/v1` it also admits the timed `[q, *]`, `upper` `null`
+with `upper_end` `open`. Under `filament.temporal.timed/v1` a lower-bounded
 `[a,*]` interval and an integer-form interval are not admitted: a timed interval has a finite upper
 bound (FR-255) and its bounds are exact rationals. The timed form is
 admitted under no other profile.
@@ -434,23 +434,23 @@ not here.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-370-AC-1 | A `temporal`/`temporal_clause` node's body is a `quire.op.temporal.clause` application with one `temporal_profile` law, a `null` member and the six arguments over, clock, activation, captures, fairness and formula in that order; a body with arguments reordered, missing or of another term shape fails the published schema. | Test (TC-303) |
-| FR-370-AC-2 | Each of the eight interval-capable operators, `holds`, the two temporal constants and the four connectives is encoded with its own `quire.op.temporal.*` identity, both V2 schemas enumerate those identities, the `temporal_formula` and `temporal_fairness` operator classes and the `temporal_interval` and `fairness` member kinds, and the operation catalog lists the `temporal` family. | Test (TC-303) |
-| FR-370-AC-3 | An interval operator carries `{lower, upper}`; a lower-bounded operator carries `{lower, upper: null}` and an unbounded operator `{kind: "temporal_interval", interval: null}`; under `quire.temporal.infinite-trace/v1` all three are admitted; under `quire.temporal.timed/v1` `null` and a timed `[a,b]` are admitted and `[a,*]` and an integer-form `[a,b]` refuse `operation-member-mismatch`; under each of the three bounded profiles only an integer `[a,b]` is admitted and `null` or `[a,*]` refuses `operation-member-mismatch`; a `null` member on an interval-capable operator refuses `operation-member-mismatch`; and `lower > upper` refuses `invalid-value` after the profile fit. | Test (TC-303) |
-| FR-370-AC-4 | `fair Op` and `fair weak whole Op` encode to byte-identical `quire.op.temporal.fair` applications, and a fairness member naming an operation absent from its declaring node's effective operations refuses `missing_declaration`/`missing-name`; a non-empty fairness argument is admitted under `quire.temporal.timed/v1` and `quire.temporal.infinite-trace/v1` and refuses `operation-member-mismatch` under each of the three bounded profiles. | Test (TC-303) |
-| FR-370-AC-5 | A `temporal_formula` application at the body root of a node other than a `temporal`/`formula` node, a `quire.op.temporal.fair` application at the body root of a node other than a `temporal`/`fairness` node, and a `quire.op.temporal.clause` application at the body root of a node other than a `temporal`/`temporal_clause` node refuse `ill_typed`/`operator-ineligible` at that node; each of the three nested inside a node body or inside another term fails the V2 schema and refuses `malformed_wire` at the nested application. | Test (TC-303) |
-| FR-370-AC-6 | Strong previous encodes as `quire.op.temporal.once` with interval `{lower: "1", upper: "1"}`. | Test (TC-303) |
+| FR-370-AC-1 | A `temporal`/`temporal_clause` node's body is a `filament.op.temporal.clause` application with one `temporal_profile` law, a `null` member and the six arguments over, clock, activation, captures, fairness and formula in that order; a body with arguments reordered, missing or of another term shape fails the published schema. | Test (TC-303) |
+| FR-370-AC-2 | Each of the eight interval-capable operators, `holds`, the two temporal constants and the four connectives is encoded with its own `filament.op.temporal.*` identity, both V2 schemas enumerate those identities, the `temporal_formula` and `temporal_fairness` operator classes and the `temporal_interval` and `fairness` member kinds, and the operation catalog lists the `temporal` family. | Test (TC-303) |
+| FR-370-AC-3 | An interval operator carries `{lower, upper}`; a lower-bounded operator carries `{lower, upper: null}` and an unbounded operator `{kind: "temporal_interval", interval: null}`; under `filament.temporal.infinite-trace/v1` all three are admitted; under `filament.temporal.timed/v1` `null` and a timed `[a,b]` are admitted and `[a,*]` and an integer-form `[a,b]` refuse `operation-member-mismatch`; under each of the three bounded profiles only an integer `[a,b]` is admitted and `null` or `[a,*]` refuses `operation-member-mismatch`; a `null` member on an interval-capable operator refuses `operation-member-mismatch`; and `lower > upper` refuses `invalid-value` after the profile fit. | Test (TC-303) |
+| FR-370-AC-4 | `fair Op` and `fair weak whole Op` encode to byte-identical `filament.op.temporal.fair` applications, and a fairness member naming an operation absent from its declaring node's effective operations refuses `missing_declaration`/`missing-name`; a non-empty fairness argument is admitted under `filament.temporal.timed/v1` and `filament.temporal.infinite-trace/v1` and refuses `operation-member-mismatch` under each of the three bounded profiles. | Test (TC-303) |
+| FR-370-AC-5 | A `temporal_formula` application at the body root of a node other than a `temporal`/`formula` node, a `filament.op.temporal.fair` application at the body root of a node other than a `temporal`/`fairness` node, and a `filament.op.temporal.clause` application at the body root of a node other than a `temporal`/`temporal_clause` node refuse `ill_typed`/`operator-ineligible` at that node; each of the three nested inside a node body or inside another term fails the V2 schema and refuses `malformed_wire` at the nested application. | Test (TC-303) |
+| FR-370-AC-6 | Strong previous encodes as `filament.op.temporal.once` with interval `{lower: "1", upper: "1"}`. | Test (TC-303) |
 | FR-370-AC-7 | The temporal step reports placement defects before clause defects, runs after the state step and before the operation step, and a `holds` operand of a non-Boolean family refuses `ill_typed`/`operator-ineligible` at the operation step. | Test (TC-303) |
-| FR-370-AC-8 | Under `quire.temporal.timed/v1`, `[0, 3]`, `[0, 3)`, `(0, 3]` and `(0, 3)` in the timed form are four distinct admitted members, `{numerator: "1", denominator: "2"}` is an admitted bound, a timed interval `(3, 3]` and a timed `lower > upper` refuse `invalid_package`/`invalid-value`, a bound `{numerator: "2", denominator: "4"}` refuses `invalid_semantic_graph`, and the timed form under any other profile refuses `operation-member-mismatch`. | Test (TC-303) |
+| FR-370-AC-8 | Under `filament.temporal.timed/v1`, `[0, 3]`, `[0, 3)`, `(0, 3]` and `(0, 3)` in the timed form are four distinct admitted members, `{numerator: "1", denominator: "2"}` is an admitted bound, a timed interval `(3, 3]` and a timed `lower > upper` refuse `invalid_package`/`invalid-value`, a bound `{numerator: "2", denominator: "4"}` refuses `invalid_semantic_graph`, and the timed form under any other profile refuses `operation-member-mismatch`. | Test (TC-303) |
 | FR-370-AC-9 | A negative interval bound, `{lower: "-1", upper: null}` or `{lower: "0", upper: "-1"}`, or a negative timed numerator fails the published schema and refuses `invalid_package`/`invalid-value` at the bound under every profile, before any temporal-step check, so it is never `operation-member-mismatch`. | Test (TC-303) |
-| FR-370-AC-10 | A clause's profile check runs before its other checks: a law naming `quire.temporal.timed/v1` is known; a law naming the package's own `protocol_profile` selection refuses `unknown_profile`/`wrong-selection-role` and a law naming `quire.temporal.unknown/v1`, selected under no role, `unknown_profile`/`unsupported-selection`, each at `/semantic_graph/nodes/{n}/body/operation/laws/0/definition` and each before a defect in the same clause's `over` reference or intervals. | Test (TC-303) |
+| FR-370-AC-10 | A clause's profile check runs before its other checks: a law naming `filament.temporal.timed/v1` is known; a law naming the package's own `protocol_profile` selection refuses `unknown_profile`/`wrong-selection-role` and a law naming `filament.temporal.unknown/v1`, selected under no role, `unknown_profile`/`unsupported-selection`, each at `/semantic_graph/nodes/{n}/body/operation/laws/0/definition` and each before a defect in the same clause's `over` reference or intervals. | Test (TC-303) |
 | FR-370-AC-11 | A fairness member naming an operation its `object_type` declaring node only inherits is admitted and resolves to the most derived redefinition; a name matching two effective operations refuses `ambiguous_declaration`/`ambiguous-name`; a declaring node no selected owner matches refuses `missing_declaration`/`missing-selection`; and a `declaration` naming a `systems_interface` model node or a non-model node refuses `invalid_model_binding`/`malformed-declaration` at the target. | Test (TC-303) |
 | FR-370-AC-12 | A reference to a `temporal`/`formula` node from a state clause's condition, and a reference to a `temporal`/`fairness` node from a clause's formula argument, refuse `ill_typed`/`operator-ineligible` located at the referencing node; a diagnostic whose `details` reference a `temporal`/`formula`, `temporal`/`fairness` or `expression`/`case` node refuses `ill_typed`/`operator-ineligible` at `/diagnostics/entries/{e}/details/{d}`; a `details` term that is an application of the `temporal_formula`, `temporal_fairness` or `case` operator class refuses `ill_typed`/`operator-ineligible` at `/diagnostics/entries/{e}/details/{d}/operator`; a `details` term holding several such applications refuses at the first in document pre-order, so a `temporal_formula` application with a nested `case` argument refuses at `/diagnostics/entries/{e}/details/{d}/operator` and an aggregate of a `temporal_formula` application and then a `case` application at `/diagnostics/entries/{e}/details/{d}/members/0/operator`; and `details` referencing a `composite_type`/`union` or `value`/`union_value` node are admitted. | Test (TC-303) |
-| FR-370-AC-13 | A `temporal` clause written with no `over` parameter refuses `invalid_syntax`/`unexpected-token` at the token standing where `over` is required, and produces no node; a `quire.op.temporal.clause` application whose argument 1 is absent, `null` or a non-reference term (such as the clause's clock text literal) fails the published schema. | Test (TC-180, TC-303) |
+| FR-370-AC-13 | A `temporal` clause written with no `over` parameter refuses `invalid_syntax`/`unexpected-token` at the token standing where `over` is required, and produces no node; a `filament.op.temporal.clause` application whose argument 1 is absent, `null` or a non-reference term (such as the clause's clock text literal) fails the published schema. | Test (TC-180, TC-303) |
 | FR-370-AC-14 | A fairness member's `target` discriminant and identity fields match exactly one target variant: operation, protocol root, attempt node, parallel branch, compensation template or hybrid transition. The vectors admit one member of every variant and reject an absent or unknown discriminant, a missing operation declaration, a branch label without its parallel identity, an extra target identity field and a negative node ordinal. | Test (TC-303) |
 | FR-370-AC-15 | A protocol-root target resolves to the clause's exact protocol node, an attempt and a compensation target resolve to exact nodes owned by that clause, and a parallel-branch target resolves only when its exact parallel control and branch label both belong to that clause. An absent or foreign-package identity, or an existing same-package target owned by another protocol clause, refuses `missing_declaration`/`missing-name` at `/target/node` or `/target/parallel`; a local target with the wrong protocol family or control operator refuses `invalid_model_binding`/`malformed-declaration` at the same target field; and an absent label on a local parallel refuses `missing_declaration`/`missing-name` at `/target/branch`. The reader checks package identity, clause ownership, target kind and branch-label membership in that order. | Test (TC-303) |
 | FR-370-AC-16 | A `temporal_clause` node's body and `node_id` hold no declared name: two clauses that differ only in declared name encode to one node with two `claim` occurrences, and each occurrence's name is the `name` of its `temporal_clause_names` row and its clock configuration the `clock` of its `temporal_bindings` row (FR-322-AC-343, FR-322-AC-344, FR-322-AC-361). | Test (TC-303; TC-233) |
-| FR-370-AC-17 | `quire.op.temporal.aggregate` is catalogued as a `temporal_formula` with one `aggregate` operand, result `temporal` and no member, and both the catalog and the V2 schema enumerate it. Under event-position false-extension, a `count` with a `filter`, a `sum`, `min` and `max` with a `value`, a `fraction` with a `predicate` and a `quantile` with `q` and a `value`, each over `positions` bounds, are admitted, as is a `quantile` over `duration` quantity bounds under timestamped-event finite-window; each argument holds exactly its kind's bindings in table order. | Test (TC-303) |
+| FR-370-AC-17 | `filament.op.temporal.aggregate` is catalogued as a `temporal_formula` with one `aggregate` operand, result `temporal` and no member, and both the catalog and the V2 schema enumerate it. Under event-position false-extension, a `count` with a `filter`, a `sum`, `min` and `max` with a `value`, a `fraction` with a `predicate` and a `quantile` with `q` and a `value`, each over `positions` bounds, are admitted, as is a `quantile` over `duration` quantity bounds under timestamped-event finite-window; each argument holds exactly its kind's bindings in table order. | Test (TC-303) |
 | FR-370-AC-18 | The reader refuses an aggregate argument at the first defect of "Window aggregate atom": an aggregate under infinite-trace `invalid-value` at the body; an unknown and a non-binding member `unknown-member`, a repeated binding `duplicate-member` and a misordered binding `invalid-value`, each at the member; a missing `kind`, `window_kind` or `comparison` and a `quantile` without `q` `missing-member` at the argument; `q` on a `sum` and `value` on a `count` `unknown-member` at the member; a `kind` of `median`, `q` `1`, a negative bound and `min_count` `0` on `max` `invalid-value` at the value; a `positions` window under timestamped-event, a `duration` window under event-position, a `duration` `lower` in `s` or in `m` and an `upper` in `s` under a clock in `ms`, and a `threshold` of another unit than `value` `ill_typed`/`unit-mismatch` at the value; a non-Boolean `filter` and a `rational` threshold on `count` `ill_typed`/`type-mismatch` at the value; and `past[5, 2]` `invalid-value` at the argument. Each value refusal of step 5 is exercised: a `comparison` of `!=` and a `window_kind` of `sliding` `invalid-value` at the value; a `q`, `window_kind`, `comparison`, `lower`, `upper` or `min_count` holding a literal of another `value_kind` or a reference `wrong-value-kind` at the value; a `value` of family `boolean`, a non-Boolean `predicate` and an `integer` threshold on `fraction` `ill_typed`/`type-mismatch` at the value; a `sum` without `value`, a `fraction` without `predicate`, and a missing `lower`, `upper`, `min_count` or `threshold` `missing-member` at the argument; and `min_count` `-1` `invalid-value` at the value. `min_count` `0` on `count` and `sum` is admitted, as is `past[0, 300000]` in `ms` under a clock in `ms`. | Test (TC-303) |
 | FR-370-AC-19 | Over the positive `sum` argument of FR-370-AC-18 under event-position, a `value` term whose type is the `scalar_type`/`carried_quantity` node of `Quantity<m, Int[-5, 5]>`, with a `threshold` literal of `m`'s unit node, refuses `ill_typed`/`type-mismatch` at the `value` member's value; the same over the `min`, `max` and `quantile` positives; a `threshold` term of that carried node beside a `value` of `m`'s unit node refuses the same at the `threshold` member's value; and a `value` and `threshold` of the package unit node `ix://acme/rpc/unit/ms` (FR-414-AC-13) are admitted. | Test (TC-303) |
 | FR-370-AC-20 | In a checked package named `acme/orders` that selects the domain package `acme/rpc` (base dimension `Time`, units `s` and `ms`), a timestamped-event clause whose `temporal_bindings` row names `timestamp_unit` `ix://acme/rpc/unit/ms`, with a `duration` `count` aggregate whose `lower` and `upper` are quantity literals typed by the model-owned node `{package: "acme/rpc", path: ["scalar_type", "unit", "ix://acme/rpc/unit/ms"], ordinal: 0}`, is admitted although the clause node's `node_id.package` is `acme/orders`; the package holds exactly one node with that path; and the same clause with `upper` typed by `ix://acme/rpc/unit/s`'s node refuses `ill_typed`/`unit-mismatch` at `upper`'s value. | Test (TC-303) |
@@ -458,7 +458,7 @@ not here.
 
 ## Published artifacts and the operation catalog
 
-`proposals/checked-package-v2/schema.json` enumerates the `quire.op.temporal.*`
+`proposals/checked-package-v2/schema.json` enumerates the `filament.op.temporal.*`
 identities, the `temporal_formula` and `temporal_fairness` operator classes and
 the `temporal_interval` and `fairness` member kinds, with the `null`, integer
 and timed interval forms and their non-negative bound patterns, and fix the
@@ -468,12 +468,12 @@ packages encode their temporal clauses in this form.
 window aggregate arguments of FR-370-AC-17 and FR-370-AC-18 with their
 expected reader outcomes.
 
-The operation catalog `quire.checked-operation-catalog/v1`, owned by
-quire-verification-contracts, SHALL hold the `temporal` family (a member of
+The operation catalog `filament.checked-operation-catalog/v1`, owned by
+filament-verification-contracts, SHALL hold the `temporal` family (a member of
 the `any_term` group), the `temporal_formula` and `temporal_fairness`
 operator classes' entries, the `temporal_interval` and `fairness` member
-kinds, one entry per `quire.op.temporal.*` identity with the operands, result
-form and member of the table above, and `quire.op.temporal.clause` with no
+kinds, one entry per `filament.op.temporal.*` identity with the operands, result
+form and member of the table above, and `filament.op.temporal.clause` with no
 member.
 
 ## Dependencies
@@ -499,6 +499,6 @@ member.
 
 ## References
 
-- quire-spec-language ADR-018 QS-11 and ADR-014 §13; Linear STD-99 and STD-131.
-- Window aggregate atom: QSL FR-337-AC-15, FR-515, FR-516 and FR-532 consume
+- filament-spec-language ADR-018 QS-11 and ADR-014 §13; Linear STD-99 and STD-131.
+- Window aggregate atom: FSL FR-337-AC-15, FR-515, FR-516 and FR-532 consume
   it; Linear QSL-1644.

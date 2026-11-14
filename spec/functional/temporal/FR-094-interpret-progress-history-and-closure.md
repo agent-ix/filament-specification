@@ -3,29 +3,29 @@ id: FR-094
 title: "Interpret temporal progress, history and closure"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: references
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-248
+  - target: ix://agent-ix/filament-specification/FR-248
     type: references
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-256
+  - target: ix://agent-ix/filament-specification/FR-256
     type: references
-  - target: ix://agent-ix/quire-specification/FR-257
+  - target: ix://agent-ix/filament-specification/FR-257
     type: references
-  - target: ix://agent-ix/quire-specification/FR-258
+  - target: ix://agent-ix/filament-specification/FR-258
     type: references
-  - target: ix://agent-ix/quire-specification/FR-295
+  - target: ix://agent-ix/filament-specification/FR-295
     type: references
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: references
 ---
 ## Description

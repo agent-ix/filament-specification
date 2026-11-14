@@ -3,7 +3,7 @@ id: TC-223
 title: "Formatter LSP incremental parity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-303
+  - target: ix://agent-ix/filament-specification/FR-303
     type: verifies
 ---
 

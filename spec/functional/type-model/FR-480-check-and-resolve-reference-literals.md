@@ -3,19 +3,19 @@ id: FR-480
 title: "Check and resolve reference literals"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-339
+  - target: ix://agent-ix/filament-specification/FR-339
     type: references
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-381
+  - target: ix://agent-ix/filament-specification/FR-381
     type: references
 ---
 
@@ -33,7 +33,7 @@ is the only source form that names one object by its key.
 ## Inputs
 
 - A `reference-literal` node of the source tree
-  ([complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md)).
+  ([complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md)).
 - The unit's model aliases and the admitted domain packages they select.
 - For resolution, a subject's universes and initial states
   ([FR-361](../temporal/FR-361-read-model-behaviours-as-temporal-traces.md)
@@ -136,7 +136,7 @@ term.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md): the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md): the
   `reference-literal` production.
 - [FR-204](../../objects/foundation/FR-204-declared-object-identity.md): the
   identity triple and the object universe of a type.

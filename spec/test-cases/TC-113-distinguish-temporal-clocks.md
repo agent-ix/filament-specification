@@ -3,9 +3,9 @@ id: TC-113
 title: "Distinguish event positions, samples and event time"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: verifies
 ---
 ## Description

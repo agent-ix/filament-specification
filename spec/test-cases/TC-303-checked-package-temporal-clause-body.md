@@ -3,9 +3,9 @@ id: TC-303
 title: "Checked-package temporal clause body and operation identities"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -14,7 +14,7 @@ relationships:
 ## Description
 
 Schema and reader vectors for the `temporal`/`temporal_clause` node body and
-the `quire.op.temporal.*` operation identities.
+the `filament.op.temporal.*` operation identities.
 
 ## Test Procedure
 
@@ -28,11 +28,11 @@ Encode as V2 packages:
 3. Mutations: the clause's arguments reordered; the fairness argument missing;
    an unbounded `eventually` under the event-position profile; a fairness
    member under the event-position profile; an interval `{lower: "3", upper:
-   "1"}`; a fairness member naming `attemptUpdat`; a `quire.op.temporal.always`
-   application, a `quire.op.temporal.fair` application and a
-   `quire.op.temporal.clause` application each at the body root of a
-   `function` node; each of a `quire.op.temporal.always`,
-   `quire.op.temporal.fair` and `quire.op.temporal.clause` application
+   "1"}`; a fairness member naming `attemptUpdat`; a `filament.op.temporal.always`
+   application, a `filament.op.temporal.fair` application and a
+   `filament.op.temporal.clause` application each at the body root of a
+   `function` node; each of a `filament.op.temporal.always`,
+   `filament.op.temporal.fair` and `filament.op.temporal.clause` application
    nested in a node body's arguments;
    a `holds` whose operand is an integer term.
 4. Encode `fair Op` and `fair weak whole Op` versions of one clause.
@@ -40,14 +40,14 @@ Encode as V2 packages:
    and one with a temporal placement defect and a temporal clause defect.
 6. Interval admission by profile: `null`, integer `[2,*]`, integer `[0,3]`
    and timed `[0,3]` under each of the five FR-250 profiles; under
-   `quire.temporal.timed/v1` the timed `[0,3]`, `[0,3)`, `(0,3]`, `(0,3)`,
+   `filament.temporal.timed/v1` the timed `[0,3]`, `[0,3)`, `(0,3]`, `(0,3)`,
    `[1/2,3]`, `(3,3]`, `[3,1]` and `[2/4,3]`; an interval-capable operator
    whose `member` is `null`.
 7. Negative bounds: `{lower: "-1", upper: null}` and `{lower: "0", upper:
    "-1"}` under each profile, and a timed bound with numerator `"-1"`.
-8. Profile check: the clause law naming `quire.temporal.timed/v1`; naming
+8. Profile check: the clause law naming `filament.temporal.timed/v1`; naming
    the package's own `protocol_profile` selection; naming
-   `quire.temporal.unknown/v1`, which no lock selection names; each of the
+   `filament.temporal.unknown/v1`, which no lock selection names; each of the
    last two also with an `over` reference to a non-parameter node.
 9. Fairness: a member naming an operation the declaring `object_type` node
    only inherits and that a subtype redefines; a name matching two effective
@@ -65,7 +65,7 @@ Encode as V2 packages:
     `case` argument; a `details` aggregate of a `temporal_formula`
     application and then a `case` application.
 
-11. A `quire.op.temporal.clause` body whose argument 1 is removed, one whose argument 1 is replaced by a `null` literal, and one whose argument 1 is replaced by the clause's clock text literal.
+11. A `filament.op.temporal.clause` body whose argument 1 is removed, one whose argument 1 is replaced by a `null` literal, and one whose argument 1 is replaced by the clause's clock text literal.
 12. `temporal-fairness-target-vectors.json`: each positive fairness member and each closed-shape mutation.
 13. The vector file's schema-valid reader cases for absent, foreign and wrong-kind parallel identities, an absent branch label, wrong-kind protocol-root, attempt and compensation targets, and same-package targets owned by a different protocol clause: root, attempt, parallel branch and compensation template.
 
@@ -76,7 +76,7 @@ Encode as V2 packages:
 
 ## Expected Results
 
-1. Both are admitted: each body is a `quire.op.temporal.clause` application
+1. Both are admitted: each body is a `filament.op.temporal.clause` application
    with one `temporal_profile` law, a `null` member and the arguments over,
    clock, activation, captures, fairness and formula; the formula argument and
    each fairness member reference their own `temporal`/`formula` and
@@ -84,7 +84,7 @@ Encode as V2 packages:
    (FR-370-AC-1).
 2. Each operator carries its own identity; bounded operators carry
    `{lower, upper}` and unbounded ones `null`; `once[1,1]` is
-   `quire.op.temporal.once` with `{lower: "1", upper: "1"}`; both V2 schemas
+   `filament.op.temporal.once` with `{lower: "1", upper: "1"}`; both V2 schemas
    enumerate every identity, class, family and member kind used
    (FR-370-AC-2, FR-370-AC-6).
 3. Reordered or missing arguments fail the schema (FR-370-AC-1); the unbounded
@@ -100,8 +100,8 @@ Encode as V2 packages:
 4. The two encodings are byte-identical (FR-370-AC-4).
 5. The state-step defect is reported first; then the placement defect before
    the clause defect (FR-370-AC-7).
-6. `quire.temporal.infinite-trace/v1` admits `null`, `[2,*]` and integer
-   `[0,3]`; `quire.temporal.timed/v1` admits `null` and timed `[0,3]` and
+6. `filament.temporal.infinite-trace/v1` admits `null`, `[2,*]` and integer
+   `[0,3]`; `filament.temporal.timed/v1` admits `null` and timed `[0,3]` and
    refuses `[2,*]` and integer `[0,3]` `operation-member-mismatch`; each
    bounded profile admits only integer `[0,3]`; the timed form outside the
    timed profile and the `null` member refuse `operation-member-mismatch`
@@ -134,6 +134,6 @@ Encode as V2 packages:
 12. Every positive member satisfies the `OperationMember` schema, including each protocol target and the preserved hybrid-transition target; all missing/unknown discriminants, missing or extra identity fields and invalid structural node ids fail the schema (FR-322-AC-293, FR-370-AC-14).
 13. Each reader case's target identity and target context are admitted by the schema. Expected refusals point exactly to `/target/node`, `/target/parallel` or `/target/branch` as applicable; wrong-kind root, attempt, parallel and compensation targets and same-package nodes in another protocol clause are refused with the FR-370-AC-15 code and cause.
 14. The rename changes no node and no `node_id`; the two clauses are one node with two `claim` occurrences and two `temporal_clause_names` rows, one name each (FR-370-AC-16, FR-322-AC-343, FR-322-AC-344).
-15. The catalog and the schema enumerate `quire.op.temporal.aggregate` with one `aggregate` operand; each argument satisfies the schema's application argument shape; each reader case differs from its `base` positive by exactly one member, or by its profile alone; every positive is admitted and every reader case refuses with its listed code, cause and pointer (FR-370-AC-17, FR-370-AC-18).
+15. The catalog and the schema enumerate `filament.op.temporal.aggregate` with one `aggregate` operand; each argument satisfies the schema's application argument shape; each reader case differs from its `base` positive by exactly one member, or by its profile alone; every positive is admitted and every reader case refuses with its listed code, cause and pointer (FR-370-AC-17, FR-370-AC-18).
 16. Each carried-value and carried-threshold argument refuses `ill_typed`/`type-mismatch` at the retyped member's value; the package-unit argument is admitted (FR-370-AC-19).
 17. The clause whose bounds name the domain package's `ms` node is admitted, its clause node's `node_id.package` being `acme/orders`, and the package holds one node with path `["scalar_type", "unit", "ix://acme/rpc/unit/ms"]`; the clause with `upper` in `s` refuses `ill_typed`/`unit-mismatch` at `upper`'s value (FR-370-AC-20).

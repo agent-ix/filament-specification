@@ -3,7 +3,7 @@ id: TC-205
 title: "Sound global projection"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-174
+  - target: ix://agent-ix/filament-specification/FR-174
     type: verifies
 ---
 

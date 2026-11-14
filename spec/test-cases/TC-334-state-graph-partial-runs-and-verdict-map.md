@@ -3,9 +3,9 @@ id: TC-334
 title: "State-graph partial runs, verdict map and reductions"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
 ---
 

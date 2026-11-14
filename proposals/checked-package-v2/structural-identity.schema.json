@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:quire:structural-identity:v1",
+  "$id": "urn:filament:structural-identity:v1",
   "title": "Structural identities of FR-201 (MemberId, VariantId, UnitId, UniverseId, PopulationId)",
   "$defs": {
     "NodeId": {

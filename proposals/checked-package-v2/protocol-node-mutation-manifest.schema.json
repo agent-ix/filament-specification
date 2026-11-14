@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:quire:checked-package-protocol-node-mutation-manifest:v1",
+  "$id": "urn:filament:checked-package-protocol-node-mutation-manifest:v1",
   "title": "Executable mutation manifest for the protocol node vectors (TC-946, TC-947, TC-948)",
   "description": "Each row is one machine edit of the checked OrderFlow base package (fixtures/protocol-node-base.json) and the typed outcome a conforming reader gives that edit. The prose rows of fixtures/protocol-node-vectors.json stay the human statement; a row here carries the same id and is the replayable form. A row states the first defect in reader order only (FR-464 'Reader order'); a defect the first one masks is not asserted, by design.",
   "type": "object",
@@ -17,7 +17,7 @@
   ],
   "properties": {
     "version": {
-      "const": "quire.protocol-node-mutation-manifest/v1"
+      "const": "filament.protocol-node-mutation-manifest/v1"
     },
     "note": {
       "type": "string",
@@ -680,7 +680,7 @@
       }
     },
     "SourceEdit": {
-      "description": "An edit of the QSL source the base was compiled from, replayed by the producer, with parameters typed per kind.",
+      "description": "An edit of the FSL source the base was compiled from, replayed by the producer, with parameters typed per kind.",
       "oneOf": [
         {
           "type": "object",

@@ -2641,7 +2641,7 @@
                 }
               ],
               "operation": {
-                "identity": "quire.op.model.dispatch_call",
+                "identity": "filament.op.model.dispatch_call",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -2709,7 +2709,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "call",
             "semantic_type": {
               "ordinal": 0,
@@ -2751,7 +2751,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "literal",
             "semantic_type": {
               "ordinal": 0,
@@ -2831,7 +2831,7 @@
                 }
               ],
               "operation": {
-                "identity": "quire.op.model.dispatch_call",
+                "identity": "filament.op.model.dispatch_call",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -2899,7 +2899,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "call",
             "semantic_type": {
               "ordinal": 0,
@@ -2967,7 +2967,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "parameter",
             "semantic_type": {
               "ordinal": 0,
@@ -3052,7 +3052,7 @@
                 }
               ],
               "operation": {
-                "identity": "quire.op.model.dispatch_call",
+                "identity": "filament.op.model.dispatch_call",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -3120,7 +3120,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "call",
             "semantic_type": {
               "ordinal": 0,
@@ -3169,7 +3169,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "reference",
             "semantic_type": {
               "ordinal": 0,
@@ -3249,7 +3249,7 @@
                 }
               ],
               "operation": {
-                "identity": "quire.op.model.dispatch_call",
+                "identity": "filament.op.model.dispatch_call",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -3317,7 +3317,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "call",
             "semantic_type": {
               "ordinal": 0,
@@ -3359,7 +3359,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "literal",
             "semantic_type": {
               "ordinal": 0,

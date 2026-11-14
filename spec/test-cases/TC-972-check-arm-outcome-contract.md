@@ -3,11 +3,11 @@ id: TC-972
 title: "Check arm: outcome mapping, evidence, refusals and registration"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-483
+  - target: ix://agent-ix/filament-specification/FR-483
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

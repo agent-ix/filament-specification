@@ -3,7 +3,7 @@ id: TC-262
 title: "Union construction and equality"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: verifies
 ---
 

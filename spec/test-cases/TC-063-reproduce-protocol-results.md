@@ -3,7 +3,7 @@ id: TC-063
 title: "Reproduce results under equivalent presentations"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/NFR-021
+  - target: ix://agent-ix/filament-specification/NFR-021
     type: verifies
 ---
 ## Description

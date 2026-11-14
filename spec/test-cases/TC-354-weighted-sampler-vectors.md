@@ -3,7 +3,7 @@ id: TC-354
 title: "Weighted sampler, choice index and trace index"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: verifies
 ---
 
@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Check the revised `quire.simulation.sampler/v1`: the choice index in the draw function input, weighted selection by exact integer weights, and trace-index assignment.
+Check the revised `filament.simulation.sampler/v1`: the choice index in the draw function input, weighted selection by exact integer weights, and trace-index assignment.
 
 ## Test Procedure
 

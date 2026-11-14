@@ -4,9 +4,9 @@ title: "Admitted observation key"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-110
+  - target: ix://agent-ix/filament-specification/FR-110
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-260
+  - target: ix://agent-ix/filament-specification/FR-260
     type: specifies
 ---
 # FR-296: Admitted observation key
@@ -86,4 +86,4 @@ key, and SHALL refuse the later observation when any member differs.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`.
+Proposed shared ruling for `filament-specification#40`.

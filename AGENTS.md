@@ -1,6 +1,6 @@
 # Contributor and session guidance
 
-Read README.md, LICENSE (`AGPL-3.0-or-later`) and the owning issue before editing. This repository holds the draft Quire language standard; it has no released version yet.
+Read README.md, LICENSE (`AGPL-3.0-or-later`) and the owning issue before editing. This repository holds the draft Filament Specification Language (FSL) standard; it has no released version yet.
 
 - Preserve authored/source identity and explicit unsupported/incomplete results.
 - Use the first specification issue to establish requirements, acceptance fixtures and scoped implementation/CI work before scaffolding speculative crates.
@@ -13,8 +13,8 @@ Read README.md, LICENSE (`AGPL-3.0-or-later`) and the owning issue before editin
   Update existing artifacts, record material decisions, and review at PR
   readiness; avoid repeated status logs, intermediate reviews and speculative
   assurance work.
-- This repository has a Rust qualification test crate whose only library API is the dependency-free `quire_specification` accessors for authored definition bytes and the typed `QUALIFICATION_VECTORS` table generated from the TC-185/186/187/192/193 rows. Run the actual local
-  commands in README.md. The native compiler remains in quire-spec-language.
+- This repository has a Rust qualification test crate whose only library API is the dependency-free `filament_specification` accessors for authored definition bytes and the typed `QUALIFICATION_VECTORS` table generated from the TC-185/186/187/192/193 rows. Run the actual local
+  commands in README.md. The native compiler remains in filament-spec-language.
   Preserve the distinction between schema/JCS producer checks and B's complete
   strict-reader/report qualification; the former does not discharge the latter.
 

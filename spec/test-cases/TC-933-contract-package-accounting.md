@@ -3,13 +3,13 @@ id: TC-933
 title: "ContractPackage records one terminal disposition per requested item"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-6
+  - target: ix://agent-ix/filament-specification/FR-330-AC-6
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-195-AC-6
+  - target: ix://agent-ix/filament-specification/FR-195-AC-6
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: verifies
 ---
 # TC-933: ContractPackage records one terminal disposition per requested item

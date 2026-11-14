@@ -3,7 +3,7 @@ id: TC-048
 title: "Stop composed work at its actual resource boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/NFR-010
+  - target: ix://agent-ix/filament-specification/NFR-010
     type: verifies
 ---
 ## Description

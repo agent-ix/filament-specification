@@ -3,19 +3,19 @@ id: FR-394
 title: "Replay state-graph evidence"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-393
+  - target: ix://agent-ix/filament-specification/FR-393
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: references
 ---
 

@@ -3,11 +3,11 @@ id: TC-969
 title: "The conformance corpus v1 schema admits the fixture and refuses out-of-domain shapes"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-336
+  - target: ix://agent-ix/filament-specification/FR-336
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-336-AC-10
+  - target: ix://agent-ix/filament-specification/FR-336-AC-10
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-336-AC-11
+  - target: ix://agent-ix/filament-specification/FR-336-AC-11
     type: verifies
 ---
 

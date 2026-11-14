@@ -2,10 +2,10 @@
   "capability_report": [
     {
       "disposition": "available",
-      "feature": "quire.value.complete/v1"
+      "feature": "filament.value.complete/v1"
     }
   ],
-  "contract_version": "quire.checked-package/v2",
+  "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {
       "authority": "agent-ix",
@@ -19,13 +19,13 @@
     "edition": {
       "definition": {
         "authority": "agent-ix",
-        "identity": "quire-edition"
+        "identity": "filament-edition"
       },
       "role": "edition"
     },
     "profile_selections": [],
     "required_features": [
-      "quire.value.complete/v1"
+      "filament.value.complete/v1"
     ],
     "sources": [
       {
@@ -36,7 +36,7 @@
   },
   "name": "example",
   "semantic_graph": {
-    "graph_version": "quire.checked-semantic-graph/v2",
+    "graph_version": "filament.checked-semantic-graph/v2",
     "nodes": [
       {
         "body": {
@@ -59,7 +59,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "boolean",
         "semantic_type": {
           "ordinal": 0,
@@ -103,7 +103,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -161,7 +161,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.control.if",
+            "identity": "filament.op.control.if",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -200,7 +200,7 @@
             {
               "operand": 1
             },
-            "quire.op.control.if",
+            "filament.op.control.if",
             "conditional",
             {
               "operand": 0
@@ -214,7 +214,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "conditional",
         "semantic_type": {
           "ordinal": 0,
@@ -246,7 +246,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer",
         "semantic_type": {
           "ordinal": 0,
@@ -291,7 +291,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -351,7 +351,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.control.if",
+            "identity": "filament.op.control.if",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -405,7 +405,7 @@
             {
               "operand": 3
             },
-            "quire.op.control.if",
+            "filament.op.control.if",
             "conditional",
             {
               "operand": 1
@@ -419,7 +419,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "conditional",
         "semantic_type": {
           "ordinal": 0,
@@ -510,7 +510,7 @@
           {
             "node": 1
           },
-          "quire.op.control.if",
+          "filament.op.control.if",
           "conditional",
           {
             "node": 0
@@ -591,7 +591,7 @@
           {
             "node": 4
           },
-          "quire.op.control.if",
+          "filament.op.control.if",
           "conditional",
           {
             "node": 3

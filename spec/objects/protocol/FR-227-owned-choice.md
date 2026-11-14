@@ -4,11 +4,11 @@ title: "Owned choice"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
 ---
 # FR-227: Owned choice
@@ -102,7 +102,7 @@ distinguishing fact without reporting global conformance success"
 - [FR-052](../../functional/protocol/FR-052-represent-bounded-control.md) places the
   choice in the finite acyclic causal graph and makes its branches
   identity-bearing.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Visibility evidence contract

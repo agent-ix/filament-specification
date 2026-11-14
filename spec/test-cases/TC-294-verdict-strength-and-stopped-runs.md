@@ -3,9 +3,9 @@ id: TC-294
 title: "Verdict strength, bound reached, undecided and stopped runs"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: verifies
 ---
 
@@ -28,7 +28,7 @@ Over the TC-293 ConfigVersion subject and the step 2 claim (`fair weak whole`):
    outcome for it (neither `true` nor `false`), and run unbounded.
 4. Run the subject with an empty list of initial states.
 5. Run a subject whose population `config_history` has no universe.
-6. Check the claim under `quire.temporal.timestamped-event.finite-window/v1`.
+6. Check the claim under `filament.temporal.timestamped-event.finite-window/v1`.
 7. Check a claim `over (c: Config::ConfigVersion)` against a subject whose
    population `config_history` has an empty universe list, so the population is
    bounded and holds no key; then against a subject whose only populations are

@@ -3,9 +3,9 @@ id: FR-017
 title: "Select exact verification artifact roles"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-004"
+  - target: "ix://agent-ix/filament-specification/US-004"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-014"
+  - target: "ix://agent-ix/filament-specification/FR-014"
     type: depends_on
 ---
 # FR-017: Select exact verification artifact roles

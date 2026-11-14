@@ -3,11 +3,11 @@ id: TC-963
 title: "Timed refinement, reductions over dense time and strong fairness over time"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: verifies
 ---
 

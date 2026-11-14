@@ -3,9 +3,9 @@ id: US-001
 title: "Understand the meaning of a native clause"
 type: US
 relationships:
-  - target: "ix://agent-ix/quire-specification/StR-001"
+  - target: "ix://agent-ix/filament-specification/StR-001"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-001"
+  - target: "ix://agent-ix/filament-specification/FR-001"
     type: exercises
 ---
 # US-001: Understand the meaning of a native clause

@@ -3,7 +3,7 @@ id: TC-317
 title: "Claim transfer through a refinement"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-380
+  - target: ix://agent-ix/filament-specification/FR-380
     type: verifies
 ---
 

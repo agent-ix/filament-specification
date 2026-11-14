@@ -3,13 +3,13 @@ id: TC-140
 title: "Bind typed observations without implicit values"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-110
+  - target: ix://agent-ix/filament-specification/FR-110
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-296
+  - target: ix://agent-ix/filament-specification/FR-296
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-260
+  - target: ix://agent-ix/filament-specification/FR-260
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-261
+  - target: ix://agent-ix/filament-specification/FR-261
     type: verifies
 ---
 ## Description

@@ -3,35 +3,35 @@ id: FR-161
 title: "Analyze native infinite-trace temporal properties"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-002
+  - target: ix://agent-ix/filament-specification/AD-002
     type: references
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: references
-  - target: ix://agent-ix/quire-specification/AD-012
+  - target: ix://agent-ix/filament-specification/AD-012
     type: references
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-251
+  - target: ix://agent-ix/filament-specification/FR-251
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-114
+  - target: ix://agent-ix/filament-specification/FR-114
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: references
 ---
 
@@ -64,7 +64,7 @@ refute an applicable property. Finite prefixes, absence of a counterexample or
 resource exhaustion cannot prove infinite satisfaction.
 
 The unbounded operator forms this requirement analyzes are admitted only under
-the `quire.temporal.infinite-trace/v1` profile ([FR-250](../../objects/temporal/FR-250-temporal-semantic-profile.md))
+the `filament.temporal.infinite-trace/v1` profile ([FR-250](../../objects/temporal/FR-250-temporal-semantic-profile.md))
 through the unbounded temporal operator grammar edition
 ([FR-048](../foundation/FR-048-bind-native-temporal-syntax.md),
 [AD-012](../../assurance/AD-012-unbounded-temporal-operator-grammar.md)). The
@@ -178,14 +178,14 @@ clock valuation, and the analyzer reads them as follows.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [FR-048](../foundation/FR-048-bind-native-temporal-syntax.md) and
   [AD-012](../../assurance/AD-012-unbounded-temporal-operator-grammar.md) admit
   the unbounded temporal operator grammar edition this requirement analyzes.
 - [FR-090](FR-090-select-temporal-profile-and-clock.md) and
   [FR-250](../../objects/temporal/FR-250-temporal-semantic-profile.md) select
-  the `quire.temporal.infinite-trace/v1` profile this requirement requires.
+  the `filament.temporal.infinite-trace/v1` profile this requirement requires.
 - [FR-251](../../objects/temporal/FR-251-tl-target-profile.md) records that an
   infinite-trace request resolves to an absent TL target rather than lowering.
 - [FR-360](../../objects/temporal/FR-360-infinite-trace-result-disposition.md)

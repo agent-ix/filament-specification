@@ -4,9 +4,9 @@ title: "Bound all complete-V1 execution resources"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-193
+  - target: ix://agent-ix/filament-specification/FR-193
     type: constrains
 ---
 

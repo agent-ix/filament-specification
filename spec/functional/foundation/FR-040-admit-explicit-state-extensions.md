@@ -3,7 +3,7 @@ id: FR-040
 title: "Admit state extensions through exact profile dependencies"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -33,8 +33,8 @@ The state contract explicitly proposes reusable-predicate/query and finite-graph
 
 ## Dependencies
 
-- [Detailed draft contract](../../../proposals/quire-v1/state-contract.md).
-- [Shared grammar](../../../proposals/quire-v1/shared-grammar.md).
+- [Detailed draft contract](../../../proposals/filament-v1/state-contract.md).
+- [Shared grammar](../../../proposals/filament-v1/shared-grammar.md).
 
 Accepted by FS03. Historical definitions and their acceptance remain separate;
 this artifact does not establish implementation coverage.

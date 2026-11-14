@@ -3,19 +3,19 @@ id: FR-405
 title: "Declare random parameters, workloads and rewards"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-205
+  - target: ix://agent-ix/filament-specification/FR-205
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
 ---
 
@@ -32,7 +32,7 @@ claim over that subject is evaluated.
 
 A checked package with a state model and its operations (FR-013, FR-181); the
 native `random`, `reward` and `workload` declarations of the shared grammar's
-probabilistic forms ([shared grammar](../../../proposals/quire-v1/shared-grammar.md));
+probabilistic forms ([shared grammar](../../../proposals/filament-v1/shared-grammar.md));
 exact rational literals (FR-205) and quantities (FR-142).
 
 ## Outputs
@@ -148,5 +148,5 @@ obligation that reads it.
 
 ## References
 
-- QSL ADR-024 PM-1, PM-2, PM-5; QSL ADR-026 SD-1.
+- FSL ADR-024 PM-1, PM-2, PM-5; FSL ADR-026 SD-1.
 - Ticket: STD-137 (paired with QSL-371).

@@ -3,11 +3,11 @@ id: IT-075
 title: "Contract backends agree with native replay"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-180
+  - target: ix://agent-ix/filament-specification/FR-180
     type: verifies
 ---
 
@@ -15,13 +15,13 @@ relationships:
 
 ## Objective
 
-Verify QSL-to-Contract-IR lowering, generated oracle/property/Kani consumers and
-the native QSL complete-V1 executor (FR-197, AD-016 arrow 7) agree on supported bounded subjects and explicit
+Verify FSL-to-Contract-IR lowering, generated oracle/property/Kani consumers and
+the native FSL complete-V1 executor (FR-197, AD-016 arrow 7) agree on supported bounded subjects and explicit
 refusals.
 
 ## Target Integration
 
-Real Rust APIs from QSL, Contract Model/IR, Codegen and Contract Runtime
+Real Rust APIs from FSL, Contract Model/IR, Codegen and Contract Runtime
 run locally; the result names the Kani version and options it ran.
 
 ## Preconditions

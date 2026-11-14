@@ -3,19 +3,19 @@ id: FR-482
 title: "Checked-package schedulability claim body and obligation identity"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: references
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-475
+  - target: ix://agent-ix/filament-specification/FR-475
     type: references
-  - target: ix://agent-ix/quire-specification/TC-967
+  - target: ix://agent-ix/filament-specification/TC-967
     type: verifies
 ---
 
@@ -25,7 +25,7 @@ relationships:
 
 When a checked package carries a `schedulable` or `response` claim over a
 task set ([FR-419](../../functional/analysis/FR-419-analyze-task-set-schedulability.md)),
-the producer SHALL emit it as one `quire.checked-semantic-graph/v2` node with
+the producer SHALL emit it as one `filament.checked-semantic-graph/v2` node with
 `node_tag: "claim"` and `semantic_form: "schedulability"`, encode its `body`
 as the aggregate below, with the whole task set inside it, and compute its
 obligation identity over every member that changes the claim's meaning. The
@@ -74,7 +74,7 @@ refusal in the reader order below.
   is typed by one `scalar_type`/`unit` node, the task set's unit, a unit of
   the package's time dimension ([FR-142](../../functional/type-model/FR-142-evaluate-quantities-and-units.md)).
   The frontend chooses that unit and converts every source value into it
-  exactly (QSL FR-246); the literal's `value` is the exact rational
+  exactly (FSL FR-246); the literal's `value` is the exact rational
   magnitude in that unit, spelled as [FR-322](FR-322-checked-package-artifact.md)
   "Scalar literal values" says.
 - **semantic_type** — the `scalar_type`/`boolean` node.
@@ -155,7 +155,7 @@ A `dependencies` list other than `[]` is FR-322's graph-shape refusal,
 `invalid_semantic_graph` at the node's `/dependencies`, which precedes this
 step.
 
-## IR and QSL boundary
+## IR and FSL boundary
 
 FR-322's `schedulability_claims` row authenticates the local claim node and
 its exact `claim` occurrence; this node's closed body is the sole checked
@@ -167,7 +167,7 @@ text, a display name, a task-set name, a graph path or declaration order.
 
 The IR read ends at the authenticated task claim. It does not bind that claim
 to a timed model, read source `release` declarations, create task-product
-states or recompute task successors. The QSL FR-418 checker SHALL resolve the
+states or recompute task successors. The FSL FR-418 checker SHALL resolve the
 same claim identity, join each checked task release to its exact source
 operation in the selected timed model, and recompute every source and
 scheduler successor before it accepts a finite task-product certificate.
@@ -183,7 +183,7 @@ the identity in concrete replay and witness evidence.
 | FR-482-AC-1 | Over TC-372's `Ctl` in a unit that declares the unit `ms` of the dimension `Time`, `schedulable CtlFp on Ctl under fixed_priority;` produces one `claim`/`schedulability` node whose body has exactly the bindings `kind`, `policy`, `task`, `bound` and `tasks` in that order, with `kind` `schedulable`, `policy` `fixed-priority`, `task` and `bound` the empty aggregate, and `tasks` the three task aggregates `t1`, `t2`, `t3`, each with its eleven bindings: `arrival` `periodic`, `period` `4`, `6`, `12`, `deadline` equal to the period, `bcet` `0`, `wcet` `1`, `2`, `5`, `wcet_hi` the empty aggregate, `criticality` `lo`, `priority` `1`, `2`, `3`, and `jitter` and `blocking` `0`, every time value a `quantity` literal typed by the `ms` unit node. The node has `semantic_type` the `scalar_type`/`boolean` node, no `declaration`, no `owner`, one occurrence of role `claim` and `dependencies` `[]`. `response T3 on Ctl.t3 <= 12 ms under fixed_priority;` produces a node with `kind` `response`, `policy` `fixed-priority`, `task` the text `t3` and `bound` the `quantity` literal `12`. | Test |
 | FR-482-AC-2 | `CtlFp` and `schedulable CtlEdf on Ctl under edf;` have different node ids and different obligation identities; `CtlFp` over `Ctl` with `t3`'s `wcet` 6 ms or `bcet` 1 ms has a different node id and obligation identity; `CtlFp` over `Ctl` with its tasks listed `t3`, `t1`, `t2`, with `jitter 0 ms` added to `t1`, with other whitespace and comments, or with the claim named `Other` has `CtlFp`'s node id and obligation identity; one unit declaring `CtlFp`'s claim twice, as `CtlFp` and `CtlFp2`, has one node with two `claim` occurrences, ordinals 0 and 1. | Test |
 | FR-482-AC-3 | Fed to the reader, each edit of `CtlFp`'s node refuses with the code at the locus stated: `tasks` with no member, `invalid_semantic_graph` at `tasks`; `policy` and `kind` swapped in order, `invalid_semantic_graph` at the body; `policy` `rate-monotonic`, `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{n}/body/members/1`; `kind` `response` with `task` still the empty aggregate, `invalid_semantic_graph` at the `task` binding; `t1`'s `wcet_hi` a `quantity` literal with `criticality` `lo`, `invalid_semantic_graph` at `t1`'s `wcet_hi` binding; tasks in the order `t2`, `t1`, `t3`, `invalid_semantic_graph` at `tasks`; `T3`'s `task` the text `t9`, `invalid_semantic_graph` at the `task` binding; `t2`'s `period` typed by a unit of length, `ill_typed`/`type-mismatch` at that literal; `t1`'s `period` `0`, `invalid_timed_model`/`invalid-task-set` at `t1`'s aggregate; `t1`'s `bcet` `-1`, `invalid_timed_model`/`invalid-task-set` at `t1`'s aggregate; `t1`'s `bcet` greater than `wcet`, and a HI task's `bcet` greater than `wcet_hi`, each `invalid_timed_model`/`invalid-task-set` at that task's aggregate; `t2`'s `jitter` `-1`, `invalid_timed_model`/`invalid-task-set` at `t2`'s aggregate; `t3`'s `priority` `1`, `invalid_timed_model`/`invalid-task-set` at `t3`'s aggregate; `dependencies` naming the `ms` unit node, `invalid_semantic_graph` at `/dependencies`. The same equal-priority edit of `CtlEdf`'s node is admitted. | Test |
-| FR-482-AC-4 | `CtlFp`'s exact local claim `NodeRef` and occurrence are carried by one `schedulability_claims` row; when the same claim node has two `claim` occurrences, both occurrence keys are present once in canonical order. The IR read returns the FR-482 body and identity by reference. It does not interpret the timed model's release bindings or task successors; QSL alone performs those joins and recomputations under FR-418. Every positive and malformed carrier row has the outcome and locus in TC-976. | Test (TC-976) |
+| FR-482-AC-4 | `CtlFp`'s exact local claim `NodeRef` and occurrence are carried by one `schedulability_claims` row; when the same claim node has two `claim` occurrences, both occurrence keys are present once in canonical order. The IR read returns the FR-482 body and identity by reference. It does not interpret the timed model's release bindings or task successors; FSL alone performs those joins and recomputations under FR-418. Every positive and malformed carrier row has the outcome and locus in TC-976. | Test (TC-976) |
 
 ## Published artifacts
 
@@ -204,5 +204,5 @@ the identity in concrete replay and witness evidence.
 
 ## References
 
-- STD-375 (this requirement); quire-spec-language FR-246 (S3 check, the
+- STD-375 (this requirement); filament-spec-language FR-246 (S3 check, the
   task set's unit) and FR-454 (S4 emission and the I2 reader).

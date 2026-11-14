@@ -4,15 +4,15 @@ title: "Operation attempt"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-235
+  - target: ix://agent-ix/filament-specification/FR-235
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-225: Operation attempt
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 - **occurrence** ([FR-221](FR-221-protocol-node-occurrence.md)) — an attempt is
   an authored protocol node. The
-  [choreography surface](../../../proposals/quire-v1/choreography-surface.md)
+  [choreography surface](../../../proposals/filament-v1/choreography-surface.md)
   states that `attempt ... by R on M::T::op contracts [...]` observes "One
   operation attempt under the named role and operation".
 - **role** — the named role performing the attempt, bound to its exact typed
@@ -119,7 +119,7 @@ successful retry retains both attempts and one successful refund effect", is a
   that retry bounds count the initial attempt.
 - [FR-235](FR-235-compensation-attempt.md) types the compensation attempt and
   owns the FR-058-AC-1 refund example.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) defines the
   concrete forward-attempt key and non-causal comparison order.

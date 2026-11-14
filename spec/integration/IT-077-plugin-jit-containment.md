@@ -3,9 +3,9 @@ id: IT-077
 title: "Rust plugins and JIT providers remain contained and exact"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-306
+  - target: ix://agent-ix/filament-specification/FR-306
     type: verifies
 ---
 

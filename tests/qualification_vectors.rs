@@ -9,7 +9,7 @@
 use std::collections::BTreeSet;
 
 use ix_trace_rs::trace;
-use quire_specification::{QUALIFICATION_VECTORS, TestCase, vectors_of};
+use filament_specification::{QUALIFICATION_VECTORS, TestCase, vectors_of};
 
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/spec/test-cases");
 

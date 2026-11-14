@@ -6,7 +6,7 @@
 //! digest member, and the worked vectors ZC-10 to ZC-12.
 
 use ix_trace_rs::trace;
-use quire_verification_contracts::jcs_canonicalize;
+use filament_verification_contracts::jcs_canonicalize;
 use serde_json::{Value, json};
 
 const SCHEMA: &str = include_str!("../proposals/backend-provider-v1/schema.json");
@@ -19,32 +19,32 @@ fn parsed(text: &str) -> Value {
 
 fn validator() -> jsonschema::Validator {
     let registry = jsonschema::Registry::new()
-        .add("urn:quire:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
+        .add("urn:filament:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
         .expect("checked-package schema registers")
-        .add("urn:quire:backend-provider:v1", parsed(SCHEMA))
+        .add("urn:filament:backend-provider:v1", parsed(SCHEMA))
         .expect("backend-provider schema registers")
         .prepare()
         .expect("registry prepares");
     jsonschema::options()
         .with_registry(&registry)
-        .build(&json!({"$ref": "urn:quire:backend-provider:v1#/$defs/ZoneCertificate"}))
+        .build(&json!({"$ref": "urn:filament:backend-provider:v1#/$defs/ZoneCertificate"}))
         .expect("ZoneCertificate definition compiles")
 }
 
 fn task_search_validator() -> jsonschema::Validator {
     let registry = jsonschema::Registry::new()
         .add(
-            "urn:quire:checked-package:v2",
+            "urn:filament:checked-package:v2",
             parsed(CHECKED_PACKAGE_SCHEMA),
         )
         .expect("checked-package schema registers")
-        .add("urn:quire:backend-provider:v1", parsed(SCHEMA))
+        .add("urn:filament:backend-provider:v1", parsed(SCHEMA))
         .expect("backend-provider schema registers")
         .prepare()
         .expect("registry prepares");
     jsonschema::options()
         .with_registry(&registry)
-        .build(&json!({"$ref": "urn:quire:backend-provider:v1#/$defs/TaskSearchEvidence"}))
+        .build(&json!({"$ref": "urn:filament:backend-provider:v1#/$defs/TaskSearchEvidence"}))
         .expect("TaskSearchEvidence definition compiles")
 }
 

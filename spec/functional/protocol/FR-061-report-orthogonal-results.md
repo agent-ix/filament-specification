@@ -3,59 +3,59 @@ id: FR-061
 title: "Report orthogonal protocol and adequacy results"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-031
+  - target: ix://agent-ix/filament-specification/FR-031
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-059
+  - target: ix://agent-ix/filament-specification/FR-059
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-231
+  - target: ix://agent-ix/filament-specification/FR-231
     type: references
-  - target: ix://agent-ix/quire-specification/FR-240
+  - target: ix://agent-ix/filament-specification/FR-240
     type: references
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: references
-  - target: ix://agent-ix/quire-specification/FR-245
+  - target: ix://agent-ix/filament-specification/FR-245
     type: references
-  - target: ix://agent-ix/quire-specification/FR-246
+  - target: ix://agent-ix/filament-specification/FR-246
     type: references
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: references
-  - target: ix://agent-ix/quire-specification/FR-248
+  - target: ix://agent-ix/filament-specification/FR-248
     type: references
-  - target: ix://agent-ix/quire-specification/FR-280
+  - target: ix://agent-ix/filament-specification/FR-280
     type: references
-  - target: ix://agent-ix/quire-specification/FR-281
+  - target: ix://agent-ix/filament-specification/FR-281
     type: references
   - target: ix://agent-ix/engineering-assurance/FR-022
     type: references
-  - target: ix://agent-ix/quire-specification/FR-282
+  - target: ix://agent-ix/filament-specification/FR-282
     type: references
-  - target: ix://agent-ix/quire-specification/FR-284
+  - target: ix://agent-ix/filament-specification/FR-284
     type: references
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: references
-  - target: ix://agent-ix/quire-specification/FR-286
+  - target: ix://agent-ix/filament-specification/FR-286
     type: references
-  - target: ix://agent-ix/quire-specification/FR-295
+  - target: ix://agent-ix/filament-specification/FR-295
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-291
+  - target: ix://agent-ix/filament-specification/FR-291
     type: references
-  - target: ix://agent-ix/quire-specification/FR-292
+  - target: ix://agent-ix/filament-specification/FR-292
     type: references
 ---
 ## Description
@@ -93,7 +93,7 @@ distinct source-bound value. The result producer SHALL reuse Quoin evidence auth
 The result producer SHALL NOT create a local evidence store or verification-method
 registry.
 The result producer SHALL emit every canonical protocol result with
-`contractVersion` equal to `quire.protocol.result/v1-draft.1`, kind
+`contractVersion` equal to `filament.protocol.result/v1-draft.1`, kind
 `ProtocolResult` and a structural `resultKey` under FR-286. A strict reader SHALL validate closed shape, version and
 kind before the key, and SHALL refuse a missing or incomplete `resultKey`. Two accepted results bearing one key SHALL have
 equal result members. A later contradiction emits a
@@ -262,4 +262,4 @@ The strict reader SHALL enforce the following result-combination rules.
   [FR-291](../../objects/protocol/FR-291-admitted-analysis-fragment.md), and
   [FR-292](../../objects/protocol/FR-292-analysis-backend.md) define claim
   dispatch and retained analysis authority.
-- [Protocol contract](../../../proposals/quire-v1/protocol-contract.md).
+- [Protocol contract](../../../proposals/filament-v1/protocol-contract.md).

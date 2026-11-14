@@ -4,15 +4,15 @@ title: "Probabilistic counterexample and witness scheduler"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-412
+  - target: ix://agent-ix/filament-specification/FR-412
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
 ---
 
@@ -196,5 +196,5 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 
 ## References
 
-- QSL ADR-028 WS-1 to WS-6, FS-9.
+- FSL ADR-028 WS-1 to WS-6, FS-9.
 - Ticket: STD-137 (paired with QSL-371).

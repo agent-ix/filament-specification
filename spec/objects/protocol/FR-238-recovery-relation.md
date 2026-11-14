@@ -4,11 +4,11 @@ title: "Authored recovery relation"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-238: Authored recovery relation
@@ -114,7 +114,7 @@ arithmetic."
   typed recovery relation and its retained states.
 - [FR-058](../../functional/protocol/FR-058-preserve-retry-and-partial-recovery.md)
   establishes the declared-population requirement for aggregating recovery.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-288](FR-288-qualified-protocol-definition-identity.md) supplies the exact
   linked protocol-definition component.

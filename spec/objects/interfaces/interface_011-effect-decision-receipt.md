@@ -3,7 +3,7 @@ id: interface_011
 title: "I11 effect decision and receipt"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-329
+  - target: ix://agent-ix/filament-specification/FR-329
     type: references
 ---
 

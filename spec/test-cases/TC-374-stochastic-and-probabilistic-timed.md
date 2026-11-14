@@ -3,15 +3,15 @@ id: TC-374
 title: "Stochastic delays, timed sampling and exact digital checking"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-420
+  - target: ix://agent-ix/filament-specification/FR-420
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-421
+  - target: ix://agent-ix/filament-specification/FR-421
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-407
+  - target: ix://agent-ix/filament-specification/FR-407
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-413
+  - target: ix://agent-ix/filament-specification/FR-413
     type: verifies
 ---
 
@@ -27,11 +27,11 @@ Run each vector through the real local Rust boundary of the frontend or provider
 
 ## Models
 
-The models below are defined here in full; the citation names the QSL design record each one comes from. `ev` selects `quire.temporal.event-position.false-extension/v1`, `inf` selects `quire.temporal.infinite-trace/v1` and `timed` selects `quire.temporal.timed/v1`.
+The models below are defined here in full; the citation names the FSL design record each one comes from. `ev` selects `filament.temporal.event-position.false-extension/v1`, `inf` selects `filament.temporal.infinite-trace/v1` and `timed` selects `filament.temporal.timed/v1`.
 
-- **`Rpc`**, **`NoLateReply`** and **`Settles`** (from QSL ADR-026 §11). `time Rpc dense unit ms;`. One object `c: Call { phase: Phase, inflight: Boolean, late: Boolean, x: Clock }`, `Phase` one of `Idle`, `Waiting`, `Replied` and `TimedOut`; universe `{c}`; initially `phase = Idle`, `inflight` and `late` false, `x = 0`. `Call::send` has pre `phase = Idle` and post `phase = Waiting`, `inflight`, `not late` and `x = 0`. `Call::reply` has pre `inflight and x >= 1 ms` and post `not inflight`, `late = (pre(phase) = TimedOut)`, and `phase = Replied` when `pre(phase) = Waiting`, unchanged otherwise. `Call::timeout` has pre `phase = Waiting and x >= T` and post `phase = TimedOut`. `Call::reset` has pre `not inflight and (phase = Replied or phase = TimedOut)` and post `phase = Idle`. The time invariants are `x <= 3 ms` while `inflight` and `x <= T` while `phase = Waiting`. `T` is a time constant each vector fixes. `NoLateReply` is `temporal NoLateReply using inf over (k: Rpc::Call) clock "model-steps" on origin { always holds(not k.late) }`. `Settles` is `temporal Settles using timed over (k: Rpc::Call) clock "model-time" on origin { always (holds(k.phase = Waiting) implies eventually[0 ms, 3 ms] holds(k.phase != Waiting)) }`.
-- **`Retx`**, **`Deadline`** and **`MeanTime`** (from QSL ADR-028 §15.5). `time Retx dense unit ms;`. One object `m: Msg { delivered: Boolean, x: Clock }`, initially `delivered = false` and `x = 0`. `Msg::send(lost)` has pre `not delivered and x >= 1 ms` and post `delivered = not lost and x = 0`, with `random Msg::send(lost) ~ { true: 1, false: 9 };` and no `delay` declaration. The time invariant is `x <= 2 ms` while `not delivered`. A state with `delivered` is terminal. `Deadline` is `probabilistic Deadline using timed on Retx under every scheduler on origin { probability >= 0.99 [ eventually[0 ms, 4 ms] holds(m.delivered) ] }`. `MeanTime` is `probabilistic MeanTime using timed on Retx under every scheduler on origin { expected elapsed until holds(m.delivered) <= 3 ms }`.
-- **`RareLate`** (from QSL ADR-026 §11). `Rpc` with `T = 3 ms`, starting from the state just after `send` (`phase = Waiting`, `inflight`, `late` false, `x = 0`), with `delay Call::reply ~ discrete { 1 ms: 90, 3 ms: 10 };`, `delay Call::timeout ~ uniform;`, `delay Call::send ~ exponential(rational(1, 1000));`, `delay Call::reset ~ exponential(rational(1, 1000));` and `workload Even on Rpc { weight Call::send = 1; weight Call::reply = 1; weight Call::timeout = 1; weight Call::reset = 1; }`. Its claim is `probabilistic RareLate using timed on Rpc under Even on origin with alpha 0.01, beta 0.01, indifference 0.005 { probability <= 0.01 [ eventually[0 ms, 3 ms] holds(c.late) ] }`, run with seed `20261001`. `timeout`'s window from the start is the single point 3 ms, so the event holds exactly when `reply` draws 3 ms and the tie is ordered `timeout` first: its exact probability is `1/10 · 1/2 = 1/20`.
+- **`Rpc`**, **`NoLateReply`** and **`Settles`** (from FSL ADR-026 §11). `time Rpc dense unit ms;`. One object `c: Call { phase: Phase, inflight: Boolean, late: Boolean, x: Clock }`, `Phase` one of `Idle`, `Waiting`, `Replied` and `TimedOut`; universe `{c}`; initially `phase = Idle`, `inflight` and `late` false, `x = 0`. `Call::send` has pre `phase = Idle` and post `phase = Waiting`, `inflight`, `not late` and `x = 0`. `Call::reply` has pre `inflight and x >= 1 ms` and post `not inflight`, `late = (pre(phase) = TimedOut)`, and `phase = Replied` when `pre(phase) = Waiting`, unchanged otherwise. `Call::timeout` has pre `phase = Waiting and x >= T` and post `phase = TimedOut`. `Call::reset` has pre `not inflight and (phase = Replied or phase = TimedOut)` and post `phase = Idle`. The time invariants are `x <= 3 ms` while `inflight` and `x <= T` while `phase = Waiting`. `T` is a time constant each vector fixes. `NoLateReply` is `temporal NoLateReply using inf over (k: Rpc::Call) clock "model-steps" on origin { always holds(not k.late) }`. `Settles` is `temporal Settles using timed over (k: Rpc::Call) clock "model-time" on origin { always (holds(k.phase = Waiting) implies eventually[0 ms, 3 ms] holds(k.phase != Waiting)) }`.
+- **`Retx`**, **`Deadline`** and **`MeanTime`** (from FSL ADR-028 §15.5). `time Retx dense unit ms;`. One object `m: Msg { delivered: Boolean, x: Clock }`, initially `delivered = false` and `x = 0`. `Msg::send(lost)` has pre `not delivered and x >= 1 ms` and post `delivered = not lost and x = 0`, with `random Msg::send(lost) ~ { true: 1, false: 9 };` and no `delay` declaration. The time invariant is `x <= 2 ms` while `not delivered`. A state with `delivered` is terminal. `Deadline` is `probabilistic Deadline using timed on Retx under every scheduler on origin { probability >= 0.99 [ eventually[0 ms, 4 ms] holds(m.delivered) ] }`. `MeanTime` is `probabilistic MeanTime using timed on Retx under every scheduler on origin { expected elapsed until holds(m.delivered) <= 3 ms }`.
+- **`RareLate`** (from FSL ADR-026 §11). `Rpc` with `T = 3 ms`, starting from the state just after `send` (`phase = Waiting`, `inflight`, `late` false, `x = 0`), with `delay Call::reply ~ discrete { 1 ms: 90, 3 ms: 10 };`, `delay Call::timeout ~ uniform;`, `delay Call::send ~ exponential(rational(1, 1000));`, `delay Call::reset ~ exponential(rational(1, 1000));` and `workload Even on Rpc { weight Call::send = 1; weight Call::reply = 1; weight Call::timeout = 1; weight Call::reset = 1; }`. Its claim is `probabilistic RareLate using timed on Rpc under Even on origin with alpha 0.01, beta 0.01, indifference 0.005 { probability <= 0.01 [ eventually[0 ms, 3 ms] holds(c.late) ] }`, run with seed `20261001`. `timeout`'s window from the start is the single point 3 ms, so the event holds exactly when `reply` draws 3 ms and the tie is ordered `timeout` first: its exact probability is `1/10 · 1/2 = 1/20`.
 
 ## Vectors
 

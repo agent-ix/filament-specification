@@ -4,9 +4,9 @@ title: "Canonical identity domain vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-015
+  - target: ix://agent-ix/filament-specification/FR-015
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-150
+  - target: ix://agent-ix/filament-specification/FR-150
     type: specifies
 ---
 # FR-201: Canonical identity domain vocabulary
@@ -85,10 +85,10 @@ owns it, an ordinal) (FR-418-AC-9). An effective declaration identity is
 
 ## Dependencies
 
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 - [FR-150](../../functional/type-model/FR-150-preserve-model-normalization-provenance.md)
   defines the effective declaration identity.
-- QSL ADR-013 O-09 and [AD-016](../../assurance/AD-016-semantic-family-extension-path.md)
+- FSL ADR-013 O-09 and [AD-016](../../assurance/AD-016-semantic-family-extension-path.md)
   arrow 5 define the obligation identity;
   [FR-196](../../functional/ir-proof/FR-196-generate-kani-contracts.md) and
   [FR-197](../../functional/ir-proof/FR-197-replay-backend-counterexamples.md)

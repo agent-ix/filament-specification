@@ -3,13 +3,13 @@ id: TC-154
 title: "Refuse output-mapping mismatch and exhaustion"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-120
+  - target: ix://agent-ix/filament-specification/FR-120
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-125
+  - target: ix://agent-ix/filament-specification/FR-125
     type: verifies
-  - target: ix://agent-ix/quire-specification/NFR-060
+  - target: ix://agent-ix/filament-specification/NFR-060
     type: verifies
 ---
 ## Description

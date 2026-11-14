@@ -4,13 +4,13 @@ title: "Send occurrence"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: references
 ---
 # FR-222: Send occurrence
@@ -58,7 +58,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 A send is the per-send unit that deliveries are counted against:
 FR-054 binds the delivery policy as a channel premise, and the
-[choreography surface](../../../proposals/quire-v1/choreography-surface.md)
+[choreography surface](../../../proposals/filament-v1/choreography-surface.md)
 states the channel's delivery policy.
 
 ## Identity and comparison
@@ -94,7 +94,7 @@ states the channel's delivery policy.
   send references distinct from the other communication references.
 - [FR-054](../../functional/protocol/FR-054-bind-channel-premises.md) binds the channel
   the send is made on.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Status

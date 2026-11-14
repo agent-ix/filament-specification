@@ -3,15 +3,15 @@ id: FR-035
 title: "Retain explicit ecosystem scope identities in assessment requests"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: references
-  - target: ix://agent-ix/quire-specification/FR-212
+  - target: ix://agent-ix/filament-specification/FR-212
     type: references
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 ## Description
@@ -30,7 +30,7 @@ A request bound to the exact declared subjects and completeness dependencies, or
 
 A trace ID, timestamp, endpoint or matching textual name alone does not establish a business relationship. Workflow instances, role instances, message deliveries, attempts and effects remain distinct subjects. Scope references preserve the selected snapshot/window, membership declaration and observation/progress dependencies; static package identity remains separate. Unknown required membership cannot establish aggregate success. B/F define the protocol and observation binding contracts; this requirement introduces no model store, correlation heuristic or alternate schema.
 
-The [package contract](../../../proposals/quire-v1/package-contract.md) defines the
+The [package contract](../../../proposals/filament-v1/package-contract.md) defines the
 typed role mapping. Configuration and binding contracts must agree with the
 linked requirements. Concrete runtime bindings are separately identified inputs;
 they cannot override static selections. Required role mappings and records needed
@@ -79,7 +79,7 @@ arrival order.
 
 ## Dependencies
 
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Composed architecture](../../assurance/AD-001-composed-native-language.md).
 - [FR-287](../../objects/protocol/FR-287-authority-qualified-runtime-subject-reference.md)
   extracts the common runtime identity value and comparison rule.

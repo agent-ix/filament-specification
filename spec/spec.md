@@ -1,6 +1,6 @@
 ---
 type: master-requirements
-name: quire-specification
+name: filament-specification
 org: agent-ix
 component_type: language-standard
 implementation_language: null
@@ -8,838 +8,838 @@ standards_alignment:
   - iso-iec-ieee-29148
   - ieee-828
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-002
+  - target: ix://agent-ix/filament-specification/AD-002
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-003
+  - target: ix://agent-ix/filament-specification/AD-003
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-004
+  - target: ix://agent-ix/filament-specification/AD-004
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-120
+  - target: ix://agent-ix/filament-specification/FR-120
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-122
+  - target: ix://agent-ix/filament-specification/FR-122
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-123
+  - target: ix://agent-ix/filament-specification/FR-123
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-124
+  - target: ix://agent-ix/filament-specification/FR-124
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-125
+  - target: ix://agent-ix/filament-specification/FR-125
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-297
+  - target: ix://agent-ix/filament-specification/FR-297
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-298
+  - target: ix://agent-ix/filament-specification/FR-298
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-299
+  - target: ix://agent-ix/filament-specification/FR-299
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-060
+  - target: ix://agent-ix/filament-specification/NFR-060
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-061
+  - target: ix://agent-ix/filament-specification/NFR-061
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-060
+  - target: ix://agent-ix/filament-specification/IT-060
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-130
+  - target: ix://agent-ix/filament-specification/FR-130
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-200
+  - target: ix://agent-ix/filament-specification/FR-200
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-202
+  - target: ix://agent-ix/filament-specification/FR-202
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-205
+  - target: ix://agent-ix/filament-specification/FR-205
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-206
+  - target: ix://agent-ix/filament-specification/FR-206
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-207
+  - target: ix://agent-ix/filament-specification/FR-207
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-220
+  - target: ix://agent-ix/filament-specification/FR-220
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-222
+  - target: ix://agent-ix/filament-specification/FR-222
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-223
+  - target: ix://agent-ix/filament-specification/FR-223
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-224
+  - target: ix://agent-ix/filament-specification/FR-224
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-225
+  - target: ix://agent-ix/filament-specification/FR-225
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-226
+  - target: ix://agent-ix/filament-specification/FR-226
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-227
+  - target: ix://agent-ix/filament-specification/FR-227
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-228
+  - target: ix://agent-ix/filament-specification/FR-228
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-270
+  - target: ix://agent-ix/filament-specification/FR-270
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-273
+  - target: ix://agent-ix/filament-specification/FR-273
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-274
+  - target: ix://agent-ix/filament-specification/FR-274
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-230
+  - target: ix://agent-ix/filament-specification/FR-230
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-231
+  - target: ix://agent-ix/filament-specification/FR-231
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-232
+  - target: ix://agent-ix/filament-specification/FR-232
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-233
+  - target: ix://agent-ix/filament-specification/FR-233
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-234
+  - target: ix://agent-ix/filament-specification/FR-234
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-235
+  - target: ix://agent-ix/filament-specification/FR-235
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-236
+  - target: ix://agent-ix/filament-specification/FR-236
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-237
+  - target: ix://agent-ix/filament-specification/FR-237
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-238
+  - target: ix://agent-ix/filament-specification/FR-238
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-239
+  - target: ix://agent-ix/filament-specification/FR-239
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-260
+  - target: ix://agent-ix/filament-specification/FR-260
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-261
+  - target: ix://agent-ix/filament-specification/FR-261
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-262
+  - target: ix://agent-ix/filament-specification/FR-262
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-263
+  - target: ix://agent-ix/filament-specification/FR-263
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-264
+  - target: ix://agent-ix/filament-specification/FR-264
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-265
+  - target: ix://agent-ix/filament-specification/FR-265
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-267
+  - target: ix://agent-ix/filament-specification/FR-267
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-268
+  - target: ix://agent-ix/filament-specification/FR-268
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-269
+  - target: ix://agent-ix/filament-specification/FR-269
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-211
+  - target: ix://agent-ix/filament-specification/FR-211
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-212
+  - target: ix://agent-ix/filament-specification/FR-212
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-214
+  - target: ix://agent-ix/filament-specification/FR-214
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-216
+  - target: ix://agent-ix/filament-specification/FR-216
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-217
+  - target: ix://agent-ix/filament-specification/FR-217
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-240
+  - target: ix://agent-ix/filament-specification/FR-240
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-245
+  - target: ix://agent-ix/filament-specification/FR-245
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-246
+  - target: ix://agent-ix/filament-specification/FR-246
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-248
+  - target: ix://agent-ix/filament-specification/FR-248
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-249
+  - target: ix://agent-ix/filament-specification/FR-249
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-280
+  - target: ix://agent-ix/filament-specification/FR-280
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-281
+  - target: ix://agent-ix/filament-specification/FR-281
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-282
+  - target: ix://agent-ix/filament-specification/FR-282
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-283
+  - target: ix://agent-ix/filament-specification/FR-283
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-284
+  - target: ix://agent-ix/filament-specification/FR-284
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-286
+  - target: ix://agent-ix/filament-specification/FR-286
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-291
+  - target: ix://agent-ix/filament-specification/FR-291
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-292
+  - target: ix://agent-ix/filament-specification/FR-292
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-293
+  - target: ix://agent-ix/filament-specification/FR-293
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-294
+  - target: ix://agent-ix/filament-specification/FR-294
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-295
+  - target: ix://agent-ix/filament-specification/FR-295
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-296
+  - target: ix://agent-ix/filament-specification/FR-296
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-251
+  - target: ix://agent-ix/filament-specification/FR-251
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-253
+  - target: ix://agent-ix/filament-specification/FR-253
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-254
+  - target: ix://agent-ix/filament-specification/FR-254
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-256
+  - target: ix://agent-ix/filament-specification/FR-256
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-257
+  - target: ix://agent-ix/filament-specification/FR-257
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-258
+  - target: ix://agent-ix/filament-specification/FR-258
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-259
+  - target: ix://agent-ix/filament-specification/FR-259
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-365
+  - target: ix://agent-ix/filament-specification/FR-365
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-369
+  - target: ix://agent-ix/filament-specification/FR-369
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-010
+  - target: ix://agent-ix/filament-specification/IT-010
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: contains
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-059
+  - target: ix://agent-ix/filament-specification/FR-059
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-020
+  - target: ix://agent-ix/filament-specification/NFR-020
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-021
+  - target: ix://agent-ix/filament-specification/NFR-021
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-020
+  - target: ix://agent-ix/filament-specification/IT-020
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-021
+  - target: ix://agent-ix/filament-specification/IT-021
     type: contains
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-110
+  - target: ix://agent-ix/filament-specification/FR-110
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-111
+  - target: ix://agent-ix/filament-specification/FR-111
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-114
+  - target: ix://agent-ix/filament-specification/FR-114
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-050
+  - target: ix://agent-ix/filament-specification/NFR-050
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-051
+  - target: ix://agent-ix/filament-specification/NFR-051
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-052
+  - target: ix://agent-ix/filament-specification/NFR-052
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-050
+  - target: ix://agent-ix/filament-specification/IT-050
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-051
+  - target: ix://agent-ix/filament-specification/IT-051
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-048
+  - target: ix://agent-ix/filament-specification/FR-048
     type: contains
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-040
+  - target: ix://agent-ix/filament-specification/NFR-040
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-040
+  - target: ix://agent-ix/filament-specification/IT-040
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-041
+  - target: ix://agent-ix/filament-specification/IT-041
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-010
+  - target: ix://agent-ix/filament-specification/NFR-010
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-040
+  - target: ix://agent-ix/filament-specification/FR-040
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-042
+  - target: ix://agent-ix/filament-specification/FR-042
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-045
+  - target: ix://agent-ix/filament-specification/FR-045
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-046
+  - target: ix://agent-ix/filament-specification/FR-046
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-037
+  - target: ix://agent-ix/filament-specification/FR-037
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-038
+  - target: ix://agent-ix/filament-specification/FR-038
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-039
+  - target: ix://agent-ix/filament-specification/FR-039
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-031
+  - target: ix://agent-ix/filament-specification/FR-031
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-032
+  - target: ix://agent-ix/filament-specification/FR-032
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-033
+  - target: ix://agent-ix/filament-specification/FR-033
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-034
+  - target: ix://agent-ix/filament-specification/FR-034
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: contains
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: contains
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-020
+  - target: ix://agent-ix/filament-specification/FR-020
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-001
+  - target: ix://agent-ix/filament-specification/FR-001
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-002
+  - target: ix://agent-ix/filament-specification/FR-002
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-003
+  - target: ix://agent-ix/filament-specification/FR-003
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-004
+  - target: ix://agent-ix/filament-specification/FR-004
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-005
+  - target: ix://agent-ix/filament-specification/FR-005
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-006
+  - target: ix://agent-ix/filament-specification/FR-006
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-007
+  - target: ix://agent-ix/filament-specification/FR-007
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-008
+  - target: ix://agent-ix/filament-specification/FR-008
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-009
+  - target: ix://agent-ix/filament-specification/FR-009
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-010
+  - target: ix://agent-ix/filament-specification/FR-010
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-011
+  - target: ix://agent-ix/filament-specification/FR-011
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-012
+  - target: ix://agent-ix/filament-specification/FR-012
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-014
+  - target: ix://agent-ix/filament-specification/FR-014
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-015
+  - target: ix://agent-ix/filament-specification/FR-015
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-017
+  - target: ix://agent-ix/filament-specification/FR-017
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-018
+  - target: ix://agent-ix/filament-specification/FR-018
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-486
+  - target: ix://agent-ix/filament-specification/FR-486
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-003
+  - target: ix://agent-ix/filament-specification/IT-003
     type: contains
-  - target: ix://agent-ix/quire-specification/US-001
+  - target: ix://agent-ix/filament-specification/US-001
     type: contains
-  - target: ix://agent-ix/quire-specification/US-002
+  - target: ix://agent-ix/filament-specification/US-002
     type: contains
-  - target: ix://agent-ix/quire-specification/US-003
+  - target: ix://agent-ix/filament-specification/US-003
     type: contains
-  - target: ix://agent-ix/quire-specification/US-004
+  - target: ix://agent-ix/filament-specification/US-004
     type: contains
-  - target: ix://agent-ix/quire-specification/StR-001
+  - target: ix://agent-ix/filament-specification/StR-001
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-002
+  - target: ix://agent-ix/filament-specification/NFR-002
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-003
+  - target: ix://agent-ix/filament-specification/NFR-003
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-002
+  - target: ix://agent-ix/filament-specification/IT-002
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-007
+  - target: ix://agent-ix/filament-specification/AD-007
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-008
+  - target: ix://agent-ix/filament-specification/AD-008
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: contains
-  - target: ix://agent-ix/quire-specification/AD-011
+  - target: ix://agent-ix/filament-specification/AD-011
     type: contains
-  - target: ix://agent-ix/quire-specification/ADR-001
+  - target: ix://agent-ix/filament-specification/ADR-001
     type: contains
-  - target: ix://agent-ix/quire-specification/ADR-002
+  - target: ix://agent-ix/filament-specification/ADR-002
     type: contains
-  - target: ix://agent-ix/quire-specification/ADR-003
+  - target: ix://agent-ix/filament-specification/ADR-003
     type: contains
-  - target: ix://agent-ix/quire-specification/ADR-004
+  - target: ix://agent-ix/filament-specification/ADR-004
     type: contains
-  - target: ix://agent-ix/quire-specification/ADR-005
+  - target: ix://agent-ix/filament-specification/ADR-005
     type: contains
-  - target: ix://agent-ix/quire-specification/ADR-006
+  - target: ix://agent-ix/filament-specification/ADR-006
     type: contains
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: contains
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: contains
-  - target: ix://agent-ix/quire-specification/US-012
+  - target: ix://agent-ix/filament-specification/US-012
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-131
+  - target: ix://agent-ix/filament-specification/FR-131
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-132
+  - target: ix://agent-ix/filament-specification/FR-132
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-133
+  - target: ix://agent-ix/filament-specification/FR-133
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-134
+  - target: ix://agent-ix/filament-specification/FR-134
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-140
+  - target: ix://agent-ix/filament-specification/FR-140
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-141
+  - target: ix://agent-ix/filament-specification/FR-141
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-147
+  - target: ix://agent-ix/filament-specification/FR-147
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-148
+  - target: ix://agent-ix/filament-specification/FR-148
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-150
+  - target: ix://agent-ix/filament-specification/FR-150
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-151
+  - target: ix://agent-ix/filament-specification/FR-151
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-152
+  - target: ix://agent-ix/filament-specification/FR-152
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-153
+  - target: ix://agent-ix/filament-specification/FR-153
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-470
+  - target: ix://agent-ix/filament-specification/FR-470
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-478
+  - target: ix://agent-ix/filament-specification/FR-478
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-170
+  - target: ix://agent-ix/filament-specification/FR-170
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-172
+  - target: ix://agent-ix/filament-specification/FR-172
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-173
+  - target: ix://agent-ix/filament-specification/FR-173
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-174
+  - target: ix://agent-ix/filament-specification/FR-174
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-175
+  - target: ix://agent-ix/filament-specification/FR-175
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-176
+  - target: ix://agent-ix/filament-specification/FR-176
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-180
+  - target: ix://agent-ix/filament-specification/FR-180
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-182
+  - target: ix://agent-ix/filament-specification/FR-182
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-190
+  - target: ix://agent-ix/filament-specification/FR-190
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-192
+  - target: ix://agent-ix/filament-specification/FR-192
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-193
+  - target: ix://agent-ix/filament-specification/FR-193
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-194
+  - target: ix://agent-ix/filament-specification/FR-194
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-300
+  - target: ix://agent-ix/filament-specification/FR-300
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-301
+  - target: ix://agent-ix/filament-specification/FR-301
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-302
+  - target: ix://agent-ix/filament-specification/FR-302
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-303
+  - target: ix://agent-ix/filament-specification/FR-303
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-304
+  - target: ix://agent-ix/filament-specification/FR-304
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-306
+  - target: ix://agent-ix/filament-specification/FR-306
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-307
+  - target: ix://agent-ix/filament-specification/FR-307
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-309
+  - target: ix://agent-ix/filament-specification/FR-309
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-310
+  - target: ix://agent-ix/filament-specification/FR-310
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-312
+  - target: ix://agent-ix/filament-specification/FR-312
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-070
+  - target: ix://agent-ix/filament-specification/NFR-070
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-071
+  - target: ix://agent-ix/filament-specification/NFR-071
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-072
+  - target: ix://agent-ix/filament-specification/NFR-072
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-073
+  - target: ix://agent-ix/filament-specification/NFR-073
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-075
+  - target: ix://agent-ix/filament-specification/NFR-075
     type: contains
-  - target: ix://agent-ix/quire-specification/NFR-076
+  - target: ix://agent-ix/filament-specification/NFR-076
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-070
+  - target: ix://agent-ix/filament-specification/IT-070
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-071
+  - target: ix://agent-ix/filament-specification/IT-071
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-072
+  - target: ix://agent-ix/filament-specification/IT-072
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-073
+  - target: ix://agent-ix/filament-specification/IT-073
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-074
+  - target: ix://agent-ix/filament-specification/IT-074
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-075
+  - target: ix://agent-ix/filament-specification/IT-075
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-076
+  - target: ix://agent-ix/filament-specification/IT-076
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-077
+  - target: ix://agent-ix/filament-specification/IT-077
     type: contains
-  - target: ix://agent-ix/quire-specification/IT-078
+  - target: ix://agent-ix/filament-specification/IT-078
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_001
+  - target: ix://agent-ix/filament-specification/interface_001
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_002
+  - target: ix://agent-ix/filament-specification/interface_002
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_003
+  - target: ix://agent-ix/filament-specification/interface_003
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_004
+  - target: ix://agent-ix/filament-specification/interface_004
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_005
+  - target: ix://agent-ix/filament-specification/interface_005
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_006
+  - target: ix://agent-ix/filament-specification/interface_006
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_007
+  - target: ix://agent-ix/filament-specification/interface_007
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_008
+  - target: ix://agent-ix/filament-specification/interface_008
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_009
+  - target: ix://agent-ix/filament-specification/interface_009
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_010
+  - target: ix://agent-ix/filament-specification/interface_010
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_011
+  - target: ix://agent-ix/filament-specification/interface_011
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_012
+  - target: ix://agent-ix/filament-specification/interface_012
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_013
+  - target: ix://agent-ix/filament-specification/interface_013
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_014
+  - target: ix://agent-ix/filament-specification/interface_014
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_015
+  - target: ix://agent-ix/filament-specification/interface_015
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_016
+  - target: ix://agent-ix/filament-specification/interface_016
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_017
+  - target: ix://agent-ix/filament-specification/interface_017
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_019
+  - target: ix://agent-ix/filament-specification/interface_019
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_020
+  - target: ix://agent-ix/filament-specification/interface_020
     type: contains
-  - target: ix://agent-ix/quire-specification/interface_021
+  - target: ix://agent-ix/filament-specification/interface_021
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-320
+  - target: ix://agent-ix/filament-specification/FR-320
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-321
+  - target: ix://agent-ix/filament-specification/FR-321
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-324
+  - target: ix://agent-ix/filament-specification/FR-324
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-325
+  - target: ix://agent-ix/filament-specification/FR-325
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-326
+  - target: ix://agent-ix/filament-specification/FR-326
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-327
+  - target: ix://agent-ix/filament-specification/FR-327
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-328
+  - target: ix://agent-ix/filament-specification/FR-328
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-329
+  - target: ix://agent-ix/filament-specification/FR-329
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-332
+  - target: ix://agent-ix/filament-specification/FR-332
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-333
+  - target: ix://agent-ix/filament-specification/FR-333
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-334
+  - target: ix://agent-ix/filament-specification/FR-334
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-336
+  - target: ix://agent-ix/filament-specification/FR-336
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-337
+  - target: ix://agent-ix/filament-specification/FR-337
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-338
+  - target: ix://agent-ix/filament-specification/FR-338
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-339
+  - target: ix://agent-ix/filament-specification/FR-339
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-440
+  - target: ix://agent-ix/filament-specification/FR-440
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-441
+  - target: ix://agent-ix/filament-specification/FR-441
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-450
+  - target: ix://agent-ix/filament-specification/FR-450
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-451
+  - target: ix://agent-ix/filament-specification/FR-451
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-452
+  - target: ix://agent-ix/filament-specification/FR-452
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-453
+  - target: ix://agent-ix/filament-specification/FR-453
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-465
+  - target: ix://agent-ix/filament-specification/FR-465
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-466
+  - target: ix://agent-ix/filament-specification/FR-466
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-467
+  - target: ix://agent-ix/filament-specification/FR-467
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-392
+  - target: ix://agent-ix/filament-specification/FR-392
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-393
+  - target: ix://agent-ix/filament-specification/FR-393
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-394
+  - target: ix://agent-ix/filament-specification/FR-394
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-398
+  - target: ix://agent-ix/filament-specification/FR-398
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-400
+  - target: ix://agent-ix/filament-specification/FR-400
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-402
+  - target: ix://agent-ix/filament-specification/FR-402
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-475
+  - target: ix://agent-ix/filament-specification/FR-475
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-476
+  - target: ix://agent-ix/filament-specification/FR-476
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-477
+  - target: ix://agent-ix/filament-specification/FR-477
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-479
+  - target: ix://agent-ix/filament-specification/FR-479
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-480
+  - target: ix://agent-ix/filament-specification/FR-480
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-481
+  - target: ix://agent-ix/filament-specification/FR-481
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-403
+  - target: ix://agent-ix/filament-specification/FR-403
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-405
+  - target: ix://agent-ix/filament-specification/FR-405
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-407
+  - target: ix://agent-ix/filament-specification/FR-407
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-409
+  - target: ix://agent-ix/filament-specification/FR-409
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-410
+  - target: ix://agent-ix/filament-specification/FR-410
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-412
+  - target: ix://agent-ix/filament-specification/FR-412
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-413
+  - target: ix://agent-ix/filament-specification/FR-413
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-414
+  - target: ix://agent-ix/filament-specification/FR-414
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-420
+  - target: ix://agent-ix/filament-specification/FR-420
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-421
+  - target: ix://agent-ix/filament-specification/FR-421
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-376
+  - target: ix://agent-ix/filament-specification/FR-376
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-378
+  - target: ix://agent-ix/filament-specification/FR-378
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-468
+  - target: ix://agent-ix/filament-specification/FR-468
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-469
+  - target: ix://agent-ix/filament-specification/FR-469
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-380
+  - target: ix://agent-ix/filament-specification/FR-380
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-381
+  - target: ix://agent-ix/filament-specification/FR-381
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-384
+  - target: ix://agent-ix/filament-specification/FR-384
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-385
+  - target: ix://agent-ix/filament-specification/FR-385
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-435
+  - target: ix://agent-ix/filament-specification/FR-435
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-436
+  - target: ix://agent-ix/filament-specification/FR-436
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-437
+  - target: ix://agent-ix/filament-specification/FR-437
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-438
+  - target: ix://agent-ix/filament-specification/FR-438
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-427
+  - target: ix://agent-ix/filament-specification/FR-427
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-428
+  - target: ix://agent-ix/filament-specification/FR-428
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-430
+  - target: ix://agent-ix/filament-specification/FR-430
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-431
+  - target: ix://agent-ix/filament-specification/FR-431
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-432
+  - target: ix://agent-ix/filament-specification/FR-432
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-433
+  - target: ix://agent-ix/filament-specification/FR-433
     type: contains
 ---
 # Master Requirements Specification
 
-## Composed native Quire language standard
+## Composed native Filament language standard
 
 ## 1. Purpose
 
-This root indexes the native Quire language requirements. Complete V1 is the
+This root indexes the native Filament language requirements. Complete V1 is the
 entire language, runtime, analysis, backend, tooling and
 qualification system under one editable source authority. The existing
 finite-state implementation is a development slice, not the product boundary.
@@ -851,7 +851,7 @@ implemented capabilities.
 
 ### 2.1 In Scope
 
-FS01 native grammar and composed profile architecture; FS02 shared model/source and artifact identity; FS03 state semantics; FS04 temporal, clock and observation contracts; the native choreography/protocol and compensation profile; FS05 strict interchange and migration; FS06 output mapping and loss contracts. The [atomic V1 inventory](../docs/v1-capability-inventory.md) is the scope authority. The older [51-group matrix](../proposals/quire-v1/capabilities.md) is a historical crosswalk and cannot defer or combine away atomic work.
+FS01 native grammar and composed profile architecture; FS02 shared model/source and artifact identity; FS03 state semantics; FS04 temporal, clock and observation contracts; the native choreography/protocol and compensation profile; FS05 strict interchange and migration; FS06 output mapping and loss contracts. The [atomic V1 inventory](../docs/v1-capability-inventory.md) is the scope authority. The older [51-group matrix](../proposals/filament-v1/capabilities.md) is a historical crosswalk and cannot defer or combine away atomic work.
 
 FS06 accepts the [output-mapping subsystem](assurance/AD-004-output-mapping-subsystem.md),
 common request/record/package contract and bounded OCL 2.4, SysML 2.0/KerML
@@ -899,7 +899,7 @@ StR states the operational need. US records user intent. FR defines observable b
 
 ## 6. Requirement Identification
 
-IDs are stable within this repository. Cross-repository identities use ix://agent-ix/quire-specification/ID. Acceptance criteria use the parent ID plus -AC-N; integration steps use -SC-NN.
+IDs are stable within this repository. Cross-repository identities use ix://agent-ix/filament-specification/ID. Acceptance criteria use the parent ID plus -AC-N; integration steps use -SC-NN.
 
 ## 7. Requirement Quality Policy
 
@@ -945,7 +945,7 @@ Frontmatter relates StR, US, FR/NFR and IT artifacts. Acceptance-criterion-to-TC
 
 ## 12. Verification Strategy
 
-Run Quire over this exact repository scope. Use real implementations and independent expected cases for integration evidence. Quire v1 acceptance includes the state workflow, timed refund and branching compensated choreography through executable evaluation, replay and incremental monitoring. An observed pass does not itself qualify the system. Existing state tests and authored examples establish only their stated subset.
+Run Filament over this exact repository scope. Use real implementations and independent expected cases for integration evidence. Filament v1 acceptance includes the state workflow, timed refund and branching compensated choreography through executable evaluation, replay and incremental monitoring. An observed pass does not itself qualify the system. Existing state tests and authored examples establish only their stated subset.
 
 ## 13. Change Management
 
@@ -954,8 +954,8 @@ that depends on them.
 
 ## 14. Lifecycle Status
 
-The 2026-09-09 ruling selects native Quire as the sole editable formal-clause
-language. FS01's accepted [language charter](assurance/AD-003-native-quire-language-charter.md)
+The 2026-09-09 ruling selects native Filament as the sole editable formal-clause
+language. FS01's accepted [language charter](assurance/AD-003-native-filament-language-charter.md)
 fixes the `ix:native` identity, composed profile hierarchy and language/profile/
 backend separation. [FR-019](functional/foundation/FR-019-admit-native-source-profile.md)
 and the [superseded amendment](../proposals/native-source-1-draft/README.md) carry
@@ -982,7 +982,7 @@ The requirement artifacts are indexed below.
 | --- | --- | --- |
 | [AD-001](assurance/AD-001-composed-native-language.md) | ArchitectureDescription | Accepted subsystem and ownership boundary; semantic delivery remains separately tracked |
 | [AD-002](assurance/AD-002-native-temporal-vertical-slice.md) | ArchitectureDescription | Accepted FS04 temporal refinement; implementation remains Plan-002 |
-| [AD-003](assurance/AD-003-native-quire-language-charter.md) | ArchitectureDescription | Accepted FS01 language charter and profile identity hierarchy |
+| [AD-003](assurance/AD-003-native-filament-language-charter.md) | ArchitectureDescription | Accepted FS01 language charter and profile identity hierarchy |
 | [AD-004](assurance/AD-004-output-mapping-subsystem.md) | ArchitectureDescription | Accepted FS06 common coordinator, target-mapper and structural-observer boundaries |
 | [AD-005](assurance/AD-005-complete-value-expression-system.md) | ArchitectureDescription | Accepted complete value, type, expression and collection subsystem |
 | [AD-006](assurance/AD-006-model-graph-state-contracts.md) | ArchitectureDescription | Accepted model, graph and state subsystem |
@@ -1001,7 +1001,7 @@ The requirement artifacts are indexed below.
 | [FR-339](functional/source-package/FR-339-define-complete-native-grammar.md) | FR | Normative complete native V1 lexical and syntactic contract |
 | [FR-322](objects/interfaces/FR-322-checked-package-artifact.md) | FR (value_object) | Checked-package V2 boundary, including model-owned record value type fields |
 | [FR-340](objects/interfaces/FR-340-checked-package-frame-location.md) | FR | Checked-package `state`/`frame` body: relationship and (declaring node, field name) entries |
-| [FR-341](objects/interfaces/FR-341-checked-package-state-clause-body.md) | FR | Checked-package `state`/`state_clause` body: `quire.op.state.clause` application and state node body roots |
+| [FR-341](objects/interfaces/FR-341-checked-package-state-clause-body.md) | FR | Checked-package `state`/`state_clause` body: `filament.op.state.clause` application and state node body roots |
 | [FR-342](objects/interfaces/FR-342-checked-package-operation-anchor-body.md) | FR | Checked-package `state`/`operation_anchor` body: context, operation and frame bindings |
 | [FR-450](functional/ir-proof/FR-450-spell-abstraction-relation-declaration.md) | FR | Abstraction relation declaration: object, population and operation binding forms, Rust spellings and refusals |
 | [FR-451](objects/interfaces/FR-451-checked-package-abstraction-relation-body.md) | FR | Checked-package `correspondence`/`abstraction_relation` body, keys and reader order |
@@ -1028,7 +1028,7 @@ The requirement artifacts are indexed below.
 | [FR-419](functional/analysis/FR-419-analyze-task-set-schedulability.md) | FR | Analyze task-set schedulability |
 | [FR-420](functional/analysis/FR-420-sample-stochastic-timed-models.md) | FR | Interpret and sample stochastic timed models |
 | [FR-421](functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md) | FR | Check probabilistic timed claims exactly through digital clocks |
-| [FR-440](objects/interfaces/FR-440-checked-package-union-and-case-nodes.md) | FR | Checked-package union, union-value and case nodes, explicit union-value application selection, and the `quire.op.control.case` catalog entry |
+| [FR-440](objects/interfaces/FR-440-checked-package-union-and-case-nodes.md) | FR | Checked-package union, union-value and case nodes, explicit union-value application selection, and the `filament.op.control.case` catalog entry |
 | [FR-441](objects/interfaces/FR-441-union-member-key.md) | FR | Union member key: the (declaration node id, member) pair |
 | [FR-478](functional/type-model/FR-478-convert-text-to-a-number.md) | FR | Text and String to a number: one locale-free grammar per integer, decimal, rational, IEEE and quantity target |
 | [FR-469](objects/interfaces/FR-469-checked-package-extension-nodes.md) | FR | Checked-package extension form node: one `extension`/`extension_form` tag with the node kind as body data, its structural key, and the reader joins for a held, selected extension definition |
@@ -1155,7 +1155,7 @@ The requirement artifacts are indexed below.
 | [IT-003](integration/IT-003-verification-reference-amendment.md) | IT | Planned |
 | [IT-010](integration/IT-010-bind-linked-package-assessments.md) | IT | Planned composed package/binding boundary |
 | [FR-130](functional/foundation/FR-130-bind-composed-package-references.md) | FR | Accepted FS05 composed-package reference interpretation |
-| [FR-200](objects/foundation/FR-200-quire-assessment-domain.md) | FR (domain) | Object layer; bounded context and identity discipline |
+| [FR-200](objects/foundation/FR-200-filament-assessment-domain.md) | FR (domain) | Object layer; bounded context and identity discipline |
 | [FR-201](objects/foundation/FR-201-canonical-identity-domain.md) | FR (enumeration) | Object layer; canonical identity domain vocabulary |
 | [FR-202](objects/foundation/FR-202-authored-source-document.md) | FR (entity) | Object layer; authored source document identity |
 | [FR-203](objects/foundation/FR-203-source-region.md) | FR (value_object) | Object layer; accepted complete-V1 half-open source-region contract |
@@ -1163,7 +1163,7 @@ The requirement artifacts are indexed below.
 | [FR-205](objects/foundation/FR-205-exact-rational-value.md) | FR (value_object) | Object layer; normalized rational value, distinct from literal identity |
 | [FR-206](objects/foundation/FR-206-numeric-domain.md) | FR (value_object) | Object layer; named numeric type and exact unit |
 | [FR-207](objects/foundation/FR-207-runtime-value-path.md) | FR (value_object) | Object layer; runtime value locus as a root and typed traversal steps |
-| [FR-208](objects/foundation/FR-208-quire-meaning-vocabulary.md) | FR (enumeration) | Object layer; Quire meaning ids that model intake binds by construct meaning |
+| [FR-208](objects/foundation/FR-208-filament-meaning-vocabulary.md) | FR (enumeration) | Object layer; Filament meaning ids that model intake binds by construct meaning |
 | [FR-220](objects/protocol/FR-220-causal-control-graph.md) | FR (aggregate_root) | Object layer; Causal control graph |
 | [FR-221](objects/protocol/FR-221-protocol-node-occurrence.md) | FR (entity) | Object layer; Protocol node occurrence |
 | [FR-222](objects/protocol/FR-222-send-occurrence.md) | FR (entity) | Object layer; Send occurrence |
@@ -1232,7 +1232,7 @@ The requirement artifacts are indexed below.
 | [FR-287](objects/protocol/FR-287-authority-qualified-runtime-subject-reference.md) | FR (value_object) | Object layer; authority-qualified opaque runtime subject identity and non-causal canonical order |
 | [FR-479](objects/protocol/FR-479-obligation-activation-binding.md) | FR | Object layer; exact producer-to-consumer protocol-obligation activation binding over the FR-464 activation relation |
 | [FR-288](objects/protocol/FR-288-qualified-protocol-definition-identity.md) | FR (value_object) | Object layer; exact linked protocol-definition qualifier across source, declaration ownership and semantic selections |
-| [FR-290](objects/protocol/FR-290-protocol-claim-kind.md) | FR (enumeration) | Object layer; cross-family authority: closed capability-kind vocabulary `quire.capability-kind/v1` for the value, state-model, finite-replay, temporal-trace, protocol, probabilistic and real-time families |
+| [FR-290](objects/protocol/FR-290-protocol-claim-kind.md) | FR (enumeration) | Object layer; cross-family authority: closed capability-kind vocabulary `filament.capability-kind/v1` for the value, state-model, finite-replay, temporal-trace, protocol, probabilistic and real-time families |
 | [FR-291](objects/protocol/FR-291-admitted-analysis-fragment.md) | FR (value_object) | Object layer; exact admitted analysis-fragment selection |
 | [FR-292](objects/protocol/FR-292-analysis-backend.md) | FR (value_object) | Object layer; exact analysis-backend selection |
 | [FR-250](objects/temporal/FR-250-temporal-semantic-profile.md) | FR (enumeration) | Object layer; Temporal semantic profile identity |
@@ -1256,7 +1256,7 @@ The requirement artifacts are indexed below.
 | [FR-367](functional/temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md) | FR | Interval operators under infinite-trace, previous, `max_automaton_states` |
 | [FR-368](functional/temporal/FR-368-negotiate-temporal-model-check-items.md) | FR | Temporal request members, provider commitments, fairness kinds |
 | [FR-369](functional/temporal/FR-369-name-excluding-strong-fairness.md) | FR | `fairness.strong-would-exclude` diagnostic |
-| [FR-370](objects/interfaces/FR-370-checked-package-temporal-clause-body.md) | FR | Checked-package `temporal`/`temporal_clause` body and `quire.op.temporal.*` identities |
+| [FR-370](objects/interfaces/FR-370-checked-package-temporal-clause-body.md) | FR | Checked-package `temporal`/`temporal_clause` body and `filament.op.temporal.*` identities |
 | [FR-289](objects/temporal/FR-289-observation-temporal-boundary-mapping.md) | FR (value_object) | Object layer; explicit half-open observation to inclusive temporal boundary mapping |
 | [FR-294](objects/observation/FR-294-late-data-classification.md) | FR (enumeration) | Object layer; exact on-time and late observation classification |
 | [FR-295](objects/observation/FR-295-input-completeness-state.md) | FR (enumeration) | Object layer; independent input-completeness state derived from an exact fact population |

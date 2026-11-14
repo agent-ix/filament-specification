@@ -3,11 +3,11 @@ id: FR-463
 title: "Refer to a declared protocol in an expression"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: references
 ---
 
@@ -21,7 +21,7 @@ semantic type and bind it to the target's typed node key, never to the name.
 
 ## Inputs
 
-A unit that selects `quire.protocol.complete/v1` and holds an expression
+A unit that selects `filament.protocol.complete/v1` and holds an expression
 containing a protocol reference.
 
 ## Outputs
@@ -87,7 +87,7 @@ No refusal produces a package.
   (FR-322-AC-66) owns the carrier and its admission rules.
 - [FR-330](../../objects/interfaces/FR-330-contract-package.md) (FR-330-AC-4)
   owns the package's single semantic node collection.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns
   the `primary` production this requirement extends.
 
 ## References

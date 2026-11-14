@@ -3,7 +3,7 @@ id: FR-032
 title: "Refuse unsupported required features"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -30,5 +30,5 @@ Edition, semantic-profile, wire/canonicalization and backend implementation iden
 
 ## Dependencies
 
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Composed architecture](../../assurance/AD-001-composed-native-language.md).

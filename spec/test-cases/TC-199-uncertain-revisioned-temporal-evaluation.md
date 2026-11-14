@@ -3,7 +3,7 @@ id: TC-199
 title: "Uncertain revisioned temporal evaluation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: verifies
 ---
 

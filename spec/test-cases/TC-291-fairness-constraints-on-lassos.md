@@ -3,9 +3,9 @@ id: TC-291
 title: "Weak and strong fairness on conformance lassos"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: verifies
 ---
 
@@ -35,7 +35,7 @@ the initial state:
    `fair weak whole Cnt::T::q`, `fair strong Cnt::T::q` and `fair each Cnt::T::q`
    and compare their obligation identities.
 2. Author `fair Cnt::T::q;` on a clause under
-   `quire.temporal.event-position.false-extension/v1`, and `fair Cnt::T::nope;`
+   `filament.temporal.event-position.false-extension/v1`, and `fair Cnt::T::nope;`
    on an infinite-trace clause.
 3. Check each lasso against (`weak`, `q`, `whole`) and (`strong`, `q`, `whole`).
 4. Over a universe `{t, u}`, check a loop that takes `q` only with receiver `t`

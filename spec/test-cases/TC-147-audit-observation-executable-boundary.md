@@ -3,7 +3,7 @@ id: TC-147
 title: "Audit the observation executable boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/NFR-052
+  - target: ix://agent-ix/filament-specification/NFR-052
     type: verifies
 ---
 ## Description

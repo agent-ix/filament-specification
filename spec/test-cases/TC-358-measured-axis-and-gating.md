@@ -3,13 +3,13 @@ id: TC-358
 title: "Measured axis, result combination and pipeline gating"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-409
+  - target: ix://agent-ix/filament-specification/FR-409
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-410
+  - target: ix://agent-ix/filament-specification/FR-410
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: verifies
 ---
 

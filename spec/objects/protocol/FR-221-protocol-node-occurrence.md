@@ -4,15 +4,15 @@ title: "Protocol node occurrence"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: references
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-221: Protocol node occurrence
@@ -57,7 +57,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 - **static declaration path** — the control name and declaration path that
   identifies the static node. A relative reference and its fully qualified path
   resolve to the same static node
-  ([choreography surface](../../../proposals/quire-v1/choreography-surface.md)).
+  ([choreography surface](../../../proposals/filament-v1/choreography-surface.md)).
 - **workflow instance identity** — the assessed workflow instance the occurrence
   belongs to. FR-050 keeps workflow instances distinct from their static
   definitions, and FR-050-AC-3 keeps "Two concurrent workflow instances sharing
@@ -124,7 +124,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   causal order the occurrences carry.
 - [FR-050](../../functional/protocol/FR-050-bind-protocol-instances.md) supplies the
   workflow-instance identity.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 - [FR-288](FR-288-qualified-protocol-definition-identity.md) supplies the
   qualified linked-definition component.

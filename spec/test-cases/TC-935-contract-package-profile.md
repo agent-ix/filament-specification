@@ -3,15 +3,15 @@ id: TC-935
 title: "ContractPackage retains the explicit lowering-profile reference"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-1
+  - target: ix://agent-ix/filament-specification/FR-330-AC-1
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-5
+  - target: ix://agent-ix/filament-specification/FR-330-AC-5
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-10
+  - target: ix://agent-ix/filament-specification/FR-330-AC-10
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-180
+  - target: ix://agent-ix/filament-specification/FR-322-AC-180
     type: verifies
 ---
 # TC-935: ContractPackage retains the explicit lowering-profile reference
@@ -58,9 +58,9 @@ below disagrees with it (FR-322-AC-180):
 
 ```json
 {
-  "T": {"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "quire.temporal.infinite-trace/v1"}},
-  "D": {"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "quire.temporal.event-position.false-extension/v1"}},
-  "U": {"role": "protocol_profile", "definition": {"authority": "agent-ix", "identity": "quire.protocol.finite-global/v1"}}
+  "T": {"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "filament.temporal.infinite-trace/v1"}},
+  "D": {"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "filament.temporal.event-position.false-extension/v1"}},
+  "U": {"role": "protocol_profile", "definition": {"authority": "agent-ix", "identity": "filament.protocol.finite-global/v1"}}
 }
 ```
 

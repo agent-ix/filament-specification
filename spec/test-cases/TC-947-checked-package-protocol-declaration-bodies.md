@@ -3,9 +3,9 @@ id: TC-947
 title: "Checked-package protocol role, channel, queue and obligation vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-465
+  - target: ix://agent-ix/filament-specification/FR-465
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: verifies
 ---
 
@@ -79,7 +79,7 @@ FR-465-AC-12.
 | CH7 | `key` reads the message binder's field only | admitted |
 | CH7a | `key` reads the capture `order` | `missing_declaration`/`missing-name` at the channel node, stage `channel-key`, `read` `stage` |
 | CH7e | `key` reads `view` (`over`) | `ill_typed`/`operator-ineligible` at the read, naming the key |
-| CH7b | `key` holds `quire.op.model.deref` | `ill_typed`/`operator-ineligible` at the read, naming the key |
+| CH7b | `key` holds `filament.op.model.deref` | `ill_typed`/`operator-ineligible` at the read, naming the key |
 | CH7c | `key` has type `float64`; `Option<float64>`; a `model`/`event_type` | `ill_typed`/`operator-ineligible` at the channel node, retaining `=` and the type |
 | CH7d | `key` has type `text`, `integer`, `uuid`, `enum`, `Reference<T>`, a record of integers | admitted: equality-stable (FR-322) |
 | CH8 | `from` names the `Charges` queue node | `invalid_model_binding`/`malformed-declaration` at the target |

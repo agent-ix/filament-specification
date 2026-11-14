@@ -4,15 +4,15 @@ title: "Delivery"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-222
+  - target: ix://agent-ix/filament-specification/FR-222
     type: references
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-224: Delivery
@@ -46,7 +46,7 @@ satisfy and from the receipt records that provide observation provenance.
 - **related send** ([FR-222](FR-222-send-occurrence.md)) — the send whose
   delivery cardinality this delivery counts against. FR-054 binds the delivery
   policy as an explicit conformance premise of the channel, and the
-  [choreography surface](../../../proposals/quire-v1/choreography-surface.md)
+  [choreography surface](../../../proposals/filament-v1/choreography-surface.md)
   states the channel's delivery policy.
 - **channel** ([FR-215](FR-215-protocol-channel.md)) — the channel whose sender,
   receiver, message types, ordering policy and delivery policy
@@ -110,7 +110,7 @@ delivery, node occurrence or effect.
   policy and ordering policy premises.
 - [FR-059](../../functional/protocol/FR-059-assess-finite-global-conformance.md) requires
   duplicated and misordered events to be reported.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 - [FR-210](FR-210-protocol-subject-vocabulary.md) records `receipt` and
   `delivery` as distinct complete-V1 subject kinds.

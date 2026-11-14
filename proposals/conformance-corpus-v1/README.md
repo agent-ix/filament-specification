@@ -2,7 +2,7 @@
 
 This proposal defines the wire shape owned by QSpec FR-336. `schema.json` is
 the closed Draft 2020-12 structural schema identified by
-`quire.conformance-corpus/v1`; `fixtures/complete-v1.json` is a small
+`filament.conformance-corpus/v1`; `fixtures/complete-v1.json` is a small
 schema-valid corpus fixture for the native-language formatter.
 
 The corpus has four top-level members:
@@ -21,8 +21,8 @@ The corpus has four top-level members:
   range-checks them before constructing the typed call.
   `$defs.InputValue` is a closed tagged union of Boolean, canonical Integer,
   canonical Reference, and named Population values. The `population` file is
-  the consuming API's object-context document; QSL binds it to FR-106's
-  `quire.state.snapshot/v1` document and resolves Population names only after
+  the consuming API's object-context document; FSL binds it to FR-106's
+  `filament.state.snapshot/v1` document and resolves Population names only after
   admission. A `replay-request` adapter uses `$defs.ReplayRequest`, a closed
   request adapter whose 14 members map one-to-one to `ReplayRequestWire`.
   FR-323 source, target and result members are reused; other nested types have
@@ -62,6 +62,6 @@ because no model owns that obligation. It is not an executable replay vector and
 no qualification claim. The main corpus fixture remains intentionally a small
 wire example rather than a complete qualification claim. FR-336-AC-1 still requires corpus owners to cover every
 inventory capability with positive and adverse or boundary vectors where
-applicable. The QSL runner selects a scope from the primary rows, then runs
-only vectors whose own applicability includes the selected QSL consumer, as
-specified by QSL FR-350/351.
+applicable. The FSL runner selects a scope from the primary rows, then runs
+only vectors whose own applicability includes the selected FSL consumer, as
+specified by FSL FR-350/351.

@@ -4,7 +4,7 @@ title: "Declaration identity in a lifted domain package"
 type: ADR
 status: proposed
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: depends_on
   - target: ix://agent-ix/filament-core-data/FR-095
     type: depends_on
@@ -21,10 +21,10 @@ only one of them.
 
 ## Context
 
-Quire admits a domain model from a lifted domain package and names each
+Filament admits a domain model from a lifted domain package and names each
 declaration by that identity in clause text, counterexamples and result
 records. Identity therefore decides whether editing a document changes a
-declaration key, and whether a Quire clause can name a declaration at all.
+declaration key, and whether a Filament clause can name a declaration at all.
 
 [FR-154](../functional/type-model/FR-154-admit-domain-package-model.md) states
 that a declaration's IR node identity is its artifact id

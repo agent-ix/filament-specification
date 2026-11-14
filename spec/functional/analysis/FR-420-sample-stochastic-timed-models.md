@@ -3,17 +3,17 @@ id: FR-420
 title: "Interpret and sample stochastic timed models"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-405
+  - target: ix://agent-ix/filament-specification/FR-405
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
 ---
 
@@ -164,7 +164,7 @@ model and ignore distributions.
 
 ## References
 
-- QSL ADR-026 SD-1 to SD-5, SS-1 to SS-6, OV-8; QSL ADR-028 RU-6, TA-1a.
+- FSL ADR-026 SD-1 to SD-5, SS-1 to SS-6, OV-8; FSL ADR-028 RU-6, TA-1a.
 - Owner rulings: stochastic delays with statistical checking (recorded on
   QSL-373); a workload that gives delays resolves delay choice and leftover
   delay nondeterminism is a minimum or maximum (recorded on QSL-371).

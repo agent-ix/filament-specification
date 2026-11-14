@@ -3,7 +3,7 @@ id: TC-930
 title: "A byte-emitting operation raises its output-byte budget"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: verifies
 ---
 

@@ -3,13 +3,13 @@ id: FR-008
 title: "Preserve bounded sequence order and multiplicity"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-003"
+  - target: "ix://agent-ix/filament-specification/US-003"
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: references
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: references
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
 ---
 # FR-008: Preserve bounded sequence order and multiplicity
@@ -40,11 +40,11 @@ ordered-set domain is owned by
 owned by
 [FR-145](../expressions/FR-145-convert-and-query-collections.md).
 
-Where `quire.state.queries/v1` is selected without `quire.value.complete/v1`,
+Where `filament.state.queries/v1` is selected without `filament.value.complete/v1`,
 the frontend shall refuse each of those forms with `unsupported_construct` and
 its source location.
 
-Where `quire.value.complete/v1` is selected, the frontend shall admit each of
+Where `filament.value.complete/v1` is selected, the frontend shall admit each of
 those forms under FR-144 and FR-145 while retaining the sequence order,
 multiplicity, empty-quantifier truth and missing-data outcome specified here.
 
@@ -56,8 +56,8 @@ multiplicity, empty-quantifier truth and missing-data outcome specified here.
 | FR-008-AC-2 | An empty existential predicate yields false. | Test |
 | FR-008-AC-3 | A two-occurrence sequence containing equal values has size two. | Test |
 | FR-008-AC-4 | Missing sequence data receives unavailable_observation. | Test |
-| FR-008-AC-5 | Where `quire.state.queries/v1` is selected without `quire.value.complete/v1`, a `collect`, `flatten`, set, bag or ordered-set form receives unsupported_construct with its source location. | Test |
-| FR-008-AC-6 | Where `quire.value.complete/v1` is selected, the same forms are admitted under FR-144 and FR-145, and sequence order, multiplicity, empty-quantifier truth and the missing-data outcome remain exactly as specified here. | Test (TC-189, TC-190) |
+| FR-008-AC-5 | Where `filament.state.queries/v1` is selected without `filament.value.complete/v1`, a `collect`, `flatten`, set, bag or ordered-set form receives unsupported_construct with its source location. | Test |
+| FR-008-AC-6 | Where `filament.value.complete/v1` is selected, the same forms are admitted under FR-144 and FR-145, and sequence order, multiplicity, empty-quantifier truth and the missing-data outcome remain exactly as specified here. | Test (TC-189, TC-190) |
 
 ## Dependencies
 

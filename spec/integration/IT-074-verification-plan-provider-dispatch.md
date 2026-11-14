@@ -3,9 +3,9 @@ id: IT-074
 title: "Verification plans dispatch exact method providers"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-190
+  - target: ix://agent-ix/filament-specification/FR-190
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-194
+  - target: ix://agent-ix/filament-specification/FR-194
     type: verifies
 ---
 
@@ -13,7 +13,7 @@ relationships:
 
 ## Objective
 
-Verify that the real `quire-verification` Rust planner links and dispatches
+Verify that the real `filament-verification` Rust planner links and dispatches
 model-testing, simulation, relational, hybrid and synthesis providers with exact
 domains, dependencies and non-conclusive results.
 

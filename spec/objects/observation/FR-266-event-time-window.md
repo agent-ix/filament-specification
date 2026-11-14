@@ -4,13 +4,13 @@ title: "Selected event-time window"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-265
+  - target: ix://agent-ix/filament-specification/FR-265
     type: references
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: references
 ---
 # FR-266: Selected event-time window
@@ -107,7 +107,7 @@ through that boundary."
   restricts progress and closure to `start <= instant < end` and forbids
   timestamp-derived causality.
 - [FR-265](FR-265-selected-snapshot.md) types the other selected bounds subject.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Cross-family boundary rule
@@ -121,4 +121,4 @@ membership of an adjacent observation window.
 ## Status
 
 Proposed cross-family reconciliation under FR-289 for
-`quire-specification#40`.
+`filament-specification#40`.

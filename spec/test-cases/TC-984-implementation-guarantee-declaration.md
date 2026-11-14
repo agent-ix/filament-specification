@@ -3,7 +3,7 @@ id: TC-984
 title: "Implementation guarantee declaration"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-490
+  - target: ix://agent-ix/filament-specification/FR-490
     type: verifies
 ---
 
@@ -18,8 +18,8 @@ Scope: FR-490-AC-1 to FR-490-AC-9.
 
 ## Test Procedure
 
-The unit selects `quire.model.complete/v1` and
-`quire.temporal.infinite-trace/v1`, declares TC-982's counter model, the
+The unit selects `filament.model.complete/v1` and
+`filament.temporal.infinite-trace/v1`, declares TC-982's counter model, the
 liveness clause `Eventually2` (`always eventually holds(c.value = 2)` under
 `fair weak each Spec::Counter::inc`), the safety clause `NonNegative`
 (`always holds(c.value >= 0)`) and the relation `A` binding the counter type,
@@ -30,7 +30,7 @@ through the real local Rust boundary:
    progress Spec::Counter::inc decreases "counter::retries_left";
    environment Sched by "scheduler" fair weak each Spec::Counter::inc; }`.
 2. The same declaration `of NonNegative`.
-3. Case 1 in a package without `quire.model.complete/v1`; with no `initial`
+3. Case 1 in a package without `filament.model.complete/v1`; with no `initial`
    member; with `initial to counter::Counter::new` unquoted.
 4. `of Missing`; `using Missing`; `of` a finite-trace clause; `of` a clause
    over another model alias.

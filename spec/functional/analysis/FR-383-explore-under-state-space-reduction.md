@@ -3,21 +3,21 @@ id: FR-383
 title: "Explore a model subject under state-space reduction"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: references
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: references
-  - target: ix://agent-ix/quire-specification/FR-384
+  - target: ix://agent-ix/filament-specification/FR-384
     type: references
-  - target: ix://agent-ix/quire-specification/FR-385
+  - target: ix://agent-ix/filament-specification/FR-385
     type: references
-  - target: ix://agent-ix/quire-specification/FR-336
+  - target: ix://agent-ix/filament-specification/FR-336
     type: references
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
 ---
 
@@ -339,9 +339,9 @@ settles different labels is a conformance failure of the engine.
 
 ## References
 
-- Design: quire-spec-language ADR-021 (RD-2, SYM-6, SYM-7, POR-1 to POR-11,
+- Design: filament-spec-language ADR-021 (RD-2, SYM-6, SYM-7, POR-1 to POR-11,
   SC-2, EI-2 to EI-7, RV-10, QS-2, QS-7, RU-2); ADR-018 FA-2 (enabledness); ADR-027
   FT-1 and FT-3 (protocol footprints and enabling footprints).
 - Review: SR-810 FND-001, FND-003; SR-811 FND-001, FND-002, FND-005;
-  quire-spec-language SR-1140 FND-001, FND-002, FND-004, FND-006 to FND-010.
+  filament-spec-language SR-1140 FND-001, FND-002, FND-004, FND-006 to FND-010.
 - Tickets: Linear STD-134; paired QSL-368.

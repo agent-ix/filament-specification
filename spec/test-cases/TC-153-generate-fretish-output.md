@@ -3,7 +3,7 @@ id: TC-153
 title: "Generate bounded FRETish output"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-124
+  - target: ix://agent-ix/filament-specification/FR-124
     type: verifies
 ---
 ## Description

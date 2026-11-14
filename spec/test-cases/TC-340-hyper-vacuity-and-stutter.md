@@ -3,9 +3,9 @@ id: TC-340
 title: "Hyperproperty vacuity, terminal stutter and deadlock items"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: verifies
 ---
 

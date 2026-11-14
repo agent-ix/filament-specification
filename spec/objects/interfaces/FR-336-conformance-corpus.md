@@ -3,17 +3,17 @@ id: FR-336
 title: "Independent complete-V1 conformance corpus"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_019
+  - target: ix://agent-ix/filament-specification/interface_019
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-018
+  - target: ix://agent-ix/filament-contract-ir/FR-018
     type: references
-  - target: ix://agent-ix/quire-contract-codegen/FR-005
+  - target: ix://agent-ix/filament-contract-codegen/FR-005
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-350
+  - target: ix://agent-ix/filament-spec-language/FR-350
     type: references
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: references
 ---
 
@@ -25,18 +25,18 @@ When the complete-V1 conformance corpus is published or executed, the producer S
 
 The closed Draft 2020-12 schema and its example fixture are published in
 [conformance-corpus-v1](../../../proposals/conformance-corpus-v1/README.md).
-The schema's `$id` is `urn:quire:conformance-corpus:v1`.
+The schema's `$id` is `urn:filament:conformance-corpus:v1`.
 
 ## Corpus members
 
 | Field | Type | Multiplicity | Constraints |
 |---|---|---|---|
-| contract_version | String | 1..1 | exactly `quire.conformance-corpus/v1` |
+| contract_version | String | 1..1 | exactly `filament.conformance-corpus/v1` |
 | vectors | CorpusVector | 1..many | ordered; every vector names one primary capability |
 | results | QualificationResult | 0..many | prior outcomes only; consumers preserve these rows |
 | coverage | CorpusCoverage | 1..1 | primary capability inventory and rollups |
 
-- `contract_version` — exactly `quire.conformance-corpus/v1`.
+- `contract_version` — exactly `filament.conformance-corpus/v1`.
 - `vectors` — an ordered array of vectors. Each vector has `id`,
   `capability_id`, `class`, `subject`, `applicability`, `input` and
   `expected`. `input.files` lists source, model, operation-input, call,
@@ -98,7 +98,7 @@ published schema:
 | --- | --- | --- |
 | `function` | String | Existing function identity spelling assigned by the consumer requirement. |
 | `arguments` | Array | Each item is one `$defs.InputValue`. Items are positional: item at zero-based index `i` supplies the function's declared parameter at index `i`. |
-| `accounting` | Object | Required; any subset of the ten `quire.value.accounting/v1` counter names, each a canonical nonnegative decimal string. The adapter parses it as `u64` before constructing the call; an omitted counter uses its operation's existing default. |
+| `accounting` | Object | Required; any subset of the ten `filament.value.accounting/v1` counter names, each a canonical nonnegative decimal string. The adapter parses it as `u64` before constructing the call; an omitted counter uses its operation's existing default. |
 
 No other call-file field is admitted. The consumer resolves the declared
 parameter names from the selected function signature, pairs each item with the
@@ -110,8 +110,8 @@ prefix call and the typed operation settles the unbound declared parameters.
 
 ### Population file
 
-A `population` file is a `quire.state.snapshot/v1` document as defined by
-QSL FR-106. Its `populations` array and each population's `objects` array
+A `population` file is a `filament.state.snapshot/v1` document as defined by
+FSL FR-106. Its `populations` array and each population's `objects` array
 retain their authored order. An object fixture's name is its existing `key`;
 its `fields` use FR-106's closed tagged value grammar. A call input value
 tagged `population` names exactly one `populations[*].population` declaration
@@ -119,7 +119,7 @@ identity in that file. The consumer admits the snapshot and resolves that
 name to the admitted binding's opaque `PopulationId`. The harness file and
 tagged name never mint, decode or substitute a PopulationId. This is the
 corpus harness's Population encoding; native-run/1 has no Population argument
-wire encoding (QSL FR-100).
+wire encoding (FSL FR-100).
 
 ### Replay request file
 
@@ -140,7 +140,7 @@ order; object maps retain their string keys.
 | JSON member | Rust field and value mapping |
 | --- | --- |
 | `profile_selections` | `ReplayRequestWire.profile_selections`: ordered `ProfileSelection` objects `{profile, value}`. |
-| `package` | `ReplayRequestWire.package`: the whole proved checked-package document (`urn:quire:checked-package:v2`, `contract_version` the constant `quire.checked-package/v2`); the wire's package name is `package.name`, its sources are `package.lock.sources` and its refinement internals are `package.lock.refinement_internals`. |
+| `package` | `ReplayRequestWire.package`: the whole proved checked-package document (`urn:filament:checked-package:v2`, `contract_version` the constant `filament.checked-package/v2`); the wire's package name is `package.name`, its sources are `package.lock.sources` and its refinement internals are `package.lock.refinement_internals`. |
 | `dependencies` | `ReplayRequestWire.dependencies`: ordered `DependencyEntryWire` objects, the schema's `$defs.DependencyEntry`: the closed top-level `{identity, sources}` entries plus an optional `refinement_internals` (a non-empty list of the checked-package `RefinementInternal` rows, the dependency lock's value; absent is the empty list), each source an `{authority, identity}` `SourceRef`. |
 | `replay_target` | `ReplayRequestWire.replay_target`: FR-323 target members under `members`, plus request fields `arguments`, `occurrence_key` and `over`. |
 | `source` | `ReplayRequestWire.source`: the FR-323 `ReplaySource`, one `witness` or `input` arm. |
@@ -175,7 +175,7 @@ position: `{"parameter": NODE_ID, "value": VALUE}`. `NODE_ID` is a node id
 replay `parameter` key, an `occurrence_key` or `obligation_identity`
 `node_id`, a `DomainKey` node, a `reference`'s `universe` and `type`) has the
 checked-package `NodeId` shape: the corpus schema's `$defs.NodeId` is
-`urn:quire:checked-package:v2#/$defs/NodeId`, so a path segment is a string or
+`urn:filament:checked-package:v2#/$defs/NodeId`, so a path segment is a string or
 an index segment `{"node": i}` and never a nested node id. Every such id is
 document-held (FR-322 "Operand index segments"): an operand slot
 `{"operand": k}`, which the shared shape admits, is misplaced there and

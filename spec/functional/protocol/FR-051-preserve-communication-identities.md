@@ -3,29 +3,29 @@ id: FR-051
 title: "Preserve message, delivery, attempt and effect identities"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: references
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: references
-  - target: ix://agent-ix/quire-specification/FR-214
+  - target: ix://agent-ix/filament-specification/FR-214
     type: references
-  - target: ix://agent-ix/quire-specification/FR-222
+  - target: ix://agent-ix/filament-specification/FR-222
     type: references
-  - target: ix://agent-ix/quire-specification/FR-223
+  - target: ix://agent-ix/filament-specification/FR-223
     type: references
-  - target: ix://agent-ix/quire-specification/FR-224
+  - target: ix://agent-ix/filament-specification/FR-224
     type: references
-  - target: ix://agent-ix/quire-specification/FR-225
+  - target: ix://agent-ix/filament-specification/FR-225
     type: references
-  - target: ix://agent-ix/quire-specification/FR-226
+  - target: ix://agent-ix/filament-specification/FR-226
     type: references
-  - target: ix://agent-ix/quire-specification/FR-235
+  - target: ix://agent-ix/filament-specification/FR-235
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 ## Description

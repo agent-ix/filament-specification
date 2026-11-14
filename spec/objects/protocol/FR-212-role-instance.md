@@ -4,13 +4,13 @@ title: "Role instance"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-211
+  - target: ix://agent-ix/filament-specification/FR-211
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-212: Role instance
@@ -97,7 +97,7 @@ instance, refuses linking with the affected source location" (FR-050-AC-2).
   instantiates.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) defines the
   concrete runtime key and its non-causal comparison order.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

@@ -2,7 +2,7 @@
 //! Case-preserving identities in the authored model fixture (FR-154).
 
 use ix_trace_rs::trace;
-use quire_specification::ACME_COLORS_DOMAIN_PACKAGE;
+use filament_specification::ACME_COLORS_DOMAIN_PACKAGE;
 use serde_json::{Value, json};
 
 const SHAPES_DOCUMENT: &str =
@@ -27,7 +27,7 @@ fn shapes_variant_case_identities_preserve_declared_case() {
             "Shape",
             "Flag",
             "ix://acme/shapes/variant/Shape-Flag",
-            Some("ix://quire/native/Boolean"),
+            Some("ix://filament/native/Boolean"),
         ),
         (
             "Shape",
@@ -112,7 +112,7 @@ fn colors_comparison_model_exposes_two_original_nullary_cases() {
     assert_eq!(constructs[0]["construct"]["shape"], "enumeration");
     assert_eq!(
         constructs[0]["construct"]["meaning"],
-        "quire.meaning.model.variant-type/v1",
+        "filament.meaning.model.variant-type/v1",
     );
     let types = document["types"]
         .as_array()

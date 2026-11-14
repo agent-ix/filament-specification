@@ -3,9 +3,9 @@ id: TC-389
 title: "Memory access classification, orderings and fences"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-435
+  - target: ix://agent-ix/filament-specification/FR-435
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: verifies
 ---
 

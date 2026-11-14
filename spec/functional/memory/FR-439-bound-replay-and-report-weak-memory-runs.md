@@ -3,19 +3,19 @@ id: FR-439
 title: "Bound, report and replay weak-memory runs"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-433
+  - target: ix://agent-ix/filament-specification/FR-433
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-436
+  - target: ix://agent-ix/filament-specification/FR-436
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-437
+  - target: ix://agent-ix/filament-specification/FR-437
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -176,6 +176,6 @@ race` ([FR-438](FR-438-report-data-races.md)).
 
 ## References
 
-- Design: quire-spec-language ADR-025 MB-1 to MB-5, MS-1 to MS-4, MV-1, MK-1,
+- Design: filament-spec-language ADR-025 MB-1 to MB-5, MS-1 to MS-4, MV-1, MK-1,
   MK-2, MF-4, MF-5, MX-7 and RU-5.
 - Tickets: Linear STD-138; paired QSL-372.

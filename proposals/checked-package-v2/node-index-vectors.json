@@ -1,5 +1,5 @@
 {
-  "version": "quire.checked-node-index-vectors/v1",
+  "version": "filament.checked-node-index-vectors/v1",
   "note": "TC-233 NI-01..NI-12 and NI-15..NI-24 (FR-322 \"Operand index segments\"). Each case is an RFC 6902 patch over the base package, whose operand rows are [[], [], [0], [0]]. A schema of invalid fails the V2 schema and is malformed_wire at the patched member (locus); a schema of valid passes it and the reader's operand checks refuse malformed_wire, with no cause, at locus, before every semantic_graph check, unless expected names another outcome: passes_operand_checks (NI-24), passes_operand_and_duplicate_checks (NI-22), or a later refusal at locus (NI-23). NI-13 (the deep chain) and NI-14 (the copied id) are built by the test, not published.",
   "base": "fixtures/positive-dependency-call.json",
   "cases": [
@@ -426,7 +426,7 @@
                 "role": "type"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "integer_range",
             "semantic_type": {
               "ordinal": 0,
@@ -529,7 +529,7 @@
                 "role": "type"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "integer_range",
             "semantic_type": {
               "ordinal": 0,
@@ -582,7 +582,7 @@
                 "role": "type"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "text",
             "semantic_type": {
               "ordinal": 0,
@@ -623,7 +623,7 @@
                 "role": "type"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "rational",
             "semantic_type": {
               "ordinal": 0,

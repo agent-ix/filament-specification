@@ -4550,5 +4550,5 @@
     }
   ],
   "note": "The refinement members are illustrative; each row sidecar entry uses the closed RefinementStepRowRegion shape of schema.json. A published package uses the closed RefinementBody and compares its retained node id and steps in declaration order against this sidecar.",
-  "version": "quire.refinement-step-occurrences/v1"
+  "version": "filament.refinement-step-occurrences/v1"
 }

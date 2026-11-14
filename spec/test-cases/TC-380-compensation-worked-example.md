@@ -3,13 +3,13 @@ id: TC-380
 title: "Compensation in a protocol subject"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-427
+  - target: ix://agent-ix/filament-specification/FR-427
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-431
+  - target: ix://agent-ix/filament-specification/FR-431
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-239
+  - target: ix://agent-ix/filament-specification/FR-239
     type: verifies
 ---
 
@@ -59,7 +59,7 @@ protocol Pay using p over (k: M::Acct) on origin {
 Explore exhaustively under `sc` through the real local Rust boundary and
 record every state, registration status and enabled step.
 
-Parse the protocol text above at S1 under the `quire.value.complete/v1` profile and require it admissible with no diagnostic.
+Parse the protocol text above at S1 under the `filament.value.complete/v1` profile and require it admissible with no diagnostic.
 
 ## Vectors
 

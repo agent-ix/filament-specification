@@ -3,7 +3,7 @@ id: TC-247
 title: "Unbounded population query"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-153
+  - target: ix://agent-ix/filament-specification/FR-153
     type: verifies
 ---
 

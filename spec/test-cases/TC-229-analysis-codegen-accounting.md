@@ -3,7 +3,7 @@ id: TC-229
 title: "Analysis codegen accounting"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-309
+  - target: ix://agent-ix/filament-specification/FR-309
     type: verifies
 ---
 

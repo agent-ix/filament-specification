@@ -3,7 +3,7 @@ id: TC-277
 title: "Replay byte provision"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: verifies
 ---
 
@@ -14,11 +14,11 @@ relationships:
 Show that an FR-323 replay request's `byte_provision` supplies every source and
 definition input the replay recompiles, located by
 `{authority, identity}`, and every domain-package document, an entry of the ordered provision located by the identity it declares, with no version or digest compared, and that a second document under one key is refused as a duplicate definition, per
-QSL ADR-013 O-26 and QC-1.
+FSL ADR-013 O-26 and QC-1.
 
 ## Preconditions
 
-- QSL ADR-011 §1: stages S1 to S4 recompile a checked package from
+- FSL ADR-011 §1: stages S1 to S4 recompile a checked package from
   supplied source.
 - FR-322 owns the checked-package value.
 

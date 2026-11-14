@@ -4,13 +4,13 @@ title: "Integration, evidence and qualification architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 ecosystem qualification
+system: native Filament V1 ecosystem qualification
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-008
+  - target: ix://agent-ix/filament-specification/AD-008
     type: references
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: references
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
 ---
 

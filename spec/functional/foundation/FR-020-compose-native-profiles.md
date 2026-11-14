@@ -3,17 +3,17 @@ id: FR-020
 title: "Report the actual composed language capability scope"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: references
-  - target: ix://agent-ix/quire-specification/FR-031
+  - target: ix://agent-ix/filament-specification/FR-031
     type: references
 ---
 ## Description
 
 When reporting a language release's capability scope, the publisher SHALL limit
-its full Quire v1 claim to the required capabilities supported under the exact
+its full Filament v1 claim to the required capabilities supported under the exact
 selected definitions and corresponding conformance evidence.
 
 ## Inputs
@@ -24,7 +24,7 @@ implementation/backend support declarations and scoped conformance references.
 ## Outputs
 
 An explicit capability report identifying supported scope and remaining gaps;
-a partial profile/package release remains distinguishable from full Quire v1.
+a partial profile/package release remains distinguishable from full Filament v1.
 
 ## Behavior
 
@@ -37,7 +37,7 @@ capability set.
 Missing, unsupported, unimplemented or unqualified required capabilities remain
 explicit gaps. Planned cases or historical-profile tests alone do not establish
 the new definition's conformance. A smaller release may identify its own exact
-supported scope without claiming full Quire v1.
+supported scope without claiming full Filament v1.
 
 The standard defines this claim boundary; existing publication/conformance
 consumers own its implementation. No new centralized release or evidence store
@@ -48,7 +48,7 @@ cannot remove a capability from the required V1 inventory.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-020-AC-7 | A report missing any required v1 family cannot claim full Quire v1 conformance. | Test (TC-020) |
+| FR-020-AC-7 | A report missing any required v1 family cannot claim full Filament v1 conformance. | Test (TC-020) |
 | FR-020-AC-8 | A report with all three families but a missing required related-instance or population capability retains that gap and cannot claim full v1. | Test (TC-020) |
 | FR-020-AC-9 | Each supported capability names its exact selected definition, implementation scope and corresponding evidence; planned or old-profile evidence alone cannot discharge it. | Test (TC-020) |
 | FR-020-AC-10 | A partial-profile release identifies its supported scope accurately without representing itself as full V1; every missing inventory capability remains open implementation or qualification work. | Test (TC-020) |

@@ -3,7 +3,7 @@ id: TC-184
 title: "Original source locus preservation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-134
+  - target: ix://agent-ix/filament-specification/FR-134
     type: verifies
 ---
 

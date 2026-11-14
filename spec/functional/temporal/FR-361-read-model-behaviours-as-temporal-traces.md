@@ -3,21 +3,21 @@ id: FR-361
 title: "Read a model subject's behaviours as temporal traces"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
 ---
 
@@ -133,8 +133,8 @@ profile the subject admits.
 ### Profiles and clock
 
 A model subject admits exactly two profiles:
-`quire.temporal.event-position.false-extension/v1` and
-`quire.temporal.infinite-trace/v1`. Under both, one tick is one step of the
+`filament.temporal.event-position.false-extension/v1` and
+`filament.temporal.infinite-trace/v1`. Under both, one tick is one step of the
 behaviour, and the clause's clock role binds to the subject's step sequence
 ([FR-090](FR-090-select-temporal-profile-and-clock.md)). A clause under any
 other profile over a model subject settles `unsupported`,
@@ -281,7 +281,7 @@ unguarded read, whatever the property.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-361-AC-1 | Position 0 of every behaviour reads the initial state with the `initialization` anchor, and position `i > 0` reads the post-state of transition `i` with that transition's operation anchor; a `holds` atom evaluated at a position returns the clause evaluator's value over that position's observation. | Test (TC-290) |
-| FR-361-AC-2 | A clause under `quire.temporal.fixed-sample.false-extension/v1` or `quire.temporal.timestamped-event.finite-window/v1` over a model subject settles `unsupported` with `unsupported-requested-capability` at negotiation; the event-position false-extension and infinite-trace profiles are admitted, with one tick per step. | Test (TC-290) |
+| FR-361-AC-2 | A clause under `filament.temporal.fixed-sample.false-extension/v1` or `filament.temporal.timestamped-event.finite-window/v1` over a model subject settles `unsupported` with `unsupported-requested-capability` at negotiation; the event-position false-extension and infinite-trace profiles are admitted, with one tick per step. | Test (TC-290) |
 | FR-361-AC-3 | One model with a reachable terminal state is read as a closed finite execution under event-position false-extension and as a terminal stutter loop under infinite-trace, and the same `always[0,4]` claim receives different verdicts under the two profiles. | Test (TC-290) |
 | FR-361-AC-4 | The terminal stutter step carries the transition identity `{"type":"terminal-stutter"}`, enables no operation and takes no fairness constraint. | Test (TC-290, TC-291) |
 | FR-361-AC-5 | A clause `over (x: T)` over a universe of two objects of `T` is checked once per object; it holds for the subject only when both checks hold, and its refutation names the refuted object. | Test (TC-290) |
@@ -311,5 +311,5 @@ unguarded read, whatever the property.
 
 ## References
 
-- quire-spec-language ADR-018 SM-2 to SM-4 and QS-1, QS-2, QS-3 and QS-5;
+- filament-spec-language ADR-018 SM-2 to SM-4 and QS-1, QS-2, QS-3 and QS-5;
   Linear STD-131 (paired with QSL-366).

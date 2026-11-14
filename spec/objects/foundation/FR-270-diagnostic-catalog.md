@@ -4,11 +4,11 @@ title: "Diagnostic catalog"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: contains
 ---
 # FR-270: Diagnostic catalog
@@ -23,7 +23,7 @@ code resolves to the selected catalog; an uncatalogued code cannot be
 published as a stable producer outcome". This artifact types the catalog that
 requirement selects. The only catalog so far offered is the **proposed** native
 diagnostic interpretation
-([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)),
+([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)),
 which states of itself: "**Proposed, not adopted or implemented.**" It is source
 material here, not an adopted selection.
 
@@ -41,12 +41,12 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| interpretation_identity | string identity such as `quire.native.diagnostics/v1`; exactly one (proposed catalog header; Key) |
+| interpretation_identity | string identity such as `filament.native.diagnostics/v1`; exactly one (proposed catalog header; Key) |
 
 
 | Property | Source | Note |
 | --- | --- | --- |
-| Interpretation identity | Proposed catalog, header | "Interpretation identity: `quire.native.diagnostics/v1`". |
+| Interpretation identity | Proposed catalog, header | "Interpretation identity: `filament.native.diagnostics/v1`". |
 | Code vocabulary | [FR-271](FR-271-diagnostic-code-vocabulary.md) | The catalogued code spellings. |
 | Closed cause sets | [FR-272](FR-272-typed-diagnostic-cause.md) | "A cause is a closed discriminated value with the payload required by its selected variant, not a free-form string map." |
 
@@ -107,9 +107,9 @@ clause. Its key is (`catalog authority`, `catalog identity`).
 
 - [FR-047](../../functional/foundation/FR-047-emit-typed-located-causes.md) establishes the
   catalogued-classification obligation.
-- [Native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)
+- [Native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)
   is the proposed, non-adopted catalog this artifact extracts from.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

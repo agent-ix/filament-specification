@@ -3,7 +3,7 @@ id: TC-274
 title: "Vacuous Kani proof settles inconclusive"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

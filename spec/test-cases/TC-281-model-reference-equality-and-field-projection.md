@@ -3,7 +3,7 @@ id: TC-281
 title: "Model reference equality and field projection"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -13,11 +13,11 @@ relationships:
 
 Show that the published operation catalog and FR-322 admit the two model
 operations a native producer emits over the lock-selected domain package:
-`quire.op.reference.eq` and `quire.op.reference.ne` over two references whose
+`filament.op.reference.eq` and `filament.op.reference.ne` over two references whose
 object types conform one to the other ("Reference conformance"),
-`quire.op.reference.upcast` of a reference to the reference type of a type
+`filament.op.reference.upcast` of a reference to the reference type of a type
 its object type conforms to, and
-`quire.op.record.project` of a model field over a `quire.op.model.deref`
+`filament.op.record.project` of a model field over a `filament.op.model.deref`
 result, whose family is `object` and which the `field_owner` operand group
 admits.
 
@@ -31,10 +31,10 @@ admits.
   and `{object: M}` is an operand of type `M` itself. An upcast case's
   `type_argument` `{reference: M}` names `Reference<M>` the same way. A projection case
   also carries the projection's declared `result_type`.
-- `contracts/checked-operation-catalog-v1.json` in `agent-ix/quire-verification-contracts` supplies the
-  `quire.op.reference.eq`, `quire.op.reference.ne`,
-  `quire.op.reference.upcast`, `quire.op.model.deref` and
-  `quire.op.record.project` entries: their operand positions, groups,
+- `contracts/checked-operation-catalog-v1.json` in `agent-ix/filament-verification-contracts` supplies the
+  `filament.op.reference.eq`, `filament.op.reference.ne`,
+  `filament.op.reference.upcast`, `filament.op.model.deref` and
+  `filament.op.record.project` entries: their operand positions, groups,
   result form and constraints are read from the catalog.
 - The lock selects the identity `acme/orders` only. In that package `Sub` (M5)
   declares supertype `Order` (M1), `SubSub` (M7) declares supertype `Sub`,
@@ -58,7 +58,7 @@ declared result equal to the `inner:0` type with a family), fit the
 projection operand to the `record.project` operand group, decide `member_of`,
 derive the member by FR-322 steps 2 to 4, and check that the declared
 `result_type` is the member type. For each reaches case, fit both operands
-to the `quire.op.model.reaches_field` entry's `reference` positions and
+to the `filament.op.model.reaches_field` entry's `reference` positions and
 decide `reference_edge` ("Reaches over a field"): operand 0 names the
 member's declaring node, the field resolves by FR-322 steps 2 and 3, its
 step 4 type is a reference, option-of-reference or bounded sequence of
@@ -138,9 +138,9 @@ not unique), `peers` (`Order` `[0, 3]`, unordered, unique) and `trail`
 
 These vectors apply FR-322 "Record conformance" and event equality
 (FR-322-AC-68, FR-322-AC-69, FR-322-AC-31) with the published catalog's
-`quire.op.record.project`, `quire.op.structural.eq`, `quire.op.structural.ne`,
-`quire.op.collection.contains`, `quire.op.collection.set`,
-`quire.op.collection.sequence` and `quire.op.function.call` entries. The
+`filament.op.record.project`, `filament.op.structural.eq`, `filament.op.structural.ne`,
+`filament.op.collection.contains`, `filament.op.collection.set`,
+`filament.op.collection.sequence` and `filament.op.function.call` entries. The
 selected document for them declares the record value types `Money`,
 `TaxedMoney` (supertype `Money`), `GiftTaxedMoney` (supertype `TaxedMoney`) and
 `Other`, the event types `OrderPlaced` and `ExpressOrderPlaced` (supertype
@@ -176,7 +176,7 @@ recorded result.
 ## Relationship ends
 
 `model-member-type-vectors.json` `relationship_navigation_cases` apply
-`quire.op.model.navigate` and `quire.op.model.reaches` over the relationship
+`filament.op.model.navigate` and `filament.op.model.reaches` over the relationship
 ends of the selected document (FR-322-AC-57). A case that patches an end
 multiplicity edits the selected document before it is read.
 

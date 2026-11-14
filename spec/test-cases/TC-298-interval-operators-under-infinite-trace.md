@@ -3,19 +3,19 @@ id: TC-298
 title: "Interval operators under infinite-trace"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: verifies
 ---
 
@@ -31,7 +31,7 @@ past-origin rule.
 ## Test Procedure
 
 Let `R` be `always (holds(fail) implies eventually always[0,10] holds(healthy))`
-under `quire.temporal.infinite-trace/v1`.
+under `filament.temporal.infinite-trace/v1`.
 
 1. Evaluate `R` on lasso A: a loop of 12 positions, `fail` at the first and
    `healthy` at the other 11; and on lasso B: a loop of 6 positions, `fail` at

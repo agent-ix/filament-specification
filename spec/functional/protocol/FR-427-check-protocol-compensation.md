@@ -3,19 +3,19 @@ id: FR-427
 title: "Check compensation templates inside a protocol subject"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-173
+  - target: ix://agent-ix/filament-specification/FR-173
     type: references
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
 ---
 
@@ -124,6 +124,6 @@ activated.
 
 ## References
 
-- Design: quire-spec-language ADR-027 CP-1 to CP-5, ST-11, ST-12, §7.1 and
+- Design: filament-spec-language ADR-027 CP-1 to CP-5, ST-11, ST-12, §7.1 and
   QS-10.
 - Tickets: Linear STD-140; paired QSL-396.

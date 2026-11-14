@@ -3,7 +3,7 @@ id: TC-949
 title: "Extension definition grammar and typed-node schema members"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-467
+  - target: ix://agent-ix/filament-specification/FR-467
     type: verifies
 ---
 

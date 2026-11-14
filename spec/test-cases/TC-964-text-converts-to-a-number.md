@@ -3,7 +3,7 @@ id: TC-964
 title: "Text converts to a number in one locale-free grammar per target"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-478
+  - target: ix://agent-ix/filament-specification/FR-478
     type: verifies
 ---
 
@@ -28,9 +28,9 @@ Scope: FR-478-AC-1 to FR-478-AC-11.
 ## Test Procedure
 
 Select language `ix:native`, edition `1-draft`, and the
-`quire.value.complete/v1` and `quire.value.text.unicode-17.0.0/v1`
+`filament.value.complete/v1` and `filament.value.text.unicode-17.0.0/v1`
 definitions through
-[`value-complete.md`](../../proposals/quire-v1/definitions/value-complete.md).
+[`value-complete.md`](../../proposals/filament-v1/definitions/value-complete.md).
 Execute these vectors through the real local Rust boundary. Text operands are
 `Text[0, 64; unicode-scalars]` unless the row names another profile or a
 `String`. Quantity rows declare `dimension Time; unit s : Time = 1; unit ms :
@@ -46,7 +46,7 @@ Time = 1/1000 * s;`. IEEE results are written as bits and a flag set.
 | TN-06 | `convert<Decimal>`: `.5`, `5.`, `-0.00`, `1.2.3`, `1,5`, `1e3`, `3/4` | undefined, no value |
 | TN-07 | `convert<Integer>` of U+FF15 under `nfkc`; under `nfc` | `5`; undefined |
 | TN-08 | type checking `convert<T>` of a text and of a `String` to `Integer`, `Decimal[0, 1000; 0, 2; exact]`, `Rational[-9, 9; 1, 9]`, `Float32[nearest-even]`, `Float64`, `Quantity<ms>`; of a text to `Boolean`, `Text[0, 8; nfc]`, an enum, `UUID`, a record | each of the first six admitted for both operands; `ill_typed`/`operator-ineligible` for each of the last five |
-| TN-09 | checked package over `t: Text[0, 8; nfc]` of `convert<Int[0, 99]>(t)`, `convert<Decimal[0, 1000; 0, 2; nearest-even]>(t)`, `convert<Rational[-9, 9; 1, 9]>(t)`, `convert<Float64[toward-zero]>(t)`, `convert<Quantity<ms>>(t)`; then the same over `s: String` | `quire.op.text.to_integer` mode `null`; `quire.op.text.to_decimal` mode `rounding` `nearest-even`; `quire.op.text.to_rational` mode `null`; `quire.op.text.to_float64` laws `text_profile`, `ieee_profile`, mode `rounding` `toward-zero`; `quire.op.text.to_quantity` mode `rounding` `exact`; each with the `text_profile` law and member `type_argument` naming the target. Over `s`: the `quire.op.string.*` identity of the same name, the same mode and member, no `text_profile` law |
+| TN-09 | checked package over `t: Text[0, 8; nfc]` of `convert<Int[0, 99]>(t)`, `convert<Decimal[0, 1000; 0, 2; nearest-even]>(t)`, `convert<Rational[-9, 9; 1, 9]>(t)`, `convert<Float64[toward-zero]>(t)`, `convert<Quantity<ms>>(t)`; then the same over `s: String` | `filament.op.text.to_integer` mode `null`; `filament.op.text.to_decimal` mode `rounding` `nearest-even`; `filament.op.text.to_rational` mode `null`; `filament.op.text.to_float64` laws `text_profile`, `ieee_profile`, mode `rounding` `toward-zero`; `filament.op.text.to_quantity` mode `rounding` `exact`; each with the `text_profile` law and member `type_argument` naming the target. Over `s`: the `filament.op.string.*` identity of the same name, the same mode and member, no `text_profile` law |
 | TN-10 | pure function `n(t) = convert<Int[0, 99]>(t)` linked, then called with `abc` and with `100` | links with no obligation; undefined; `integer_out_of_domain` |
 | TN-11 | `convert<Int[0, 99]>` of `42` with exact limits; with `text.input-bytes` denied; of `abc`; of `100` | succeeds after `text.input-bytes` and `text.decode-scalars`; `incomplete`, no value; undefined after operand and applicable normalization charges; refused after those charges, before a result is returned |
 | TN-12 | `convert<Decimal[0, 1000; 0, 2; nearest-even]>`: `1.555`; `1.565` | coefficient `156` scale `2`, `DecimalLoss` exact `311/200`, mode `nearest-even`, after operand and applicable normalization charges and `decimal.rounding` (`integer_bits` 11, `decimal_digits` 4); coefficient `156` scale `2` (tie to even) |

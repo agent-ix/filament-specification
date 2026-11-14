@@ -4,9 +4,9 @@ title: "Bound retained observation state"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-114
+  - target: ix://agent-ix/filament-specification/FR-114
     type: constrains
 ---
 ## Statement

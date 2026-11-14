@@ -3,11 +3,11 @@ id: FR-302
 title: "Preserve a lossless concrete syntax tree"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-134
+  - target: ix://agent-ix/filament-specification/FR-134
     type: references
-  - target: ix://agent-ix/quire-specification/AD-004
+  - target: ix://agent-ix/filament-specification/AD-004
     type: references
 ---
 
@@ -53,7 +53,7 @@ edits are a separate proposed-edit stream and never mutate source bytes.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

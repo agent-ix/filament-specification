@@ -3,7 +3,7 @@ id: TC-004
 title: "Withdrawn: automated core correspondence"
 type: TC
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-018"
+  - target: "ix://agent-ix/filament-specification/FR-018"
     type: verifies
 ---
 # TC-004: Withdrawn: automated core correspondence

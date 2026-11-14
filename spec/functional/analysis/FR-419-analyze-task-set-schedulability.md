@@ -3,23 +3,23 @@ id: FR-419
 title: "Analyze task-set schedulability"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-482
+  - target: ix://agent-ix/filament-specification/FR-482
     type: references
-  - target: ix://agent-ix/quire-specification/TC-372
+  - target: ix://agent-ix/filament-specification/TC-372
     type: verifies
 ---
 
@@ -388,7 +388,7 @@ establish completeness for the fixed-work class.
 
 ## References
 
-- QSL ADR-026 RT-1 to RT-8, OV-10.
+- FSL ADR-026 RT-1 to RT-8, OV-10.
 - Owner ruling recorded on QSL-373: native closed-form schedulability; WCET is
   a stated premise. The later QSL-585 task-automaton contract supersedes its
   unsupported disposition for variable-demand and mode-change products: those

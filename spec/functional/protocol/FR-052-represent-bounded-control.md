@@ -3,21 +3,21 @@ id: FR-052
 title: "Represent bounded causal protocol control"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-220
+  - target: ix://agent-ix/filament-specification/FR-220
     type: references
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-227
+  - target: ix://agent-ix/filament-specification/FR-227
     type: references
-  - target: ix://agent-ix/quire-specification/FR-228
+  - target: ix://agent-ix/filament-specification/FR-228
     type: references
-  - target: ix://agent-ix/quire-specification/FR-479
+  - target: ix://agent-ix/filament-specification/FR-479
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: references
 ---
 ## Description
@@ -78,7 +78,7 @@ clause only through that relation
 ## Surface syntax
 
 The shared grammar's `repetition` production
-([shared grammar](../../../proposals/quire-v1/shared-grammar.md)) makes the
+([shared grammar](../../../proposals/filament-v1/shared-grammar.md)) makes the
 maximum and the invariant and variant each optional; only a repetition with a
 maximum has an `exhausted` control.
 
@@ -126,5 +126,5 @@ system ([FR-426](FR-426-apply-protocol-steps.md)):
 
 ## References
 
-- Causal interleavings: quire-spec-language ADR-027 CI-1 to CI-3 and QS-5;
+- Causal interleavings: filament-spec-language ADR-027 CI-1 to CI-3 and QS-5;
   invariant/variant loops: ADR-027 PS-6. Linear STD-140, paired QSL-396.

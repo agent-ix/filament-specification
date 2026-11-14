@@ -3,15 +3,15 @@ id: FR-348
 title: "Admit compositional verification obligations"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: references
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/AD-013
+  - target: ix://agent-ix/filament-specification/AD-013
     type: references
 ---
 
@@ -72,7 +72,7 @@ claim no registered composition-capable backend can discharge settles
   verification-method and plan architecture this obligation is planned under.
 - [AD-010](../../assurance/AD-010-target-neutral-ir-backends.md) supplies the
   per-item provider capability negotiation this requirement uses.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

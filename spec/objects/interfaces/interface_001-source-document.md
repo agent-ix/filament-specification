@@ -3,9 +3,9 @@ id: interface_001
 title: "I01 exact source document"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-202
+  - target: ix://agent-ix/filament-specification/FR-202
     type: references
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: references
 ---
 

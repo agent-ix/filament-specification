@@ -3,7 +3,7 @@ id: TC-295
 title: "Temporal counterexample wire, replay and refusals"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
 ---
 

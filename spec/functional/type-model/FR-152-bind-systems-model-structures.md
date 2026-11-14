@@ -3,13 +3,13 @@ id: FR-152
 title: "Bind complete systems-model structures"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: references
 ---
 
@@ -24,7 +24,7 @@ declarations of the admitted domain package.
 ## Inputs
 
 Checked package, the admitted domain package with its ModelSelection (FR-321),
-the FR-150 effective view, the selected `quire.model.complete/v1` definition
+the FR-150 effective view, the selected `filament.model.complete/v1` definition
 and a qualified element reference with its required kind.
 
 ## Outputs
@@ -41,9 +41,9 @@ connections and preserves original/effective declaration provenance.
 
 ## Systems-model roles
 
-Rule `quire.model.systems.kind-mapping/v1` of the selected
-`quire.model.complete/v1` definition maps each IR node to at most one systems
-kind by the Quire meaning id (FR-208) of its construct: the `meaning` of the
+Rule `filament.model.systems.kind-mapping/v1` of the selected
+`filament.model.complete/v1` definition maps each IR node to at most one systems
+kind by the Filament meaning id (FR-208) of its construct: the `meaning` of the
 `constructs` table entry that the node's `{module, name}` kind names. The kinds
 are disjoint. A node's kind name and module never select a systems kind: a node
 whose construct names no systems meaning has no systems kind, whatever its kind
@@ -52,11 +52,11 @@ any kind name.
 
 | Kind | Construct meaning | Required identity and constraints |
 | --- | --- | --- |
-| Part | `quire.meaning.systems.part/v1` | construct declaration key, `owner` reference to the owning composite type, declared type and typed multiplicity |
-| Port | `quire.meaning.systems.port/v1`, whose `owner` names a Part | construct declaration key, `owner` reference to the owning part, direction `in`, `out` or `inout`, interface type (an Interface) and typed multiplicity |
-| Interface | `quire.meaning.systems.interface/v1` | construct declaration key and ordered feature signatures |
-| Connection | `quire.meaning.systems.connection/v1`, whose two ends both name Ports | construct declaration key, effective member owned by the source end-owner type, compatible source and target port keys and a declared `direction` |
-| Allocation | `quire.meaning.systems.allocation/v1` | construct declaration key, effective member owned by the source end-owner type, plus source element (Part, Port or operation) and target element (Part) keys |
+| Part | `filament.meaning.systems.part/v1` | construct declaration key, `owner` reference to the owning composite type, declared type and typed multiplicity |
+| Port | `filament.meaning.systems.port/v1`, whose `owner` names a Part | construct declaration key, `owner` reference to the owning part, direction `in`, `out` or `inout`, interface type (an Interface) and typed multiplicity |
+| Interface | `filament.meaning.systems.interface/v1` | construct declaration key and ordered feature signatures |
+| Connection | `filament.meaning.systems.connection/v1`, whose two ends both name Ports | construct declaration key, effective member owned by the source end-owner type, compatible source and target port keys and a declared `direction` |
+| Allocation | `filament.meaning.systems.allocation/v1` | construct declaration key, effective member owned by the source end-owner type, plus source element (Part, Port or operation) and target element (Part) keys |
 
 Each part, port, interface, connection and allocation is declared by its own
 artifact and is a construct, not a member. Its IR node identity is
@@ -95,7 +95,7 @@ declaration of another kind is refused `invalid_model_binding`/`wrong-export`
 with the required kind, actual kind and both declaration keys; equal names
 never pass a kind check.
 
-Rule `quire.model.systems.connection/v1` admits a connection only when all of
+Rule `filament.model.systems.connection/v1` admits a connection only when all of
 these hold, each charged as `systems.connection-condition` in table order and
 reported independently before the connection is exposed:
 
@@ -105,7 +105,7 @@ reported independently before the connection is exposed:
 | The flow-source port's interface type conforms under FR-151 to the flow-target port's interface type (for `bidirectional`, the two interface types are the same effective type) | `ill_typed`/`type-mismatch` |
 | Each connection end's typed multiplicity conforms under FR-151 to its port's typed multiplicity | `ill_typed`/`multiplicity-narrowing` |
 
-Rule `quire.model.systems.allocation/v1` admits an allocation only when its
+Rule `filament.model.systems.allocation/v1` admits an allocation only when its
 target element is a Part, charging `systems.allocation`; any other target is
 `invalid_model_binding`/`wrong-export` (required Part, actual kind or `none`).
 Allocation compatibility has no other rule.
@@ -129,7 +129,7 @@ A name matching both a field and an end is
 `ambiguous_declaration`/`ambiguous-name`. A name that is no field of `T` and
 the role of no end navigable from `T` (a far-end role among them) finds no
 candidate: checking source refuses it `ill_typed`/`type-mismatch` at the form,
-as for an undeclared field (QSL FR-363), and the IR member check of a
+as for an undeclared field (FSL FR-363), and the IR member check of a
 `relationship_end` naming a role the relationship does not name refuses
 `missing_declaration`/`missing-name` at `member.name` (FR-322-AC-56). Traversal from source to target
 requires declared direction `source-to-target`, `bidirectional` or
@@ -156,12 +156,12 @@ canonical reference-key order and a target absent from a complete population is
 `dangling_reference`, decided before the count bound; then a target count
 outside the bound is `cardinality_out_of_bound`/`below-minimum` or
 `above-maximum`. Charges are the `model.navigate` schedule of
-`quire.value.accounting/v1`.
+`filament.value.accounting/v1`.
 
 ## Reachability over a relationship end
 
 `reaches(a, b, name)` where `name` is a relationship end is the Boolean
-`quire.op.model.reaches` application (FR-322-AC-57). The end is navigated as
+`filament.op.model.reaches` application (FR-322-AC-57). The end is navigated as
 above, and checking admits a destination end of the receiver endpoint's own
 type `E` with any finite multiplicity, single-valued (`[0,1]`, `[1,1]`) or
 multi-valued (`Set` or `Bag` shaped, unique or not). An `unbounded` upper bound
@@ -177,7 +177,7 @@ repeats of one reference adjacent. A single-valued end gives at most one
 neighbour and a multi-valued end gives each of them: the search is breadth-first
 in discovery order, and the frontier expands every neighbour of a dequeued
 object in that order. The charges are the `graph` rows of
-`quire.value.accounting/v1`: `graph.expand` for `a` and then once for each
+`filament.value.accounting/v1`: `graph.expand` for `a` and then once for each
 object when it is first discovered (`value_occurrences` the number of distinct
 objects discovered, `a` included), one `graph.edge` for each link occurrence
 examined, including a repeat of a neighbour already discovered, and one
@@ -216,9 +216,9 @@ complete population is `dangling_reference`, decided before that neighbour's
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
-- [FR-208](../../objects/foundation/FR-208-quire-meaning-vocabulary.md) owns
+- [FR-208](../../objects/foundation/FR-208-filament-meaning-vocabulary.md) owns
   the systems meaning ids.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

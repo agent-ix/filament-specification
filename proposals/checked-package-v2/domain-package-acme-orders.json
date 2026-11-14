@@ -3,7 +3,7 @@
     {
       "construct": {
         "identity": "identified",
-        "meaning": "quire.meaning.model.object-type/v1",
+        "meaning": "filament.meaning.model.object-type/v1",
         "members": {
           "fields": "optional",
           "identityFields": "required",
@@ -22,7 +22,7 @@
     {
       "construct": {
         "identity": "none",
-        "meaning": "quire.meaning.systems.interface/v1",
+        "meaning": "filament.meaning.systems.interface/v1",
         "members": {
           "fields": "optional",
           "operations": "optional"
@@ -38,7 +38,7 @@
     {
       "construct": {
         "identity": "value",
-        "meaning": "quire.meaning.model.value-type/v1",
+        "meaning": "filament.meaning.model.value-type/v1",
         "members": {},
         "shape": "record"
       },
@@ -102,7 +102,7 @@
       "displayName": "ClockMap",
       "extensions": [],
       "identity": "ix://acme/orders/ClockMap",
-      "keys": "ix://quire/native/Text",
+      "keys": "ix://filament/native/Text",
       "kind": "map",
       "origin": {
         "source": {
@@ -114,7 +114,7 @@
       },
       "roles": [],
       "unknownPolicy": "reject",
-      "values": "ix://quire/native/Clock"
+      "values": "ix://filament/native/Clock"
     },
     {
       "constraints": [
@@ -214,7 +214,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Boolean"
+          "typeRef": "ix://filament/native/Boolean"
         }
       ],
       "identity": "ix://acme/orders/Coded",
@@ -272,7 +272,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         }
       ],
@@ -460,7 +460,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         }
       ],
       "identity": "ix://acme/orders/Invoice",
@@ -532,7 +532,7 @@
             }
           },
           "presence": "optional",
-          "typeRef": "ix://quire/native/Boolean"
+          "typeRef": "ix://filament/native/Boolean"
         },
         {
           "defaultKind": "none",
@@ -554,7 +554,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -576,7 +576,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -598,7 +598,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -642,7 +642,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Text"
+          "typeRef": "ix://filament/native/Text"
         },
         {
           "defaultKind": "none",
@@ -663,7 +663,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -684,7 +684,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "constraints": [
@@ -725,7 +725,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -956,7 +956,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         },
         {
@@ -991,7 +991,7 @@
                 }
               },
               "presence": "required",
-              "typeRef": "ix://quire/native/Integer"
+              "typeRef": "ix://filament/native/Integer"
             }
           ],
           "post": [],
@@ -1004,7 +1004,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         },
         {
@@ -1261,7 +1261,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         },
         {
@@ -1296,7 +1296,7 @@
                 }
               },
               "presence": "required",
-              "typeRef": "ix://quire/native/Integer"
+              "typeRef": "ix://filament/native/Integer"
             }
           ],
           "post": [],
@@ -1310,7 +1310,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         }
       ],
@@ -1366,7 +1366,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         }
       ],
@@ -1410,7 +1410,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -1432,7 +1432,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Boolean"
+          "typeRef": "ix://filament/native/Boolean"
         },
         {
           "defaultKind": "none",
@@ -1454,7 +1454,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         }
       ],
       "identity": "ix://acme/orders/Switch",
@@ -1498,7 +1498,7 @@
                 }
               },
               "presence": "required",
-              "typeRef": "ix://quire/native/Boolean"
+              "typeRef": "ix://filament/native/Boolean"
             }
           ],
           "post": [],
@@ -1543,7 +1543,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         }
       ],
       "identity": "ix://acme/orders/Tagged",

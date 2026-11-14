@@ -3,7 +3,7 @@ id: TC-269
 title: "Proved settlement certification"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: verifies
 ---
 

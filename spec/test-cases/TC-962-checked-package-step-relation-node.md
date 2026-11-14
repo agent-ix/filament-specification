@@ -3,7 +3,7 @@ id: TC-962
 title: "Checked-package step-relation claim node"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-477
+  - target: ix://agent-ix/filament-specification/FR-477
     type: verifies
 ---
 

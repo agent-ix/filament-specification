@@ -3,9 +3,9 @@ id: FR-015
 title: "Preserve established canonical identity domains"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-004"
+  - target: "ix://agent-ix/filament-specification/US-004"
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
 ---
 # FR-015: Preserve established canonical identity domains

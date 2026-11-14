@@ -3,11 +3,11 @@ id: TC-337
 title: "Hyperproperty and step-relation syntax, binding and refusals"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-398
+  - target: ix://agent-ix/filament-specification/FR-398
     type: verifies
 ---
 

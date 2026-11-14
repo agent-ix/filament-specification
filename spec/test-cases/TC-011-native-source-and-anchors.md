@@ -3,7 +3,7 @@ id: TC-011
 title: "Bind one exact source authority and operation instant"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: verifies
 ---
 ## Description

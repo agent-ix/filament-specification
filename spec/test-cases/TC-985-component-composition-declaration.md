@@ -3,7 +3,7 @@ id: TC-985
 title: "Component composition declaration"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-491
+  - target: ix://agent-ix/filament-specification/FR-491
     type: verifies
 ---
 

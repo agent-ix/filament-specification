@@ -3,27 +3,27 @@ id: FR-429
 title: "Read protocol terminal states and report protocol deadlocks"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-428
+  - target: ix://agent-ix/filament-specification/FR-428
     type: references
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: references
-  - target: ix://agent-ix/quire-specification/FR-170
+  - target: ix://agent-ix/filament-specification/FR-170
     type: references
-  - target: ix://agent-ix/quire-specification/FR-427
+  - target: ix://agent-ix/filament-specification/FR-427
     type: references
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: references
-  - target: ix://agent-ix/quire-specification/FR-433
+  - target: ix://agent-ix/filament-specification/FR-433
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -75,7 +75,7 @@ is a boundary state: never terminal and never a deadlock.
 
 ### The `terminal` member
 
-A protocol clause carries at most one `terminal` member, by the [shared grammar](../../../proposals/quire-v1/shared-grammar.md)'s
+A protocol clause carries at most one `terminal` member, by the [shared grammar](../../../proposals/filament-v1/shared-grammar.md)'s
 `protocol-terminal` production:
 
 - `terminal when { P };` — `P` is a Boolean predicate over the model
@@ -216,11 +216,11 @@ state key.
   queue, capacity and overflow meaning the causes read.
 - [FR-433](FR-433-replay-protocol-counterexamples.md) owns the
   counterexample wire and its replay.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns the
   `protocol-clause` and `protocol-terminal` productions.
 
 ## References
 
-- Design: quire-spec-language ADR-027 PB-4, PD-1 to PD-5, QS-7 and QS-13;
+- Design: filament-spec-language ADR-027 PB-4, PD-1 to PD-5, QS-7 and QS-13;
   model-subject deadlocks in ADR-018 DL-1 to DL-7.
 - Tickets: Linear STD-140; paired QSL-396.

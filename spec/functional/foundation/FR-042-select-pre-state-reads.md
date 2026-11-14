@@ -3,7 +3,7 @@ id: FR-042
 title: "Select pre-state reads without retagging captured values"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -34,8 +34,8 @@ The state contract's anchor table and correspondence examples define the selecti
 
 ## Dependencies
 
-- [Detailed draft contract](../../../proposals/quire-v1/state-contract.md).
-- [Shared grammar](../../../proposals/quire-v1/shared-grammar.md).
+- [Detailed draft contract](../../../proposals/filament-v1/state-contract.md).
+- [Shared grammar](../../../proposals/filament-v1/shared-grammar.md).
 
 Accepted by FS03. Historical definitions and their acceptance remain separate;
 this artifact does not establish implementation coverage.

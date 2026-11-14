@@ -3,13 +3,13 @@ id: TC-058
 title: "Preserve retries, duplicates and partial recovery"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-235
+  - target: ix://agent-ix/filament-specification/FR-235
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-236
+  - target: ix://agent-ix/filament-specification/FR-236
     type: verifies
 ---
 ## Description

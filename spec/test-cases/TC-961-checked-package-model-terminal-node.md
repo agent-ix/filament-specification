@@ -3,7 +3,7 @@ id: TC-961
 title: "Checked-package model terminal declaration node"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-476
+  - target: ix://agent-ix/filament-specification/FR-476
     type: verifies
 ---
 

@@ -3,7 +3,7 @@ id: TC-273
 title: "Outcome-to-verdict map fixed per O-16 category"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: verifies
 ---
 
@@ -11,15 +11,15 @@ relationships:
 
 ## Description
 
-Show that the replay outcome-to-verdict map assigns one verdict per QSL
+Show that the replay outcome-to-verdict map assigns one verdict per FSL
 ADR-013 O-16 category independently of the request, and that an `Undefined`
 native outcome and a refused `FamilyOutcome` never settle agreement.
 
 ## Preconditions
 
-- QSL ADR-013 TK-01: the QSL layer-6 `replay` facade exists.
-- The QSL #231 replay envelope carries an expected originating verdict.
-- `FamilyOutcome` and its `Refused` case are the QSL ADR-011 #209 FND-008
+- FSL ADR-013 TK-01: the FSL layer-6 `replay` facade exists.
+- The FSL #231 replay envelope carries an expected originating verdict.
+- `FamilyOutcome` and its `Refused` case are the FSL ADR-011 #209 FND-008
   S6a-stage result type (`Result<FamilyOutcome, InternalFault>`).
 
 ## Test Procedure

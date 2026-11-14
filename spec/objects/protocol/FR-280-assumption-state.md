@@ -4,9 +4,9 @@ title: "Assumption state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
 ---
 # FR-280: Assumption state vocabulary
@@ -58,7 +58,7 @@ identity and one state from `met`, `not-met`, `unknown` or `not-assessed`."
   vocabulary and the retention obligation.
 - [FR-062](../../functional/protocol/FR-062-project-results-to-portable-verification.md)
   carries it to the portable verification boundary.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

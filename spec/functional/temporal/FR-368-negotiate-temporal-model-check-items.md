@@ -3,31 +3,31 @@ id: FR-368
 title: "Request and negotiate temporal items over a model subject"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: references
-  - target: ix://agent-ix/quire-specification/FR-438
+  - target: ix://agent-ix/filament-specification/FR-438
     type: references
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: references
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: references
 ---
 
@@ -231,7 +231,7 @@ members (FR-331 "Identity and validation").
 
 A derived item is the reachable-state invariant `always holds(I)` of
 [FR-363](FR-363-settle-every-behaviour-temporal-verdicts.md) "Property forms",
-which that table puts under `quire.temporal.infinite-trace/v1`; a
+which that table puts under `filament.temporal.infinite-trace/v1`; a
 `refinement` item reads its behaviours as FR-377 "Model subjects and
 behaviours" does, maximal paths with a terminal stutter step, which is the
 infinite-trace reading. So each classifies `unbounded` by "Extent" above,
@@ -243,7 +243,7 @@ finite_bound_available: false}` and nothing else:
   authored item carries for its own claim node, followed by the population
   domains that the item's subject reads without a maximum, as the boundedness
   architecture lists them for an authored item over the same subject
-  (quire-spec-language#222, QSL ADR-014 §4). The infinite-trace domain is
+  (filament-spec-language#222, FSL ADR-014 §4). The infinite-trace domain is
   never boundable, so `finite_bound_available` is false.
 - The item has no `extent.bounds` and no result bound of its own: the
   substitutions for the subject's populations are the subject's
@@ -348,8 +348,8 @@ query of the item: a base, step, unrolling or search query.
   temporal item's `max_solver_time` is a limit the request names on each
   SMT query, so its exhaustion is `limit-reached`.
 - When the request omits a member, the provider SHALL apply its descriptor
-  `bounds` (FR-331, FR-461). QSL's 100000000 steps and 60 seconds are the
-  defaults of its own SMT settings (QSL FR-255); this requirement states no
+  `bounds` (FR-331, FR-461). FSL's 100000000 steps and 60 seconds are the
+  defaults of its own SMT settings (FSL FR-255); this requirement states no
   number. A provider that runs no solver reads neither member.
 - A record that a request reuses states the limit values of the run that
   produced it. Two requests that differ only in `max_solver_time` share a
@@ -361,7 +361,7 @@ query of the item: a base, step, unrolling or search query.
 
 ### SMT encoding limits
 
-An SMT backend that encodes its proof queries with QSL's encoder (QSL
+An SMT backend that encodes its proof queries with FSL's encoder (FSL
 FR-315) bounds each query's size by the item's `smt_encoding`, a closed
 object whose members are `PositiveCount`s, each a limit under
 [FR-461](../foundation/FR-461-name-the-limit-value-and-setting.md):
@@ -376,8 +376,8 @@ object whose members are `PositiveCount`s, each a limit under
 | `max_script_bytes` | the bytes of one printed query | `smt_encoding.max_script_bytes` |
 
 - An absent `smt_encoding`, and an absent member, take the routed
-  provider's published default (its descriptor `bounds`); QSL FR-255
-  publishes QSL's. A present `smt_encoding` is never empty, and an unknown
+  provider's published default (its descriptor `bounds`); FSL FR-255
+  publishes FSL's. A present `smt_encoding` is never empty, and an unknown
   member, a zero and a non-integer value refuse before consumption.
 - The values decide whether a query can be encoded at all, so they change
   the result (`limit-reached` against a proof) and are part of the request
@@ -385,12 +385,12 @@ object whose members are `PositiveCount`s, each a limit under
 - An encoder stop at a member settles FR-331 result `incomplete`,
   `limit-reached{limit, value, setting}` naming the member, its value and
   its setting (FR-363 "Undecided k-induction runs", rule 3). A provider
-  that does not use QSL's encoder reads no member.
+  that does not use FSL's encoder reads no member.
 
 ### Extent
 
 An item under the event-position false-extension profile classifies `bounded`.
-An item under `quire.temporal.infinite-trace/v1` classifies `unbounded`, for
+An item under `filament.temporal.infinite-trace/v1` classifies `unbounded`, for
 every subject, since its traces are infinite. FR-290's advertised-mode table
 then settles it: an unbounded item on a candidate that advertises only
 `bounded` for `temporal-satisfaction` settles `unsupported`,
@@ -494,5 +494,5 @@ infinite-trace formula that no registered candidate decides.
 
 ## References
 
-- quire-spec-language ADR-018 §3 Placement in negotiation and QS-9; ADR-019
+- filament-spec-language ADR-018 §3 Placement in negotiation and QS-9; ADR-019
   SV-1, SV-5, BE-1 and QS-4; Linear STD-131 and STD-132.

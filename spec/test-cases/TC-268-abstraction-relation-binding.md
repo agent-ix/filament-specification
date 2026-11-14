@@ -3,7 +3,7 @@ id: TC-268
 title: "Model-to-implementation abstraction relation binding and refusal"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: verifies
 ---
 

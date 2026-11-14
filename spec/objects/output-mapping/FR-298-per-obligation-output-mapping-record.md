@@ -4,11 +4,11 @@ title: "Per-obligation output-mapping record"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-269
+  - target: ix://agent-ix/filament-specification/FR-269
     type: references
-  - target: ix://agent-ix/quire-specification/FR-297
+  - target: ix://agent-ix/filament-specification/FR-297
     type: references
 ---
 # FR-298: Per-obligation output-mapping record

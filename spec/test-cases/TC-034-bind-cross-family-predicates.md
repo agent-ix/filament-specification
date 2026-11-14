@@ -3,7 +3,7 @@ id: TC-034
 title: "Bind cross-family predicates to explicit evaluation environments"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-034
+  - target: ix://agent-ix/filament-specification/FR-034
     type: verifies
 ---
 ## Description

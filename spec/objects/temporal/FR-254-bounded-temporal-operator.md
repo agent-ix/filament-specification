@@ -4,15 +4,15 @@ title: "Bounded temporal operator vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
 ---
 # FR-254: Bounded temporal operator vocabulary
@@ -122,7 +122,7 @@ timestamps never substitutes for it.
   past members and strong previous.
 - [FR-090](../../functional/temporal/FR-090-select-temporal-profile-and-clock.md)
   establishes the order-sensitive subset.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Truth boundary
@@ -135,4 +135,4 @@ mapping view and is not a source truth label.
 
 ## Status
 
-Proposed truth-boundary reconciliation for `quire-specification#40`.
+Proposed truth-boundary reconciliation for `filament-specification#40`.

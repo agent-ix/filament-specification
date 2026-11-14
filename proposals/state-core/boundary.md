@@ -71,7 +71,7 @@ The future linked identity needs its own named canonical profile covering
 edition, semantic profile, required features, resolved declarations/obligations
 and exact static dependency closure. Source provenance and implementation
 lineage remain explicit even when the source-free expression is unchanged.
-Do not change existing `quire.contract.bound-identity/v1` or existing canonical
+Do not change existing `filament.contract.bound-identity/v1` or existing canonical
 profile bytes to accommodate a new source language. A migration reports old
 and new identities, mapping version and preserved/refused obligations; old
 evidence stays addressed to its original subject.

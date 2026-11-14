@@ -3,15 +3,15 @@ id: FR-406
 title: "Interpret probabilistic models under a workload or every scheduler"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-405
+  - target: ix://agent-ix/filament-specification/FR-405
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-407
+  - target: ix://agent-ix/filament-specification/FR-407
     type: references
 ---
 
@@ -170,8 +170,8 @@ scheduler.
 
 ## References
 
-- QSL ADR-024 PM-2 to PM-8; QSL ADR-028 PR-1 to PR-3, SCH-1 to SCH-5.
-- QSL ADR-028 FS-1 to FS-3.
+- FSL ADR-024 PM-2 to PM-8; FSL ADR-028 PR-1 to PR-3, SCH-1 to SCH-5.
+- FSL ADR-028 FS-1 to FS-3.
 - Owner rulings recorded on QSL-371: fair schedulers follow Baier and
   Kwiatkowska; the scheduler picks after the draw.
 - C. Baier and M. Kwiatkowska, "Model checking for a probabilistic branching

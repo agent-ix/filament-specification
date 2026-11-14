@@ -3,27 +3,27 @@ id: FR-492
 title: "Planner settlement request, premise results and planner result"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-488
+  - target: ix://agent-ix/filament-specification/FR-488
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-489
+  - target: ix://agent-ix/filament-specification/FR-489
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-490
+  - target: ix://agent-ix/filament-specification/FR-490
     type: references
-  - target: ix://agent-ix/quire-specification/FR-491
+  - target: ix://agent-ix/filament-specification/FR-491
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
 ---
 
@@ -33,7 +33,7 @@ relationships:
 
 When the verification planner settles a planner-local implementation-guarantee
 item (FR-488, FR-490) or assume-guarantee composition item (FR-489, FR-491),
-it SHALL read one `quire.planner-settlement/v1` request that carries every
+it SHALL read one `filament.planner-settlement/v1` request that carries every
 premise slot the item's declaration derives and the complete premise result
 behind each filled slot, SHALL refuse a malformed, forged or mismatched
 request before settlement, and SHALL write one planner result whose cause is
@@ -42,7 +42,7 @@ drawn from FR-331's closed inconclusive causes.
 ## Inputs
 
 - The checked package that carries the declaration.
-- A `quire.planner-settlement/v1` request (below).
+- A `filament.planner-settlement/v1` request (below).
 
 ## Outputs
 
@@ -55,7 +55,7 @@ first defect's member by its RFC 6901 pointer.
 
 ```json
 {
-  "format": "quire.planner-settlement/v1",
+  "format": "filament.planner-settlement/v1",
   "package": "<checked package identity>",
   "item": {"role": "guarantee", "node": "<NodeId>"},
   "slots": [ {"role": "model-claim", "identity": {}, "result": {}} ],
@@ -185,7 +185,7 @@ order:
 
 ```json
 {
-  "format": "quire.planner-result/v1",
+  "format": "filament.planner-result/v1",
   "item": {"role": "guarantee", "node": "<NodeId>"},
   "value": "inconclusive",
   "basis": "unsettled",

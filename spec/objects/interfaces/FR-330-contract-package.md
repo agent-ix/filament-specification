@@ -3,21 +3,21 @@ id: FR-330
 title: "Target-neutral contract package"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/interface_012
+  - target: ix://agent-ix/filament-specification/interface_012
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: references
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-035
+  - target: ix://agent-ix/filament-contract-ir/FR-035
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-038
+  - target: ix://agent-ix/filament-contract-ir/FR-038
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-096
+  - target: ix://agent-ix/filament-spec-language/FR-096
     type: references
 ---
 
@@ -34,10 +34,10 @@ structure, authored source, or semantic authority.
 
 The ContractPackage is a closed object with exactly six required members:
 
-- `contract_version`: exactly `quire.contract-package/v1`.
+- `contract_version`: exactly `filament.contract-package/v1`.
 - `package`: the closed object `{source, lowering_profile}`. `source` is the
   closed object `{identity, lock}`. `source.identity` is the `name` of the
-  admitted originating `quire.checked-package/v2` value.
+  admitted originating `filament.checked-package/v2` value.
   `source.lock` is that value's exact FR-322 lock, with the same members,
   selected identities, and ordering. It is provenance, not a second package
   or authority; the producer SHALL NOT reconstruct, normalize, or silently
@@ -52,7 +52,7 @@ The ContractPackage is a closed object with exactly six required members:
   with exactly one `nodes` array and its FR-322 `operand_rows`, one row per
   node; the nodes' own ids and body references hold operand slots into those
   rows (FR-322 "Operand index segments"). `graph_version` is exactly
-  `quire.checked-semantic-graph/v2`. The node array uses FR-322's closed
+  `filament.checked-semantic-graph/v2`. The node array uses FR-322's closed
   node-tag vocabulary, producer-chosen node order (FR-322-AC-95), stable references,
   dependency-reference and recursion-group rules. Each node occurs once.
   `types`, `expressions`, `clauses`, and `protocol_references` are not graph
@@ -186,18 +186,18 @@ others:
   IEEE-754 rounding.
 - `invalid_body`: the requested `node_id`, offending `body_node_id`, and exact
   Contract IR FR-038 `CheckedPackageRefusal` carried by FR-322, with path
-  semantics constrained by QSL FR-096.
+  semantics constrained by FSL FR-096.
 - `body_incomplete`: the requested `node_id`, stopped `body_node_id`, and
   exact Contract IR FR-038 `CheckedPackageIncomplete` carried by FR-322. Its
-  closed `limit_kind` vocabulary comes from Contract IR FR-038; QSL FR-096
+  closed `limit_kind` vocabulary comes from Contract IR FR-038; FSL FR-096
   constrains the producer's measured-counter and path semantics.
 
 The two defensive payloads have closed serialized shapes. The `invalid_body`
 record carries `refusal`, a closed object with required string `code` and
 optional members `path`, `cause`, `locus`, `contract_version`, and
 `document_pointer`. Their field names and types are those of Contract IR
-FR-038's `CheckedPackageRefusal`, carried by FR-322; QSL FR-096 constrains the
-QSL producer's path semantics:
+FR-038's `CheckedPackageRefusal`, carried by FR-322; FSL FR-096 constrains the
+FSL producer's path semantics:
 `code` uses the exact FR-322 code spelling;
 `path` is its RFC 6901 pointer into the checked-package document; `cause` uses
 the FR-272 spelling paired by FR-322; `locus` is its exact structural node id, written as a
@@ -230,7 +230,7 @@ that required member uses `missing-member`, and presence for another code uses
 
 The `body_incomplete` record carries `incomplete`, a closed object with
 required `limit_kind`, `limit`, and `consumed`, plus optional `path`, matching
-the typed fields of Contract IR FR-038's `CheckedPackageIncomplete`; QSL
+the typed fields of Contract IR FR-038's `CheckedPackageIncomplete`; FSL
 FR-096 constrains the producer's measured-counter and path semantics. The
 typed FR-322 `ReadResult` has no serialized
 counter wire form; this ContractPackage projection is the sole JSON encoding
@@ -242,7 +242,7 @@ integer range of JSON numbers.
 `diagnostics`, or `work`. `limit` and `consumed` are canonical unsigned
 decimal strings with the same grammar as the `failed` record and parse exactly
 to their typed Contract IR FR-038 `u64` values; `consumed` is the counter value
-at the failed charge, as defined by Contract IR FR-038 and QSL FR-096. `path` is the
+at the failed charge, as defined by Contract IR FR-038 and FSL FR-096. `path` is the
 Contract IR FR-038 RFC 6901 pointer into the checked-package document.
 Contract IR FR-038 requires it for every limit kind except `bytes`; the reader
 requires it for non-byte kinds and forbids it for `bytes`,
@@ -347,8 +347,8 @@ The ContractPackage reader is the single owner of outer wire admission. It
 first applies only the generic wire checks reused from FR-322: strict JSON
 parsing including duplicate-member rejection, then canonical-byte validation.
 It then validates
-FR-330's own exact `quire.contract-package/v1` version (it MUST NOT apply
-FR-322's `quire.checked-package/v2` version predicate to this output), and
+FR-330's own exact `filament.contract-package/v1` version (it MUST NOT apply
+FR-322's `filament.checked-package/v2` version predicate to this output), and
 checks the exact top-level and nested closed shapes, node_ids and
 references, package provenance, the closed lowering-profile reference shape,
 source-map totality, and feature-accounting/request bijection
@@ -527,10 +527,10 @@ this reader and the I2 reader together, is outside this requirement.
 - [FR-195](../../functional/ir-proof/FR-195-lower-complete-contract-ir.md)
   owns exact lowering and the five ordinary dispositions plus the two
   defensive walk outcomes. Contract IR
-  [FR-035](ix://agent-ix/quire-contract-ir/FR-035) owns the emitted package's
-  outer shape; Contract IR [FR-038](ix://agent-ix/quire-contract-ir/FR-038)
+  [FR-035](ix://agent-ix/filament-contract-ir/FR-035) owns the emitted package's
+  outer shape; Contract IR [FR-038](ix://agent-ix/filament-contract-ir/FR-038)
   consumes its seven-member disposition vocabulary, including defensive
-  records. Neither defines a competing QSL wire schema.
-- [QSL FR-096](ix://agent-ix/quire-spec-language/FR-096) constrains the QSL
+  records. Neither defines a competing FSL wire schema.
+- [FSL FR-096](ix://agent-ix/filament-spec-language/FR-096) constrains the FSL
   producer's stage-limit counter and path semantics carried in defensive
   outcomes; it does not define a competing ContractPackage wire enum.

@@ -3,9 +3,9 @@ id: TC-384
 title: "Scheduler fairness and adversarial scheduling"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-430
+  - target: ix://agent-ix/filament-specification/FR-430
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-433
+  - target: ix://agent-ix/filament-specification/FR-433
     type: verifies
 ---
 
@@ -42,7 +42,7 @@ holds(k.done)` under infinite-trace through the real local Rust boundary, with
 and without `scheduling adversarial;`, and record the resolved fairness set,
 the obligation identity, the verdict and the counterexample.
 
-Parse the protocol text above at S1 under the `quire.value.complete/v1` profile and require it admissible with no diagnostic.
+Parse the protocol text above at S1 under the `filament.value.complete/v1` profile and require it admissible with no diagnostic.
 
 ## Vectors
 

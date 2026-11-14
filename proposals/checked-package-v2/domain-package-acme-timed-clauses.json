@@ -3,7 +3,7 @@
     {
       "construct": {
         "identity": "identified",
-        "meaning": "quire.meaning.model.object-type/v1",
+        "meaning": "filament.meaning.model.object-type/v1",
         "members": {
           "fields": "optional",
           "identityFields": "required",
@@ -22,7 +22,7 @@
     {
       "construct": {
         "identity": "value",
-        "meaning": "quire.meaning.model.record-value-type/v1",
+        "meaning": "filament.meaning.model.record-value-type/v1",
         "members": {
           "fields": "required"
         },
@@ -58,7 +58,7 @@
       "displayName": "ClockMap",
       "extensions": [],
       "identity": "ix://acme/orders/ClockMap",
-      "keys": "ix://quire/native/Text",
+      "keys": "ix://filament/native/Text",
       "kind": "map",
       "origin": {
         "source": {
@@ -70,7 +70,7 @@
       },
       "roles": [],
       "unknownPolicy": "reject",
-      "values": "ix://quire/native/Clock"
+      "values": "ix://filament/native/Clock"
     },
     {
       "constraints": [],
@@ -88,7 +88,7 @@
       },
       "roles": [],
       "unknownPolicy": "reject",
-      "items": "ix://quire/native/Clock"
+      "items": "ix://filament/native/Clock"
     },
     {
       "constraints": [],
@@ -130,7 +130,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         }
       ],
       "identityFields": [
@@ -159,7 +159,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         }
       ],
@@ -206,7 +206,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         },
         {
           "defaultKind": "none",
@@ -228,7 +228,7 @@
             }
           },
           "presence": "optional",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -272,7 +272,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -294,7 +294,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -316,7 +316,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -358,7 +358,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -380,7 +380,7 @@
             }
           },
           "presence": "optional",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -431,7 +431,7 @@
               "upper": 1
             },
             "nullable": false,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         },
         {
@@ -466,7 +466,7 @@
                 }
               },
               "presence": "required",
-              "typeRef": "ix://quire/native/Clock"
+              "typeRef": "ix://filament/native/Clock"
             }
           ],
           "post": [],
@@ -504,7 +504,7 @@
                 }
               },
               "presence": "required",
-              "typeRef": "ix://quire/native/Integer"
+              "typeRef": "ix://filament/native/Integer"
             }
           ],
           "post": [],
@@ -588,7 +588,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Clock"
+          "typeRef": "ix://filament/native/Clock"
         },
         {
           "defaultKind": "none",
@@ -610,7 +610,7 @@
             }
           },
           "presence": "required",
-          "typeRef": "ix://quire/native/Integer"
+          "typeRef": "ix://filament/native/Integer"
         }
       ]
     }

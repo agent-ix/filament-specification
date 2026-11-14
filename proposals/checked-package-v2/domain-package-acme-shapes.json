@@ -6,7 +6,7 @@
     {
       "construct": {
         "identity": "identified",
-        "meaning": "quire.meaning.model.object-type/v1",
+        "meaning": "filament.meaning.model.object-type/v1",
         "members": {
           "fields": "optional",
           "identityFields": "required",
@@ -25,7 +25,7 @@
     {
       "construct": {
         "identity": "value",
-        "meaning": "quire.meaning.model.tuple-value-type/v1",
+        "meaning": "filament.meaning.model.tuple-value-type/v1",
         "members": {
           "positions": "required"
         },
@@ -40,7 +40,7 @@
     {
       "construct": {
         "identity": "value",
-        "meaning": "quire.meaning.model.variant-type/v1",
+        "meaning": "filament.meaning.model.variant-type/v1",
         "members": {
           "variants": "required"
         },
@@ -182,7 +182,7 @@
       "positions": [
         {
           "identity": "ix://acme/shapes/Pair/p0",
-          "typeRef": "ix://quire/native/Boolean",
+          "typeRef": "ix://filament/native/Boolean",
           "origin": {
             "source": {
               "path": "shapes/Pair.md",
@@ -194,7 +194,7 @@
         },
         {
           "identity": "ix://acme/shapes/Pair/p1",
-          "typeRef": "ix://quire/native/Integer",
+          "typeRef": "ix://filament/native/Integer",
           "origin": {
             "source": {
               "path": "shapes/Pair.md",
@@ -228,7 +228,7 @@
       "positions": [
         {
           "identity": "ix://acme/shapes/Swap/p0",
-          "typeRef": "ix://quire/native/Integer",
+          "typeRef": "ix://filament/native/Integer",
           "origin": {
             "source": {
               "path": "shapes/Swap.md",
@@ -240,7 +240,7 @@
         },
         {
           "identity": "ix://acme/shapes/Swap/p1",
-          "typeRef": "ix://quire/native/Boolean",
+          "typeRef": "ix://filament/native/Boolean",
           "origin": {
             "source": {
               "path": "shapes/Swap.md",
@@ -320,7 +320,7 @@
       "positions": [
         {
           "identity": "ix://acme/shapes/Cell/p0",
-          "typeRef": "ix://quire/native/Integer",
+          "typeRef": "ix://filament/native/Integer",
           "origin": {
             "source": {
               "path": "shapes/Cell.md",
@@ -377,7 +377,7 @@
               "startLine": 1
             }
           },
-          "payloadType": "ix://quire/native/Boolean"
+          "payloadType": "ix://filament/native/Boolean"
         },
         {
           "identity": "ix://acme/shapes/variant/Shape-Empty",

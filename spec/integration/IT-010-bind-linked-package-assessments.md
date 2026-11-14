@@ -3,9 +3,9 @@ id: IT-010
 title: "Bind assessments to an exact linked package"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: verifies
 ---
 ## Objective
@@ -17,7 +17,7 @@ substitution at the boundary before a dependent evaluator runs.
 ## Target Integration
 
 The package's spec artifacts pass through quire-rs semantic extraction and the
-FCD extraction-frontend lift into a domain package. QSL model intake admits it
+FCD extraction-frontend lift into a domain package. FSL model intake admits it
 and A's native linker links it into a checked package whose `model_root` nodes
 name that domain package. The typed linked output feeds the request binder
 consuming F's observations and B's scoped requests. Use the real extraction,
@@ -45,7 +45,7 @@ ceilings and separate mutants listed in TC-030 and TC-035.
 
 ## Test Procedure
 
-1. Extract and lift the inventory into its domain package, admit it through QSL model intake, link it and consume the result.
+1. Extract and lift the inventory into its domain package, admit it through FSL model intake, link it and consume the result.
    - IT-010-SC-01: every expected source, model/profile selection, declaration and typed role agrees with the independently authored fixture; both equal-named roles remain distinct.
 2. Remove one inventoried source and substitute each wrong source identity independently.
    - IT-010-SC-02: namespace or import admission refuses as applicable; the consumer receives no falsely checked dependent declaration.
@@ -55,7 +55,7 @@ ceilings and separate mutants listed in TC-030 and TC-035.
    - IT-010-SC-04: resource changes preserve the static subject and retain distinct full configuration references; semantic overrides refuse the original subject.
 5. Admit the compensation mapping without activation, then activate it and withhold a recovery observation required for the selected assessment.
    - IT-010-SC-05: the first request invents no recovery evidence prerequisite; the second reports incomplete required evidence, never optional-none, false or successful recovery.
-6. Through an explicitly selected `quire.observation.range/v1` mapping, bind a window of the declared population with inclusive start 0 and exclusive end 30 to a native timestamped `eventually[0,30] holds(p)` obligation. Put its sole p witness at time 30. Supply truthful coverage for only that window, then falsely relabel that coverage as closing the native inclusive interval. Repeat with a separately selected window [0,31), exact progress covering time 30, and the boundary witness admitted by the mapping; also use a decisive witness at time 29 as a control.
+6. Through an explicitly selected `filament.observation.range/v1` mapping, bind a window of the declared population with inclusive start 0 and exclusive end 30 to a native timestamped `eventually[0,30] holds(p)` obligation. Put its sole p witness at time 30. Supply truthful coverage for only that window, then falsely relabel that coverage as closing the native inclusive interval. Repeat with a separately selected window [0,31), exact progress covering time 30, and the boundary witness admitted by the mapping; also use a decisive witness at time 29 as a control.
    - IT-010-SC-06: the shorter window cannot establish closed-scope truth for the inclusive obligation; truthful missing boundary coverage stays incomplete, and the false closure mapping refuses. The explicitly covering window admits the time-30 witness and settles satisfied; a valid decisive time-29 witness remains satisfied with its exact support despite the still-uncovered upper boundary. No implicit time increment, unit conversion, endpoint rounding or reinterpretation of membership makes the shorter window complete.
 
 Additional stage and declaration-key controls:
@@ -75,7 +75,7 @@ Additional stage and declaration-key controls:
 
 ## Expected Results
 
-Real extraction, intake and binder stages agree on the [package contract](../../proposals/quire-v1/package-contract.md).
+Real extraction, intake and binder stages agree on the [package contract](../../proposals/filament-v1/package-contract.md).
 Static subjects, artifact bytes, build provenance and runtime inputs retain their
 separate identity domains. Every rejected mutation has a structured cause;
 incomplete evidence and unsupported methods remain distinct from malformed
@@ -88,7 +88,7 @@ bindings and logical truth. No executable coverage is claimed by this plan.
 [AD-006](../assurance/AD-006-model-graph-state-contracts.md) defines the
 domain package and declaration keys. F's exact observation binding interface is
 a delivered review input. SC-06 uses the
-[observation range definition](../../proposals/quire-v1/definitions/observation-range.md);
+[observation range definition](../../proposals/filament-v1/definitions/observation-range.md);
 it never infers temporal coverage from a population's member IDs alone. E owns
 temporal interval meaning, F scoped coverage assertions, and S3 the declared
 population and its closed extent.

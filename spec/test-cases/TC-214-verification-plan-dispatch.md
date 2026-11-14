@@ -3,7 +3,7 @@ id: TC-214
 title: "Verification plan dispatch"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-192
+  - target: ix://agent-ix/filament-specification/FR-192
     type: verifies
 ---
 

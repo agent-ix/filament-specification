@@ -3,7 +3,7 @@ id: FR-033
 title: "Admit total typed reusable Boolean predicates"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -42,7 +42,7 @@ no-user-call profile is unchanged.
 
 ## Dependencies
 
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Composed architecture](../../assurance/AD-001-composed-native-language.md).
 
 Accepted by FS03 for the composed state query/graph closure. It does not amend

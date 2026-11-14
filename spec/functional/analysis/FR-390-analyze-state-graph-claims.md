@@ -3,21 +3,21 @@ id: FR-390
 title: "Analyze state-graph claims over a model subject"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: references
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: references
-  - target: ix://agent-ix/quire-specification/FR-393
+  - target: ix://agent-ix/filament-specification/FR-393
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
 ---
 
@@ -160,7 +160,7 @@ A trace monitor evaluates no state-graph claim.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns
   the `state-graph-clause` production.
 - [FR-181](../runtime/FR-181-simulate-finite-executions.md) owns the successor
   relation, canonical exploration order and state keys the state graph uses.

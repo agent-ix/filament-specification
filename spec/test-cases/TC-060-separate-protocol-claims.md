@@ -3,13 +3,13 @@ id: TC-060
 title: "Separate conformance and advanced analysis claims"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-291
+  - target: ix://agent-ix/filament-specification/FR-291
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-292
+  - target: ix://agent-ix/filament-specification/FR-292
     type: verifies
 ---
 ## Description

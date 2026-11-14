@@ -3,7 +3,7 @@ id: TC-141
 title: "Correlate related instances without heuristics"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-111
+  - target: ix://agent-ix/filament-specification/FR-111
     type: verifies
 ---
 ## Description

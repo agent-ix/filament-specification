@@ -3,7 +3,7 @@ id: TC-386
 title: "Explicit refinement rows for every protocol step class"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-432
+  - target: ix://agent-ix/filament-specification/FR-432
     type: verifies
 ---
 

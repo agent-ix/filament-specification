@@ -4,9 +4,9 @@ title: "Protocol adequacy state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
 ---
 # FR-246: Protocol adequacy state vocabulary
@@ -68,7 +68,7 @@ the member `unknown` spelling and are never interchangeable.
   four members and the demonstration rule.
 - [FR-062](../../functional/protocol/FR-062-project-results-to-portable-verification.md)
   establishes the retention boundary.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

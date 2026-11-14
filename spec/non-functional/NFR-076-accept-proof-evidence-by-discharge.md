@@ -4,7 +4,7 @@ title: "Accept proof evidence only by discharge"
 type: NFR
 quality_attribute: compliance
 relationships:
-  - target: ix://agent-ix/quire-specification/NFR-075
+  - target: ix://agent-ix/filament-specification/NFR-075
     type: references
 ---
 
@@ -12,7 +12,7 @@ relationships:
 
 ## Statement
 
-Every proof gate of a Quire runtime or code generation backend SHALL pass only
+Every proof gate of a Filament runtime or code generation backend SHALL pass only
 when, for each module it claims, it discharges at least one proposition inside
 that module, a mutation inside that module turns it red, and every helper
 shared by its expectation and the function under proof fails the proof when
@@ -21,10 +21,10 @@ mutated. A gate that declares no claimed module fails.
 ## Scope
 
 - Applies to every proof gate whose result is offered as proof evidence for
-  Quire code: the runtime gate over the exact kernel
-  (agent-ix/quire-contract-runtime `src/exact/`, and the `quire-exact` gate
+  Filament code: the runtime gate over the exact kernel
+  (agent-ix/filament-contract-runtime `src/exact/`, and the `filament-exact` gate
   that replaces it), and the generated-harness gate of
-  agent-ix/quire-contract-codegen.
+  agent-ix/filament-contract-codegen.
 - Binds those gates in their own repositories, whether or not an epic or
   qualification gate counts their result.
 - Proof evidence from the runtime exact-kernel gate and from the
@@ -42,7 +42,7 @@ the module and reaches no proposition in it, every check it reports is
 unreachable, or the expectation and the function under proof share a helper,
 so a mutation of the helper moves both sides and the proposition holds
 vacuously. The exact kernel was once compiled under Kani with no proposition
-discharged (agent-ix/quire-contract-runtime#53), and a mutated shared `decode`
+discharged (agent-ix/filament-contract-runtime#53), and a mutated shared `decode`
 once left a proof reporting VERIFICATION SUCCESSFUL. A gate that accepts such a
 run reports coverage that does not exist.
 
@@ -115,5 +115,5 @@ that caused it.
 
 - [NFR-075](NFR-075-require-complete-qualification-coverage.md) owns the
   qualification claims that count proof evidence.
-- QSL ADR-011 §2.3 places proof-stage acceptance in the QSL architecture; this
+- FSL ADR-011 §2.3 places proof-stage acceptance in the FSL architecture; this
   requirement states the same rule for the backend repositories.

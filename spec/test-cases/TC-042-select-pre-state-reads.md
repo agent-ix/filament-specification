@@ -3,7 +3,7 @@ id: TC-042
 title: "Select pre-state reads without retagging captured values"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-042
+  - target: ix://agent-ix/filament-specification/FR-042
     type: verifies
 ---
 ## Description

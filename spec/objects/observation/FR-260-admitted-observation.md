@@ -4,11 +4,11 @@ title: "Admitted observation"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-110
+  - target: ix://agent-ix/filament-specification/FR-110
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-261
+  - target: ix://agent-ix/filament-specification/FR-261
     type: references
-  - target: ix://agent-ix/quire-specification/FR-296
+  - target: ix://agent-ix/filament-specification/FR-296
     type: references
 ---
 # FR-260: Admitted observation
@@ -114,11 +114,11 @@ and visibility provenance."
 - [FR-261](FR-261-observation-binding.md) types the selected binding.
 - [FR-262](FR-262-declared-instance-relationship.md) types the only admitted
   relationship between instances.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-296](FR-296-admitted-observation-identity-preimage.md) defines the exact
   key and uniqueness rule.
 
 ## Status
 
-Proposed identity closure under FR-296 for `quire-specification#40`.
+Proposed identity closure under FR-296 for `filament-specification#40`.

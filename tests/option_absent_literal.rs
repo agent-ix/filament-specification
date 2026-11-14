@@ -8,7 +8,7 @@
 use ix_trace_rs::trace;
 use serde_json::{Value, json};
 
-const VECTORS: &str = include_str!("../proposals/quire-v1/option-absent-literal-vectors.json");
+const VECTORS: &str = include_str!("../proposals/filament-v1/option-absent-literal-vectors.json");
 
 fn vectors() -> Value {
     serde_json::from_str(VECTORS).expect("authored vectors are JSON")

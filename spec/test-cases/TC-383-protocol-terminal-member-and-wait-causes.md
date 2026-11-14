@@ -3,7 +3,7 @@ id: TC-383
 title: "Protocol terminal member, deadlock opt-out and wait causes"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: verifies
 ---
 

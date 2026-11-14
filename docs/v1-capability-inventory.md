@@ -1,7 +1,7 @@
-# Quire V1 atomic capability inventory
+# Filament V1 atomic capability inventory
 
-This is the master list of capabilities that Quire V1 specifies. The
-older 51-row matrix in `proposals/quire-v1/capabilities.md` is a historical
+This is the master list of capabilities that Filament V1 specifies. The
+older 51-row matrix in `proposals/filament-v1/capabilities.md` is a historical
 crosswalk; it does not remove or combine a row from this inventory.
 
 ## Inventory contract
@@ -17,7 +17,7 @@ with a typed, located outcome.
 
 | ID | Atomic capability | Class | Origin |
 | --- | --- | --- | --- |
-| V1-SRC-001 | Use native Quire as the sole editable formal-clause language. | Required | V1-001 |
+| V1-SRC-001 | Use native Filament as the sole editable formal-clause language. | Required | V1-001 |
 | V1-SRC-002 | Select an exact language edition independently of profiles and wire formats. | Required | V1-001, V1-051 |
 | V1-SRC-003 | Select an exact, ordered profile bundle. | Required | V1-001, V1-051 |
 | V1-SRC-004 | Link state, temporal, protocol and analysis declarations into one package. | Required | V1-001, V1-040 |
@@ -219,7 +219,7 @@ with a typed, located outcome.
 | V1-BACK-017 | Check that a decomposed requirement's admitted result entails its parent's admitted result through a registered implication backend; absent that backend, the claim settles `unsupported` with a warning naming the required capability. | Required | V1-037; prose census |
 | V1-BACK-018 | Catalog exact lowering targets and the FR-290 capabilities each backend advertises for registration and negotiation. | Required | V1-006 |
 | V1-BACK-019 | Register an SMT backend (cvc5, with Z3 as an independent cross-check) advertising unbounded quantification, induction, composition and mathematical-integer capabilities. | Required | V1-006; prose census |
-| V1-BACK-020 | Emit Verus `requires`/`ensures` and loop invariants from QSL state contracts onto named implementation Rust functions. | Required | V1-006; prose census |
+| V1-BACK-020 | Emit Verus `requires`/`ensures` and loop invariants from FSL state contracts onto named implementation Rust functions. | Required | V1-006; prose census |
 | V1-BACK-021 | Declare a model-to-implementation abstraction relation from model objects, populations and operation frames to implementation state. | Required | V1-006; prose census |
 | V1-BACK-022 | Refuse emission onto implementation code that references a model element with no bound abstraction relation, naming the element. | Integrity | V1-BACK-021; prose census |
 | V1-BACK-023 | Record a proved settlement's certification: `certified` when the core's Alethe checker verifies the cvc5 certificate for the core's own query, `uncertified` when the certificate is absent or unverifiable. | Required | V1-BACK-019; prose census |
@@ -256,8 +256,8 @@ remains authoritative.
 
 | Source class | Enumerated input | Atomic accounting |
 | --- | --- | --- |
-| Historical capability groups | Every `V1-001` through `V1-051` row in `proposals/quire-v1/capabilities.md` | Every group identifier appears in one or more `Origin` cells above; compound groups were split. |
-| Current compiler refusals | `helper`, `rec`, `set`, `bag`, `Set`, `Bag`, `OrderedSet`, `collect`, `flatten`, `cast`, `tuple`, `Tuple`, `Decimal`, `Rational`, `allInstances` in the QSL tokenizer | Each spelling maps to V1-EXPR-003/004/013/014, V1-TYPE-004/005/012/015/016/017/023/030. Case variants share semantics but remain enumerated here. |
+| Historical capability groups | Every `V1-001` through `V1-051` row in `proposals/filament-v1/capabilities.md` | Every group identifier appears in one or more `Origin` cells above; compound groups were split. |
+| Current compiler refusals | `helper`, `rec`, `set`, `bag`, `Set`, `Bag`, `OrderedSet`, `collect`, `flatten`, `cast`, `tuple`, `Tuple`, `Decimal`, `Rational`, `allInstances` in the FSL tokenizer | Each spelling maps to V1-EXPR-003/004/013/014, V1-TYPE-004/005/012/015/016/017/023/030. Case variants share semantics but remain enumerated here. |
 | Prose-only exclusions | richer numerics and units; recursive values; inherited/redefined models; uncertainty/repair; projection/realizability/refinement; dynamic protocols; relational and hyperproperty analysis; simulation, synthesis and workflow driving; editor/CST/tool APIs; plugins/JIT/libraries | Each named item has a Required row above and therefore cannot disappear behind prose. |
 
 ## Table invariants

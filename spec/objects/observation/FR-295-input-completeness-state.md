@@ -4,13 +4,13 @@ title: "Input completeness state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-284
+  - target: ix://agent-ix/filament-specification/FR-284
     type: references
 ---
 # FR-295: Input completeness state vocabulary
@@ -73,5 +73,5 @@ completeness. A producer SHALL NOT derive either axis from the other.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`; implementation evidence
+Proposed shared ruling for `filament-specification#40`; implementation evidence
 remains owned by the cited behavioral test cases.

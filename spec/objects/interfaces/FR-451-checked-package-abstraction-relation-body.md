@@ -3,17 +3,17 @@ id: FR-451
 title: "Checked-package abstraction relation body"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-450
+  - target: ix://agent-ix/filament-specification/FR-450
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
 ---
 
@@ -24,7 +24,7 @@ relationships:
 When a checked package carries an
 [FR-450](../../functional/ir-proof/FR-450-spell-abstraction-relation-declaration.md)
 abstraction relation declaration, the producer SHALL emit it as one
-`quire.checked-semantic-graph/v2` node with `node_tag: "correspondence"` and
+`filament.checked-semantic-graph/v2` node with `node_tag: "correspondence"` and
 `semantic_form: "abstraction_relation"`, whose body carries every binding
 with its key and value, and the reader SHALL refuse a node whose joins below
 do not hold with the first refusal in the order below. The node is the only
@@ -168,7 +168,7 @@ object, population or operation key refuses `invalid_model_binding`/
 
 ## References
 
-- quire-spec-language ADR-017 §3 AR-2 and AR-4, §6 Q-2 and Q-7.
+- filament-spec-language ADR-017 §3 AR-2 and AR-4, §6 Q-2 and Q-7.
 - Specification tickets STD-116, STD-121.
 
 ## Status

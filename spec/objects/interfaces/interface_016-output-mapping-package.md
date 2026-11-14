@@ -3,7 +3,7 @@ id: interface_016
 title: "I16 output mapping package"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-299
+  - target: ix://agent-ix/filament-specification/FR-299
     type: references
 ---
 

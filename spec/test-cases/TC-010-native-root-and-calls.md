@@ -3,7 +3,7 @@ id: TC-010
 title: "Require a defined Boolean root and admitted calls"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: verifies
 ---
 ## Description

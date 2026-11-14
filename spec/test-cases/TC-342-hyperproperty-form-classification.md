@@ -3,13 +3,13 @@ id: TC-342
 title: "Hyperproperty form classification, unsupported forms and single-existential claims"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-394
+  - target: ix://agent-ix/filament-specification/FR-394
     type: verifies
 ---
 

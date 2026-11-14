@@ -4,7 +4,7 @@ title: "Consumer mapping-loss classification"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: specifies
 ---
 # FR-269: Consumer mapping-loss classification
@@ -63,9 +63,9 @@ is not reachable by omission.
 
 - [FR-116](../../functional/observation/FR-116-map-observation-results-to-consumers.md)
   establishes the closed classification set and the no-promotion rules.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
-- [Observation result consumer and output-mapping contract](../../../proposals/quire-v1/observation-output-mapping-contract.md)
+- [Observation result consumer and output-mapping contract](../../../proposals/filament-v1/observation-output-mapping-contract.md)
   supplies the consumer mapping context.
 
 ## FS06 resolution

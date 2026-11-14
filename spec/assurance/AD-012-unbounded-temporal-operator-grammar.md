@@ -4,19 +4,19 @@ title: "Unbounded temporal operator grammar edition"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire unbounded (infinite-trace) temporal operator grammar
+system: native Filament unbounded (infinite-trace) temporal operator grammar
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-003
+  - target: ix://agent-ix/filament-specification/AD-003
     type: references
-  - target: ix://agent-ix/quire-specification/AD-002
+  - target: ix://agent-ix/filament-specification/AD-002
     type: references
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: references
-  - target: ix://agent-ix/quire-specification/FR-048
+  - target: ix://agent-ix/filament-specification/FR-048
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: realizes
 ---
 
@@ -28,7 +28,7 @@ AD-003 requires that new grammar be added "only under a new exact edition
 definition" and never by reinterpreting a historical identifier or bytes. This
 architecture is that edition definition for the interval-less temporal operator
 forms ([FR-161](../functional/temporal/FR-161-analyze-infinite-trace-properties.md))
-already named by the `quire.temporal.infinite-trace/v1` facet in AD-003's
+already named by the `filament.temporal.infinite-trace/v1` facet in AD-003's
 Accepted profile hierarchy and by [FR-250](../objects/temporal/FR-250-temporal-semantic-profile.md).
 It owns the grammar edition, not the infinite-trace soundness contract, which
 AD-002 and AD-009 continue to own.
@@ -40,7 +40,7 @@ productions require an `interval` token between the operator and its operand.
 This edition adds a sibling pair of productions,
 `temporal-unary-unbounded`/`temporal-relation-unbounded`, whose `interval` token
 is optional, admitted only under the existing `ix:native` / `1-draft`
-edition and only when the clause selects `quire.temporal.infinite-trace/v1`.
+edition and only when the clause selects `filament.temporal.infinite-trace/v1`.
 It reuses the eight existing reserved keywords (`eventually`, `always`, `once`,
 `historically`, `until`, `release`, `since`, `triggered`); no keyword is added,
 removed or reassigned, and no `0-draft` or bracketed-`1-draft` byte sequence
@@ -56,8 +56,8 @@ historical one.
 
 | Stage | Owner | Required selection | Failure behavior |
 | --- | --- | --- | --- |
-| Source recognition | A | `1-draft` edition; the exact interval-less production named in [the shared grammar](../../proposals/quire-v1/shared-grammar.md#unbounded-temporal-operator-grammar-edition-infinite-trace) | Ungrammatical outside the new production: located syntax refusal |
-| Profile admission | A | `quire.temporal.infinite-trace/v1` selected ([FR-090](../functional/temporal/FR-090-select-temporal-profile-and-clock.md), [FR-250](../objects/temporal/FR-250-temporal-semantic-profile.md)) | Any other selected profile: `unsupported_construct`, per FR-048-AC-9 |
+| Source recognition | A | `1-draft` edition; the exact interval-less production named in [the shared grammar](../../proposals/filament-v1/shared-grammar.md#unbounded-temporal-operator-grammar-edition-infinite-trace) | Ungrammatical outside the new production: located syntax refusal |
+| Profile admission | A | `filament.temporal.infinite-trace/v1` selected ([FR-090](../functional/temporal/FR-090-select-temporal-profile-and-clock.md), [FR-250](../objects/temporal/FR-250-temporal-semantic-profile.md)) | Any other selected profile: `unsupported_construct`, per FR-048-AC-9 |
 | Frontend binding | A | [FR-048](../functional/foundation/FR-048-bind-native-temporal-syntax.md) typed leaf/scope/capture rules, unchanged | Same typed refusals FR-048 already defines |
 | TL lowering | Contract IR | none; there is no TL target | Absent target, per [FR-251](../objects/temporal/FR-251-tl-target-profile.md) and [FR-095](../functional/temporal/FR-095-preserve-native-tl-correspondence.md) |
 | Analysis | E | selected sound infinite-trace provider | `proved`/`refuted`/`inconclusive`/`unsupported`/`failed` per [FR-161](../functional/temporal/FR-161-analyze-infinite-trace-properties.md) and [FR-360](../objects/temporal/FR-360-infinite-trace-result-disposition.md); an item with no candidate settles `unsupported` with a warning under the FR-290 candidate and advertised-mode tables ([FR-368](../functional/temporal/FR-368-negotiate-temporal-model-check-items.md)) |

@@ -3,15 +3,15 @@ id: FR-436
 title: "Explore a parallel under the x86-TSO memory model"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-435
+  - target: ix://agent-ix/filament-specification/FR-435
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: references
 ---
 
@@ -118,6 +118,6 @@ mapping's x86-TSO behaviour.
 
 ## References
 
-- Design: quire-spec-language ADR-025 TSO-1 to TSO-8, MS-2, MS-4, MF-1 and
+- Design: filament-spec-language ADR-025 TSO-1 to TSO-8, MS-2, MS-4, MF-1 and
   MF-3; Sewell et al., x86-TSO (CACM 2010); Batty et al., POPL 2011.
 - Tickets: Linear STD-138; paired QSL-372.

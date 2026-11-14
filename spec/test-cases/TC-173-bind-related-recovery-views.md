@@ -3,7 +3,7 @@ id: TC-173
 title: "Bind related instances and complete recovery populations"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: verifies
 ---
 ## Description

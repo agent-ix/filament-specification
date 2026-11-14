@@ -3,25 +3,25 @@ id: FR-092
 title: "Evaluate bounded past temporal operators"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
-  - target: ix://agent-ix/quire-specification/FR-253
+  - target: ix://agent-ix/filament-specification/FR-253
     type: references
-  - target: ix://agent-ix/quire-specification/FR-254
+  - target: ix://agent-ix/filament-specification/FR-254
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-257
+  - target: ix://agent-ix/filament-specification/FR-257
     type: references
-  - target: ix://agent-ix/quire-specification/FR-293
+  - target: ix://agent-ix/filament-specification/FR-293
     type: references
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
 ---
 ## Description
@@ -76,7 +76,7 @@ The v1 profile shall define strong previous as `once[1,1]`.
 If a later profile admits weak previous, then that profile shall define its
 boundary separately from strong previous.
 
-Where a bounded temporal profile is selected, the evaluator shall refuse an unbounded past interval. Where the infinite-trace profile is selected, the evaluator shall admit the unbounded historically, once, since and triggered operators with the meaning [FR-161](FR-161-analyze-infinite-trace-properties.md) states. Where the infinite-trace profile is selected, the evaluator shall admit the interval operators above with their past offset meaning over the infinite trace, whose position 0 is the authoritative origin ([FR-367](FR-367-evaluate-interval-operators-under-infinite-trace.md)). Implicit history reconstruction is refused under every profile. The refusal and the authoritative-origin meaning above bind the evaluators of those profiles; the tick monitor of quire-spec-language FR-251 is a separate evaluator whose unbounded past operators have the history-present meaning with a `HistoryCutoff` lower boundary (an unknown prefix, quire-spec-language FR-251 "Unbounded past operators"), which refines the authoritative-origin result: wherever the monitor's verdict is definite it equals the infinite-trace verdict.
+Where a bounded temporal profile is selected, the evaluator shall refuse an unbounded past interval. Where the infinite-trace profile is selected, the evaluator shall admit the unbounded historically, once, since and triggered operators with the meaning [FR-161](FR-161-analyze-infinite-trace-properties.md) states. Where the infinite-trace profile is selected, the evaluator shall admit the interval operators above with their past offset meaning over the infinite trace, whose position 0 is the authoritative origin ([FR-367](FR-367-evaluate-interval-operators-under-infinite-trace.md)). Implicit history reconstruction is refused under every profile. The refusal and the authoritative-origin meaning above bind the evaluators of those profiles; the tick monitor of filament-spec-language FR-251 is a separate evaluator whose unbounded past operators have the history-present meaning with a `HistoryCutoff` lower boundary (an unknown prefix, filament-spec-language FR-251 "Unbounded past operators"), which refines the authoritative-origin result: wherever the monitor's verdict is definite it equals the infinite-trace verdict.
 
 Strong previous is `once[1,1]` under the infinite-trace profile as under every
 other profile: true at position `i > 0` exactly when its operand holds at

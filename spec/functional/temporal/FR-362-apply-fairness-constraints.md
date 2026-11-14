@@ -3,17 +3,17 @@ id: FR-362
 title: "Apply weak and strong fairness constraints"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
 ---
 
@@ -171,6 +171,6 @@ obligations: a claim under (`strong`, `Op`, `each`) and the same claim under
 
 ## References
 
-- quire-spec-language ADR-018 FA-1 to FA-6 and QS-4; ADR-019 SY-1 to SY-5,
+- filament-spec-language ADR-018 FA-1 to FA-6 and QS-4; ADR-019 SY-1 to SY-5,
   SF-1 to SF-7, SV-2, SV-5 and QS-1 to QS-3; Linear STD-131 and STD-132
   (paired with QSL-366 and QSL-365).

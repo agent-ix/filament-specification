@@ -4,13 +4,13 @@ title: "Target-neutral semantic IR and exact backend architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 IR and proof backends
+system: native Filament V1 IR and proof backends
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/AD-007
+  - target: ix://agent-ix/filament-specification/AD-007
     type: references
-  - target: ix://agent-ix/quire-specification/AD-016
+  - target: ix://agent-ix/filament-specification/AD-016
     type: references
 ---
 
@@ -20,7 +20,7 @@ relationships:
 
 S8 owns the cycle-free target-neutral contract package and exact provider
 protocol for oracle, property-test, Kani, solver and code-generation backends.
-Native Quire remains semantic authority. The lowest `quire-contract-model`
+Native Filament remains semantic authority. The lowest `filament-contract-model`
 package contains portable descriptors only; adapters, generators and runtimes
 remain in their owning crates to preserve the acyclic dependency graph.
 
@@ -64,7 +64,7 @@ flowchart LR
 
 IR nodes retain exact types, definitions, source occurrences, anchors,
 identities and bounds. Capability negotiation happens at one point,
-`quire-contract-codegen`'s `negotiate_*`
+`filament-contract-codegen`'s `negotiate_*`
 ([AD-016](AD-016-semantic-family-extension-path.md)), which settles each item
 before generation as exactly one of `supported`, `requires-bound`,
 `unsupported` (warned, naming the required capability) or `invalid-request`,
@@ -73,7 +73,7 @@ constructs emit no approximating artifact. Generated artifacts name the tool
 version and options they ran and account for every requested obligation.
 
 Counterexamples use one canonical typed serialization, retain source and run
-lineage, and replay through the QSL complete-V1 executor (FR-197, AD-016 arrow 7) under the
+lineage, and replay through the FSL complete-V1 executor (FR-197, AD-016 arrow 7) under the
 same package and input domain. Backend and runtime verdict disagreement is an explicit parity failure.
 
 ## Decisions

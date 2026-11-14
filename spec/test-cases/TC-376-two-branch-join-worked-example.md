@@ -3,9 +3,9 @@ id: TC-376
 title: "Two branches and a join: states, deadlock and repair"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: verifies
 ---
 
@@ -43,7 +43,7 @@ boundary, recording every state, enabled step and transition identity. Check
 the deadlock-freedom item, the claim `eventually holds(k.v = 3)` under
 infinite-trace, and the same with `TwoPre: self.v <= 1`.
 
-Parse the protocol text above at S1 under the `quire.value.complete/v1` profile and require it admissible with no diagnostic.
+Parse the protocol text above at S1 under the `filament.value.complete/v1` profile and require it admissible with no diagnostic.
 
 ## Vectors
 

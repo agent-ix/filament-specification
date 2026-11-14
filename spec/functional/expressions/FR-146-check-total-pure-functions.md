@@ -3,23 +3,23 @@ id: FR-146
 title: "Check total pure functions and recursion"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-033
+  - target: ix://agent-ix/filament-specification/FR-033
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: references
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: references
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: references
-  - target: ix://agent-ix/quire-specification/FR-440
+  - target: ix://agent-ix/filament-specification/FR-440
     type: references
-  - target: ix://agent-ix/quire-specification/FR-460
+  - target: ix://agent-ix/filament-specification/FR-460
     type: references
 ---
 
@@ -97,7 +97,7 @@ scrutinee value's active member, binds that member's payload positionally to
 the arm's bound identifiers exactly as a union value's payload is read under
 FR-143, and evaluates that arm's body, whose outcome is the `case`
 expression's outcome. Selecting the arm and binding its payload make no
-`quire.value.accounting/v1` charge: a `case` charges exactly its scrutinee's
+`filament.value.accounting/v1` charge: a `case` charges exactly its scrutinee's
 charges and then its selected arm body's charges, and an unselected arm body
 is neither evaluated nor charged.
 
@@ -149,12 +149,12 @@ member declaration order a checked package lowers the arms in (FR-440).
 Functions are first order. A function is not a value, and a call names a
 `function` declaration or FR-307 export by its exact identity, so the call graph
 is static. The graph includes calls inside `let`, `if`, collection binders, fold
-steps and measure expressions, and, under `quire.model.complete/v1`, the FR-151
+steps and measure expressions, and, under `filament.model.complete/v1`, the FR-151
 dispatch edges from the declaration containing a dispatched call to every
 candidate `operation-body` and every clause of every candidate's effective
 precondition. Operation bodies and contract clauses have no `decreases` form, so
 a strongly connected component containing a dispatch edge is refused at link
-time as `refused { code: invalid_package, cause: definition-cycle }`. A call to a reserved `quire::value::...`
+time as `refused { code: invalid_package, cause: definition-cycle }`. A call to a reserved `filament::value::...`
 intrinsic is not a call-graph edge. A function declaration is
 `function f using V (p: T, ...): R pure [decreases(m)] { body }`, where `V` is
 the declared value-profile alias.
@@ -216,8 +216,8 @@ exactly `p`. It is *strictly smaller* when:
   - `x != e`, `e != x` or `not (x = e)`, when `p`'s element type admits FR-149
     `=` and contains no `Float32` or `Float64` leaf, so that `=` is exactly
     the FR-144 collection membership relation;
-  - `not quire::value::ieee::bitIdentical(x, e)` or
-    `not quire::value::ieee::bitIdentical(e, x)`, when `p`'s element type is
+  - `not filament::value::ieee::bitIdentical(x, e)` or
+    `not filament::value::ieee::bitIdentical(e, x)`, when `p`'s element type is
     `Float32` or `Float64`, whose membership relation is FR-148 bit identity;
   - `not contains(d, x)`, for any element type, where `d` is a stable
     collection path whose element type is `p`'s and the membership fact
@@ -257,7 +257,7 @@ guard facts and section 6 interval discharge, closed as follows. A producer
 admits nothing that these rules do not prove and refuses nothing that they do.
 
 A *stable path* is a parameter or `let` name, or `self` inside a
-`quire.model.complete/v1` invariant, state constraint (FR-382), precondition,
+`filament.model.complete/v1` invariant, state constraint (FR-382), precondition,
 postcondition or `operation-body` block, followed by zero or more field projections and proved
 `value(q)` steps. When discharging an FR-151 refinement obligation, a projection
 `self.f` onto a redefining field or the field it redefines has the declared
@@ -293,7 +293,7 @@ A `Rational[..]` expression has a numerator interval `N` and a positive
 denominator interval `D`, both over mathematical integers, and never a value
 interval. A literal `rational(n,d)` has the points of its normalized `n/d`; a
 stable path has its declared `[n1,n2]` and `[d1,d2]`; an `Integer` or `Int[..]`
-operand of a rational `/` (`quire.op.rational.div`, which promotes it
+operand of a rational `/` (`filament.op.rational.div`, which promotes it
 exactly to `n/1` under FR-149) has its integer interval over `[1,1]`; and every other
 rational form, such as a call, `sum`, `fold` or `convert`, has its declared
 result type's intervals. When every operand of `+`, `-`, `*`, `/` or unary `-`
@@ -314,8 +314,8 @@ zero first requires the nonzero obligation below; without it the quotient is
 interval, never an infinite, clamped or approximated one. A rational range
 obligation holds when the normalized numerator interval lies inside `[n1,n2]`
 and the denominator interval inside `[d1,d2]` of the required type; it is the
-obligation of an FR-149 rational narrowing (`quire.op.rational.narrow`), as the
-range obligation is of a range narrowing (`quire.op.numeric.narrow`), and
+obligation of an FR-149 rational narrowing (`filament.op.rational.narrow`), as the
+range obligation is of a range narrowing (`filament.op.numeric.narrow`), and
 neither narrowing ever rounds. A
 comparison `x != rational(0,1)` or `rational(0,1) != x` for a rational stable
 path `x` records a nonzero fact for `x` on its true outcome, and `=` on its
@@ -426,7 +426,7 @@ checking stage, the limit, its value, its setting
 node that could not proceed. It is never an `ill_typed`, `undefined_expression`
 or admission verdict, and a host stack exhaustion is never an outcome.
 
-Each call charges `function.call` under `quire.value.accounting/v1` before its
+Each call charges `function.call` under `filament.value.accounting/v1` before its
 arguments are bound. Arguments are evaluated left to right before that charge.
 Execution fuel is the `work_units` limit. Its exhaustion is
 `incomplete { limit_kind: work_units, ... }` at the denied point, and the
@@ -451,12 +451,12 @@ counter, and no call depth turns into an outcome (FR-460).
 | FR-146-AC-12 | A `case` that is the body of a function declared `: Int[0..100]`, with arms `0` and a parameter `w: Int[0..9]`, has result type `Int[0..100]`; under an unannotated `let`, arms `r: Int[0..9]` and `w: Int[0..99]` infer `Integer`, and arms that are both `Text` parameters infer that `Text` type; arms `0` and `"none"` refuse `ill_typed`/`type-mismatch` at the `"none"` arm body, and arms `"none"` and `0` at the `0` arm body; and an arm body `sequence[]` with no expected type refuses `ill_typed`/`ambiguous-literal`. | Test (TC-398) |
 | FR-146-AC-13 | A `case` charges its scrutinee's charges and then only its selected arm body's charges, with no charge for arm selection or payload binding; an undefined scrutinee is the `case`'s outcome with no arm evaluated or charged; and a work limit equal to the scrutinee's and selected arm body's work units admits the `case` while one unit less returns `incomplete { limit_kind: work_units }`. | Test (TC-399) |
 | FR-146-AC-14 | A `case` whose scrutinee is an `Integer` and whose arms name unknown members is refused `ill_typed`/`type-mismatch` at the scrutinee only; a `case` with an ill-typed body in a resolved arm and a missing arm is refused `ill_typed`/`type-mismatch` at that body only; and a `case` whose `unknown-member` arm has an ill-typed body, or whose `arm-arity` arm's body uses an unbound identifier, is refused `undefined_expression`/`unproved-exhaustiveness` with that obligation only. | Test (TC-398) |
-| FR-146-AC-15 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes a removal filter of `s` (`x != e`, `e != x` or `not (x = e)` over an element type without a float leaf, `not quire::value::ieee::bitIdentical(x, e)` over a `Float32` or `Float64` element type, or `not contains(d, x)` under a further `contains(d, e)` fact, for a stable path `e`) under a `contains(s, e)` guard fact, or that filter inside a same-kind `convert`, and evaluates its declared result; passing `s` unchanged, a removal filter without the membership fact, a filter of any other predicate shape, or a removal of a non-stable `e` refuses `undefined_expression`/`unproved-decrease` with obligation `decrease`; `size` of a non-parameter operand, and one measure position holding a cardinality element in one function and an integer element in another of its component, refuse with obligation `measure-kind`; and a lexicographic tuple mixing cardinality and integer positions decreases by the earlier-equal rule. | Test (TC-191) |
+| FR-146-AC-15 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes a removal filter of `s` (`x != e`, `e != x` or `not (x = e)` over an element type without a float leaf, `not filament::value::ieee::bitIdentical(x, e)` over a `Float32` or `Float64` element type, or `not contains(d, x)` under a further `contains(d, e)` fact, for a stable path `e`) under a `contains(s, e)` guard fact, or that filter inside a same-kind `convert`, and evaluates its declared result; passing `s` unchanged, a removal filter without the membership fact, a filter of any other predicate shape, or a removal of a non-stable `e` refuses `undefined_expression`/`unproved-decrease` with obligation `decrease`; `size` of a non-parameter operand, and one measure position holding a cardinality element in one function and an integer element in another of its component, refuse with obligation `measure-kind`; and a lexicographic tuple mixing cardinality and integer positions decreases by the earlier-equal rule. | Test (TC-191) |
 | FR-146-AC-16 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes `removeOne(s, e)` for a stable path `e` under a `contains(s, e)` guard fact, including over an element type with a float leaf, or passes `dropFirst(s)` for a `Sequence` or `OrderedSet` `s` under a fact that `size(s) >= 1` (a `size(s) > 0` comparison, a `contains(s, v)` fact or a declared minimum of at least `1`), or either inside a same-kind `convert`, and evaluates its declared result, so a duplicate-holding `Sequence` or `Bag` is walked one occurrence at a time; `removeOne(s, e)` without the membership fact, with a non-stable `e`, and `dropFirst(s)` without the size fact, refuse `undefined_expression`/`unproved-decrease` with obligation `decrease`. | Test (TC-191) |
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

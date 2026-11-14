@@ -3,7 +3,7 @@ id: TC-328
 title: "Stutter invariance of since and triggered"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: verifies
 ---
 

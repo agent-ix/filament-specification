@@ -3,19 +3,19 @@ id: FR-120
 title: "Select one exact output-mapping profile"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-020
+  - target: ix://agent-ix/filament-specification/FR-020
     type: references
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: references
-  - target: ix://agent-ix/quire-specification/FR-297
+  - target: ix://agent-ix/filament-specification/FR-297
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-032
+  - target: ix://agent-ix/filament-contract-ir/FR-032
     type: references
 ---
 ## Description
 
 When admitting an output-mapping request, the coordinator SHALL select exactly
-one FR-297 target family, normative target revision, Quire mapping profile
+one FR-297 target family, normative target revision, Filament mapping profile
 identity and requested capability set before dispatch.
 
 ## Inputs

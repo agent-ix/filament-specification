@@ -3,7 +3,7 @@ id: TC-296
 title: "Canonical counterexample of an explicit-state analysis"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-365
+  - target: ix://agent-ix/filament-specification/FR-365
     type: verifies
 ---
 

@@ -3,9 +3,9 @@ id: TC-363
 title: "Probability certificate checker"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-412
+  - target: ix://agent-ix/filament-specification/FR-412
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 
@@ -21,10 +21,10 @@ Run each vector through the real local Rust boundary of the provider named by th
 
 ## Models
 
-The models below are defined here in full; the citation names the QSL design record each one comes from. `ev` selects `quire.temporal.event-position.false-extension/v1`, `inf` selects `quire.temporal.infinite-trace/v1` and `timed` selects `quire.temporal.timed/v1`.
+The models below are defined here in full; the citation names the FSL design record each one comes from. `ev` selects `filament.temporal.event-position.false-extension/v1`, `inf` selects `filament.temporal.infinite-trace/v1` and `timed` selects `filament.temporal.timed/v1`.
 
-- **`Link`** and **`Deliver`** (from QSL ADR-028 §15.4). One object `m: Msg { delivered: Boolean, attempts: Int[0, 2] }`, initially `delivered = false` and `attempts = 0`. `Msg::send_a(lost)` and `Msg::send_b(lost)` each have pre `not delivered and attempts < 2` and post `attempts = pre(attempts) + 1 and delivered = not lost`, with `random Msg::send_a(lost) ~ { true: 1, false: 9 };` and `random Msg::send_b(lost) ~ { true: 1, false: 4 };`. A state with `delivered` or `attempts = 2` is terminal. `workload Even on Link { weight Msg::send_a = 1; weight Msg::send_b = 1; }`. `Deliver` is `probabilistic Deliver using ev on Link under every scheduler on origin { probability >= 0.97 [ eventually[0, 2] holds(m.delivered) ] }`. Its minimum is `24/25`, its maximum `99/100`, and its value under `Even` `391/400`.
-- **`Coin`**, **`Terminates`** and **`FairTerminates`** (from QSL ADR-028 §15.6). One object `p: Proc { done: Boolean }`, initially `done = false`. `Proc::flip(heads)` has pre `not done` and post `done = heads`, with `random Proc::flip(heads) ~ { true: 1, false: 1 };`. `Proc::wait` has pre `not done` and post `done = pre(done)`. A state with `done` is terminal. `Terminates` is `probabilistic Terminates using inf on Coin under every scheduler on origin { probability >= 0.99 [ eventually holds(p.done) ] }`. `FairTerminates` is the same claim with `under every scheduler fair strong Proc::flip`.
+- **`Link`** and **`Deliver`** (from FSL ADR-028 §15.4). One object `m: Msg { delivered: Boolean, attempts: Int[0, 2] }`, initially `delivered = false` and `attempts = 0`. `Msg::send_a(lost)` and `Msg::send_b(lost)` each have pre `not delivered and attempts < 2` and post `attempts = pre(attempts) + 1 and delivered = not lost`, with `random Msg::send_a(lost) ~ { true: 1, false: 9 };` and `random Msg::send_b(lost) ~ { true: 1, false: 4 };`. A state with `delivered` or `attempts = 2` is terminal. `workload Even on Link { weight Msg::send_a = 1; weight Msg::send_b = 1; }`. `Deliver` is `probabilistic Deliver using ev on Link under every scheduler on origin { probability >= 0.97 [ eventually[0, 2] holds(m.delivered) ] }`. Its minimum is `24/25`, its maximum `99/100`, and its value under `Even` `391/400`.
+- **`Coin`**, **`Terminates`** and **`FairTerminates`** (from FSL ADR-028 §15.6). One object `p: Proc { done: Boolean }`, initially `done = false`. `Proc::flip(heads)` has pre `not done` and post `done = heads`, with `random Proc::flip(heads) ~ { true: 1, false: 1 };`. `Proc::wait` has pre `not done` and post `done = pre(done)`. A state with `done` is terminal. `Terminates` is `probabilistic Terminates using inf on Coin under every scheduler on origin { probability >= 0.99 [ eventually holds(p.done) ] }`. `FairTerminates` is the same claim with `under every scheduler fair strong Proc::flip`.
 
 ## Vectors
 
@@ -36,8 +36,8 @@ The models below are defined here in full; the citation names the QSL design rec
 | EC-04 | EC-01 with another item's identity | Refused `invalid_runtime_input`/`conflicting-identity` |
 | EC-05 | A `lower` certificate naming a subset of states | Checked over the named states and their successors only, unnamed successors at value 0 |
 | EC-06 | `FairTerminates` `exact` certificate whose objective names the fairness set | Accepted after the checker recomputes that no fair end component exists |
-| EC-07 | FR-411's bounded product with repeated model state at two monitor positions, then at two accumulator values; QSL FR-196-AC-4's intermediate product states with different pending action/draw. Serialize and read each named key in every keyed certificate member and each state-located rejection. | Every complete product key is preserved; distinct monitor, accumulator and pending components never collapse to the shared model state key (FR-412-AC-8). |
-| EC-08 | EC-07 with keys constructed from the actual checked model using QSL FR-196's complete canonical five-member array. Substitute a bare model state key, local index, missing/extra component, non-JCS octets, foreign context, invented default accumulator or pending member. | Real reader refuses before consumption; canonical base64url syntax alone is insufficient. Actual None is preserved as null, distinct from a genuine empty drawn vector. |
+| EC-07 | FR-411's bounded product with repeated model state at two monitor positions, then at two accumulator values; FSL FR-196-AC-4's intermediate product states with different pending action/draw. Serialize and read each named key in every keyed certificate member and each state-located rejection. | Every complete product key is preserved; distinct monitor, accumulator and pending components never collapse to the shared model state key (FR-412-AC-8). |
+| EC-08 | EC-07 with keys constructed from the actual checked model using FSL FR-196's complete canonical five-member array. Substitute a bare model state key, local index, missing/extra component, non-JCS octets, foreign context, invented default accumulator or pending member. | Real reader refuses before consumption; canonical base64url syntax alone is insufficient. Actual None is preserved as null, distinct from a genuine empty drawn vector. |
 
 ## Expected Results
 

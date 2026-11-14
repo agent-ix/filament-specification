@@ -2,10 +2,10 @@
   "capability_report": [
     {
       "disposition": "available",
-      "feature": "quire.value.complete/v1"
+      "feature": "filament.value.complete/v1"
     }
   ],
-  "contract_version": "quire.checked-package/v2",
+  "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {
       "authority": "agent-ix",
@@ -19,7 +19,7 @@
     "edition": {
       "definition": {
         "authority": "agent-ix",
-        "identity": "quire-edition"
+        "identity": "filament-edition"
       },
       "role": "edition"
     },
@@ -27,13 +27,13 @@
       {
         "definition": {
           "authority": "agent-ix",
-          "identity": "quire.protocol.finite-global/v1"
+          "identity": "filament.protocol.finite-global/v1"
         },
         "role": "protocol_profile"
       }
     ],
     "required_features": [
-      "quire.value.complete/v1"
+      "filament.value.complete/v1"
     ],
     "sources": [
       {
@@ -44,7 +44,7 @@
   },
   "name": "example",
   "semantic_graph": {
-    "graph_version": "quire.checked-semantic-graph/v2",
+    "graph_version": "filament.checked-semantic-graph/v2",
     "nodes": [
       {
         "body": {
@@ -67,7 +67,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "boolean",
         "semantic_type": {
           "ordinal": 0,
@@ -99,7 +99,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer",
         "semantic_type": {
           "ordinal": 0,
@@ -131,7 +131,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "text",
         "semantic_type": {
           "ordinal": 0,
@@ -169,7 +169,7 @@
           "kind": "model",
           "node": "ix://acme/orders/Switch"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "object_type",
         "semantic_type": {
           "ordinal": 0,
@@ -228,7 +228,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "reference",
         "semantic_type": {
           "ordinal": 0,
@@ -311,7 +311,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -394,7 +394,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -434,7 +434,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.model.deref",
+            "identity": "filament.op.model.deref",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -484,7 +484,7 @@
             {
               "operand": 3
             },
-            "quire.op.model.deref",
+            "filament.op.model.deref",
             "deref",
             {
               "operand": 4
@@ -498,7 +498,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "deref",
         "semantic_type": {
           "ordinal": 0,
@@ -523,7 +523,7 @@
                   {
                     "operand": 0
                   },
-                  "quire.op.model.deref",
+                  "filament.op.model.deref",
                   "deref",
                   {
                     "operand": 1
@@ -534,7 +534,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.record.project",
+            "identity": "filament.op.record.project",
             "laws": [],
             "leaves": [],
             "member": {
@@ -583,7 +583,7 @@
               {
                 "operand": 0
               },
-              "quire.op.model.deref",
+              "filament.op.model.deref",
               "deref",
               {
                 "operand": 1
@@ -600,7 +600,7 @@
             {
               "operand": 2
             },
-            "quire.op.record.project",
+            "filament.op.record.project",
             {
               "operand": 1
             },
@@ -618,7 +618,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "query",
         "semantic_type": {
           "ordinal": 0,
@@ -666,7 +666,7 @@
                   {
                     "operand": 3
                   },
-                  "quire.op.record.project",
+                  "filament.op.record.project",
                   {
                     "operand": 4
                   },
@@ -681,7 +681,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.boolean.or",
+            "identity": "filament.op.boolean.or",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -708,7 +708,7 @@
               {
                 "operand": 3
               },
-              "quire.op.record.project",
+              "filament.op.record.project",
               {
                 "operand": 4
               },
@@ -753,7 +753,7 @@
             {
               "operand": 6
             },
-            "quire.op.boolean.or",
+            "filament.op.boolean.or",
             "binary",
             {
               "operand": 2
@@ -767,7 +767,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "binary",
         "semantic_type": {
           "ordinal": 0,
@@ -831,7 +831,7 @@
             "role": "generated"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "frame",
         "semantic_type": {
           "ordinal": 0,
@@ -952,7 +952,7 @@
             "role": "anchor"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "operation_anchor",
         "semantic_type": {
           "ordinal": 0,
@@ -1057,7 +1057,7 @@
                   {
                     "operand": 7
                   },
-                  "quire.op.boolean.or",
+                  "filament.op.boolean.or",
                   "binary",
                   {
                     "operand": 3
@@ -1068,7 +1068,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.state.clause",
+            "identity": "filament.op.state.clause",
             "laws": [],
             "leaves": [],
             "member": {
@@ -1101,7 +1101,7 @@
               {
                 "operand": 7
               },
-              "quire.op.boolean.or",
+              "filament.op.boolean.or",
               "binary",
               {
                 "operand": 3
@@ -1190,7 +1190,7 @@
             {
               "operand": 10
             },
-            "quire.op.state.clause",
+            "filament.op.state.clause",
             "state_clause",
             {
               "operand": 3
@@ -1204,7 +1204,7 @@
             "role": "claim"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "state_clause",
         "semantic_type": {
           "ordinal": 0,
@@ -1305,7 +1305,7 @@
                   {
                     "operand": 6
                   },
-                  "quire.op.record.project",
+                  "filament.op.record.project",
                   {
                     "operand": 4
                   },
@@ -1320,7 +1320,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.state.clause",
+            "identity": "filament.op.state.clause",
             "laws": [],
             "leaves": [],
             "member": {
@@ -1350,7 +1350,7 @@
               {
                 "operand": 6
               },
-              "quire.op.record.project",
+              "filament.op.record.project",
               {
                 "operand": 4
               },
@@ -1443,7 +1443,7 @@
             {
               "operand": 10
             },
-            "quire.op.state.clause",
+            "filament.op.state.clause",
             "state_clause",
             {
               "operand": 3
@@ -1457,7 +1457,7 @@
             "role": "claim"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "state_clause",
         "semantic_type": {
           "ordinal": 0,
@@ -1512,7 +1512,7 @@
                     {
                       "operand": 3
                     },
-                    "quire.op.record.project",
+                    "filament.op.record.project",
                     {
                       "operand": 0
                     },
@@ -1583,7 +1583,7 @@
                         {
                           "operand": 9
                         },
-                        "quire.op.state.clause",
+                        "filament.op.state.clause",
                         "state_clause",
                         {
                           "operand": 4
@@ -1618,7 +1618,7 @@
                     {
                       "operand": 10
                     },
-                    "quire.op.state.clause",
+                    "filament.op.state.clause",
                     "state_clause",
                     {
                       "operand": 4
@@ -1630,12 +1630,12 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.state.transition",
+            "identity": "filament.op.state.transition",
             "laws": [
               {
                 "definition": {
                   "authority": "agent-ix",
-                  "identity": "quire.protocol.finite-global/v1"
+                  "identity": "filament.protocol.finite-global/v1"
                 },
                 "role": "protocol_profile"
               }
@@ -1668,7 +1668,7 @@
               {
                 "operand": 3
               },
-              "quire.op.record.project",
+              "filament.op.record.project",
               {
                 "operand": 0
               },
@@ -1718,7 +1718,7 @@
               {
                 "operand": 9
               },
-              "quire.op.state.clause",
+              "filament.op.state.clause",
               "state_clause",
               {
                 "operand": 4
@@ -1743,7 +1743,7 @@
               {
                 "operand": 10
               },
-              "quire.op.state.clause",
+              "filament.op.state.clause",
               "state_clause",
               {
                 "operand": 4
@@ -1798,8 +1798,8 @@
             {
               "operand": 12
             },
-            "quire.op.state.transition",
-            "quire.protocol.finite-global/v1",
+            "filament.op.state.transition",
+            "filament.protocol.finite-global/v1",
             "transition",
             "state_transition",
             {
@@ -1814,7 +1814,7 @@
             "role": "claim"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "transition",
         "semantic_type": {
           "ordinal": 0,
@@ -1850,7 +1850,7 @@
           "identity": "acme/orders",
           "kind": "model_root"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "model_root",
         "semantic_type": {
           "ordinal": 0,
@@ -2019,7 +2019,7 @@
           {
             "node": 9
           },
-          "quire.op.state.clause",
+          "filament.op.state.clause",
           "state_clause",
           {
             "node": 0
@@ -2093,7 +2093,7 @@
           {
             "node": 8
           },
-          "quire.op.state.clause",
+          "filament.op.state.clause",
           "state_clause",
           {
             "node": 0
@@ -2123,7 +2123,7 @@
           {
             "node": 5
           },
-          "quire.op.model.deref",
+          "filament.op.model.deref",
           "deref",
           {
             "node": 3
@@ -2268,7 +2268,7 @@
           {
             "node": 7
           },
-          "quire.op.record.project",
+          "filament.op.record.project",
           {
             "node": 3
           },
@@ -2319,8 +2319,8 @@
           {
             "node": 13
           },
-          "quire.op.state.transition",
-          "quire.protocol.finite-global/v1",
+          "filament.op.state.transition",
+          "filament.protocol.finite-global/v1",
           "transition",
           "state_transition",
           {
@@ -2354,7 +2354,7 @@
           {
             "node": 8
           },
-          "quire.op.boolean.or",
+          "filament.op.boolean.or",
           "binary",
           {
             "node": 0

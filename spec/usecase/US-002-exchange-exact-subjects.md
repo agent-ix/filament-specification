@@ -3,13 +3,13 @@ id: US-002
 title: "Exchange exact source and model subjects"
 type: US
 relationships:
-  - target: "ix://agent-ix/quire-specification/StR-001"
+  - target: "ix://agent-ix/filament-specification/StR-001"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-002"
+  - target: "ix://agent-ix/filament-specification/FR-002"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-003"
+  - target: "ix://agent-ix/filament-specification/FR-003"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-004"
+  - target: "ix://agent-ix/filament-specification/FR-004"
     type: exercises
 ---
 # US-002: Exchange exact source and model subjects

@@ -1,13 +1,13 @@
 ---
 id: US-010
-title: "Author and maintain complete native Quire specifications"
+title: "Author and maintain complete native Filament specifications"
 type: US
 relationships:
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: traces_to
 ---
 
-# US-010: Author and maintain complete native Quire specifications
+# US-010: Author and maintain complete native Filament specifications
 
 ## Story
 

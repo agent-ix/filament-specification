@@ -3,7 +3,7 @@ id: TC-037
 title: "Parse shared expressions with explicit precedence"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-037
+  - target: ix://agent-ix/filament-specification/FR-037
     type: verifies
 ---
 ## Description

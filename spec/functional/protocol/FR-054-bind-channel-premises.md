@@ -3,21 +3,21 @@ id: FR-054
 title: "Bind explicit channel and delivery premises"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: references
-  - target: ix://agent-ix/quire-specification/FR-216
+  - target: ix://agent-ix/filament-specification/FR-216
     type: references
-  - target: ix://agent-ix/quire-specification/FR-224
+  - target: ix://agent-ix/filament-specification/FR-224
     type: references
-  - target: ix://agent-ix/quire-specification/FR-170
+  - target: ix://agent-ix/filament-specification/FR-170
     type: references
-  - target: ix://agent-ix/quire-specification/FR-465
+  - target: ix://agent-ix/filament-specification/FR-465
     type: references
 ---
 ## Description

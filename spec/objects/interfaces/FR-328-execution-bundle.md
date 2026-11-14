@@ -4,9 +4,9 @@ title: "Composed execution bundle"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_010
+  - target: ix://agent-ix/filament-specification/interface_010
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-180
+  - target: ix://agent-ix/filament-specification/FR-180
     type: references
 ---
 
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | bundle_disposition | type not stated in source; multiplicity not stated in source; see Field sources |
 
 
-- `contract_version` — exactly `quire.execution-bundle/v1`.
+- `contract_version` — exactly `filament.execution-bundle/v1`.
 - `request` — package, workflow, selected claims, observations, domains and limits.
 - `shared_prerequisites` — exact model, package, clock and population selections.
 - `state_results` — ordered native state results.

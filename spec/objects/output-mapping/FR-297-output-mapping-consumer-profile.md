@@ -4,7 +4,7 @@ title: "Output-mapping consumer profile"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-120
+  - target: ix://agent-ix/filament-specification/FR-120
     type: specifies
 ---
 # FR-297: Output-mapping consumer profile
@@ -12,7 +12,7 @@ relationships:
 ## Description
 
 When selecting an output consumer, the mapping coordinator SHALL identify the
-target family, normative target references and Quire mapping profile by exact
+target family, normative target references and Filament mapping profile by exact
 identity rather than by a display name or installed tool.
 
 ## Properties
@@ -33,7 +33,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 |---|---|
 | target_family | string tag, exactly one of `ocl`, `sysml-kerml`, `fretish` |
 | target_standard_refs | type not stated in source; see Field sources |
-| mapping_profile_id | string identity, one of three `quire.output.*/v1` names; absence refuses dispatch (Absence) |
+| mapping_profile_id | string identity, one of three `filament.output.*/v1` names; absence refuses dispatch (Absence) |
 | required_capabilities | type not stated in source; see Field sources |
 | observer_selection | type not stated in source; see Field sources |
 
@@ -42,7 +42,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | --- | --- |
 | `target_family` | Exactly one of `ocl`, `sysml-kerml` or `fretish`. |
 | `target_standard_refs` | Ordered exact normative/tool references required by the selected family. |
-| `mapping_profile_id` | One of `quire.output.ocl24/v1`, `quire.output.sysml2-kerml1/v1` or `quire.output.fretish31/v1`. |
+| `mapping_profile_id` | One of `filament.output.ocl24/v1`, `filament.output.sysml2-kerml1/v1` or `filament.output.fretish31/v1`. |
 | `required_capabilities` | Closed requested subset of the selected mapping profile. |
 | `observer_selection` | Optional, independent structural observer/tool selection; never part of semantic support. |
 
@@ -75,7 +75,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 - [FR-120](../../functional/output-mapping/FR-120-select-output-mapping-profile.md)
   defines selection behavior.
-- [Common output-mapping contract](../../../proposals/quire-v1/output-mappings/common.md)
+- [Common output-mapping contract](../../../proposals/filament-v1/output-mappings/common.md)
   fixes the subsystem boundary.
 
 ## Status

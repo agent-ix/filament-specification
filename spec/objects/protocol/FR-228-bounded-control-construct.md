@@ -4,13 +4,13 @@ title: "Bounded control construct vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-227
+  - target: ix://agent-ix/filament-specification/FR-227
     type: references
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: references
 ---
 # FR-228: Bounded control construct vocabulary
@@ -77,7 +77,7 @@ records the sentence that states each construct's rule.
   node's iteration identity.
 - [FR-053](../../functional/protocol/FR-053-enforce-choice-visibility.md) supplies the
   choice member's ownership and visibility rules.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 - [FR-171](../../functional/protocol/FR-171-evaluate-dynamic-control.md) supplies the
   proved-invariant/well-founded-variant admission path that this artifact's

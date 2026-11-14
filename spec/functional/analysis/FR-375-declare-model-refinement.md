@@ -3,41 +3,41 @@ id: FR-375
 title: "Declare a refinement between two state models"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-151
+  - target: ix://agent-ix/filament-specification/FR-151
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-376
+  - target: ix://agent-ix/filament-specification/FR-376
     type: references
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-378
+  - target: ix://agent-ix/filament-specification/FR-378
     type: references
-  - target: ix://agent-ix/quire-specification/FR-432
+  - target: ix://agent-ix/filament-specification/FR-432
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-specification/FR-307
+  - target: ix://agent-ix/filament-specification/FR-307
     type: references
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: references
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: references
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
-  - target: ix://agent-ix/quire-specification/FR-001
+  - target: ix://agent-ix/filament-specification/FR-001
     type: references
-  - target: ix://agent-ix/quire-specification/FR-147
+  - target: ix://agent-ix/filament-specification/FR-147
     type: references
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
 ---
 
@@ -135,7 +135,7 @@ their spellings.
 dependency package selected in the unit's `dependency_selections`. The
 **abstract subject** is the checked package holding the abstract model's
 contract clauses; the **concrete subject** is the declaring package. A
-profile alias that does not select `quire.temporal.infinite-trace/v1`
+profile alias that does not select `filament.temporal.infinite-trace/v1`
 refuses `unknown_profile`/`wrong-selection-role` at the alias.
 
 **Protocol subject.** When the `abstract-subject` is `alias::name`, `alias`
@@ -290,12 +290,12 @@ step argument or a history update a nested reference is not lifted either, so
 it does not conform and refuses `ill_typed`/`type-mismatch` there.
 
 **Row layers.** The infinite-trace profile a refinement's `using` names
-requires `quire.value.complete/v1` and `quire.model.complete/v1` for the
+requires `filament.value.complete/v1` and `filament.model.complete/v1` for the
 refinement's rows when it governs the refinement
 ([FR-090](../temporal/FR-090-select-temporal-profile-and-clock.md),
 [FR-250](../../objects/temporal/FR-250-temporal-semantic-profile.md)). The rows
 are admitted under exactly those two layers and their `requires` closure
-(`quire.state.core/v1`, `quire.state.queries/v1`, `quire.state.graph/v1`),
+(`filament.state.core/v1`, `filament.state.queries/v1`, `filament.state.graph/v1`),
 whatever the unit's other declarations select, and under no other layer. So
 `mod` ([FR-147](../expressions/FR-147-evaluate-integer-division-domains.md)),
 `Reference` comparison such as `s.ring = self`
@@ -303,7 +303,7 @@ whatever the unit's other declarations select, and under no other layer. So
 undefined reasons of the native diagnostics check in a row. A row using a form
 outside that set, for example the protocol reference `protocol Fill` naming a protocol declared in the unit, refuses
 `unsupported_construct`/`expression-form` at the `protocol` token, naming
-`quire.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks ([FR-001](../foundation/FR-001-select-native-profile.md)).
+`filament.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks ([FR-001](../foundation/FR-001-select-native-profile.md)).
 These layers count toward the unit's selected layers for the complete-value
 lock, so a row using `div` or `rem` brings the lock's integer-division law and
 the package identity names the definitions the rows run under (FR-001).
@@ -389,7 +389,7 @@ other model refuses `missing_declaration`/`missing-name`. Either set may be
 empty.
 
 **Checked-package node.** An admitted declaration is one
-`quire.checked-semantic-graph/v2` node with `node_tag: "relation"` and
+`filament.checked-semantic-graph/v2` node with `node_tag: "relation"` and
 `semantic_form: "refinement"` ([FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md)).
 Its `semantic_type` is the concrete selected model package's canonical
 `model_root` node, not one of the package's object-type or state-machine
@@ -550,8 +550,8 @@ node named by its declared name at level `1..n` in declared order, its
 object row has the `self` binder alone. These are FR-341's own parameter nodes,
 so the binders of a step row of `op` are the very nodes of `op`'s
 precondition clause. A pre-state field is read as FR-341 reads it: a
-`quire.op.record.project` application with member `{kind: "field", name,
-declaration}` over a `quire.op.model.deref` application of the `self`
+`filament.op.record.project` application with member `{kind: "field", name,
+declaration}` over a `filament.op.model.deref` application of the `self`
 node. A binder is never encoded by an inline name, an alias or a position. A
 `reference` to a `value`/`parameter` node whose name, level or type is not the
 binder's refuses `invalid_model_binding`/`malformed-declaration` at the
@@ -646,7 +646,7 @@ The abstract catalog covers the selected `protocol` clause when present,
 or the abstract model's operation classes otherwise. It excludes classes
 of another model or an unselected dependency.
 
-QSL SHALL derive the catalog from its checked subjects and binder records,
+FSL SHALL derive the catalog from its checked subjects and binder records,
 independently of the emitted step rows. The reader SHALL compare every
 `steps[i].source_class` and `source_node` to one concrete entry, and every
 `protocol_step` target's `class`, optional `node`, argument count and
@@ -675,7 +675,7 @@ the tie-break of the paragraph above that begins "Extra and omitted classes"
 (FR-375-AC-33); duplicate
 or misordered entries refuse during refinement canonical order. This is a
 producer attestation and wire/graph consistency check, not a second parse
-of QSL source. A later analysis request may override a parallel's memory
+of FSL source. A later analysis request may override a parallel's memory
 model; its resolved memory classes belong to that request's obligation
 identity and are outside checked-package admission.
 
@@ -718,7 +718,7 @@ refinement body; source
 reordering therefore changes row regions without changing the body.
 The reader checks the sidecar against the retained body step count and, for
 proof-eligible owners, against generated `source_map` occurrences. This is a
-closed wire consistency check, not a second parse of the QSL source.
+closed wire consistency check, not a second parse of the FSL source.
 
 **Claim kinds.** A request to check the whole declaration is one item of
 kind `temporal-satisfaction`; each per-step simulation obligation is one item
@@ -834,7 +834,7 @@ before this step and cannot substitute for a missing body key.
 | FR-375-AC-15 | A field row of type `Sequence<Reference<T_C>>[0, 2]` for an abstract `Sequence<Reference<T_A>>[0, 2]` field, and the row `Some(self.ring)` for an abstract `?` field of type `Reference<T_A>`, each use `nested-reference-row`: where the support set omits it, each refuses `unsupported_construct`/`not-yet-implemented` naming the feature at the row's expression, once per such row, and no node is produced; a whole-population reference row and a plain `Reference<T_C>` row for a `Reference<T_A>` field are admitted; a `Sequence<Reference<T_C>>` step argument for a `Sequence<Reference<T_A>>` parameter refuses `ill_typed`/`type-mismatch`. | Test (TC-310) |
 | FR-375-AC-16 | A refinement whose abstract model declares a relationship refuses `unsupported_construct`/`declaration-form` at the abstract alias of the header, once per refinement, naming the form, the refinement and the selected profile identity, whatever the producer's support set, and produces no node. | Test (TC-310) |
 | FR-375-AC-17 | `Some(e)` for `e` of type `E` is typed `Option<E>`; over an abstract `?` field of type `T`, the row `none` leaves the field absent and `Some(v)` sets it, and a row that is not `Option<T>`, including a bare `self.f` of a concrete `?` field, refuses `ill_typed`/`type-mismatch`; over an abstract `Option<T>` field the row's option value is taken unchanged; `none` with no field type or other `if` arm refuses `ill_typed`/`type-mismatch`; outside a refinement declaration `Some` is an ordinary identifier, so `Some(1)` in a state clause refuses `missing_declaration`/`missing-name` at `Some` when no function `Some` is declared and is a call to it when one is. | Test (TC-310) |
-| FR-375-AC-18 | In a refinement governed by `quire.temporal.infinite-trace/v1`, the ring-buffer rows `s.ring = self`, `(self.head + i) mod 2` and an `a div b` row are admitted even when the unit's own declarations select no layer, the lock selection counts the rows' layers (the `always` rows and exactly one integer-division law, `selection_trigger_unsatisfied` when none is selected), and a Boolean field row `ready = protocol Fill` naming a local protocol refuses `unsupported_construct`/`expression-form` at the `protocol` token naming `quire.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks. | Test (TC-310) |
+| FR-375-AC-18 | In a refinement governed by `filament.temporal.infinite-trace/v1`, the ring-buffer rows `s.ring = self`, `(self.head + i) mod 2` and an `a div b` row are admitted even when the unit's own declarations select no layer, the lock selection counts the rows' layers (the `always` rows and exactly one integer-division law, `selection_trigger_unsatisfied` when none is selected), and a Boolean field row `ready = protocol Fill` naming a local protocol refuses `unsupported_construct`/`expression-form` at the `protocol` token naming `filament.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks. | Test (TC-310) |
 | FR-375-AC-19 | Withdrawn: the sort of `steps` by node id, member name and alias-free class spelling this criterion tested is removed; `steps` is in declaration order. | Withdrawn |
 | FR-375-AC-20 | Withdrawn: the content-hash identity (package id, node key, digest or stale comparison) this criterion tested is removed. | Withdrawn |
 | FR-375-AC-21 | The reader visits refinement nodes in ascending node-id order and applies canonical order (of the sorted arrays, never `steps`), header joins and row joins after the identity check; an out-of-order entry of a sorted array refuses `invalid_semantic_graph` at the first offending entry, an absent local `abstract` key refuses `missing_declaration`/`missing-name`, an absent direct dependency for an external `abstract` key refuses `missing_declaration`/`missing-selection`, and a wrong-kind local `semantic_type` or object-row type key refuses `invalid_model_binding`/`malformed-declaration`, each at the member this section names. Object rows join either two object types admitted by mapped populations or two `state_machine` declarations and reject mixed or unrelated declaration kinds. | Test (TC-310) |
@@ -871,12 +871,12 @@ before this step and cannot substitute for a missing body key.
   protocol, and the shape, spellings and resolution of its internal list.
 - [FR-272](../../objects/foundation/FR-272-typed-diagnostic-cause.md) owns the
   `not-yet-implemented` cause.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns
   the productions this requirement extends.
 
 ## References
 
-- Design: quire-spec-language ADR-020 (RM-1 to RM-7, AX-1, QS-1, QS-4,
+- Design: filament-spec-language ADR-020 (RM-1 to RM-7, AX-1, QS-1, QS-4,
   QS-5, RU-1).
 - Tickets: Linear STD-133; paired QSL-367; Linear STD-182 (protocol abstract
   subject); Linear STD-199 (internal step list, unbuilt-feature refusal).

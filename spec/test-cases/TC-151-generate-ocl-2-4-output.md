@@ -3,7 +3,7 @@ id: TC-151
 title: "Generate bounded OCL 2.4 output"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-122
+  - target: ix://agent-ix/filament-specification/FR-122
     type: verifies
 ---
 ## Description

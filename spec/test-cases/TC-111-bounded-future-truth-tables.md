@@ -3,7 +3,7 @@ id: TC-111
 title: "Evaluate bounded future truth tables"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: verifies
 ---
 ## Description

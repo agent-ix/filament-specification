@@ -4,15 +4,15 @@ title: "Native temporal vertical-slice architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-e
-system: native Quire temporal admission, observation and evaluation boundary
+system: native Filament temporal admission, observation and evaluation boundary
 relationships:
-  - { target: ix://agent-ix/quire-specification/FR-090, type: realizes }
-  - { target: ix://agent-ix/quire-specification/FR-091, type: realizes }
-  - { target: ix://agent-ix/quire-specification/FR-092, type: realizes }
-  - { target: ix://agent-ix/quire-specification/FR-093, type: realizes }
-  - { target: ix://agent-ix/quire-specification/FR-094, type: realizes }
-  - { target: ix://agent-ix/quire-specification/FR-095, type: realizes }
-  - { target: ix://agent-ix/quire-specification/NFR-040, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-090, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-091, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-092, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-093, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-094, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-095, type: realizes }
+  - { target: ix://agent-ix/filament-specification/NFR-040, type: realizes }
 ---
 # Native temporal vertical-slice architecture
 
@@ -23,7 +23,7 @@ end-to-end subject out of an authored temporal clause, its exact meaning,
 validated observations and any derived TL request without making any lower
 representation a second authoring language.
 
-Native Quire source remains the only editable formal-clause authority. The
+Native Filament source remains the only editable formal-clause authority. The
 compiler admits and links it; the observation provider establishes runtime
 facts; Contract IR builds strict predicate/correspondence artifacts; a selected
 TL implementation consumes only a supported derived request. An evaluator does
@@ -58,7 +58,7 @@ truth default.
 | Boundary | Owner | Required selections | Failure behavior |
 | --- | --- | --- | --- |
 | Native source → linked temporal subject | A | source/span; language edition; temporal profile definition identity; typed predicates; anchor/scope/capture roles | located compiler refusal |
-| Linked subject → `quire.compiled-protocol/2` | A | all subject identities plus tagged clock: `sequence_authority`, or `epoch`/`period`/`unit`, or `timestamp_unit` | strict `/2` refusal; `/1` stays readable but is not authenticated temporal input |
+| Linked subject → `filament.compiled-protocol/2` | A | all subject identities plus tagged clock: `sequence_authority`, or `epoch`/`period`/`unit`, or `timestamp_unit` | strict `/2` refusal; `/1` stays readable but is not authenticated temporal input |
 | Observation → runtime | F | semantic-event/correlation identity; causal order; payload; duplicate rule; completeness; progress/closure assertion | unavailable, incomplete or typed contradiction; never false padding |
 | Native predicate → TL proposition | Contract IR #63 | exact checked predicate, result/availability contract, valuation and proposition-map identity | typed non-value; no numeric/nullable/pending coercion |
 | Native subject → TL request | Contract IR #64 | profile/operator/interval; predicate map; anchor/capture; clock/history/progress/closure; formula/evaluator identities | unsupported/refused with no formula |
@@ -76,7 +76,7 @@ The three v1 clock forms are structurally distinct:
   completeness assertion; timestamp or ingestion order alone establishes no
   causality.
 
-`quire.compiled-protocol/2` is the only wire that carries and is read for this
+`filament.compiled-protocol/2` is the only wire that carries and is read for this
 admission decision. Missing, unknown or multiply selected fields refuse before a
 runtime or bridge call.
 

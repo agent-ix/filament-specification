@@ -3,7 +3,7 @@ id: TC-040
 title: "Admit state extensions through exact profile dependencies"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-040
+  - target: ix://agent-ix/filament-specification/FR-040
     type: verifies
 ---
 ## Description
@@ -13,7 +13,7 @@ No executable test or observed coverage is claimed.
 
 ## Test Procedure
 
-Use the exact [accepted state definitions](../../proposals/quire-v1/definitions/README.md)
+Use the exact [accepted state definitions](../../proposals/filament-v1/definitions/README.md)
 and their selected rule snapshots once implemented. Keep a separately
 identified historical first-profile control. Exercise this admission table with
 the same explicit finite typed model wherever that profile admits its types:

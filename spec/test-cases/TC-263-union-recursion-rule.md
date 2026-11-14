@@ -3,7 +3,7 @@ id: TC-263
 title: "Union recursion rule"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: verifies
 ---
 

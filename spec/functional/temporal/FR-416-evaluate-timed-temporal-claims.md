@@ -3,23 +3,23 @@ id: FR-416
 title: "Evaluate timed temporal claims under the timed profile"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -27,7 +27,7 @@ relationships:
 
 ## Description
 
-When a temporal claim selects the `quire.temporal.timed/v1` profile, the
+When a temporal claim selects the `filament.temporal.timed/v1` profile, the
 evaluator and every provider SHALL read it pointwise over the time-stamped
 positions of the subject's time-divergent behaviours, with each interval
 measuring time-stamp differences, and SHALL settle it only in one of the four
@@ -35,7 +35,7 @@ timed forms below.
 
 ## Inputs
 
-A temporal clause under `quire.temporal.timed/v1` (FR-090) with a
+A temporal clause under `filament.temporal.timed/v1` (FR-090) with a
 `model-time` clock binding (FR-252) over a timed subject
 ([FR-415](FR-415-declare-clocks-and-timed-models.md)), or over a timed trace;
 its timed intervals (FR-255).
@@ -58,7 +58,7 @@ order FR-090 requires of order-sensitive operators.
 
 ### Pointwise meaning
 
-This reading applies to the `quire.temporal.timed/v1` profile; the `quire.temporal.timestamped-event.finite-window/v1` profile follows the timestamped rule of [FR-091](FR-091-evaluate-bounded-future.md) and [FR-092](FR-092-evaluate-bounded-past.md); the integer-position profiles, infinite-trace, event-position and fixed-sample, read an interval as position offsets with the meaning of FR-091, FR-092 and [FR-367](FR-367-evaluate-interval-operators-under-infinite-trace.md).
+This reading applies to the `filament.temporal.timed/v1` profile; the `filament.temporal.timestamped-event.finite-window/v1` profile follows the timestamped rule of [FR-091](FR-091-evaluate-bounded-future.md) and [FR-092](FR-092-evaluate-bounded-past.md); the integer-position profiles, infinite-trace, event-position and fixed-sample, read an interval as position offsets with the meaning of FR-091, FR-092 and [FR-367](FR-367-evaluate-interval-operators-under-infinite-trace.md).
 
 `eventually_I p` holds at position `i` when some `j >= i` has `τ_j − τ_i` in
 `I` and `p` at `j`; `p until_I q` holds when some such `j` has `q` and every
@@ -175,7 +175,7 @@ identity.
 
 ## References
 
-- QSL ADR-026 DF-1 to DF-7, TV-1, CB-1, CB-5, EZ-8 to EZ-10, CF-4, §15; QSL
+- FSL ADR-026 DF-1 to DF-7, TV-1, CB-1, CB-5, EZ-8 to EZ-10, CF-4, §15; FSL
   FR-430 (strong fairness over time).
 - R. Alur, T. Feder and T. A. Henzinger, 1996; P. Bouyer, N. Markey,
   J. Ouaknine and J. Worrell, 2007; J. Ouaknine and J. Worrell, 2005.

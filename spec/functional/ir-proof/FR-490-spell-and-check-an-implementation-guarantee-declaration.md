@@ -3,27 +3,27 @@ id: FR-490
 title: "Spell and check an implementation guarantee declaration"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-488
+  - target: ix://agent-ix/filament-specification/FR-488
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-450
+  - target: ix://agent-ix/filament-specification/FR-450
     type: references
-  - target: ix://agent-ix/quire-specification/FR-451
+  - target: ix://agent-ix/filament-specification/FR-451
     type: references
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-492
+  - target: ix://agent-ix/filament-specification/FR-492
     type: references
 ---
 
@@ -31,7 +31,7 @@ relationships:
 
 ## Description
 
-When a source unit that selects `quire.model.complete/v1` declares a
+When a source unit that selects `filament.model.complete/v1` declares a
 `guarantee-decl`, the compiler SHALL check it into one FR-488
 implementation-guarantee declaration, carry it in the checked package as one
 `correspondence`/`implementation_guarantee` node, and derive from it the
@@ -42,7 +42,7 @@ the code and cause below.
 ## Inputs
 
 - The unit's `guarantee-decl` declarations, recognized by the
-  [complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md)
+  [complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md)
   "Implementation guarantee declaration" production.
 - The unit's temporal clauses, its `abstraction-decl` declarations
   ([FR-450](FR-450-spell-abstraction-relation-declaration.md)) and the
@@ -89,13 +89,13 @@ step of any other bound function leaves the measure of every earlier
 
 The compiler SHALL refuse, in source order, naming the member:
 
-1. A package that does not select `quire.model.complete/v1`:
+1. A package that does not select `filament.model.complete/v1`:
    `unsupported_construct` at the declaration. A declaration with no
    `initial` member, a second `initial` member, or an unquoted Rust string:
    `invalid_syntax` at the offending token.
 2. `P` naming no temporal clause of the unit, or `A` naming no
    `abstraction-decl` of the unit: `missing_declaration`/`missing-name`.
-3. `P` not selecting `quire.temporal.infinite-trace/v1`, or `P`'s `using`
+3. `P` not selecting `filament.temporal.infinite-trace/v1`, or `P`'s `using`
    model alias differing from `A`'s: `invalid_model_binding`/
    `malformed-declaration`, naming `P`.
 4. A `progress` or scheduling `environment` operation name that resolves to
@@ -147,7 +147,7 @@ derives neither progress role and no unfilled `environment` slot.
 
 ### Checked-package node
 
-`G` is emitted as one `quire.checked-semantic-graph/v2` node with
+`G` is emitted as one `filament.checked-semantic-graph/v2` node with
 `node_tag: "correspondence"` and `semantic_form: "implementation_guarantee"`:
 
 - **body** — `{term: "implementation_guarantee", clause, relation, initial,
@@ -194,7 +194,7 @@ obligation identities.
 | FR-490-AC-1 | A declaration over a liveness clause of a one-operation subject, with one `initial`, one `progress ... decreases` and one scheduling `environment` member covering `F_P`'s one constraint, checks and derives the guarantee item and, in order, the model-claim slot with `stutter_closure`, the initialization, transition-simulation and frame slots, one environment slot, one no-divergence slot and one fairness-correspondence slot, each with a distinct identity. | Test (TC-984) |
 | FR-490-AC-2 | The same declaration over a safety clause derives no no-divergence, fairness-correspondence or unfilled environment slot, and its model-claim slot has no `stutter_closure`. | Test (TC-984) |
 | FR-490-AC-9 | The liveness declaration of AC-1 without its `progress` member derives an unfilled no-divergence slot, and without its `environment` member derives an unfilled environment slot naming `F_P`'s constraint; neither is a refusal. | Test (TC-984) |
-| FR-490-AC-3 | A package not selecting `quire.model.complete/v1` refuses `unsupported_construct`; a declaration with no `initial` member and one with an unquoted Rust path refuse `invalid_syntax` at the offending token. | Test (TC-984) |
+| FR-490-AC-3 | A package not selecting `filament.model.complete/v1` refuses `unsupported_construct`; a declaration with no `initial` member and one with an unquoted Rust path refuse `invalid_syntax` at the offending token. | Test (TC-984) |
 | FR-490-AC-4 | `P` or `A` naming no declaration refuses `missing_declaration`/`missing-name`; a finite-trace `P`, and `P` and `A` over different model aliases, refuse `invalid_model_binding`/`malformed-declaration` naming `P`. | Test (TC-984) |
 | FR-490-AC-5 | A `progress` operation that is not an operation of the subject refuses `missing_declaration`/`missing-name`; `bound 0` and the Rust path `"9lives"` refuse `invalid_model_binding`/`malformed-declaration`; two `progress` members for one operation refuse `invalid_model_binding`/`conflicting-binding` naming both. | Test (TC-984) |
 | FR-490-AC-6 | An operation of the model subject with no frame binding in `A` refuses only the guarantee item `missing_declaration`/`missing-name`; the package checks and its other items are derived unchanged. | Test (TC-984) |

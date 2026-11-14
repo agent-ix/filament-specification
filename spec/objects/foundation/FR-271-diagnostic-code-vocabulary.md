@@ -4,15 +4,15 @@ title: "Diagnostic code vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-003
+  - target: ix://agent-ix/filament-specification/FR-003
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-008
+  - target: ix://agent-ix/filament-specification/FR-008
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-009
+  - target: ix://agent-ix/filament-specification/FR-009
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: references
 ---
 # FR-271: Diagnostic code vocabulary
@@ -23,7 +23,7 @@ When a producer reports a failure, the reader SHALL match its machine-readable c
 
 The members below are the code families named by the **proposed** native
 diagnostic interpretation
-([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)),
+([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)),
 which is "**Proposed, not adopted or implemented.**" They are extracted, not
 adopted. Each member's closed cause-variant set is typed by
 [FR-272](FR-272-typed-diagnostic-cause.md). Spellings are exact: "Hyphenated and
@@ -88,7 +88,7 @@ catalog).
 | `unknown_member` | A member outside the closed member set of the object that holds it. |
 | `unknown_required_capability` | A package that requires a capability the reader does not know. |
 | `invalid_semantic_graph` | A semantic graph that breaks the reader's graph rules: a dependency, key, owner or term order the artifact refuses. |
-| `unsupported_node_tag` | A node whose `node_tag` is outside the closed tag set (QSL ADR-013 O-14, QC-19). |
+| `unsupported_node_tag` | A node whose `node_tag` is outside the closed tag set (FSL ADR-013 O-14, QC-19). |
 | `inexact_decimal` | Strict `exact` met a decimal rounding step: a nonzero digit would be discarded. |
 | `inexact_conversion` | Strict `exact` met a rounding step of a carried-quantity conversion: the converted value is not on the target carrier's scale grid. |
 | `decimal_out_of_domain` | A decimal result outside its target `Decimal[..]` domain. |
@@ -178,7 +178,7 @@ conventions:
   unavailable_observation." FR-009-AC-3: "Coincident object labels from
   different universes receive foreign_reference."
 - **Kebab-case projection literals.** FR-062 Outputs names six values and FR-283
-  now places them in `quire.protocol.projection-refusal/v1-draft.1`. They are
+  now places them in `filament.protocol.projection-refusal/v1-draft.1`. They are
   outside this native producer catalog and have no normalized aliases here.
 
 The complete-V1 native producer catalog assigns `invalid_source_map`,
@@ -220,9 +220,9 @@ for FR-146, the `unbounded-extent` and `tool-unavailable` causes of
   [FR-009](../../functional/foundation/FR-009-preserve-object-identity.md) and
   [FR-062](../../functional/protocol/FR-062-project-results-to-portable-verification.md)
   supply the FR-spelled code literals recorded above.
-- [Native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)
+- [Native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)
   is the proposed, non-adopted source of the members.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-283](../protocol/FR-283-projection-refusal-code.md) defines the separate
   projection-refusal namespace.

@@ -4,17 +4,17 @@ title: "Causal control graph"
 type: FR
 object: aggregate_root
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-227
+  - target: ix://agent-ix/filament-specification/FR-227
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-228
+  - target: ix://agent-ix/filament-specification/FR-228
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-220: Causal control graph
@@ -148,7 +148,7 @@ finite graph (FR-052-AC-3).
   definitions.
 - [FR-050](../../functional/protocol/FR-050-bind-protocol-instances.md) supplies the
   linked protocol the graph belongs to.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 - [FR-210](FR-210-protocol-subject-vocabulary.md) supplies the
   distinct protocol subject kinds.

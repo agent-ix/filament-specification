@@ -3,7 +3,7 @@ id: FR-005
 title: "Require snapshot-qualified optional definedness"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-003"
+  - target: "ix://agent-ix/filament-specification/US-003"
     type: traces_to
 ---
 # FR-005: Require snapshot-qualified optional definedness

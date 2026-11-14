@@ -3,9 +3,9 @@ id: TC-318
 title: "Protocol refinement over the model-refinement step rules"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: verifies
 ---
 

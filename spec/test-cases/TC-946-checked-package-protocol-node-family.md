@@ -3,9 +3,9 @@ id: TC-946
 title: "Checked-package protocol node family: placement, keys, clause, membership, binders and causal vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -14,7 +14,7 @@ relationships:
 ## Description
 
 Schema and reader vectors for the `protocol` node family of
-`quire.checked-semantic-graph/v2`: the shared `quire.op.protocol.control`
+`filament.checked-semantic-graph/v2`: the shared `filament.op.protocol.control`
 body, the operator catalog, node ids, declaration paths, the clause body,
 membership and containment, binders and their scope, the derived causal
 relation and progress, placement, profile fit, the reader order and the
@@ -80,12 +80,12 @@ node and the `value`/`parameter` binder nodes. The binders have levels
 
 | Vector | Edit to the base | Expected |
 | --- | --- | --- |
-| V1 | none | admitted; every body is a `quire.op.protocol.control` application with one `protocol_profile` law equal to the lock's row, a `profile_operator` member, the Boolean `result_type` and `semantic_type` |
-| V2 | `Requested`'s body applies `quire.op.state.clause` | `ill_typed`/`operator-ineligible` at the node (a state clause application at a protocol node's root) |
+| V1 | none | admitted; every body is a `filament.op.protocol.control` application with one `protocol_profile` law equal to the lock's row, a `profile_operator` member, the Boolean `result_type` and `semantic_type` |
+| V2 | `Requested`'s body applies `filament.op.state.clause` | `ill_typed`/`operator-ineligible` at the node (a state clause application at a protocol node's root) |
 | V3 | the `Orders` role node's operator is `channel` | `malformed_wire` at the node (the schema refuses the operator of another form first; the protocol step alone gives `ill_typed`/`operator-ineligible`) |
 | V4 | the `Orders` node's `semantic_form` is `control` with the `role` operator | `malformed_wire` at the node (schema first; the protocol step alone gives `ill_typed`/`operator-ineligible`) |
-| V5 | a `quire.op.protocol.control` application nested as an argument of `Main` | `malformed_wire` at the node pointer `/semantic_graph/nodes/{i}` of `Main` (strict wire validation, the schema's first error path) |
-| V6 | a `protocol_reference` carrier's body is a `quire.op.protocol.control` application | refuses `malformed_wire` (`malformed_wire`) |
+| V5 | a `filament.op.protocol.control` application nested as an argument of `Main` | `malformed_wire` at the node pointer `/semantic_graph/nodes/{i}` of `Main` (strict wire validation, the schema's first error path) |
+| V6 | a `protocol_reference` carrier's body is a `filament.op.protocol.control` application | refuses `malformed_wire` (`malformed_wire`) |
 | V7 | `Requested`'s member operator is `jump` | `malformed_wire` at the node (schema first; the operation step alone gives `invalid_package`/`operation-member-mismatch`) |
 | V8 | `Requested`'s member is `null` | `invalid_package`/`operation-member-mismatch` |
 | V9 | `Requested`'s `laws` is empty | `invalid_package`/`operation-law-missing` |
@@ -198,9 +198,9 @@ node and the `value`/`parameter` binder nodes. The binders have levels
 | B11 | `Limit`'s `check` reads `polled` | `missing_declaration`/`missing-name` at `Limit` (an iteration binder does not escape) |
 | B12 | `Finalized`'s constraint reads `eastRes` | admitted (`Out(Outcome)` keeps the joined branches' binders) |
 | B13 | `Finalized`'s constraint reads `polled` | `missing_declaration`/`missing-name` at `Finalized` |
-| B14 | `Outcome`'s case `shipped` guard `{ eastRes.ok }` is replaced by `{ isTrue(M::Order(view.id).open) }` (a `quire.op.model.deref`) | `ill_typed`/`operator-ineligible` at the guard's read |
-| B15 | the `Poll` guard holds `quire.op.state.pre` | `ill_typed`/`operator-ineligible` at the read |
-| B16 | a `check` condition over a `quire.op.model.all_instances` | `ill_typed`/`operator-ineligible` at the read |
+| B14 | `Outcome`'s case `shipped` guard `{ eastRes.ok }` is replaced by `{ isTrue(M::Order(view.id).open) }` (a `filament.op.model.deref`) | `ill_typed`/`operator-ineligible` at the guard's read |
+| B15 | the `Poll` guard holds `filament.op.state.pre` | `ill_typed`/`operator-ineligible` at the read |
+| B16 | a `check` condition over a `filament.op.model.all_instances` | `ill_typed`/`operator-ineligible` at the read |
 | B17 | `Requested`'s constraint (not binders-only) dereferences a model object | admitted |
 | B18 | the `finish` constraint reads `eastRes` | admitted (`finish` reads `Out(root)`) |
 | B19 | the `finish` constraint reads `polled` | `missing_declaration`/`missing-name` at the `finish` node |
@@ -228,7 +228,7 @@ node and the `value`/`parameter` binder nodes. The binders have levels
 | R17 | `Poll`'s body is a `sequence` of a nested `repeat` around an `attempt` and a second `attempt`, in either order; and a `parallel` with a `join` holding the nested `repeat` in one branch; and an `await` whose `then` is the nested `repeat`; the nested guard is `a`, a feasible exit, with `visible` listing `a` | each admitted (a sibling step, the `parallel` and the `await` step) whatever the nested guard is (FR-464-AC-21) |
 | R18 | `Poll`'s body is only a nested `repeat` whose guard is `true` and whose own body is only a `check`; and the same with `maximum` 1, an `exhausted` `attempt` and the own body only a `check` | each `unsupported_construct`/`declaration-form` at the first `repeat` in tree order, the outer `repeat`, naming it and the profile: the nested body does not step and its `exhausted` control is never counted (FR-464-AC-21, FR-464-AC-23) |
 | R19 | `Poll`'s body is a `choice` with a nested `repeat` around an `attempt` in one case and an `attempt` in the other, the nested guard being `true`; and the same with the nested guard `a` and `visible` listing `a` | admitted; `unsupported_construct`/`declaration-form` at the outer `repeat` (FR-464-AC-21) |
-| R20 | `Poll`'s body is only a nested `repeat` around an `attempt`, `visible` listing the entry `quire.op.boolean.eq(a, b)`, whose guard is `quire.op.boolean.eq(a, b) or not quire.op.boolean.eq(a, b)`; and `visible` listing the entries `quire.op.boolean.eq(a, b)` then `quire.op.boolean.eq(b, a)`, whose guard is `quire.op.boolean.eq(a, b) or not quire.op.boolean.eq(b, a)` | admitted (one atom, infeasible exit); `unsupported_construct`/`declaration-form` at the outer `repeat` (two atoms, no commutativity, feasible exit) (FR-464-AC-22) |
+| R20 | `Poll`'s body is only a nested `repeat` around an `attempt`, `visible` listing the entry `filament.op.boolean.eq(a, b)`, whose guard is `filament.op.boolean.eq(a, b) or not filament.op.boolean.eq(a, b)`; and `visible` listing the entries `filament.op.boolean.eq(a, b)` then `filament.op.boolean.eq(b, a)`, whose guard is `filament.op.boolean.eq(a, b) or not filament.op.boolean.eq(b, a)` | admitted (one atom, infeasible exit); `unsupported_construct`/`declaration-form` at the outer `repeat` (two atoms, no commutativity, feasible exit) (FR-464-AC-22) |
 | R21 | R14 under `CheckedPackageReadLimits.work` set to *V* minus 1, to *V* and to *T*, with *V* the reader's total consumption through the nested `repeat`'s fourth valuation charge and *T* its total for the package; R16's `a or b`, whose valuation charges are exactly one unit; and a `Poll` that is not nested in another `repeat`'s body, with `visible` listing 30 atoms and a guard over them, whose total consumption equals that of the same package with the guard `true` | *V* minus 1: `stage_limit_exceeded`/`work-budget-exceeded` (incomplete) at the nested `repeat`, no progress refusal; *V*: the same incomplete result at a later charge, never at the nested `repeat`; *T*: admitted; `a or b`: the one valuation unit is charged (all-false is the first valuation) and the refusal of R16; the 30-atom `Poll`: no valuation is charged (FR-464-AC-22) |
 | R22 | `Poll`'s body is only a nested `repeat` around an `attempt`, `visible` listing the entry `E` (the expression `a and b`), then `a`, then `b`, whose guard is `E or not a or not b` | `unsupported_construct`/`declaration-form` at the outer `repeat`: `E` is an atom and is not descended into, so the exit is feasible (FR-464-AC-22) |
 | R23 | `Poll`'s body is only a nested `repeat` around an `attempt` whose guard is a `reference` to a Boolean `value`/`literal` node `true`; and the guard `a or true` with `visible` listing `a` and the `true` written as that reference | each admitted: a Boolean constant, inline or by reference, is never an atom (FR-464-AC-22) |

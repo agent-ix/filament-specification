@@ -4,9 +4,9 @@ title: "Protocol assessment request and result envelope"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_009
+  - target: ix://agent-ix/filament-specification/interface_009
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-175
+  - target: ix://agent-ix/filament-specification/FR-175
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.protocol.assessment/v1` |
+| contract_version | exactly `filament.protocol.assessment/v1` |
 | claim | record: claim kind and exact strength |
 | subject | record: checked protocol plus observations or finite model; multiplicity not stated in source |
 | premises | record: closure, fairness, channel, population, environment assumptions; multiplicity not stated in source |
@@ -44,7 +44,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | witness | record: one of strategy, trace set, counterexample, incompatibility core; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.protocol.assessment/v1`.
+- `contract_version` — exactly `filament.protocol.assessment/v1`.
 - `request_id` — the identity assigned to the request, compared as an exact string. It is not computed from the other members.
 - `claim` — conformance, projection, realizability, composition or refinement with exact strength.
 - `subject` — checked protocol plus observations or finite model.
@@ -56,7 +56,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 ## Identity and validation
 
 The request and result keep claim kind, strength and premise identities independent; display labels never identify them.
-A document whose `contract_version` is not `quire.protocol.assessment/v1`, missing required properties, duplicate keys,
+A document whose `contract_version` is not `filament.protocol.assessment/v1`, missing required properties, duplicate keys,
 out-of-domain values and non-canonical encodings refuse before consumption.
 
 ## Acceptance Criteria

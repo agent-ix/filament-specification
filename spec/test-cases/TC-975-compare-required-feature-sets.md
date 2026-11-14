@@ -3,7 +3,7 @@ id: TC-975
 title: "Compare required feature sets"
 type: TC
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-486"
+  - target: "ix://agent-ix/filament-specification/FR-486"
     type: verifies
 ---
 # TC-975: Compare required feature sets

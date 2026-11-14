@@ -3,9 +3,9 @@ id: FR-486
 title: "Compare required features of a shared semantic reference"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-004"
+  - target: "ix://agent-ix/filament-specification/US-004"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-017"
+  - target: "ix://agent-ix/filament-specification/FR-017"
     type: depends_on
 ---
 # FR-486: Compare required features of a shared semantic reference

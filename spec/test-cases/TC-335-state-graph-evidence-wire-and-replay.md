@@ -3,11 +3,11 @@ id: TC-335
 title: "State-graph evidence wire and replay disagreements"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-393
+  - target: ix://agent-ix/filament-specification/FR-393
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-394
+  - target: ix://agent-ix/filament-specification/FR-394
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: verifies
 ---
 

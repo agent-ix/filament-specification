@@ -3,7 +3,7 @@ id: FR-030
 title: "Bind every clause to its exact semantic definitions"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -30,7 +30,7 @@ admission; unrelated valid clauses may remain inspectable. Repeated declarations
 cannot introduce a second editable authority. Runtime observations and changing
 monitor state do not participate in static package identity.
 
-The [package contract](../../../proposals/quire-v1/package-contract.md) defines the
+The [package contract](../../../proposals/filament-v1/package-contract.md) defines the
 static components, the lock's recorded model identities and typed binding requirements. The
 compiler input inventory closes the native declaration namespace. Checked output
 retains per-declaration dependency dispositions; partial admission is not a
@@ -61,7 +61,7 @@ substitutes one for the other.
 
 ## Dependencies
 
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Composed architecture](../../assurance/AD-001-composed-native-language.md).
 
 Proposed requirement for the composed profile; it does not amend historical

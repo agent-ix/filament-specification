@@ -3,21 +3,21 @@ id: FR-411
 title: "Settle probabilistic claims with exact evidence"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-407
+  - target: ix://agent-ix/filament-specification/FR-407
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-412
+  - target: ix://agent-ix/filament-specification/FR-412
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-413
+  - target: ix://agent-ix/filament-specification/FR-413
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -53,18 +53,18 @@ read at each position. A bounded measure adds to the product state its
 accumulator (steps, reward or weighted sums since activation, saturating one
 unit above the threshold) and the activation flag; rewards are non-negative
 values from finite supports, so the accumulator takes finitely many values.
-The complete product key SHALL use QSL FR-196's canonical RFC 8785 UTF-8
-octets of `["quire.probability-product-key/v1", model, monitor, accumulator,
+The complete product key SHALL use FSL FR-196's canonical RFC 8785 UTF-8
+octets of `["filament.probability-product-key/v1", model, monitor, accumulator,
 pending]`: the full typed model form, actual canonical monitor/accumulator,
 and actual pending scheduled identity and declaration-ordered drawn vector.
 All members are present; actual None is null, never a default component.
-Formula monitors retain the full parsed QSL FR-338 automaton array, not a
+Formula monitors retain the full parsed FSL FR-338 automaton array, not a
 local state index. Exact-only forms retain actual None monitor/accumulator;
 digital model forms retain actual clocks, deadline and tail control.
 Equality/order SHALL compare complete decoded unsigned octets, not a
 bare model state key or local product number. FR-331 owns their transport spelling
 in FR-412 certificates and rejections; no new canonical
-representation is defined here. A product edge retains QSL FR-196's full
+representation is defined here. A product edge retains FSL FR-196's full
 semantic ProductAction, actual action/draw and probability.
 Every product path reaches an accepting or rejecting monitor state, a **decided**
 state, within `h + 1` positions; decided states are absorbing, and the product
@@ -286,7 +286,7 @@ and are not read.
 
 ## References
 
-- QSL ADR-028 SP-1 to SP-6, PR-4 to PR-6, FS-4 to FS-8, XF-1 to XF-8, AR-1
+- FSL ADR-028 SP-1 to SP-6, PR-4 to PR-6, FS-4 to FS-8, XF-1 to XF-8, AR-1
   to AR-4, FH-1 to FH-4, UR-1 to UR-7, LR-1 to LR-5, XV-1 to XV-7, LM-1 to LM-3, RX-1.
 - Owner ruling recorded on QSL-371: exact probabilistic checking is a native
   engine with certified results; fair schedulers follow Baier and Kwiatkowska.

@@ -3,7 +3,7 @@ id: TC-982
 title: "Implementation temporal guarantee through checked correspondence"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-488
+  - target: ix://agent-ix/filament-specification/FR-488
     type: verifies
 ---
 

@@ -3,13 +3,13 @@ id: FR-470
 title: "Resolve names in a domain package's own clauses"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: references
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: references
 ---
 
@@ -17,7 +17,7 @@ relationships:
 
 ## Description
 
-When QSL checks a domain clause, it SHALL resolve every qualified name in the
+When FSL checks a domain clause, it SHALL resolve every qualified name in the
 clause against the clause's own domain package through the self alias of the
 clause's owner, independently of the unit that imports the package.
 
@@ -35,7 +35,7 @@ declares the operation.
 ## Inputs
 
 - The admitted original declarations of one domain package (FR-154), including
-  every type definition bound to `quire.meaning.model.namespace/v1` with its
+  every type definition bound to `filament.meaning.model.namespace/v1` with its
   `members` (FR-208).
 - One domain clause, its owner and its FCD `origin`.
 
@@ -123,7 +123,7 @@ qualified name is reported separately, in source order within the clause.
 
 - **Upstream**: [FR-154](./FR-154-admit-domain-package-model.md) admits the
   domain package and its declaration keys;
-  [FR-208](../../objects/foundation/FR-208-quire-meaning-vocabulary.md) defines
+  [FR-208](../../objects/foundation/FR-208-filament-meaning-vocabulary.md) defines
   namespace membership, invariants and guards;
   [AD-006](../../assurance/AD-006-model-graph-state-contracts.md) places
   clauses in spec artifacts.

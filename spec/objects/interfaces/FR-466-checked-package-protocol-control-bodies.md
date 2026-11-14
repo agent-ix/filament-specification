@@ -3,33 +3,33 @@ id: FR-466
 title: "Checked-package protocol control and compensation bodies"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: references
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: references
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: references
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: references
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: references
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: references
-  - target: ix://agent-ix/quire-specification/FR-427
+  - target: ix://agent-ix/filament-specification/FR-427
     type: references
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
 ---
 
@@ -192,7 +192,7 @@ completed iteration's `attempt` binder, refuses `missing_declaration`/
 eligibility for the owner, the `maximum` (including 0) and whether the read is
 a field or bare. The wire has no post-test form: a `repeat` has no argument
 that runs the body once before its first guard, and FR-426 has no such move.
-A source language that defines post-test `repeat` semantics (QSL FR-218-AC-33)
+A source language that defines post-test `repeat` semantics (FSL FR-218-AC-33)
 has no checked-package encoding until a requirement adds one.
 
 **A `visible` entry is an `expression` node.** The `visible` set holds

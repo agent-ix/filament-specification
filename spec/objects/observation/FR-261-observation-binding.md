@@ -4,7 +4,7 @@ title: "Observation binding"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-110
+  - target: ix://agent-ix/filament-specification/FR-110
     type: specifies
 ---
 # FR-261: Observation binding
@@ -27,7 +27,7 @@ occurrence field. The link is derived from members the record already carries
 - **Checked node** — the record's `declared_binding_identity` is resolved through
   the assessment's declared role mapping. One explicit binding may be referenced
   by several compatible role mappings
-  ([observation contract](../../../proposals/quire-v1/observation-contract.md)),
+  ([observation contract](../../../proposals/filament-v1/observation-contract.md)),
   so it resolves to a set of owning native declarations (checked event,
   compensation or response nodes). The record is an observation for node N
   exactly when N is in that set. A binding identity that resolves to nothing
@@ -78,7 +78,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | Concrete mapping | FR-110 Behavior, FR-110-AC-4 | Changing it under the same selection does not change the static subject; it identifies a changed assessment input. |
 | Admitted record set | FR-110 Behavior, FR-110-AC-4 | As for the concrete mapping. |
 
-The [observation binding contract](../../../proposals/quire-v1/observation-contract.md)
+The [observation binding contract](../../../proposals/filament-v1/observation-contract.md)
 states that a declared observation role has "the identity of its owning native
 declaration, original source region, and role kind; its local name is diagnostic
 text and never a global lookup key", and that "equal local names never merge
@@ -95,7 +95,7 @@ roles".
   (FR-110-AC-4), and display name, source path, span, message text, locale and
   rendering never participate — a role's "local name is diagnostic text and
   never a global lookup key"
-  ([observation binding contract](../../../proposals/quire-v1/observation-contract.md)).
+  ([observation binding contract](../../../proposals/filament-v1/observation-contract.md)).
 - **Key order** — bytewise over `definition identity`, for collection
   comparison only. It carries no precedence, no recency and no causal meaning,
   and FR-113 states that "Arbitrary timestamp order SHALL NOT establish
@@ -119,9 +119,9 @@ roles".
 
 - [FR-110](../../functional/observation/FR-110-bind-typed-observations.md) establishes the
   retained selection, the subject-change rule and the substitution prohibitions.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
-- [Observation binding contract](../../../proposals/quire-v1/observation-contract.md)
+- [Observation binding contract](../../../proposals/filament-v1/observation-contract.md)
   supplies the role-identity and local-name rules.
 
 ## Assessment inputs
@@ -131,4 +131,4 @@ static binding key.
 
 ## Status
 
-Proposed binding identity closure for `quire-specification#40`.
+Proposed binding identity closure for `filament-specification#40`.

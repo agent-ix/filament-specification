@@ -3,7 +3,7 @@ id: TC-377
 title: "Join policies at zero, below, at and past threshold"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: verifies
 ---
 

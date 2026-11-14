@@ -4,9 +4,9 @@ title: "Preserve complete semantic fidelity"
 type: NFR
 quality_attribute: functional_suitability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-131
+  - target: ix://agent-ix/filament-specification/FR-131
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: constrains
 ---
 

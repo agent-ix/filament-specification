@@ -3,7 +3,7 @@ id: TC-272
 title: "Replay source structural separation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: verifies
 ---
 
@@ -19,8 +19,8 @@ replay-result type stores a witness-backed field.
 
 ## Preconditions
 
-- QSL ADR-013 TK-01: the QSL layer-6 `replay` facade exists.
-- QSL ADR-013 TK-04: IR admits a `Witness` only through `Witness::parse` and
+- FSL ADR-013 TK-01: the FSL layer-6 `replay` facade exists.
+- FSL ADR-013 TK-04: IR admits a `Witness` only through `Witness::parse` and
   the packet carries `ReplaySource`.
 - CG computes the structural obligation identity (TC-952).
 - CG #50: the CG replay adapter and parity comparator exist.
@@ -36,7 +36,7 @@ counterexample vector. The `Input` packet carries the same decoded values
 ## Test Procedure
 
 Build packets through the real local Rust boundary and replay each through the
-public `Witness` replay entry or the CG replay adapter against the QSL layer-6
+public `Witness` replay entry or the CG replay adapter against the FSL layer-6
 `replay` facade. Run the compile-fail vectors as `trybuild` cases with committed
 `.stderr` snapshots that name the rejected type, each paired with a
 compile-pass control that differs only in passing an accepted type. Take the
@@ -54,19 +54,19 @@ runtime vectors as ordinary tests.
 | RS-04 | Compile-fail: pass an `Input`-arm result to each function parameter that accepts a backend-evidence verdict | Does not compile; snapshot names the rejected type | FR-197-AC-8 |
 | RS-05 | Compile-fail: store an `Input`-arm result in each field that holds a backend-evidence verdict, and return one from each function whose return type is one | Does not compile; snapshot names the rejected type | FR-197-AC-8 |
 | RS-06 | Compile-fail: build a backend-evidence verdict from an `Input`-arm result, from bare values, by struct literal, through `Default`, `From`, `TryFrom` and deserialization | Does not compile; the listing shows one construction path, taking a `Witness`-arm result | FR-197-AC-9, FR-197-AC-10 |
-| RS-07 | Enumerate the fields of the packet and of every replay-result type through their serialized form and a destructuring pattern with no `..` | The field sets are exactly: `CounterexamplePacket`, the deterministic-replay members QSL ADR-013 O-25 assigns to the packet (implemented by IR TK-04, IR #144) plus `source`, the `ReplaySource`; `Witness`-arm result {`witness`, `native`, `settlement`}; `Input`-arm result {`input`, `native`, `settlement`}; per-item replay result {`arm`}, the sum of the two arm results. No witness-backed field exists | FR-197-AC-11 |
+| RS-07 | Enumerate the fields of the packet and of every replay-result type through their serialized form and a destructuring pattern with no `..` | The field sets are exactly: `CounterexamplePacket`, the deterministic-replay members FSL ADR-013 O-25 assigns to the packet (implemented by IR TK-04, IR #144) plus `source`, the `ReplaySource`; `Witness`-arm result {`witness`, `native`, `settlement`}; `Input`-arm result {`input`, `native`, `settlement`}; per-item replay result {`arm`}, the sum of the two arm results. No witness-backed field exists | FR-197-AC-11 |
 | RS-08 | Ask whether each packet is witness-backed | `true` for the `Witness` packet, `false` for the `Input` packet, both from a match on `ReplaySource` | FR-197-AC-12 |
 | RS-09 | Deserialize a packet that carries both a transcript and stored values | Refused with a typed cause before any replay runs | FR-197-AC-14 |
 | RS-10 | Deserialize a packet that carries neither a transcript nor stored values | Refused with a typed cause before any replay runs | FR-197-AC-14 |
 | RS-11 | Replay the `Witness` packet with an executor that does not reproduce the counterexample | `inconclusive` with a typed cause; no backend-evidence verdict | FR-197-AC-13 |
 | RS-12 | Replay the `Input` packet with an executor that does not reproduce the counterexample | `inconclusive` with a typed cause; no backend-evidence verdict | FR-197-AC-13 |
 | RS-13 | Deserialize a `Witness` whose transcript is a cover playback, has no assertion block, or has two; and, as a compile-fail case, write a `Witness { transcript: .. }` literal outside its module | Deserialization is refused by `Witness::parse` and no `Witness` value exists; the literal does not compile | FR-197-AC-15 |
-| RS-14 | Replay the `Witness` packet through the public `Witness` replay entry with a recording QSL `replay` facade | The facade records one call whose decoded arguments are (8, 992); the entry's signature takes no executor parameter | FR-197-AC-16 |
+| RS-14 | Replay the `Witness` packet through the public `Witness` replay entry with a recording FSL `replay` facade | The facade records one call whose decoded arguments are (8, 992); the entry's signature takes no executor parameter | FR-197-AC-16 |
 | RS-15 | Compile-fail: build a `Witness`-arm result that holds an `Input` source, and destructure each replay-result type with no `..` | Does not compile; no replay-result type has a `ReplaySource` field | FR-197-AC-17 |
 | RS-16 | Read back the `native-run-result/2` record of RS-02, and the same record with its arm member altered to `Witness` | The first decodes into the `Input`-arm result type; the altered record refuses with a typed cause; neither yields a backend-evidence verdict | FR-197-AC-18 |
 | RS-17 | Replay an `Input` packet with one assignment keyed by a `WireNodeId` that is no parameter, and another `Input` packet with one parameter left without a value | Each refused with a typed cause before execution; a recording executor records no call | FR-197-AC-20 |
 | RS-18 | Build two counterexample packets for two occurrences of one node id (same node id, different `role`/`ordinal`), then destructure each packet and the obligation identity it belongs to | Each packet and obligation identity carries the occurrence key `(node_id, role, ordinal)` of its own failing occurrence, and the two are told apart though their node ids are equal | FR-197-AC-21 |
-| RS-19 | Replay the seed counterexample vector through the QSL layer-6 `replay` facade with the package's recorded proving-run S1–S4 stage limits lowered below the recompile's requirement | The replay request carries the lowered limits and the recompile refuses with a typed limit cause under exactly those limits, not the reader's default limits | FR-197-AC-22 |
+| RS-19 | Replay the seed counterexample vector through the FSL layer-6 `replay` facade with the package's recorded proving-run S1–S4 stage limits lowered below the recompile's requirement | The replay request carries the lowered limits and the recompile refuses with a typed limit cause under exactly those limits, not the reader's default limits | FR-197-AC-22 |
 
 ## Expected Results
 

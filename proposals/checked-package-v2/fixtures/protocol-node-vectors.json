@@ -233,7 +233,7 @@
   ],
   "protocol_profile": {
     "authority": "agent-ix",
-    "identity": "quire.protocol.finite-global/v1"
+    "identity": "filament.protocol.finite-global/v1"
   },
   "cases": [
     {
@@ -241,13 +241,13 @@
       "section": "Placement and operators",
       "id": "V1",
       "Edit to the base": "none",
-      "Expected": "admitted; every body is a `quire.op.protocol.control` application with one `protocol_profile` law equal to the lock's row, a `profile_operator` member, the Boolean `result_type` and `semantic_type`"
+      "Expected": "admitted; every body is a `filament.op.protocol.control` application with one `protocol_profile` law equal to the lock's row, a `profile_operator` member, the Boolean `result_type` and `semantic_type`"
     },
     {
       "test_case": "TC-946",
       "section": "Placement and operators",
       "id": "V2",
-      "Edit to the base": "`Requested`'s body applies `quire.op.state.clause`",
+      "Edit to the base": "`Requested`'s body applies `filament.op.state.clause`",
       "Expected": "`ill_typed`/`operator-ineligible` at the node (a state clause application at a protocol node's root)"
     },
     {
@@ -268,14 +268,14 @@
       "test_case": "TC-946",
       "section": "Placement and operators",
       "id": "V5",
-      "Edit to the base": "a `quire.op.protocol.control` application nested as an argument of `Main`",
+      "Edit to the base": "a `filament.op.protocol.control` application nested as an argument of `Main`",
       "Expected": "`malformed_wire` at the node pointer `/semantic_graph/nodes/{i}` of `Main` (strict wire validation, the schema's first error path)"
     },
     {
       "test_case": "TC-946",
       "section": "Placement and operators",
       "id": "V6",
-      "Edit to the base": "a `protocol_reference` carrier's body is a `quire.op.protocol.control` application",
+      "Edit to the base": "a `protocol_reference` carrier's body is a `filament.op.protocol.control` application",
       "Expected": "refuses `malformed_wire` (`malformed_wire`)"
     },
     {
@@ -1757,21 +1757,21 @@
       "test_case": "TC-946",
       "section": "Binders and scope",
       "id": "B14",
-      "Edit to the base": "`Outcome`'s case `shipped` guard `{ eastRes.ok }` is replaced by `{ isTrue(M::Order(view.id).open) }` (a `quire.op.model.deref`)",
+      "Edit to the base": "`Outcome`'s case `shipped` guard `{ eastRes.ok }` is replaced by `{ isTrue(M::Order(view.id).open) }` (a `filament.op.model.deref`)",
       "Expected": "`ill_typed`/`operator-ineligible` at the guard's read"
     },
     {
       "test_case": "TC-946",
       "section": "Binders and scope",
       "id": "B15",
-      "Edit to the base": "the `Poll` guard holds `quire.op.state.pre`",
+      "Edit to the base": "the `Poll` guard holds `filament.op.state.pre`",
       "Expected": "`ill_typed`/`operator-ineligible` at the read"
     },
     {
       "test_case": "TC-946",
       "section": "Binders and scope",
       "id": "B16",
-      "Edit to the base": "a `check` condition over a `quire.op.model.all_instances`",
+      "Edit to the base": "a `check` condition over a `filament.op.model.all_instances`",
       "Expected": "`ill_typed`/`operator-ineligible` at the read"
     },
     {
@@ -1932,7 +1932,7 @@
       "test_case": "TC-946",
       "section": "Causal relation and progress",
       "id": "R20",
-      "Edit to the base": "`Poll`'s body is only a nested `repeat` around an `attempt`, `visible` listing the entry `quire.op.boolean.eq(a, b)`, whose guard is `quire.op.boolean.eq(a, b) or not quire.op.boolean.eq(a, b)`; and `visible` listing the entries `quire.op.boolean.eq(a, b)` then `quire.op.boolean.eq(b, a)`, whose guard is `quire.op.boolean.eq(a, b) or not quire.op.boolean.eq(b, a)`",
+      "Edit to the base": "`Poll`'s body is only a nested `repeat` around an `attempt`, `visible` listing the entry `filament.op.boolean.eq(a, b)`, whose guard is `filament.op.boolean.eq(a, b) or not filament.op.boolean.eq(a, b)`; and `visible` listing the entries `filament.op.boolean.eq(a, b)` then `filament.op.boolean.eq(b, a)`, whose guard is `filament.op.boolean.eq(a, b) or not filament.op.boolean.eq(b, a)`",
       "Expected": "admitted (one atom, infeasible exit); `unsupported_construct`/`declaration-form` at the outer `repeat` (two atoms, no commutativity, feasible exit) (FR-464-AC-22)"
     },
     {
@@ -2415,7 +2415,7 @@
       "test_case": "TC-947",
       "section": "Channel vectors",
       "id": "CH7b",
-      "Edit": "`key` holds `quire.op.model.deref`",
+      "Edit": "`key` holds `filament.op.model.deref`",
       "Expected": "`ill_typed`/`operator-ineligible` at the read, naming the key"
     },
     {
@@ -3990,7 +3990,7 @@
       "test_case": "TC-948",
       "section": "Compensation vectors",
       "id": "CP35",
-      "Edit": "the trigger guard holds a `quire.op.model.deref`",
+      "Edit": "the trigger guard holds a `filament.op.model.deref`",
       "Expected": "`ill_typed`/`operator-ineligible` at the read, naming the guard"
     },
     {

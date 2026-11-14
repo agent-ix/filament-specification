@@ -3,14 +3,14 @@ id: FR-123
 title: "Generate bounded SysML 2.0 and KerML 1.0 output"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: references
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: references
 ---
 ## Description
 
-When `quire.output.sysml2-kerml1/v1` is selected, the
+When `filament.output.sysml2-kerml1/v1` is selected, the
 SysML/KerML mapper SHALL generate only the admitted requirement/constraint
 expression fragment over exact model bindings from spec artifacts.
 
@@ -49,7 +49,7 @@ generating plausible replacement structures.
 
 ## Dependencies
 
-- [SysML/KerML profile](../../../proposals/quire-v1/output-mappings/sysml-2.0-kerml-1.0.md).
+- [SysML/KerML profile](../../../proposals/filament-v1/output-mappings/sysml-2.0-kerml-1.0.md).
 - [FR-121](FR-121-account-for-every-output-obligation.md).
 - Qcir #56 owns implementation; the spec-declared domain declarations retain declaration authority.
 

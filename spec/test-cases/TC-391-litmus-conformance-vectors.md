@@ -3,9 +3,9 @@ id: TC-391
 title: "Litmus conformance vectors under sc, tso and ra"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-436
+  - target: ix://agent-ix/filament-specification/FR-436
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-437
+  - target: ix://agent-ix/filament-specification/FR-437
     type: verifies
 ---
 

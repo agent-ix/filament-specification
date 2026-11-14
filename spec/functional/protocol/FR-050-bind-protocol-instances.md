@@ -3,27 +3,27 @@ id: FR-050
 title: "Bind protocol roles and instances to exact subjects"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: references
-  - target: ix://agent-ix/quire-specification/FR-211
+  - target: ix://agent-ix/filament-specification/FR-211
     type: references
-  - target: ix://agent-ix/quire-specification/FR-212
+  - target: ix://agent-ix/filament-specification/FR-212
     type: references
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: references
-  - target: ix://agent-ix/quire-specification/FR-214
+  - target: ix://agent-ix/filament-specification/FR-214
     type: references
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: references
-  - target: ix://agent-ix/quire-specification/FR-217
+  - target: ix://agent-ix/filament-specification/FR-217
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 ## Description
@@ -114,8 +114,8 @@ establish source order, role precedence, message order or causality.
 ## Dependencies
 
 - [US-006](../../usecase/US-006-assess-distributed-protocols.md).
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Qualified protocol-definition identity](../../objects/protocol/FR-288-qualified-protocol-definition-identity.md).
-- [Protocol contract](../../../proposals/quire-v1/protocol-contract.md).
+- [Protocol contract](../../../proposals/filament-v1/protocol-contract.md).
 - [FR-287](../../objects/protocol/FR-287-authority-qualified-runtime-subject-reference.md)
   defines the common runtime key and non-causal order.

@@ -3,11 +3,11 @@ id: TC-290
 title: "Model behaviours read as temporal traces"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: verifies
 ---
 
@@ -32,10 +32,10 @@ whose predicate holds exactly at `value = 3`. Its one behaviour visits values
 
 1. Read the behaviour and record each position's state and anchor.
 2. Check `always[0,4] holds(c.value >= 0)`, activation `on origin`, under
-   `quire.temporal.event-position.false-extension/v1` and under
-   `quire.temporal.infinite-trace/v1`.
-3. Check the same subject under `quire.temporal.fixed-sample.false-extension/v1`
-   and `quire.temporal.timestamped-event.finite-window/v1`.
+   `filament.temporal.event-position.false-extension/v1` and under
+   `filament.temporal.infinite-trace/v1`.
+3. Check the same subject under `filament.temporal.fixed-sample.false-extension/v1`
+   and `filament.temporal.timestamped-event.finite-window/v1`.
 4. Under infinite-trace, extend the behaviour to a lasso and inspect its loop
    step.
 5. Widen the universe to `{c, d}`, both at value 0, and check

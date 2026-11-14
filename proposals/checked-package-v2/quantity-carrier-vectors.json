@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "FR-142-AC-27 to FR-142-AC-31, FR-322-AC-301, FR-322-AC-302 and FR-322-AC-382 (TC-187 U41 to U44, TC-280 MU-31 to MU-34): the carried quantity type `Quantity<u, C>` (`scalar_type`/`carried_quantity`) and its conversion. `nodes` lists the nodes of one importing package `example` by key; a path segment `{\"node\": key}` is the structural id of the node `key` (the path of FR-322 \"Derived type forms and forwarding\"). `wire` holds CQ-W01 to CQ-W19 (CQ-W16 to CQ-W19 the `Rational[..]` carrier, `exact` only): the shape and conversion-application cases, each `admitted`, `distinct` (two nodes with different paths) or a refusal with `code`, `cause` and the node `at`. `evaluation` holds CQ-E01 to CQ-E26 (CQ-E21 to CQ-E26 the `Rational[..]` carrier: no grid, a reduced value outside its bounds refuses `rational_out_of_domain`, a completed value is its reduced `numerator` and `denominator`), the exact halves of TC-187 U07, U08, U16, U17, U18 and U29 and the precedence case U43: each names the `source` value, its `unit`, the `target` carrier node, the mode (`exact` except CQ-E17 to CQ-E19, the carried forms of the unchanged nearest-even halves of U07 and U29 and rounding before bounds), the optional `limits` tuple `L(i,d,e,o,w,r)` of TC-187 as a list `[integer_bits, decimal_digits, unit_edges, value_occurrences, work_units, result_units]`, and the `expected` disposition. The reader and evaluator that decide these outcomes are quire-contract-ir's and quire-verification's; the vectors are authoritative for them and QSpec's test checks only their shape and that each `completed` or `refused` outcome follows from the exact value and the carrier.",
+  "note": "FR-142-AC-27 to FR-142-AC-31, FR-322-AC-301, FR-322-AC-302 and FR-322-AC-382 (TC-187 U41 to U44, TC-280 MU-31 to MU-34): the carried quantity type `Quantity<u, C>` (`scalar_type`/`carried_quantity`) and its conversion. `nodes` lists the nodes of one importing package `example` by key; a path segment `{\"node\": key}` is the structural id of the node `key` (the path of FR-322 \"Derived type forms and forwarding\"). `wire` holds CQ-W01 to CQ-W19 (CQ-W16 to CQ-W19 the `Rational[..]` carrier, `exact` only): the shape and conversion-application cases, each `admitted`, `distinct` (two nodes with different paths) or a refusal with `code`, `cause` and the node `at`. `evaluation` holds CQ-E01 to CQ-E26 (CQ-E21 to CQ-E26 the `Rational[..]` carrier: no grid, a reduced value outside its bounds refuses `rational_out_of_domain`, a completed value is its reduced `numerator` and `denominator`), the exact halves of TC-187 U07, U08, U16, U17, U18 and U29 and the precedence case U43: each names the `source` value, its `unit`, the `target` carrier node, the mode (`exact` except CQ-E17 to CQ-E19, the carried forms of the unchanged nearest-even halves of U07 and U29 and rounding before bounds), the optional `limits` tuple `L(i,d,e,o,w,r)` of TC-187 as a list `[integer_bits, decimal_digits, unit_edges, value_occurrences, work_units, result_units]`, and the `expected` disposition. The reader and evaluator that decide these outcomes are filament-contract-ir's and filament-verification's; the vectors are authoritative for them and QSpec's test checks only their shape and that each `completed` or `refused` outcome follows from the exact value and the carrier.",
   "units": {
     "m": "1",
     "cm": "1/100",
@@ -1644,7 +1644,7 @@
       "description": "convert 1 in into q_dec, mode exact",
       "expected": "admitted",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_in"
         ],
@@ -1660,7 +1660,7 @@
       "description": "convert into q_dec_ne, mode nearest-even",
       "expected": "admitted",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_in"
         ],
@@ -1676,7 +1676,7 @@
       "description": "convert into q_dec_ne, mode exact",
       "expected": "invalid_package/operation-mode-type-mismatch",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_in"
         ],
@@ -1694,7 +1694,7 @@
       "description": "convert into q_dec, mode null",
       "expected": "invalid_package/operation-mode-type-mismatch",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_in"
         ],
@@ -1709,7 +1709,7 @@
       "description": "convert a length quantity into q_dec_s (a time unit)",
       "expected": "ill_typed/operator-ineligible",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_in"
         ],
@@ -1724,10 +1724,10 @@
     },
     {
       "id": "CQ-W14",
-      "description": "quire.op.quantity.add over a q_dec operand",
+      "description": "filament.op.quantity.add over a q_dec operand",
       "expected": "ill_typed/operator-ineligible",
       "application": {
-        "operation": "quire.op.quantity.add",
+        "operation": "filament.op.quantity.add",
         "operand_types": [
           "q_dec",
           "q_dec"
@@ -1743,7 +1743,7 @@
       "description": "convert a q_pm2 operand (carried, unit m) into q_dec, mode exact",
       "expected": "admitted",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "q_pm2"
         ],
@@ -1774,7 +1774,7 @@
       "description": "convert 25 cm into q_rat, mode exact",
       "expected": "admitted",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_cm"
         ],
@@ -1790,7 +1790,7 @@
       "description": "convert into q_rat, mode nearest-even",
       "expected": "invalid_package/operation-mode-type-mismatch",
       "application": {
-        "operation": "quire.op.quantity.convert",
+        "operation": "filament.op.quantity.convert",
         "operand_types": [
           "unit_cm"
         ],

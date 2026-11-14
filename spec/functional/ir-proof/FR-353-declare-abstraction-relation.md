@@ -3,23 +3,23 @@ id: FR-353
 title: "Declare a model-to-implementation abstraction relation"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: references
-  - target: ix://agent-ix/quire-specification/FR-350
+  - target: ix://agent-ix/filament-specification/FR-350
     type: references
-  - target: ix://agent-ix/quire-specification/FR-012
+  - target: ix://agent-ix/filament-specification/FR-012
     type: references
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: references
-  - target: ix://agent-ix/quire-specification/FR-450
+  - target: ix://agent-ix/filament-specification/FR-450
     type: references
-  - target: ix://agent-ix/quire-specification/FR-451
+  - target: ix://agent-ix/filament-specification/FR-451
     type: references
 ---
 
@@ -121,5 +121,5 @@ it does not silently reinterpret an already-generated contract.
 
 ## References
 
-- quire-spec-language ADR-017 §3 AR-2 and §6 Q-7 (the operation key).
+- filament-spec-language ADR-017 §3 AR-2 and §6 Q-7 (the operation key).
 - Specification ticket STD-121.

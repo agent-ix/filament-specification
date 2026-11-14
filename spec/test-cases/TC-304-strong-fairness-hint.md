@@ -3,7 +3,7 @@ id: TC-304
 title: "Strong-fairness hint on a reproduced refutation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-369
+  - target: ix://agent-ix/filament-specification/FR-369
     type: verifies
 ---
 

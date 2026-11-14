@@ -3,13 +3,13 @@ id: FR-153
 title: "Query explicit closed model environments"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -39,8 +39,8 @@ Lookup names its absence behavior per query. `allInstances` returns the complete
 selected population only when object and subtype closure are both established;
 otherwise it is incomplete. Neither operation consults a process-global registry
 or invents objects from samples. Both forms are defined by the complete-V1
-grammar and the selected `quire.model.complete/v1` definition (rules
-`quire.model.environment.lookup/v1` and `quire.model.environment.population/v1`).
+grammar and the selected `filament.model.complete/v1` definition (rules
+`filament.model.environment.lookup/v1` and `filament.model.environment.population/v1`).
 
 ## Environment key and closure
 
@@ -71,7 +71,7 @@ A member type not covered by the population declaration's member types is
 `foreign_reference`/`foreign-type`. A member whose most-specific type is
 abstract is `invalid_runtime_input`/`abstract-instance`.
 After the uncharged model-selection and closure checks, binding admission is
-metered by `PopulationAdmissionLimitsV1` of `quire.value.accounting/v1`: each
+metered by `PopulationAdmissionLimitsV1` of `filament.value.accounting/v1`: each
 member in input order is charged `binding.member` and then checked for
 foreign type (each supertypes edge its coverage walk follows is charged
 `admission.ancestor-edge` against `ancestor_steps` before it is followed),
@@ -149,7 +149,7 @@ population when `M` is a model alias and `P` a population of its package.
   declaration, which states none: it is whatever maximum the unit's source
   authors for `P`, and a population with none has no bracket and no inferred
   finite bound. The authoring form (`bound <label> on M::P [N]`) is the
-  source-language's (quire-spec-language FR-380), not this grammar's. The queried `T` need not be `U`; it
+  source-language's (filament-spec-language FR-380), not this grammar's. The queried `T` need not be `U`; it
   is checked against the population's member types as above.
 - The name selects the declaration; the binding is not ambient. It is the
   population row of the clause's observation: `current` in an invariant,
@@ -181,7 +181,7 @@ A population binding carries its anchor: in a postcondition,
 `pre(allInstances<T>(p))` reads the invocation's pre population. An object
 deleted in the post state keeps its pre most-specific type. Charges are the
 `lookup.*`, `population.visit` and `collection.*` schedules of
-`quire.value.accounting/v1`. A checked downcast is outside V1.
+`filament.value.accounting/v1`. A checked downcast is outside V1.
 
 ## Acceptance Criteria
 
@@ -197,16 +197,16 @@ deleted in the post state keeps its pre most-specific type. Charges are the
 | FR-153-AC-8 | A binding typed `Population<T>[N]` requires a model object target `T` and an unsigned maximum `N`, including zero; an admitted non-object target refuses `ill_typed`/`type-mismatch`. `allInstances<T>(p)`'s result is exactly `Set<Reference<T>>[0,N]`, typed to the queried `T` and bounded by `p`'s declared maximum `N`, when `p` declares one. Lookup's present result is `Reference<T>` in the `undefined` and `refused` modes and `Option<Reference<T>>` in the `empty` mode, in every case typed to the queried `T`; every lookup spells its mandatory `absent` mode. | Test (TC-198) |
 | FR-153-AC-9 | A binding typed `Population<T>` declares no maximum and infers no finite default; `allInstances<T>(p)`'s result is exactly the unbounded `Set<Reference<T>>`, admits every selected count, and never returns `cardinality_out_of_bound`. | Test |
 | FR-153-AC-10 | Admitting a member whose most-specific type is `n` supertypes edges from a covering population member type completes at `ancestor_steps = n` and, at `n - 1`, returns exactly `incomplete(ancestor_steps, n-1, n-1, 1, admission.ancestor-edge)` with no population admitted; a zero limit denies the first followed edge; an unavailable `binding.member` charge wins before a simultaneous edge denial. | Test (TC-198) |
-| FR-153-AC-11 | A package that does not select `quire.model.complete/v1` refuses `unsupported_construct` for `lookup`, a dispatched call and an `operation-body`, and for no `Population<T>[N]` type, `allInstances<T>(p)` call or field or relationship-end navigation. | Test (TC-198) |
+| FR-153-AC-11 | A package that does not select `filament.model.complete/v1` refuses `unsupported_construct` for `lookup`, a dispatched call and an `operation-body`, and for no `Population<T>[N]` type, `allInstances<T>(p)` call or field or relationship-end navigation. | Test (TC-198) |
 | FR-153-AC-12 | In a state clause, `allInstances<T>(M::P)` and `lookup<T>(M::P, r) absent m` name the population `P` of `M`'s domain package. The operand types as `Population<U>[N]` (no bracket without a `bound` on `P`), `U` the least member type by declaration key, and the result types as in AC-8 and AC-9. The binding is the population row of the clause's observation (`current`, `pre` or `post`; `pre` under `pre(e)`). | Test (TC-198) |
 | FR-153-AC-13 | An unknown `P` refuses `missing_declaration`/`missing-name`; `M` naming both a model alias and an enum refuses `ambiguous_declaration`/`ambiguous-name`; `M::P` in a function body refuses `missing_declaration`/`missing-name`; `M::P` as a value (compared, bound by `let`, argument of `size`, or a whole clause body) refuses `ill_typed`/`operator-ineligible`. | Test (TC-198) |
 | FR-153-AC-14 | A missing population row returns `incomplete_population`/`missing-required-artifact`, an open extent `incomplete_population`/`incomplete-scope` and an uncovered subtype `incomplete_population`/`unclosed-subtypes`, each with no collection. | Test (TC-198) |
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement, except the unit-authored maximum
-  of a population named in a state clause, whose form is quire-spec-language
+  of a population named in a state clause, whose form is filament-spec-language
   FR-380's.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

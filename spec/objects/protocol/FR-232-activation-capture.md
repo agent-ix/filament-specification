@@ -4,9 +4,9 @@ title: "Immutable activation capture"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: specifies
 ---
 # FR-232: Immutable activation capture
@@ -98,7 +98,7 @@ instance's captures shall not satisfy another instance's propositions."
   establishes capture retention, immutability and the anchor rule.
 - [FR-055](../../functional/protocol/FR-055-activate-protocol-obligations.md) establishes
   capture immutability for the obligation.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Ordered capture contract

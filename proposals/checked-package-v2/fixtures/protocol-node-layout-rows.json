@@ -1,5 +1,5 @@
 {
-  "version": "quire.protocol-node-layout-rows/v1",
+  "version": "filament.protocol-node-layout-rows/v1",
   "note": "STD-650. The 26 Q-LAYOUT vectors that STD-609 held as pending, written in the mutation-manifest row format so they can be promoted unchanged. Each edits protocol-node-base.json and is refused at the schema stage as malformed_wire; the locus is the instance path of the first error of schema.json (jsonschema 0.55.0). L12 appends a fence node because the base has none; an appended node has no 'node' name.",
   "rows": [
     {
@@ -16,7 +16,7 @@
           "value": {
             "definition": {
               "authority": "agent-ix",
-              "identity": "quire.protocol.finite-global/v1"
+              "identity": "filament.protocol.finite-global/v1"
             },
             "role": "protocol_profile"
           },
@@ -462,12 +462,12 @@
                 }
               ],
               "operation": {
-                "identity": "quire.op.protocol.control",
+                "identity": "filament.op.protocol.control",
                 "laws": [
                   {
                     "definition": {
                       "authority": "agent-ix",
-                      "identity": "quire.protocol.finite-global/v1"
+                      "identity": "filament.protocol.finite-global/v1"
                     },
                     "role": "protocol_profile"
                   }
@@ -510,7 +510,7 @@
                   {
                     "operand": 0
                   },
-                  "quire.op.record.project",
+                  "filament.op.record.project",
                   {
                     "operand": 1
                   },
@@ -541,7 +541,7 @@
                 "role": "declaration"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "control",
             "semantic_type": {
               "ordinal": 0,
@@ -1181,7 +1181,7 @@
                   {
                     "operand": 0
                   },
-                  "quire.op.record.project",
+                  "filament.op.record.project",
                   {
                     "operand": 1
                   },
@@ -1330,7 +1330,7 @@
                     {
                       "operand": 0
                     },
-                    "quire.op.record.project",
+                    "filament.op.record.project",
                     {
                       "operand": 1
                     },

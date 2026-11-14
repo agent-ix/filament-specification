@@ -3,11 +3,11 @@ id: TC-332
 title: "Always-possible claims on the game subject"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-394
+  - target: ix://agent-ix/filament-specification/FR-394
     type: verifies
 ---
 

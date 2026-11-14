@@ -3,9 +3,9 @@ id: IT-071
 title: "Compose native, temporal and protocol runtime results"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-180
+  - target: ix://agent-ix/filament-specification/FR-180
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: verifies
 ---
 
@@ -13,7 +13,7 @@ relationships:
 
 ## Objective
 
-Verify that the `quire-integration` Rust facade coordinates the real QSL,
+Verify that the `filament-integration` Rust facade coordinates the real FSL,
 temporal/observation and protocol APIs while preserving every result axis.
 
 ## Target Integration

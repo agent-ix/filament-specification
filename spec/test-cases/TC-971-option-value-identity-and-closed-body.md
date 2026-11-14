@@ -3,7 +3,7 @@ id: TC-971
 title: "A present option is an identity-bound value with a closed payload reference"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 

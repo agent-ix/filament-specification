@@ -3,35 +3,35 @@ id: FR-049
 title: "Bind native choreography syntax to exact protocol subjects"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-034
+  - target: ix://agent-ix/filament-specification/FR-034
     type: references
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: references
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: references
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: references
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: references
-  - target: ix://agent-ix/quire-specification/FR-211
+  - target: ix://agent-ix/filament-specification/FR-211
     type: references
-  - target: ix://agent-ix/quire-specification/FR-220
+  - target: ix://agent-ix/filament-specification/FR-220
     type: references
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-222
+  - target: ix://agent-ix/filament-specification/FR-222
     type: references
-  - target: ix://agent-ix/quire-specification/FR-223
+  - target: ix://agent-ix/filament-specification/FR-223
     type: references
-  - target: ix://agent-ix/quire-specification/FR-228
+  - target: ix://agent-ix/filament-specification/FR-228
     type: references
-  - target: ix://agent-ix/quire-specification/FR-239
+  - target: ix://agent-ix/filament-specification/FR-239
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 ## Description
@@ -112,9 +112,9 @@ constraint. Selecting or not selecting a branch is not itself a result
 
 ## Dependencies
 
-- [One composed grammar](../../../proposals/quire-v1/shared-grammar.md).
-- [Choreography surface and binding contract](../../../proposals/quire-v1/choreography-surface.md).
-- [B's protocol contract](../../../proposals/quire-v1/protocol-contract.md).
+- [One composed grammar](../../../proposals/filament-v1/shared-grammar.md).
+- [Choreography surface and binding contract](../../../proposals/filament-v1/choreography-surface.md).
+- [B's protocol contract](../../../proposals/filament-v1/protocol-contract.md).
 - [Explicit ecosystem subjects](FR-035-bind-ecosystem-subjects.md).
 - [Temporal clock selection](../temporal/FR-090-select-temporal-profile-and-clock.md).
 - [Typed observation binding](../observation/FR-110-bind-typed-observations.md).

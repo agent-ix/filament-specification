@@ -3,11 +3,11 @@ id: FR-111
 title: "Correlate related workflow instances only through declared relationships"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-262
+  - target: ix://agent-ix/filament-specification/FR-262
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 ## Description
@@ -45,7 +45,7 @@ from a foreign key, trace ID, provider name, or ambient configuration.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [AD-006](../../assurance/AD-006-model-graph-state-contracts.md): relationship declarations are spec-declared and keyed by domain package identity and IR node identity (the package selection carries identity and version); B owns protocol subject meaning.
 - [FR-287](../../objects/protocol/FR-287-authority-qualified-runtime-subject-reference.md)
   supplies each ordered endpoint key.

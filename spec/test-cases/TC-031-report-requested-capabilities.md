@@ -3,7 +3,7 @@ id: TC-031
 title: "Report each requested assessment capability independently"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-031
+  - target: ix://agent-ix/filament-specification/FR-031
     type: verifies
 ---
 ## Description
@@ -16,7 +16,7 @@ No executable test or completed coverage is claimed by this artifact.
 Request replay and local projection for the same admitted protocol with a backend supporting only replay. Separately request independent state evaluation and unsupported temporal lowering. Inject one failed prerequisite shared by two requests while retaining a third independent request.
 
 Select the exact state-graph, timestamped temporal and finite-global protocol
-roots in the [definition catalog](../../proposals/quire-v1/definitions/README.md).
+roots in the [definition catalog](../../proposals/filament-v1/definitions/README.md).
 Evaluate a total state predicate, request native timestamped monitoring and ask
 the current TL bridge to lower that same temporal subject. Retain the separately
 requested global protocol conformance result. A native meaning cannot be switched

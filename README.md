@@ -1,21 +1,21 @@
-# quire-specification
+# filament-specification
 
 [![Discord](https://img.shields.io/badge/Discord-Join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/k8DVhuYBR2)
-[![Quire](https://img.shields.io/badge/Quire-Specification%20Language-1F6FEB)](https://github.com/agent-ix/quire-spec-language)
+[![Filament](https://img.shields.io/badge/Filament-Specification%20Language-1F6FEB)](https://github.com/agent-ix/filament-spec-language)
 
-quire-specification is the written standard for the Quire language. It holds
+filament-specification is the written standard for the Filament Specification Language (FSL). It holds
 the semantics of the language, the profiles that select parts of it, the
 interchange formats programs use to hand each other checked results, and the
 test cases an implementation has to pass.
 
-The compiler ([quire-spec-language](https://github.com/agent-ix/quire-spec-language)),
+The compiler ([filament-spec-language](https://github.com/agent-ix/filament-spec-language)),
 the proof and code-generation backends and the verification tools read the same
 requirements, JSON schemas and vectors from this repository. Implementers and
 tool authors use it as the shared reference.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.svg">
-  <img alt="The standard is authored as requirements, test cases, schemas with vectors, and definition bytes. Today the qualification tests check the schemas, vectors and definition bytes and report each vector admitted or refused. Compiler acceptance of the test cases by quire-spec-language and the backends is planned." src="docs/images/hero-light.svg">
+  <img alt="The standard is authored as requirements, test cases, schemas with vectors, and definition bytes. Today the qualification tests check the schemas, vectors and definition bytes and report each vector admitted or refused. Compiler acceptance of the test cases by filament-spec-language and the backends is planned." src="docs/images/hero-light.svg">
 </picture>
 
 ## Getting started
@@ -23,17 +23,17 @@ tool authors use it as the shared reference.
 Clone the repository to read the standard:
 
 ```sh
-git clone https://github.com/agent-ix/quire-specification
-cd quire-specification
+git clone https://github.com/agent-ix/filament-specification
+cd filament-specification
 ```
 
 To use the authored definition documents from Rust, add the library as a git
-dependency. Its package name is `quire-specification-qualification` and its
-library name is `quire_specification`:
+dependency. Its package name is `filament-specification-qualification` and its
+library name is `filament_specification`:
 
 ```toml
 [dependencies]
-quire-specification-qualification = { git = "https://github.com/agent-ix/quire-specification" }
+filament-specification-qualification = { git = "https://github.com/agent-ix/filament-specification" }
 ```
 
 ## Contents
@@ -56,7 +56,7 @@ The proposals are:
 
 | Proposal | What it defines |
 | --- | --- |
-| [`quire-v1`](proposals/quire-v1/README.md) | The V1 language research, capability assessment and the versioned definition documents (edition, value and model packages, diagnostics, state, temporal, protocol and observation profiles). |
+| [`filament-v1`](proposals/filament-v1/README.md) | The V1 language research, capability assessment and the versioned definition documents (edition, value and model packages, diagnostics, state, temporal, protocol and observation profiles). |
 | [`state-core`](proposals/state-core/README.md) | The finite-state profile: grammar, snapshots, identity-preserving references and the fixture cases. |
 | [`native-source-1-draft`](proposals/native-source-1-draft/README.md) | The native source ruling, with the superseded state-finite candidate kept as history. |
 | [`shared-reference-2-draft`](proposals/shared-reference-2-draft/README.md) | The artifact roles that verification records use. |
@@ -99,33 +99,33 @@ supplies the domain package.
 
 ## Usage
 
-The library crate is named `quire_specification`. A consumer reads the
+The library crate is named `filament_specification`. A consumer reads the
 documents by reference:
 
 ```rust
-use quire_specification::{
+use filament_specification::{
     COMPLETE_VALUE_SELECTION_VECTORS, NATIVE_DIAGNOSTICS,
 };
 ```
 
 Each constant holds exactly the bytes of the file under
-`proposals/quire-v1/definitions/`.
+`proposals/filament-v1/definitions/`.
 
-## The Quire ecosystem
+## The Filament ecosystem
 
 This repository is the language standard. It starts the main chain, ahead of
 the compiler and the backends that implement and consume it.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/ecosystem-dark.svg">
-  <img alt="The Quire repositories. The main chain runs from the standard, quire-specification, to the compiler, quire-spec-language, then quire-contract-ir, quire-contract-codegen and quire-contract-runtime. quire-spec-language also feeds quire-protocol, and quire-contract-ir feeds quire-analyze. quire-observation feeds quire-protocol and quire-mltl. Above the chain, quire-driver runs it, quire-integration tests it and quire-verification plans verification. Below it, shared libraries used throughout: quire-eval, quire-exact, quire-semantic-value, quire-walk, quire-canonical and quire-verification-contracts." src="docs/images/ecosystem-light.svg">
+  <img alt="The Filament repositories. The main chain runs from the standard, filament-specification, to the compiler, filament-spec-language, then filament-contract-ir, filament-contract-codegen and filament-contract-runtime. filament-spec-language also feeds filament-protocol, and filament-contract-ir feeds filament-analyze. filament-observation feeds filament-protocol and filament-mltl. Above the chain, filament-driver runs it, filament-integration tests it and filament-verification plans verification. Below it, shared libraries used throughout: filament-eval, filament-exact, filament-semantic-value, filament-walk, quire-canonical and filament-verification-contracts." src="docs/images/ecosystem-light.svg">
 </picture>
 
 The library has no dependencies. The tests use the
-[quire-verification-contracts](https://github.com/agent-ix/quire-verification-contracts)
+[filament-verification-contracts](https://github.com/agent-ix/filament-verification-contracts)
 crate crate (canonical JSON identity and the operation catalog) and ix-trace-rs, which
 ties each test to the criterion it verifies. The compiler that implements the standard is
-[quire-spec-language](https://github.com/agent-ix/quire-spec-language).
+[filament-spec-language](https://github.com/agent-ix/filament-spec-language).
 
 ## Building and testing
 

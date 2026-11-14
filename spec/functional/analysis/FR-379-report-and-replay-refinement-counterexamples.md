@@ -3,29 +3,29 @@ id: FR-379
 title: "Report and replay refinement verdicts and counterexamples"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-378
+  - target: ix://agent-ix/filament-specification/FR-378
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: references
-  - target: ix://agent-ix/quire-specification/FR-432
+  - target: ix://agent-ix/filament-specification/FR-432
     type: references
 ---
 
@@ -250,8 +250,8 @@ when its relation is defined.
 
 ## References
 
-- Design: quire-spec-language ADR-020 (RC-1 to RC-3, RE-4, QS-6) and the
+- Design: filament-spec-language ADR-020 (RC-1 to RC-3, RE-4, QS-6) and the
   "Strength" paragraph of its §5.
 - Tickets: Linear STD-133; paired QSL-367; STD-631 for the protocol relation
-  failures, asked by QSL-1442 for QSL-1439 and QSL FR-148. The model-subject temporal
+  failures, asked by QSL-1442 for QSL-1439 and FSL FR-148. The model-subject temporal
   requirement is Linear STD-131.

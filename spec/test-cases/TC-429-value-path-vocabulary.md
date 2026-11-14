@@ -3,9 +3,9 @@ id: TC-429
 title: "Value paths root and step through every witness location"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-207
+  - target: ix://agent-ix/filament-specification/FR-207
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-351
+  - target: ix://agent-ix/filament-specification/FR-351
     type: verifies
 ---
 

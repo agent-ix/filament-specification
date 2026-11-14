@@ -4,13 +4,13 @@ title: "Native-to-TL correspondence record"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-251
+  - target: ix://agent-ix/filament-specification/FR-251
     type: references
-  - target: ix://agent-ix/quire-specification/FR-258
+  - target: ix://agent-ix/filament-specification/FR-258
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-026
+  - target: ix://agent-ix/filament-contract-ir/FR-026
     type: references
 ---
 # FR-259: Native-to-TL correspondence record
@@ -145,7 +145,7 @@ valuation, capture and clock mapping as semantic correspondence."
 - [FR-251](FR-251-tl-target-profile.md) supplies the TL target labels.
 - [FR-258](FR-258-temporal-decision-scope.md) supplies the progress/closure axes
   the record preserves.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Artifact identity allocation
@@ -157,4 +157,4 @@ they remain unequal if another preserved correspondence axis differs.
 
 ## Status
 
-Proposed identity allocation for `quire-specification#40`.
+Proposed identity allocation for `filament-specification#40`.

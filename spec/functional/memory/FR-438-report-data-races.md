@@ -3,19 +3,19 @@ id: FR-438
 title: "Report data races on non-atomic locations through a derived item"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-435
+  - target: ix://agent-ix/filament-specification/FR-435
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-436
+  - target: ix://agent-ix/filament-specification/FR-436
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-437
+  - target: ix://agent-ix/filament-specification/FR-437
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -208,6 +208,6 @@ settles `inconclusive`, cause `replay-parity`.
 
 ## References
 
-- Design: quire-spec-language ADR-025 DR-1 to DR-8 and RU-4; Flanagan and
+- Design: filament-spec-language ADR-025 DR-1 to DR-8 and RU-4; Flanagan and
   Freund, FastTrack (PLDI 2009).
 - Tickets: Linear STD-138; paired QSL-372.

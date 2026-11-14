@@ -3,7 +3,7 @@ id: TC-209
 title: "Complete reference workflow corpus"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-180
+  - target: ix://agent-ix/filament-specification/FR-180
     type: verifies
 ---
 
@@ -29,8 +29,8 @@ promote missing execution.
 
 | Case family | Capability | Primary ticket | Qualification ticket |
 | --- | --- | --- | --- |
-| ConfigVersion | V1-RUN-010 | QSL #121 | QSL #123 |
+| ConfigVersion | V1-RUN-010 | FSL #121 | FSL #123 |
 | Timed-refund | V1-RUN-011 | Protocol #82 | Research #78 |
 | Fan-out/join/compensation choreography | V1-RUN-012 | Protocol #82 | Research #78 |
 | Cross-workflow aggregates | V1-RUN-008 | QObs #25 | QObs #26 |
-| Composed domain execution (IT-071) | — | quire-integration | — |
+| Composed domain execution (IT-071) | — | filament-integration | — |

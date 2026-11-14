@@ -4,21 +4,21 @@ title: "TL target evaluator profile"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-025
+  - target: ix://agent-ix/filament-contract-ir/FR-025
     type: references
 ---
 # FR-251: TL target evaluator profile
 
 ## Description
 
-When a native temporal clause is lowered, the reader SHALL treat the TL evaluator profiles listed here as lowering targets of a correspondence rather than as authored Quire temporal profiles.
+When a native temporal clause is lowered, the reader SHALL treat the TL evaluator profiles listed here as lowering targets of a correspondence rather than as authored Filament temporal profiles.
 
 FR-200 records that `tl-*` syntax and evaluators "are consumed behind a
-native-Quire lowering boundary; they are not a second authored source
+native-Filament lowering boundary; they are not a second authored source
 language". FR-095 states that "The generated TL artifact is internal derived
 output and never editable source."
 
@@ -34,9 +34,9 @@ fixed-sample false-extension bounded future core, "Supported only with one total
 valuation per required sample and retained epoch/period/unit correspondence",
 and "Current TL profiles" as the target of the two unsupported rows for
 timestamped-event finite-window and for "Any bounded past operator". FR-095
-also records "No TL target" for a `quire.temporal.infinite-trace/v1` unbounded
+also records "No TL target" for a `filament.temporal.infinite-trace/v1` unbounded
 property, resolving to an absent target rather than to either labeled member; FR-161 analyzes that
-request natively instead of lowering it. A `quire.temporal.timed/v1` claim
+request natively instead of lowering it. A `filament.temporal.timed/v1` claim
 likewise resolves to an absent target; FR-416 analyzes it natively, and an
 embedded monitor of a timed claim runs under the timestamped-event profile.
 No requirement enumerates any TL
@@ -98,7 +98,7 @@ equivalence claim."
   lower-bound convention shared with `mltl.closed-trace/v1`.
 - [FR-250](FR-250-temporal-semantic-profile.md) holds the authored profile
   vocabulary this one is kept separate from.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Status

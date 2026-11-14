@@ -3,7 +3,7 @@ id: US-012
 title: "Drive authorized workflows from formal decisions"
 type: US
 relationships:
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: traces_to
 ---
 

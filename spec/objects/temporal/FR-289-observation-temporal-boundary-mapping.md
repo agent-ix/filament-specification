@@ -4,15 +4,15 @@ title: "Observation-to-temporal boundary mapping"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: references
 ---
 # FR-289: Observation-to-temporal boundary mapping
@@ -106,4 +106,4 @@ interval `[a,a]` is admitted only with a carrier end strictly greater than `a`.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`.
+Proposed shared ruling for `filament-specification#40`.

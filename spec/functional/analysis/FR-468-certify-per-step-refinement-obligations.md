@@ -3,21 +3,21 @@ id: FR-468
 title: "Query and certify a refinement's per-step simulation obligations"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: references
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-485
+  - target: ix://agent-ix/filament-specification/FR-485
     type: references
 ---
 
@@ -41,7 +41,7 @@ For each query, the query itself and a settlement; for the refinement item, the 
 
 ### The queries
 
-The per-step obligations of [FR-377](FR-377-decide-model-refinement.md) (Engines) are the queries' content; each query is the negation of one obligation, so a refutation of the query proves the obligation. Every query carries the *hypotheses*: the invariant clauses whose context is an object type of the concrete model (the abstract model's invariants are not hypotheses), the same set the per-step simulation record carries (quire-semantic-value FR-123).
+The per-step obligations of [FR-377](FR-377-decide-model-refinement.md) (Engines) are the queries' content; each query is the negation of one obligation, so a refutation of the query proves the obligation. Every query carries the *hypotheses*: the invariant clauses whose context is an object type of the concrete model (the abstract model's invariants are not hypotheses), the same set the per-step simulation record carries (filament-semantic-value FR-123).
 
 - **Initial query.** The negation of: for every concrete initial state satisfying the hypotheses, the state maps to an abstract initial state. It carries the hypotheses so its identity changes with them.
 - **Step query**, one per step row, identified by the row's position in the declaration node's `steps` order ([FR-375](FR-375-declare-model-refinement.md)). The negation of: for every pair `(s, s')` of states of the declared types, if the hypotheses hold at `s`, the operation's effective precondition holds at `s`, `(s, s')` is within the operation's frame and its postcondition holds over `(s, s')`, then the row's rule (`stutter`: the mapped state is unchanged by state key; an abstract operation: that transition's precondition, frame and postcondition admit the mapped pair) holds over `(map(s), map(s'))`.
@@ -53,15 +53,15 @@ Each query is one `operation-contract` item ([FR-290](../../objects/protocol/FR-
 ### Claim extent
 
 Each query item carries the [FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md)
-`extent` that the boundedness architecture (QSL ADR-014 §4) classifies over
+`extent` that the boundedness architecture (FSL ADR-014 §4) classifies over
 the query's roots, as it classifies every other `operation-contract` item.
 
 - A step query's roots are the concrete operation's receiver (`self`),
   result and parameter types; the parameter domain of each `_` argument of
   its abstract operation; the *context population*, the one population of the
   concrete model that covers the receiver's type; each population the
-  operation's contract clauses range over (QSL FR-104, check state clauses;
-  QSL FR-391, name a domain-package population in a state clause or a holds
+  operation's contract clauses range over (FSL FR-104, check state clauses;
+  FSL FR-391, name a domain-package population in a state clause or a holds
   atom), whether by a quantifier, an
   `allInstances` or a `reaches`, because the query reads the clause bodies; and
   each population a `reaches` in the refinement's state mapping walks.
@@ -146,4 +146,4 @@ When the declaration's `F_A` is non-empty, the liveness half is decided by the e
 - [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) owns the `operation-contract` kind.
 - [FR-354](../ir-proof/FR-354-record-proof-trust-basis.md) owns the checker outcome to certification table.
 - [FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md) owns the closed `certification` values, the `extent` wire form and the causes this requirement uses.
-- QSL FR-146 (Claim extent) states the same roots and classification for the QSL request writer.
+- FSL FR-146 (Claim extent) states the same roots and classification for the FSL request writer.

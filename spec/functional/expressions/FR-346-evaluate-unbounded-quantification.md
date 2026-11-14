@@ -3,17 +3,17 @@ id: FR-346
 title: "Evaluate unbounded universal and existential quantification"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: references
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/AD-013
+  - target: ix://agent-ix/filament-specification/AD-013
     type: references
-  - target: ix://agent-ix/quire-specification/FR-349
+  - target: ix://agent-ix/filament-specification/FR-349
     type: references
 ---
 
@@ -75,7 +75,7 @@ naming the required capability.
   trigger.
 - [AD-010](../../assurance/AD-010-target-neutral-ir-backends.md) supplies the
   per-item provider capability negotiation this requirement uses.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

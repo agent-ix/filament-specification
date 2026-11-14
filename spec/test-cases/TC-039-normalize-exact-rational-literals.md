@@ -3,7 +3,7 @@ id: TC-039
 title: "Normalize exact rational literals before domain admission"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-039
+  - target: ix://agent-ix/filament-specification/FR-039
     type: verifies
 ---
 ## Description

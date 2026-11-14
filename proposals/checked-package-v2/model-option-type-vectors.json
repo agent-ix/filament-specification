@@ -1,5 +1,5 @@
 {
-  "version": "quire.model-option-type-vectors/v1",
+  "version": "filament.model-option-type-vectors/v1",
   "note": "STD-627. Option value types (FR-154 \"Option value types\"): a type definition of kind option with one inner typeRef, named by package identity; typeRef stays the three forms. domain_package is the FR-154 projection in the style of model-tuple-union-vectors.json (identity, version, object_types, tuple_types, variant_types); this file defines the further collections it needs: units, record_types, option_types (node, inner), aliases (node, target), sequence_types (node, items), map_types (node, keys, values, bound; FR-154 \"Map types\"), reference_types (node, target), namespaces and constraints (identity, keyword, appliesTo, operands). field_type_cases give the FR-322 step 4 type of a member (forms as in model-tuple-union-vectors.json; same_node_as names the field sharing the composite_type/option node). intake_cases are RFC 6902 patches over domain_package; `at` is a pointer into the patched projection. No reader consumes this file yet: the strict reader and the FCD kind are follow-up work.",
   "domain_package": {
     "identity": "acme/optionals",
@@ -15,7 +15,7 @@
         "fields": [
           {
             "name": "n",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -31,11 +31,11 @@
     "option_types": [
       {
         "node": "ix://acme/optionals/OptInt",
-        "inner": "ix://quire/native/Integer"
+        "inner": "ix://filament/native/Integer"
       },
       {
         "node": "ix://acme/optionals/OptMs",
-        "inner": "ix://quire/unit/ms"
+        "inner": "ix://filament/unit/ms"
       },
       {
         "node": "ix://acme/optionals/OptRec",
@@ -49,7 +49,7 @@
       },
       {
         "node": "ix://acme/optionals/AClock",
-        "target": "ix://quire/native/Clock"
+        "target": "ix://filament/native/Clock"
       }
     ],
     "object_types": [
@@ -72,7 +72,7 @@
           },
           {
             "name": "b",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "optional",
             "multiplicity": {
               "lower": "1",
@@ -108,7 +108,7 @@
           },
           {
             "name": "e",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "optional",
             "multiplicity": {
               "lower": "0",
@@ -298,7 +298,7 @@
           "value": [
             {
               "node": "ix://acme/optionals/MO",
-              "keys": "ix://quire/native/Text",
+              "keys": "ix://filament/native/Text",
               "values": "ix://acme/optionals/OptInt",
               "bound": {
                 "lower": 0
@@ -408,7 +408,7 @@
         {
           "op": "replace",
           "path": "/option_types/0/inner",
-          "value": "ix://quire/native/Clock"
+          "value": "ix://filament/native/Clock"
         }
       ],
       "expected": {
@@ -572,7 +572,7 @@
         {
           "op": "replace",
           "path": "/object_types/0/fields/0/typeRef",
-          "value": "ix://quire/native/Option"
+          "value": "ix://filament/native/Option"
         }
       ],
       "expected": {
@@ -590,7 +590,7 @@
         {
           "op": "replace",
           "path": "/object_types/0/fields/0/typeRef",
-          "value": "ix://quire/native/Option<Integer>"
+          "value": "ix://filament/native/Option<Integer>"
         }
       ],
       "expected": {
@@ -608,7 +608,7 @@
         {
           "op": "replace",
           "path": "/object_types/0/fields/0/typeRef",
-          "value": "ix://quire/native/option"
+          "value": "ix://filament/native/option"
         }
       ],
       "expected": {
@@ -716,7 +716,7 @@
           "op": "replace",
           "path": "/option_types/0/inner",
           "value": [
-            "ix://quire/native/Integer"
+            "ix://filament/native/Integer"
           ]
         }
       ],
@@ -736,8 +736,8 @@
           "op": "replace",
           "path": "/option_types/0/inner",
           "value": [
-            "ix://quire/native/Integer",
-            "ix://quire/native/Text"
+            "ix://filament/native/Integer",
+            "ix://filament/native/Text"
           ]
         }
       ],
@@ -774,7 +774,7 @@
         {
           "op": "replace",
           "path": "/option_types/0/inner",
-          "value": "ix://quire/native/Int"
+          "value": "ix://filament/native/Int"
         }
       ],
       "expected": {
@@ -795,7 +795,7 @@
           "value": [
             {
               "name": "x",
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "presence": "required",
               "multiplicity": {
                 "lower": "1",
@@ -870,7 +870,7 @@
           "value": [
             {
               "ordinal": 0,
-              "typeRef": "ix://quire/native/Integer"
+              "typeRef": "ix://filament/native/Integer"
             }
           ]
         }
@@ -890,7 +890,7 @@
         {
           "op": "add",
           "path": "/option_types/0/items",
-          "value": "ix://quire/native/Integer"
+          "value": "ix://filament/native/Integer"
         }
       ],
       "expected": {
@@ -912,7 +912,7 @@
             {
               "identity": "ix://acme/optionals/constraint/OptInt-min",
               "keyword": "min",
-              "appliesTo": "ix://quire/native/Integer",
+              "appliesTo": "ix://filament/native/Integer",
               "operands": {
                 "value": "1"
               }

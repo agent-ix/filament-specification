@@ -4,11 +4,11 @@ title: "Channel premise"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
-  - target: ix://agent-ix/quire-specification/FR-465
+  - target: ix://agent-ix/filament-specification/FR-465
     type: references
 ---
 # FR-216: Channel premise
@@ -101,7 +101,7 @@ Synchronized clocks are likewise never inferred (FR-054).
   components, the non-inference rules and the identity effect of changing one.
 - [FR-215](FR-215-protocol-channel.md) is the channel that contains this premise
   set.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-288](FR-288-qualified-protocol-definition-identity.md) qualifies the FIFO
   binder and typed key-expression handles.

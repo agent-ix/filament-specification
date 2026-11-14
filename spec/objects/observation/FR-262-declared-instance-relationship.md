@@ -4,11 +4,11 @@ title: "Declared instance relationship"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-111
+  - target: ix://agent-ix/filament-specification/FR-111
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-262: Declared instance relationship
@@ -121,7 +121,7 @@ the receive occurrence.
   establishes the explicit typed relationship and its refusal cases.
 - [FR-213](../protocol/FR-213-workflow-instance.md) supplies the related
   instance subject and records that its key is unstated.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-287](../protocol/FR-287-authority-qualified-runtime-subject-reference.md)
   supplies the ordered source and target keys.

@@ -4,9 +4,9 @@ title: "Checked protocol artifact"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_008
+  - target: ix://agent-ix/filament-specification/interface_008
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: references
 ---
 
@@ -53,11 +53,11 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 ## Carriage
 
-The value is carried by the `protocol` nodes of a `quire.checked-semantic-graph/v2`
+The value is carried by the `protocol` nodes of a `filament.checked-semantic-graph/v2`
 checked package ([FR-464](FR-464-checked-package-protocol-node-bodies.md),
 [FR-465](FR-465-checked-package-protocol-declaration-bodies.md),
 [FR-466](FR-466-checked-package-protocol-control-bodies.md)) and by nothing
-else: no separate `quire.checked-protocol/v1` document is emitted or read. The
+else: no separate `filament.checked-protocol/v1` document is emitted or read. The
 `definition` is the `protocol_clause` node; `roles`, `messages_channels`,
 `control_graph`, `guards_obligations` and `compensations` are its role,
 channel, queue, control, obligation and compensation nodes, and `bounds` the

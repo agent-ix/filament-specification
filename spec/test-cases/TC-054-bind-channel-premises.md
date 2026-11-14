@@ -3,7 +3,7 @@ id: TC-054
 title: "Bind channel delivery and order premises"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: verifies
 ---
 ## Description

@@ -3,21 +3,21 @@ id: FR-408
 title: "Settle probabilistic claims with statistical evidence"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-407
+  - target: ix://agent-ix/filament-specification/FR-407
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-409
+  - target: ix://agent-ix/filament-specification/FR-409
     type: references
-  - target: ix://agent-ix/quire-specification/FR-410
+  - target: ix://agent-ix/filament-specification/FR-410
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -27,7 +27,7 @@ relationships:
 
 When a `probabilistic-satisfaction` item names `statistical` evidence, the
 provider SHALL sample behaviours of the subject under the claim's workload
-with the `quire.simulation.sampler/v1` sampler, decide the claim's event or
+with the `filament.simulation.sampler/v1` sampler, decide the claim's event or
 measure on each sample, and decide the claim from the counts with the method
 the request names, at the claim's own confidence parameters.
 
@@ -310,7 +310,7 @@ may draw samples at once, set by the request setting `statistical.workers`
 and defaulting to 1 when the request names none. It is a resource choice, not
 a budget: it stops no run, takes no row in `StatisticalLimits` or the limit
 table (FR-461), and enters neither the obligation identity nor the provenance.
-This section registers the setting; QSL FR-191 "Workers" states the same
+This section registers the setting; FSL FR-191 "Workers" states the same
 semantics for the engine, and where the two texts differ this section governs
 the statistical settings.
 
@@ -372,7 +372,7 @@ is a new, independent measurement of the same obligation.
 - [FR-406](FR-406-interpret-probabilistic-models.md) and
   [FR-407](FR-407-state-probabilistic-claims.md) supply the measure and forms.
 - [FR-181](../runtime/FR-181-simulate-finite-executions.md) and the
-  [sampler definition](../../../proposals/quire-v1/definitions/simulation-sampler.md)
+  [sampler definition](../../../proposals/filament-v1/definitions/simulation-sampler.md)
   supply weighted, indexed draws.
 - [FR-409](../../objects/protocol/FR-409-measured-decision.md) and
   [FR-410](../../objects/interfaces/FR-410-statistical-verdict.md) carry the
@@ -380,7 +380,7 @@ is a new, independent measurement of the same obligation.
 
 ## References
 
-- QSL ADR-024 ST-1 to ST-10, RX-1, RP-1 to RP-3; QSL ADR-026 SS-5.
+- FSL ADR-024 ST-1 to ST-10, RX-1, RP-1 to RP-3; FSL ADR-026 SS-5.
 - A. Wald, *Sequential Analysis*, 1947; M. Okamoto, 1959; H. L. S. Younes and
   R. G. Simmons, CAV 2002; P. W. Glynn and D. L. Iglehart, 1988.
 - Ticket: STD-137 (paired with QSL-371).

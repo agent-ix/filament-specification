@@ -3,9 +3,9 @@ id: TC-264
 title: "Case exhaustiveness obligations"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: verifies
 ---
 

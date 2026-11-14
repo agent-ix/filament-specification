@@ -3,15 +3,15 @@ id: FR-365
 title: "Build the canonical counterexample of an explicit-state analysis"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -151,5 +151,5 @@ undefined state.
 
 ## References
 
-- quire-spec-language ADR-018 §3 Determinism, FA-4 and CX-5; ADR-019 SR-2,
+- filament-spec-language ADR-018 §3 Determinism, FA-4 and CX-5; ADR-019 SR-2,
   SR-6, SR-7 and RU-3; Linear STD-131 and STD-132.

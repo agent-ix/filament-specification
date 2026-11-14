@@ -3,11 +3,11 @@ id: FR-130
 title: "Interpret composed-package references without flattening clause profiles"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-032
+  - target: ix://agent-ix/filament-specification/FR-032
     type: depends_on
 ---
 ## Description
@@ -29,7 +29,7 @@ or a typed version, role, feature-set or dependency refusal.
 
 ## Behavior
 
-The [package-reference candidate](../../../proposals/quire-v1/definitions/package-reference.md)
+The [package-reference candidate](../../../proposals/filament-v1/definitions/package-reference.md)
 defines the outer interpretation, four declaration/family features and explicit
 null canonical identity. The outer definition identifies a container contract;
 it cannot identify the particular package without its content and inner closure.

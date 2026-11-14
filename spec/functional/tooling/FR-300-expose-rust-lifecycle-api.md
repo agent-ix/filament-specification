@@ -3,17 +3,17 @@ id: FR-300
 title: "Expose a stable typed Rust lifecycle API"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-004
+  - target: ix://agent-ix/filament-specification/AD-004
     type: references
-  - target: ix://agent-ix/quire-specification/FR-460
+  - target: ix://agent-ix/filament-specification/FR-460
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-280
+  - target: ix://agent-ix/filament-spec-language/FR-280
     type: references
 ---
 
@@ -52,7 +52,7 @@ a clock, or silently performs a later stage.
 | `parse` | Read source into syntax | source bytes, source identity, S1 and S2 limits | the parsed source |
 | `select` | Admit the domain packages a unit's `model` declarations select (FR-154) | domain package documents keyed by domain package identity (one per identity), the unit's model selections (identity only) | the admitted models |
 | `check` | Check and link | the parsed source, the admitted models, the dependency input, the lock evidence | the checked package |
-| `package` | Emit the checked package (FR-322) | the checked package | the emitted `quire.checked-package/v2` bytes with their source provision |
+| `package` | Emit the checked package (FR-322) | the checked package | the emitted `filament.checked-package/v2` bytes with their source provision |
 | `execute` | Call a checked function or evaluate a checked clause | the checked package, the selected entry, arguments, objects, accounting limits, the selected execution backend (FR-306) | the evaluation or a typed call failure |
 | `monitor` | Check a supplied finite or lasso trace against temporal clauses | the checked package, clause selections, a trace | one verdict per clause |
 | `analyze` | Decide claims over every behaviour with an in-process engine | the checked package, claim items, the subject binding, engine limits | one FR-331 terminal record per item |
@@ -75,16 +75,16 @@ request except for cancellation.
 `prove` hands a process provider the emitted package and an in-process
 provider the checked package, with `emitted` as `None` when `package` refuses
 to emit and an in-process provider ignoring it (FR-331, "In-process
-providers"; QSL ADR-029 PV-3). An item routed
+providers"; FSL ADR-029 PV-3). An item routed
 to an in-process engine is therefore served over a checked package that
 `package` refuses to emit, such as one that declares a probabilistic claim
-(QSL FR-185); an item routed to a process provider over such a package has
+(FSL FR-185); an item routed to a process provider over such a package has
 no package bytes to send and settles `unsupported` with the diagnostic
 `unsupported_projection`/`unsupported-requested-capability` naming its
 capability kind and backend (FR-331, "In-process providers").
 
 Each serialized outcome or view carries a `format` identity that names its
-document type, for example `quire-outcome/1`. A reader accepts exactly the
+document type, for example `filament-outcome/1`. A reader accepts exactly the
 format identity it reads and refuses any other.
 
 ## Cancellation
@@ -110,7 +110,7 @@ inside `prove` or `analyze` settles FR-331 `incomplete` with its cause kept.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.
@@ -120,4 +120,4 @@ inside `prove` or `analyze` settles FR-331 `incomplete` with its cause kept.
 
 ## References
 
-- Linear STD-141; QSL ADR-029 LC-1 to LC-3, OP-1.
+- Linear STD-141; FSL ADR-029 LC-1 to LC-3, OP-1.

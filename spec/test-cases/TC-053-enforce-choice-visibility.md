@@ -3,7 +3,7 @@ id: TC-053
 title: "Refuse unobservable or ambiguously owned choice"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: verifies
 ---
 ## Description

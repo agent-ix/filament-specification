@@ -3,21 +3,21 @@ id: FR-453
 title: "Preserve a parent profile's refusals under its child profile"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-003
+  - target: ix://agent-ix/filament-specification/AD-003
     type: references
-  - target: ix://agent-ix/quire-specification/FR-001
+  - target: ix://agent-ix/filament-specification/FR-001
     type: references
-  - target: ix://agent-ix/quire-specification/FR-301
+  - target: ix://agent-ix/filament-specification/FR-301
     type: references
-  - target: ix://agent-ix/quire-specification/FR-452
+  - target: ix://agent-ix/filament-specification/FR-452
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-345
+  - target: ix://agent-ix/filament-spec-language/FR-345
     type: references
 ---
 
@@ -56,7 +56,7 @@ reports them.
 
 ### Layering edges
 
-Each row of the [header-selectable layers table](../../../proposals/quire-v1/definitions/README.md#header-selectable-layers) is a layer a `profile` declaration selects by naming its identity (FR-001).
+Each row of the [header-selectable layers table](../../../proposals/filament-v1/definitions/README.md#header-selectable-layers) is a layer a `profile` declaration selects by naming its identity (FR-001).
 The row carries the layer's identity, the layers it `requires`, its
 `admitted_forms` definition, what it `admits` and its `witness_request`
 (an FR-290 kind and an FR-331 extent classification). A layering edge is one AD-003 `requires` edge between two of those
@@ -64,12 +64,12 @@ layers. The gate covers exactly these six edges:
 
 | Edge | Parent | Child |
 | --- | --- | --- |
-| E1 | `quire.state.core/v1` | `quire.state.queries/v1` |
-| E2 | `quire.state.queries/v1` | `quire.state.graph/v1` |
-| E3 | `quire.state.core/v1` | `quire.value.complete/v1` |
-| E4 | `quire.state.graph/v1` | `quire.model.complete/v1` |
-| E5 | `quire.value.complete/v1` | `quire.model.complete/v1` |
-| E6 | `quire.model.complete/v1` | `quire.temporal.complete/v1` |
+| E1 | `filament.state.core/v1` | `filament.state.queries/v1` |
+| E2 | `filament.state.queries/v1` | `filament.state.graph/v1` |
+| E3 | `filament.state.core/v1` | `filament.value.complete/v1` |
+| E4 | `filament.state.graph/v1` | `filament.model.complete/v1` |
+| E5 | `filament.value.complete/v1` | `filament.model.complete/v1` |
+| E6 | `filament.model.complete/v1` | `filament.temporal.complete/v1` |
 
 AD-003 forbids a child from weakening an inherited rule, so a unit the parent
 refuses with a typed refusal stays refused under the child.
@@ -142,7 +142,7 @@ adds: a named predicate or query for E1; a reference or `reaches` for E2;
 whole-record equality or a `record` declaration for E3; conformance or
 dispatch over a supertype for E4; object navigation for E5; a `time` member of a state model for E6.
 
-quire-spec-language FR-345 implements this gate.
+filament-spec-language FR-345 implements this gate.
 
 ## Acceptance Criteria
 
@@ -154,16 +154,16 @@ quire-spec-language FR-345 implements this gate.
 | FR-453-AC-4 | A case naming a pair of layers that is not one of E1 to E6, such as state core and complete model, is a tool failure naming the case. | Test (TC-414) |
 | FR-453-AC-5 | Each of the six layers, selected alone by a `profile` declaration, admits its witness unit, and its witness item, requested with the layer's `witness_request` kind and extent once from each candidate backend by name, settles `supported` under at least one candidate; with two candidates of which one supports and one does not, the layer holds. A layer that refuses its witness, or whose item settles `supported` under no candidate, gives a regression naming the layer and the stage, or each candidate's backend identity and disposition. | Test (TC-414) |
 | FR-453-AC-6 | On each of E1 to E6, the parent prohibits the edge's distinguishing unit with `unsupported_construct` naming the parent layer and the child admits it; a parent that admits it gives a regression naming the edge, verdict violation, exit 10. | Test (TC-414) |
-| FR-453-AC-7 | On E6, the distinguishing unit, a state model whose source writes `time M dense unit ms;`, is prohibited by `quire.model.complete/v1` with `unsupported_construct`/`declaration-form` naming `quire.model.complete/v1` and the required layer `quire.temporal.complete/v1`, and is admitted under `quire.temporal.complete/v1`; E6's case over a unit both layers refuse holds, and E6's case over a unit that a fault makes the child admit gives a regression naming E6. | Test (TC-414) |
-| FR-453-AC-8 | `quire.temporal.complete/v1`, selected alone by a `profile` declaration, admits its witness unit, a state model with `time M dense unit ms;`, a clock field, a reset, a guard `x >= 1 ms`, a time invariant and one `invariant` clause, and the invariant clause, requested with `operation-contract` and `bounded` from each candidate backend by name, settles `supported` under at least one candidate; an empty candidate set, or a set in which every candidate settles it `unsupported`, gives a regression naming `quire.temporal.complete/v1` and the empty set or each candidate's identity and disposition. | Test (TC-414) |
+| FR-453-AC-7 | On E6, the distinguishing unit, a state model whose source writes `time M dense unit ms;`, is prohibited by `filament.model.complete/v1` with `unsupported_construct`/`declaration-form` naming `filament.model.complete/v1` and the required layer `filament.temporal.complete/v1`, and is admitted under `filament.temporal.complete/v1`; E6's case over a unit both layers refuse holds, and E6's case over a unit that a fault makes the child admit gives a regression naming E6. | Test (TC-414) |
+| FR-453-AC-8 | `filament.temporal.complete/v1`, selected alone by a `profile` declaration, admits its witness unit, a state model with `time M dense unit ms;`, a clock field, a reset, a guard `x >= 1 ms`, a time invariant and one `invariant` clause, and the invariant clause, requested with `operation-contract` and `bounded` from each candidate backend by name, settles `supported` under at least one candidate; an empty candidate set, or a set in which every candidate settles it `unsupported`, gives a regression naming `filament.temporal.complete/v1` and the empty set or each candidate's identity and disposition. | Test (TC-414) |
 
 ## Dependencies
 
-- [AD-003](../../assurance/AD-003-native-quire-language-charter.md) owns the
+- [AD-003](../../assurance/AD-003-native-filament-language-charter.md) owns the
   profile hierarchy, its `requires` edges and the non-weakening rule.
 - [FR-001](../foundation/FR-001-select-native-profile.md) owns profile
   selection by `profile` declaration.
-- The [header-selectable layers table](../../../proposals/quire-v1/definitions/README.md#header-selectable-layers) owns each layer's `requires` edges, admitted-form set and accepting
+- The [header-selectable layers table](../../../proposals/filament-v1/definitions/README.md#header-selectable-layers) owns each layer's `requires` edges, admitted-form set and accepting
   targets.
 - [FR-452](FR-452-preserve-admission-across-specification-revisions.md)
   owns the case results, verdict and exit code.
@@ -173,7 +173,7 @@ quire-spec-language FR-345 implements this gate.
 ## References
 
 - Capability row V1-TOOL-012.
-- quire-spec-language ADR-017 §2 RF-3, §6 Q-5; FR-345.
+- filament-spec-language ADR-017 §2 RF-3, §6 Q-5; FR-345.
 - Specification tickets STD-119 (owner ruling, option A), STD-117.
 
 ## Status

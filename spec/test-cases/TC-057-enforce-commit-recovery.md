@@ -3,13 +3,13 @@ id: TC-057
 title: "Check commit ordering and recovery meaning"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-237
+  - target: ix://agent-ix/filament-specification/FR-237
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-238
+  - target: ix://agent-ix/filament-specification/FR-238
     type: verifies
 ---
 ## Description

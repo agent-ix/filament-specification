@@ -4,11 +4,11 @@ title: "Contain output-mapping dependencies"
 type: NFR
 quality_attribute: maintainability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-122
+  - target: ix://agent-ix/filament-specification/FR-122
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-123
+  - target: ix://agent-ix/filament-specification/FR-123
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-124
+  - target: ix://agent-ix/filament-specification/FR-124
     type: constrains
 ---
 ## Statement

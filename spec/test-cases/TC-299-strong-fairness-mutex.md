@@ -3,9 +3,9 @@ id: TC-299
 title: "Strong fairness on the contended mutex"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
 ---
 
@@ -26,7 +26,7 @@ precondition `self.owner != 0` and postcondition `self.owner = 0`. Universe
 `1 -rel-> 0`, `2 -rel-> 0`.
 
 Check `always eventually holds(m.owner = 1)` under
-`quire.temporal.infinite-trace/v1`:
+`filament.temporal.infinite-trace/v1`:
 
 1. with `fair strong each M::Mutex::acquire;`
 2. with `fair weak each M::Mutex::acquire;`

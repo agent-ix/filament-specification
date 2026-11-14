@@ -3,9 +3,9 @@ id: IT-078
 title: "Authorized workflow results enter qualification evidence"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-182
+  - target: ix://agent-ix/filament-specification/FR-182
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: verifies
 ---
 
@@ -19,7 +19,7 @@ identities through the real Rust boundaries.
 
 ## Target Integration
 
-The `quire-integration` Rust facade and an isolated local adapter exchange I11;
+The `filament-integration` Rust facade and an isolated local adapter exchange I11;
 QObs consumes the resulting observation; Verification emits I20 evidence intake.
 No Quoin runtime dependency is required before its Rust port lands.
 

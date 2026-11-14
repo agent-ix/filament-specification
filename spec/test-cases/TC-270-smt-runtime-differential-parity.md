@@ -3,7 +3,7 @@ id: TC-270
 title: "SMT/native runtime differential parity corpus"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-355
+  - target: ix://agent-ix/filament-specification/FR-355
     type: verifies
 ---
 

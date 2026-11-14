@@ -3,7 +3,7 @@ id: TC-055
 title: "Separate activation from obligation truth"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: verifies
 ---
 ## Description

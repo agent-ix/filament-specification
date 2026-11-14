@@ -3,7 +3,7 @@ id: TC-239
 title: "Agree replay and incremental assessment on an unsettled temporal result"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-114
+  - target: ix://agent-ix/filament-specification/FR-114
     type: verifies
 ---
 

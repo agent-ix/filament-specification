@@ -4,7 +4,7 @@
   "positive": [
     {
       "id": "TCB-01-event-position",
-      "profile": "quire.temporal.event-position.false-extension/v1",
+      "profile": "filament.temporal.event-position.false-extension/v1",
       "clock_name": "model-steps",
       "clock": {
         "kind": "event_position",
@@ -13,7 +13,7 @@
     },
     {
       "id": "TCB-02-fixed-sample",
-      "profile": "quire.temporal.fixed-sample.false-extension/v1",
+      "profile": "filament.temporal.fixed-sample.false-extension/v1",
       "clock_name": "model-steps",
       "clock": {
         "kind": "fixed_sample",
@@ -31,7 +31,7 @@
     },
     {
       "id": "TCB-03-timestamped-event",
-      "profile": "quire.temporal.timestamped-event.finite-window/v1",
+      "profile": "filament.temporal.timestamped-event.finite-window/v1",
       "clock_name": "model-steps",
       "clock": {
         "kind": "timestamped_event",
@@ -46,7 +46,7 @@
       "model-steps"
     ],
     "shared_model": true,
-    "shared_profile": "quire.temporal.event-position.false-extension/v1",
+    "shared_profile": "filament.temporal.event-position.false-extension/v1",
     "canonical_formula_node_indices": [
       28,
       29

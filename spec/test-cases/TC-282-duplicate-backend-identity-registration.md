@@ -3,9 +3,9 @@ id: TC-282
 title: "Duplicate backend identity registration"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: verifies
 ---
 

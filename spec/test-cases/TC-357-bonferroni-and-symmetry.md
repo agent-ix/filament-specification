@@ -3,7 +3,7 @@ id: TC-357
 title: "Bonferroni over tests and symmetry reduction of tests"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: verifies
 ---
 

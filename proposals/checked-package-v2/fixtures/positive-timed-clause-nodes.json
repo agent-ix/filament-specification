@@ -2,10 +2,10 @@
   "capability_report": [
     {
       "disposition": "available",
-      "feature": "quire.value.complete/v1"
+      "feature": "filament.value.complete/v1"
     }
   ],
-  "contract_version": "quire.checked-package/v2",
+  "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {
       "authority": "agent-ix",
@@ -24,7 +24,7 @@
     "edition": {
       "definition": {
         "authority": "agent-ix",
-        "identity": "quire-edition"
+        "identity": "filament-edition"
       },
       "role": "edition"
     },
@@ -32,20 +32,20 @@
       {
         "definition": {
           "authority": "agent-ix",
-          "identity": "quire.temporal.event-position.false-extension/v1"
+          "identity": "filament.temporal.event-position.false-extension/v1"
         },
         "role": "temporal_profile"
       },
       {
         "definition": {
           "authority": "agent-ix",
-          "identity": "quire.protocol.finite-global/v1"
+          "identity": "filament.protocol.finite-global/v1"
         },
         "role": "protocol_profile"
       }
     ],
     "required_features": [
-      "quire.value.complete/v1"
+      "filament.value.complete/v1"
     ],
     "sources": [
       {
@@ -56,7 +56,7 @@
   },
   "name": "example",
   "semantic_graph": {
-    "graph_version": "quire.checked-semantic-graph/v2",
+    "graph_version": "filament.checked-semantic-graph/v2",
     "nodes": [
       {
         "body": {
@@ -90,7 +90,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "boolean",
         "semantic_type": {
           "ordinal": 0,
@@ -173,7 +173,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "record",
         "semantic_type": {
           "ordinal": 0,
@@ -256,7 +256,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer_range",
         "semantic_type": {
           "ordinal": 0,
@@ -308,7 +308,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -362,7 +362,7 @@
             "role": "declaration"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "reference",
         "semantic_type": {
           "ordinal": 0,
@@ -389,7 +389,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.function.call",
+            "identity": "filament.op.function.call",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -437,7 +437,7 @@
             "role": "declaration"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "pure_function",
         "semantic_type": {
           "ordinal": 0,
@@ -480,7 +480,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "model_import",
         "semantic_type": {
           "ordinal": 0,
@@ -518,7 +518,7 @@
           "kind": "model",
           "node": "ix://acme/orders/relationship/Order-order-Order"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "relationship",
         "semantic_type": {
           "ordinal": 0,
@@ -610,7 +610,7 @@
                   {
                     "operand": 3
                   },
-                  "quire.op.temporal.eventually",
+                  "filament.op.temporal.eventually",
                   "temporal_formula",
                   {
                     "operand": 4
@@ -621,12 +621,12 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.temporal.clause",
+            "identity": "filament.op.temporal.clause",
             "laws": [
               {
                 "definition": {
                   "authority": "agent-ix",
-                  "identity": "quire.temporal.event-position.false-extension/v1"
+                  "identity": "filament.temporal.event-position.false-extension/v1"
                 },
                 "role": "temporal_profile"
               }
@@ -656,7 +656,7 @@
               {
                 "operand": 3
               },
-              "quire.op.temporal.eventually",
+              "filament.op.temporal.eventually",
               "temporal_formula",
               {
                 "operand": 4
@@ -703,8 +703,8 @@
             {
               "operand": 6
             },
-            "quire.op.temporal.clause",
-            "quire.temporal.event-position.false-extension/v1",
+            "filament.op.temporal.clause",
+            "filament.temporal.event-position.false-extension/v1",
             "temporal",
             {
               "operand": 4
@@ -718,7 +718,7 @@
             "role": "claim"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "temporal_clause",
         "semantic_type": {
           "ordinal": 0,
@@ -894,12 +894,12 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.protocol.control",
+            "identity": "filament.op.protocol.control",
             "laws": [
               {
                 "definition": {
                   "authority": "agent-ix",
-                  "identity": "quire.protocol.finite-global/v1"
+                  "identity": "filament.protocol.finite-global/v1"
                 },
                 "role": "protocol_profile"
               }
@@ -1004,7 +1004,7 @@
             "ix://acme/orders/Order"
           ]
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "protocol_clause",
         "semantic_type": {
           "ordinal": 0,
@@ -1019,12 +1019,12 @@
         "body": {
           "arguments": [],
           "operation": {
-            "identity": "quire.op.claim.clause",
+            "identity": "filament.op.claim.clause",
             "laws": [
               {
                 "definition": {
                   "authority": "agent-ix",
-                  "identity": "quire.temporal.event-position.false-extension/v1"
+                  "identity": "filament.temporal.event-position.false-extension/v1"
                 },
                 "role": "temporal_profile"
               }
@@ -1069,7 +1069,7 @@
             "role": "declaration"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "verification_claim",
         "semantic_type": {
           "ordinal": 0,
@@ -1123,7 +1123,7 @@
             "role": "declaration"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "source_locus",
         "semantic_type": {
           "ordinal": 0,
@@ -1166,7 +1166,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "pure_function",
         "semantic_type": {
           "ordinal": 0,
@@ -1209,7 +1209,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "object_type",
         "semantic_type": {
           "ordinal": 0,
@@ -1252,7 +1252,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "process",
         "semantic_type": {
           "ordinal": 0,
@@ -1367,7 +1367,7 @@
             "role": "generated"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "frame",
         "semantic_type": {
           "ordinal": 0,
@@ -1410,7 +1410,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "record_value_type",
         "semantic_type": {
           "ordinal": 0,
@@ -1453,7 +1453,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "event_type",
         "semantic_type": {
           "ordinal": 0,
@@ -1496,7 +1496,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "systems_part",
         "semantic_type": {
           "ordinal": 0,
@@ -1539,7 +1539,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "systems_port",
         "semantic_type": {
           "ordinal": 0,
@@ -1582,7 +1582,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "systems_interface",
         "semantic_type": {
           "ordinal": 0,
@@ -1625,7 +1625,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "systems_connection",
         "semantic_type": {
           "ordinal": 0,
@@ -1668,7 +1668,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "systems_allocation",
         "semantic_type": {
           "ordinal": 0,
@@ -1700,7 +1700,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "text",
         "semantic_type": {
           "ordinal": 0,
@@ -1732,7 +1732,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer",
         "semantic_type": {
           "ordinal": 0,
@@ -1775,7 +1775,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "object_type",
         "semantic_type": {
           "ordinal": 0,
@@ -1833,7 +1833,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "reference",
         "semantic_type": {
           "ordinal": 0,
@@ -1916,7 +1916,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -1946,7 +1946,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.temporal.holds",
+            "identity": "filament.op.temporal.holds",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -1982,7 +1982,7 @@
             {
               "operand": 0
             },
-            "quire.op.temporal.holds",
+            "filament.op.temporal.holds",
             "temporal_formula",
             {
               "operand": 1
@@ -1996,7 +1996,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "formula",
         "semantic_type": {
           "ordinal": 0,
@@ -2020,7 +2020,7 @@
                   {
                     "operand": 0
                   },
-                  "quire.op.temporal.holds",
+                  "filament.op.temporal.holds",
                   "temporal_formula",
                   {
                     "operand": 1
@@ -2031,7 +2031,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.temporal.eventually",
+            "identity": "filament.op.temporal.eventually",
             "laws": [],
             "leaves": [],
             "member": {
@@ -2064,7 +2064,7 @@
               {
                 "operand": 0
               },
-              "quire.op.temporal.holds",
+              "filament.op.temporal.holds",
               "temporal_formula",
               {
                 "operand": 1
@@ -2081,7 +2081,7 @@
             {
               "operand": 2
             },
-            "quire.op.temporal.eventually",
+            "filament.op.temporal.eventually",
             "temporal_formula",
             {
               "operand": 1
@@ -2095,7 +2095,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "formula",
         "semantic_type": {
           "ordinal": 0,
@@ -2151,7 +2151,7 @@
           "kind": "model",
           "node": "ix://acme/orders/Order/size"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "pure_function",
         "semantic_type": {
           "ordinal": 0,
@@ -2234,7 +2234,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer_range",
         "semantic_type": {
           "ordinal": 0,
@@ -2279,7 +2279,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -2327,7 +2327,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -2450,7 +2450,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "extension_form",
         "semantic_type": {
           "ordinal": 0,
@@ -2481,7 +2481,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "rational",
         "semantic_type": {
           "ordinal": 0,
@@ -2561,7 +2561,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -2641,7 +2641,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -2686,7 +2686,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -2855,7 +2855,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "hybrid_transition",
         "semantic_type": {
           "ordinal": 0,
@@ -3079,7 +3079,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "hybrid_mode",
         "semantic_type": {
           "ordinal": 0,
@@ -3306,7 +3306,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "hybrid_model",
         "semantic_type": {
           "ordinal": 0,
@@ -3350,7 +3350,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "dimension",
         "semantic_type": {
           "ordinal": 0,
@@ -3418,7 +3418,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "unit",
         "semantic_type": {
           "ordinal": 0,
@@ -3501,7 +3501,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "time_source",
         "semantic_type": {
           "ordinal": 0,
@@ -3747,7 +3747,7 @@
                               "text"
                             ]
                           },
-                          "value": "Map<Text, ix://quire/native/Clock>",
+                          "value": "Map<Text, ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -3837,7 +3837,7 @@
                               "text"
                             ]
                           },
-                          "value": "Map<Text, ix://quire/native/Clock>",
+                          "value": "Map<Text, ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -3854,7 +3854,7 @@
                               "text"
                             ]
                           },
-                          "value": "Map<Text, ix://quire/native/Clock>[slot]",
+                          "value": "Map<Text, ix://filament/native/Clock>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -3871,7 +3871,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -3991,11 +3991,11 @@
             "member_identity",
             "ix://acme/orders/Order/clock",
             "member_type",
-            "Map<Text, ix://quire/native/Clock>",
+            "Map<Text, ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "Map<Text, ix://quire/native/Clock>[slot]",
-            "ix://quire/native/Clock",
+            "Map<Text, ix://filament/native/Clock>[slot]",
+            "ix://filament/native/Clock",
             "none",
             ""
           ]
@@ -4007,7 +4007,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -4045,11 +4045,11 @@
             "member_identity",
             "ix://acme/orders/Order/clock",
             "member_type",
-            "Map<Text, ix://quire/native/Clock>",
+            "Map<Text, ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "Map<Text, ix://quire/native/Clock>[slot]",
-            "ix://quire/native/Clock",
+            "Map<Text, ix://filament/native/Clock>[slot]",
+            "ix://filament/native/Clock",
             "none",
             ""
           ]
@@ -4143,11 +4143,11 @@
                     "member_identity",
                     "ix://acme/orders/Order/clock",
                     "member_type",
-                    "Map<Text, ix://quire/native/Clock>",
+                    "Map<Text, ix://filament/native/Clock>",
                     "collection_kind",
                     "1",
-                    "Map<Text, ix://quire/native/Clock>[slot]",
-                    "ix://quire/native/Clock",
+                    "Map<Text, ix://filament/native/Clock>[slot]",
+                    "ix://filament/native/Clock",
                     "none",
                     ""
                   ]
@@ -4328,11 +4328,11 @@
               "member_identity",
               "ix://acme/orders/Order/clock",
               "member_type",
-              "Map<Text, ix://quire/native/Clock>",
+              "Map<Text, ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "Map<Text, ix://quire/native/Clock>[slot]",
-              "ix://quire/native/Clock",
+              "Map<Text, ix://filament/native/Clock>[slot]",
+              "ix://filament/native/Clock",
               "none",
               ""
             ]
@@ -4416,7 +4416,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_reset",
         "semantic_type": {
           "ordinal": 0,
@@ -4511,7 +4511,7 @@
                               {
                                 "operand": 4
                               },
-                              "quire.op.option.present",
+                              "filament.op.option.present",
                               "present",
                               {
                                 "operand": 5
@@ -4669,7 +4669,7 @@
               {
                 "operand": 4
               },
-              "quire.op.option.present",
+              "filament.op.option.present",
               "present",
               {
                 "operand": 5
@@ -4838,7 +4838,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_guard",
         "semantic_type": {
           "ordinal": 0,
@@ -5010,7 +5010,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "time_invariant",
         "semantic_type": {
           "ordinal": 0,
@@ -5113,7 +5113,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "urgency",
         "semantic_type": {
           "ordinal": 0,
@@ -5226,7 +5226,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "urgency",
         "semantic_type": {
           "ordinal": 0,
@@ -5308,11 +5308,11 @@
                     "member_identity",
                     "ix://acme/orders/Order/clock",
                     "member_type",
-                    "Map<Text, ix://quire/native/Clock>",
+                    "Map<Text, ix://filament/native/Clock>",
                     "collection_kind",
                     "1",
-                    "Map<Text, ix://quire/native/Clock>[slot]",
-                    "ix://quire/native/Clock",
+                    "Map<Text, ix://filament/native/Clock>[slot]",
+                    "ix://filament/native/Clock",
                     "none",
                     ""
                   ]
@@ -5446,11 +5446,11 @@
               "member_identity",
               "ix://acme/orders/Order/clock",
               "member_type",
-              "Map<Text, ix://quire/native/Clock>",
+              "Map<Text, ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "Map<Text, ix://quire/native/Clock>[slot]",
-              "ix://quire/native/Clock",
+              "Map<Text, ix://filament/native/Clock>[slot]",
+              "ix://filament/native/Clock",
               "none",
               ""
             ]
@@ -5527,7 +5527,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -5661,11 +5661,11 @@
                         "member_identity",
                         "ix://acme/orders/Order/clock",
                         "member_type",
-                        "Map<Text, ix://quire/native/Clock>",
+                        "Map<Text, ix://filament/native/Clock>",
                         "collection_kind",
                         "1",
-                        "Map<Text, ix://quire/native/Clock>[slot]",
-                        "ix://quire/native/Clock",
+                        "Map<Text, ix://filament/native/Clock>[slot]",
+                        "ix://filament/native/Clock",
                         "none",
                         ""
                       ]
@@ -5719,7 +5719,7 @@
                         "",
                         "2",
                         "ix://acme/orders/Timer/x",
-                        "ix://quire/native/Clock"
+                        "ix://filament/native/Clock"
                       ]
                     },
                     "term": "reference"
@@ -5761,11 +5761,11 @@
                         "member_identity",
                         "ix://acme/orders/Order/c",
                         "member_type",
-                        "Set<ix://quire/native/Clock>",
+                        "Set<ix://filament/native/Clock>",
                         "collection_kind",
                         "1",
-                        "ix://quire/native/Clock",
-                        "Set<ix://quire/native/Clock>[slot]",
+                        "ix://filament/native/Clock",
+                        "Set<ix://filament/native/Clock>[slot]",
                         "none",
                         ""
                       ]
@@ -5809,11 +5809,11 @@
                         "member_identity",
                         "ix://acme/orders/Order/b",
                         "member_type",
-                        "Bag<ix://quire/native/Clock>",
+                        "Bag<ix://filament/native/Clock>",
                         "collection_kind",
                         "1",
-                        "ix://quire/native/Clock",
-                        "Bag<ix://quire/native/Clock>[slot]",
+                        "ix://filament/native/Clock",
+                        "Bag<ix://filament/native/Clock>[slot]",
                         "none",
                         ""
                       ]
@@ -5857,11 +5857,11 @@
                         "member_identity",
                         "ix://acme/orders/Order/o",
                         "member_type",
-                        "OrderedSet<ix://quire/native/Clock>",
+                        "OrderedSet<ix://filament/native/Clock>",
                         "collection_kind",
                         "1",
-                        "ix://quire/native/Clock",
-                        "OrderedSet<ix://quire/native/Clock>[slot]",
+                        "ix://filament/native/Clock",
+                        "OrderedSet<ix://filament/native/Clock>[slot]",
                         "none",
                         ""
                       ]
@@ -5905,14 +5905,14 @@
                         "member_identity",
                         "ix://acme/orders/Order/g",
                         "member_type",
-                        "Sequence<Sequence<ix://quire/native/Clock>>",
+                        "Sequence<Sequence<ix://filament/native/Clock>>",
                         "collection_kind",
                         "1",
-                        "Sequence<ix://quire/native/Clock>",
-                        "Sequence<Sequence<ix://quire/native/Clock>>[slot]",
+                        "Sequence<ix://filament/native/Clock>",
+                        "Sequence<Sequence<ix://filament/native/Clock>>[slot]",
                         "2",
-                        "ix://quire/native/Clock",
-                        "Sequence<ix://quire/native/Clock>[slot]",
+                        "ix://filament/native/Clock",
+                        "Sequence<ix://filament/native/Clock>[slot]",
                         "none",
                         ""
                       ]
@@ -5956,11 +5956,11 @@
                         "member_identity",
                         "ix://acme/orders/Order/s",
                         "member_type",
-                        "Sequence<ix://quire/native/Clock>",
+                        "Sequence<ix://filament/native/Clock>",
                         "collection_kind",
                         "1",
-                        "ix://quire/native/Clock",
-                        "Sequence<ix://quire/native/Clock>[slot]",
+                        "ix://filament/native/Clock",
+                        "Sequence<ix://filament/native/Clock>[slot]",
                         "none",
                         ""
                       ]
@@ -5997,7 +5997,7 @@
                         "member_identity",
                         "ix://acme/orders/Order/v",
                         "member_type",
-                        "Option<ix://quire/native/Clock>",
+                        "Option<ix://filament/native/Clock>",
                         "collection_kind",
                         "none",
                         "minimum",
@@ -6044,11 +6044,11 @@
                         "member_identity",
                         "ix://acme/orders/Order/q",
                         "member_type",
-                        "Sequence<Option<ix://quire/native/Clock>>",
+                        "Sequence<Option<ix://filament/native/Clock>>",
                         "collection_kind",
                         "1",
-                        "Option<ix://quire/native/Clock>",
-                        "Sequence<Option<ix://quire/native/Clock>>[slot]",
+                        "Option<ix://filament/native/Clock>",
+                        "Sequence<Option<ix://filament/native/Clock>>[slot]",
                         "none",
                         ""
                       ]
@@ -6972,11 +6972,11 @@
               "member_identity",
               "ix://acme/orders/Order/b",
               "member_type",
-              "Bag<ix://quire/native/Clock>",
+              "Bag<ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "ix://quire/native/Clock",
-              "Bag<ix://quire/native/Clock>[slot]",
+              "ix://filament/native/Clock",
+              "Bag<ix://filament/native/Clock>[slot]",
               "none",
               ""
             ]
@@ -7017,11 +7017,11 @@
               "member_identity",
               "ix://acme/orders/Order/c",
               "member_type",
-              "Set<ix://quire/native/Clock>",
+              "Set<ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "ix://quire/native/Clock",
-              "Set<ix://quire/native/Clock>[slot]",
+              "ix://filament/native/Clock",
+              "Set<ix://filament/native/Clock>[slot]",
               "none",
               ""
             ]
@@ -7062,11 +7062,11 @@
               "member_identity",
               "ix://acme/orders/Order/clock",
               "member_type",
-              "Map<Text, ix://quire/native/Clock>",
+              "Map<Text, ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "Map<Text, ix://quire/native/Clock>[slot]",
-              "ix://quire/native/Clock",
+              "Map<Text, ix://filament/native/Clock>[slot]",
+              "ix://filament/native/Clock",
               "none",
               ""
             ]
@@ -7107,14 +7107,14 @@
               "member_identity",
               "ix://acme/orders/Order/g",
               "member_type",
-              "Sequence<Sequence<ix://quire/native/Clock>>",
+              "Sequence<Sequence<ix://filament/native/Clock>>",
               "collection_kind",
               "1",
-              "Sequence<ix://quire/native/Clock>",
-              "Sequence<Sequence<ix://quire/native/Clock>>[slot]",
+              "Sequence<ix://filament/native/Clock>",
+              "Sequence<Sequence<ix://filament/native/Clock>>[slot]",
               "2",
-              "ix://quire/native/Clock",
-              "Sequence<ix://quire/native/Clock>[slot]",
+              "ix://filament/native/Clock",
+              "Sequence<ix://filament/native/Clock>[slot]",
               "none",
               ""
             ]
@@ -7155,11 +7155,11 @@
               "member_identity",
               "ix://acme/orders/Order/o",
               "member_type",
-              "OrderedSet<ix://quire/native/Clock>",
+              "OrderedSet<ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "ix://quire/native/Clock",
-              "OrderedSet<ix://quire/native/Clock>[slot]",
+              "ix://filament/native/Clock",
+              "OrderedSet<ix://filament/native/Clock>[slot]",
               "none",
               ""
             ]
@@ -7200,11 +7200,11 @@
               "member_identity",
               "ix://acme/orders/Order/q",
               "member_type",
-              "Sequence<Option<ix://quire/native/Clock>>",
+              "Sequence<Option<ix://filament/native/Clock>>",
               "collection_kind",
               "1",
-              "Option<ix://quire/native/Clock>",
-              "Sequence<Option<ix://quire/native/Clock>>[slot]",
+              "Option<ix://filament/native/Clock>",
+              "Sequence<Option<ix://filament/native/Clock>>[slot]",
               "none",
               ""
             ]
@@ -7245,11 +7245,11 @@
               "member_identity",
               "ix://acme/orders/Order/s",
               "member_type",
-              "Sequence<ix://quire/native/Clock>",
+              "Sequence<ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "ix://quire/native/Clock",
-              "Sequence<ix://quire/native/Clock>[slot]",
+              "ix://filament/native/Clock",
+              "Sequence<ix://filament/native/Clock>[slot]",
               "none",
               ""
             ]
@@ -7300,7 +7300,7 @@
               "",
               "2",
               "ix://acme/orders/Timer/x",
-              "ix://quire/native/Clock"
+              "ix://filament/native/Clock"
             ]
           },
           {
@@ -7332,7 +7332,7 @@
               "member_identity",
               "ix://acme/orders/Order/v",
               "member_type",
-              "Option<ix://quire/native/Clock>",
+              "Option<ix://filament/native/Clock>",
               "collection_kind",
               "none",
               "minimum",
@@ -7621,7 +7621,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "timed_model",
         "semantic_type": {
           "ordinal": 0,
@@ -7659,7 +7659,7 @@
           "kind": "model",
           "node": "ix://acme/orders/Order"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "object_type",
         "semantic_type": {
           "ordinal": 0,
@@ -7684,12 +7684,12 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.protocol.control",
+            "identity": "filament.op.protocol.control",
             "laws": [
               {
                 "definition": {
                   "authority": "agent-ix",
-                  "identity": "quire.protocol.finite-global/v1"
+                  "identity": "filament.protocol.finite-global/v1"
                 },
                 "role": "protocol_profile"
               }
@@ -7738,7 +7738,7 @@
             "role": "declaration"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "control",
         "semantic_type": {
           "ordinal": 0,
@@ -7797,12 +7797,12 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.protocol.control",
+            "identity": "filament.op.protocol.control",
             "laws": [
               {
                 "definition": {
                   "authority": "agent-ix",
-                  "identity": "quire.protocol.finite-global/v1"
+                  "identity": "filament.protocol.finite-global/v1"
                 },
                 "role": "protocol_profile"
               }
@@ -7881,7 +7881,7 @@
             "role": "declaration"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "obligation",
         "semantic_type": {
           "ordinal": 0,
@@ -7961,7 +7961,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -8488,7 +8488,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -8618,7 +8618,7 @@
             "",
             "2",
             "ix://acme/orders/Timer/x",
-            "ix://quire/native/Clock"
+            "ix://filament/native/Clock"
           ]
         },
         "node_tag": "timed_model",
@@ -8628,7 +8628,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -8676,7 +8676,7 @@
             "",
             "2",
             "ix://acme/orders/Timer/x",
-            "ix://quire/native/Clock"
+            "ix://filament/native/Clock"
           ]
         }
       },
@@ -8906,7 +8906,7 @@
                               "text"
                             ]
                           },
-                          "value": "Set<ix://quire/native/Clock>",
+                          "value": "Set<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -8996,7 +8996,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -9013,7 +9013,7 @@
                               "text"
                             ]
                           },
-                          "value": "Set<ix://quire/native/Clock>[slot]",
+                          "value": "Set<ix://filament/native/Clock>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -9030,7 +9030,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -9150,11 +9150,11 @@
             "member_identity",
             "ix://acme/orders/Order/c",
             "member_type",
-            "Set<ix://quire/native/Clock>",
+            "Set<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "Set<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Set<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -9166,7 +9166,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -9204,11 +9204,11 @@
             "member_identity",
             "ix://acme/orders/Order/c",
             "member_type",
-            "Set<ix://quire/native/Clock>",
+            "Set<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "Set<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Set<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -9440,7 +9440,7 @@
                               "text"
                             ]
                           },
-                          "value": "Bag<ix://quire/native/Clock>",
+                          "value": "Bag<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -9530,7 +9530,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -9547,7 +9547,7 @@
                               "text"
                             ]
                           },
-                          "value": "Bag<ix://quire/native/Clock>[slot]",
+                          "value": "Bag<ix://filament/native/Clock>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -9564,7 +9564,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -9684,11 +9684,11 @@
             "member_identity",
             "ix://acme/orders/Order/b",
             "member_type",
-            "Bag<ix://quire/native/Clock>",
+            "Bag<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "Bag<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Bag<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -9700,7 +9700,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -9738,11 +9738,11 @@
             "member_identity",
             "ix://acme/orders/Order/b",
             "member_type",
-            "Bag<ix://quire/native/Clock>",
+            "Bag<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "Bag<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Bag<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -9974,7 +9974,7 @@
                               "text"
                             ]
                           },
-                          "value": "OrderedSet<ix://quire/native/Clock>",
+                          "value": "OrderedSet<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -10064,7 +10064,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -10081,7 +10081,7 @@
                               "text"
                             ]
                           },
-                          "value": "OrderedSet<ix://quire/native/Clock>[slot]",
+                          "value": "OrderedSet<ix://filament/native/Clock>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -10098,7 +10098,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -10218,11 +10218,11 @@
             "member_identity",
             "ix://acme/orders/Order/o",
             "member_type",
-            "OrderedSet<ix://quire/native/Clock>",
+            "OrderedSet<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "OrderedSet<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "OrderedSet<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -10234,7 +10234,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -10272,11 +10272,11 @@
             "member_identity",
             "ix://acme/orders/Order/o",
             "member_type",
-            "OrderedSet<ix://quire/native/Clock>",
+            "OrderedSet<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "OrderedSet<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "OrderedSet<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -10596,7 +10596,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<Sequence<ix://quire/native/Clock>>",
+                          "value": "Sequence<Sequence<ix://filament/native/Clock>>",
                           "value_kind": "text"
                         }
                       },
@@ -10686,7 +10686,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<ix://quire/native/Clock>",
+                          "value": "Sequence<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -10703,7 +10703,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<Sequence<ix://quire/native/Clock>>[slot]",
+                          "value": "Sequence<Sequence<ix://filament/native/Clock>>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -10720,7 +10720,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<ix://quire/native/Clock>",
+                          "value": "Sequence<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -10810,7 +10810,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -10827,7 +10827,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<ix://quire/native/Clock>[slot]",
+                          "value": "Sequence<ix://filament/native/Clock>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -10844,7 +10844,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -10964,14 +10964,14 @@
             "member_identity",
             "ix://acme/orders/Order/g",
             "member_type",
-            "Sequence<Sequence<ix://quire/native/Clock>>",
+            "Sequence<Sequence<ix://filament/native/Clock>>",
             "collection_kind",
             "1",
-            "Sequence<ix://quire/native/Clock>",
-            "Sequence<Sequence<ix://quire/native/Clock>>[slot]",
+            "Sequence<ix://filament/native/Clock>",
+            "Sequence<Sequence<ix://filament/native/Clock>>[slot]",
             "2",
-            "ix://quire/native/Clock",
-            "Sequence<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Sequence<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -10983,7 +10983,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -11021,14 +11021,14 @@
             "member_identity",
             "ix://acme/orders/Order/g",
             "member_type",
-            "Sequence<Sequence<ix://quire/native/Clock>>",
+            "Sequence<Sequence<ix://filament/native/Clock>>",
             "collection_kind",
             "1",
-            "Sequence<ix://quire/native/Clock>",
-            "Sequence<Sequence<ix://quire/native/Clock>>[slot]",
+            "Sequence<ix://filament/native/Clock>",
+            "Sequence<Sequence<ix://filament/native/Clock>>[slot]",
             "2",
-            "ix://quire/native/Clock",
-            "Sequence<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Sequence<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -11260,7 +11260,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<ix://quire/native/Clock>",
+                          "value": "Sequence<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -11350,7 +11350,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -11367,7 +11367,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<ix://quire/native/Clock>[slot]",
+                          "value": "Sequence<ix://filament/native/Clock>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -11384,7 +11384,7 @@
                               "text"
                             ]
                           },
-                          "value": "ix://quire/native/Clock",
+                          "value": "ix://filament/native/Clock",
                           "value_kind": "text"
                         }
                       },
@@ -11504,11 +11504,11 @@
             "member_identity",
             "ix://acme/orders/Order/s",
             "member_type",
-            "Sequence<ix://quire/native/Clock>",
+            "Sequence<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "Sequence<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Sequence<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -11520,7 +11520,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -11558,11 +11558,11 @@
             "member_identity",
             "ix://acme/orders/Order/s",
             "member_type",
-            "Sequence<ix://quire/native/Clock>",
+            "Sequence<ix://filament/native/Clock>",
             "collection_kind",
             "1",
-            "ix://quire/native/Clock",
-            "Sequence<ix://quire/native/Clock>[slot]",
+            "ix://filament/native/Clock",
+            "Sequence<ix://filament/native/Clock>[slot]",
             "none",
             ""
           ]
@@ -11706,7 +11706,7 @@
                               "text"
                             ]
                           },
-                          "value": "Option<ix://quire/native/Clock>",
+                          "value": "Option<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -11811,7 +11811,7 @@
             "member_identity",
             "ix://acme/orders/Order/v",
             "member_type",
-            "Option<ix://quire/native/Clock>",
+            "Option<ix://filament/native/Clock>",
             "collection_kind",
             "none",
             "minimum",
@@ -11826,7 +11826,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -11857,7 +11857,7 @@
             "member_identity",
             "ix://acme/orders/Order/v",
             "member_type",
-            "Option<ix://quire/native/Clock>",
+            "Option<ix://filament/native/Clock>",
             "collection_kind",
             "none",
             "minimum",
@@ -12092,7 +12092,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<Option<ix://quire/native/Clock>>",
+                          "value": "Sequence<Option<ix://filament/native/Clock>>",
                           "value_kind": "text"
                         }
                       },
@@ -12182,7 +12182,7 @@
                               "text"
                             ]
                           },
-                          "value": "Option<ix://quire/native/Clock>",
+                          "value": "Option<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -12199,7 +12199,7 @@
                               "text"
                             ]
                           },
-                          "value": "Sequence<Option<ix://quire/native/Clock>>[slot]",
+                          "value": "Sequence<Option<ix://filament/native/Clock>>[slot]",
                           "value_kind": "text"
                         }
                       },
@@ -12216,7 +12216,7 @@
                               "text"
                             ]
                           },
-                          "value": "Option<ix://quire/native/Clock>",
+                          "value": "Option<ix://filament/native/Clock>",
                           "value_kind": "text"
                         }
                       },
@@ -12336,11 +12336,11 @@
             "member_identity",
             "ix://acme/orders/Order/q",
             "member_type",
-            "Sequence<Option<ix://quire/native/Clock>>",
+            "Sequence<Option<ix://filament/native/Clock>>",
             "collection_kind",
             "1",
-            "Option<ix://quire/native/Clock>",
-            "Sequence<Option<ix://quire/native/Clock>>[slot]",
+            "Option<ix://filament/native/Clock>",
+            "Sequence<Option<ix://filament/native/Clock>>[slot]",
             "none",
             ""
           ]
@@ -12352,7 +12352,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_place",
         "semantic_type": {
           "ordinal": 0,
@@ -12390,11 +12390,11 @@
             "member_identity",
             "ix://acme/orders/Order/q",
             "member_type",
-            "Sequence<Option<ix://quire/native/Clock>>",
+            "Sequence<Option<ix://filament/native/Clock>>",
             "collection_kind",
             "1",
-            "Option<ix://quire/native/Clock>",
-            "Sequence<Option<ix://quire/native/Clock>>[slot]",
+            "Option<ix://filament/native/Clock>",
+            "Sequence<Option<ix://filament/native/Clock>>[slot]",
             "none",
             ""
           ]
@@ -12469,7 +12469,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -12549,7 +12549,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -12626,7 +12626,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "parameter",
         "semantic_type": {
           "ordinal": 0,
@@ -12670,7 +12670,7 @@
                   "member_identity",
                   "ix://acme/orders/Order/v",
                   "member_type",
-                  "Option<ix://quire/native/Clock>",
+                  "Option<ix://filament/native/Clock>",
                   "collection_kind",
                   "none",
                   "minimum",
@@ -12706,7 +12706,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.option.present",
+            "identity": "filament.op.option.present",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -12753,7 +12753,7 @@
               "member_identity",
               "ix://acme/orders/Order/v",
               "member_type",
-              "Option<ix://quire/native/Clock>",
+              "Option<ix://filament/native/Clock>",
               "collection_kind",
               "none",
               "minimum",
@@ -12795,7 +12795,7 @@
             {
               "operand": 5
             },
-            "quire.op.option.present",
+            "filament.op.option.present",
             "present",
             {
               "operand": 6
@@ -12809,7 +12809,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "presence_read",
         "semantic_type": {
           "ordinal": 0,
@@ -12860,11 +12860,11 @@
                   "member_identity",
                   "ix://acme/orders/Order/q",
                   "member_type",
-                  "Sequence<Option<ix://quire/native/Clock>>",
+                  "Sequence<Option<ix://filament/native/Clock>>",
                   "collection_kind",
                   "1",
-                  "Option<ix://quire/native/Clock>",
-                  "Sequence<Option<ix://quire/native/Clock>>[slot]",
+                  "Option<ix://filament/native/Clock>",
+                  "Sequence<Option<ix://filament/native/Clock>>[slot]",
                   "none",
                   ""
                 ]
@@ -12918,7 +12918,7 @@
             }
           ],
           "operation": {
-            "identity": "quire.op.option.present",
+            "identity": "filament.op.option.present",
             "laws": [],
             "leaves": [],
             "member": null,
@@ -12972,11 +12972,11 @@
               "member_identity",
               "ix://acme/orders/Order/q",
               "member_type",
-              "Sequence<Option<ix://quire/native/Clock>>",
+              "Sequence<Option<ix://filament/native/Clock>>",
               "collection_kind",
               "1",
-              "Option<ix://quire/native/Clock>",
-              "Sequence<Option<ix://quire/native/Clock>>[slot]",
+              "Option<ix://filament/native/Clock>",
+              "Sequence<Option<ix://filament/native/Clock>>[slot]",
               "none",
               ""
             ]
@@ -13036,7 +13036,7 @@
             {
               "operand": 6
             },
-            "quire.op.option.present",
+            "filament.op.option.present",
             "present",
             {
               "operand": 7
@@ -13050,7 +13050,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "presence_read",
         "semantic_type": {
           "ordinal": 0,
@@ -13170,7 +13170,7 @@
             "role": "anchor"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "operation_anchor",
         "semantic_type": {
           "ordinal": 0,
@@ -13235,7 +13235,7 @@
             "role": "generated"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "frame",
         "semantic_type": {
           "ordinal": 0,
@@ -13300,7 +13300,7 @@
             "role": "generated"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "frame",
         "semantic_type": {
           "ordinal": 0,
@@ -13421,7 +13421,7 @@
             "role": "anchor"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "operation_anchor",
         "semantic_type": {
           "ordinal": 0,
@@ -13516,7 +13516,7 @@
             "role": "generated"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "frame",
         "semantic_type": {
           "ordinal": 0,
@@ -13641,7 +13641,7 @@
             "role": "anchor"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "operation_anchor",
         "semantic_type": {
           "ordinal": 0,
@@ -13723,7 +13723,7 @@
                     "",
                     "2",
                     "ix://acme/orders/Timer/x",
-                    "ix://quire/native/Clock"
+                    "ix://filament/native/Clock"
                   ]
                 },
                 "term": "reference"
@@ -13871,7 +13871,7 @@
               "",
               "2",
               "ix://acme/orders/Timer/x",
-              "ix://quire/native/Clock"
+              "ix://filament/native/Clock"
             ]
           },
           {
@@ -13952,7 +13952,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -14039,7 +14039,7 @@
                     "member_identity",
                     "ix://acme/orders/Order/v",
                     "member_type",
-                    "Option<ix://quire/native/Clock>",
+                    "Option<ix://filament/native/Clock>",
                     "collection_kind",
                     "none",
                     "minimum",
@@ -14153,7 +14153,7 @@
               "member_identity",
               "ix://acme/orders/Order/v",
               "member_type",
-              "Option<ix://quire/native/Clock>",
+              "Option<ix://filament/native/Clock>",
               "collection_kind",
               "none",
               "minimum",
@@ -14218,7 +14218,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -14309,11 +14309,11 @@
                     "member_identity",
                     "ix://acme/orders/Order/clock",
                     "member_type",
-                    "Map<Text, ix://quire/native/Clock>",
+                    "Map<Text, ix://filament/native/Clock>",
                     "collection_kind",
                     "1",
-                    "Map<Text, ix://quire/native/Clock>[slot]",
-                    "ix://quire/native/Clock",
+                    "Map<Text, ix://filament/native/Clock>[slot]",
+                    "ix://filament/native/Clock",
                     "none",
                     ""
                   ]
@@ -14447,11 +14447,11 @@
               "member_identity",
               "ix://acme/orders/Order/clock",
               "member_type",
-              "Map<Text, ix://quire/native/Clock>",
+              "Map<Text, ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "Map<Text, ix://quire/native/Clock>[slot]",
-              "ix://quire/native/Clock",
+              "Map<Text, ix://filament/native/Clock>[slot]",
+              "ix://filament/native/Clock",
               "none",
               ""
             ]
@@ -14528,7 +14528,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -14719,7 +14719,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -14800,7 +14800,7 @@
                     "member_identity",
                     "ix://acme/orders/Order/v",
                     "member_type",
-                    "Option<ix://quire/native/Clock>",
+                    "Option<ix://filament/native/Clock>",
                     "collection_kind",
                     "none",
                     "minimum",
@@ -14914,7 +14914,7 @@
               "member_identity",
               "ix://acme/orders/Order/v",
               "member_type",
-              "Option<ix://quire/native/Clock>",
+              "Option<ix://filament/native/Clock>",
               "collection_kind",
               "none",
               "minimum",
@@ -14979,7 +14979,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -15070,11 +15070,11 @@
                     "member_identity",
                     "ix://acme/orders/Order/c",
                     "member_type",
-                    "Set<ix://quire/native/Clock>",
+                    "Set<ix://filament/native/Clock>",
                     "collection_kind",
                     "1",
-                    "ix://quire/native/Clock",
-                    "Set<ix://quire/native/Clock>[slot]",
+                    "ix://filament/native/Clock",
+                    "Set<ix://filament/native/Clock>[slot]",
                     "none",
                     ""
                   ]
@@ -15214,11 +15214,11 @@
               "member_identity",
               "ix://acme/orders/Order/c",
               "member_type",
-              "Set<ix://quire/native/Clock>",
+              "Set<ix://filament/native/Clock>",
               "collection_kind",
               "1",
-              "ix://quire/native/Clock",
-              "Set<ix://quire/native/Clock>[slot]",
+              "ix://filament/native/Clock",
+              "Set<ix://filament/native/Clock>[slot]",
               "none",
               ""
             ]
@@ -15301,7 +15301,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_constraint",
         "semantic_type": {
           "ordinal": 0,
@@ -15416,7 +15416,7 @@
                     "member_identity",
                     "ix://acme/orders/Order/v",
                     "member_type",
-                    "Option<ix://quire/native/Clock>",
+                    "Option<ix://filament/native/Clock>",
                     "collection_kind",
                     "none",
                     "minimum",
@@ -15577,7 +15577,7 @@
               "member_identity",
               "ix://acme/orders/Order/v",
               "member_type",
-              "Option<ix://quire/native/Clock>",
+              "Option<ix://filament/native/Clock>",
               "collection_kind",
               "none",
               "minimum",
@@ -15649,7 +15649,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_reset",
         "semantic_type": {
           "ordinal": 0,
@@ -15785,7 +15785,7 @@
                     "",
                     "2",
                     "ix://acme/orders/Timer/x",
-                    "ix://quire/native/Clock"
+                    "ix://filament/native/Clock"
                   ]
                 },
                 "term": "reference"
@@ -15980,7 +15980,7 @@
               "",
               "2",
               "ix://acme/orders/Timer/x",
-              "ix://quire/native/Clock"
+              "ix://filament/native/Clock"
             ]
           },
           {
@@ -16068,7 +16068,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_reset",
         "semantic_type": {
           "ordinal": 0,
@@ -16197,11 +16197,11 @@
                     "member_identity",
                     "ix://acme/orders/Order/q",
                     "member_type",
-                    "Sequence<Option<ix://quire/native/Clock>>",
+                    "Sequence<Option<ix://filament/native/Clock>>",
                     "collection_kind",
                     "1",
-                    "Option<ix://quire/native/Clock>",
-                    "Sequence<Option<ix://quire/native/Clock>>[slot]",
+                    "Option<ix://filament/native/Clock>",
+                    "Sequence<Option<ix://filament/native/Clock>>[slot]",
                     "none",
                     ""
                   ]
@@ -16316,7 +16316,7 @@
                     {
                       "operand": 7
                     },
-                    "quire.op.option.present",
+                    "filament.op.option.present",
                     "present",
                     {
                       "operand": 8
@@ -16362,7 +16362,7 @@
               {
                 "operand": 7
               },
-              "quire.op.option.present",
+              "filament.op.option.present",
               "present",
               {
                 "operand": 8
@@ -16426,11 +16426,11 @@
               "member_identity",
               "ix://acme/orders/Order/q",
               "member_type",
-              "Sequence<Option<ix://quire/native/Clock>>",
+              "Sequence<Option<ix://filament/native/Clock>>",
               "collection_kind",
               "1",
-              "Option<ix://quire/native/Clock>",
-              "Sequence<Option<ix://quire/native/Clock>>[slot]",
+              "Option<ix://filament/native/Clock>",
+              "Sequence<Option<ix://filament/native/Clock>>[slot]",
               "none",
               ""
             ]
@@ -16520,7 +16520,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_reset",
         "semantic_type": {
           "ordinal": 0,
@@ -16699,7 +16699,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_reset",
         "semantic_type": {
           "ordinal": 0,
@@ -16911,7 +16911,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "clock_guard",
         "semantic_type": {
           "ordinal": 0,
@@ -16953,7 +16953,7 @@
                     {
                       "operand": 1
                     },
-                    "quire.op.option.present",
+                    "filament.op.option.present",
                     "present",
                     {
                       "operand": 2
@@ -17053,7 +17053,7 @@
               {
                 "operand": 1
               },
-              "quire.op.option.present",
+              "filament.op.option.present",
               "present",
               {
                 "operand": 2
@@ -17146,7 +17146,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "time_invariant",
         "semantic_type": {
           "ordinal": 0,
@@ -17193,7 +17193,7 @@
           "identity": "acme/orders",
           "kind": "model_root"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "model_root",
         "semantic_type": {
           "ordinal": 0,
@@ -17888,11 +17888,11 @@
           "member_identity",
           "ix://acme/orders/Order/clock",
           "member_type",
-          "Map<Text, ix://quire/native/Clock>",
+          "Map<Text, ix://filament/native/Clock>",
           "collection_kind",
           "1",
-          "Map<Text, ix://quire/native/Clock>[slot]",
-          "ix://quire/native/Clock",
+          "Map<Text, ix://filament/native/Clock>[slot]",
+          "ix://filament/native/Clock",
           "none",
           ""
         ]
@@ -18304,7 +18304,7 @@
           {
             "node": 3
           },
-          "quire.op.temporal.holds",
+          "filament.op.temporal.holds",
           "temporal_formula",
           {
             "node": 0
@@ -18985,8 +18985,8 @@
           {
             "node": 29
           },
-          "quire.op.temporal.clause",
-          "quire.temporal.event-position.false-extension/v1",
+          "filament.op.temporal.clause",
+          "filament.temporal.event-position.false-extension/v1",
           "temporal",
           {
             "node": 0
@@ -19160,7 +19160,7 @@
           {
             "node": 28
           },
-          "quire.op.temporal.eventually",
+          "filament.op.temporal.eventually",
           "temporal_formula",
           {
             "node": 0
@@ -19284,7 +19284,7 @@
           "",
           "2",
           "ix://acme/orders/Timer/x",
-          "ix://quire/native/Clock"
+          "ix://filament/native/Clock"
         ]
       },
       "ordinal": 0,
@@ -19337,11 +19337,11 @@
           "member_identity",
           "ix://acme/orders/Order/c",
           "member_type",
-          "Set<ix://quire/native/Clock>",
+          "Set<ix://filament/native/Clock>",
           "collection_kind",
           "1",
-          "ix://quire/native/Clock",
-          "Set<ix://quire/native/Clock>[slot]",
+          "ix://filament/native/Clock",
+          "Set<ix://filament/native/Clock>[slot]",
           "none",
           ""
         ]
@@ -19396,11 +19396,11 @@
           "member_identity",
           "ix://acme/orders/Order/b",
           "member_type",
-          "Bag<ix://quire/native/Clock>",
+          "Bag<ix://filament/native/Clock>",
           "collection_kind",
           "1",
-          "ix://quire/native/Clock",
-          "Bag<ix://quire/native/Clock>[slot]",
+          "ix://filament/native/Clock",
+          "Bag<ix://filament/native/Clock>[slot]",
           "none",
           ""
         ]
@@ -19455,11 +19455,11 @@
           "member_identity",
           "ix://acme/orders/Order/o",
           "member_type",
-          "OrderedSet<ix://quire/native/Clock>",
+          "OrderedSet<ix://filament/native/Clock>",
           "collection_kind",
           "1",
-          "ix://quire/native/Clock",
-          "OrderedSet<ix://quire/native/Clock>[slot]",
+          "ix://filament/native/Clock",
+          "OrderedSet<ix://filament/native/Clock>[slot]",
           "none",
           ""
         ]
@@ -19514,14 +19514,14 @@
           "member_identity",
           "ix://acme/orders/Order/g",
           "member_type",
-          "Sequence<Sequence<ix://quire/native/Clock>>",
+          "Sequence<Sequence<ix://filament/native/Clock>>",
           "collection_kind",
           "1",
-          "Sequence<ix://quire/native/Clock>",
-          "Sequence<Sequence<ix://quire/native/Clock>>[slot]",
+          "Sequence<ix://filament/native/Clock>",
+          "Sequence<Sequence<ix://filament/native/Clock>>[slot]",
           "2",
-          "ix://quire/native/Clock",
-          "Sequence<ix://quire/native/Clock>[slot]",
+          "ix://filament/native/Clock",
+          "Sequence<ix://filament/native/Clock>[slot]",
           "none",
           ""
         ]
@@ -19576,11 +19576,11 @@
           "member_identity",
           "ix://acme/orders/Order/s",
           "member_type",
-          "Sequence<ix://quire/native/Clock>",
+          "Sequence<ix://filament/native/Clock>",
           "collection_kind",
           "1",
-          "ix://quire/native/Clock",
-          "Sequence<ix://quire/native/Clock>[slot]",
+          "ix://filament/native/Clock",
+          "Sequence<ix://filament/native/Clock>[slot]",
           "none",
           ""
         ]
@@ -19628,7 +19628,7 @@
           "member_identity",
           "ix://acme/orders/Order/v",
           "member_type",
-          "Option<ix://quire/native/Clock>",
+          "Option<ix://filament/native/Clock>",
           "collection_kind",
           "none",
           "minimum",
@@ -19686,11 +19686,11 @@
           "member_identity",
           "ix://acme/orders/Order/q",
           "member_type",
-          "Sequence<Option<ix://quire/native/Clock>>",
+          "Sequence<Option<ix://filament/native/Clock>>",
           "collection_kind",
           "1",
-          "Option<ix://quire/native/Clock>",
-          "Sequence<Option<ix://quire/native/Clock>>[slot]",
+          "Option<ix://filament/native/Clock>",
+          "Sequence<Option<ix://filament/native/Clock>>[slot]",
           "none",
           ""
         ]
@@ -19820,7 +19820,7 @@
           {
             "node": 65
           },
-          "quire.op.option.present",
+          "filament.op.option.present",
           "present",
           {
             "node": 0
@@ -19856,7 +19856,7 @@
           {
             "node": 67
           },
-          "quire.op.option.present",
+          "filament.op.option.present",
           "present",
           {
             "node": 0
@@ -20619,8 +20619,8 @@
           {
             "node": 29
           },
-          "quire.op.temporal.clause",
-          "quire.temporal.event-position.false-extension/v1",
+          "filament.op.temporal.clause",
+          "filament.temporal.event-position.false-extension/v1",
           "temporal",
           {
             "node": 0
@@ -20655,8 +20655,8 @@
           {
             "node": 29
           },
-          "quire.op.temporal.clause",
-          "quire.temporal.event-position.false-extension/v1",
+          "filament.op.temporal.clause",
+          "filament.temporal.event-position.false-extension/v1",
           "temporal",
           {
             "node": 0

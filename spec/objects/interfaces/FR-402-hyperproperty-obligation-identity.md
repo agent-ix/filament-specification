@@ -3,17 +3,17 @@ id: FR-402
 title: "Hyperproperty claim body and obligation identity"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: references
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: references
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: references
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: references
 ---
 
@@ -21,7 +21,7 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` node has `node_tag: "claim"` and
+When a `filament.checked-semantic-graph/v2` node has `node_tag: "claim"` and
 `semantic_form: "hyperproperty"`, the producer SHALL encode its `body` as the
 aggregate below and compute each of its items' obligation identity over every
 member that changes the clause's meaning, and the reader SHALL refuse a node
@@ -59,7 +59,7 @@ below.
        variable ranges over; absent for a finite domain;
     4. one `reference` per constraint of the variable's resolved fairness
        set, in fairness-set order, to the `temporal`/`fairness` node whose
-       body root is that constraint's `quire.op.temporal.fair` application
+       body root is that constraint's `filament.op.temporal.fair` application
        ([FR-370](FR-370-checked-package-temporal-clause-body.md)); none for
        the empty set and none for a finite domain.
   - `match` — an aggregate of one `reference` per conjunct of the match, in
@@ -229,7 +229,7 @@ order and the first failing check is its defect:
 | FR-402-AC-4 | A step relation's model claim and code claim have different obligation identities. | Test (TC-343, TC-346) |
 | FR-402-AC-5 | A `behaviours` clause's `quantifiers` binding is a Tuple of one quantifier Group per quantifier, each Group binding `variable`, `quantifier` and `alias` to text literals and then holding one `reference` per fairness constraint to its `temporal`/`fairness` node; with `fair weak V::Vault::step` on `a` of TC-337 HB-01, `a`'s Group holds one reference and `b`'s none; the body passes strict wire validation of FR-322's grammar with no `malformed_wire`, and the reader admits the package. A finite-domain clause's Groups bind `variable` and `quantifier` only and its `subjects` is empty. | Test (TC-346) |
 | FR-402-AC-6 | Each `subjects` binding references the `model`/`model_root` node of the package its alias selects: two aliases' clauses over one object type of each package reference two roots, and a clause whose alias binds no object parameter has that alias's root as its subject; a `subjects` target that is a `model`/`object_type` node refuses `invalid_model_binding`/`malformed-declaration` at the target; a quantifier `alias` naming no subject refuses `missing_declaration`/`missing-name` at the `alias` binding; a `subjects` binding no Group names, and a body of six bindings, each refuse `invalid_semantic_graph`; and a finite-domain body with a `subjects` member, an `alias` binding or a fairness reference refuses `invalid_semantic_graph` at that member. | Test (TC-346) |
-| FR-402-AC-7 | Each quantifier fairness refusal is located at the reference `/semantic_graph/nodes/{n}/body/members/3/value/members/{g}/members/{m}`: a fairness node whose target is a `protocol_root` target refuses `invalid_model_binding`/`malformed-declaration`; one whose `operation` target names no effective operation refuses `missing_declaration`/`missing-name`; one whose declaring node belongs to another alias's package refuses `invalid_model_binding`/`malformed-declaration`; and a non-empty quantifier fairness set under a body wrapper whose profile is `quire.temporal.event-position.false-extension/v1` refuses `invalid_package`/`operation-member-mismatch`. A `quantifier` value `some` refuses `invalid_package`/`invalid-value` and a Group with `quantifier` before `variable` refuses `invalid_semantic_graph`. | Test (TC-346) |
+| FR-402-AC-7 | Each quantifier fairness refusal is located at the reference `/semantic_graph/nodes/{n}/body/members/3/value/members/{g}/members/{m}`: a fairness node whose target is a `protocol_root` target refuses `invalid_model_binding`/`malformed-declaration`; one whose `operation` target names no effective operation refuses `missing_declaration`/`missing-name`; one whose declaring node belongs to another alias's package refuses `invalid_model_binding`/`malformed-declaration`; and a non-empty quantifier fairness set under a body wrapper whose profile is `filament.temporal.event-position.false-extension/v1` refuses `invalid_package`/`operation-member-mismatch`. A `quantifier` value `some` refuses `invalid_package`/`invalid-value` and a Group with `quantifier` before `variable` refuses `invalid_semantic_graph`. | Test (TC-346) |
 | FR-402-AC-8 | A `behaviours` clause's `body` references a body wrapper whose `formula` argument references the body's root formula node and whose `fairness` argument is empty; the request the producer writes for the clause holds no FR-368 `formula` item whose `claim.node` is the wrapper; a `body` referencing a `temporal`/`formula` node directly refuses `ill_typed`/`operator-ineligible` at the hyperproperty node; a wrapper with a non-empty `fairness` argument refuses `invalid_semantic_graph` at that argument; and a finite-domain `body` referencing an integer-typed `expression` node refuses `ill_typed`/`non-boolean-root` at the target. | Test (TC-346) |
 | FR-402-AC-9 | Every slot parameter name matches `[A-Za-z_][A-Za-z0-9_]*` and decodes to its tag and fields: `v @ a` is `slot_sv_sa`, `a.step.op` is `op_sa` and `a.step.Vault::step.i` is `arg_sa_sVault_sstep_si`; the slots for object parameter `a_b` in trace `c` and for `a` in trace `b_c` are `slot_sa__b_sc` and `slot_sa_sb__c`, which differ; a byte outside ASCII letters, digits and `_` is `_x` and two uppercase hexadecimal digits; and names built from every pair of distinct tags and field lists over a set including `_`, `s`, `x` and digit-leading names are pairwise distinct. | Test (TC-346) |
 

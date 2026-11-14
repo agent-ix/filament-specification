@@ -6,9 +6,9 @@ object: value_object
 relationships:
   - target: ix://agent-ix/engineering-assurance/FR-022
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
 ---
 # FR-281: Claim strength
@@ -23,7 +23,7 @@ rather than collapsing strengths into one success fact.
 
 Engineering Assurance FR-022
 owns its members, their exact wire spellings, their meaning and the typed
-refusal of any other label. This artifact states how a Quire result carries
+refusal of any other label. This artifact states how a Filament result carries
 that vocabulary: its source binding, its identity discipline and its
 cardinality on an advanced result.
 
@@ -50,7 +50,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Property | Meaning |
 | --- | --- |
-| `strength` | Exactly one Engineering Assurance FR-022 wire spelling, carried unchanged. The members, their spellings and their meaning are those of FR-022; a Quire result adds no member, alias, spelling or rendering of its own. |
+| `strength` | Exactly one Engineering Assurance FR-022 wire spelling, carried unchanged. The members, their spellings and their meaning are those of FR-022; a Filament result adds no member, alias, spelling or rendering of its own. |
 | source binding | The source that established the strength. The strength is **source-bound** and does not transfer to another claim (FR-061). |
 
 ## Identity and comparison
@@ -93,10 +93,10 @@ claims/results, not as a multi-valued strength.
   requires the strengths be retained distinct and source-bound.
 - [FR-115](../../functional/observation/FR-115-report-activation-participation-and-adequacy.md)
   retains claim strength as a separate fact.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status
 
-Proposed cardinality closure for `quire-specification#40`; implementation
+Proposed cardinality closure for `filament-specification#40`; implementation
 evidence remains planned under TC-061.

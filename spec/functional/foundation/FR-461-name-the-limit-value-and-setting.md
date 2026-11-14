@@ -3,19 +3,19 @@ id: FR-461
 title: "Name the limit, its value and its setting in every limit outcome"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-460
+  - target: ix://agent-ix/filament-specification/FR-460
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: references
-  - target: ix://agent-ix/quire-specification/FR-300
+  - target: ix://agent-ix/filament-specification/FR-300
     type: references
-  - target: ix://agent-ix/quire-specification/FR-301
+  - target: ix://agent-ix/filament-specification/FR-301
     type: references
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: references
 ---
 # FR-461: Name the limit, its value and its setting in every limit outcome
@@ -88,7 +88,7 @@ setting.
    not apply to it.
    The statistical worker count `statistical.workers` (FR-408 "Workers") is a resource choice, not a limit: it takes no limit row and no limit name, and no limit outcome names it. It is a request setting that the library and `--limit statistical.workers=<n>` accept as a positive integer and a replay request carries as the statistical request's `workers`; the value 0 is refused with `invalid_runtime_input`/`invalid-value` (FR-408-AC-16). The other worker counts are not registered here.
 6. **Execution budgets name their counter.** An `incomplete` execution
-   outcome names its `quire.value.accounting/v1` counter, for example
+   outcome names its `filament.value.accounting/v1` counter, for example
    `work_units`, as its limit. A counter of the evaluation meter, one of the
    ten `ScalarLimitsV1` counters (`integer_bits`, `decimal_digits`,
    `scale_expansion`, `text_input_bytes`, `text_scalars`,
@@ -118,13 +118,13 @@ setting.
 | FR-461-AC-2 | For each stage limit, an input that exceeds its default is rerun with that limit raised through the library setter, through the replay request's `stage_limits` entry and through `--limit <name>=<value>`, each under the setting name the outcome reported, and each rerun succeeds with the same result. | Test (TC-426) |
 | FR-461-AC-3 | A replay request whose `stage_limits` raises any stage limit runs that stage under the raised value, not under its default. | Test (TC-426) |
 | FR-461-AC-4 | An unknown setting name, or a setting name naming a depth, given to `--limit` or to a replay request's `stage_limits` refuses before any stage runs and names the argument. | Test (TC-426) |
-| FR-461-AC-5 | An `incomplete` execution outcome names its `quire.value.accounting/v1` counter as its limit and, for a `ScalarLimitsV1` counter, `accounting.<counter>` as its setting, such as `accounting.work_units`, and raising that setting through each entry point lets the same run complete; a request carrying both `ScalarLimitsV1` and `PopulationAdmissionLimitsV1` that exhausts population admission's `work_units` names the setting `admission.work_units`, and raising `accounting.work_units` does not let it complete. | Test (TC-426) |
+| FR-461-AC-5 | An `incomplete` execution outcome names its `filament.value.accounting/v1` counter as its limit and, for a `ScalarLimitsV1` counter, `accounting.<counter>` as its setting, such as `accounting.work_units`, and raising that setting through each entry point lets the same run complete; a request carrying both `ScalarLimitsV1` and `PopulationAdmissionLimitsV1` that exhausts population admission's `work_units` names the setting `admission.work_units`, and raising `accounting.work_units` does not let it complete. | Test (TC-426) |
 | FR-461-AC-6 | An engine item stopped at an engine limit, such as the model checker's state count, settles `incomplete` naming the limit, its value and its dotted setting name, such as `model_check.max_states`, and raising that setting through the library setter, the replay request and `--limit` lets the same item finish. | Test (TC-426) |
 | FR-461-AC-7 | A byte-emitting lifecycle operation with an `output_bytes` limit reports the operation's `*.output_bytes` setting when the next emitted byte would exceed the configured bound, returns no partial output, succeeds at the exact output length including its terminating newline, and accepts the same bound through its typed limits field and the CLI settings operation. | Test (TC-930) |
 | FR-461-AC-8 | A backend-provider `LimitReached` cause for an exhausted execution budget with `limit` `work_units` and `setting` `accounting.work_units` validates against the provider schema; the same cause with `setting` `work_units` fails it. | Test (TC-426) |
-| FR-461-AC-9 | The spellings the `quire.value.accounting/v1` ordered charge-point table declares equal, in table order, the spellings of the published list `value-accounting-charge-point-vectors.json`, and every spelling has an amount row; the set includes `equality.plan-form`, `frame.write`, `frame.redefines-link`, `declaration.check` and `temporal.visit`. | Test (TC-426) |
+| FR-461-AC-9 | The spellings the `filament.value.accounting/v1` ordered charge-point table declares equal, in table order, the spellings of the published list `value-accounting-charge-point-vectors.json`, and every spelling has an amount row; the set includes `equality.plan-form`, `frame.write`, `frame.redefines-link`, `declaration.check` and `temporal.visit`. | Test (TC-426) |
 | FR-461-AC-10 | A spelling the table does not declare, such as `temporal.visits`, is absent from the ordered table (and therefore the amount table) and from the published list, and a one-sided change to either fails the comparison; `tests/value_accounting_vocabulary.rs` enforces this half. A conforming kernel's test compares its `ChargePoint::ALL` `as_str()` set with `VALUE_ACCOUNTING_CHARGE_POINT_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
-| FR-461-AC-11 | The ten `ScalarLimitsV1` counter spellings the `quire.value.accounting/v1` Limit object lists, in field order, equal the spellings of the published list `value-accounting-limit-kind-vectors.json`, which is the `ScalarLimitsV1` counter vocabulary only (the `limit_kind` values of `PopulationAdmissionLimitsV1` and `ModelNormalizationLimitsV1` are not part of it); a spelling that is not a `ScalarLimitsV1` counter, such as `unit_work` or `accounting.work_units`, is absent from the Limit object, from the published list and from every `limit_kind` the definition names, and a one-sided change fails the comparison. A conforming kernel's test compares its `LimitKind::ALL` `as_str()` set with `VALUE_ACCOUNTING_LIMIT_KIND_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
+| FR-461-AC-11 | The ten `ScalarLimitsV1` counter spellings the `filament.value.accounting/v1` Limit object lists, in field order, equal the spellings of the published list `value-accounting-limit-kind-vectors.json`, which is the `ScalarLimitsV1` counter vocabulary only (the `limit_kind` values of `PopulationAdmissionLimitsV1` and `ModelNormalizationLimitsV1` are not part of it); a spelling that is not a `ScalarLimitsV1` counter, such as `unit_work` or `accounting.work_units`, is absent from the Limit object, from the published list and from every `limit_kind` the definition names, and a one-sided change fails the comparison. A conforming kernel's test compares its `LimitKind::ALL` `as_str()` set with `VALUE_ACCOUNTING_LIMIT_KIND_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
 | FR-461-AC-12 | When the CLI is given `--limit statistical.workers=4`, the statistical request carries `workers` 4 and no limit row or `limit-reached` outcome names `statistical.workers`; given `--limit statistical.workers=0` it refuses with `invalid_runtime_input`/`invalid-value`. | Test (TC-426) |
 
 ## Dependencies
@@ -143,4 +143,4 @@ setting.
 
 ## References
 
-- Linear STD-143; QSL ADR-030 D-3.
+- Linear STD-143; FSL ADR-030 D-3.

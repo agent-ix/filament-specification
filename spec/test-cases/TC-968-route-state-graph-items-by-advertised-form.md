@@ -3,9 +3,9 @@ id: TC-968
 title: "Route state-graph items by advertised provider form"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
 ---
 

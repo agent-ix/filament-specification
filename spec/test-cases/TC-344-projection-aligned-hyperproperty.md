@@ -3,11 +3,11 @@ id: TC-344
 title: "Projection-aligned hyperproperty"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-398
+  - target: ix://agent-ix/filament-specification/FR-398
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-400
+  - target: ix://agent-ix/filament-specification/FR-400
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: verifies
 ---
 

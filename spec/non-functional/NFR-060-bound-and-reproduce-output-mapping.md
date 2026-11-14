@@ -4,9 +4,9 @@ title: "Bound and reproduce output mapping"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-120
+  - target: ix://agent-ix/filament-specification/FR-120
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-125
+  - target: ix://agent-ix/filament-specification/FR-125
     type: constrains
 ---
 ## Statement

@@ -3,11 +3,11 @@ id: FR-009
 title: "Compare objects by declared identity"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-003"
+  - target: "ix://agent-ix/filament-specification/US-003"
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: references
 ---
 # FR-009: Compare objects by declared identity

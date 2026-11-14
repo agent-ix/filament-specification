@@ -3,17 +3,17 @@ id: TC-315
 title: "Refinement undetermined mappings and replay"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-378
+  - target: ix://agent-ix/filament-specification/FR-378
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-377-AC-12
+  - target: ix://agent-ix/filament-specification/FR-377-AC-12
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-377-AC-13
+  - target: ix://agent-ix/filament-specification/FR-377-AC-13
     type: verifies
 ---
 

@@ -3,9 +3,9 @@ id: TC-940
 title: "Model-owned variant, tuple and union declaration nodes, their ids and their reads"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-141
+  - target: ix://agent-ix/filament-specification/FR-141
     type: verifies
 ---
 # TC-940: Model-owned variant, tuple and union declaration nodes, their ids and their reads
@@ -27,8 +27,8 @@ and a second variant type `Level` with cases `Gold` and `Silver`.
 
 1. Select the package into one checked package under alias `Config` and read
    the type of each `Order` field, and of the `Tier` node and each case.
-2. Apply `quire.op.enum.eq` and `quire.op.enum.ne` to two `Tier` operands, then
-   `quire.op.structural.eq` and `quire.op.enum.lt` to them. Read an `enum_value`
+2. Apply `filament.op.enum.eq` and `filament.op.enum.ne` to two `Tier` operands, then
+   `filament.op.structural.eq` and `filament.op.enum.lt` to them. Read an `enum_value`
    node of `Tier` whose case is `Gold`, then one whose case is `Silver`.
 3. Select the same package into a second checked package under alias `Cfg` and
    compare the node id of the `Tier` node, of `Gold` and of `Standard` with step 1.
@@ -43,7 +43,7 @@ and a second variant type `Level` with cases `Gold` and `Silver`.
    `Sequence<Tier>[0, 3]`; none is `Reference<Tier>`. The `Tier` node has a
    `ModelOwner`, family `enum` and no `scalar_type`/`enum` unit-owned
    counterpart.
-2. The enum equality and inequality are admitted; `quire.op.structural.eq` and
+2. The enum equality and inequality are admitted; `filament.op.structural.eq` and
    the ordering application refuse `ill_typed`/`operator-ineligible`. The `Gold`
    node is admitted; the `Silver` node refuses `invalid_semantic_graph`.
 3. The three node ids equal those of step 1, and `Gold` of one package equals
@@ -77,9 +77,9 @@ the package `acme/shapes` declares the tuples `Pair` (`p0: Boolean`,
    over `Shape`, and structural and enum equality over `Shape`.
 10. Present a tuple with no position, a gap, an absent `typeRef`, a field, an
     unresolved `typeRef`, a repeated ordinal, and a case with an unresolved
-    `payloadType` and one typed `ix://quire/native/Clock`.
+    `payloadType` and one typed `ix://filament/native/Clock`.
 11. Read `fixtures/positive-model-tuple-union.json` with the full reader: the
-    `union_value`, `enum_value`, `quire.op.tuple.project`, `case` and equality
+    `union_value`, `enum_value`, `filament.op.tuple.project`, `case` and equality
     nodes it carries over `Pair`, `Shape`, `Color` and `List`, then each wire case
     `TW-11` to `TW-26` (a wrong case, payload or arity, a `union_value` over an
     enumeration, a missing or reordered `case` arm, a position beyond the tuple, a

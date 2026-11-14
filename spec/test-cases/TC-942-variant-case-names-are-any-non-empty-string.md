@@ -3,9 +3,9 @@ id: TC-942
 title: "Variant case names are any non-empty string"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-141
+  - target: ix://agent-ix/filament-specification/FR-141
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: verifies
 ---
 # TC-942: Variant case names are any non-empty string

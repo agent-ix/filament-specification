@@ -3,19 +3,19 @@ id: TC-064
 title: "Project protocol results to portable verification findings"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-249
+  - target: ix://agent-ix/filament-specification/FR-249
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-283
+  - target: ix://agent-ix/filament-specification/FR-283
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: verifies
 ---
 ## Description
 
 Verify the total, source-bound projection from one canonical protocol result to
-`quire-verification/e02-draft-2` without losing an FR-007 finding or conflating
+`filament-verification/e02-draft-2` without losing an FR-007 finding or conflating
 observation adequacy, protocol adequacy and evidence sufficiency.
 
 ## Test Procedure
@@ -34,7 +34,7 @@ reasons. Mutate absent required sets, mixed variants, duplicate references and
 each E02 target label in the source fact.
 Project each result under one exact E02 obligation, plan, task, run, profile, binding
 and adapter identity, then assess the emitted
-`TechniqueResult` with the quire-verification strict reader.
+`TechniqueResult` with the filament-verification strict reader.
 
 For each case, mutate the canonical result key,
 target obligation, execution binding, adapter version and one source state in

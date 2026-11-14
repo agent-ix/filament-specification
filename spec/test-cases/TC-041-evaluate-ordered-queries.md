@@ -3,7 +3,7 @@ id: TC-041
 title: "Evaluate bounded queries with occurrence-preserving semantics"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: verifies
 ---
 ## Description

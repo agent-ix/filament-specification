@@ -3,19 +3,19 @@ id: FR-341
 title: "Checked-package state clause body"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: references
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: references
 ---
 
@@ -23,9 +23,9 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` node has `node_tag: "state"` and
+When a `filament.checked-semantic-graph/v2` node has `node_tag: "state"` and
 `semantic_form: "state_clause"`, the producer SHALL encode its `body` as one
-application of `quire.op.state.clause`, the clause operation of an
+application of `filament.op.state.clause`, the clause operation of an
 invariant, a state constraint
 ([FR-382](../../functional/analysis/FR-382-select-state-space-reductions.md)),
 a precondition or a postcondition, whose `state_clause` member
@@ -34,17 +34,17 @@ the clause's parameter aggregate, its anchor and its Boolean condition. The
 reader SHALL refuse a node whose joins below do not hold with the first
 refusal in the order below.
 
-A `quire.checked-semantic-graph/v2` node with `node_tag: "state"` and
+A `filament.checked-semantic-graph/v2` node with `node_tag: "state"` and
 `semantic_form: "transition"` is the checked claim that one operation
 transitions one Boolean model field. The producer SHALL encode its `body` as
-one application of `quire.op.state.transition` as "State transition body"
+one application of `filament.op.state.transition` as "State transition body"
 below fixes, and the reader SHALL refuse a node whose joins there do not
 hold.
 
 ## Properties
 
 - **body** — an `application` term with `operator: "state_clause"` and
-  `operation.identity: "quire.op.state.clause"`, whose `operation.member` is
+  `operation.identity: "filament.op.state.clause"`, whose `operation.member` is
   `{kind: "state_clause", clause, execution_point?}` with `clause` one of `invariant`,
   `constraint`, `precondition` or `postcondition`, `laws` empty, `mode` `null` and
   `leaves` empty. Its `arguments` are exactly:
@@ -92,7 +92,7 @@ model declaration node ([FR-322](FR-322-checked-package-artifact.md) "Derived
 type forms and forwarding"). It stands for the object of an object type, for
 the run of a process at the run's declared object identity, and for the one
 context of a state machine
-([FR-208](../foundation/FR-208-quire-meaning-vocabulary.md)). A clause on a
+([FR-208](../foundation/FR-208-filament-meaning-vocabulary.md)). A clause on a
 process or state machine binds its `result` and parameters from its operation
 exactly as an object type's clause does.
 
@@ -104,7 +104,7 @@ parameter node's `semantic_type` names that type's node.
 
 ## Operation catalog entry
 
-`quire.op.state.clause` is the catalogued operation (FR-322 "Operation
+`filament.op.state.clause` is the catalogued operation (FR-322 "Operation
 families, groups and constraints"):
 
 | Member | Value |
@@ -129,9 +129,9 @@ at different accepted points are distinct nodes.
 
 ## Node forms and body roots
 
-- A `quire.op.state.clause` application is the body root of a
+- A `filament.op.state.clause` application is the body root of a
   `state`/`state_clause` node, and stands nowhere else.
-- A `quire.op.state.transition` application is the body root of a
+- A `filament.op.state.transition` application is the body root of a
   `state`/`transition` node (see "State transition body"), and stands
   nowhere else.
 - A `state`/`frame` node's body is
@@ -140,10 +140,10 @@ at different accepted points are distinct nodes.
 - A `state`/`operation_anchor` node's body is FR-342's binding aggregate
   and holds no application.
 
-The schema fixes each body root. A `quire.op.state.clause` application
+The schema fixes each body root. A `filament.op.state.clause` application
 standing as the body root of a node that is not `state`/`state_clause`
 refuses `ill_typed`/`operator-ineligible` at that node. A
-`quire.op.state.clause` application nested inside a node body or inside
+`filament.op.state.clause` application nested inside a node body or inside
 another term is outside [FR-322](FR-322-checked-package-artifact.md)'s body
 grammar and refuses `malformed_wire` at the nested application, at strict
 wire validation, like any other nested application other than `case`.
@@ -172,7 +172,7 @@ example `Switch.set(flag: Boolean)` with the required Boolean field `on`); other
 other transition forms are outside this body and this version.
 
 - **body** — an `application` term with `operator: "state_transition"` and
-  `operation.identity: "quire.op.state.transition"`, whose `laws` are exactly
+  `operation.identity: "filament.op.state.transition"`, whose `laws` are exactly
   one `protocol_profile` law equal to the lock's `profile_selections` row of
   that role (so a package carrying a transition selects the protocol profile),
   `member` `{kind: "profile_operator", operator: "transition"}`, `mode` `null`
@@ -184,7 +184,7 @@ other transition forms are outside this body and this version.
   | # | Binding | Value |
   | --- | --- | --- |
   | 1 | `anchor` | a `reference` to the `state`/`operation_anchor` node ([FR-342](FR-342-checked-package-operation-anchor-body.md)) of the operation that effects the transition |
-  | 2 | `subject` | a `reference` to the `expression`/`query` node, a `quire.op.record.project` application with member `{kind: "field", name, declaration}` over a `quire.op.model.deref` application of the `self` `value`/`parameter` node, that reads the transitioned Boolean field of the anchor's context |
+  | 2 | `subject` | a `reference` to the `expression`/`query` node, a `filament.op.record.project` application with member `{kind: "field", name, declaration}` over a `filament.op.model.deref` application of the `self` `value`/`parameter` node, that reads the transitioned Boolean field of the anchor's context |
   | 3 | `inputs` | an ordered list: a Group `aggregate` of `reference` terms to the `value`/`parameter` nodes of the operation's parameters, in declared order, empty when the operation has none |
   | 4 | `pre` | optional: a Group `aggregate` of no member or of one `reference` to the `state`/`state_clause` precondition of the operation |
   | 5 | `post` | a `reference` to the `state`/`state_clause` postcondition of the operation |
@@ -241,7 +241,7 @@ other transition forms are outside this body and this version.
   field, the operation, an input, `pre`, `post` or the profile selection
   yields a different node.
 
-Placement. A `quire.op.state.transition` application is the body root of a
+Placement. A `filament.op.state.transition` application is the body root of a
 `state`/`transition` node and nowhere else. The state step checks the
 placement of every such application first, in ascending node-id order,
 before the anchor checks: an application at the body root of a node that is not
@@ -249,7 +249,7 @@ a `state`/`transition` node refuses `ill_typed`/`operator-ineligible` at that
 node; an application nested inside a node body or another term is outside
 FR-322's body grammar and refuses `malformed_wire` at the nested application at
 strict wire validation; and a `state`/`transition` node whose body root is not a
-`quire.op.state.transition` application fails the published schema.
+`filament.op.state.transition` application fails the published schema.
 
 Reader order for transition nodes: the state step checks every
 `state`/`transition` node after every `state`/`state_clause` node, in
@@ -291,14 +291,14 @@ refuse as there.
 ### Stage boundary for a mismatched profile operator
 
 FR-322's reader order applies the published V2 schema before any step. The
-schema pins the member operator of a `quire.op.state.transition` application
+schema pins the member operator of a `filament.op.state.transition` application
 to `transition` and enumerates the member operators of a
-`quire.op.protocol.control` application without `transition`. A complete
+`filament.op.protocol.control` application without `transition`. A complete
 reader therefore refuses these inputs at the schema stage and never reaches
 the operation step for them:
 
-- a `quire.op.state.transition` application naming any other operator, and a
-  `quire.op.protocol.control` application naming `transition`, refuse
+- a `filament.op.state.transition` application naming any other operator, and a
+  `filament.op.protocol.control` application naming `transition`, refuse
   `malformed_wire`, the locus being the application's node pointer
   `/semantic_graph/nodes/{i}` and `operation/member/operator` the
   `document_pointer` (FR-322-AC-152);
@@ -319,8 +319,8 @@ A `state`/`transition` node is a Boolean model-field claim over one
 (`anchor`, `subject`) pair. It is not the summary of an operation's
 postconditions or of its preconditions. An operation anchor may have any
 number of `state_clause` nodes of clause `postcondition` and of clause
-`precondition` (QSL FR-105-AC-4 adds a second post as one more node on the
-same anchor; QSL allows several preconditions, evaluated as a conjunction),
+`precondition` (FSL FR-105-AC-4 adds a second post as one more node on the
+same anchor; FSL allows several preconditions, evaluated as a conjunction),
 each checked as FR-341 states, and an operation's postconditions (and,
 likewise, its preconditions) are the conjunction of its clauses of that kind
 whether or not any transition names one of them. A transition's `post` binds
@@ -337,9 +337,9 @@ One producer option, not a requirement of this specification: where several
 clauses of one kind constrain one subject, the producer that wants a
 transition for it states one clause for that subject (the source's own
 `post A and B`) and binds that, and the others remain plain clause nodes.
-Which option QSL takes is QSL-owned and OPEN (QSL-1163, the first transition
-emitter, escalation e38). QSL FR-105 and ADR-012 section 15.4 currently say
-QSL emits no `state`/`transition` node from a state clause, so the QSL-authored
+Which option FSL takes is FSL-owned and OPEN (QSL-1163, the first transition
+emitter, escalation e38). FSL FR-105 and ADR-012 section 15.4 currently say
+FSL emits no `state`/`transition` node from a state clause, so the FSL-authored
 part of IR-1052 AC-7 is not closed by this specification.
 
 ## Reader order
@@ -347,7 +347,7 @@ part of IR-1052 AC-7 is not closed by this specification.
 The state step runs after the frame step (FR-340) and before any operation
 refusal ([FR-322](FR-322-checked-package-artifact.md)), after every
 graph-shape and declaration refusal. Within it, the
-reader first checks the placement of every `quire.op.state.clause`
+reader first checks the placement of every `filament.op.state.clause`
 application, in ascending node-id order; then every
 `state`/`operation_anchor` node (FR-342), in ascending node-id
 order; then every `state`/`state_clause` node, in ascending node-id
@@ -387,26 +387,26 @@ non-Boolean node each refuse `ill_typed`/`operator-ineligible`.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-341-AC-1 | A `state`/`state_clause` node's body is a `quire.op.state.clause` application with operator class `state_clause`, a `{kind: "state_clause", clause}` member whose `clause` is `invariant`, `constraint`, `precondition` or `postcondition`, and three arguments: an `aggregate` of one or more `reference` terms, a `reference`, and the condition. A body that is another clause application, names another identity or operator class, carries another member kind or clause value, or whose first or second argument has another term shape fails the published schema. | Test (TC-233) |
+| FR-341-AC-1 | A `state`/`state_clause` node's body is a `filament.op.state.clause` application with operator class `state_clause`, a `{kind: "state_clause", clause}` member whose `clause` is `invariant`, `constraint`, `precondition` or `postcondition`, and three arguments: an `aggregate` of one or more `reference` terms, a `reference`, and the condition. A body that is another clause application, names another identity or operator class, carries another member kind or clause value, or whose first or second argument has another term shape fails the published schema. | Test (TC-233) |
 | FR-341-AC-2 | Every occurrence of a `state`/`state_clause` node has role `claim`; an occurrence of another role fails the published schema. | Test (TC-233) |
 | FR-341-AC-3 | The anchor of an invariant is a declared `model`/`object_type`, `model`/`process` or `model`/`state_machine` dependency and the anchor of a precondition or postcondition a declared `state`/`operation_anchor` dependency; an invariant anchored at an operation anchor and a precondition anchored at an object type refuse `invalid_model_binding`/`malformed-declaration` at the anchor's target. | Test (TC-233) |
 | FR-341-AC-4 | Each parameter reference targets a declared `value`/`parameter` dependency, else it refuses `invalid_model_binding`/`malformed-declaration` at its target; `self` has type `Reference<C>` for the clause's context `C` (an object type, a process or a state machine), and an invariant binds `self` alone; a `self` of another type and an invariant binding a second parameter refuse `ill_typed`/`operator-ineligible` at the clause node. | Test (TC-233) |
 | FR-341-AC-5 | A precondition binds `self` and then the resolved operation's parameters; a postcondition binds `self`, then the operation's result when it has one, then its parameters; for `Order.scaled(n: Integer): Integer`, `[Reference<Order>, Integer]` is the precondition's list and `[Reference<Order>, Integer, Integer]` the postcondition's, and `Order.reset()` with no result gives `[Reference<Order>]`. A missing parameter, a missing result, a `self` of another object type and a parameter of another type each refuse `ill_typed`/`operator-ineligible`. | Test (TC-280) |
-| FR-341-AC-6 | A `quire.op.state.clause` application at the body root of a node other than a `state`/`state_clause` node refuses `ill_typed`/`operator-ineligible` at that node; a `quire.op.state.clause` application nested inside a node body or inside another term fails the V2 schema and refuses `malformed_wire` at the nested application. | Test (TC-233) |
+| FR-341-AC-6 | A `filament.op.state.clause` application at the body root of a node other than a `state`/`state_clause` node refuses `ill_typed`/`operator-ineligible` at that node; a `filament.op.state.clause` application nested inside a node body or inside another term fails the V2 schema and refuses `malformed_wire` at the nested application. | Test (TC-233) |
 | FR-341-AC-7 | The published clause package's invariant and precondition are admitted by the state step; the state step reports anchor defects before clause defects, and runs after the frame step and before the operation step. | Test (TC-233) |
-| FR-341-AC-8 | A `state`/`transition` node's body root is a `quire.op.state.transition` application; a `state`/`transition` node whose body root is another clause application fails the published schema. | Test (TC-233) |
-| FR-341-AC-9 | The operation catalog holds `quire.op.state.clause` with operator class `state_clause`, operands `aggregate`, `object`, `boolean`, result `clause`, no laws, no mode and the `state_clause` member kind, and both V2 schemas enumerate the identity, the operator class and the member kind; each published state clause application is admitted by the operation step. | Test (TC-233) |
+| FR-341-AC-8 | A `state`/`transition` node's body root is a `filament.op.state.transition` application; a `state`/`transition` node whose body root is another clause application fails the published schema. | Test (TC-233) |
+| FR-341-AC-9 | The operation catalog holds `filament.op.state.clause` with operator class `state_clause`, operands `aggregate`, `object`, `boolean`, result `clause`, no laws, no mode and the `state_clause` member kind, and both V2 schemas enumerate the identity, the operator class and the member kind; each published state clause application is admitted by the operation step. | Test (TC-233) |
 | FR-341-AC-10 | A `value`/`parameter` node's body is an `aggregate` of exactly two bindings, `name` (a `text` literal) and `level` (an `integer` literal), in that order, and every occurrence has role `expression`; a body with the bindings reordered, a non-text `name`, a non-integer `level`, a missing binding and an occurrence of another role each fail the published schema. | Test (TC-233) |
 | FR-341-AC-11 | A process `Flow` with field `n` and operation `go(): Integer` admits an invariant anchored at the `model`/`process` node binding `[Reference<Flow>]`, a precondition of `go` binding `[Reference<Flow>]` and a postcondition of `go` binding `[Reference<Flow>, Integer]`, whose anchor is the `go` operation anchor of context `Flow`; a state machine `Gate` with operation `toggle()` admits an invariant anchored at the `model`/`state_machine` node binding `[Reference<Gate>]` and a postcondition of `toggle` binding `[Reference<Gate>]`; the `Reference<Flow>` and `Reference<Gate>` nodes are `composite_type`/`reference` nodes over the process and state-machine declaration nodes. | Test (TC-233, TC-280) |
 | FR-341-AC-12 | A clause on a process or a state machine refuses as one on an object type does: an invariant anchored at an operation anchor, and a precondition anchored at the process node, refuse `invalid_model_binding`/`malformed-declaration` at the anchor's target; a `self` of `Reference<Other>` for another declaring type, a missing operation parameter and a missing result each refuse `ill_typed`/`operator-ineligible` at the clause node; an invariant anchored at a record value type, an event type, a persistence interface or a systems interface refuses `invalid_model_binding`/`malformed-declaration` at the anchor's target. | Test (TC-233, TC-280) |
 | FR-341-AC-13 | The published clause package's invariant node with its kind member's `clause` rewritten to `constraint`, validates against both V2 schemas and is admitted by the state step, as a constraint is checked as an invariant; the same constraint anchored at an operation anchor refuses `invalid_model_binding`/`malformed-declaration` at the anchor's target, and one binding a second parameter refuses `ill_typed`/`operator-ineligible` at the clause node. An invariant and a constraint with equal bodies have different node ids, because the kind member is part of the body. | Test (TC-233) |
 | FR-341-AC-14 | The state-clause member admits each closed `execution_point` variant: initialization/handler on an invariant, pre/post on an operation clause; it refuses an unknown variant, extra member, missing anchor name, an inapplicable point, or a name that disagrees with the checked source/operation anchor. Equal clause bodies with different accepted points are different bodies; the same point round-trips unchanged. | Test (TC-233) |
-| FR-341-AC-15 | A `state`/`transition` node's body is a `quire.op.state.transition` application with operator class `state_transition`, one `protocol_profile` law, `member` `{kind: "profile_operator", operator: "transition"}`, `null` mode, empty leaves, a Boolean `result_type`, and exactly the five bindings `anchor`, `subject`, `inputs`, `pre`, `post` in that order, where `anchor`, `subject` and `post` are references, `inputs` an aggregate of references and `pre` an aggregate of at most one reference; every occurrence has role `claim`. A body with the bindings reordered, one missing or added, `pre` holding two references, an aggregate `subject`, another member operator, another law role, a mode, or an occurrence of another role fails the published schema (`malformed_wire`); the operation step, run alone on a document the schema was not applied to, refuses another profile operator as `operation-member-mismatch` (FR-341-AC-19). | Test (TC-233) |
+| FR-341-AC-15 | A `state`/`transition` node's body is a `filament.op.state.transition` application with operator class `state_transition`, one `protocol_profile` law, `member` `{kind: "profile_operator", operator: "transition"}`, `null` mode, empty leaves, a Boolean `result_type`, and exactly the five bindings `anchor`, `subject`, `inputs`, `pre`, `post` in that order, where `anchor`, `subject` and `post` are references, `inputs` an aggregate of references and `pre` an aggregate of at most one reference; every occurrence has role `claim`. A body with the bindings reordered, one missing or added, `pre` holding two references, an aggregate `subject`, another member operator, another law role, a mode, or an occurrence of another role fails the published schema (`malformed_wire`); the operation step, run alone on a document the schema was not applied to, refuses another profile operator as `operation-member-mismatch` (FR-341-AC-19). | Test (TC-233) |
 | FR-341-AC-16 | The state step refuses a transition node with the first defect in this order, each at its stated locus: a transition application at the root of another node (`ill_typed`/`operator-ineligible` at that node); an `anchor` that is not a declared `operation_anchor` dependency; a `subject` that is not a declared field projection of a dereferenced `Reference<C>` `self` of the anchor's context, or whose field the anchor's frame does not modify (`invalid_model_binding`/`malformed-declaration`), or whose type is not the required single-valued Boolean node, such as an optional Boolean field typed `Option<Boolean>` or an Integer field (`ill_typed`/`operator-ineligible` at the node); an `inputs` list that is not the operation's Boolean parameters in declared order; a `pre` or `post` that is not the operation's precondition or postcondition state clause, including one anchored at another context or operation; and a second transition over the same `anchor` and `subject` (`ambiguous_declaration`/`ambiguous-name`). | Analysis |
 | FR-341-AC-17 | The published `positive-state-transition.json` package, whose transition is `Switch.set(flag: Boolean)` over the required Boolean field `on` of `acme/orders` with precondition `flag || on` and postcondition `on`, validates against `schema.json`, is admitted by the operation step for every application, the subject projection included. Rewriting the anchor's operation name changes the ids of the anchor, both clauses and the transition; rewriting the subject's field, `pre`, `post` or the profile selection changes the transition id; moving a source-map region leaves every node id unchanged. | Test (TC-233) |
-| FR-341-AC-18 | A `quire.op.state.transition` application nested inside a node body or another term fails the V2 schema (`malformed_wire` at the nested application), and a `state`/`transition` node whose body root is another application or term fails the V2 schema; the state step refuses a transition application at the root of any other node as `ill_typed`/`operator-ineligible` at that node, before any anchor check. | Test (TC-233) |
-| FR-341-AC-19 | For the published `positive-clause-operations.json` and `positive-state-transition.json` packages, a `quire.op.protocol.control` application naming operator `transition` fails the published schema and a complete reader refuses it `malformed_wire` with the application's node pointer `/semantic_graph/nodes/{i}` as the locus and `operation/member/operator` as the `document_pointer` (FR-322-AC-152); a `quire.op.state.transition` application naming `sequence` fails the schema likewise; the operation step run alone on either edited document refuses `invalid_package`/`operation-member-mismatch` at the application. The schema is not widened. | Test (TC-233) |
-| FR-341-AC-20 | A package whose operation anchor has two `postcondition` `state_clause` nodes and one transition binding either one as `post` is admitted, and likewise for two `precondition` nodes and `pre`; a transition's `post` and `pre` do not stand for the operation's complete postcondition or precondition, and two transitions over one (`anchor`, `subject`) refuse `ambiguous_declaration`/`ambiguous-name` whichever clauses each binds. How QSL's first transition emitter chooses its clause (for example one source-stated `post A and B`) is QSL-owned and OPEN (QSL-1163, e38); this criterion does not close the QSL-authored part of IR-1052 AC-7. | Analysis |
+| FR-341-AC-18 | A `filament.op.state.transition` application nested inside a node body or another term fails the V2 schema (`malformed_wire` at the nested application), and a `state`/`transition` node whose body root is another application or term fails the V2 schema; the state step refuses a transition application at the root of any other node as `ill_typed`/`operator-ineligible` at that node, before any anchor check. | Test (TC-233) |
+| FR-341-AC-19 | For the published `positive-clause-operations.json` and `positive-state-transition.json` packages, a `filament.op.protocol.control` application naming operator `transition` fails the published schema and a complete reader refuses it `malformed_wire` with the application's node pointer `/semantic_graph/nodes/{i}` as the locus and `operation/member/operator` as the `document_pointer` (FR-322-AC-152); a `filament.op.state.transition` application naming `sequence` fails the schema likewise; the operation step run alone on either edited document refuses `invalid_package`/`operation-member-mismatch` at the application. The schema is not widened. | Test (TC-233) |
+| FR-341-AC-20 | A package whose operation anchor has two `postcondition` `state_clause` nodes and one transition binding either one as `post` is admitted, and likewise for two `precondition` nodes and `pre`; a transition's `post` and `pre` do not stand for the operation's complete postcondition or precondition, and two transitions over one (`anchor`, `subject`) refuse `ambiguous_declaration`/`ambiguous-name` whichever clauses each binds. How FSL's first transition emitter chooses its clause (for example one source-stated `post A and B`) is FSL-owned and OPEN (QSL-1163, e38); this criterion does not close the FSL-authored part of IR-1052 AC-7. | Analysis |
 
 ## Dependencies
 
@@ -425,7 +425,7 @@ non-Boolean node each refuse `ill_typed`/`operator-ineligible`.
   invariants, preconditions and postcondition anchors as a model feature,
   and [FR-382](../../functional/analysis/FR-382-select-state-space-reductions.md)
   owns the state constraint;
-  `proposals/quire-v1/state-contract.md`'s "Operation anchors, aliases and
+  `proposals/filament-v1/state-contract.md`'s "Operation anchors, aliases and
   captures" fixes which values each clause binds.
 - [FR-047](../../functional/foundation/FR-047-emit-typed-located-causes.md)
   requires each refusal to carry a stable catalogued cause and an exact

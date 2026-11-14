@@ -3,9 +3,9 @@ id: TC-322
 title: "Annotated quotient each-fairness vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-384
+  - target: ix://agent-ix/filament-specification/FR-384
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: verifies
 ---
 

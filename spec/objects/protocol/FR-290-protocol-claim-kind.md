@@ -4,41 +4,41 @@ title: "Capability kind vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: references
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-193
+  - target: ix://agent-ix/filament-specification/FR-193
     type: references
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: references
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: references
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: references
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: references
-  - target: ix://agent-ix/quire-specification/FR-407
+  - target: ix://agent-ix/filament-specification/FR-407
     type: references
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: references
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: references
-  - target: ix://agent-ix/quire-specification/FR-483
+  - target: ix://agent-ix/filament-specification/FR-483
     type: references
-  - target: ix://agent-ix/quire-specification/FR-484
+  - target: ix://agent-ix/filament-specification/FR-484
     type: references
-  - target: ix://agent-ix/quire-specification/FR-485
+  - target: ix://agent-ix/filament-specification/FR-485
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-507
+  - target: ix://agent-ix/filament-spec-language/FR-507
     type: references
 ---
 # FR-290: Capability kind vocabulary
@@ -87,20 +87,20 @@ results name members only. A protocol claim is a claim whose kind is in the
 
 ## Vocabulary authority
 
-These twelve labels are the single capability-kind vocabulary of the Quire
-ecosystem. `quire-spec-language`'s `Capability` type, the backend descriptors
-registered in its registry and `quire-protocol`'s advertised claim kinds all
+These twelve labels are the single capability-kind vocabulary of the Filament
+ecosystem. `filament-spec-language`'s `Capability` type, the backend descriptors
+registered in its registry and `filament-protocol`'s advertised claim kinds all
 take their members from this table.
 
-The vocabulary identity of this table is `quire.capability-kind/v1`. A kind
+The vocabulary identity of this table is `filament.capability-kind/v1`. A kind
 serializes as its exact label, a JSON string. Each carrier selects the
 vocabulary as follows:
 
 | Carrier | Selection |
 | --- | --- |
-| [FR-331](../interfaces/FR-331-backend-provider-envelope.md) manifest and request | its `capability_vocabulary` member, exactly `quire.capability-kind/v1` |
-| FR-240 result, FR-291 fragment, FR-292 backend | their own contract identities, each of which selects `quire.capability-kind/v1` |
-| Any other cross-repository carrier | the member its owner assigns, exactly `quire.capability-kind/v1` |
+| [FR-331](../interfaces/FR-331-backend-provider-envelope.md) manifest and request | its `capability_vocabulary` member, exactly `filament.capability-kind/v1` |
+| FR-240 result, FR-291 fragment, FR-292 backend | their own contract identities, each of which selects `filament.capability-kind/v1` |
+| Any other cross-repository carrier | the member its owner assigns, exactly `filament.capability-kind/v1` |
 
 A reader SHALL refuse a carrier whose selection is any other identity or
 version, or is absent, with `invalid_capability`/`unknown-vocabulary`, and
@@ -125,7 +125,7 @@ declaration family of the claim ("Declaration-family applicability").
 | Boolean clause over pure expressions, including function application | `value-validity` | `value` |
 | Clause containing a `case` expression over a sum type | `value-validity` | `value` |
 | Scalar operation application in a function body ([FR-146](../../functional/expressions/FR-146-check-total-pure-functions.md)): the application is defined and its result lies in its result bound, for every argument assignment under which its path condition holds (the guards it is nested under: the condition of an enclosing `if`, required true in the `then` branch and false in the `else` branch, and, for the right operand of an enclosing `and`, `or` or `implies`, its left operand, as FR-146's propagation rule carries guard facts) | `value-validity`, one claim per occurrence | `value` |
-| Range narrowing (`quire.op.numeric.narrow`) in a function body | none. When its operand is a scalar operation application, its target range is that application's result bound; otherwise its FR-146 range obligation discharges it | none |
+| Range narrowing (`filament.op.numeric.narrow`) in a function body | none. When its operand is a scalar operation application, its target range is that application's result bound; otherwise its FR-146 range obligation discharges it | none |
 | FR-146 `case` exhaustiveness obligation | none; it is discharged during language admission, and an unproved obligation refuses as `undefined_expression`/`unproved-exhaustiveness` | none |
 | Operation precondition, postcondition or invariant ([FR-196](../../functional/ir-proof/FR-196-generate-kani-contracts.md)) | `operation-contract` | `state-model` |
 | Frame obligation over `modifies`, `creates` and `deletes` sets | `operation-contract` | `state-model` |
@@ -153,15 +153,15 @@ declaration family of the claim ("Declaration-family applicability").
 | Derived race-freedom item over a protocol subject (FR-438), `item_kind` `race-freedom` (FR-368) | `temporal-satisfaction` | `temporal-trace` |
 
 A scalar operation application is an application in a function body whose
-operation identity has one of the prefixes `quire.op.integer` (FR-044,
-FR-147), `quire.op.rational` (FR-149, including `quire.op.rational.narrow`),
-`quire.op.decimal` (FR-140), `quire.op.ieee` (FR-148), `quire.op.quantity`
-(FR-142, including `quire.op.quantity.convert`), `quire.op.numeric`,
-`quire.op.text` and `quire.op.enum` (FR-141), other than the range narrowing
-(`quire.op.numeric.narrow`). Every other application in a body (`let`, `if`,
+operation identity has one of the prefixes `filament.op.integer` (FR-044,
+FR-147), `filament.op.rational` (FR-149, including `filament.op.rational.narrow`),
+`filament.op.decimal` (FR-140), `filament.op.ieee` (FR-148), `filament.op.quantity`
+(FR-142, including `filament.op.quantity.convert`), `filament.op.numeric`,
+`filament.op.text` and `filament.op.enum` (FR-141), other than the range narrowing
+(`filament.op.numeric.narrow`). Every other application in a body (`let`, `if`,
 a Boolean connective, Boolean, structural or reference equality, a projection, an option read, a call, a
 dispatch, a collection or model operation, and an operation whose prefix is not
-listed, such as `quire.op.string`, `quire.op.uuid` and `quire.op.timestamp`)
+listed, such as `filament.op.string`, `filament.op.uuid` and `filament.op.timestamp`)
 is not a claim of its own. The
 application's result bound is the target range of the range narrowing whose
 operand it is, when there is one, and otherwise its own result type. Each
@@ -282,7 +282,7 @@ kind the claim-form assignment table assigns to its claim's form.
   request's other items are unaffected.
 - **Producers.** A producer's own declaration catalogue maps each declaration
   that holds a request item's claim to exactly one label of this vocabulary,
-  the label of its claims' rows. For `quire-spec-language` that mapping is QSL
+  the label of its claims' rows. For `filament-spec-language` that mapping is FSL
   FR-507.
 
 ## Check arm
@@ -324,7 +324,7 @@ The domain-kind check below reads `domains`.
 
 Each requested item carries its claim's extent in the representation that the
 boundedness architecture
-([quire-spec-language#222](https://github.com/agent-ix/quire-spec-language/issues/222))
+([filament-spec-language#222](https://github.com/agent-ix/filament-spec-language/issues/222))
 defines, together with that architecture's classification of the extent as
 `bounded` or `unbounded`. A finite domain classifies as `bounded`. #222 owns
 the representation, the classification and the "finite bound is available"
@@ -451,9 +451,9 @@ its `dynamics` for an item carrying the hybrid-dynamics requirement and
 - When the request names none, the set is every registered backend that
   matches the item.
 
-The `quire-spec-language` registry computes `candidates`
-([quire-spec-language#185](https://github.com/agent-ix/quire-spec-language/issues/185)).
-Capability negotiation happens at one point, `quire-contract-codegen`'s
+The `filament-spec-language` registry computes `candidates`
+([filament-spec-language#185](https://github.com/agent-ix/filament-spec-language/issues/185)).
+Capability negotiation happens at one point, `filament-contract-codegen`'s
 `negotiate_*` ([AD-016](../../assurance/AD-016-semantic-family-extension-path.md)).
 `negotiate_*` SHALL evaluate each item's rules in this order, and the first
 that matches settles the item: an absent kind or an unknown kind; a kind that
@@ -509,12 +509,12 @@ backend identity.
 - **Backend absence** — a claim no registered backend can discharge settles
   `unsupported` with a warning naming the required capability kind. Backends
   register under one contract. Kani is one registered backend descriptor,
-  implemented by `quire-contract-codegen` and `quire-contract-ir` and entered
-  in the `quire-spec-language` registry; it is not a `quire-spec-language`
+  implemented by `filament-contract-codegen` and `filament-contract-ir` and entered
+  in the `filament-spec-language` registry; it is not a `filament-spec-language`
   backend. Further backends register under the same contract.
 - **Tool absence** — the routed backend's adapter probes its tool after
   routing and before the run; the probe's placement and fault-injection
-  evidence belong to `quire-contract-codegen`. The probe also reads the
+  evidence belong to `filament-contract-codegen`. The probe also reads the
   version of the executable it is about to run, and a version other than
   the descriptor's `tool.version` is a failed probe whose `detail` names
   both versions ([FR-331](../interfaces/FR-331-backend-provider-envelope.md)
@@ -536,7 +536,7 @@ backend identity.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-290-AC-1 | The twelve exact labels are the complete accepted set; absent, unknown and display-derived labels refuse with their named `invalid_capability` cause and are never mapped to a member; a carrier selecting a vocabulary other than `quire.capability-kind/v1`, or none, is refused with none of its labels read. | Test (TC-060, TC-061, TC-271) |
+| FR-290-AC-1 | The twelve exact labels are the complete accepted set; absent, unknown and display-derived labels refuse with their named `invalid_capability` cause and are never mapped to a member; a carrier selecting a vocabulary other than `filament.capability-kind/v1`, or none, is refused with none of its labels read. | Test (TC-060, TC-061, TC-271) |
 | FR-290-AC-2 | Every pair of claim kinds may retain independent execution and outcome states without promotion or premise transfer. | Test (TC-060, TC-271) |
 | FR-290-AC-3 | A non-global claim cannot carry the complete-global-conformance premise set as evidence for its own success. | Test (TC-060, TC-061, TC-271) |
 | FR-290-AC-4 | An item whose candidate set is empty settles `unsupported` with a warning naming its capability kind, and the named backend when there is one. | Test (TC-060, TC-271) |
@@ -550,7 +550,7 @@ backend identity.
 | FR-290-AC-12 | A `probabilistic-satisfaction` item is a candidate only for backends advertising its evidence kind; an `exact` item with only a `statistical` candidate, and the converse, settle `unsupported`, `unsupported-requested-capability`; an item with an absent or unknown evidence kind settles `invalid-request` with its named cause. | Test (TC-353) |
 | FR-290-AC-13 | At the single candidate's arm, the domain-kind check runs after the candidate table and before the advertised-mode table: a bounded item whose `extent.bounds` hold a kind outside the candidate's `domains` settles `unsupported`, `unsupported-requested-capability`, naming the kind, and one with empty `bounds` passes. An unbounded item on a candidate that advertises only `bounded` for its kind has only its boundable `extent.domains` kinds compared: when one is outside `domains` it settles `unsupported`, `unsupported-requested-capability`, naming the kind, whatever `finite_bound_available` says; when every boundable kind is in `domains`, the advertised-mode table settles it, `requires-bound` with a finite bound available and `unsupported`, `unbounded-extent` without one, so a `quantity`, `loop` or `infinite-trace` domain never settles `unsupported-requested-capability`. An unbounded item is not compared on a candidate that advertises `unbounded`. Any registration, including one that advertises only `unbounded` modes, whose `domains` is present and empty, holds a non-boundable or unknown kind or repeats a kind is refused `invalid_capability`/`invalid-domains`, keyed by backend identity; a registration with no `domains` is refused the same way only when it advertises a `bounded` pair, and one that advertises only `unbounded` modes is admitted without `domains`. | Test (TC-271) |
 | FR-290-AC-14 | A per-step simulation obligation whose extent is `unbounded` with one boundable `population` domain, on a single candidate that advertises `operation-contract` only in `bounded` mode with `domains` holding `population`, settles `requires-bound` when `finite_bound_available` is true and `unsupported`, `unsupported_projection`/`unbounded-extent` when it is false; on a bounded-only candidate whose `domains` lack `population` it settles `unsupported`, `unsupported_projection`/`unsupported-requested-capability` naming `population`, whatever `finite_bound_available` says; on a candidate that advertises `unbounded` it takes the negotiation arm's own disposition; the same obligation with that population bounded is `bounded` and takes the arm's own disposition on either mode. | Test (TC-950) |
-| FR-290-AC-15 | With `qsl-model-check` advertising `temporal-satisfaction` with no `dynamics` and `dreal` advertising it with `dynamics` `["hybrid"]`, a `temporal-satisfaction` item carrying `"requirements": ["hybrid-dynamics"]` and naming no backend has the candidate set `[dreal]`, and one carrying no `requirements` `[qsl-model-check]`; naming `qsl-model-check`, the hybrid item's set is empty and it settles `unsupported`, `unsupported-requested-capability`; a hybrid item whose `candidates` is `[dreal, qsl-model-check]` settles `invalid-request`, `inconsistent-candidates`, naming `qsl-model-check`; and with `dreal`'s `dynamics` `["discrete", "hybrid"]` the item carrying no `requirements` has the set `[dreal, qsl-model-check]` and settles `ambiguous-backend`. | Test (TC-373) |
+| FR-290-AC-15 | With `fsl-model-check` advertising `temporal-satisfaction` with no `dynamics` and `dreal` advertising it with `dynamics` `["hybrid"]`, a `temporal-satisfaction` item carrying `"requirements": ["hybrid-dynamics"]` and naming no backend has the candidate set `[dreal]`, and one carrying no `requirements` `[fsl-model-check]`; naming `fsl-model-check`, the hybrid item's set is empty and it settles `unsupported`, `unsupported-requested-capability`; a hybrid item whose `candidates` is `[dreal, fsl-model-check]` settles `invalid-request`, `inconsistent-candidates`, naming `fsl-model-check`; and with `dreal`'s `dynamics` `["discrete", "hybrid"]` the item carrying no `requirements` has the set `[dreal, fsl-model-check]` and settles `ambiguous-backend`. | Test (TC-373) |
 | FR-290-AC-16 | For each FR-390 form, an EN-1 registration whose FR-331 `state_graph_forms` contains that form is a candidate and a temporal backend whose member omits it is not; an omitted member matches no state-graph form. Naming the backend that omits the form gives an empty candidate set and settles `unsupported`, `unsupported-requested-capability`, naming the state-graph form. An empty, duplicate or unknown form list, or a form list on a registration that does not advertise `temporal-satisfaction`, is refused `invalid_capability`/`invalid-state-graph-forms`, keyed by backend identity. Membership filtering is exact and does not change candidate sets for temporal formulas, hyperproperty items or step-relation items. | Test (TC-968) |
 | FR-290-AC-17 | An item whose admitted kind is not listed for its claim's declaration family settles `invalid-request` with `invalid_capability`/`inapplicable-kind` and payload `request_index`, `capability` (its kind label) and `family` (the declaration family label). The family is read from the item's `item_kind` when it is not `formula`, and otherwise from its claim node's tag, `semantic_form` and occurrence role by the tables of "Reading the family from a request item". An item whose claim node is in no row has no `family` member and is refused for every kind. No negotiation arm or engine runs the item, whatever its extent, evidence kind, statistical method, candidates or named backend, so it never settles `absent-evidence-kind`, `unknown-evidence-kind`, `not-statistical`, `absent-extent` or a candidate-table cause. An item with an absent or unknown kind settles `absent-kind` or `unknown-kind` instead. The item keeps its request position, its disposition is its terminal record with no result entry, and the request's other items settle independently. For every claim-form row whose family is not "none", the request item of that row's kind on such a claim is never refused this way. This includes both claims of one `relation` clause with an implementation binding, and the derived deadlock-freedom and race-freedom items anchored on a protocol clause node. | Test (TC-271) |
 | FR-290-AC-18 | The declaration-family vocabulary has exactly seven labels: `value`, `state-model`, `temporal-trace`, `relation-claim`, `protocol`, `probabilistic` and `real-time`. For each label, the kinds the family table lists are exactly the kinds the claim-form assignment table assigns to the rows whose "Declaration family" cell names it; `state-model` lists `operation-contract` only, and `finite-replay` is listed for `protocol` only. Every node row and `item_kind` row of "Reading the family from a request item" names a label of that vocabulary, and the rows whose family is "none" request no item. | Inspection |
@@ -571,6 +571,6 @@ backend identity.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`, widened to the value,
+Proposed shared ruling for `filament-specification#40`, widened to the value,
 state-model, finite-replay and temporal-trace families by
-`quire-specification#134`.
+`filament-specification#134`.

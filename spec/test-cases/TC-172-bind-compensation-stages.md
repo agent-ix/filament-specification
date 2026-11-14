@@ -3,7 +3,7 @@ id: TC-172
 title: "Keep compensation registration and activation captures separate"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: verifies
 ---
 ## Description

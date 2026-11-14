@@ -3,21 +3,21 @@ id: FR-475
 title: "Checked-package state-graph claim body and obligation identity"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: references
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: references
-  - target: ix://agent-ix/quire-specification/FR-393
+  - target: ix://agent-ix/filament-specification/FR-393
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-402
+  - target: ix://agent-ix/filament-specification/FR-402
     type: references
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: references
 ---
 
@@ -27,7 +27,7 @@ relationships:
 
 When a checked package carries a `possible`, `always possible` or `unique
 path` claim ([FR-390](../../functional/analysis/FR-390-analyze-state-graph-claims.md)),
-the producer SHALL emit it as one `quire.checked-semantic-graph/v2` node with
+the producer SHALL emit it as one `filament.checked-semantic-graph/v2` node with
 `node_tag: "claim"` and `semantic_form: "state_graph"`, encode its `body` as
 the aggregate below, and compute each of its items' obligation identity over
 every member that changes the claim's meaning. The reader SHALL refuse a node
@@ -154,4 +154,4 @@ which precedes this step.
 
 ## References
 
-- STD-267 (this requirement); quire-spec-language ADR-022 SG-1 to SG-3.
+- STD-267 (this requirement); filament-spec-language ADR-022 SG-1 to SG-3.

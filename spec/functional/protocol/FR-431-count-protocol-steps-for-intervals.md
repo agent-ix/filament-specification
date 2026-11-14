@@ -3,19 +3,19 @@ id: FR-431
 title: "Observe protocol positions and measure intervals in counted steps"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-253
+  - target: ix://agent-ix/filament-specification/FR-253
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
 ---
 
@@ -97,5 +97,5 @@ the same truth whether or not a step counts.
 
 ## References
 
-- Design: quire-spec-language ADR-027 PB-1 to PB-3, SE-3 and QS-12.
+- Design: filament-spec-language ADR-027 PB-1 to PB-3, SE-3 and QS-12.
 - Tickets: Linear STD-140; paired QSL-396.

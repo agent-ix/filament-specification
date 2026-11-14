@@ -3,21 +3,21 @@ id: TC-200
 title: "Infinite-trace provider boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-251
+  - target: ix://agent-ix/filament-specification/FR-251
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: verifies
 ---
 
@@ -28,7 +28,7 @@ relationships:
 Sound infinite-trace analysis differential and typed-boundary controls for
 `always`, `eventually`, `until`, `release` and the past duals `previous`,
 `historically`, `once` and `since`, selected under
-`quire.temporal.infinite-trace/v1`. Verifies the FR-161 result vocabulary maps
+`filament.temporal.infinite-trace/v1`. Verifies the FR-161 result vocabulary maps
 exactly onto FR-360/FR-241/FR-242/FR-243, that infinite-trace requests never
 reach a TL target, and that a missing liveness backend settles `unsupported`
 rather than holding.
@@ -37,7 +37,7 @@ rather than holding.
 
 For each of `always`, `eventually`, `until`, `release`, `previous`,
 `historically`, `once` and `since`, author the interval-less form admitted only
-under the selected `quire.temporal.infinite-trace/v1` profile
+under the selected `filament.temporal.infinite-trace/v1` profile
 ([FR-090](../functional/temporal/FR-090-select-temporal-profile-and-clock.md),
 [AD-012](../assurance/AD-012-unbounded-temporal-operator-grammar.md)). Exercise
 each operator against:

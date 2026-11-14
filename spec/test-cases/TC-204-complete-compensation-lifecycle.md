@@ -3,7 +3,7 @@ id: TC-204
 title: "Complete compensation lifecycle"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-173
+  - target: ix://agent-ix/filament-specification/FR-173
     type: verifies
 ---
 

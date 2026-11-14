@@ -3,7 +3,7 @@ id: TC-987
 title: "Operation-body carrier and strict reader boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -49,7 +49,7 @@ OBR-17 to OBR-19 at `body/node` for a body of another operation, a precondition
 clause function, and a node of another package; OBR-20 and OBR-22 at the row's `body`, a `no_body` row whose joined candidate carries a body and a candidate carrying another candidate's body); OBR-13
 `invalid_package`/`conflicting-definition`; OBR-04, OBR-06, OBR-07 and OBR-11
 `ill_typed`/`operator-ineligible`. OBD-01 passes the carrier and is refused by the dispatch join `invalid_package`/`invalid-value` at `/checked_term_data/dispatch_tables/0/candidates/0/selection_key`. The IR reader exposes the admitted body by
-key and owns no mirror type; QSL owns emission.
+key and owns no mirror type; FSL owns emission.
 
 OBR-21 (a body node whose owner identity is another document) is retired: the
 owner join of every owner-bearing node precedes the carrier checks, so such a

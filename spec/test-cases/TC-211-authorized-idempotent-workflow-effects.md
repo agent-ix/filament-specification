@@ -3,7 +3,7 @@ id: TC-211
 title: "Authorized idempotent workflow effects"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-182
+  - target: ix://agent-ix/filament-specification/FR-182
     type: verifies
 ---
 

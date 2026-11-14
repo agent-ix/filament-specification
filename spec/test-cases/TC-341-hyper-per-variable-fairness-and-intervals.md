@@ -3,7 +3,7 @@ id: TC-341
 title: "Per-variable fairness and mixed interval bodies"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: verifies
 ---
 

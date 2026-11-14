@@ -4,11 +4,11 @@ title: "Composed execution, monitoring and workflow architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 composed runtime
+system: native Filament V1 composed runtime
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-007
+  - target: ix://agent-ix/filament-specification/AD-007
     type: references
 ---
 
@@ -16,9 +16,9 @@ relationships:
 
 ## System Boundary
 
-S6 is a Rust composition facade in the already-planned `quire-integration`
-repository. It coordinates exact QSL, temporal, observation and protocol
-interfaces without absorbing their semantics. `quire-contract-runtime` remains
+S6 is a Rust composition facade in the already-planned `filament-integration`
+repository. It coordinates exact FSL, temporal, observation and protocol
+interfaces without absorbing their semantics. `filament-contract-runtime` remains
 a small generated-oracle helper and is not the composed application runtime.
 
 S6 may issue a typed recommended decision. Only an explicitly authorized
@@ -54,7 +54,7 @@ fan-out/join and compensation workflows.
 
 | Choice | Rejected alternative | Consequence |
 | --- | --- | --- |
-| Composition in `quire-integration` | Put orchestration in QSL, Protocol or the oracle helper | Domain owners stay independent and the application boundary is explicit. |
+| Composition in `filament-integration` | Put orchestration in FSL, Protocol or the oracle helper | Domain owners stay independent and the application boundary is explicit. |
 | Pure evaluators and authorized adapters | Execute business actions from clauses | Formal results cannot silently cause external effects. |
 | One ordered bundle without flattening | Convert all domain outcomes to Boolean | Per-domain truth, execution, adequacy and provenance survive composition. |
 

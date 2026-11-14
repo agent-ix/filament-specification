@@ -3,7 +3,7 @@ id: TC-203
 title: "Choice obligation and capture binding"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-172
+  - target: ix://agent-ix/filament-specification/FR-172
     type: verifies
 ---
 

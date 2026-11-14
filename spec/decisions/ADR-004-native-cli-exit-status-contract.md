@@ -4,9 +4,9 @@ title: "Native CLI exit status contract"
 type: ADR
 status: accepted
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-301
+  - target: ix://agent-ix/filament-specification/FR-301
     type: depends_on
-  - target: ix://agent-ix/quire-spec-language/FR-010
+  - target: ix://agent-ix/filament-spec-language/FR-010
     type: depends_on
 ---
 # ADR-004: Native CLI exit status contract
@@ -23,7 +23,7 @@ completed without violation or still pending on declared progress, `10` logical 
 clause, `20` invalid or refused
 input, `21` unsupported, `22` incomplete and `30` tool failure.
 
-`ix://agent-ix/quire-spec-language/FR-010` states the same contract, and its
+`ix://agent-ix/filament-spec-language/FR-010` states the same contract, and its
 acceptance criteria assert these codes.
 
 ## Context

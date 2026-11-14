@@ -3,19 +3,19 @@ id: FR-354
 title: "Record a proved settlement's certification"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/FR-349
+  - target: ix://agent-ix/filament-specification/FR-349
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-314
+  - target: ix://agent-ix/filament-spec-language/FR-314
     type: references
 ---
 
@@ -25,7 +25,7 @@ relationships:
 
 When the registered SMT backend settles a claim `proved`, the result SHALL
 carry the FR-331 `certification` `certified` when the qualified core's
-Alethe checker (QSL FR-314) verifies the cvc5 Alethe certificate against the
+Alethe checker (FSL FR-314) verifies the cvc5 Alethe certificate against the
 queries the core itself encodes for that item, and `uncertified` when the
 proof comes with no certificate or the checker cannot verify it. When a
 plugin (FR-305) settles a claim `proved`, the result SHALL carry the
@@ -96,8 +96,8 @@ results alone, and a plugin's result carries `trusted` alone.
 - [FR-197](FR-197-replay-backend-counterexamples.md) supplies the parity
   precedent (independent, replayable, never-silently-resolved verdict
   agreement) this requirement follows for the Z3 cross-check.
-- QSL FR-314 specifies the core's Alethe checker and its checked rule set;
-  QSL FR-315 the one query encoding the backend and the checker share.
+- FSL FR-314 specifies the core's Alethe checker and its checked rule set;
+  FSL FR-315 the one query encoding the backend and the checker share.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.
 - Every requirement linked in frontmatter is a normative prerequisite.

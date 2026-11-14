@@ -3,9 +3,9 @@ id: TC-382
 title: "Replicated role spawn, action and lifetimes"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-428
+  - target: ix://agent-ix/filament-specification/FR-428
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: verifies
 ---
 

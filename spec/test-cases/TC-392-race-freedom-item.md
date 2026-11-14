@@ -3,7 +3,7 @@ id: TC-392
 title: "Race-freedom item and race counterexamples"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-438
+  - target: ix://agent-ix/filament-specification/FR-438
     type: verifies
 ---
 

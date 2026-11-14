@@ -3,45 +3,45 @@ id: FR-352
 title: "Produce and read the native-run-result/2 wire"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-014
+  - target: ix://agent-ix/filament-specification/FR-014
     type: references
-  - target: ix://agent-ix/quire-specification/FR-351
+  - target: ix://agent-ix/filament-specification/FR-351
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-207
+  - target: ix://agent-ix/filament-specification/FR-207
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-115
+  - target: ix://agent-ix/filament-spec-language/FR-115
     type: references
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-414
+  - target: ix://agent-ix/filament-specification/FR-414
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-267
+  - target: ix://agent-ix/filament-spec-language/FR-267
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-330
+  - target: ix://agent-ix/filament-spec-language/FR-330
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-031
+  - target: ix://agent-ix/filament-spec-language/FR-031
     type: references
-  - target: ix://agent-ix/quire-specification/FR-174
+  - target: ix://agent-ix/filament-specification/FR-174
     type: references
-  - target: ix://agent-ix/quire-specification/FR-175
+  - target: ix://agent-ix/filament-specification/FR-175
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-572
+  - target: ix://agent-ix/filament-spec-language/FR-572
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-574
+  - target: ix://agent-ix/filament-spec-language/FR-574
     type: references
 ---
 # FR-352: Produce and read the native-run-result/2 wire
@@ -60,7 +60,7 @@ closed-wire reading rules; it does not define run-result members.
 
 A clause run's disposition, package identity and usage, its FR-243 settlement basis and,
 where the basis is `decisive-witness` or `decisive-counterexample`, its
-FR-351 separating witness record; for a temporal selection, its QSL FR-330
+FR-351 separating witness record; for a temporal selection, its FSL FR-330
 temporal report. For a protocol-analysis record: the analysis kind, its
 derived-artifact key, its FR-360 settlement and FR-331 result entry, and for
 a decisive counterexample its FR-351 record and the request's
@@ -88,8 +88,8 @@ below and `extraction` when the run's unit is an extracted Markdown clause
 body. Absent optional members are omitted, never `null`.
 
 The producer SHALL write `extraction` exactly when the clause run's unit is
-the body that QSL FR-030 extracted from an original Markdown document (QSL
-FR-031). QSL FR-031 owns the meaning of the record it carries. `extraction`
+the body that FSL FR-030 extracted from an original Markdown document (FSL
+FR-031). FSL FR-031 owns the meaning of the record it carries. `extraction`
 is a closed object with exactly these members, every string a JSON string
 and every offset an unsigned JSON integer:
 
@@ -107,7 +107,7 @@ an `extraction`, or a nested object of it, with an unknown, missing,
 duplicate or `null` member, with a value of another JSON type, or with an
 empty `segments` or `original_regions` array.
 
-`disposition` carries QSL FR-109's clause-run disposition without loss. Its
+`disposition` carries FSL FR-109's clause-run disposition without loss. Its
 `stage` and `category` are required; its applicable `truth` and refusal
 record are retained. A `compile`, `select` or `admit` refusal retains its
 FR-109 `RefusalRecord`, including `code`, `cause` and `locus`. An `evaluate`
@@ -116,14 +116,14 @@ vocabulary, including `code`, `cause`, `fields`, `locus` and `location` when
 that outcome assigns them; its `refused` form is not an empty tag. An
 `evaluate` internal failure carries `internal_fault` as a closed object
 with the FR-100 `InternalFault`'s string `stage` and `invariant`, and no
-`outcome` member. The QSL FR-100 and FR-109
+`outcome` member. The FSL FR-100 and FR-109
 contracts determine which of these members are present for each category;
 the `/2` writer and reader SHALL preserve them and SHALL NOT replace an
 assigned member with `null`, a default or a generic refusal tag.
 
-For an evaluated QSL FR-115 `Frame` violation, `disposition.refusal`
+For an evaluated FSL FR-115 `Frame` violation, `disposition.refusal`
 additionally carries `frame_witness`: the complete FR-115 `FrameWitness`
-in QSL FR-267's closed encoding. This member is present exactly for that
+in FSL FR-267's closed encoding. This member is present exactly for that
 case, even though the disposition category is `violation`; the enclosing
 refusal's code and cause remain `frame_violation`/`unauthorized-change`.
 The frame witness is distinct from the top-level FR-351 `witness`, which
@@ -169,16 +169,16 @@ the table, or substituting a default for an absent component.
 
 ## Temporal disposition
 
-A stage `evaluate` disposition of a temporal selection (QSL FR-330) whose
+A stage `evaluate` disposition of a temporal selection (FSL FR-330) whose
 result is a temporal verdict, a refused `holds` condition or a trace refusal
-carries `disposition.temporal`: a closed object in QSL FR-267's encoding
+carries `disposition.temporal`: a closed object in FSL FR-267's encoding
 whose `kind` is exactly one of the ten rows below. The member is present
 exactly for that case. A stage `compile`, `select` or `admit` disposition of a
 temporal selection, its internal failure (written with `internal_fault`, as
 for every other selection) and every non-temporal selection carry no
 `temporal`. A disposition with `temporal` carries no top-level FR-351
 `witness`, no `frame_witness`, no `internal_fault` and no `refusal`; its
-`outcome`, when present, is in FR-100's `outcome` vocabulary. QSL FR-267
+`outcome`, when present, is in FR-100's `outcome` vocabulary. FSL FR-267
 owns the members, the `trace-refused` `variant` spellings and their payloads;
 this requirement adds none.
 
@@ -244,7 +244,7 @@ the item's only result.
 | Member | Value |
 | --- | --- |
 | `kind` | The [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) kind: `local-projection` or `realizability`. |
-| `key` | The derived-artifact key of FR-174 or FR-175 "Derived-artifact identity" for that kind, as a closed JSON object with one member per key member in plain JSON (strings, integers, arrays and objects). It is not the FR-331 canonical typed value encoding. Its `kind` member is `projection` or `realizability`, and QSL FR-572 owns the other members' names and encoding. A digest never stands in for a member, and the key holds no assessed-subject root (FR-351 "Assessed subject's root"). |
+| `key` | The derived-artifact key of FR-174 or FR-175 "Derived-artifact identity" for that kind, as a closed JSON object with one member per key member in plain JSON (strings, integers, arrays and objects). It is not the FR-331 canonical typed value encoding. Its `kind` member is `projection` or `realizability`, and FSL FR-572 owns the other members' names and encoding. A digest never stands in for a member, and the key holds no assessed-subject root (FR-351 "Assessed subject's root"). |
 | `label` | The [FR-360](../../objects/temporal/FR-360-infinite-trace-result-disposition.md) label. |
 | `execution` | The [FR-241](../../objects/protocol/FR-241-assessment-execution-disposition.md) execution disposition. |
 | `truth` | The [FR-242](../../objects/protocol/FR-242-truth-disposition.md) truth disposition. |
@@ -274,7 +274,7 @@ decisive counterexample. It has the protocol family's shape:
   verbatim, with an empty `steps` array (FR-351 "Assessed subject's root").
 - `trace_position` is the canonical decimal string of the zero-based index of
   the step at which the divergence or violation occurs, in the
-  counterexample's ordered event sequence. QSL FR-574 says which sequence
+  counterexample's ordered event sequence. FSL FR-574 says which sequence
   each counterexample form indexes.
 
 The record carries the result's key, settlement and FR-351 record, and not
@@ -309,11 +309,11 @@ back SHALL restore an equal record.
 | FR-352-AC-6 | Every `native-run-result/2` clause-run result carries `basis`: `decisive-counterexample` with a `witness` for a state `forall` refuted at an element, `decisive-witness` with a `witness` for an `exists` satisfied at an element, `closed-scope` with no `witness` for a truth decided elsewhere, and `unavailable` with no `witness` for a refused, undefined, incomplete, cancelled or unsupported result. | Test |
 | FR-352-AC-7 | A `witness` serializes with exactly the members `quantifier`, `deciding_element`, `index`, `value_path` and `trace_position` its family assigns; a reader refuses an unknown `basis`, a `witness` whose presence disagrees with the basis, a missing assigned member, an extra member, and a `null` or default standing for an absent member. | Test |
 | FR-352-AC-8 | A clause-run document with the declared top-level members and the FR-100/FR-109 disposition and usage reads. A refused outcome retains its assigned `code`, `cause`, `fields`, `locus` and `location`; an internal failure carries `internal_fault` with stage and invariant and no outcome. Independently dropping an assigned member, adding an unknown member, or encoding an absent optional member as `null` refuses with a located wire diagnostic. | Test |
-| FR-352-AC-9 | A QSL FR-115 Frame violation carries `disposition.refusal.frame_witness`, retaining its complete typed invocation, pre and post selections, population, change and checked permission under QSL FR-267's encoding. A relationship link change is carried as the `link` change, which identifies the link by the relationship's `DeclarationKey`, its `difference` (`added` or `removed`), its `source` and `target` references and the frame's `modifies`, with `population` the source end's; a link that FR-106 check 11.5 leaves out carries no `frame_witness`. The report has `basis: closed-scope` and no top-level FR-351 `witness`. The strict reader restores it, and refuses a missing, malformed or misplaced `frame_witness`, and a `link` change missing a member or with a `difference` other than `added` or `removed`, with a located wire diagnostic. | Test |
+| FR-352-AC-9 | A FSL FR-115 Frame violation carries `disposition.refusal.frame_witness`, retaining its complete typed invocation, pre and post selections, population, change and checked permission under FSL FR-267's encoding. A relationship link change is carried as the `link` change, which identifies the link by the relationship's `DeclarationKey`, its `difference` (`added` or `removed`), its `source` and `target` references and the frame's `modifies`, with `population` the source end's; a link that FR-106 check 11.5 leaves out carries no `frame_witness`. The report has `basis: closed-scope` and no top-level FR-351 `witness`. The strict reader restores it, and refuses a missing, malformed or misplaced `frame_witness`, and a `link` change missing a member or with a `difference` other than `added` or `removed`, with a located wire diagnostic. | Test |
 | FR-352-AC-10 | Each of the ten `disposition.temporal` kinds is written at stage `evaluate` of a temporal selection with exactly its row's members, `category`, `truth`, `basis` and `outcome`, no top-level `witness` and no `refusal`, and reads back to an equal disposition; a `trace-refused` disposition with `variant` `empty-loop` and one with `variant` `tuple-arity`, `expected` 2 and `found` 1 each read back to the same variant and payload. | Test (TC-255) |
 | FR-352-AC-11 | A `pending` disposition reads with category `inconclusive`, no `truth` and `basis` `unsettled`; an `undefined` disposition reads with category `violation`, `truth` `false` and `basis` `closed-scope`; an `insufficient-data` disposition reads with `outcome` `{"kind": "undefined", "reason": "insufficient-data"}`; a `window-limit-reached` disposition reads with `outcome` `{"kind": "incomplete", "limit": "max_window_values"}`; the reason `insufficient-data` in an `undefined` disposition, the limit `max_window_values` in an `incomplete` disposition, and either on a non-temporal state clause run each refuse. | Test (TC-255) |
 | FR-352-AC-12 | Independently: a `temporal` on a stage `admit` disposition, on a non-temporal clause run, or beside a top-level `witness`, an `internal_fault` or a `refusal`; `kind` `held`; `variant` `empty-hoop`; a `violated` disposition without `counterexample`, with `position` `null`, or with an extra member; a `counterexample` whose `trace_position` differs from `position`; and a `pending` disposition with `basis` `unavailable` or with `truth` each refuse with a located wire diagnostic naming the member. | Test (TC-255) |
-| FR-352-AC-13 | A clause run over an extracted Markdown clause body (QSL FR-031) is written with an `extraction` member under QSL FR-267's encoding and reads back with every member equal; a clause run over a unit given as bytes carries no `extraction`. Independently, an `extraction` with an unknown top-level member `source`, one with `map` missing, one with `binding` `null`, and one whose `map.segments` is `[]` each refuse with a located wire diagnostic naming `extraction` and the member. | Test |
+| FR-352-AC-13 | A clause run over an extracted Markdown clause body (FSL FR-031) is written with an `extraction` member under FSL FR-267's encoding and reads back with every member equal; a clause run over a unit given as bytes carries no `extraction`. Independently, an `extraction` with an unknown top-level member `source`, one with `map` missing, one with `binding` `null`, and one whose `map.segments` is `[]` each refuse with a located wire diagnostic naming `extraction` and the member. | Test |
 | FR-352-AC-14 | A `local-projection` and a `realizability` result are each written as a protocol-analysis record with exactly `format`, `analysis`, `basis` and, with a decisive basis, `witness`, and read back to an equal record: a `proved` result with `closed-scope`; a `refuted` result with `decisive-counterexample` and a `witness` whose `quantifier` and `index` are absent, whose `deciding_element` is the deciding node's canonical node-id text, whose `value_path` root equals the request's `assessed_root` with empty `steps`, and whose `trace_position` is a decimal string; an `inconclusive` result with `unsettled` and `bound-reached{depth}` (`depth` the key's `max_depth`) on each kind, `replay-disagreed` on each kind, and each of `premise-not-stated`, `unforced-refutation`, `strategy-replay-failed`, `cut-count` and `undecided-evaluation` on a `realizability` record; an `unsupported` result with `unavailable`; and a limit-stopped result, FR-360 `failed` with execution `resource-incomplete` and `settlement` `incomplete` `limit-reached`. A declined item and an engine failure write no protocol-analysis record. | Test (TC-255) |
 | FR-352-AC-15 | Independently: a protocol-analysis record with `disposition` added; with `analysis` removed; with `usage` added; `kind` `refinement`; a `key` member removed; `label` `proved` with `truth` `pending`; `label` `refuted` with `settlement.result` `inconclusive`; `label` `failed` with `execution` `failed`; a `bound-reached` `depth` other than the key's `max_depth`; `cut-count` on a `local-projection` record; a `witness` with `index` 0; a `deciding_element` that is a node id written with its members reordered; a `value_path` with one `member` step; and `trace_position` `"02"` each refuse with a located wire diagnostic naming the member; the removed key member is refused `invalid_runtime_input`/`missing-member`. | Test (TC-255) |
 
@@ -329,25 +329,25 @@ back SHALL restore an equal record.
   path.
 - [US-011](../../usecase/US-011-analyze-complete-models.md) supplies the
   replay/comparability need this wire serves.
-- QSL FR-115 owns the evaluated frame witness; QSL FR-267 owns its closed
+- FSL FR-115 owns the evaluated frame witness; FSL FR-267 owns its closed
   serialization inside the clause-run disposition.
-- QSL FR-031 owns the meaning of the extraction record of an extracted
-  clause run; this requirement fixes its member set and types, and QSL FR-267
+- FSL FR-031 owns the meaning of the extraction record of an extracted
+  clause run; this requirement fixes its member set and types, and FSL FR-267
   writes and reads it as the top-level `extraction` member.
 - [FR-174](../protocol/FR-174-project-global-protocols.md) and
   [FR-175](../protocol/FR-175-analyze-protocol-realizability.md) own the
   analyses a protocol-analysis record reports and their derived-artifact
-  keys; QSL FR-572 owns the key's member encoding and QSL FR-574 the
+  keys; FSL FR-572 owns the key's member encoding and FSL FR-574 the
   counterexample's event sequence. [FR-360](../../objects/temporal/FR-360-infinite-trace-result-disposition.md)
   supplies the labels and [FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md)
   the result entry and its causes.
-- QSL FR-330 owns the temporal clause-run report, and QSL FR-267 the closed
+- FSL FR-330 owns the temporal clause-run report, and FSL FR-267 the closed
   `disposition.temporal` encoding, its members and its `trace-refused`
   variants. [FR-364](../temporal/FR-364-replay-temporal-counterexamples.md)
   owns the observed-arm counterexample it carries.
 
 ## References
 
-- Linear STD-144; QSL ADR-031 SW-10, SW-11, R-1 to R-4.
+- Linear STD-144; FSL ADR-031 SW-10, SW-11, R-1 to R-4.
 - TC-255 exercises the native run-result wire.
-- Linear QSL-1898; QSL ADR-036 PA-24.
+- Linear QSL-1898; FSL ADR-036 PA-24.

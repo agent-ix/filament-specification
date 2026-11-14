@@ -3,11 +3,11 @@ id: TC-349
 title: "Undefined evaluation refutes a state-graph claim"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-393
+  - target: ix://agent-ix/filament-specification/FR-393
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-394
+  - target: ix://agent-ix/filament-specification/FR-394
     type: verifies
 ---
 

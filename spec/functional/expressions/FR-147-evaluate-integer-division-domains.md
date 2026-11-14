@@ -3,17 +3,17 @@ id: FR-147
 title: "Evaluate mathematical and bounded integer division"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-007
+  - target: ix://agent-ix/filament-specification/FR-007
     type: references
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-349
+  - target: ix://agent-ix/filament-specification/FR-349
     type: references
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
 ---
 
@@ -21,7 +21,7 @@ relationships:
 
 ## Description
 
-When `quire.value.complete/v1` admits an integer `div`, `rem` or `mod` expression,
+When `filament.value.complete/v1` admits an integer `div`, `rem` or `mod` expression,
 the evaluator SHALL apply its exact selected quotient/remainder law and result
 domain.
 
@@ -46,7 +46,7 @@ member the operator exposes. Division by zero is undefined and no backend may
 saturate or substitute float division.
 
 The shared grammar recognizes `div`, `rem` and `mod` at product precedence, but
-semantic admission requires the declaration's `quire.value.complete/v1` facet (for a refinement's rows, the layers the governing infinite-trace profile requires, FR-375).
+semantic admission requires the declaration's `filament.value.complete/v1` facet (for a refinement's rows, the layers the governing infinite-trace profile requires, FR-375).
 Without it, each occurrence is a located `unsupported_construct` refusal even
 inside an unreachable branch. `/` never denotes integer division; rational `/`
 follows FR-044 and FR-149. The required `div`/`rem` law is selected by the
@@ -83,9 +83,9 @@ completes in that domain. `mod` names only the Euclidean remainder and cannot
 inherit a truncating or floor profile.
 
 The checked package retains exactly one of
-`quire.value.integer-division.truncating/v1`,
-`quire.value.integer-division.floor/v1` or
-`quire.value.integer-division.euclidean/v1` for `div`/`rem`; absence or multiple
+`filament.value.integer-division.truncating/v1`,
+`filament.value.integer-division.floor/v1` or
+`filament.value.integer-division.euclidean/v1` for `div`/`rem`; absence or multiple
 selections refuses semantic admission. `mod` always selects Euclidean remainder.
 Before evaluation, a
 finite I13 consumer without complete operand, intermediate and result bounds
@@ -94,10 +94,10 @@ mathematical integers. That provider disposition is not an evaluator outcome.
 `div` and `rem` are each a single-result operation charged at exactly
 `integer-division.operands`, `integer-division.arithmetic`,
 `integer-division.domain` and `integer-division.result-retain`, in that order,
-with the measures defined by `quire.value.accounting/v1`. `mod` is a single-result operation charged at exactly
+with the measures defined by `filament.value.accounting/v1`. `mod` is a single-result operation charged at exactly
 `integer-modulus.operands`, `integer-modulus.arithmetic`,
 `integer-modulus.domain` and `integer-modulus.result-retain`, in that order,
-with the measures defined by `quire.value.accounting/v1`. For `div`/`rem` and
+with the measures defined by `filament.value.accounting/v1`. For `div`/`rem` and
 `mod`, the zero-divisor undefined check follows the operands charge and
 precedes the arithmetic charge; an undefined outcome makes no later charge.
 
@@ -115,11 +115,11 @@ precedes the arithmetic charge; an undefined outcome makes no later charge.
 | FR-147-AC-8 | In that same locked run, the corpus settles at least one integer-division obligation `refuted` through that backend via the I13 negotiation path; the AC-3 `requires-bound` finite-backend negotiation disposition is unchanged in a locked run with no such backend registered. | Test (TC-192, TC-266) |
 | FR-147-AC-9 | Under each profile, a bounded consumer's `div` whose quotient is outside its domain returns `refused { code: division_out_of_domain, cause: quotient-outside-domain }`, a `rem` whose remainder is outside it returns `refused { code: division_out_of_domain, cause: remainder-outside-domain }`, and a `mod` whose Euclidean remainder is outside it returns `refused { code: modulo_out_of_domain, cause: outside-domain }`; no refusal exposes a member. | Test (TC-192) |
 | FR-147-AC-10 | The unexposed member never refuses: over the consumer domain `Int[1,10]`, `10 div y` at `y = 5` returns `2` although the remainder `0` is outside the domain, and over `Int[-10,5]`, `x rem -1` at `x = -10` returns `0` although the quotient `10` is outside the domain. | Test (TC-192) |
-| FR-147-AC-11 | In the shared grammar, `div`, `rem` and `mod` parse at product precedence in both a complete-value declaration and a declaration without `quire.value.complete/v1`; semantic admission accepts each well-typed complete-value form under its selected law, but returns a located `unsupported_construct` for each occurrence without that facet, including in an unreachable branch. `/` never becomes integer division; only under complete value may a rational `/` with an expected rational result type promote integer operands exactly under FR-149. | Test |
+| FR-147-AC-11 | In the shared grammar, `div`, `rem` and `mod` parse at product precedence in both a complete-value declaration and a declaration without `filament.value.complete/v1`; semantic admission accepts each well-typed complete-value form under its selected law, but returns a located `unsupported_construct` for each occurrence without that facet, including in an unreachable branch. `/` never becomes integer division; only under complete value may a rational `/` with an expected rational result type promote integer operands exactly under FR-149. | Test |
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

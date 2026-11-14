@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:quire:conformance-corpus:v1",
-  "title": "Quire complete-V1 conformance corpus",
+  "$id": "urn:filament:conformance-corpus:v1",
+  "title": "Filament complete-V1 conformance corpus",
   "description": "FR-336: closed transport structure for independently authored complete-V1 qualification vectors.",
   "type": "object",
   "required": [
@@ -12,7 +12,7 @@
   ],
   "properties": {
     "contract_version": {
-      "const": "quire.conformance-corpus/v1"
+      "const": "filament.conformance-corpus/v1"
     },
     "vectors": {
       "type": "array",
@@ -591,7 +591,7 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "urn:quire:checked-package:v2#/$defs/RefinementInternal"
+            "$ref": "urn:filament:checked-package:v2#/$defs/RefinementInternal"
           }
         }
       },
@@ -1143,7 +1143,7 @@
           }
         },
         "package": {
-          "$ref": "urn:quire:checked-package:v2"
+          "$ref": "urn:filament:checked-package:v2"
         },
         "dependencies": {
           "type": "array",
@@ -1740,7 +1740,7 @@
       "additionalProperties": false
     },
     "NodeId": {
-      "$ref": "urn:quire:checked-package:v2#/$defs/NodeId"
+      "$ref": "urn:filament:checked-package:v2#/$defs/NodeId"
     },
     "SourceRef": {
       "type": "object",

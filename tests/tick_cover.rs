@@ -3,7 +3,7 @@
 
 //! FR-160-AC-6 and FR-160-AC-7: the half-open counter-tick cover and the endpoint
 //! rule that decides `ack - req <= bound` and definite ordering. The evaluator is
-//! QSL's and RT's; this test applies the stated rule to the published vectors.
+//! FSL's and RT's; this test applies the stated rule to the published vectors.
 
 use ix_trace_rs::trace;
 use serde_json::Value;

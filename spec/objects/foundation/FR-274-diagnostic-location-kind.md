@@ -4,11 +4,11 @@ title: "Diagnostic location kind"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: references
-  - target: ix://agent-ix/quire-specification/FR-207
+  - target: ix://agent-ix/filament-specification/FR-207
     type: references
 ---
 # FR-274: Diagnostic location kind
@@ -22,7 +22,7 @@ request/subject, exact selections that were available, original source region
 and typed input location where known. An authored source span, a JSON
 field/index path and a runtime object/value path remain different location
 kinds"
-([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md),
+([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md),
 "Common structured context"). FR-047-AC-4 requires that "original
 source/model/clause loci and identities remain attached where available;
 diagnostics do not reconstruct a location by searching for a repeated name". The
@@ -98,13 +98,13 @@ discriminators/steps refuse. These wire values never alias display paths.
 
 - [FR-047](../../functional/foundation/FR-047-emit-typed-located-causes.md) establishes the
   locus-retention obligation and the prohibition on reconstructing a location.
-- [Native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)
+- [Native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)
   is the proposed, non-adopted source of the three distinct location kinds.
 - [FR-203](FR-203-source-region.md) types the authored source span
   kind.
 - [FR-207](FR-207-runtime-value-path.md) types the runtime object/value path
   kind.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

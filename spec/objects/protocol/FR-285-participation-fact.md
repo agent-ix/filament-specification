@@ -4,13 +4,13 @@ title: "Participation fact"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-212
+  - target: ix://agent-ix/filament-specification/FR-212
     type: references
 ---
 # FR-285: Participation fact

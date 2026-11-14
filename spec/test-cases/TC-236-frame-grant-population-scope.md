@@ -3,7 +3,7 @@ id: TC-236
 title: "Frame grant population scope"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: verifies
 ---
 ## Description

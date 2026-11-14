@@ -4,7 +4,7 @@ title: "Exact rational value"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-039
+  - target: ix://agent-ix/filament-specification/FR-039
     type: specifies
 ---
 # FR-205: Exact rational value
@@ -95,7 +95,7 @@ values differ.
   establishes normalization, bounds checking and the refusal set.
 - [FR-206](FR-206-numeric-domain.md) supplies the named type and unit a rational
   is admitted into.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 
 ## Status
 

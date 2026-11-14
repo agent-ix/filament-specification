@@ -3,9 +3,9 @@ id: TC-248
 title: "Iteration admitted without a maximum or a proved invariant/variant"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-228
+  - target: ix://agent-ix/filament-specification/FR-228
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: verifies
 ---
 

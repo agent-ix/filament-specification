@@ -3,25 +3,25 @@ id: FR-483
 title: "Settle a value-validity or operation-contract item at the check arm"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-462
+  - target: ix://agent-ix/filament-specification/FR-462
     type: references
-  - target: ix://agent-ix/quire-specification/FR-484
+  - target: ix://agent-ix/filament-specification/FR-484
     type: references
-  - target: ix://agent-ix/quire-specification/FR-485
+  - target: ix://agent-ix/filament-specification/FR-485
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
 ---
 
@@ -35,7 +35,7 @@ The check arm is the step that follows [FR-290](../../objects/protocol/FR-290-pr
 
 ## Inputs
 
-One request item that [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) settled `supported` for the candidate, with its `request_index`, `kind`, `claim` (`{node, occurrence}`), `extent`, `options` and the candidate's name; the request's `deadline_ms`; the checked package, as the typed value of an in-process provider or the decoded `quire.checked-package/v2` bytes of a process provider ([FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md) "In-process providers", "Package bytes"); and the candidate's admitted descriptor.
+One request item that [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) settled `supported` for the candidate, with its `request_index`, `kind`, `claim` (`{node, occurrence}`), `extent`, `options` and the candidate's name; the request's `deadline_ms`; the checked package, as the typed value of an in-process provider or the decoded `filament.checked-package/v2` bytes of a process provider ([FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md) "In-process providers", "Package bytes"); and the candidate's admitted descriptor.
 
 ## Outputs
 

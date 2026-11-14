@@ -3,7 +3,7 @@ id: TC-361
 title: "Exact unbounded reachability, expected rewards and fairness sets"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: verifies
 ---
 
@@ -19,10 +19,10 @@ Run each vector through the real local Rust boundary of the provider named by th
 
 ## Models
 
-The models below are defined here in full; the citation names the QSL design record each one comes from. `ev` selects `quire.temporal.event-position.false-extension/v1`, `inf` selects `quire.temporal.infinite-trace/v1` and `timed` selects `quire.temporal.timed/v1`.
+The models below are defined here in full; the citation names the FSL design record each one comes from. `ev` selects `filament.temporal.event-position.false-extension/v1`, `inf` selects `filament.temporal.infinite-trace/v1` and `timed` selects `filament.temporal.timed/v1`.
 
-- **`Link`** and **`Deliver`** (from QSL ADR-028 §15.4). One object `m: Msg { delivered: Boolean, attempts: Int[0, 2] }`, initially `delivered = false` and `attempts = 0`. `Msg::send_a(lost)` and `Msg::send_b(lost)` each have pre `not delivered and attempts < 2` and post `attempts = pre(attempts) + 1 and delivered = not lost`, with `random Msg::send_a(lost) ~ { true: 1, false: 9 };` and `random Msg::send_b(lost) ~ { true: 1, false: 4 };`. A state with `delivered` or `attempts = 2` is terminal. `workload Even on Link { weight Msg::send_a = 1; weight Msg::send_b = 1; }`. `Deliver` is `probabilistic Deliver using ev on Link under every scheduler on origin { probability >= 0.97 [ eventually[0, 2] holds(m.delivered) ] }`. Its minimum is `24/25`, its maximum `99/100`, and its value under `Even` `391/400`.
-- **`Coin`**, **`Terminates`** and **`FairTerminates`** (from QSL ADR-028 §15.6). One object `p: Proc { done: Boolean }`, initially `done = false`. `Proc::flip(heads)` has pre `not done` and post `done = heads`, with `random Proc::flip(heads) ~ { true: 1, false: 1 };`. `Proc::wait` has pre `not done` and post `done = pre(done)`. A state with `done` is terminal. `Terminates` is `probabilistic Terminates using inf on Coin under every scheduler on origin { probability >= 0.99 [ eventually holds(p.done) ] }`. `FairTerminates` is the same claim with `under every scheduler fair strong Proc::flip`.
+- **`Link`** and **`Deliver`** (from FSL ADR-028 §15.4). One object `m: Msg { delivered: Boolean, attempts: Int[0, 2] }`, initially `delivered = false` and `attempts = 0`. `Msg::send_a(lost)` and `Msg::send_b(lost)` each have pre `not delivered and attempts < 2` and post `attempts = pre(attempts) + 1 and delivered = not lost`, with `random Msg::send_a(lost) ~ { true: 1, false: 9 };` and `random Msg::send_b(lost) ~ { true: 1, false: 4 };`. A state with `delivered` or `attempts = 2` is terminal. `workload Even on Link { weight Msg::send_a = 1; weight Msg::send_b = 1; }`. `Deliver` is `probabilistic Deliver using ev on Link under every scheduler on origin { probability >= 0.97 [ eventually[0, 2] holds(m.delivered) ] }`. Its minimum is `24/25`, its maximum `99/100`, and its value under `Even` `391/400`.
+- **`Coin`**, **`Terminates`** and **`FairTerminates`** (from FSL ADR-028 §15.6). One object `p: Proc { done: Boolean }`, initially `done = false`. `Proc::flip(heads)` has pre `not done` and post `done = heads`, with `random Proc::flip(heads) ~ { true: 1, false: 1 };`. `Proc::wait` has pre `not done` and post `done = pre(done)`. A state with `done` is terminal. `Terminates` is `probabilistic Terminates using inf on Coin under every scheduler on origin { probability >= 0.99 [ eventually holds(p.done) ] }`. `FairTerminates` is the same claim with `under every scheduler fair strong Proc::flip`.
 
 ## Vectors
 

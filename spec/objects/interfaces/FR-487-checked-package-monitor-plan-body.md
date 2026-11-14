@@ -3,19 +3,19 @@ id: FR-487
 title: "Checked-package tick-monitor plan root and state-passing entries"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: references
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: references
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: references
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
-  - target: ix://agent-ix/quire-specification/TC-978
+  - target: ix://agent-ix/filament-specification/TC-978
     type: verifies
 ---
 
@@ -23,16 +23,16 @@ relationships:
 
 ## Description
 
-When a checked package carries a closed tick-monitor program (QSL FR-251) for a
+When a checked package carries a closed tick-monitor program (FSL FR-251) for a
 `temporal`/`temporal_clause` declaration, the producer SHALL emit it as
-`quire.checked-semantic-graph/v2` nodes over the existing expression contract:
+`filament.checked-semantic-graph/v2` nodes over the existing expression contract:
 four ordinary `function` nodes (`init`, `on_event`, `on_watermark`, `on_gap`) that pass
 the monitor state in and out, and one *plan-root* node, `node_tag: "temporal"`,
 `semantic_form: "monitor_plan"`, that names them with the state and result types
 and the plan's capacities and counter premises. No statement, loop or assignment
 vocabulary exists on the wire: an assignment is a functional update (record
-construction), a branch is `quire.op.control.if` or `case`, a loop over a buffer
-is a `quire.op.collection.fold` bounded by the buffer's capacity premise, and an
+construction), a branch is `filament.op.control.if` or `case`, a loop over a buffer
+is a `filament.op.collection.fold` bounded by the buffer's capacity premise, and an
 emission is a field of the returned results. The reader SHALL refuse a root
 whose rules below do not hold, with the first refusal in the reader order below.
 
@@ -55,7 +55,7 @@ whose rules below do not hold, with the first refusal in the reader order below.
   body of another closure member, an atom body or the activation guard, in
   ascending node-id order of the called function nodes, each once (FR-322 `path`). As for every operand segment, the segment names the body-root node through the plan node's operand row (FR-322 "Operand index segments"), and it is that node's structural `node_id` (its content-bearing key, FR-322 "Structural node identity"), not the slot or the row's graph index, that distinguishes two keys; reordering the graph rewrites the row and changes no key and no node's bytes. Like every derived path this is the producer's duty: the reader recomputes no identifier and refuses no path for differing from the derivation (FR-322 "Declaration-less function nodes"), and the call closure is a rule of the key, not a reader check.
   Every premise of the plan, and so the subject, clock binding, uncertainty,
-  gap, rate and capacities of QSL FR-251, is part of the key: changing one
+  gap, rate and capacities of FSL FR-251, is part of the key: changing one
   yields a different root key and so a different plan. Changing an entry body changes that entry's own derived `node_id`
   and so the root's: the plan is identified by the content keys of the root and
   its entries, and no other plan identity exists.
@@ -97,18 +97,18 @@ whose rules below do not hold, with the first refusal in the reader order below.
   - `counter_width_bits` — an `integer` literal, 1 to 64;
   - `max_reading_gap` — an `integer` literal, 0 to `2^counter_width_bits - 1`;
   - `max_event_rate` — a `rational` literal in the canonical spelling of FR-322-AC-114, greater than 0, the plan's
-    `monitor.max_event_rate` setting in events per tick (QSL FR-251's
+    `monitor.max_event_rate` setting in events per tick (FSL FR-251's
     `rate_limit`, an exact rational: the default of one event per microsecond
     converts to a rational number of events per tick);
   - `buffers` — an aggregate of one aggregate per buffered subformula,
     `{binding("subformula", reference), binding("capacity", integer literal)}`,
     ascending by the subformula node's `node_id` with no repeat, each
     `subformula` a `temporal`/`formula` node the clause's formula reaches and
-    each `capacity` at least 1 (QSL FR-251: the event rate times the window,
-    rounded up, plus one; QSL FR-251 owns the formula and the reader checks only the range). Capacities are premises of the plan; sequence types
+    each `capacity` at least 1 (FSL FR-251: the event rate times the window,
+    rounded up, plus one; FSL FR-251 owns the formula and the reader checks only the range). Capacities are premises of the plan; sequence types
     stay ordinary `composite_type`/`sequence` nodes;
   - `counter` — a `text` literal, non-empty: the counter's name, the first
-    component of the plan's tick clock binding key (QSL FR-251
+    component of the plan's tick clock binding key (FSL FR-251
     `ClockBindingKey`; the clause's `temporal_bindings` rows keep the clause's
     own clock name and kind, and the plan's counter is a separate premise);
   - `tick_unit` — a `reference` to the `scalar_type`/`unit` node whose `dimension_node_id` equals, by identity, the
@@ -122,10 +122,10 @@ whose rules below do not hold, with the first refusal in the reader order below.
     endpoints");
   - `activation_capacity` — an `integer` literal, at least 0 (member 16, after `on_gap`): the plan's bound on the live obligation instances of the unbounded operators in the state's `activations`. An instance that would exceed it is not started: the body returns the `Incomplete` outcome with `LimitReached{limit: activation, value: activation_capacity, setting: monitor.max_activations}`, never a silent drop. The `limit` kind `activation` names the resource counter (as `event_buffer` does) and the setting `monitor.max_activations` follows FR-461's rule for an engine limit (the engine's name, a dot and the member, like `monitor.max_event_rate`).
 
-  The tick intervals of QSL FR-251 are not bindings. Each is the clause's
+  The tick intervals of FSL FR-251 are not bindings. Each is the clause's
   interval bounds (in the clause's clock unit, FR-322 "Temporal clock
   bindings") multiplied by the scale of that unit and divided by the scale of
-  `tick_unit`, an exact rational; the plan carries no rounded value, and the evaluator's sound rounding of a bound to a tick (QSL FR-251) acts on it with the cover widened by `u`; the clause and `tick_unit`
+  `tick_unit`, an exact rational; the plan carries no rounded value, and the evaluator's sound rounding of a bound to a tick (FSL FR-251) acts on it with the cover widened by `u`; the clause and `tick_unit`
   are in the root's key, so the interval association is as identified as the
   clause.
 - **entry signatures** — a `function`'s parameters are its `parameters`
@@ -164,7 +164,7 @@ whose rules below do not hold, with the first refusal in the reader order below.
   of admitted events (the event position of FR-091 and FR-092; `init` returns 0
   and `on_event` adds 1 per admitted event, the first reading's `on_event(0)`
   included; `on_watermark` and `on_gap` leave it unchanged, since a watermark and
-  a faulting reading are not admitted events, and a clock poll calls no entry). A body keeps each `buffer_<n>` at no more than its capacity, except that the `buffer_<n>` of an unbounded past operator (`once`, `historically`, `since` or `triggered` with no upper bound: no interval, or `[a, *]`) additionally holds one **summary cell** as its first element, which is not counted in the capacity: the cell stores the accumulator that folds the entries as they age out (QSL FR-251 "Unbounded past operators"), the element type of such a buffer is the producer's and the reader imposes no rule on it, and `State` keeps exactly the fields of this list; and
+  a faulting reading are not admitted events, and a clock poll calls no entry). A body keeps each `buffer_<n>` at no more than its capacity, except that the `buffer_<n>` of an unbounded past operator (`once`, `historically`, `since` or `triggered` with no upper bound: no interval, or `[a, *]`) additionally holds one **summary cell** as its first element, which is not counted in the capacity: the cell stores the accumulator that folds the entries as they age out (FSL FR-251 "Unbounded past operators"), the element type of such a buffer is the producer's and the reader imposes no rule on it, and `State` keeps exactly the fields of this list; and
   `activations` at no more than `activation_capacity`; an event that would
   exceed either returns the `Incomplete` outcome below instead of appending.
   An unbounded operator (root `always`, `eventually`, or a nested future
@@ -187,14 +187,14 @@ whose rules below do not hold, with the first refusal in the reader order below.
   the capacity and `setting` `monitor.max_event_rate`; or `limit` `activation`,
   `value` the `activation_capacity` and `setting` `monitor.max_activations`; or
   `limit` `atom_projection`, `value` the atom's identity, an `integer` (the
-  `AtomId` of QSL FR-251), and `setting` `monitor.atom_projection`); `Failed` carrying
+  `AtomId` of FSL FR-251), and `setting` `monitor.atom_projection`); `Failed` carrying
   the record `ReadingGapExceeded{gap, max_reading_gap}`. `gap` and `max_reading_gap` are `integer`s. `on_event` and `on_watermark`
   return the first four and `Incomplete`; only `on_gap` returns `Failed`, from
   the checked gap it is given and the plan's `max_reading_gap` premise. The
   executor owns the modular delta, detects the fault and calls `on_gap`.
 - **append** — the sequence extension `append(s, x)` is not a new operation:
-  it is `quire.op.collection.flatten` of `quire.op.collection.sequence(s,
-  quire.op.collection.sequence(x))`, over ordinary sequence types. The closed
+  it is `filament.op.collection.flatten` of `filament.op.collection.sequence(s,
+  filament.op.collection.sequence(x))`, over ordinary sequence types. The closed
   operation catalog is unchanged.
 
 ## Semantics
@@ -205,7 +205,7 @@ half-open interval `[k, k + 1)`, an obligation instance is `pending` while decla
 progress could still resolve its verdict and `indeterminate` when closed
 evidence stays conflicting, and an entry expires when its window end lies before
 the history boundary. The entries are validated against that meaning by the
-reference evaluator and the differential of QSL FR-251-AC-7; the wire fixes no
+reference evaluator and the differential of FSL FR-251-AC-7; the wire fixes no
 separate algorithm.
 
 ### Atoms without an admitted projection
@@ -221,7 +221,7 @@ dropped, and no new `Outcome` case or payload shape exists. The `limit` kind
 names the resource counter in the manner of `event_buffer` and `activation`.
 `monitor.atom_projection` is not a runtime tunable and is the one outcome
 FR-461 excepts from its raising-setting rule: it names the remedy, the
-plan-declared capture binding of the atom (QSL FR-251) that supplies an admitted
+plan-declared capture binding of the atom (FSL FR-251) that supplies an admitted
 projection, and no `--limit` or library setter exists for it; `value` is the
 atom's identity, not a count. The closed `limit` kinds of the
 plan root are therefore `event_buffer`, `activation` and `atom_projection`.
@@ -246,7 +246,7 @@ is still open (its window or deadline spans the gap) a result whose `outcome` is
 `Failed(ReadingGapExceeded{gap, max_reading_gap})`, and drops that instance
 from the returned state; an instance already decided, and one not yet started,
 is unaffected, and a result already emitted is not changed. No temporal verdict
-is emitted for a failed instance. These rules are QSL:plan's counter-gap
+is emitted for a failed instance. These rules are FSL:plan's counter-gap
 rulings (QSL-1463) over FR-251 "Counter faults" and RT FR-276, which state only
 the modular difference, the `Failed` payload and the absence of a verdict.
 
@@ -297,9 +297,9 @@ A `dependencies` list other than the nodes the body references and the
 `semantic_type` is FR-322's graph-shape refusal, `invalid_semantic_graph` at the
 node's `/dependencies`, which precedes this step.
 
-## IR and QSL boundary
+## IR and FSL boundary
 
-QSL emits the nodes above on the checked-package wire; there is no second
+FSL emits the nodes above on the checked-package wire; there is no second
 serialization and no plan identity beyond the node keys. An IR reader SHALL
 validate the checks above and expose the admitted plan, its entries and its
 premises by reference as typed data. The runtime executes the entries: it
@@ -316,7 +316,7 @@ a body.
 | FR-487-AC-2 | A root with a binding missing (including `uncertainty`, `MP-39`), reordered or extra, or with `counter_width_bits` or `max_reading_gap` that is not an `integer` literal, `max_event_rate` or `uncertainty` that is not a `rational` literal (`MP-35`, `MP-37`) or a `counter` that is not a `text` literal (`MP-42`), refuses `invalid_semantic_graph` at the first breaking binding; a `clause` that is not a `temporal_clause`, a `state` that is not a record and an entry that is not a `pure_function` refuse the same at the binding (`MP-03` to `MP-09`, `MP-28`, `MP-40`, `MP-41`, `MP-48`, `MP-49`, `MP-60` and `MP-61`). | Test (TC-978) |
 | FR-487-AC-3 | `init` with a parameter, `on_event` with two parameters or with the delta before the state, `on_watermark` whose boundary is not an `integer`, `on_gap` with the gap before the state or a non-`integer` gap (`MP-50`, `MP-51`), and an entry whose result is not the `(State, Results)` tuple refuse `ill_typed`/`type-mismatch` at the entry's binding; an `Outcome` union missing `Pending`, with an extra case or with a `Failed` payload that is not `ReadingGapExceeded` refuses the same at `results` (`MP-10` to `MP-17`, `MP-29` and `MP-52`). | Test (TC-978) |
 | FR-487-AC-4 | `counter_width_bits` 0 and 65, `max_reading_gap` `2^width`, `max_event_rate` 0 or negative, a negative `uncertainty`, an empty `counter` and a `capacity` 0 refuse `invalid_package`/`invalid-value` at the literal; `buffers` out of ascending order, with a repeated subformula or naming an unreached subformula, and a `state` lacking `buffer_1` or holding a non-sequence `buffer_1`, refuse `invalid_semantic_graph` at `buffers` or `state` (`MP-18` to `MP-27`, `MP-30`, `MP-31`, `MP-34`, `MP-36`, `MP-38`, `MP-46` and `MP-47`). | Test (TC-978) |
-| FR-487-AC-5 | Buffer extension is `flatten(sequence(s, sequence(x)))` over the existing operations `quire.op.collection.flatten` and `quire.op.collection.sequence`: both are in the closed operation catalog, the extension of a `Sequence<T>` by a `T` is a `Sequence<T>`, and the catalog and both V2 schemas are unchanged (`MP-32`). | Test (TC-978) |
+| FR-487-AC-5 | Buffer extension is `flatten(sequence(s, sequence(x)))` over the existing operations `filament.op.collection.flatten` and `filament.op.collection.sequence`: both are in the closed operation catalog, the extension of a `Sequence<T>` by a `T` is a `Sequence<T>`, and the catalog and both V2 schemas are unchanged (`MP-32`). | Test (TC-978) |
 | FR-487-AC-6 | The identity-bearing premises are bindings of the root and part of its key: the `counter` name, the `tick_unit` node, `counter_width_bits`, `max_reading_gap`, `max_event_rate`, `uncertainty`, the `on_gap` entry, the `activation_capacity` and the buffer capacities. A different `uncertainty` (`0`), `counter`, `max_event_rate` (`1/10`, a rational), `tick_unit` node or capacity yields a different root key (`MP-02`, `MP-33`, `MP-43` to `MP-45`, the `on_gap` node `MP-53` and the capacity `MP-58`); a `tick_unit` that is not a `scalar_type`/`unit` node, or is a unit of the `Length` dimension, refuses `invalid_semantic_graph` at the `tick_unit` binding (`MP-40`, `MP-41`). The tick intervals are derived from the clause and the unit scales and are not bound. | Test (TC-978) |
 | FR-487-AC-7 | On a reading-gap fault the runtime calls `on_gap(State, gap)` with the checked gap (an `integer` count of ticks above `max_reading_gap`) in place of `on_event`: every open instance yields `Failed(ReadingGapExceeded{gap, max_reading_gap})` and leaves the instance state, a decided instance and the results already emitted are unaffected, and with no open instance the results are empty (the buffers and time markers still change, AC-9) (`MP-54` to `MP-56`). The first reading is the baseline with no gap check, and the faulting reading becomes the new baseline: readings 65530, 4, 65500, 65510 under width 16 and `max_reading_gap` 100 call the baseline `on_event(0)`, `on_event(10)`, `on_gap(65496)`, `on_event(10)` (`MP-57`). | Test (TC-978) |
 | FR-487-AC-8 | The root carries `activation_capacity` (member 16, an `integer` literal at least 0) and its state is exactly `now`, `history_start`, one `buffer_<n>` per buffer, then `activations`, a sequence of records with `subformula`, `origin` and `status`, then `event_position`; unbounded operators keep no history buffer, only one constant-size `activations` element per live instance, and an instance beyond the capacity yields `Incomplete(LimitReached{limit: activation, value, setting: monitor.max_activations})`, never a silent drop (`MP-73`). A capacity of 0 is admitted and is part of the key (`MP-58`); a negative capacity refuses `invalid_package`/`invalid-value` at the literal (`MP-59`); a missing or non-`integer` capacity, a state lacking `history_start` or `activations`, an `activations` element lacking `origin` and a non-`integer` `history_start` refuse `invalid_semantic_graph` (`MP-60` to `MP-65`). The type of an `activations` element's `status` is not constrained by the reader: a scalar and a record holding an `integer` `position` are both admitted (`MP-81`, `MP-82`). | Test (TC-978) |
@@ -324,8 +324,8 @@ a body.
 | FR-487-AC-10 | Each interval-operator instance is reported once, on settlement, and each pending instance at every `on_watermark` step and no `on_event` step; an unbounded root `always` or `eventually` reports one folded outcome per activation, `Pending` until resolved (`MP-70` to `MP-72`). | Test (TC-978) |
 | FR-487-AC-11 | The state ends with `event_position`, an `integer` that `init` sets to 0, `on_event` increases by 1 per admitted event (the baseline reading included), and `on_watermark`, `on_gap` and a clock poll leave unchanged (`MP-77`, `MP-57`, `MP-69`); a state lacking `event_position`, with it typed `text` or placed before `activations` refuses `invalid_semantic_graph` at the `state` binding (`MP-74` to `MP-76`). | Test (TC-978) |
 | FR-487-AC-12 | An atom with no admitted projection yields `Incomplete(LimitReached{limit: atom_projection, value: <atom identity>, setting: monitor.atom_projection})` with replayable evidence, not a refusal and not a dropped atom, and an atom with an admitted projection does not; the `limit` kinds of `LimitReached` are exactly `event_buffer`, `activation` and `atom_projection`, each with its own `setting`, and the `Outcome` union and its payload record shapes are unchanged (`MP-78` to `MP-80`). | Test (TC-978) |
-| FR-487-AC-13 | The plan root's key covers the call closure as a producer rule: two plans that differ only in the body of a declared helper function called by an entry, an atom or the activation guard (the helper keeps its declaration path and so its own `node_id`, and the entries keep theirs) have different root keys, a helper called only through another helper's body is covered the same way, equal helper bodies give an equal root key, and a helper is never inlined into an entry to be keyed. The reader recomputes no identifier and refuses nothing for it, so this repository has no reader-visible vector; the verifier is the producer's test, quire-spec-language FR-251-AC-38 (TC-1081), which this criterion cites as its owner. | Inspection |
-| FR-487-AC-14 | The `buffer_<n>` of an unbounded past operator additionally holds one summary cell that is not counted in the capacity, and `State` keeps exactly its fields; the reader imposes no rule on the element type of a buffer (quire-spec-language FR-251, "Unbounded past operators"). | Inspection |
+| FR-487-AC-13 | The plan root's key covers the call closure as a producer rule: two plans that differ only in the body of a declared helper function called by an entry, an atom or the activation guard (the helper keeps its declaration path and so its own `node_id`, and the entries keep theirs) have different root keys, a helper called only through another helper's body is covered the same way, equal helper bodies give an equal root key, and a helper is never inlined into an entry to be keyed. The reader recomputes no identifier and refuses nothing for it, so this repository has no reader-visible vector; the verifier is the producer's test, filament-spec-language FR-251-AC-38 (TC-1081), which this criterion cites as its owner. | Inspection |
+| FR-487-AC-14 | The `buffer_<n>` of an unbounded past operator additionally holds one summary cell that is not counted in the capacity, and `State` keeps exactly its fields; the reader imposes no rule on the element type of a buffer (filament-spec-language FR-251, "Unbounded past operators"). | Inspection |
 
 ## Published artifacts
 
@@ -347,5 +347,5 @@ a body.
 
 ## References
 
-- STD-647 (this requirement); quire-spec-language FR-251 (the closed monitor
+- STD-647 (this requirement); filament-spec-language FR-251 (the closed monitor
   program), QSL-1463 (producer) and IR-721 (reader).

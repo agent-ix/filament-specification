@@ -3,11 +3,11 @@ id: TC-316
 title: "Ring-buffer to queue data refinement"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-376
+  - target: ix://agent-ix/filament-specification/FR-376
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: verifies
 ---
 

@@ -1,0 +1,100 @@
+{
+  "version": "filament.value.compound-unit-vectors/v1",
+  "vectors": [
+    {
+      "name": "dimensionless",
+      "identity": {
+        "version": "filament.value.compound-unit/v1",
+        "terms": []
+      }
+    },
+    {
+      "name": "metre-per-second",
+      "identity": {
+        "version": "filament.value.compound-unit/v1",
+        "terms": [
+          {
+            "unit_node_id": {
+              "package": "acme/units",
+              "path": [
+                "metre"
+              ],
+              "ordinal": 0
+            },
+            "exponent": "1"
+          },
+          {
+            "unit_node_id": {
+              "package": "acme/units",
+              "path": [
+                "second"
+              ],
+              "ordinal": 0
+            },
+            "exponent": "-1"
+          }
+        ]
+      }
+    }
+  ],
+  "invalid_mutations": [
+    {
+      "name": "zero-exponent",
+      "kind": "semantic",
+      "refused_by": "semantic",
+      "base": "metre-per-second",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/terms/1/exponent",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "name": "duplicate-term",
+      "kind": "semantic",
+      "refused_by": "semantic",
+      "base": "metre-per-second",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/terms/1/unit_node_id",
+          "value": {
+            "package": "acme/units",
+            "path": [
+              "metre"
+            ],
+            "ordinal": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "unsorted-terms",
+      "kind": "semantic",
+      "refused_by": "semantic",
+      "base": "metre-per-second",
+      "patch": [
+        {
+          "op": "move",
+          "from": "/terms/0",
+          "path": "/terms/1"
+        }
+      ]
+    },
+    {
+      "name": "negative-zero-exponent",
+      "kind": "semantic",
+      "refused_by": "schema",
+      "base": "metre-per-second",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/terms/1/exponent",
+          "value": "-0"
+        }
+      ]
+    }
+  ]
+}

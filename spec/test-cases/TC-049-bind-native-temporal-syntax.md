@@ -3,7 +3,7 @@ id: TC-049
 title: "Retain typed temporal syntax and activation bindings"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-048
+  - target: ix://agent-ix/filament-specification/FR-048
     type: verifies
 ---
 ## Description
@@ -23,7 +23,7 @@ deadline refund. Independently compare outer true with holds(true) across a
 one-position false-extension boundary. Attempt current TL lowering for the
 timestamped and past-time forms.
 
-Bind the three exact [temporal root definitions](../../proposals/quire-v1/definitions/README.md)
+Bind the three exact [temporal root definitions](../../proposals/filament-v1/definitions/README.md)
 independently. The common temporal facet is not a selectable source root.
 Replace only the root identity while keeping its clock input: an
 incompatible clock/boundary selection refuses instead of reusing an earlier

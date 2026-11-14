@@ -3,11 +3,11 @@ id: TC-297
 title: "Deadlock-freedom vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-365
+  - target: ix://agent-ix/filament-specification/FR-365
     type: verifies
 ---
 
@@ -28,7 +28,7 @@ The **Job** subject: object type `Job` with `status` of an enum
 successor-free.
 
 1. Request `always eventually holds(j.status = done)` under
-   `quire.temporal.infinite-trace/v1` with no `terminal` declaration.
+   `filament.temporal.infinite-trace/v1` with no `terminal` declaration.
 2. Add `terminal Finished using v on M when { … }` whose predicate holds at
    `done` and at `stuck`, and repeat.
 3. Change the predicate to hold at `done` only, and repeat.

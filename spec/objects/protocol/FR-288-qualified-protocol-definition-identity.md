@@ -4,11 +4,11 @@ title: "Qualified protocol-definition identity"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-202
+  - target: ix://agent-ix/filament-specification/FR-202
     type: references
 ---
 # FR-288: Qualified protocol-definition identity
@@ -95,7 +95,7 @@ selection changes the definition identity.
   retains the protocol declaration, formal owner and selected definitions.
 - [FR-202](../foundation/FR-202-authored-source-document.md) supplies the exact
   source-document key.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the object
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the object
   identity discipline.
 
 ## Status

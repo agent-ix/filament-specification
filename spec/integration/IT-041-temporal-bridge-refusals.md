@@ -3,11 +3,11 @@ id: IT-041
 title: "Qualify unsupported temporal bridge boundaries"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: verifies
 ---
 ## Objective

@@ -4,9 +4,9 @@ title: "Canonical protocol result key"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-240
+  - target: ix://agent-ix/filament-specification/FR-240
     type: specifies
 ---
 # FR-286: Canonical protocol result key

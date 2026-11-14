@@ -3,25 +3,25 @@ id: FR-489
 title: "Carry liveness dependencies and fairness premises through component composition"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-348
+  - target: ix://agent-ix/filament-specification/FR-348
     type: references
-  - target: ix://agent-ix/quire-specification/FR-176
+  - target: ix://agent-ix/filament-specification/FR-176
     type: references
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: references
-  - target: ix://agent-ix/quire-specification/FR-380
+  - target: ix://agent-ix/filament-specification/FR-380
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-491
+  - target: ix://agent-ix/filament-specification/FR-491
     type: references
-  - target: ix://agent-ix/quire-specification/FR-492
+  - target: ix://agent-ix/filament-specification/FR-492
     type: references
 ---
 

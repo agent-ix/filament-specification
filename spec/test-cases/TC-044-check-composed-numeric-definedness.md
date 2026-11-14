@@ -3,7 +3,7 @@ id: TC-044
 title: "Establish exact numeric definedness in the selected domain"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: verifies
 ---
 ## Description
@@ -27,7 +27,7 @@ integers and to equal named rational types carrying a non-dimensionless unit;
 under state-only selection both refuse the accepted division admission rather
 than choosing new result types. Repeat integer-operand `1 / 2` with expected
 result type Q under state-only selection and under
-`quire.value.complete/v1`. The state-only checker refuses the integer operands;
+`filament.value.complete/v1`. The state-only checker refuses the integer operands;
 complete value promotes them exactly to `1/1` and `2/1` under FR-149, then
 checks that the rational quotient `1/2` lies in Q, with a nonzero divisor.
 Without the

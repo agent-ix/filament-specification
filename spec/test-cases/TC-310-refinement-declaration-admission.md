@@ -3,15 +3,15 @@ id: TC-310
 title: "Refinement declaration admission"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-001
+  - target: ix://agent-ix/filament-specification/FR-001
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -126,15 +126,15 @@ Mutations, each applied alone to the positive unit:
     `Option<Int[0, 2]>` abstract field by `none`; map a field by `none` as a
     call argument; write `Some(1)` in a state clause with no function `Some`
     declared, and with one declared;
-21. under `quire.temporal.infinite-trace/v1` and a unit whose own declarations
+21. under `filament.temporal.infinite-trace/v1` and a unit whose own declarations
     select no layer, with the ring-buffer rows `s.ring = self` and
     `(self.head + i) mod 2`, add a row `a div b`; supply the unit's
     `integer_division_profile` choice as the lock selection's alternative
     role, three times: floor, Euclidean and none; read the unit's lock
     selection and `definition_selections` each time; then, in a separate run
     on the floor-law unit, add exactly these declarations: the profiles
-    `profile p = "quire.protocol.complete/v1";` and
-    `profile m = "quire.model.complete/v1";` (the unit-level profile `m`
+    `profile p = "filament.protocol.complete/v1";` and
+    `profile m = "filament.model.complete/v1";` (the unit-level profile `m`
     admits the clauses below and changes that run's lock selection, which the
     run does not read; it does not widen the refinement's row layers); the
     clauses `pre PutPre using m on R::Slot::put { self.ring.size < 2 }` and
@@ -155,7 +155,7 @@ Mutations, each applied alone to the positive unit:
     field `ready: Boolean`; and the row `ready = protocol Fill`. The
     refinement stays `using inf`, the infinite-trace alias, and the protocol
     has its own alias `p`;
-22. a plain temporal clause under `quire.temporal.infinite-trace/v1`, with no
+22. a plain temporal clause under `filament.temporal.infinite-trace/v1`, with no
     refinement, in a unit that selects no value layer.
 23. a protocol-subject refinement whose rows include `step duplicate`, `step lose`, `step spawn`, `step retire`, `step fork`, `step join`, a template's `cattempt` and `cend` rows, `step memory flush` and `step memory drain`, written in one order and then in the exact reverse of it, so every tied pair and the two memory rows swap their relative order.
 24. select one abstract model `Spec` whose declaration node is local to the
@@ -346,7 +346,7 @@ and the floor law for the first run and the Euclidean law for the second, so
 `definition_selections` differ exactly in that role, and the third run refuses
 `selection_trigger_unsatisfied` (the canonical `division-missing-for-div-rem`
 vector); the `ready = protocol Fill` row, in the separate run, is the only refusal of that run (the other declarations listed are each admitted) and refuses `unsupported_construct`/
-`expression-form` at the `protocol` token naming `quire.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks
+`expression-form` at the `protocol` token naming `filament.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks
 (FR-375-AC-18, FR-001-AC-7, FR-090-AC-10, FR-250-AC-8). In mutation 22 the
 clause is admitted and the unit's selection gains no value layer or lock row
 (FR-090-AC-10). In mutation 23 the node's `steps` array lists the rows in the order each source writes them, so the reversed source gives the reversed array; no row is moved by its node id, member name or class spelling (FR-375-AC-22).

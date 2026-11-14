@@ -4,15 +4,15 @@ title: "Temporal evaluation anchor"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: references
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: references
 ---
 # FR-253: Temporal evaluation anchor
@@ -114,7 +114,7 @@ history cutoff is not an execution origin."
   establishes the authored activation anchor and the anchor identity inputs.
 - [FR-252](FR-252-temporal-clock-binding.md) supplies the clock binding and the
   admitted causal order.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Activation vocabulary
@@ -125,4 +125,4 @@ the source activation state attached to this anchor.
 
 ## Status
 
-Proposed activation-spelling reconciliation for `quire-specification#40`.
+Proposed activation-spelling reconciliation for `filament-specification#40`.

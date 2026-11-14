@@ -106,10 +106,10 @@ enum Named<'a> {
 /// The type a well-formed `typeRef` names, following aliases, or `None` when
 /// a package identity names no node.
 fn resolve<'a>(package: &'a Value, type_ref: &'a str) -> Option<Named<'a>> {
-    if let Some(name) = type_ref.strip_prefix("ix://quire/native/") {
+    if let Some(name) = type_ref.strip_prefix("ix://filament/native/") {
         return Some(Named::Native(name));
     }
-    if type_ref.starts_with("ix://quire/unit/") {
+    if type_ref.starts_with("ix://filament/unit/") {
         return Some(Named::Unit);
     }
     let found = declared(package, type_ref)?;
@@ -123,11 +123,11 @@ fn resolve<'a>(package: &'a Value, type_ref: &'a str) -> Option<Named<'a>> {
 /// type identity.
 fn well_formed(package: &Value, type_ref: &str) -> bool {
     let prefix = format!("ix://{}/", package["identity"].as_str().unwrap_or_default());
-    match type_ref.strip_prefix("ix://quire/native/") {
+    match type_ref.strip_prefix("ix://filament/native/") {
         Some(name) => NATIVES.contains(&name),
         None => {
             type_ref
-                .strip_prefix("ix://quire/unit/")
+                .strip_prefix("ix://filament/unit/")
                 .is_some_and(|name| !name.is_empty())
                 || type_ref
                     .strip_prefix(&prefix)
@@ -223,7 +223,7 @@ fn read_map(package: &Value, map: &Value) -> Result<Value, Value> {
     // FR-322 "Selected timed package": a native key by its name, any other key
     // and the value by their references.
     let keys = map["keys"].as_str().unwrap_or_default();
-    let key = keys.strip_prefix("ix://quire/native/").unwrap_or(keys);
+    let key = keys.strip_prefix("ix://filament/native/").unwrap_or(keys);
     Ok(json!({"admitted": true, "reads": {
         "rendered": format!("Map<{key}, {}>", map["values"].as_str().unwrap_or_default()),
         "min": lower.to_string(),
@@ -298,7 +298,7 @@ fn tc_234_published_map_types_declare_keys_and_bound() {
         assert_eq!(
             read_map(&document, clock_map),
             Ok(json!({"admitted": true, "reads": {
-                "rendered": "Map<Text, ix://quire/native/Clock>",
+                "rendered": "Map<Text, ix://filament/native/Clock>",
                 "min": "0",
                 "max": "unbounded",
             }}))

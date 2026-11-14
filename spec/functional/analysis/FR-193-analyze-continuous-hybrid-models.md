@@ -3,31 +3,31 @@ id: FR-193
 title: "Analyze continuous and hybrid models soundly"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: references
-  - target: ix://agent-ix/quire-specification/FR-306
+  - target: ix://agent-ix/filament-specification/FR-306
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
-  - target: ix://agent-ix/quire-specification/FR-481
+  - target: ix://agent-ix/filament-specification/FR-481
     type: references
 ---
 
@@ -167,7 +167,7 @@ FR-331 wire form (`claim`, `tool` and `domains` elided):
 ## Initial states
 
 A `hybrid-decl` may open with an `initial` clause of one or more entries
-([shared grammar](../../../proposals/quire-v1/shared-grammar.md)):
+([shared grammar](../../../proposals/filament-v1/shared-grammar.md)):
 
 ```
 hybrid Braking using p {
@@ -300,9 +300,9 @@ a `hybrid-decl`. In its body `h.x` reads the continuous variable `x`.
   or closed as written; `[q, *]` has no upper bound. A bound of another
   dimension SHALL refuse `ill_typed`/`type-mismatch` at its span.
 - The interval forms a claim admits follow its profile, as FR-370 "Placement
-  and profile fit" fixes them: under `quire.temporal.timed/v1`, every
+  and profile fit" fixes them: under `filament.temporal.timed/v1`, every
   rational bound, either end open or closed, and `[q, *]`; under an integer
-  profile, such as `quire.temporal.infinite-trace/v1`, whole-second bounds
+  profile, such as `filament.temporal.infinite-trace/v1`, whole-second bounds
   with both ends closed, and `[a, *]` where that profile admits it. A bound
   or end the profile does not admit SHALL refuse
   `unsupported_construct`/`expression-form` at the interval's span, naming
@@ -357,7 +357,7 @@ a `hybrid-decl`. In its body `h.x` reads the continuous variable `x`.
 | `δ-sat`, a flowpipe meeting the unsafe set, `unknown`, or an outcome its method is not sound for | `inconclusive` | `solver-inconclusive{trace}`, retaining any reported trace as unverified evidence ("Hybrid trace" below) |
 | A solver stopped by its step budget | `incomplete`, execution `resource-incomplete` | `limit-reached{limit: max_solver_steps, value, setting: hybrid.max_solver_steps}` |
 | A solver that exhausts `max_solver_time`, or a provider that overruns the provider deadline `deadline_ms` (FR-462) | `incomplete`, execution `resource-incomplete` | `timed-out`, the backend's own wall-clock limit |
-| A run the caller's frontend ends at the caller's own deadline (a frontend-owned timer that cancels the run, QSL FR-276) | `incomplete`, execution `resource-incomplete` | `cancelled{source: deadline}`, never `timed-out` |
+| A run the caller's frontend ends at the caller's own deadline (a frontend-owned timer that cancels the run, FSL FR-276) | `incomplete`, execution `resource-incomplete` | `cancelled{source: deadline}`, never `timed-out` |
 | No registered candidate | `unsupported` | `unsupported_projection`/`unsupported-requested-capability` |
 | A trace the reader replays exactly to a violation ("Trace replay") | `refuted` | a `HybridCounterexample` in `counterexamples`; the cause `undefined-evaluation{where, cause}` when the violation is an expression with no value |
 
@@ -396,7 +396,7 @@ reports its kind as `unclassified`.
 ### Proof coverage
 
 A claim's *horizon* is the reach of its formula after its activation
-position, as QSL FR-447 defines it and FR-481 derives it from the claim
+position, as FSL FR-447 defines it and FR-481 derives it from the claim
 node: seconds under `model-time`, positions under `model-steps`, and none
 for an `on each` activation or an unbounded reach. The *claim region* is the
 set of states the claim reads: under `model-time` with horizon `r`, every
@@ -501,7 +501,7 @@ entry, and that entry is the wire form of the solver result.
   whether the result is a proof: a first-party provider, one the producer
   runs as its own engine, applies the verdict map to its solver's method and
   outcome and writes `proved` only for a method sound for that outcome
-  ("Solver methods", QSL FR-250) and a proof that covers the claim ("Proof
+  ("Solver methods", FSL FR-250) and a proof that covers the claim ("Proof
   coverage"). The entry carries no outcome member, and a reader SHALL NOT
   decide soundness again from the entry; it checks only the closed method
   rule of "Solver methods" and the coverage of "Proof coverage".
@@ -718,18 +718,18 @@ when exact replay reproduces it.
 | FR-193-AC-11 | `Braking` with `initial { mode Moving when { v = 20 and a >= 1 and a <= 2 and t = 0 }; mode Stopped when { v = 0 and t = 0 }; }` has two initial modes and the initial states those entries and the modes' invariants give; with no `initial` clause its initial states are `Moving`'s invariant at time 0, equal to those of `initial { mode Moving when { true }; }`; `initial { mode Halted when { true }; }` refuses `missing_declaration`/`missing-name`; a model whose initial set is empty settles `inconclusive`, `no-initial-state`. | Test (TC-373) |
 | FR-193-AC-12 | In a declaration over `v`, `a` and `x`, a flow `v' = -a * v`, a guard `v * v >= 2`, a flow `x' = if v > 1 then -1 else 0`, a flow `v' = drag(v)` calling a pure function `drag(s: Rational[-100, 100; 1, 1]): Rational[-1000, 0; 1, 10]` whose body is `- s * s / 10`, so that `v = 3/2` passes and `v = 101` has no value, a `let` and a `!=` are admitted; `v' = v div 2` and a call passing `v` to an `Integer` parameter refuse `ill_typed`/`type-mismatch`; a reachable state at which `1 / v` has `v = 0` is a violating state, so no provider proves a claim over a model that reaches it. | Test (TC-373) |
 | FR-193-AC-13 | A reset `{ v = pre(v) / 2 and a >= 1 and a <= 2 }` halves `v` from its pre-jump value and sets `a` to any value in `[1, 2]`, keeping `t`; `{ v = v + 1 }` adds 1 to the pre-jump `v`; `{ v = 0 and v >= 0 }` refuses `conflicting_declaration`/`duplicate-declaration`; `{ v + a = 1 }` and `{ v = 0 or v = 1 }` refuse `invalid_model_binding`/`malformed-declaration`; a transition whose reset gives only states outside the target's invariant is never enabled. | Test (TC-373) |
-| FR-193-AC-14 | Over `Braking`, `always [0, 10] holds(h.v < 30)` holds on every behaviour; `always [0, 10] (holds(h.v = 0) implies once [0, 2] holds(h.v <= 1))` and `holds(h.v > 0) since [0, 3] holds(h.v = 20)` are read pointwise over instants; `eventually [0 s, 1500 ms] holds(h.v < 19)` and `always (0.5 s, 2 s] holds(h.v <= 20)` read the intervals `[0, 3/2]` and `(1/2, 2]` in seconds under `quire.temporal.timed/v1`, and the same claims under `quire.temporal.infinite-trace/v1` refuse `unsupported_construct`/`expression-form` naming that profile, while `eventually [0 s, 2 s]` is admitted there as `[0, 2]`; `[2 kg, 3 kg]` refuses `ill_typed`/`type-mismatch` and `(1 s, 1 s]` refuses `invalid_timed_model`/`invalid-interval`; under `clock "model-steps"`, `eventually [0, 1] holds(h.v = 0)` counts jumps. | Test (TC-373) |
+| FR-193-AC-14 | Over `Braking`, `always [0, 10] holds(h.v < 30)` holds on every behaviour; `always [0, 10] (holds(h.v = 0) implies once [0, 2] holds(h.v <= 1))` and `holds(h.v > 0) since [0, 3] holds(h.v = 20)` are read pointwise over instants; `eventually [0 s, 1500 ms] holds(h.v < 19)` and `always (0.5 s, 2 s] holds(h.v <= 20)` read the intervals `[0, 3/2]` and `(1/2, 2]` in seconds under `filament.temporal.timed/v1`, and the same claims under `filament.temporal.infinite-trace/v1` refuse `unsupported_construct`/`expression-form` naming that profile, while `eventually [0 s, 2 s]` is admitted there as `[0, 2]`; `[2 kg, 3 kg]` refuses `ill_typed`/`type-mismatch` and `(1 s, 1 s]` refuses `invalid_timed_model`/`invalid-interval`; under `clock "model-steps"`, `eventually [0, 1] holds(h.v = 0)` counts jumps. | Test (TC-373) |
 | FR-193-AC-15 | `on each (q: Braking) when (q.v > 10)` with `capture v0: Rational = q.v;` and body `eventually [0, 10] holds(h.v < v0)` creates one obligation at every instant where `v > 10`, each reading its own `v0`; `on each (q: Other)` refuses `ill_typed`/`type-mismatch`; `fair Moving;` and `fair strong each Moving::Stopped;` resolve to `Moving`'s transitions and to those targeting `Stopped`, and `fair Moving::Halted;` refuses `missing_declaration`/`missing-name`. | Test (TC-373) |
 | FR-193-AC-16 | Static replay of a trace whose `start` box meets no initial entry reports `inconsistent{at: /start, check: 1}`; one whose `before` box misses the guard by less than its `delta` 1/100 is `consistent`, and with no `delta` is `inconsistent` at check 4; neither outcome changes the `inconclusive` value. | Test (TC-373, TC-431) |
 | FR-193-AC-17 | Over `Braking`, the point trace starting at `(Moving, v = 20, a = 2, t = 0)` with `before` `(time 10, v = 0, a = 2, t = 10)` and one jump by transition 0 to `(Stopped, time 10, v = 0, a = 2, t = 10)` replays exactly; against the claim `always [0, 12] holds(h.v > 0)` it reproduces and settles `refuted` with the trace as a `HybridCounterexample` of kind `formula`; the same trace with `before` `v = 1` settles `not-reproduced` at check 2, the item staying `inconclusive`, and as a provider's `refuted` entry `inconclusive`, `replay-parity`; a point trace through a mode with the flow `v' = v`, and the AC-17 trace against a claim whose atom calls a recursive function, are replayed statically only and do not refute; against `always [0, 12] holds(1 / (h.v - 5) != 0)` the AC-17 trace settles `refuted` of kind `undefined-evaluation` at time 15/2, and against `always [0, 12] holds(1 / (h.v - 5) < 100)`, false from time 1499/200 before the undefined instant, of kind `formula`; a stored record carries the static outcome as `replay`, and a provider entry carrying `replay` is refused `invalid_result`/`unknown-member` at `/cause/replay`; a `loop` naming the last state is refused `invalid_result`/`invalid-value` at `/loop`. | Test (TC-373, TC-431) |
-| FR-193-AC-18 | With two registered backends advertising `temporal-satisfaction`, `qsl-model-check` with no `dynamics` and `dreal` with `dynamics` `["hybrid"]` and `bounds` `{max_solver_steps: 1000000, max_solver_time: 60}`, the item of `always [0, 10] holds(h.v < 30)` over `Braking`, carrying `"requirements": ["hybrid-dynamics"]` has the one candidate `dreal`, and a temporal item over a model without hybrid dynamics, carrying no `requirements`, has the one candidate `qsl-model-check`, neither `ambiguous-backend`; with `dreal`'s `dynamics` `["discrete", "hybrid"]` the second item has both candidates and settles `ambiguous-backend`; with only `qsl-model-check` registered the hybrid item settles `unsupported`, `unsupported-requested-capability`, its warning naming `temporal-satisfaction` and `hybrid-dynamics`; a hybrid item naming `qsl-model-check` has the empty set, and one whose `candidates` lists `qsl-model-check` settles `inconsistent-candidates`. Two requests differing only in an item's `requirements` have different request identities. | Test (TC-373) |
+| FR-193-AC-18 | With two registered backends advertising `temporal-satisfaction`, `fsl-model-check` with no `dynamics` and `dreal` with `dynamics` `["hybrid"]` and `bounds` `{max_solver_steps: 1000000, max_solver_time: 60}`, the item of `always [0, 10] holds(h.v < 30)` over `Braking`, carrying `"requirements": ["hybrid-dynamics"]` has the one candidate `dreal`, and a temporal item over a model without hybrid dynamics, carrying no `requirements`, has the one candidate `fsl-model-check`, neither `ambiguous-backend`; with `dreal`'s `dynamics` `["discrete", "hybrid"]` the second item has both candidates and settles `ambiguous-backend`; with only `fsl-model-check` registered the hybrid item settles `unsupported`, `unsupported-requested-capability`, its warning naming `temporal-satisfaction` and `hybrid-dynamics`; a hybrid item naming `fsl-model-check` has the empty set, and one whose `candidates` lists `fsl-model-check` settles `inconsistent-candidates`. Two requests differing only in an item's `requirements` have different request identities. | Test (TC-373) |
 | FR-193-AC-19 | The schema refuses before consumption an item carrying `requirements` `[]`, `["hybrid-dynamics", "hybrid-dynamics"]` or `["stochastic-dynamics"]`, an item of kind `value-validity` carrying `requirements`, an item carrying `hybrid` without `requirements`, a temporal descriptor with `dynamics` `[]`, `["hybrid", "hybrid"]` or `["continuous"]`, a `dynamics` on a descriptor advertising only `operation-contract`, and a descriptor with `dynamics` `["hybrid"]` whose `bounds` lack `max_solver_time`; a registration not on the wire with each of these `dynamics` defects is refused `invalid_capability`/`invalid-dynamics` retaining `empty`, `duplicate-label` naming `hybrid`, `unknown-label` naming `continuous` and `missing-bounds` naming `max_solver_time`, and one with `dynamics` `"hybrid"` retaining `not-a-list`; a registration with `dynamics` `["continuous", "hybrid"]` and `bounds` lacking `max_solver_time` reports `unknown-label`, and one that also has a `fairness_kinds` defect reports `invalid-fairness-kinds`. | Test (TC-373, TC-431) |
 | FR-193-AC-20 | The method table settles each pair as stated: `delta-complete` with `unsat` and `flowpipe-outward-rounded` with a disjoint enclosure, each covering, settle `proved`, `bounded-solver` carrying that spelling; `inductive-enclosure` with a disjoint enclosure settles `proved`, `inductive-solver{method: inductive-enclosure}`; `flowpipe-unrounded` and `unclassified` with any outcome, `delta-complete` with a disjoint enclosure and `flowpipe-outward-rounded` with `unsat` each settle `inconclusive`, `solver-inconclusive`. The schema refuses a `bounded-solver` with `method` `dreal` or `inductive-enclosure` and an `inductive-solver` with `method` `delta-complete`; a reader refuses an `uncertified` `bounded-solver` proof with `method` `flowpipe-unrounded` `invalid_result`/`invalid-value` at `/basis/method`, and admits the same proof as a plugin's `trusted` entry. | Test (TC-373, TC-431) |
 | FR-193-AC-21 | Over `Braking`, whose one jump occurs at time `v0 / a`, anywhere in `[0, 20]`, and which takes no second jump: against `always [0, 10] holds(h.v < 30)`, a `delta-complete` `unsat` with `horizon` 10, `jumps` 1 and `exhaustive` `["time"]`, and one with `horizon` 21/2, settle `proved`, `bounded-solver`; one with `horizon` 1 settles `inconclusive`, `insufficient-horizon{horizon: 1, jumps: 1, exhaustive: ["time"]}`; one with `horizon` 10, `jumps` 0 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 0, exhaustive: []}`, and one with `horizon` 20, `jumps` 3 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `always [0, 10] eventually [0, 5] holds(h.v < 30)` a `horizon` 10 proof with `exhaustive` `["time"]` settles `insufficient-horizon`; under `clock "model-steps"`, against `eventually [0, 1] holds(h.v = 0)`, `jumps` 1 with `horizon` 20 and `exhaustive` `["jumps"]` settles `proved`, `jumps` 1 with `horizon` 10 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 1, exhaustive: []}`, and `jumps` 0 with `horizon` 100 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `once [0, 2] holds(h.v = 20)` under `model-steps` (horizon 0 positions) a proof with `jumps` 0 and `exhaustive` `[]` settles `proved`; against `always holds(h.v < 30)` and against FR-193-AC-15's `on each (q: Braking) when (q.v > 10)` claim, every `bounded-solver` proof settles `insufficient-horizon` and an `inductive-solver` proof settles `proved`; a plugin's `trusted` `bounded-solver` entry with `horizon` 1 against the first claim settles `insufficient-horizon` at the reader; an `insufficient-horizon` cause on an FR-468 refinement item is refused `invalid_result`/`invalid-value` at `/cause/type`. | Test (TC-373) |
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

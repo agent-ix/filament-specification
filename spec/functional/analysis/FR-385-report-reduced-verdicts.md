@@ -3,25 +3,25 @@ id: FR-385
 title: "Apply reductions by the preservation table and report reduced verdicts"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: references
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: references
-  - target: ix://agent-ix/quire-specification/FR-384
+  - target: ix://agent-ix/filament-specification/FR-384
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -145,7 +145,7 @@ and its basis is `decisive-counterexample` whatever reduction found it.
 
 ## References
 
-- Design: quire-spec-language ADR-021 (PT-1, PT-2, RV-1 to RV-7, TX-4,
+- Design: filament-spec-language ADR-021 (PT-1, PT-2, RV-1 to RV-7, TX-4,
   QS-5, QS-6).
 - Tickets: Linear STD-134; paired QSL-368. The model-subject temporal
   requirement is Linear STD-131.

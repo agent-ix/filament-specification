@@ -4,15 +4,15 @@ title: "Statistical verdict and sampled witness"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-409
+  - target: ix://agent-ix/filament-specification/FR-409
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
 ---
 
@@ -62,7 +62,7 @@ witnesses it holds, each with its replay rule below.
 | `estimate` | An exact rational: `p̂` for a probability bound; for a quantile claim, the conditional probability its decision reads, `Pr(M <= c | activated)` for `quantile q of M <= c` and `Pr(M < c | activated)` for `quantile q of M >= c` (FR-407), and the empirical nearest-rank quantile of the counted samples (the `⌈q · n⌉`-th smallest of `n`); the sample mean for a mean of a fraction; the regenerative ratio for a long-run fraction. A quantity estimate carries the threshold's unit. |
 | `interval` | The confidence interval `[lower, upper]` in exact rationals for the fixed-sample, exact binomial and regenerative methods (for the exact binomial method, the outward Clopper–Pearson interval of FR-408); absent for the sequential method. |
 | `basis` | `StatisticalBasis{method, confidence, samples, draws, tests, coverage, grid}`: `method` is `okamoto`, `sprt`, `clopper-pearson` or `regenerative` with its `min_cycles`; `confidence` is the claim's `α`, `β` and `ι`; `samples` is the count of counted samples; `draws` the count of drawn samples; `tests` is `m` with the per-test `α'` and `β'`; `coverage` is `finite-sample` or `asymptotic`; `grid` is the delay-draw grid exponent `q` of a timed run ([FR-420](../../functional/analysis/FR-420-sample-stochastic-timed-models.md)) and absent otherwise. |
-| `provenance` | The seed; the sampler identity `quire.simulation.sampler/v1`; and per test its index, initial state, `over` binding and trace-index range. |
+| `provenance` | The seed; the sampler identity `filament.simulation.sampler/v1`; and per test its index, initial state, `over` binding and trace-index range. |
 | `tests` | One entry per test, in test-index order, with its own decision, estimate, interval and counts. |
 | `witnesses` | Up to the request's `max_witnesses` sampled witnesses, the first in trace-index order. |
 
@@ -133,5 +133,5 @@ witness. The item's `measured` decision is unchanged by any witness replay.
 
 ## References
 
-- QSL ADR-024 SV-2, SV-6 to SV-8, RP-1; QSL ADR-026 SS-3, SS-6.
+- FSL ADR-024 SV-2, SV-6 to SV-8, RP-1; FSL ADR-026 SS-3, SS-6.
 - Ticket: STD-137 (paired with QSL-371).

@@ -3,27 +3,27 @@ id: FR-465
 title: "Checked-package protocol role, channel, queue and obligation bodies"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: references
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: references
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: references
-  - target: ix://agent-ix/quire-specification/FR-170
+  - target: ix://agent-ix/filament-specification/FR-170
     type: references
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: references
-  - target: ix://agent-ix/quire-specification/FR-428
+  - target: ix://agent-ix/filament-specification/FR-428
     type: references
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
 ---
 
@@ -56,7 +56,7 @@ and a third that only a role on a model member carries:
 node: a Port is not a semantic model node, and the role record carries it
 directly. `package` is the identity of the domain package that declares the
 Port and `node` is the Port's declaration identity within that package, the
-two members of the `DeclarationKey` shape `{package, node}` that QSL ADR-013 O-03 defines. A role
+two members of the `DeclarationKey` shape `{package, node}` that FSL ADR-013 O-03 defines. A role
 on a model type or a whole model has no third argument, so a role layout
 without it stays valid and its bytes are unchanged. The `model` argument of a
 role on a Port keeps its form: the reference to the model node that owns the

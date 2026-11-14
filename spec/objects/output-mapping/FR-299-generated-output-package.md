@@ -4,9 +4,9 @@ title: "Generated output package"
 type: FR
 object: aggregate_root
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-125
+  - target: ix://agent-ix/filament-specification/FR-125
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-298
+  - target: ix://agent-ix/filament-specification/FR-298
     type: references
 ---
 # FR-299: Generated output package

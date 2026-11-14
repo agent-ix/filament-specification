@@ -3,7 +3,7 @@ id: US-009
 title: "Assess observed workflow outcomes without inventing evidence"
 type: US
 relationships:
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: traces_to
 ---
 ## Story

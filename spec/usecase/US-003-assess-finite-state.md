@@ -3,25 +3,25 @@ id: US-003
 title: "Assess a finite state under explicit assumptions"
 type: US
 relationships:
-  - target: "ix://agent-ix/quire-specification/StR-001"
+  - target: "ix://agent-ix/filament-specification/StR-001"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-005"
+  - target: "ix://agent-ix/filament-specification/FR-005"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-006"
+  - target: "ix://agent-ix/filament-specification/FR-006"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-007"
+  - target: "ix://agent-ix/filament-specification/FR-007"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-008"
+  - target: "ix://agent-ix/filament-specification/FR-008"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-009"
+  - target: "ix://agent-ix/filament-specification/FR-009"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-010"
+  - target: "ix://agent-ix/filament-specification/FR-010"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-011"
+  - target: "ix://agent-ix/filament-specification/FR-011"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-012"
+  - target: "ix://agent-ix/filament-specification/FR-012"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-013"
+  - target: "ix://agent-ix/filament-specification/FR-013"
     type: exercises
 ---
 # US-003: Assess a finite state under explicit assumptions

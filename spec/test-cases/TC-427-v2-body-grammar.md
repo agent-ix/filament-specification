@@ -3,7 +3,7 @@ id: TC-427
 title: "The v2 body grammar fixes package depth by schema"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 

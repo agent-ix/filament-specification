@@ -4,11 +4,11 @@ title: "Derived portable projection result"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-240
+  - target: ix://agent-ix/filament-specification/FR-240
     type: references
-  - target: ix://agent-ix/quire-specification/FR-283
+  - target: ix://agent-ix/filament-specification/FR-283
     type: references
 ---
 # FR-249: Derived portable projection result
@@ -39,7 +39,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | key | type not stated in source; see Field sources |
 | resultId | closed JSON object `{sourceResultKey, adapter}` (FR-062) |
 | sourceResultRef | the FR-286 `resultKey` of the source, equal to `resultId.sourceResultKey` (FR-062) |
-| targetContractVersion | exactly `quire-verification/e02-draft-2` (FR-062) |
+| targetContractVersion | exactly `filament-verification/e02-draft-2` (FR-062) |
 | targetBinding | JSON object with members `propertyRef`, `planId`, `taskId`, `runRef`, `profile`, `bindingRefs`, `executionScope` (FR-062) |
 | adapter | type not stated in source; see Field sources |
 | nativeArtifacts | type not stated in source; see Field sources |
@@ -50,10 +50,10 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | --- | --- |
 | `resultId` | The closed object `{sourceResultKey, adapter}` stated by FR-062: the FR-286 `resultKey` of the source and the adapter identity and version. It nests at most three levels, carries no hash and does not repeat the target binding. |
 | `sourceResultRef` | The exact canonical result key (FR-062), which is `resultId.sourceResultKey`. The adapter validates the canonical protocol result before mapping it. |
-| `targetContractVersion` | `quire-verification/e02-draft-2` (FR-062). |
+| `targetContractVersion` | `filament-verification/e02-draft-2` (FR-062). |
 | `targetBinding` | `propertyRef`, `planId`, `taskId`, `runRef`, `profile`, `bindingRefs` and `executionScope`, each equal to its selected context; the adapter "SHALL NOT infer or substitute one from display text" (FR-062). |
 | `adapter` | The exact adapter identity and version (FR-062). |
-| `nativeArtifacts` | "Exactly one canonical-result entry with the source URI and media type `application/vnd.agent-ix.quire-protocol-result+json;version=1-draft.1`" (FR-062). |
+| `nativeArtifacts` | "Exactly one canonical-result entry with the source URI and media type `application/vnd.agent-ix.filament-protocol-result+json;version=1-draft.1`" (FR-062). |
 | `provenance` | Identifies the protocol producer plus this adapter and their versions (FR-062). |
 
 ## Identity and comparison
@@ -100,7 +100,7 @@ code from `invalid-source-result`, `unsupported-source-version`,
 | `unsupported-target-version` | The target contract version or a required feature is unknown (FR-062). |
 | `identity-mismatch` | A supplied exact target context is missing or conflicting (FR-062). |
 | `unrepresented-source-state` | A source state has no mapping in the selected table (FR-062). |
-| `finding-loss` | The output would lose an applicable quire-verification FR-007 finding (FR-062). |
+| `finding-loss` | The output would lose an applicable filament-verification FR-007 finding (FR-062). |
 
 A refusal is emitted without a `TechniqueResult` (FR-062, FR-062-AC-4).
 
@@ -131,7 +131,7 @@ emit a sufficiency decision."
   boundary.
 - [FR-240](FR-240-canonical-protocol-result.md) supplies the source canonical
   result.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-283](FR-283-projection-refusal-code.md) defines the refusal code
   vocabulary recorded above.

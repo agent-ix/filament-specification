@@ -3,21 +3,21 @@ id: FR-349
 title: "Register an SMT proof backend"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-346
+  - target: ix://agent-ix/filament-specification/FR-346
     type: references
-  - target: ix://agent-ix/quire-specification/FR-347
+  - target: ix://agent-ix/filament-specification/FR-347
     type: references
-  - target: ix://agent-ix/quire-specification/FR-348
+  - target: ix://agent-ix/filament-specification/FR-348
     type: references
-  - target: ix://agent-ix/quire-specification/FR-147
+  - target: ix://agent-ix/filament-specification/FR-147
     type: references
 ---
 
@@ -83,7 +83,7 @@ hold on cvc5's settlement. A configured Z3 whose tool probe finds it
 missing, errors or exceeds its limit is the same warned absent
 cross-check: cvc5's verdict settles the claim, and the item never records the
 FR-290 tool-absence result `unsupported` on Z3's account. Counterexamples and witnesses retain the FR-036
-original source spans and replay through the QSL complete-V1 executor per AD-010
+original source spans and replay through the FSL complete-V1 executor per AD-010
 (FR-197, AD-016 arrow 7). A
 claim whose required capability kind no registered backend advertises settles
 `unsupported` with a warning naming the required capability kind; this absence

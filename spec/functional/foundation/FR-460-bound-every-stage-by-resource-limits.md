@@ -3,17 +3,17 @@ id: FR-460
 title: "Bound every stage by resource limits, never by nesting depth"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
-  - target: ix://agent-ix/quire-specification/NFR-010
+  - target: ix://agent-ix/filament-specification/NFR-010
     type: references
 ---
 # FR-460: Bound every stage by resource limits, never by nesting depth
@@ -59,7 +59,7 @@ format reader and writer.
 4. **Reaching a limit is a stated outcome.** A stage limit settles as
    `stage_limit_exceeded` (FR-272), and an execution budget as
    `incomplete { limit_kind, ... }` at the denied charge
-   (`quire.value.accounting/v1`). Each names the limit, its value and its
+   (`filament.value.accounting/v1`). Each names the limit, its value and its
    setting (FR-461). A host stack exhaustion is never an outcome, because no
    stage reaches one.
 5. **Every limit has a published default.** A limit the caller does not
@@ -96,4 +96,4 @@ charges bytes, nodes, edges, occurrences, diagnostics and work.
 
 ## References
 
-- Linear STD-143; QSL ADR-030 D-1.
+- Linear STD-143; FSL ADR-030 D-1.

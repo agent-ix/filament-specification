@@ -3,23 +3,23 @@ id: FR-433
 title: "Carry and replay protocol counterexamples"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-430
+  - target: ix://agent-ix/filament-specification/FR-430
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -125,6 +125,6 @@ counterexamples for one item both replay.
 
 ## References
 
-- Design: quire-spec-language ADR-027 PX-1, PX-2, PD-4 and QS-8; the
+- Design: filament-spec-language ADR-027 PX-1, PX-2, PD-4 and QS-8; the
   model-subject counterexample in ADR-018 CX-1 to CX-5.
 - Tickets: Linear STD-140; paired QSL-396.

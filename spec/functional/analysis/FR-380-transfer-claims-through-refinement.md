@@ -3,23 +3,23 @@ id: FR-380
 title: "Transfer temporal claims through a refinement"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: references
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-348
+  - target: ix://agent-ix/filament-specification/FR-348
     type: references
 ---
 
@@ -158,6 +158,6 @@ composition over component interface contracts.
 
 ## References
 
-- Design: quire-spec-language ADR-020 (CO-3 to CO-5, MC-3, QS-7, RU-3).
+- Design: filament-spec-language ADR-020 (CO-3 to CO-5, MC-3, QS-7, RU-3).
 - Tickets: Linear STD-133; paired QSL-367. The model-subject temporal
   requirement is Linear STD-131.

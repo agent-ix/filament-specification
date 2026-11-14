@@ -4,9 +4,9 @@ title: "Linked verification plan"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_014
+  - target: ix://agent-ix/filament-specification/interface_014
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-192
+  - target: ix://agent-ix/filament-specification/FR-192
     type: references
 ---
 
@@ -36,7 +36,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.verification-plan/v1` |
+| contract_version | exactly `filament.verification-plan/v1` |
 | obligations | list of obligation records: clause or claim plus expected evidence class; multiplicity not stated in source |
 | methods | ordered list of method selections |
 | domains | record: model, input, trace, time, candidate domains; multiplicity not stated in source |
@@ -46,7 +46,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | providers | record: capability-constrained selections and fallback or refusal policy; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.verification-plan/v1`.
+- `contract_version` — exactly `filament.verification-plan/v1`.
 - `plan_id` — the identity assigned to the plan, compared as an exact string. It is not computed from the other members.
 - `obligations` — exact clauses/claims and expected evidence class.
 - `methods` — ordered provider-independent method selections.
