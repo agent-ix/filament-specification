@@ -4,7 +4,7 @@ title: "Contain observation executable dependencies"
 type: NFR
 quality_attribute: maintainability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: constrains
 ---
 ## Statement

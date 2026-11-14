@@ -3,9 +3,9 @@ id: TC-387
 title: "Protocol counterexample wire and replay"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-433
+  - target: ix://agent-ix/filament-specification/FR-433
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: verifies
 ---
 

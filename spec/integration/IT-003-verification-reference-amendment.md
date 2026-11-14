@@ -3,9 +3,9 @@ id: IT-003
 title: "Qualify verification reference amendment"
 type: IT
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-017"
+  - target: "ix://agent-ix/filament-specification/FR-017"
     type: verifies
-  - target: "ix://agent-ix/quire-specification/FR-486"
+  - target: "ix://agent-ix/filament-specification/FR-486"
     type: verifies
 ---
 # IT-003: Qualify verification reference amendment
@@ -64,4 +64,4 @@ Rust JSON Schema validator; it does not introduce a production shared reader.
 
 ## References
 
-- VER-54: replace the fixed JSON depth and size caps in `quire-verification-contracts` with caller limits.
+- VER-54: replace the fixed JSON depth and size caps in `filament-verification-contracts` with caller limits.

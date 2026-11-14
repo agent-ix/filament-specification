@@ -3,7 +3,7 @@ id: TC-174
 title: "Preserve deadline branches and explicit workflow closure"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: verifies
 ---
 ## Description

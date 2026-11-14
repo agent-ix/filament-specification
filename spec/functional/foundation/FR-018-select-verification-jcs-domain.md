@@ -3,7 +3,7 @@ id: FR-018
 title: "Withdrawn: preserve the verification JCS identity domain"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-004"
+  - target: "ix://agent-ix/filament-specification/US-004"
     type: traces_to
 ---
 # FR-018: Withdrawn: preserve the verification JCS identity domain

@@ -4,9 +4,9 @@ title: "Verification method result"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_015
+  - target: ix://agent-ix/filament-specification/interface_015
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-192
+  - target: ix://agent-ix/filament-specification/FR-192
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.method-result/v1` |
+| contract_version | exactly `filament.method-result/v1` |
 | run_id | type not stated in source; multiplicity not stated in source; see Field sources |
 | subject_claim | record: obligation and claimed strength |
 | outcome | string tag: proved, refuted, tested, observed, inconclusive, unsupported, incomplete or failed; multiplicity not stated in source |
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | provenance | record: package, model, observations, timestamps; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.method-result/v1`.
+- `contract_version` — exactly `filament.method-result/v1`.
 - `run_id` — request, provider and option identity.
 - `subject_claim` — exact obligation and claimed strength.
 - `outcome` — proved, refuted, tested, observed, inconclusive, unsupported, incomplete or failed.

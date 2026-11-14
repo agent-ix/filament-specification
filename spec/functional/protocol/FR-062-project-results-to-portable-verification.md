@@ -3,44 +3,44 @@ id: FR-062
 title: "Project protocol results to portable verification"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: depends_on
-  - target: ix://agent-ix/quire-verification/FR-007
+  - target: ix://agent-ix/filament-verification/FR-007
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: references
-  - target: ix://agent-ix/quire-specification/FR-245
+  - target: ix://agent-ix/filament-specification/FR-245
     type: references
-  - target: ix://agent-ix/quire-specification/FR-246
+  - target: ix://agent-ix/filament-specification/FR-246
     type: references
-  - target: ix://agent-ix/quire-specification/FR-248
+  - target: ix://agent-ix/filament-specification/FR-248
     type: references
-  - target: ix://agent-ix/quire-specification/FR-249
+  - target: ix://agent-ix/filament-specification/FR-249
     type: references
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: references
-  - target: ix://agent-ix/quire-specification/FR-280
+  - target: ix://agent-ix/filament-specification/FR-280
     type: references
-  - target: ix://agent-ix/quire-specification/FR-282
+  - target: ix://agent-ix/filament-specification/FR-282
     type: references
-  - target: ix://agent-ix/quire-specification/FR-283
+  - target: ix://agent-ix/filament-specification/FR-283
     type: references
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: references
 ---
 ## Description
 
-When a canonical protocol result is submitted for portable evidence assessment, the projection adapter SHALL emit one source-bound `quire-verification/e02-draft-2` `TechniqueResult` or one typed refusal without losing or conflating an FR-007 finding.
+When a canonical protocol result is submitted for portable evidence assessment, the projection adapter SHALL emit one source-bound `filament-verification/e02-draft-2` `TechniqueResult` or one typed refusal without losing or conflating an FR-007 finding.
 
 ## Inputs
 
-One FR-061 `quire.protocol.result/v1-draft.1` result plus one exact E02 evidence
+One FR-061 `filament.protocol.result/v1-draft.1` result plus one exact E02 evidence
 obligation, plan, task, run, profile, binding and adapter
 identity/version context.
 
@@ -58,7 +58,7 @@ before mapping it. An invalid source SHALL yield `invalid-source-result`. After
 source acceptance, a missing/conflicting target-context identity SHALL yield
 `identity-mismatch`. The derived projection identity is the structural key `{sourceResultKey, adapter}`. The adapter SHALL preserve
 every independent execution, activation, observation, participation, assumption
-and logical finding required by quire-verification FR-007. The adapter SHALL
+and logical finding required by filament-verification FR-007. The adapter SHALL
 describe protocol adequacy only in the canonical protocol result through the
 exact exercised protocol obligations and cases. It SHALL NOT represent protocol
 adequacy as E02 observation adequacy or as an evidence-sufficiency decision.
@@ -84,7 +84,7 @@ different `resultId`.
 `nativeArtifacts` SHALL contain
 exactly one canonical-result entry with the source URI and
 media type
-`application/vnd.agent-ix.quire-protocol-result+json;version=1-draft.1`.
+`application/vnd.agent-ix.filament-protocol-result+json;version=1-draft.1`.
 `provenance` SHALL identify the protocol producer plus this adapter and their
 versions. The E02 property, subject, profile, binding,
 execution-scope, plan, task and run fields SHALL equal their selected context;
@@ -121,8 +121,8 @@ the output would lose an applicable FR-007 finding. The adapter SHALL reuse
 Quoin evidence authority and SHALL NOT emit a sufficiency decision.
 
 The intended implementation owner is the future first-party Rust
-`agent-ix/quire-protocol` library after private setup ticket #33 is authorized.
-quire-verification owns the selected E02 contract and strict assessment reader;
+`agent-ix/filament-protocol` library after private setup ticket #33 is authorized.
+filament-verification owns the selected E02 contract and strict assessment reader;
 Engineering Assurance supplies the accepted plan/task/run execution context and
 typed result transport; Quoin retains evidence authority. This requirement does
 not authorize a local runner, evidence store, E02 fork or substitute adapter in
@@ -140,4 +140,4 @@ another repository.
 ## Dependencies
 
 - [Canonical protocol result](FR-061-report-orthogonal-results.md).
-- [Portable independent-finding contract](ix://agent-ix/quire-verification/FR-007).
+- [Portable independent-finding contract](ix://agent-ix/filament-verification/FR-007).

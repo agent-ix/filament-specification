@@ -3,19 +3,19 @@ id: FR-397
 title: "Check step relations over model operations"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: references
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: references
 ---
 

@@ -3,19 +3,19 @@ id: FR-477
 title: "Checked-package step-relation claim body"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-402
+  - target: ix://agent-ix/filament-specification/FR-402
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-451
+  - target: ix://agent-ix/filament-specification/FR-451
     type: references
 ---
 
@@ -26,7 +26,7 @@ relationships:
 When a checked package carries a `relation` clause whose execution variables
 are bound to model operations
 ([FR-397](../../functional/analysis/FR-397-check-step-relations-over-model-operations.md)),
-the producer SHALL emit it as one `quire.checked-semantic-graph/v2` node with
+the producer SHALL emit it as one `filament.checked-semantic-graph/v2` node with
 `node_tag: "claim"` and `semantic_form: "step_relation"`, whose body is the
 aggregate below, and the reader SHALL refuse a node whose rules below do not
 hold, with the first refusal in the reader order below. The node is what a
@@ -219,6 +219,6 @@ With `B` = `/semantic_graph/nodes/{n}/body`, the execution Group `k` is at
 
 ## References
 
-- STD-291 (this requirement); quire-spec-language FR-180 and ADR-023 XC-1,
+- STD-291 (this requirement); filament-spec-language FR-180 and ADR-023 XC-1,
   XC-2; QSL-1093 (the grammar-legal body: execution Groups and positional
   Tuples of premise Groups, as FR-402's quantifier Groups).

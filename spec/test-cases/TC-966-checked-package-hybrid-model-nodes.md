@@ -3,7 +3,7 @@ id: TC-966
 title: "Checked-package hybrid model nodes and hybrid claims"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-481
+  - target: ix://agent-ix/filament-specification/FR-481
     type: verifies
 ---
 
@@ -19,7 +19,7 @@ package bytes.
 
 ## Test Procedure
 
-`hybrid-node-vectors.json` holds the nodes of QSL FR-447's `Braking`
+`hybrid-node-vectors.json` holds the nodes of FSL FR-447's `Braking`
 declaration and `SlowEnough` claim, and as `restored_nodes` those of
 `Braking2`, `Slows` and `Recent`. HN-01 to HN-14 read that file, HN-15
 `positive-all-families.json` and HN-16 the FR-481 and FR-193 text, in the QSpec harness
@@ -43,7 +43,7 @@ does for its patched vectors, and feed the package to the reader.
 | HN-14 | `Slows`'s `eventually` interval with `upper` `null` and `upper_end` `open` | meets `SemanticNode` |
 | HN-15 | `positive-all-families.json`'s `Tank` | a `hybrid_model`, a `hybrid_mode` and a `hybrid_transition` node; `x`'s rate and `x`'s reset value reference `y`'s variable node; `y`, classed `hybrid`, has the rate literal `1`; the full reader admits the package |
 | HN-16 | every `code`/`cause` pair FR-481 and FR-193 name, scanned from their text | each cause listed in its code's native-diagnostics row; each cause of a V2 `Diagnostic` code, `non-boolean-root` included, in the `cause_tag` enum and admitted by the schema with that code |
-| HY-01 | `Braking` and `SlowEnough` of QSL FR-447, compiled and emitted | the HN-01 nodes; the full reader admits the package |
+| HY-01 | `Braking` and `SlowEnough` of FSL FR-447, compiled and emitted | the HN-01 nodes; the full reader admits the package |
 | HY-02 | HY-01 respelled with other whitespace and comments | a checked package structurally equal to HY-01's |
 | HY-03 | `modes` listing `Moving` twice | `invalid_semantic_graph` at the second entry |
 | HY-04 | `v`'s parameter node typed `scalar_type`/`integer`; `a`'s at level 2 | `invalid_model_binding`/`malformed-declaration` at the target, each |
@@ -59,11 +59,11 @@ does for its patched vectors, and feed the package to the reader.
 | HY-14 | `SlowEnough`'s formula `once [0, 2] holds(v = 0)`; a `holds` operand reading `h` | admitted; `missing_declaration`/`missing-name` at the `holds` node |
 | HY-15 | HY-01's v2 bytes handed to a process fixture provider for `SlowEnough`'s item | the provider reads the model and claim from the nodes, derives horizon 10, and the item's extent is `bounded` |
 | HY-16 | the process fixture provider's `solver-inconclusive` traces over HY-01, read by the host: `Moving` then `Stopped` by `transition` 0; mode `Halted` | the first kept on the `inconclusive` record; the second refused by the host `invalid_result`/`invalid-value` at its `mode` |
-| HY-17 | `Braking2`, `Slows` and `Recent` of QSL FR-447, compiled and emitted; then `Braking` with the written default `initial`; an initial `mode` 2; an initial condition referencing the literal `20` | the HN-11 and HN-12 nodes, the reader admitting the package; `invalid_semantic_graph` at `initial`; `missing_declaration`/`missing-name`; `ill_typed`/`non-boolean-root` |
+| HY-17 | `Braking2`, `Slows` and `Recent` of FSL FR-447, compiled and emitted; then `Braking` with the written default `initial`; an initial `mode` 2; an initial condition referencing the literal `20` | the HN-11 and HN-12 nodes, the reader admitting the package; `invalid_semantic_graph` at `initial`; `missing_declaration`/`missing-name`; `ill_typed`/`non-boolean-root` |
 | HY-18 | `T2`'s reset `relation` `eq`; a reset `(0, 0)` beside `(0, 1, ge)` | `malformed_wire` at the relation; `invalid_package`/`conflicting-definition` naming both entries |
 | HY-19 | `Slows`'s fairness member naming `Halted`; a `holds` operand reading a parameter `v` at level 4 | `missing_declaration`/`missing-name` at the member; at the `holds` node |
-| HY-20 | a timed interval with `upper` `null` in `Slows` under `quire.temporal.timed/v1`; the same interval in a temporal clause over a state model; `[2, *]` in a hybrid claim under `quire.temporal.infinite-trace/v1` in the integer form, then in the timed form | admitted; refused as FR-370 refuses an interval its profile does not admit; admitted; `invalid_package`/`operation-member-mismatch` at the application |
-| HY-21 | `SlowEnough` under a `quire.temporal.timed/v1` profile alias, its interval in the timed form `[0, 10]` with both ends closed | admitted, its law `timed/v1` |
+| HY-20 | a timed interval with `upper` `null` in `Slows` under `filament.temporal.timed/v1`; the same interval in a temporal clause over a state model; `[2, *]` in a hybrid claim under `filament.temporal.infinite-trace/v1` in the integer form, then in the timed form | admitted; refused as FR-370 refuses an interval its profile does not admit; admitted; `invalid_package`/`operation-member-mismatch` at the application |
+| HY-21 | `SlowEnough` under a `filament.temporal.timed/v1` profile alias, its interval in the timed form `[0, 10]` with both ends closed | admitted, its law `timed/v1` |
 | HY-23 | `SlowEnough` with clock `wall`; with an `each` activation whose `trigger` is typed by the `scalar_type`/`rational` node; with the formula `once [0, 2] holds(v = 0)`; with one capture binding over `v`; with one fairness reference naming `Moving` | `invalid_package`/`invalid-value` at `/body/arguments/1`; `ill_typed`/`type-mismatch` at the trigger; admitted; admitted; admitted |
 
 ## Expected Results

@@ -3,9 +3,9 @@ id: TC-313
 title: "Refinement initial, stutter and terminal-state vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: verifies
 ---
 

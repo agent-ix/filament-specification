@@ -3,7 +3,7 @@ id: TC-033
 title: "Admit total typed reusable Boolean predicates"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-033
+  - target: ix://agent-ix/filament-specification/FR-033
     type: verifies
 ---
 ## Description

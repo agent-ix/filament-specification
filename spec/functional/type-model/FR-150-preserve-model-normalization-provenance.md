@@ -3,13 +3,13 @@ id: FR-150
 title: "Preserve original and effective model declarations"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: references
-  - target: ix://agent-ix/quire-specification/FR-321
+  - target: ix://agent-ix/filament-specification/FR-321
     type: references
 ---
 
@@ -25,13 +25,13 @@ identity and ordered derivation provenance.
 
 The original declarations that model intake (FR-154) builds from one domain
 package, its ModelSelection (FR-321) and the selected
-`quire.model.complete/v1` definition with its rule manifest
-`quire.model.complete.rules/v1`.
+`filament.model.complete/v1` definition with its rule manifest
+`filament.model.complete.rules/v1`.
 
 ## Outputs
 
 An immutable retained-original inventory and a structural effective view,
-carried as one `quire.model.effective-view/v2` value, or a typed refusal.
+carried as one `filament.model.effective-view/v2` value, or a typed refusal.
 The structural view is checking input, not a validated checked package.
 
 ## Behavior
@@ -39,7 +39,7 @@ The structural view is checking input, not a validated checked package.
 Each original declaration is keyed by `(domain package identity, IR node
 identity)`. Supertypes, subsets and redefines are members of the
 IR nodes, so every edge normalization reads is part of the admitted package.
-QSL derives effective declarations. It never mints, renames or merges a
+FSL derives effective declarations. It never mints, renames or merges a
 declaration key, and never derives an edge the package does not declare.
 Normalization never replaces the original key or actual FCD origin. Every derived
 member records its source declarations and rule. Equal normalized shapes from
@@ -71,13 +71,13 @@ original declaration key and `owner_effective_type` is `null` for an effective
 type and the owning effective type's identity for a member. Nothing is hashed.
 Its facts are `{ordinal, rule, inputs, parent}`, with `parent` the structural
 identity of the one parent a fact links to; the effective view
-(`quire.model.effective-view/v2`) is the value
+(`filament.model.effective-view/v2`) is the value
 `{model_selection, rules, declarations}` holding the ModelSelection, rule
 manifest and every effective declaration with its facts, ascending by identity;
 and the object universe of a connected supertype component
-(`quire.model.object-universe/v2`) is the value `{model_selection, root_types}`.
+(`filament.model.object-universe/v2`) is the value `{model_selection, root_types}`.
 The exact shapes and orders are defined by the selected
-`quire.model.complete/v1` definition. A node id of the checked package is
+`filament.model.complete/v1` definition. A node id of the checked package is
 `{package, path, ordinal}` (FR-322) and an effective declaration identity has
 the different shape above, so no effective identity equals a node id. The
 effective view is carried in the checked package as a `correspondence` node
@@ -93,7 +93,7 @@ other fact has `parent` `null`. A fact never contains an ancestor path
 longer than one edge, so a diamond stores one inherit fact per direct edge and
 the retained facts grow with the number of types and direct
 edges, not with the number of ancestor paths. The selected
-`quire.model.complete/v1` definition owns the exact fact list and order.
+`filament.model.complete/v1` definition owns the exact fact list and order.
 
 The full path-form derivation, every distinct inheritance path included, is
 the deterministic expansion of the retained facts through the parent
@@ -106,19 +106,19 @@ strict reader refuses a link of the wrong kind, owner or original.
 ## Normalization derivation
 
 The model checker applies the manifest's rules in this fixed phase order:
-(1) `quire.model.normalize.intake/v1` and `quire.model.features/v1`, domain
+(1) `filament.model.normalize.intake/v1` and `filament.model.features/v1`, domain
 package admission, declaration building and feature checks (FR-154);
-(2) `quire.model.normalize.qualify/v1`, qualified-identity formation for
+(2) `filament.model.normalize.qualify/v1`, qualified-identity formation for
 object types, record value types, event types, state machines, processes,
 persistence interfaces, variant types, interfaces, variant cases (owned by
 their variant type), fields, relationships, operations (owned by a type,
 interface or persistence interface), `quire` invariant clauses owned by a type,
 parts, ports (owned by their part's owning type), connections and allocations
 (owned by each end's end-owner type);
-(3) `quire.model.normalize.inherit/v2`, inheritance along each direct declared
-supertype edge; (4) `quire.model.normalize.subset/v2` and
-`quire.model.normalize.redefine/v2`, declared subsetting and redefinition; and
-(5) `quire.model.normalize.canonicalize/v1`, identity computation. Each derived
+(3) `filament.model.normalize.inherit/v2`, inheritance along each direct declared
+supertype edge; (4) `filament.model.normalize.subset/v2` and
+`filament.model.normalize.redefine/v2`, declared subsetting and redefinition; and
+(5) `filament.model.normalize.canonicalize/v1`, identity computation. Each derived
 fact records its declaration-key inputs, rule identity, ordinal and parent link. A later phase may reference but cannot erase an earlier derivation. No
 rule declares an override relation, and no precedence exists between rules.
 
@@ -136,7 +136,7 @@ semantic ambiguity.
 
 Normalization and later conformance share the one operation-owned meter under
 `ModelNormalizationLimitsV1` of the selected
-`quire.value.accounting/v1` definition at its named record, fact, cycle-check,
+`filament.value.accounting/v1` definition at its named record, fact, cycle-check,
 redefinition-check, conflict-check and declaration charge
 points. `derivation_facts` counts the retained facts, not the path-form
 facts of their expansion, and each direct supertype edge is charged once,
@@ -152,7 +152,7 @@ reports a refusal ends checking. Exhaustion ends checking as
 | FR-150-AC-1 | An inherited/redefined member links its normalized identity to every contributing original declaration and rule. | Test (TC-195) |
 | FR-150-AC-2 | Two equal effective shapes from distinct original identities remain distinguishable. | Test (TC-195) |
 | FR-150-AC-3 | A conflicting phase 4 derivation refuses normalization with its named cause, and a supplied document is admitted at the normalization boundary under the identity its lock row records. | Test (TC-195) |
-| FR-150-AC-4 | Replaying the ordered derivation from the same domain package reproduces the `quire.model.effective-view/v2` value by structural equality, independent of IR node order. | Test (TC-195) |
+| FR-150-AC-4 | Replaying the ordered derivation from the same domain package reproduces the `filament.model.effective-view/v2` value by structural equality, independent of IR node order. | Test (TC-195) |
 | FR-150-AC-5 | Conflicting derivations report both rule paths and expose no chosen effective member. | Test (TC-195) |
 | FR-150-AC-6 | Diamond paths reaching one original declaration collapse to one effective member with one inherit fact per direct parent, whose expansion lists every path, | Test (TC-195) |
 | FR-150-AC-7 | Declaration keys are fixed by the domain package identity and IR node identity: two documents of one package with equal nodes yield equal effective declaration identities and equal effective views. | Test (TC-195) |
@@ -169,7 +169,7 @@ reports a refusal ends checking. Exhaustion ends checking as
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

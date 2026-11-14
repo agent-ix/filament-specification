@@ -3,17 +3,17 @@ id: FR-055
 title: "Activate protocol obligations under exact captured facts"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-230
+  - target: ix://agent-ix/filament-specification/FR-230
     type: references
-  - target: ix://agent-ix/quire-specification/FR-231
+  - target: ix://agent-ix/filament-specification/FR-231
     type: references
-  - target: ix://agent-ix/quire-specification/FR-232
+  - target: ix://agent-ix/filament-specification/FR-232
     type: references
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: references
 ---
 ## Description

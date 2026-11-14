@@ -3,13 +3,13 @@ id: TC-302
 title: "Temporal request members and obligation identity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: verifies
 ---
 

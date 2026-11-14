@@ -3,9 +3,9 @@ id: TC-977
 title: "Operation-effect carrier and strict reader boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: verifies
 ---
 
@@ -51,5 +51,5 @@ OER-19 and OER-22 `invalid_package`/`invalid-value` (OER-22 at
 `invalid_package`/`invalid-value`; OER-04, OER-06, OER-07, OER-25 and OER-26
 `ill_typed`/`operator-ineligible`; OER-11 `invalid_model_binding`/
 `malformed-declaration`; OER-13 and OER-23 `invalid_semantic_graph`. The IR
-reader exposes the admitted effect by key and owns no mirror type; QSL owns
+reader exposes the admitted effect by key and owns no mirror type; FSL owns
 emission.

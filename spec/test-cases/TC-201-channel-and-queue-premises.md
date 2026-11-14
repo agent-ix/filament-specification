@@ -3,7 +3,7 @@ id: TC-201
 title: "Channel and queue premises"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-170
+  - target: ix://agent-ix/filament-specification/FR-170
     type: verifies
 ---
 

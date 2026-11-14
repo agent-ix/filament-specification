@@ -3,13 +3,13 @@ id: IT-020
 title: "Native compiler hands off an exact linked protocol"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: verifies
 ---
 ## Objective
@@ -20,7 +20,7 @@ model, profile, role, message, channel or control identities.
 
 ## Target Integration
 
-The producer is the native Quire linker under L6. The consumer is the future
+The producer is the native Filament linker under L6. The consumer is the future
 Rust PT01 protocol implementation. The boundary is the reviewed linked-package
 protocol representation selected by the composed native profile.
 

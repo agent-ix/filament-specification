@@ -3,9 +3,9 @@ id: TC-220
 title: "Rust lifecycle API contract"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-300
+  - target: ix://agent-ix/filament-specification/FR-300
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

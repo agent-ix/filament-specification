@@ -3,9 +3,9 @@ id: TC-939
 title: "Admit a field, parameter and result typed by a variant type"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: verifies
 ---
 # TC-939: Admit a field, parameter and result typed by a variant type

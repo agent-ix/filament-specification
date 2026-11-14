@@ -1,4 +1,4 @@
-# Complete Quire V1 architecture
+# Complete Filament V1 architecture
 
 This is the architecture for every row of the
 [atomic capability inventory](v1-capability-inventory.md). It reconciles the
@@ -8,7 +8,7 @@ accepted QSpec architecture with the current Rust component graph.
 
 The architecture has nine non-negotiable drivers:
 
-1. Native Quire is the sole editable formal-clause language. Mappings, IR,
+1. Native Filament is the sole editable formal-clause language. Mappings, IR,
    generated Rust and proof inputs are derived artifacts.
 2. Complete language meaning is independent from any backend's supported
    fragment. A backend refuses an unsupported request exactly and never
@@ -24,7 +24,7 @@ The architecture has nine non-negotiable drivers:
 7. Extensions add versioned descriptors, providers or adapters. They do not
    replace the parser, type system, result model or evidence store.
 8. First-party executable production and qualification logic is Rust. A spec's
-   artifacts declare its domain model, and Quire owns that model's meaning;
+   artifacts declare its domain model, and Filament owns that model's meaning;
    Quoin remains the evidence retention/audit consumer behind its Rust-port gate.
 9. Every capability is V1 scope. Delivery can be dependency-ordered, but cannot
    be closed through deferral, a failed experiment or one backend's limitation.
@@ -36,15 +36,15 @@ stack:
 
 | Implemented seam at the inventory revision | Architectural use |
 | --- | --- |
-| QSL `source`, `parser`, `linking/composed`, `checking/composed`, `package`, `runtime/evaluation`, `temporal` and `protocol_artifact` modules | S1-S5 native compiler and reference-evaluation foundation; expand their type/declaration families rather than add a peer frontend. |
-| QSL `linking/composed/requests` family/capability/disposition report | Generalize into the common exact capability-negotiation pattern. |
-| Cycle-free `quire-contract-model` package inside Contract IR | Lowest shared representation dependency; keep the full IR adapters out of it. |
+| FSL `source`, `parser`, `linking/composed`, `checking/composed`, `package`, `runtime/evaluation`, `temporal` and `protocol_artifact` modules | S1-S5 native compiler and reference-evaluation foundation; expand their type/declaration families rather than add a peer frontend. |
+| FSL `linking/composed/requests` family/capability/disposition report | Generalize into the common exact capability-negotiation pattern. |
+| Cycle-free `filament-contract-model` package inside Contract IR | Lowest shared representation dependency; keep the full IR adapters out of it. |
 | Full Contract IR `predicate`, `temporal`, `kani`, `bridge` and `ecosystem_model` modules | S8 native/provider bridges, not native semantic authority. |
-| Codegen oracle, strategy, Kani, bound and replay modules plus the small `quire-contract-runtime` | Exact generated-backend foundation; extend profiles and keep the helper distinct from S6. |
+| Codegen oracle, strategy, Kani, bound and replay modules plus the small `filament-contract-runtime` | Exact generated-backend foundation; extend profiles and keep the helper distinct from S6. |
 | QObs `authority/*` record/population/position/clock/progress/completeness views | S4 observation authority; add uncertainty/partial/repair views without moving truth evaluation into QObs. |
 | Protocol intake/link/compensation/conformance/claims/result modules | S5 bounded foundation; add new graph/analyzer families behind the same owner boundaries. |
 | Verification planner, native process, qualification profile/corpus/oracle and report modules | S7/S10 plan/provider/result foundation; add method providers rather than a second planner. |
-| Existing `quire-spec` and `quire` Rust binaries | Separate native-language lifecycle from specification/assurance coordination while sharing typed provider envelopes. |
+| Existing `fsl-spec` and `fsl` Rust binaries | Separate native-language lifecycle from specification/assurance coordination while sharing typed provider envelopes. |
 
 The missing complete-V1 capabilities recorded by the inventory remain missing;
 module names are evidence of seams, not evidence that the expanded behavior is
@@ -59,31 +59,31 @@ dependency direction; they are not new products or scope buckets.
 
 | ID | Subsystem | Owns | Primary Rust owners |
 | --- | --- | --- | --- |
-| S1 | Language kernel, packages and evolution | Source/CST-to-AST admission, editions, profiles, declarations, packages, dependencies, feature discovery, source identity and migration | `quire-spec-language`; normative QSpec AD-003 |
-| S2 | Values, types, expressions and collections | Scalar/value algebra, exact numeric domains, functions and termination, records, collection kinds, queries, equality, definedness and pure evaluation | `quire-spec-language`; cycle-free descriptors in `quire-contract-model` |
-| S3 | Model, graph and state-contract semantics | Model intake from domain packages, object identity/populations/references, inheritance/redefinition/dispatch, graph traversal, state anchors, frames and operation contracts | `quire-spec-language` model intake; normative QSpec AD-006 |
+| S1 | Language kernel, packages and evolution | Source/CST-to-AST admission, editions, profiles, declarations, packages, dependencies, feature discovery, source identity and migration | `filament-spec-language`; normative QSpec AD-003 |
+| S2 | Values, types, expressions and collections | Scalar/value algebra, exact numeric domains, functions and termination, records, collection kinds, queries, equality, definedness and pure evaluation | `filament-spec-language`; cycle-free descriptors in `filament-contract-model` |
+| S3 | Model, graph and state-contract semantics | Model intake from domain packages, object identity/populations/references, inheritance/redefinition/dispatch, graph traversal, state anchors, frames and operation contracts | `filament-spec-language` model intake; normative QSpec AD-006 |
 
 ### Time and interaction plane
 
 | ID | Subsystem | Owns | Primary Rust owners |
 | --- | --- | --- | --- |
-| S4 | Temporal and observation semantics | Temporal operators, clocks/history, uncertainty, partial valuations, progress, completeness, out-of-order repair and replay/incremental agreement | QSL native temporal artifact; `tl-*` independent temporal implementation; `quire-observation` authority views |
-| S5 | Protocol and choreography semantics | Roles/instances, messages/channels/queues, control graphs, dynamic topology, guards/obligations, compensation/recovery, conformance, projection, realizability, composition and refinement | QSL source compiler; `quire-protocol` representation/runtime/analyzers |
+| S4 | Temporal and observation semantics | Temporal operators, clocks/history, uncertainty, partial valuations, progress, completeness, out-of-order repair and replay/incremental agreement | FSL native temporal artifact; `tl-*` independent temporal implementation; `filament-observation` authority views |
+| S5 | Protocol and choreography semantics | Roles/instances, messages/channels/queues, control graphs, dynamic topology, guards/obligations, compensation/recovery, conformance, projection, realizability, composition and refinement | FSL source compiler; `filament-protocol` representation/runtime/analyzers |
 
 ### Execution and analysis plane
 
 | ID | Subsystem | Owns | Primary Rust owners |
 | --- | --- | --- | --- |
-| S6 | Composed execution, monitoring and workflow | Cross-domain request coordination, state/temporal/protocol replay, incremental monitoring, population aggregation, simulation façade and authorized external workflow decisions/receipts | new Rust workspace in the already-planned `quire-integration` repository; component evaluators remain QSL/TL/QObs/Protocol |
-| S7 | Verification methods and plans | Model-based testing, counterexample shrinking/replay, relational/hyperproperty analysis, continuous/hybrid analysis, bounded synthesis, method planning and non-conclusive result semantics | `quire-verification`, `quire-analyze`, method-provider crates |
-| S8 | Semantic IR and exact backends | Cycle-free target-neutral IR, lowering requests, oracle/proptest/Kani generation, solver/codegen providers, capability negotiation, source maps and backend replay parity | `quire-contract-model`, `quire-contract-ir`, `quire-contract-codegen`, `quire-contract-runtime`, `quire-analyze` |
+| S6 | Composed execution, monitoring and workflow | Cross-domain request coordination, state/temporal/protocol replay, incremental monitoring, population aggregation, simulation façade and authorized external workflow decisions/receipts | new Rust workspace in the already-planned `filament-integration` repository; component evaluators remain FSL/TL/QObs/Protocol |
+| S7 | Verification methods and plans | Model-based testing, counterexample shrinking/replay, relational/hyperproperty analysis, continuous/hybrid analysis, bounded synthesis, method planning and non-conclusive result semantics | `filament-verification`, `filament-analyze`, method-provider crates |
+| S8 | Semantic IR and exact backends | Cycle-free target-neutral IR, lowering requests, oracle/proptest/Kani generation, solver/codegen providers, capability negotiation, source maps and backend replay parity | `filament-contract-model`, `filament-contract-ir`, `filament-contract-codegen`, `filament-contract-runtime`, `filament-analyze` |
 
 ### Product and assurance plane
 
 | ID | Subsystem | Owns | Primary Rust owners |
 | --- | --- | --- | --- |
-| S9 | Mappings, authoring and tooling | OCL/SysML/KerML/FRETish outputs, deterministic packages, formatter, lossless CST/editor/LSP, CLI, code/model views, plugins, JIT and reusable libraries | Contract IR mapping adapters, QSL, `quire-cli`, `quire-code-rs` |
-| S10 | Integration, evidence and qualification | Conformance corpora, verification-result composition, independent qualification, evidence intake/retention and release decisions | `quire-integration`, `quire-verification`, future Rust Quoin interface, human release owner |
+| S9 | Mappings, authoring and tooling | OCL/SysML/KerML/FRETish outputs, deterministic packages, formatter, lossless CST/editor/LSP, CLI, code/model views, plugins, JIT and reusable libraries | Contract IR mapping adapters, FSL, `quire-cli`, `quire-code-rs` |
+| S10 | Integration, evidence and qualification | Conformance corpora, verification-result composition, independent qualification, evidence intake/retention and release decisions | `filament-integration`, `filament-verification`, future Rust Quoin interface, human release owner |
 
 The complete primary allocation is exact:
 
@@ -109,14 +109,14 @@ authority is divided as follows:
 
 | Concern | Authoritative producer | Consumer rule |
 | --- | --- | --- |
-| Authored source and source spans | QSL source reader/parser | No consumer re-parses source text or fabricates a span. |
-| Edition/profile/package admission | QSL linker/checker | Downstream tools consume one immutable checked package and its capability report. |
-| Domain model declarations and declaration keys | Spec artifacts, extracted by quire-rs and lifted by the FCD extraction-frontend into a domain package | QSL model intake builds and checks Quire model declarations; it never invents declaration identities. |
-| Native value/type/expression meaning | QSpec semantics implemented by QSL reference evaluator | IR/backends demonstrate correspondence; they never redefine native meaning. |
-| Temporal authored meaning | QSpec/QSL native temporal artifact | TL supplies an independent selected-profile implementation and correspondence target. |
+| Authored source and source spans | FSL source reader/parser | No consumer re-parses source text or fabricates a span. |
+| Edition/profile/package admission | FSL linker/checker | Downstream tools consume one immutable checked package and its capability report. |
+| Domain model declarations and declaration keys | Spec artifacts, extracted by quire-rs and lifted by the FCD extraction-frontend into a domain package | FSL model intake builds and checks Filament model declarations; it never invents declaration identities. |
+| Native value/type/expression meaning | QSpec semantics implemented by FSL reference evaluator | IR/backends demonstrate correspondence; they never redefine native meaning. |
+| Temporal authored meaning | QSpec/FSL native temporal artifact | TL supplies an independent selected-profile implementation and correspondence target. |
 | Observation, population, clock progress and completeness facts | QObs owner artifacts | Protocol/temporal consumers validate the exact owner contract and do not infer missing facts. |
-| Protocol representation and conformance facts | QSL checked protocol artifact plus Protocol assessment | Verification/mapping consumers preserve Protocol result axes and lineage. |
-| Target-neutral derived contract model | Cycle-free `quire-contract-model` crate | It is a representation contract, not an authored-language or execution authority. |
+| Protocol representation and conformance facts | FSL checked protocol artifact plus Protocol assessment | Verification/mapping consumers preserve Protocol result axes and lineage. |
+| Target-neutral derived contract model | Cycle-free `filament-contract-model` crate | It is a representation contract, not an authored-language or execution authority. |
 | Domain execution results | The selected native Rust producer | Verification can compare/compose results but cannot relabel their domain outcomes. |
 | Evidence retention and audit | Quoin after its Rust boundary is available | Producers do not acquire a Quoin runtime dependency; Quoin does not execute them. |
 | Human release/acceptance decision | Attributed human/ix-flow record | No test, proof, score or agent promotes itself. |
@@ -207,7 +207,7 @@ into an executed Boolean.
 ### 4.5 Model and state semantics
 
 The model universe is a closed selection of one or more domain packages, each
-lifted from spec artifacts, selected by identity and rooted at its `model_root` node. QSL model intake
+lifted from spec artifacts, selected by identity and rooted at its `model_root` node. FSL model intake
 constructs a read-only model view containing original and effective
 declaration IDs, inheritance/conformance edges, redefinitions,
 parts, ports, interfaces, connections, allocations, operations and
@@ -223,7 +223,7 @@ positive-length/zero-length rule and resource budget.
 
 ## 5. Temporal and observation model
 
-QSL publishes a checked native temporal artifact whose atoms reference the same
+FSL publishes a checked native temporal artifact whose atoms reference the same
 typed expression graph. The TL bridge projects that artifact to an exact
 selected TL profile and records every correspondence decision. Native and TL
 evaluators remain independent parity oracles rather than sharing one evaluator
@@ -289,14 +289,14 @@ manufactures a business effect.
 The existing component graph has no cycle-safe home for a composed runtime
 facade:
 
-- QSL is already a dependency of Protocol and cannot depend back on Protocol;
+- FSL is already a dependency of Protocol and cannot depend back on Protocol;
 - Protocol must not absorb state/temporal compiler authority;
-- `quire-contract-runtime` is intentionally a small `no_std` helper for
+- `filament-contract-runtime` is intentionally a small `no_std` helper for
   generated oracles; and
 - Verification plans and compares producers but does not become the product
   runtime.
 
-The already-planned `quire-integration` repository (Research #28/#34 and #39)
+The already-planned `filament-integration` repository (Research #28/#34 and #39)
 therefore becomes a Rust workspace containing the S6 coordinator and adapter
 contracts. This is not a new top-level epic or semantic engine.
 
@@ -322,7 +322,7 @@ business effects.
 
 ## 8. Verification methods and planning
 
-`quire-verification` owns a versioned plan language over references to authored
+`filament-verification` owns a versioned plan language over references to authored
 requirements/clauses; it does not copy those clauses. A plan selects method
 providers, exact domains, preconditions, bounds, tools/options, evidence
 obligations and comparison rules. Its dependency graph is acyclic and each task
@@ -349,21 +349,21 @@ verdict or records an explicit replay disagreement.
 
 ## 9. Target-neutral IR and exact backend protocol
 
-The cycle-free `quire-contract-model` crate remains the lowest shared Rust
+The cycle-free `filament-contract-model` crate remains the lowest shared Rust
 representation package. It contains versioned data contracts, identity
 newtypes, expression/type/protocol descriptors, requests/results and bounded
 readers; it contains no parser, native evaluator, solver, code generator,
 monitor, evidence store or release policy.
 
-QSL lowers checked native artifacts into this model. Full
-`quire-contract-ir` owns adapters to QSL, QObs, Protocol and TL plus canonical
+FSL lowers checked native artifacts into this model. Full
+`filament-contract-ir` owns adapters to FSL, QObs, Protocol and TL plus canonical
 derived packages. Keeping those adapters in the full crate preserves the
 existing acyclic dependency direction:
 
 ```text
-Domain package ─────> QSL ──────────────┐
+Domain package ─────> FSL ──────────────┐
        └────────────> QObs ──> Protocol ├──> full Contract IR
-contract-model ─────> QSL/Protocol ─────┘          │
+contract-model ─────> FSL/Protocol ─────┘          │
 TL syntax/evaluator ───────────────────────────────┤
                                                    ├──> Codegen ──> generated code
                                                    └──> Analyze / other providers
@@ -386,19 +386,19 @@ Rust use the same protocol and must replay counterexamples through S6/native
 execution. Approximation, implicit numeric narrowing, omitted obligations and
 success on an unexecuted precondition are forbidden.
 
-`quire-contract-runtime` remains permissively licensed, small and `no_std`
+`filament-contract-runtime` remains permissively licensed, small and `no_std`
 where its selected features allow. It implements generated-oracle value/result
-primitives only; it does not become the native Quire runtime.
+primitives only; it does not become the native Filament runtime.
 
 ## 10. Tooling, mappings and extension boundary
 
-QSL retains both a lossless CST and a typed semantic graph. Formatting and
+FSL retains both a lossless CST and a typed semantic graph. Formatting and
 editor transformations operate on the CST; checking/execution operate on the
 semantic graph; source correspondence connects them. Recovery nodes may support
 editor feedback but can never enter a checked package.
 
-The native lifecycle API and `quire-spec` binary expose parse, format, check,
-compile, lower, execute and inspect. The general `quire` CLI remains the
+The native lifecycle API and `fsl-spec` binary expose parse, format, check,
+compile, lower, execute and inspect. The general `fsl` CLI remains the
 specification/assurance coordinator and invokes versioned native provider APIs;
 it does not duplicate the language parser or evaluator. Replay, monitor,
 analysis and workflow commands route through S6/S7. Both CLIs publish stable
@@ -426,7 +426,7 @@ cannot add source meaning without a registered edition/profile extension.
 JIT is an S8 backend provider. Its artifact identity includes checked IR,
 provider/toolchain/options and target. It must agree with native reference
 execution on the conformance corpus and cannot be the sole qualification oracle.
-Reusable domain libraries are immutable Quire packages that select an exact
+Reusable domain libraries are immutable Filament packages that select an exact
 edition and profile, not arbitrary runtime callbacks.
 
 ## 11. Common request, result and failure contracts
@@ -479,18 +479,18 @@ Names are architectural roles; Rust names may follow repository idioms.
 
 | Interface | Producer -> consumer | Contract |
 | --- | --- | --- |
-| I01 Source document | editor/filesystem -> QSL | Exact bytes, unit identity and bounded read outcome. |
-| I02 Parsed source | QSL parser -> formatter/linker/editor | Lossless CST, recoveries, tokens/spans and edition; not semantically admitted. |
-| I03 Model selection | FCD extraction-frontend lift -> QSL/QObs | Domain package identity, declaration keys, declarations and relationships lifted from spec artifacts. |
-| I04 Checked package | QSL -> all semantic consumers | Immutable semantic graph, package identity, feature report, source map and diagnostics. |
-| I05 Native runtime input/result | caller/S6 <-> QSL | Typed state anchors, objects, frames, bounds and independent results. |
-| I06 Native temporal artifact/result | QSL/S6 <-> TL/QSL | Typed atoms/formula, clocks/history/captures, partial valuations and progress. |
+| I01 Source document | editor/filesystem -> FSL | Exact bytes, unit identity and bounded read outcome. |
+| I02 Parsed source | FSL parser -> formatter/linker/editor | Lossless CST, recoveries, tokens/spans and edition; not semantically admitted. |
+| I03 Model selection | FCD extraction-frontend lift -> FSL/QObs | Domain package identity, declaration keys, declarations and relationships lifted from spec artifacts. |
+| I04 Checked package | FSL -> all semantic consumers | Immutable semantic graph, package identity, feature report, source map and diagnostics. |
+| I05 Native runtime input/result | caller/S6 <-> FSL | Typed state anchors, objects, frames, bounds and independent results. |
+| I06 Native temporal artifact/result | FSL/S6 <-> TL/FSL | Typed atoms/formula, clocks/history/captures, partial valuations and progress. |
 | I07 Observation authority bundle | QObs -> temporal/Protocol/S6 | Records, revisions, populations, positions, clocks, completeness and authority. |
-| I08 Checked protocol artifact | QSL -> Protocol/S6 | Roles/instances, messages/channels, control/queue graph, guards, obligations and bounds. |
+| I08 Checked protocol artifact | FSL -> Protocol/S6 | Roles/instances, messages/channels, control/queue graph, guards, obligations and bounds. |
 | I09 Protocol assessment | Protocol -> S6/Verification/IR | Conformance/projection/refinement outcomes, premises, axes and lineage. |
 | I10 Execution bundle | S6 -> CLI/Verification/Quoin intake | Ordered cross-domain native results without semantic flattening. |
 | I11 Effect decision/receipt | S6 <-> authorized adapter | Decision, authority, idempotency, request and external receipt/observation link. |
-| I12 Target-neutral contract package | QSL/full IR -> backend providers | Cycle-free types/expressions/clauses/protocol refs and source map. |
+| I12 Target-neutral contract package | FSL/full IR -> backend providers | Cycle-free types/expressions/clauses/protocol refs and source map. |
 | I13 Backend capability/request/result | S8 coordinator <-> provider | Per-item exact support, bounds/options, artifact accounting and counterexamples. |
 | I14 Verification plan | author/Verification -> method providers | Referenced clauses, methods, domains, dependencies, bounds and evidence obligations. |
 | I15 Method result | provider -> Verification/S10 | Domain-native result, non-conclusive state, provenance and replay material. |
@@ -522,7 +522,7 @@ without replacing an existing subsystem or creating a second authority:
    obligation. The consumer never becomes a source frontend.
 6. **Add a model feature.** Declare it in an artifact section, add its quire-rs
    extraction rule, its semantic IR member and its module manifest section, then
-   give it Quire meaning in model intake. QSL's model semantics do not bind to
+   give it Filament meaning in model intake. FSL's model semantics do not bind to
    extraction implementation structs.
 7. **Add dynamic protocol behavior.** Extend S5 graph nodes plus bounds and
    analyzers. S6/Protocol consume the same graph; bounded kernels may refuse an

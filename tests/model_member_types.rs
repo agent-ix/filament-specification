@@ -4,20 +4,20 @@
 //! FR-322 "Model-owned members" vector qualification (TC-280): owner recovery
 //! by the structural ids of model declaration nodes, member resolution in the
 //! declaring type's exposed effective members and member type derivation.
-//! TC-281 applies the published operation catalog's `quire.op.reference.eq`,
-//! `quire.op.reference.ne`, `quire.op.model.deref` and
-//! `quire.op.record.project` entries over the same recovered owners:
+//! TC-281 applies the published operation catalog's `filament.op.reference.eq`,
+//! `filament.op.reference.ne`, `filament.op.model.deref` and
+//! `filament.op.record.project` entries over the same recovered owners:
 //! reference equality over conforming object types and a model field
 //! projection over a `deref` result.
 
 use ix_trace_rs::trace;
-use quire_verification_contracts::operation_catalog::CHECKED_OPERATION_CATALOG_V1;
+use filament_verification_contracts::operation_catalog::CHECKED_OPERATION_CATALOG_V1;
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 const VECTORS: &str =
     include_str!("../proposals/checked-package-v2/model-member-type-vectors.json");
-/// The catalog lives only in `quire-verification-contracts`; it is read from there.
+/// The catalog lives only in `filament-verification-contracts`; it is read from there.
 const OPERATION_CATALOG: &str = CHECKED_OPERATION_CATALOG_V1;
 /// The selected domain package document: an FCD semantic IR 2.0.0 document.
 /// `domain_package` in the vectors is the projection of its declarations that
@@ -228,8 +228,8 @@ const TEXT_PROFILES: [&str; 6] = [
 /// declaration node key recomputed from the declaration.
 fn element_type(package: &Value, type_ref: &str) -> Option<Value> {
     match type_ref {
-        "ix://quire/native/Boolean" => return Some(json!({"type": "Boolean"})),
-        "ix://quire/native/Integer" => return Some(json!({"type": "Integer"})),
+        "ix://filament/native/Boolean" => return Some(json!({"type": "Boolean"})),
+        "ix://filament/native/Integer" => return Some(json!({"type": "Integer"})),
         _ => {}
     }
     if let Some(value_type) = array(package, "value_types")
@@ -241,10 +241,10 @@ fn element_type(package: &Value, type_ref: &str) -> Option<Value> {
         let bound = |member: &str| value_type[member].as_str()?.parse::<i128>().ok();
         let ordered = bound("lower")? <= bound("upper")?;
         return match text(value_type, "native") {
-            "ix://quire/native/Integer" => ordered.then(
+            "ix://filament/native/Integer" => ordered.then(
                 || json!({"type": "Int", "min": value_type["lower"], "max": value_type["upper"]}),
             ),
-            "ix://quire/native/Text" => {
+            "ix://filament/native/Text" => {
                 (ordered && TEXT_PROFILES.contains(&text(value_type, "profile"))).then(|| {
                     json!({
                         "type": "Text",
@@ -257,7 +257,7 @@ fn element_type(package: &Value, type_ref: &str) -> Option<Value> {
             _ => None,
         };
     }
-    if let Some(name) = type_ref.strip_prefix("ix://quire/unit/") {
+    if let Some(name) = type_ref.strip_prefix("ix://filament/unit/") {
         return unit_element_type(package, name);
     }
     let target = declarations(package)
@@ -266,7 +266,7 @@ fn element_type(package: &Value, type_ref: &str) -> Option<Value> {
     Some(json!({"type": "Reference", "target": declaration_key(package, &target)}))
 }
 
-/// FR-322 step 4's unit row: a `typeRef` of the form `ix://quire/unit/<name>`
+/// FR-322 step 4's unit row: a `typeRef` of the form `ix://filament/unit/<name>`
 /// names the `scalar_type`/`unit` node of the checked package whose qualified
 /// declaration name is the `/`-joined `<name>`. The vectors list the checked
 /// package's units as `checked_units`, which the test carries on the package
@@ -286,7 +286,7 @@ fn unit_element_type(package: &Value, name: &str) -> Option<Value> {
 /// The refusal for a declared type whose unit `typeRef` names no unit of the
 /// checked package, or `None` for any other declared type.
 fn unresolved_unit(package: &Value, declared: &Value) -> Option<Value> {
-    let name = text(declared, "typeRef").strip_prefix("ix://quire/unit/")?;
+    let name = text(declared, "typeRef").strip_prefix("ix://filament/unit/")?;
     unit_element_type(package, name)
         .is_none()
         .then(|| refused("missing_declaration", "missing-name"))
@@ -492,7 +492,7 @@ fn declares_in(package: &Value, list: &str, owner_node: &str) -> bool {
 }
 
 /// A clause function's clause kind: the text literal of the one `clause`
-/// binding of its body (QSL FR-094): `invariant`, `precondition` or `body`.
+/// binding of its body (FSL FR-094): `invariant`, `precondition` or `body`.
 fn clause_kind(node: &Value) -> Option<&str> {
     let mut bindings = node["body"]["members"]
         .as_array()?
@@ -644,9 +644,9 @@ fn tc_280_rational_decimal_and_bare_text_members_have_no_type() {
     let retyped = |member: &Value, type_ref: &str, argument: Option<Value>| {
         let mut package = vectors["domain_package"].clone();
         package["value_types"].as_array_mut().expect("value types").extend([
-            json!({"node": "ix://acme/orders/Dec", "native": "ix://quire/native/Decimal", "lower": "0", "upper": "9"}),
+            json!({"node": "ix://acme/orders/Dec", "native": "ix://filament/native/Decimal", "lower": "0", "upper": "9"}),
             // The unbounded Rational value type: no bounds (FR-154 "Rational value types").
-            json!({"node": "ix://acme/orders/Rat", "native": "ix://quire/native/Rational"}),
+            json!({"node": "ix://acme/orders/Rat", "native": "ix://filament/native/Rational"}),
         ]);
         let order = package["object_types"]
             .as_array_mut()
@@ -685,9 +685,9 @@ fn tc_280_rational_decimal_and_bare_text_members_have_no_type() {
     };
     let refused = json!({"refused": {"code": "ill_typed", "cause": "operator-ineligible"}});
     for native in [
-        "ix://quire/native/Rational",
-        "ix://quire/native/Decimal",
-        "ix://quire/native/Text",
+        "ix://filament/native/Rational",
+        "ix://filament/native/Decimal",
+        "ix://filament/native/Text",
         "ix://acme/orders/Dec",
         "ix://acme/orders/Rat",
     ] {
@@ -701,17 +701,17 @@ fn tc_280_rational_decimal_and_bare_text_members_have_no_type() {
         );
     }
     assert_eq!(
-        retyped(&field, "ix://quire/native/Boolean", None),
+        retyped(&field, "ix://filament/native/Boolean", None),
         json!({"resolves": "ix://acme/orders/Order/label", "member_type": {"type": "Boolean"}}),
         "the field control resolves"
     );
     assert_eq!(
-        retyped(&size, "ix://quire/native/Boolean", None),
+        retyped(&size, "ix://filament/native/Boolean", None),
         json!({"resolves": "ix://acme/orders/Order/size", "member_type": {"type": "Boolean"}}),
         "the result control resolves"
     );
     assert_eq!(
-        retyped(&scaled, "ix://quire/native/Boolean", Some(json!({"type": "Boolean"}))),
+        retyped(&scaled, "ix://filament/native/Boolean", Some(json!({"type": "Boolean"}))),
         json!({"resolves": "ix://acme/orders/Order/scaled", "member_type": {"type": "Integer"}}),
         "the parameter control resolves"
     );
@@ -882,7 +882,7 @@ fn string_positions(entry: &Value) -> Vec<&str> {
 }
 
 /// The typed operand of a projection case: a `deref` application checked
-/// against the catalog's `quire.op.model.deref` entry, or a plain operand.
+/// against the catalog's `filament.op.model.deref` entry, or a plain operand.
 fn projection_operand<'a>(
     catalog: &Value,
     nodes: &[Value],
@@ -891,7 +891,7 @@ fn projection_operand<'a>(
     if operand.get("deref").is_none() {
         return Some(Operand::from_case(operand));
     }
-    let entry = catalog_entry(catalog, "quire.op.model.deref");
+    let entry = catalog_entry(catalog, "filament.op.model.deref");
     let [position] = string_positions(entry)[..] else {
         panic!("deref takes one operand");
     };
@@ -913,10 +913,10 @@ fn projection_operand<'a>(
         .then_some(declared)
 }
 
-/// One projection case through the catalog's `quire.op.record.project`
+/// One projection case through the catalog's `filament.op.record.project`
 /// entry, then FR-322 steps 2 to 4 for its `field` member.
 fn projection(catalog: &Value, package: &Value, nodes: &[Value], case: &Value) -> Value {
-    let entry = catalog_entry(catalog, "quire.op.record.project");
+    let entry = catalog_entry(catalog, "filament.op.record.project");
     assert_eq!(entry["member"], "field");
     let [position] = string_positions(entry)[..] else {
         panic!("record.project takes one operand");
@@ -998,7 +998,7 @@ fn tc_281_reference_equality_admits_conforming_object_types() {
     let operations: BTreeSet<_> = cases.iter().map(|case| text(case, "operation")).collect();
     assert_eq!(
         operations,
-        BTreeSet::from(["quire.op.reference.eq", "quire.op.reference.ne"])
+        BTreeSet::from(["filament.op.reference.eq", "filament.op.reference.ne"])
     );
     for case in cases {
         assert_eq!(
@@ -1231,9 +1231,9 @@ fn reference_edge(
     }
 }
 
-/// One `quire.op.model.reaches_field` case through its catalog entry.
+/// One `filament.op.model.reaches_field` case through its catalog entry.
 fn reaches_field(catalog: &Value, package: &Value, nodes: &[Value], case: &Value) -> Value {
-    let entry = catalog_entry(catalog, "quire.op.model.reaches_field");
+    let entry = catalog_entry(catalog, "filament.op.model.reaches_field");
     assert_eq!(entry["member"], "field");
     let positions = string_positions(entry);
     let operands: Vec<Operand<'_>> = array(case, "operands")
@@ -1487,7 +1487,7 @@ fn project_document(document: &Value) -> Value {
         )];
         let node = text(declared, "identity");
         match meaning {
-            "quire.meaning.model.object-type/v1" | "quire.meaning.systems.interface/v1" => {
+            "filament.meaning.model.object-type/v1" | "filament.meaning.systems.interface/v1" => {
                 let fields: Vec<Value> = array(declared, "fields")
                     .iter()
                     .map(|field| {
@@ -1552,14 +1552,14 @@ fn project_document(document: &Value) -> Value {
                 }
                 object_types.push(json!({
                     "node": node,
-                    "interfaceFeatures": (meaning == "quire.meaning.systems.interface/v1")
+                    "interfaceFeatures": (meaning == "filament.meaning.systems.interface/v1")
                         .then(|| json!([])),
                     "supertypes": declared["supertypes"],
                     "fields": fields,
                     "operations": operations,
                 }));
             }
-            "quire.meaning.model.value-type/v1" => {
+            "filament.meaning.model.value-type/v1" => {
                 let (native, low, high) = match text(declared, "scalar") {
                     "integer" => ("Integer", "min", "max"),
                     "string" => ("Text", "minLength", "maxLength"),
@@ -1567,7 +1567,7 @@ fn project_document(document: &Value) -> Value {
                 };
                 let mut projected = json!({
                     "node": node,
-                    "native": format!("ix://quire/native/{native}"),
+                    "native": format!("ix://filament/native/{native}"),
                     "lower": operand_text(constraint_of(declared, low).expect("a lower bound")),
                     "upper": operand_text(constraint_of(declared, high).expect("an upper bound")),
                 });
@@ -1876,8 +1876,8 @@ fn read_relationships_retaining(document: &Value) -> Result<(), Retained> {
             ))
             .is_some_and(|meaning| {
                 [
-                    "quire.meaning.model.object-type/v1",
-                    "quire.meaning.systems.interface/v1",
+                    "filament.meaning.model.object-type/v1",
+                    "filament.meaning.systems.interface/v1",
                 ]
                 .contains(meaning)
             })
@@ -2167,7 +2167,7 @@ fn destination_type(end: &Value, destination: &str) -> Result<Value, Value> {
     })
 }
 
-/// One `quire.op.model.navigate` or `quire.op.model.reaches` application over
+/// One `filament.op.model.navigate` or `filament.op.model.reaches` application over
 /// a model-owned relationship end, in the operation-step order of FR-322
 /// "Model-owned members" step 3: declaration kind, role lookup, receiver
 /// endpoint, direction, destination multiplicity, then the operation's own
@@ -2302,7 +2302,7 @@ fn owner_form_node(package: &Value, case: &Value) -> Value {
     });
     json!({
         "node_id": id,
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": case["node_tag"],
         "semantic_form": case["semantic_form"],
         "semantic_type": id,

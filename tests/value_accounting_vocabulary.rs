@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Agent-IX
 
-//! The complete charge-point vocabulary of `quire.value.accounting/v1`
+//! The complete charge-point vocabulary of `filament.value.accounting/v1`
 //! (FR-461-AC-9): the published spelling list equals the spellings the
 //! definition's ordered table declares, so a one-sided change fails.
 
 use ix_trace_rs::trace;
-use quire_specification::VALUE_ACCOUNTING_CHARGE_POINT_VECTORS;
+use filament_specification::VALUE_ACCOUNTING_CHARGE_POINT_VECTORS;
 use serde_json::Value;
 use std::collections::BTreeSet;
 
-const DEFINITION: &str = include_str!("../proposals/quire-v1/definitions/value-accounting.md");
+const DEFINITION: &str = include_str!("../proposals/filament-v1/definitions/value-accounting.md");
 
 /// Every backtick-quoted charge-point spelling in `text`: lowercase
 /// hyphenated words around one dot (`equality.plan-form`).
@@ -173,7 +173,7 @@ fn a_one_sided_change_to_either_list_is_detected() {
 
 // ---- `limit_kind` vocabulary (FR-461-AC-11) ----
 
-use quire_specification::VALUE_ACCOUNTING_LIMIT_KIND_VECTORS;
+use filament_specification::VALUE_ACCOUNTING_LIMIT_KIND_VECTORS;
 
 /// The `ScalarLimitsV1` counters: the backtick-quoted field names of the
 /// field list in the Limit object, which runs from `limits for` to the

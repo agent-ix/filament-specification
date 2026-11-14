@@ -1,23 +1,23 @@
 ---
 id: FR-462
-title: "Speak the quire.plugin-wire/v1 plugin wire"
+title: "Speak the filament.plugin-wire/v1 plugin wire"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
 ---
-# FR-462: Speak the quire.plugin-wire/v1 plugin wire
+# FR-462: Speak the filament.plugin-wire/v1 plugin wire
 
 ## Description
 
 When the host runs a process plugin, the host and the plugin SHALL exchange
-only `quire.plugin-wire/v1` frames: length-prefixed RFC 8785 JSON envelopes
+only `filament.plugin-wire/v1` frames: length-prefixed RFC 8785 JSON envelopes
 carrying FR-331 manifests, requests and results.
 
 ## Inputs
@@ -55,17 +55,17 @@ Every frame is one closed envelope with exactly these members:
 
 | Member | Value |
 | --- | --- |
-| `protocol` | exactly `quire.plugin-wire/v1`, the wire's identity |
+| `protocol` | exactly `filament.plugin-wire/v1`, the wire's identity |
 | `id` | an unsigned integer request id the host assigns; every reply names the id it answers |
 | `kind` | exactly one of `hello`, `request`, `result`, `cancel`, `shutdown` and `fault` |
 | `body` | the typed body of that kind |
 
-A reader accepts exactly the identity `quire.plugin-wire/v1` and refuses any
+A reader accepts exactly the identity `filament.plugin-wire/v1` and refuses any
 other before reading the body. The bodies are:
 
 | Kind | Sender | Body |
 | --- | --- | --- |
-| `hello` | plugin | the FR-331 `quire.backend-provider/v1` manifest stage, whose one descriptor is the plugin's: its advertised FR-290 (kind, mode) pairs, domains, options and bounds |
+| `hello` | plugin | the FR-331 `filament.backend-provider/v1` manifest stage, whose one descriptor is the plugin's: its advertised FR-290 (kind, mode) pairs, domains, options and bounds |
 | `request` | host | the FR-331 request stage: the routed items; the checked package as `package`, the unpadded base64url spelling of its RFC 8785 v2 bytes; and the provider limits, including `deadline_ms` |
 | `result` | plugin | the FR-331 outcome stage for the request whose id it names |
 | `cancel` | host | the id of the request to cancel |
@@ -113,7 +113,7 @@ open item `incomplete` with the cause cancelled.
 
 Each of these settles every affected item FR-331 `failed` with a typed
 tool-failure cause: a crash; a non-zero exit; a malformed or non-canonical
-frame; a frame whose `protocol` is not `quire.plugin-wire/v1`; a frame above
+frame; a frame whose `protocol` is not `filament.plugin-wire/v1`; a frame above
 the frame-length or total-byte limit; a result for an item not routed to the
 plugin; a result for a capability kind the plugin did not advertise; and a
 missing terminal record at `shutdown`. A deadline overrun ends the process
@@ -134,7 +134,7 @@ total for `total-bytes`. No other defect carries them.
 | value whose bytes differ from its RFC 8785 re-encoding | `noncanonical-frame` |
 | frame above the frame-length limit | `frame-length`, with `limit` and `value` |
 | frames above the total-byte limit | `total-bytes`, with `limit` and `value` |
-| `protocol` other than `quire.plugin-wire/v1` | `unknown-protocol` |
+| `protocol` other than `filament.plugin-wire/v1` | `unknown-protocol` |
 | unknown `kind` | `unknown-frame-kind` |
 | missing or extra envelope member | `envelope-member` |
 | `result` naming an id the host did not send | `unknown-request-id` |
@@ -149,7 +149,7 @@ total for `total-bytes`. No other defect carries them.
 | --- | --- | --- |
 | FR-462-AC-1 | A plugin that sends `hello` with a valid manifest, answers each `request` with one `result` and exits after `shutdown` yields one terminal record per routed item, and each record names the backend identity the manifest names. | Test (TC-428) |
 | FR-462-AC-2 | A frame is accepted only as a 64-bit big-endian length followed by that many bytes of RFC 8785 JSON; a value whose bytes differ from its RFC 8785 re-encoding, and a frame whose length exceeds the frame-length or total-byte limit, settle each affected item `failed` with a tool-failure cause. | Test (TC-428) |
-| FR-462-AC-3 | An envelope with a `protocol` other than `quire.plugin-wire/v1`, an unknown `kind`, a missing or extra member, or a `result` naming an id the host did not send is refused before its body is read and settles each affected item `failed`. | Test (TC-428) |
+| FR-462-AC-3 | An envelope with a `protocol` other than `filament.plugin-wire/v1`, an unknown `kind`, a missing or extra member, or a `result` naming an id the host did not send is refused before its body is read and settles each affected item `failed`. | Test (TC-428) |
 | FR-462-AC-4 | A crash, a non-zero exit, a result for an item not routed to the plugin, a result for an unadvertised capability kind and a missing terminal record each settle every affected item `failed` with a tool-failure cause, while items routed to other providers keep their own records. | Test (TC-428) |
 | FR-462-AC-5 | Cancelling a run sends `cancel` with the request id; a plugin that answers settles each open item `incomplete` with cause cancelled, and a plugin that does not answer within the grace period is ended with the same settlement. A deadline overrun ends the process and settles each open item `incomplete` with cause `timed-out`. | Test (TC-428) |
 | FR-462-AC-6 | The host starts the plugin only at the path the caller names, and text the plugin writes to standard error changes no settlement. | Test (TC-428) |
@@ -169,4 +169,4 @@ total for `total-bytes`. No other defect carries them.
 
 ## References
 
-- Linear STD-141; QSL ADR-029 PL-2 to PL-7.
+- Linear STD-141; FSL ADR-029 PL-2 to PL-7.

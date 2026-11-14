@@ -3,7 +3,7 @@ id: TC-250
 title: "Inductive verification obligation negotiation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-347
+  - target: ix://agent-ix/filament-specification/FR-347
     type: verifies
 ---
 

@@ -3,11 +3,11 @@ id: FR-160
 title: "Evaluate uncertain, partial and revisioned temporal inputs"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-002
+  - target: ix://agent-ix/filament-specification/AD-002
     type: references
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: references
 ---
 
@@ -62,7 +62,7 @@ is **half-open**: reading `k` (an unwrapped nonnegative integer, in ticks)
 covers `[k, k + 1)`, closed at `k` and open at `k + 1`. A clock uncertainty of
 `u` ticks widens it by Minkowski sum to `[k - u, k + 1 + u)`: the lower end
 stays closed and the upper end stays open, so a stamp is never closed at the
-upper end. This supersedes the "closed interval" wording that QSL ADR-026 MN-2
+upper end. This supersedes the "closed interval" wording that FSL ADR-026 MN-2
 uses for a tick cover (see the note under Dependencies).
 
 Over intervals of dense time with these flags, for `a` and `b`:
@@ -106,11 +106,11 @@ The vectors are `proposals/checked-package-v2/tick-cover-vectors.json`.
 
 ## Dependencies
 
-- QSL ADR-026 MN-2 (dense time) says a tick covers a "closed interval"; that
+- FSL ADR-026 MN-2 (dense time) says a tick covers a "closed interval"; that
   wording is superseded by "Counter-tick intervals and endpoints" above, which
-  fixes the half-open cover `[k, k + 1)` that QSL FR-251-AC-1 and RT FR-276-AC-1
-  require. ADR-026 lives in the QSL repository and is amended there.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+  fixes the half-open cover `[k, k + 1)` that FSL FR-251-AC-1 and RT FR-276-AC-1
+  require. ADR-026 lives in the FSL repository and is amended there.
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

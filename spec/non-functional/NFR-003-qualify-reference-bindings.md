@@ -4,11 +4,11 @@ title: "Reject unqualified identity reuse"
 type: NFR
 quality_attribute: security
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-002"
+  - target: "ix://agent-ix/filament-specification/FR-002"
     type: constrains
-  - target: "ix://agent-ix/quire-specification/FR-003"
+  - target: "ix://agent-ix/filament-specification/FR-003"
     type: constrains
-  - target: "ix://agent-ix/quire-specification/FR-004"
+  - target: "ix://agent-ix/filament-specification/FR-004"
     type: constrains
 ---
 # NFR-003: Reject unqualified identity reuse

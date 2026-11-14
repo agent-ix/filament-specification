@@ -4,13 +4,13 @@ title: "Bounded control in the protocol profile layer"
 type: ADR
 status: accepted
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-003
+  - target: ix://agent-ix/filament-specification/AD-003
     type: depends_on
-  - target: ix://agent-ix/quire-specification/AD-007
+  - target: ix://agent-ix/filament-specification/AD-007
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: depends_on
 ---
 # ADR-006: Bounded control in the protocol profile layer
@@ -18,7 +18,7 @@ relationships:
 ## Status
 
 **Decided, 2026-10-01** (team-leader decision for the protocol
-transition-system specification). `quire.protocol.complete/v1` is the one
+transition-system specification). `filament.protocol.complete/v1` is the one
 protocol admission profile. A `repeat` needs only progress, every body cycle
 passing through a step node; an
 iteration maximum and an invariant with a variant are each optional model
@@ -27,11 +27,11 @@ stood; the Decision and Consequences sections record the outcome.
 
 ## Context
 
-[AD-003](../assurance/AD-003-native-quire-language-charter.md) fixes one
-protocol-layer profile identity, `quire.protocol.complete/v1`, covering
+[AD-003](../assurance/AD-003-native-filament-language-charter.md) fixes one
+protocol-layer profile identity, `filament.protocol.complete/v1`, covering
 "static/dynamic choreography, compensation, conformance, projection,
 realizability, composition and refinement under AD-007". The tree carries no
-second `quire.protocol.*` semantic profile; `quire.protocol.assessment/v1` and
+second `filament.protocol.*` semantic profile; `filament.protocol.assessment/v1` and
 the result identities name result and assessment contracts, not an admission
 profile.
 
@@ -52,7 +52,7 @@ claims", and FR-171-AC-2 admits "a loop with proved invariant/variant" while
 returning inconclusive or refused for an unproved termination claim. It names no
 finite iteration maximum as a premise.
 
-Both statements apply to a package selecting `quire.protocol.complete/v1`. A
+Both statements apply to a package selecting `filament.protocol.complete/v1`. A
 linker that admits an invariant-and-variant loop with no authored maximum
 satisfies FR-171-AC-2 and violates the four refusal criteria; a linker that
 refuses it satisfies them and violates FR-171-AC-2.
@@ -60,19 +60,19 @@ refuses it satisfies them and violates FR-171-AC-2.
 ## Question
 
 Does the protocol layer need a bounded-control profile identity distinct from
-`quire.protocol.complete/v1`, under which an absent finite iteration maximum
-refuses, or does `quire.protocol.complete/v1` admit an invariant-and-variant
+`filament.protocol.complete/v1`, under which an absent finite iteration maximum
+refuses, or does `filament.protocol.complete/v1` admit an invariant-and-variant
 loop outright, making the finite iteration maximum one of two alternative
 termination premises?
 
-Answering it fixes, in one place: how many `quire.protocol.*` admission
+Answering it fixes, in one place: how many `filament.protocol.*` admission
 identities the hierarchy carries; which termination premises an admitted
 iteration may carry; and whether FR-220 and FR-228 record a finite maximum, an
 invariant-and-variant pair, or either.
 
 ## Decision
 
-`quire.protocol.complete/v1` is the one protocol admission profile. A
+`filament.protocol.complete/v1` is the one protocol admission profile. A
 `repeat` carries progress: every cycle in its body graph passes through a step
 node.
 
@@ -103,5 +103,5 @@ node.
 
 ## References
 
-- Raised from the protocol transition-system design: quire-spec-language
+- Raised from the protocol transition-system design: filament-spec-language
   ADR-027 PS-6; Linear STD-140, paired QSL-396.

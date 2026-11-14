@@ -3,13 +3,13 @@ id: TC-266
 title: "SMT backend registration and capability advertisement"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-349
+  - target: ix://agent-ix/filament-specification/FR-349
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-346
+  - target: ix://agent-ix/filament-specification/FR-346
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-347
+  - target: ix://agent-ix/filament-specification/FR-347
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-147
+  - target: ix://agent-ix/filament-specification/FR-147
     type: verifies
 ---
 

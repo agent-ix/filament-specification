@@ -3,11 +3,11 @@ id: interface_005
 title: "I05 native runtime input and result"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-100
+  - target: ix://agent-ix/filament-spec-language/FR-100
     type: references
-  - target: ix://agent-ix/quire-specification/FR-153
+  - target: ix://agent-ix/filament-specification/FR-153
     type: references
 ---
 
@@ -33,15 +33,15 @@ invariants:
   - exhaustion never truncates meaning into a completed value
 ```
 
-## QSL source Value-call binding
+## FSL source Value-call binding
 
-For the QSL source-compiled Value function boundary, I05's typed values SHALL
-be the shared `quire_exact::Value` carriers. Its explicit model/object
+For the FSL source-compiled Value function boundary, I05's typed values SHALL
+be the shared `filament_exact::Value` carriers. Its explicit model/object
 context SHALL be the borrowed
-`qsl_semantics::model::object_environment::ObjectEnvironment`, with an
+`fsl_semantics::model::object_environment::ObjectEnvironment`, with an
 actually admitted shared object closure and registered FR-153 population
-bindings. QSL [FR-100](ix://agent-ix/quire-spec-language/FR-100) owns the
-single public `qsl_replay::spine::run` facade and its replacement signature;
+bindings. FSL [FR-100](ix://agent-ix/filament-spec-language/FR-100) owns the
+single public `fsl_replay::spine::run` facade and its replacement signature;
 the driver consumes it. I05 adds no second executor, evaluator export,
 private environment copy or locally minted model/value semantics.
 
@@ -57,11 +57,11 @@ object world instead retains the typed dangling-reference admission
 failure. An unregistered population, wrong maximum, wrong kind or foreign
 model/universe retains its owning admission failure and actual fields.
 
-The executor SHALL use QSL FR-100's settled admission order: all name checks
+The executor SHALL use FSL FR-100's settled admission order: all name checks
 first, then declared parameter order, checking value shape, actual selected
 model/universe correspondence, selected-model conformance and complete-world
 resolution. Its Reference parameter domain is the real admitted selected
-model's shared QSV `TypeEnvironment::admits`/`conforms` domain: a
+model's shared FSV `TypeEnvironment::admits`/`conforms` domain: a
 most-specific `S` is admitted to `Reference<T>` when both types are admitted
 there and `S` equals or has a declared supertype path to `T`. The original
 Reference triple SHALL remain unchanged, without retagging or constructing
@@ -74,8 +74,8 @@ The same rules apply to unused parameters. Population registration and
 declared-maximum guards remain FR-100/FR-089's, not kernel Population
 admission.
 
-Kernel `quire_exact::ValueType::admits` remains exact-type admission for
-References; it does not itself admit proper subtypes. The model-aware QSV
+Kernel `filament_exact::ValueType::admits` remains exact-type admission for
+References; it does not itself admit proper subtypes. The model-aware FSV
 predicate is the owning conformance rule here, not a change to that kernel
 API or permission for consumers to select different admission semantics.
 TC-792's genuine subtype/unrelated/foreign/combined controls discriminate
@@ -117,5 +117,5 @@ owners retain their contracts.
 This amendment is proposed under QSL-665 for independent review. The
 absent/present source lookup, unused-parameter admission controls, scalar
 regressions, cancellation/accounting and driver adoption are the existing
-[TC-792](ix://agent-ix/quire-spec-language/TC-792) controls, all UNRUN here.
+[TC-792](ix://agent-ix/filament-spec-language/TC-792) controls, all UNRUN here.
 No source-only contract change claims runtime or consumer qualification.

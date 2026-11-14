@@ -3,11 +3,11 @@ id: FR-384
 title: "Decide each-granularity fairness under symmetry on the annotated quotient"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: references
-  - target: ix://agent-ix/quire-specification/FR-385
+  - target: ix://agent-ix/filament-specification/FR-385
     type: references
 ---
 
@@ -107,6 +107,6 @@ reaching one settles the item `incomplete`, FR-241 `resource-incomplete`, cause 
 
 ## References
 
-- Design: quire-spec-language ADR-021 (AQ-1 to AQ-8, QS-3, RU-4).
+- Design: filament-spec-language ADR-021 (AQ-1 to AQ-8, QS-3, RU-4).
 - Tickets: Linear STD-134; paired QSL-368. The model-subject temporal and
   strong-fairness requirements are Linear STD-131 and STD-132.

@@ -3,13 +3,13 @@ id: interface_012
 title: "I12 target-neutral contract package"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-019
+  - target: ix://agent-ix/filament-contract-ir/FR-019
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-035
+  - target: ix://agent-ix/filament-contract-ir/FR-035
     type: references
 ---
 

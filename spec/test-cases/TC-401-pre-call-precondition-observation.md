@@ -3,9 +3,9 @@ id: TC-401
 title: "Pre-call precondition observation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-046
+  - target: ix://agent-ix/filament-specification/FR-046
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: verifies
 ---
 

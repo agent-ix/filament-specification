@@ -3,7 +3,7 @@ id: TC-170
 title: "Bind choreography references without identity substitution"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: verifies
 ---
 ## Description

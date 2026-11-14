@@ -3,17 +3,17 @@ id: FR-421
 title: "Check probabilistic timed claims exactly through digital clocks"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-420
+  - target: ix://agent-ix/filament-specification/FR-420
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: depends_on
 ---
 
@@ -160,7 +160,7 @@ with the scaled constants and is bounded only by the request's `max_states`.
 
 ## References
 
-- QSL ADR-028 TA-1, TA-1a, TA-2 to TA-7, RU-6; QSL ADR-026 SS-7.
+- FSL ADR-028 TA-1, TA-1a, TA-2 to TA-7, RU-6; FSL ADR-026 SS-7.
 - Owner ruling recorded on QSL-371: a workload that gives delays makes the
   timed subject a Markov chain, exact on the exact engine, and leftover delay
   nondeterminism is a minimum or maximum.

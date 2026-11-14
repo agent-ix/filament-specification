@@ -3,9 +3,9 @@ id: FR-019
 title: "Enforce the native source profile admission contract"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-001
+  - target: ix://agent-ix/filament-specification/US-001
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-001
+  - target: ix://agent-ix/filament-specification/FR-001
     type: references
 ---
 # FR-019: Enforce the native source profile admission contract
@@ -29,7 +29,7 @@ refusal retaining the original source and rejected construct/declaration.
 The carried-forward admission baseline is preserved in the superseded
 [native-source amendment](../../../proposals/native-source-1-draft/README.md)
 and refined by the composed state definitions selected in
-[AD-003](../../assurance/AD-003-native-quire-language-charter.md).
+[AD-003](../../assurance/AD-003-native-filament-language-charter.md).
 The frontend shall refuse every construct prohibited by the exact selected
 profile even inside an unreachable branch. A backend's wider capability cannot
 admit a source construct. The complete-V1 profile bundle shall admit every
@@ -76,7 +76,7 @@ its owning semantic acceptance and corresponding compiler support.
 - [FR-001](FR-001-select-native-profile.md): exact definition selection.
 - [FR-003](FR-003-bind-source-correspondence.md): original byte/span correspondence.
 - [Amendment](../../../proposals/native-source-1-draft/README.md): carried-forward table, anchor rules and open design gate.
-- [AD-003](../../assurance/AD-003-native-quire-language-charter.md): accepted profile and support-stage boundaries.
+- [AD-003](../../assurance/AD-003-native-filament-language-charter.md): accepted profile and support-stage boundaries.
 
 ## Status
 

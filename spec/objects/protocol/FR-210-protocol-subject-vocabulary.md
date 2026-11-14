@@ -4,13 +4,13 @@ title: "Protocol subject vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: specifies
 ---
 # FR-210: Protocol subject vocabulary
@@ -120,7 +120,7 @@ object artifact, not by minting a subject-kind label.
   instances, role instances, message deliveries, attempts and effects.
 - [FR-111](../../functional/observation/FR-111-correlate-related-instances-explicitly.md)
   names workflow instances, deliveries, attempts, effects and receipts.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

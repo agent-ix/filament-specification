@@ -3,7 +3,7 @@ id: interface_021
 title: "I21 attributed human decision"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-338
+  - target: ix://agent-ix/filament-specification/FR-338
     type: references
 ---
 

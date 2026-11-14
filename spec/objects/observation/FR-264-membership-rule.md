@@ -4,7 +4,7 @@ title: "Declared membership rule"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: specifies
 ---
 # FR-264: Declared membership rule
@@ -31,7 +31,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| rule_identity | contract string, `quire.observation.explicit-members/v1` in v1 (FR-264 Identity) |
+| rule_identity | contract string, `filament.observation.explicit-members/v1` in v1 (FR-264 Identity) |
 | finiteness | type not stated in source; see Field sources |
 | required_members | type not stated in source; see Field sources |
 
@@ -48,7 +48,7 @@ FR-112 Behavior requires that members be "exactly listed", and that
 ## Identity and comparison
 
 - **Identity kind** — *value*. There is no derived content hash.
-- **Key** — (contract `quire.observation.explicit-members/v1`, sorted distinct
+- **Key** — (contract `filament.observation.explicit-members/v1`, sorted distinct
   required member identity set). FR-112-AC-1 establishes that changing the
   membership rule changes the assessment subject, and FR-112-AC-4 that a
   rule mismatch refuses; both components therefore participate. Equality is
@@ -80,7 +80,7 @@ FR-112 Behavior requires that members be "exactly listed", and that
 - [FR-112](../../functional/observation/FR-112-declare-population-and-completeness.md)
   establishes the declared finite membership rule and its refusal cases.
 - [FR-263](FR-263-declared-population.md) is the population the rule bounds.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## V1 rule form
@@ -91,4 +91,4 @@ under this identity.
 
 ## Status
 
-Proposed v1 membership closure for `quire-specification#40`.
+Proposed v1 membership closure for `filament-specification#40`.

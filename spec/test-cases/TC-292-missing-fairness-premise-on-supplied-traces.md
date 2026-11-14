@@ -3,9 +3,9 @@ id: TC-292
 title: "Fairness over a supplied trace is a missing fairness premise"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: verifies
 ---
 

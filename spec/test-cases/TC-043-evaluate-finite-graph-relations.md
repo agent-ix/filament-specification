@@ -3,7 +3,7 @@ id: TC-043
 title: "Evaluate identity and reachability in explicit finite graphs"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: verifies
 ---
 ## Description

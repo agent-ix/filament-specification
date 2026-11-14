@@ -3,25 +3,25 @@ id: FR-479
 title: "Protocol-obligation activation binding"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-230
+  - target: ix://agent-ix/filament-specification/FR-230
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: references
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: references
-  - target: ix://agent-ix/quire-specification/FR-232
+  - target: ix://agent-ix/filament-specification/FR-232
     type: references
-  - target: ix://agent-ix/quire-specification/FR-260
+  - target: ix://agent-ix/filament-specification/FR-260
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
-  - target: ix://agent-ix/quire-specification/FR-172
+  - target: ix://agent-ix/filament-specification/FR-172
     type: references
-  - target: ix://agent-ix/quire-specification/FR-227
+  - target: ix://agent-ix/filament-specification/FR-227
     type: references
 ---
 # FR-479: Protocol-obligation activation binding

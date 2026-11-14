@@ -3,11 +3,11 @@ id: TC-112
 title: "Distinguish closure boundaries and bounded past history"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-293
+  - target: ix://agent-ix/filament-specification/FR-293
     type: verifies
 ---
 ## Description

@@ -3,7 +3,7 @@ id: TC-970
 title: "The corpus replay adapter maps closed requests and byte provisions"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-336
+  - target: ix://agent-ix/filament-specification/FR-336
     type: verifies
 ---
 

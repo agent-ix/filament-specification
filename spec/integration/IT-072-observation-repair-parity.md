@@ -3,9 +3,9 @@ id: IT-072
 title: "Observation revisions repair temporal and protocol results"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-173
+  - target: ix://agent-ix/filament-specification/FR-173
     type: verifies
 ---
 
@@ -13,7 +13,7 @@ relationships:
 
 ## Objective
 
-Verify that real QObs authority views drive QSL/TL temporal and Protocol repair
+Verify that real QObs authority views drive FSL/TL temporal and Protocol repair
 with identical partial/uncertain input meaning and retained supersession.
 
 ## Target Integration

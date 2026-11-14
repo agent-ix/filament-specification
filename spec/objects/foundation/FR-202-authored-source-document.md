@@ -4,9 +4,9 @@ title: "Authored source document"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-003
+  - target: ix://agent-ix/filament-specification/FR-003
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: specifies
 ---
 # FR-202: Authored source document
@@ -80,7 +80,7 @@ produce no semantic tokens (FR-036).
   document identity and the segment-map limits.
 - [FR-036](../../functional/foundation/FR-036-retain-lexical-source-locations.md)
   establishes the original-bytes input and comment retention.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 
 ## Status
 

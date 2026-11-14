@@ -3,15 +3,15 @@ id: TC-118
 title: "Refuse temporal resource and retained-state exhaustion"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-293
+  - target: ix://agent-ix/filament-specification/FR-293
     type: verifies
-  - target: ix://agent-ix/quire-specification/NFR-040
+  - target: ix://agent-ix/filament-specification/NFR-040
     type: verifies
 ---
 ## Description

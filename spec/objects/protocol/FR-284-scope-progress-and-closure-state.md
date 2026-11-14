@@ -4,15 +4,15 @@ title: "Scope progress and closure state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: references
 ---
 # FR-284: Scope progress and closure state vocabulary
@@ -141,7 +141,7 @@ No other label is a member of any of the four axes:
 - [FR-240](FR-240-canonical-protocol-result.md) carries the four axes as result
   properties; [FR-258](../temporal/FR-258-temporal-decision-scope.md) carries them
   as observed facts about an identified scope.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

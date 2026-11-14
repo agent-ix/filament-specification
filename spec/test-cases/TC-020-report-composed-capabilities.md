@@ -3,7 +3,7 @@ id: TC-020
 title: "Report complete versus partial language capability scope"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-020
+  - target: ix://agent-ix/filament-specification/FR-020
     type: verifies
 ---
 ## Description
@@ -19,7 +19,7 @@ synthetic inventory. Replace selected evidence with only planned cases or an
 old profile's results. Separately request a deliberately partial profile report
 while later realizability research is unfinished.
 
-Use every ID in the [51-row capability crosswalk](../../proposals/quire-v1/capabilities.md#initial-specification-crosswalk),
+Use every ID in the [51-row capability crosswalk](../../proposals/filament-v1/capabilities.md#initial-specification-crosswalk),
 preserving its V1/Later/Refuse decision. A required positive V1 capability cannot
 disappear because another row shares its family. Later capabilities are not
 silently promoted to mandatory positive scope; selected-profile refusal rules

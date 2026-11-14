@@ -3,13 +3,13 @@ id: FR-133
 title: "Extend declarations and semantic families uniformly"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-032
+  - target: ix://agent-ix/filament-specification/FR-032
     type: references
-  - target: ix://agent-ix/quire-specification/FR-131
+  - target: ix://agent-ix/filament-specification/FR-131
     type: references
-  - target: ix://agent-ix/quire-specification/FR-467
+  - target: ix://agent-ix/filament-specification/FR-467
     type: references
 ---
 
@@ -50,7 +50,7 @@ capability.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [FR-467](FR-467-define-extension-definition-members.md) defines the grammar
   and typed-node schema members of an extension definition and their refusals.

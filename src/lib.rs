@@ -8,16 +8,16 @@
 //! exact authored bytes, plus the typed [`QUALIFICATION_VECTORS`] table that
 //! `build.rs` generates from the authored test-case rows.
 
-/// `proposals/quire-v1/definitions/complete-value-selection-vectors.json`:
+/// `proposals/filament-v1/definitions/complete-value-selection-vectors.json`:
 /// the accepted, refused and ordering vectors for the complete-value
 /// package selection.
 pub const COMPLETE_VALUE_SELECTION_VECTORS: &str =
-    include_str!("../proposals/quire-v1/definitions/complete-value-selection-vectors.json");
+    include_str!("../proposals/filament-v1/definitions/complete-value-selection-vectors.json");
 
-/// `proposals/quire-v1/definitions/native-diagnostics.md`: the
-/// `quire.native.diagnostics/v1` interpretation catalog document.
+/// `proposals/filament-v1/definitions/native-diagnostics.md`: the
+/// `filament.native.diagnostics/v1` interpretation catalog document.
 pub const NATIVE_DIAGNOSTICS: &str =
-    include_str!("../proposals/quire-v1/definitions/native-diagnostics.md");
+    include_str!("../proposals/filament-v1/definitions/native-diagnostics.md");
 
 /// The complete `acme/colors` Semantic IR 2.0.0 model with the two nullary
 /// `Color` cases, exposed for consumers' enum-comparison inputs.
@@ -30,21 +30,21 @@ pub const ACME_COLORS_DOMAIN_PACKAGE: &str =
 pub const ACME_COLORS_COMPARISON_SOURCE: &str =
     include_str!("../proposals/checked-package-v2/model-enum-comparison.native");
 
-/// `proposals/quire-v1/definitions/value-accounting-charge-point-vectors.json`:
-/// the complete charge-point spelling list of `quire.value.accounting/v1`'s
+/// `proposals/filament-v1/definitions/value-accounting-charge-point-vectors.json`:
+/// the complete charge-point spelling list of `filament.value.accounting/v1`'s
 /// ordered table, with spellings the table does not declare. A kernel compares
 /// its own `ChargePoint` set with this list.
 pub const VALUE_ACCOUNTING_CHARGE_POINT_VECTORS: &str =
-    include_str!("../proposals/quire-v1/definitions/value-accounting-charge-point-vectors.json");
+    include_str!("../proposals/filament-v1/definitions/value-accounting-charge-point-vectors.json");
 
-/// `proposals/quire-v1/definitions/value-accounting-limit-kind-vectors.json`:
+/// `proposals/filament-v1/definitions/value-accounting-limit-kind-vectors.json`:
 /// the complete `ScalarLimitsV1` counter spelling list of
-/// `quire.value.accounting/v1`, in field order, with spellings that are not
+/// `filament.value.accounting/v1`, in field order, with spellings that are not
 /// `ScalarLimitsV1` counters. It does not cover the `limit_kind` values of
 /// `PopulationAdmissionLimitsV1` or `ModelNormalizationLimitsV1`. A kernel compares its own
 /// `LimitKind` set with this list.
 pub const VALUE_ACCOUNTING_LIMIT_KIND_VECTORS: &str =
-    include_str!("../proposals/quire-v1/definitions/value-accounting-limit-kind-vectors.json");
+    include_str!("../proposals/filament-v1/definitions/value-accounting-limit-kind-vectors.json");
 
 /// A test case whose authored vector table is exported.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

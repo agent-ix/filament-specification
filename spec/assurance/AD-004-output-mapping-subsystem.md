@@ -4,12 +4,12 @@ title: "Non-authoritative output-mapping subsystem"
 type: ArchitectureDescription
 status: accepted
 owner: quire-standard
-system: native Quire output mapping and loss reporting
+system: native Filament output mapping and loss reporting
 relationships:
-  - { target: ix://agent-ix/quire-specification/AD-001, type: references }
-  - { target: ix://agent-ix/quire-specification/FR-116, type: references }
-  - { target: ix://agent-ix/quire-specification/FR-120, type: realizes }
-  - { target: ix://agent-ix/quire-specification/FR-121, type: realizes }
+  - { target: ix://agent-ix/filament-specification/AD-001, type: references }
+  - { target: ix://agent-ix/filament-specification/FR-116, type: references }
+  - { target: ix://agent-ix/filament-specification/FR-120, type: realizes }
+  - { target: ix://agent-ix/filament-specification/FR-121, type: realizes }
 ---
 # Non-authoritative output-mapping subsystem
 

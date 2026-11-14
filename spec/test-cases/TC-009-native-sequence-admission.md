@@ -3,7 +3,7 @@ id: TC-009
 title: "Enforce sequence declaration bounds and occurrence order"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: verifies
 ---
 ## Description

@@ -3,25 +3,25 @@ id: FR-095
 title: "Preserve exact native-to-TL temporal correspondence"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: references
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: references
-  - target: ix://agent-ix/quire-specification/FR-251
+  - target: ix://agent-ix/filament-specification/FR-251
     type: references
-  - target: ix://agent-ix/quire-specification/FR-259
+  - target: ix://agent-ix/filament-specification/FR-259
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-350
+  - target: ix://agent-ix/filament-contract-ir/FR-350
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-515
+  - target: ix://agent-ix/filament-spec-language/FR-515
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-527
+  - target: ix://agent-ix/filament-spec-language/FR-527
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-052
+  - target: ix://agent-ix/filament-spec-language/FR-052
     type: references
 ---
 ## Description
@@ -32,8 +32,8 @@ native operator, predicate, clock, capture, history and closure meaning.
 
 ## Inputs
 
-An admitted `quire.checked-package/v2` package, its QSL FR-515 checked temporal
-subject view and the QSL FR-527 classification of that subject against FR-045's
+An admitted `filament.checked-package/v2` package, its FSL FR-515 checked temporal
+subject view and the FSL FR-527 classification of that subject against FR-045's
 support table; the native owner's admitted evaluation evidence and actual
 FR-052 report; total-Boolean predicate projections that Contract IR FR-350
 builds from the native `holds` leaves and explicit valuation cells; selected
@@ -55,7 +55,7 @@ editable source.
 
 The bridge shall consume the actual checked package, subject view and
 classification through the public owner APIs, preserving the opaque
-admitted-package binding that QSL retains from the checked-package owner. It
+admitted-package binding that FSL retains from the checked-package owner. It
 shall first verify the subject belongs to the supplied borrowed package and
 the classification retains that package's admission, then reclassify the
 subject with the same surrounding-execution closure and compare the complete
@@ -71,8 +71,8 @@ classification's sealed definition selection does not select an occurrence or
 supply an evaluation result. A public disposition or retained field changed
 without the owner selection is not an admitted correspondence.
 
-QSL owns classification and native temporal evaluation. The bridge in
-`quire-integration` owns projection, correspondence, strict projection/join
+FSL owns classification and native temporal evaluation. The bridge in
+`filament-integration` owns projection, correspondence, strict projection/join
 reading and cross-owner result comparison under Contract IR FR-350. Projection,
 join and strict reading shall invoke neither evaluator and shall accept no
 caller-authored mirror of an owner admission or result. TL owners retain
@@ -80,11 +80,11 @@ formula, trace/history, request and mapped-result admission and evaluation.
 
 ### Mapping domain
 
-The correspondence shall use the support table that QSL FR-045 classifies:
+The correspondence shall use the support table that FSL FR-045 classifies:
 
 | Native request | Existing TL target | Disposition |
 | --- | --- | --- |
-| `quire.temporal.infinite-trace/v1` | No target | Unsupported on the infinite-trace dimension; there is no bounded TL formula to generate, and QSpec FR-161 analyzes unbounded requests natively |
+| `filament.temporal.infinite-trace/v1` | No target | Unsupported on the infinite-trace dimension; there is no bounded TL formula to generate, and QSpec FR-161 analyzes unbounded requests natively |
 | Timestamped-event finite-window | Current TL profiles | Unsupported; no index conversion is inferred |
 | Both a bounded past and bounded future operator reachable from the root | No target | Unsupported on the mixed-direction dimension; the past-operator profile admits no future or mixed graph |
 | Either false-extension profile, at least one bounded past operator defined by FR-092 and no future operator, with origin-complete history | `tl-syntax.past-operators/v1`, `mltl.origin-complete-history/v1`, and the selected position-history/past-evaluator contracts | Supported when every bridge premise below holds; a history cutoff is `incomplete` with cause `missing-history`, not unsupported |
@@ -173,20 +173,20 @@ correspondence.
 - Contract IR FR-350 implements this correspondence: it constructs and
   validates the formula and valuation projection, correspondence record and
   result join. This requirement supplies the temporal meaning.
-- QSL FR-045 owns the support table; FR-515 supplies the checked temporal
+- FSL FR-045 owns the support table; FR-515 supplies the checked temporal
   subject of the admitted checked-package/v2 and FR-527 supplies its
   authenticated classification and owner-issued package binding. FR-052/FR-043
   supply the actual native evaluation report and complete predecessor
-  validation. QSL does not construct the TL correspondence. FR-050's legacy
+  validation. FSL does not construct the TL correspondence. FR-050's legacy
   compiled-protocol `/2` classifier is not this checked-view bridge input.
 - tl-syntax FR-011 (past-operator semantics; FR-011-AC-4 admits no future or
   mixed node under `tl-syntax.past-operators/v1`), FR-013 and FR-014 (the
-  formula editions), tl-mltl FR-018 (trace and history wire) and quire-mltl
+  formula editions), tl-mltl FR-018 (trace and history wire) and filament-mltl
   FR-001 and FR-003 (request and result admission, result mapping).
 - TL syntax/evaluation retains its own semantic-profile and release authority.
 
 ## Status
 
 Accepted by FS04 as the exact native-to-TL correspondence contract. Contract IR
-FR-350 is its implementation; QSL FR-045 owns classification and supplies the
+FR-350 is its implementation; FSL FR-045 owns classification and supplies the
 bridge inputs.

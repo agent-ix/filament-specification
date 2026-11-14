@@ -6,10 +6,10 @@
 use ix_trace_rs::trace;
 use num_bigint::BigInt;
 use num_integer::Integer;
-use quire_specification::{
+use filament_specification::{
     COMPLETE_VALUE_SELECTION_VECTORS, NATIVE_DIAGNOSTICS,
 };
-use quire_verification_contracts::operation_catalog::CHECKED_OPERATION_CATALOG_V1;
+use filament_verification_contracts::operation_catalog::CHECKED_OPERATION_CATALOG_V1;
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -17,7 +17,7 @@ use std::collections::{BTreeMap, BTreeSet};
 mod operand_slots;
 
 const SCHEMA: &str = include_str!("../proposals/checked-package-v2/schema.json");
-/// The catalog lives only in `quire-verification-contracts`; it is read from there.
+/// The catalog lives only in `filament-verification-contracts`; it is read from there.
 const OPERATION_CATALOG: &str = CHECKED_OPERATION_CATALOG_V1;
 const POSITIVE_OPERATION_IDENTITIES: &str =
     include_str!("../proposals/checked-package-v2/fixtures/positive-operation-identities.json");
@@ -821,7 +821,7 @@ fn application_node_dependencies(node: &Value) -> Vec<Value> {
 
 /// Closed reader refusal causes for an application's operation, in evaluation
 /// order. The first eight are `invalid_package` causes and the last is the
-/// `ill_typed` cause of `quire.native.diagnostics/v1`.
+/// `ill_typed` cause of `filament.native.diagnostics/v1`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum OperationRefusal {
     UnknownOperation,
@@ -1293,7 +1293,7 @@ impl<'a> OperationOracle<'a> {
     /// member): a native `Boolean` or `Integer` is its scalar node, a tuple or
     /// variant type of the package is its model declaration node.
     fn type_ref_node(&self, reference: &str) -> Option<&'a Value> {
-        match reference.strip_prefix("ix://quire/native/") {
+        match reference.strip_prefix("ix://filament/native/") {
             Some(native @ ("Boolean" | "Integer")) => {
                 let form = native.to_lowercase();
                 self.nodes.iter().find(|node| {
@@ -1735,8 +1735,8 @@ impl<'a> OperationOracle<'a> {
                 return None;
             }
             let form = match field["typeRef"].as_str()? {
-                "ix://quire/native/Boolean" => "boolean",
-                "ix://quire/native/Integer" => "integer",
+                "ix://filament/native/Boolean" => "boolean",
+                "ix://filament/native/Integer" => "integer",
                 _ => return None,
             };
             let scalar = self
@@ -2333,7 +2333,7 @@ impl<'a> OperationOracle<'a> {
                         .first()
                         .and_then(|law| profile_operators(&law["definition"]))
                         .map(|operators| {
-                            if operation["identity"] == "quire.op.state.transition" {
+                            if operation["identity"] == "filament.op.state.transition" {
                                 state_transition_operators()
                             } else {
                                 operators
@@ -2412,7 +2412,7 @@ impl<'a> OperationOracle<'a> {
             || entry["member"] == "state_clause"
             || entry["member"] == "temporal_interval"
             || entry["member"] == "fairness"
-            || operation["identity"] == "quire.op.model.reaches_field"
+            || operation["identity"] == "filament.op.model.reaches_field"
             || self.member_descriptor(member).is_some();
         let population_links = self.population_link_holds(entry, member);
         let constraints_hold = entry["constraints"]
@@ -2564,13 +2564,13 @@ fn conversion_class(from: &NumericBounds, to: &NumericBounds) -> Option<Conversi
 /// Bytes of the profile definitions and the rule texts that define their
 /// operator sets.
 const TEMPORAL_PROFILES: [&[u8]; 3] = [
-    include_bytes!("../proposals/quire-v1/definitions/temporal-event-position.md"),
-    include_bytes!("../proposals/quire-v1/definitions/temporal-fixed-sample.md"),
-    include_bytes!("../proposals/quire-v1/definitions/temporal-timestamped-window.md"),
+    include_bytes!("../proposals/filament-v1/definitions/temporal-event-position.md"),
+    include_bytes!("../proposals/filament-v1/definitions/temporal-fixed-sample.md"),
+    include_bytes!("../proposals/filament-v1/definitions/temporal-timestamped-window.md"),
 ];
 const PROTOCOL_FINITE: &[u8] =
-    include_bytes!("../proposals/quire-v1/definitions/protocol-finite.md");
-const TEMPORAL_COMMON: &str = include_str!("../proposals/quire-v1/definitions/temporal-common.md");
+    include_bytes!("../proposals/filament-v1/definitions/protocol-finite.md");
+const TEMPORAL_COMMON: &str = include_str!("../proposals/filament-v1/definitions/temporal-common.md");
 
 /// Items of an English list `a, b and c` between `start` and `end` in a text
 /// whose line breaks are read as spaces, spelled with underscores.
@@ -2615,10 +2615,10 @@ fn matched_profile(definition: &Value) -> Option<(&'static str, &'static str)> {
 fn profile_operators(definition: &Value) -> Option<Vec<String>> {
     match matched_profile(definition)? {
         ("temporal_profile", text) => text
-            .contains("| `quire.temporal.bounded-facet/v1` |")
+            .contains("| `filament.temporal.bounded-facet/v1` |")
             .then(|| listed_items(TEMPORAL_COMMON, "bounded operators: ", ".")),
         (_, text) => text
-            .contains("Profile identity: `quire.protocol.finite-global/v1`.")
+            .contains("Profile identity: `filament.protocol.finite-global/v1`.")
             .then(protocol_operators),
     }
 }
@@ -3202,14 +3202,14 @@ fn std_539_nested_repeat_rule_model_agrees_with_the_vectors() {
         ),
         (
             "R20",
-            "`quire.op.boolean.eq(a, b) or not quire.op.boolean.eq(a, b)`",
+            "`filament.op.boolean.eq(a, b) or not filament.op.boolean.eq(a, b)`",
             simple(Or(eq_ab(), Box::new(Not(eq_ab()))), &["eq(a, b)"], None),
             true,
             2,
         ),
         (
             "R20",
-            "not quire.op.boolean.eq(b, a)",
+            "not filament.op.boolean.eq(b, a)",
             simple(
                 Or(eq_ab(), Box::new(Not(eq_ba()))),
                 &["eq(a, b)", "eq(b, a)"],
@@ -3414,7 +3414,7 @@ fn application_node_shape_locus(node: &Value) -> Option<&'static str> {
     (!dependencies_fit).then_some("/dependencies")
 }
 
-/// A model declaration node (QSL FR-094): no `declaration`, the form of an
+/// A model declaration node (FSL FR-094): no `declaration`, the form of an
 /// object type, a process, a state machine, a persistence interface, a
 /// systems interface, a relationship or a population.
 fn is_model_declaration(node: &Value) -> bool {
@@ -3511,7 +3511,7 @@ fn application_node_shape_is_valid(node: &Value) -> bool {
 
 /// Semantic checks owned by the derived-shape reader after key freshness.
 /// These wire checks cover model-reference targets, population bounds and
-/// compound-unit term order. QSL lowering owns richer domain checks.
+/// compound-unit term order. FSL lowering owns richer domain checks.
 fn derived_shape_semantic_refusal(nodes: &[Value]) -> Option<&Value> {
     let find = |id: &Value| nodes.iter().find(|node| node["node_id"] == *id);
     nodes.iter().find(
@@ -3622,7 +3622,7 @@ fn derived_shape_semantic_refusal(nodes: &[Value]) -> Option<&Value> {
     )
 }
 
-/// A derived `Reference<O>` target (QSL FR-322): a declared model form,
+/// A derived `Reference<O>` target (FSL FR-322): a declared model form,
 /// whether source-declared in this package or resolved through a `ModelOwner`.
 fn is_model_reference_target(node: &Value) -> bool {
     matches!(
@@ -3790,7 +3790,7 @@ fn document_declares_owner(document: &Value, node: &Value, owner_node: &str) -> 
 }
 
 /// A clause function's clause kind: the text literal of the one `clause`
-/// binding of its body (QSL FR-094): `invariant`, `precondition` or `body`.
+/// binding of its body (FSL FR-094): `invariant`, `precondition` or `body`.
 /// `None` when the binding is absent, repeated or not a text literal.
 fn clause_kind(node: &Value) -> Option<&str> {
     let mut bindings = node["body"]["members"]
@@ -4041,7 +4041,7 @@ fn dependency_signature_is_package_independent(function: &Value, nodes: &[Value]
 /// `node` carrying no `declaration` in that dependency
 /// (`missing_declaration`/`missing-name` at its `node`), then a target that
 /// is no package-independent `function` or a term that is not the callee of a
-/// `quire.op.function.call` (`ill_typed`/`operator-ineligible` at the term).
+/// `filament.op.function.call` (`ill_typed`/`operator-ineligible` at the term).
 fn dependency_reference_refusal(
     package: &Value,
     dependencies: &[(String, Value)],
@@ -4055,7 +4055,7 @@ fn dependency_reference_refusal(
         match term["term"].as_str() {
             Some("dependency_reference") => out.push((pointer, term, callee)),
             Some("application") => {
-                let call = term["operation"]["identity"] == "quire.op.function.call";
+                let call = term["operation"]["identity"] == "filament.op.function.call";
                 for (index, argument) in term["arguments"]
                     .as_array()
                     .into_iter()
@@ -4889,7 +4889,7 @@ fn clause_refusal(
 }
 
 /// Independent oracle for the state step of the reader order: a
-/// `quire.op.state.clause` application at a body root stands only on a
+/// `filament.op.state.clause` application at a body root stands only on a
 /// `state`/`state_clause` node (a nested one is a malformed wire, refused
 /// before this step); then `operation_anchor` nodes and then `state_clause` nodes,
 /// each in ascending node-id order, report their first defect.
@@ -4903,7 +4903,7 @@ fn package_state_refusal(package: &Value) -> Result<(), (StateRefusal, Value)> {
     for node in &ordered {
         let root_clause = node["node_tag"] == "state" && node["semantic_form"] == "state_clause";
         let misplaced =
-            node["body"]["operation"]["identity"] == "quire.op.state.clause" && !root_clause;
+            node["body"]["operation"]["identity"] == "filament.op.state.clause" && !root_clause;
         if misplaced {
             return Err((StateRefusal::OperatorIneligible, node["node_id"].clone()));
         }
@@ -5082,7 +5082,7 @@ fn authored_frame_node(
 ) -> Value {
     json!({
         "node_id": absent_node_id("93"),
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "state",
         "semantic_form": "frame",
         "semantic_type": all_families_node_id("account"),
@@ -6467,15 +6467,15 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
             .find(|entry| entry["identity"] == identity)
             .unwrap_or_else(|| panic!("{identity} is catalogued"))
     };
-    for identity in ["quire.op.integer.div", "quire.op.integer.rem"] {
+    for identity in ["filament.op.integer.div", "filament.op.integer.rem"] {
         assert_eq!(entry(identity)["laws"], json!(["integer_division"]));
     }
-    assert_eq!(entry("quire.op.integer.mod")["laws"], json!([]));
+    assert_eq!(entry("filament.op.integer.mod")["laws"], json!([]));
     for identity in &identities {
         let (family, operation) = identity
-            .strip_prefix("quire.op.")
+            .strip_prefix("filament.op.")
             .and_then(|rest| rest.split_once('.'))
-            .expect("identity is quire.op.<family>.<operation>");
+            .expect("identity is filament.op.<family>.<operation>");
         if family == "ieee" {
             assert!(
                 string_set(&entry(identity)["laws"], "ieee laws").contains("ieee_profile"),
@@ -6503,47 +6503,47 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         }
     }
     for identity in [
-        "quire.op.ieee.numeric_equal",
-        "quire.op.ieee.total_order",
-        "quire.op.ieee.bit_identical",
-        "quire.op.record.project",
-        "quire.op.tuple.project",
-        "quire.op.collection.index",
-        "quire.op.model.deref",
-        "quire.op.model.dispatch_call",
+        "filament.op.ieee.numeric_equal",
+        "filament.op.ieee.total_order",
+        "filament.op.ieee.bit_identical",
+        "filament.op.record.project",
+        "filament.op.tuple.project",
+        "filament.op.collection.index",
+        "filament.op.model.deref",
+        "filament.op.model.dispatch_call",
     ] {
         entry(identity);
     }
     assert_eq!(
-        entry("quire.op.model.all_instances")["operands"],
+        entry("filament.op.model.all_instances")["operands"],
         json!(["population"])
     );
-    assert_eq!(entry("quire.op.model.lookup")["mode"], json!("absence"));
+    assert_eq!(entry("filament.op.model.lookup")["mode"], json!("absence"));
     assert_eq!(
-        entry("quire.op.model.navigate")["member"],
+        entry("filament.op.model.navigate")["member"],
         json!("relationship_end")
     );
     assert_eq!(
-        entry("quire.op.model.reaches")["member"],
+        entry("filament.op.model.reaches")["member"],
         json!("relationship_end")
     );
-    assert_eq!(entry("quire.op.record.project")["member"], json!("field"));
-    assert_eq!(entry("quire.op.tuple.project")["member"], json!("position"));
+    assert_eq!(entry("filament.op.record.project")["member"], json!("field"));
+    assert_eq!(entry("filament.op.tuple.project")["member"], json!("position"));
     assert_eq!(
-        entry("quire.op.structural.eq")["leaves"],
+        entry("filament.op.structural.eq")["leaves"],
         json!("operand:0")
     );
     assert_eq!(
-        entry("quire.op.collection.contains")["leaves"],
+        entry("filament.op.collection.contains")["leaves"],
         json!("inner:0")
     );
     assert_eq!(
-        entry("quire.op.temporal.clause")["laws"],
+        entry("filament.op.temporal.clause")["laws"],
         json!(["temporal_profile"]),
-        "quire.op.temporal.clause law"
+        "filament.op.temporal.clause law"
     );
     assert_eq!(
-        entry("quire.op.temporal.clause")["member"],
+        entry("filament.op.temporal.clause")["member"],
         Value::Null,
         "a temporal clause names no operator: its formula's operators are their own identities (FR-370)"
     );
@@ -6564,7 +6564,7 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         "since",
         "triggered",
     ] {
-        let identity = format!("quire.op.temporal.{operator}");
+        let identity = format!("filament.op.temporal.{operator}");
         assert_eq!(
             entry(&identity)["operator"],
             json!("temporal_formula"),
@@ -6577,14 +6577,14 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         );
     }
     assert_eq!(
-        entry("quire.op.temporal.fair")["member"],
+        entry("filament.op.temporal.fair")["member"],
         json!("fairness"),
         "a fairness constraint carries the fairness member"
     );
     for (identity, role) in [
-        ("quire.op.claim.clause", "temporal_profile"),
-        ("quire.op.protocol.control", "protocol_profile"),
-        ("quire.op.state.transition", "protocol_profile"),
+        ("filament.op.claim.clause", "temporal_profile"),
+        ("filament.op.protocol.control", "protocol_profile"),
+        ("filament.op.state.transition", "protocol_profile"),
     ] {
         assert_eq!(entry(identity)["laws"], json!([role]), "{identity} law");
         assert_eq!(
@@ -6594,7 +6594,7 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         );
     }
     assert_eq!(
-        entry("quire.op.rational.div")["operands"],
+        entry("filament.op.rational.div")["operands"],
         json!(["rational_promotable", "rational_promotable"])
     );
     assert_eq!(
@@ -6602,7 +6602,7 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         BTreeSet::from(["integer", "rational"])
     );
     assert!(
-        entry("quire.op.rational.div")["constraints"]
+        entry("filament.op.rational.div")["constraints"]
             .as_array()
             .is_some_and(|constraints| constraints
                 .iter()
@@ -6610,8 +6610,8 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         "rational division states its exact integer promotion"
     );
     for (identity, kind) in [
-        ("quire.op.numeric.narrow", "range_narrowing"),
-        ("quire.op.rational.narrow", "rational_narrowing"),
+        ("filament.op.numeric.narrow", "range_narrowing"),
+        ("filament.op.rational.narrow", "rational_narrowing"),
     ] {
         assert!(
             entry(identity)["constraints"]
@@ -6624,13 +6624,13 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         assert!(entry(identity)["mode"].is_null(), "{identity} never rounds");
     }
     for identity in [
-        "quire.op.collection.set",
-        "quire.op.collection.bag",
-        "quire.op.collection.ordered_set",
-        "quire.op.collection.map",
-        "quire.op.collection.flat_map",
-        "quire.op.collection.flatten",
-        "quire.op.collection.convert",
+        "filament.op.collection.set",
+        "filament.op.collection.bag",
+        "filament.op.collection.ordered_set",
+        "filament.op.collection.map",
+        "filament.op.collection.flat_map",
+        "filament.op.collection.flatten",
+        "filament.op.collection.convert",
     ] {
         assert_eq!(
             entry(identity)["leaves"],
@@ -6639,8 +6639,8 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
         );
     }
     for identity in [
-        "quire.op.quantity.convert",
-        "quire.op.collection.sum.quantity",
+        "filament.op.quantity.convert",
+        "filament.op.collection.sum.quantity",
     ] {
         assert_eq!(
             entry(identity)["mode"],
@@ -6753,7 +6753,7 @@ fn tc_233_operation_member_resolves_only_against_an_operation_bearing_model_form
 /// before the arity/family/member/constraint/leaves let-else is ever
 /// reached, so no `dispatch_call` scenario -- `systems_interface` included --
 /// can tell `member_resolves` apart from a mutant that hard-codes it `true`.
-/// `quire.op.model.reaches` is not coupled that way: its catalog result form
+/// `filament.op.model.reaches` is not coupled that way: its catalog result form
 /// is `boolean`, computed independently of its `relationship_end` member, so
 /// an unresolved relationship-end declaration reaches the let-else and is
 /// refused by `member_resolves` alone, dying if that term is mutated.
@@ -6779,7 +6779,7 @@ fn tc_233_operator_ineligible_member_refusals_refuse_through_the_full_operations
                 "term": "application",
                 "operator": "call",
                 "operation": {
-                    "identity": "quire.op.model.dispatch_call",
+                    "identity": "filament.op.model.dispatch_call",
                     "laws": [],
                     "leaves": [],
                     "mode": null,
@@ -6818,7 +6818,7 @@ fn tc_233_operator_ineligible_member_refusals_refuse_through_the_full_operations
                         "term": "application",
                         "operator": "reaches",
                         "operation": {
-                            "identity": "quire.op.model.reaches",
+                            "identity": "filament.op.model.reaches",
                             "laws": [],
                             "leaves": [],
                             "mode": null,
@@ -6971,8 +6971,8 @@ fn tc_233_clause_applications_bind_a_selected_profile_law_and_one_profile_member
     let catalog = parsed_fixture(OPERATION_CATALOG);
     let package = parsed_fixture(POSITIVE_CLAUSE_OPERATIONS);
     assert_eq!(package_operations_refusal(&package, &catalog), Ok(()));
-    let temporal = node_with_operation(&package, "quire.op.temporal.clause");
-    let protocol = node_with_operation(&package, "quire.op.protocol.control");
+    let temporal = node_with_operation(&package, "filament.op.temporal.clause");
+    let protocol = node_with_operation(&package, "filament.op.protocol.control");
     let operation = |index: usize| format!("/semantic_graph/nodes/{index}/body/operation");
     let refusal = |edit: &dyn Fn(&mut Value)| {
         let mut candidate = package.clone();
@@ -7018,7 +7018,7 @@ fn tc_233_clause_applications_bind_a_selected_profile_law_and_one_profile_member
     assert_eq!(
         package.pointer(&format!("{}/member", operation(temporal))),
         Some(&Value::Null),
-        "a temporal clause carries no member; its operators are quire.op.temporal.* applications"
+        "a temporal clause carries no member; its operators are filament.op.temporal.* applications"
     );
     assert_eq!(
         refusal(&|candidate| {
@@ -7076,12 +7076,12 @@ fn edited_clause(package: &Value, clause: &str, edit: impl FnOnce(&mut Value)) -
 
 /// FR-341-AC-1/AC-2, FR-341-AC-8, FR-342-AC-1, FR-340-AC-12/AC-14/AC-15:
 /// the node-form body rules the published schema carries. A
-/// `state`/`state_clause` body is a `quire.op.state.clause` application
+/// `state`/`state_clause` body is a `filament.op.state.clause` application
 /// over a parameter aggregate of references, an anchor reference and a
 /// condition, carrying the `state_clause` member, and its occurrences are
 /// `claim`; an `operation_anchor` body is the three bindings in order and
 /// its occurrences are `anchor`; a `transition` body is a
-/// `quire.op.state.transition` application; a frame's occurrences are
+/// `filament.op.state.transition` application; a frame's occurrences are
 /// `generated`. `ModelNode.semantic_form` is the closed set FR-340-AC-15
 /// names, so no `model` node names a member declaration form.
 #[trace("TC-233", "FR-341-AC-1")]
@@ -7125,8 +7125,8 @@ fn tc_233_state_node_forms_fix_their_body_roots_and_occurrence_roles() {
     );
     refused(
         &format!("{}/body/operation/identity", node(invariant)),
-        json!("quire.op.state.transition"),
-        "a state_clause body names quire.op.state.clause",
+        json!("filament.op.state.transition"),
+        "a state_clause body names filament.op.state.clause",
     );
     refused(
         &format!("{}/body/operator", node(invariant)),
@@ -7566,7 +7566,7 @@ fn clause_model_bindings(operation_parameters: usize) -> Value {
         .map(|i| {
             json!({
                 "name": format!("p{i}"),
-                "typeRef": "ix://quire/native/Integer",
+                "typeRef": "ix://filament/native/Integer",
                 "multiplicity": {"lower": "1", "upper": "1", "ordered": false, "unique": true},
             })
         })
@@ -7581,7 +7581,7 @@ fn clause_model_bindings(operation_parameters: usize) -> Value {
                 "supertypes": [],
                 "fields": [{
                     "name": "versionNumber",
-                    "typeRef": "ix://quire/native/Integer",
+                    "typeRef": "ix://filament/native/Integer",
                     "presence": "required",
                     "multiplicity": {"lower": "1", "upper": "1", "ordered": false, "unique": true},
                     "redefines": null,
@@ -7763,7 +7763,7 @@ fn tc_233_state_step_refusal_precedes_an_operation_step_refusal() {
         .expect("a conditional expression is published");
     let mut with_operation_defect = package.clone();
     let mut if_node = with_operation_defect["semantic_graph"]["nodes"][if_index].clone();
-    if_node["body"]["operation"]["identity"] = json!("quire.op.control.iff");
+    if_node["body"]["operation"]["identity"] = json!("filament.op.control.iff");
     replace_application_node(&mut with_operation_defect, if_index, if_node);
     assert!(
         package_operations_refusal(&with_operation_defect, &catalog).is_err(),
@@ -7792,7 +7792,7 @@ fn tc_233_state_step_refusal_precedes_an_operation_step_refusal() {
     );
 }
 
-/// FR-341-AC-9: the catalog entry of `quire.op.state.clause`, bound to both
+/// FR-341-AC-9: the catalog entry of `filament.op.state.clause`, bound to both
 /// schemas, and every published state clause admitted by the operation step.
 #[trace("TC-233", "FR-341-AC-9")]
 #[test]
@@ -7802,8 +7802,8 @@ fn tc_233_state_clause_is_a_catalogued_operation_the_schemas_enumerate() {
         .as_array()
         .expect("catalog operations are an array")
         .iter()
-        .find(|entry| entry["identity"] == "quire.op.state.clause")
-        .expect("quire.op.state.clause is catalogued");
+        .find(|entry| entry["identity"] == "filament.op.state.clause")
+        .expect("filament.op.state.clause is catalogued");
     assert_eq!(entry["operator"], "state_clause");
     assert_eq!(entry["operands"], json!(["aggregate", "object", "boolean"]));
     assert_eq!(entry["rest"], Value::Null);
@@ -7814,7 +7814,7 @@ fn tc_233_state_clause_is_a_catalogued_operation_the_schemas_enumerate() {
     for schema in [parsed_fixture(SCHEMA)] {
         assert!(
             string_set(&schema["$defs"]["OperationIdentity"]["enum"], "identities")
-                .contains("quire.op.state.clause")
+                .contains("filament.op.state.clause")
         );
     }
     let package = parsed_fixture(POSITIVE_CLAUSE_OPERATIONS);
@@ -7869,7 +7869,7 @@ fn tc_395_malformed_union_bodies_fail_the_published_schema() {
         (
             "case application naming another operation",
             format!("/semantic_graph/nodes/{case}/body/operation/identity"),
-            json!("quire.op.control.if"),
+            json!("filament.op.control.if"),
         ),
     ];
     for (label, pointer, replacement) in mutations {
@@ -8160,12 +8160,12 @@ fn walk_package(catalog: &Value, mut types: Vec<Value>, compared: &str) -> Value
     })
 }
 
-/// `quire.op.structural.eq` over `left` and `right` carrying `leaves`.
+/// `filament.op.structural.eq` over `left` and `right` carrying `leaves`.
 fn walk_structural_eq(leaves: &[Value]) -> Value {
     json!({
         "term": "application",
         "operator": "binary",
-        "operation": {"identity": "quire.op.structural.eq", "laws": [], "mode": null, "member": null, "leaves": leaves},
+        "operation": {"identity": "filament.op.structural.eq", "laws": [], "mode": null, "member": null, "leaves": leaves},
         "result_type": walk_id("Bool"),
         "arguments": [walk_ref("left"), walk_ref("right")]
     })
@@ -8183,7 +8183,7 @@ fn walk_recursion_leaf(path: &[&str]) -> Value {
     json!({"path": path, "laws": [], "mode": null})
 }
 
-/// `quire.op.structural.eq` over two `compared` values of `types` is admitted
+/// `filament.op.structural.eq` over two `compared` values of `types` is admitted
 /// with exactly `leaves`, in order: with the last leaf dropped it refuses
 /// `operation-law-missing`, and with the leaves reversed it refuses
 /// `operation-law-mismatch`.
@@ -8502,15 +8502,15 @@ enum TemporalRefusal {
     MalformedWire(String),
 }
 
-const INFINITE_TRACE: &str = "quire.temporal.infinite-trace/v1";
-const TIMED: &str = "quire.temporal.timed/v1";
+const INFINITE_TRACE: &str = "filament.temporal.infinite-trace/v1";
+const TIMED: &str = "filament.temporal.timed/v1";
 
 /// FR-250's five profile identities.
 fn fr_250_profiles() -> Vec<&'static str> {
     vec![
-        "quire.temporal.event-position.false-extension/v1",
-        "quire.temporal.fixed-sample.false-extension/v1",
-        "quire.temporal.timestamped-event.finite-window/v1",
+        "filament.temporal.event-position.false-extension/v1",
+        "filament.temporal.fixed-sample.false-extension/v1",
+        "filament.temporal.timestamped-event.finite-window/v1",
         INFINITE_TRACE,
         TIMED,
     ]
@@ -8753,9 +8753,9 @@ fn temporal_clause_refusal(
 #[trace("TC-303", "FR-370-AC-10")]
 #[test]
 fn tc_303_a_clause_profile_check_runs_before_its_other_checks() {
-    let protocol = json!({"authority": "agent-ix", "identity": "quire.protocol.finite-global/v1"});
+    let protocol = json!({"authority": "agent-ix", "identity": "filament.protocol.finite-global/v1"});
     let lock = json!({
-        "edition": {"role": "edition", "definition": {"authority": "agent-ix", "identity": "quire-edition"}},
+        "edition": {"role": "edition", "definition": {"authority": "agent-ix", "identity": "filament-edition"}},
         "profile_selections": [{"role": "protocol_profile", "definition": protocol}]
     });
     let law = |identity: &str| json!({"authority": "agent-ix", "identity": identity});
@@ -8769,7 +8769,7 @@ fn tc_303_a_clause_profile_check_runs_before_its_other_checks() {
     for (definition, refusal) in [
         (protocol.clone(), TemporalRefusal::WrongSelectionRole),
         (
-            law("quire.temporal.unknown/v1"),
+            law("filament.temporal.unknown/v1"),
             TemporalRefusal::UnsupportedSelection,
         ),
     ] {
@@ -9494,7 +9494,7 @@ fn case_placement_refusal(package: &Value) -> Result<(), TemporalRefusal> {
         }
     }
     for (index, node) in nodes.iter().enumerate() {
-        let at_root = node["body"]["operation"]["identity"] == "quire.op.control.case";
+        let at_root = node["body"]["operation"]["identity"] == "filament.op.control.case";
         let case_node = node["node_tag"] == "expression" && node["semantic_form"] == "case";
         if at_root && !case_node {
             return Err(TemporalRefusal::OperatorIneligible(format!(
@@ -9635,7 +9635,7 @@ fn model_field_projections_missing_read_form(package: &Value) -> Vec<String> {
         .expect("the semantic graph has a node array");
     let model_derefs: Vec<Value> = nodes
         .iter()
-        .filter(|node| node["body"]["operation"]["identity"] == "quire.op.model.deref")
+        .filter(|node| node["body"]["operation"]["identity"] == "filament.op.model.deref")
         .map(|node| node["node_id"].clone())
         .collect();
     nodes
@@ -9643,7 +9643,7 @@ fn model_field_projections_missing_read_form(package: &Value) -> Vec<String> {
         .enumerate()
         .filter_map(|(index, node)| {
             let body = &node["body"];
-            if body["operation"]["identity"] != "quire.op.record.project"
+            if body["operation"]["identity"] != "filament.op.record.project"
                 || body["operation"]["member"]["kind"] != "field"
             {
                 return None;
@@ -9704,7 +9704,7 @@ fn positive_packages_and_projection_vectors_carry_model_read_form() {
         .iter()
         .find(|node| {
             let member = &node["body"]["operation"]["member"];
-            node["body"]["operation"]["identity"] == "quire.op.record.project"
+            node["body"]["operation"]["identity"] == "filament.op.record.project"
                 && member["kind"] == "field"
                 && member["name"] == "on"
                 && member["declaration"]["path"]
@@ -10354,7 +10354,7 @@ fn tc_233_a_model_population_with_no_max_is_the_unbounded_population() {
             .1;
         let application = node_index_where(&candidate, |node| {
             node["body"]["operation"]["member"]["kind"] == "relationship_end"
-                && node["body"]["operation"]["identity"] == "quire.op.model.reaches"
+                && node["body"]["operation"]["identity"] == "filament.op.model.reaches"
         });
         let order = node_index_where(&candidate, |node| {
             node["node_tag"] == "model" && node["owner"]["node"] == "ix://acme/orders/Order"
@@ -10429,7 +10429,7 @@ fn tc_233_a_model_population_with_no_max_is_the_unbounded_population() {
 }
 
 /// FR-322-AC-73 (population link of a `reaches`): the published
-/// `reaches_population_cases`. A `quire.op.model.reaches` application whose
+/// `reaches_population_cases`. A `filament.op.model.reaches` application whose
 /// `relationship_end` member names a `model_population` node over the type of
 /// its role's end is admitted, for a `max` of `3` and of `0`; the key is part
 /// of the application's key and its dependencies; a `population` that is an
@@ -10458,7 +10458,7 @@ fn tc_233_a_reaches_population_link_names_a_population_over_its_role_end_type() 
         let published = candidate.clone();
         let application = node_index_where(&candidate, |node| {
             node["body"]["operation"]["member"]["kind"] == "relationship_end"
-                && node["body"]["operation"]["identity"] == "quire.op.model.reaches"
+                && node["body"]["operation"]["identity"] == "filament.op.model.reaches"
         });
         let population = &case["population"];
         let link = if population.is_null() {
@@ -10566,7 +10566,7 @@ fn model_declaration_for(package: &mut Value, owner_node: &str) -> Value {
 
 /// FR-322-AC-398 (population link of a `reaches_field`): the published
 /// `field_population_cases`. The relationship-end `reaches` application of the
-/// published fixture is rewritten to `quire.op.model.reaches_field` over a
+/// published fixture is rewritten to `filament.op.model.reaches_field` over a
 /// field of `Order`, whose `field` member names `population`. A population over
 /// the field's owner is admitted for a `max` of `3`, of `0` and an absent one,
 /// when the member's declaration is `Order` or its subtype `Sub`; a population
@@ -10592,9 +10592,9 @@ fn tc_233_a_reaches_field_population_link_names_a_population_over_the_field_owne
             .expect("a published base")
             .1;
         if case["schema"] == "refused" {
-            // A field projection (`quire.op.record.project`) with a population.
+            // A field projection (`filament.op.record.project`) with a population.
             let projection = node_index_where(&candidate, |node| {
-                node["body"]["operation"]["identity"] == "quire.op.record.project"
+                node["body"]["operation"]["identity"] == "filament.op.record.project"
             });
             assert!(v2.is_valid(&candidate), "{id}: the published fixture validates");
             let link = candidate["semantic_graph"]["nodes"][projection]["node_id"].clone();
@@ -10606,7 +10606,7 @@ fn tc_233_a_reaches_field_population_link_names_a_population_over_the_field_owne
         }
         let application = node_index_where(&candidate, |node| {
             node["body"]["operation"]["member"]["kind"] == "relationship_end"
-                && node["body"]["operation"]["identity"] == "quire.op.model.reaches"
+                && node["body"]["operation"]["identity"] == "filament.op.model.reaches"
         });
         let declaration = model_declaration_for(
             &mut candidate,
@@ -10628,7 +10628,7 @@ fn tc_233_a_reaches_field_population_link_names_a_population_over_the_field_owne
         };
         let without_dependency = case["dependencies"] == "without-population";
         edit_node(&mut candidate, application, |node| {
-            node["body"]["operation"]["identity"] = json!("quire.op.model.reaches_field");
+            node["body"]["operation"]["identity"] = json!("filament.op.model.reaches_field");
             node["body"]["operation"]["member"] =
                 json!({"kind": "field", "declaration": declaration, "name": field, "population": link});
             node["dependencies"] = Value::Array(application_dependencies(&node["body"]));
@@ -10742,7 +10742,7 @@ fn tc_233_scalar_equality_identities_and_literal_kinds_are_enumerated_and_admitt
     let oracle = OperationOracle::for_package(&catalog, &package);
     for (family, prefix) in [("string", "s"), ("uuid", "u"), ("timestamp", "t")] {
         for operation in ["eq", "ne"] {
-            let identity = format!("quire.op.{family}.{operation}");
+            let identity = format!("filament.op.{family}.{operation}");
             for schema in [parsed_fixture(SCHEMA)] {
                 assert!(
                     string_set(&schema["$defs"]["OperationIdentity"]["enum"], "identities")
@@ -10899,14 +10899,14 @@ fn tc_233_scalar_equality_refuses_cross_family_laws_modes_ordering_and_arithmeti
             .err()
     };
     for (identity, left, right) in [
-        ("quire.op.string.eq", "s1", "x1"),
-        ("quire.op.uuid.eq", "u1", "s1"),
-        ("quire.op.string.ne", "s1", "u1"),
-        ("quire.op.timestamp.eq", "t1", "u1"),
-        ("quire.op.integer.lt", "u1", "u2"),
-        ("quire.op.integer.add", "u1", "u2"),
-        ("quire.op.integer.lt", "t1", "t2"),
-        ("quire.op.integer.add", "s1", "s2"),
+        ("filament.op.string.eq", "s1", "x1"),
+        ("filament.op.uuid.eq", "u1", "s1"),
+        ("filament.op.string.ne", "s1", "u1"),
+        ("filament.op.timestamp.eq", "t1", "u1"),
+        ("filament.op.integer.lt", "u1", "u2"),
+        ("filament.op.integer.add", "u1", "u2"),
+        ("filament.op.integer.lt", "t1", "t2"),
+        ("filament.op.integer.add", "s1", "s2"),
     ] {
         assert_eq!(
             refusal(identity, json!([]), Value::Null, left, right),
@@ -10916,18 +10916,18 @@ fn tc_233_scalar_equality_refuses_cross_family_laws_modes_ordering_and_arithmeti
     }
     assert_eq!(
         refusal(
-            "quire.op.text.eq",
+            "filament.op.text.eq",
             json!([{"role": "text_profile", "definition": walk_text_law(&catalog)}]),
             json!({"kind": "text_profile", "value": "nfc"}),
             "s1",
             "s2"
         ),
         Some(OperationRefusal::ModeTypeMismatch),
-        "a string operand of quire.op.text.eq pins no text profile and refuses operation-mode-type-mismatch"
+        "a string operand of filament.op.text.eq pins no text profile and refuses operation-mode-type-mismatch"
     );
     assert_eq!(
         refusal(
-            "quire.op.string.eq",
+            "filament.op.string.eq",
             json!([{"role": "text_profile", "definition": walk_text_law(&catalog)}]),
             Value::Null,
             "s1",
@@ -10938,7 +10938,7 @@ fn tc_233_scalar_equality_refuses_cross_family_laws_modes_ordering_and_arithmeti
     );
     assert_eq!(
         refusal(
-            "quire.op.uuid.eq",
+            "filament.op.uuid.eq",
             json!([]),
             json!({"kind": "text_profile", "value": "nfc"}),
             "u1",
@@ -10962,12 +10962,12 @@ fn tc_233_text_number_operations_are_catalogued_and_checked() {
     let expected_text_identities: Vec<String> = [
         "integer", "decimal", "rational", "float32", "float64", "quantity",
     ]
-    .map(|target| format!("quire.op.text.to_{target}"))
+    .map(|target| format!("filament.op.text.to_{target}"))
     .into();
     let expected_string_identities: Vec<String> = [
         "integer", "decimal", "rational", "float32", "float64", "quantity",
     ]
-    .map(|target| format!("quire.op.string.to_{target}"))
+    .map(|target| format!("filament.op.string.to_{target}"))
     .into();
     for schema in [parsed_fixture(SCHEMA)] {
         let identities: Vec<String> = schema["$defs"]["OperationIdentity"]["enum"]
@@ -10978,11 +10978,11 @@ fn tc_233_text_number_operations_are_catalogued_and_checked() {
             .collect();
         let text_anchor = identities
             .iter()
-            .position(|identity| identity == "quire.op.text.size")
+            .position(|identity| identity == "filament.op.text.size")
             .expect("text.size is enumerated");
         let string_anchor = identities
             .iter()
-            .position(|identity| identity == "quire.op.string.ne")
+            .position(|identity| identity == "filament.op.string.ne")
             .expect("string.ne is enumerated");
         assert_eq!(
             &identities[text_anchor + 1..text_anchor + 7],
@@ -11042,7 +11042,7 @@ fn tc_233_text_number_operations_are_catalogued_and_checked() {
     for source in ["text", "string"] {
         let source_node = if source == "text" { "x1" } else { "s1" };
         for (target, target_node, mode) in targets {
-            let identity = format!("quire.op.{source}.to_{target}");
+            let identity = format!("filament.op.{source}.to_{target}");
             let mut law_roles = Vec::new();
             if source == "text" {
                 law_roles.push("text_profile");
@@ -11085,7 +11085,7 @@ fn tc_233_text_number_operations_are_catalogued_and_checked() {
         }
     }
 
-    let wrong_member = application("quire.op.text.to_integer", "x1", "Bool", &["text_profile"]);
+    let wrong_member = application("filament.op.text.to_integer", "x1", "Bool", &["text_profile"]);
     assert_eq!(
         oracle.classify(&wrong_member),
         Err(OperationRefusal::OperatorIneligible),
@@ -11492,7 +11492,7 @@ fn tc_303_a_clause_application_has_no_absent_or_null_over_argument() {
         schema.is_valid(&package),
         "the published clause package is admitted"
     );
-    let index = node_with_operation(&package, "quire.op.temporal.clause");
+    let index = node_with_operation(&package, "filament.op.temporal.clause");
     let arguments = format!("/semantic_graph/nodes/{index}/body/arguments");
     let mut removed = package.clone();
     removed
@@ -11641,7 +11641,7 @@ const POSITIVE_INTEGER_LITERAL_REFERENCES: &str =
     include_str!("../proposals/checked-package-v2/fixtures/positive-integer-literal-references.json");
 
 /// FR-322 "Integer literal operands": the rule binds the producer. A package
-/// whose `quire.op.integer.add` application references literal nodes is
+/// whose `filament.op.integer.add` application references literal nodes is
 /// admitted by the reader, under its own node identity.
 #[trace("TC-233", "FR-322-AC-93")]
 #[test]
@@ -11660,13 +11660,13 @@ fn tc_233_a_reader_admits_the_reference_form_of_an_integer_literal_operand() {
             .find(|node| {
                 node["node_tag"] == "expression"
                     && node["semantic_form"] == "binary"
-                    && node["body"]["operation"]["identity"] == "quire.op.integer.add"
+                    && node["body"]["operation"]["identity"] == "filament.op.integer.add"
             })
             .expect("the integer-add expression")
             .clone()
     };
     let referenced = application(&references);
-    assert_eq!(referenced["body"]["operation"]["identity"], "quire.op.integer.add");
+    assert_eq!(referenced["body"]["operation"]["identity"], "filament.op.integer.add");
     assert!(
         referenced["body"]["arguments"]
             .as_array()
@@ -12009,7 +12009,7 @@ fn push_structural_node(
     dependencies.dedup();
     let mut node = json!({
         "node_id": placeholder,
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": tag,
         "semantic_form": form,
         "semantic_type": semantic_type.unwrap_or_else(|| placeholder.clone()),
@@ -12869,7 +12869,7 @@ fn tc_233_text_bounds_nodes_must_be_complete() {
 const FMA_APPLICATION_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/fma-application-vectors.json");
 
-/// FR-322-AC-307: `quire.op.ieee.float{32,64}.fma` is the generic `call`
+/// FR-322-AC-307: `filament.op.ieee.float{32,64}.fma` is the generic `call`
 /// application with three `reference` arguments. Each vector is decided against
 /// the catalog entry, and the derived operation member meets the closed schema.
 #[trace("TC-233", "FR-322-AC-307")]
@@ -12886,7 +12886,7 @@ fn tc_233_fma_applications_follow_the_catalog_entry() {
         .as_array()
         .unwrap()
         .iter()
-        .find(|node| node["body"]["operation"]["identity"] == "quire.op.ieee.float64.add")
+        .find(|node| node["body"]["operation"]["identity"] == "filament.op.ieee.float64.add")
         .expect("the fixture carries a float64.add application")["body"]
         .clone();
     let mut seen = BTreeSet::new();
@@ -13142,10 +13142,10 @@ fn tc_367_timed_model_authority_bindings_are_explicit_and_joined() {
     assert_eq!(resolved.len(), path.len());
     assert_eq!(resolved[0]["members"][1]["value"]["value"], "ix://acme/orders/Order");
     assert_eq!(resolved[0]["members"][2]["value"]["value"], "ix://acme/orders/Order/clock");
-    assert_eq!(resolved[0]["members"][3]["value"]["value"], "Map<Text, ix://quire/native/Clock>");
+    assert_eq!(resolved[0]["members"][3]["value"]["value"], "Map<Text, ix://filament/native/Clock>");
     assert_eq!(resolved[0]["members"][4]["value"]["value"], "map");
-    assert_eq!(resolved[1]["members"][1]["value"]["value"], "Map<Text, ix://quire/native/Clock>");
-    assert_eq!(resolved[1]["members"][3]["value"]["value"], "ix://quire/native/Clock");
+    assert_eq!(resolved[1]["members"][1]["value"]["value"], "Map<Text, ix://filament/native/Clock>");
+    assert_eq!(resolved[1]["members"][3]["value"]["value"], "ix://filament/native/Clock");
 }
 
 #[trace("TC-367", "FR-322-AC-120")]
@@ -13236,15 +13236,15 @@ fn every_positive_fixture_lists_dependencies_in_structural_node_id_order() {
 
 const TEMPORAL_PROFILE_CLOCK_KINDS: [(&str, &str); 3] = [
     (
-        "quire.temporal.event-position.false-extension/v1",
+        "filament.temporal.event-position.false-extension/v1",
         "event_position",
     ),
     (
-        "quire.temporal.fixed-sample.false-extension/v1",
+        "filament.temporal.fixed-sample.false-extension/v1",
         "fixed_sample",
     ),
     (
-        "quire.temporal.timestamped-event.finite-window/v1",
+        "filament.temporal.timestamped-event.finite-window/v1",
         "timestamped_event",
     ),
 ];
@@ -13269,7 +13269,7 @@ fn every_positive_fixture_carries_each_required_temporal_clock_binding() {
         let configured = nodes
             .iter()
             .filter_map(|node| {
-                if node["body"]["operation"]["identity"] != "quire.op.temporal.clause" {
+                if node["body"]["operation"]["identity"] != "filament.op.temporal.clause" {
                     return None;
                 }
                 let profile = node["body"]["operation"]["laws"]
@@ -13496,7 +13496,7 @@ const SHAPES_DOCUMENT: &str =
 /// "Model-owned members" step 4): a native name is its scalar, a package type
 /// is its self-typed declaration node.
 fn shapes_type_of(reference: &str) -> Value {
-    match reference.strip_prefix("ix://quire/native/") {
+    match reference.strip_prefix("ix://filament/native/") {
         Some(native) => json!({"type": native}),
         None => json!({"declaration": reference.rsplit('/').next().expect("segment")}),
     }
@@ -13629,7 +13629,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
             .flatten()
             .find(|candidate| candidate["node"] == reference)
     };
-    let resolves = |reference: &str| match read_through(reference).strip_prefix("ix://quire/native/") {
+    let resolves = |reference: &str| match read_through(reference).strip_prefix("ix://filament/native/") {
         Some(native) => natives.contains(&native),
         None => {
             let reference = read_through(reference);
@@ -13647,10 +13647,10 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
     // unbounded Rational value type of FR-154 "Rational value types"; a bounded one has a step 4
     // row), or `Text` without the flat `lower`, `upper` and `profile` members (FR-154's value type
     // shape, as `model-member-type-vectors.json` publishes it).
-    let unmapped = |reference: &str| match read_through(reference).strip_prefix("ix://quire/native/") {
+    let unmapped = |reference: &str| match read_through(reference).strip_prefix("ix://filament/native/") {
         Some(native) => matches!(native, "Rational" | "Decimal" | "Text"),
         None => value_type(&read_through(reference)).is_some_and(|found| {
-            match found["native"].as_str().and_then(|native| native.strip_prefix("ix://quire/native/")) {
+            match found["native"].as_str().and_then(|native| native.strip_prefix("ix://filament/native/")) {
                 Some("Decimal") => true,
                 Some("Rational") => ["numerator_min", "numerator_max", "denominator_min", "denominator_max"]
                     .iter()
@@ -13680,7 +13680,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
         for (slot, position) in positions.iter().enumerate() {
             let supported = position["typeRef"]
                 .as_str()
-                .is_some_and(|reference| reference != "ix://quire/native/Clock" && !unmapped(reference));
+                .is_some_and(|reference| reference != "ix://filament/native/Clock" && !unmapped(reference));
             if position["ordinal"] != slot || !supported {
                 return Some(("invalid_model_binding", "malformed-declaration", format!("{at}/positions/{slot}")));
             }
@@ -13694,7 +13694,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
     for (index, variant) in document["variant_types"].as_array().into_iter().flatten().enumerate() {
         for (slot, case) in variant["cases"].as_array().expect("cases").iter().enumerate() {
             if let Some(payload) = case["payloadType"].as_str()
-                && (payload == "ix://quire/native/Clock" || unmapped(payload) || !resolves(payload))
+                && (payload == "ix://filament/native/Clock" || unmapped(payload) || !resolves(payload))
             {
                 return Some((
                     "unsupported_construct",
@@ -13845,8 +13845,8 @@ fn tc_940_tuple_and_union_cases_run_from_the_published_vectors() {
         seen(&case["name"]);
         let family = shapes_family(document, case["type"].as_str().unwrap());
         let admitted = match case["operation"].as_str().unwrap() {
-            "quire.op.structural.eq" => ["tuple", "union"].contains(&family),
-            "quire.op.enum.eq" => family == "enum",
+            "filament.op.structural.eq" => ["tuple", "union"].contains(&family),
+            "filament.op.enum.eq" => family == "enum",
             other => panic!("unexpected operation {other}"),
         };
         let observed = if admitted { json!({"admitted": true}) } else { shapes_refusal("ill_typed", "operator-ineligible") };
@@ -14517,7 +14517,7 @@ fn presence_cause(
 fn presence_hidden_member(vectors: &Value) -> Result<(), String> {
     let hidden = |value: &Value| {
         let text = serde_json::to_string(value).unwrap();
-        text.contains("\"presence\"") || text.contains("Option<Boolean>") || text.contains("Option<ix://quire/native/Boolean>")
+        text.contains("\"presence\"") || text.contains("Option<Boolean>") || text.contains("Option<ix://filament/native/Boolean>")
     };
     let presence = &vectors["presence"];
     for (name, place) in presence["places"].as_object().unwrap() {
@@ -14633,7 +14633,7 @@ fn tc_367_presence_vector_assertions_each_fail_on_their_mutation() {
     })).contains("object_type"));
     assert!(hidden(&mutate(&|v| {
         v["model_join"]["declared_with_v"]["fields"].as_array_mut().unwrap()
-            .push(json!({"name": "v_present", "presence": "optional", "typeRef": "ix://quire/native/Boolean", "identity": "x", "multiplicity": {}}));
+            .push(json!({"name": "v_present", "presence": "optional", "typeRef": "ix://filament/native/Boolean", "identity": "x", "multiplicity": {}}));
     })).contains("hidden field"));
     assert!(hidden(&mutate(&|v| {
         v["model_join"]["declared_with_v"]["fields"].as_array_mut().unwrap().pop();
@@ -14793,7 +14793,7 @@ fn tc_935_selection_vectors_are_published_and_agree_with_the_markdown() {
 
 fn tc935_agreement(vector_text: &str, markdown: &str) {
     let vectors: Value = serde_json::from_str(vector_text).expect("vector file is JSON");
-    assert_eq!(vectors["version"], "quire.contract-package-selection-vectors/v1");
+    assert_eq!(vectors["version"], "filament.contract-package-selection-vectors/v1");
 
     // The fenced JSON block under "Typed source-selection vectors".
     let section = markdown
@@ -14929,7 +14929,7 @@ fn tc_935_table_cells_keep_a_pipe_inside_a_cell() {
 #[test]
 fn tc_935_selection_vector_disagreement_is_detected() {
     let mutations: [(&str, &str); 5] = [
-        ("quire.temporal.infinite-trace/v1", "quire.temporal.infinite-trace/v2"),
+        ("filament.temporal.infinite-trace/v1", "filament.temporal.infinite-trace/v2"),
         (r#""lock_profile_selections": ["U", "T"]"#, r#""lock_profile_selections": ["T", "U"]"#),
         ("\"unrelated selection\"", "\"unrelated\""),
         ("Repeat the unrelated case with lock order", "Repeat the unrelated case with lock order EDIT"),
@@ -15027,7 +15027,7 @@ fn timed_clause_refusal(
             .and_then(|op| op["params"].as_array().unwrap().iter().find(|param| param["name"] == name));
         match parameter {
             None => !on("parameter-declared"),
-            Some(param) => param["typeRef"] == "ix://quire/native/Clock" || !on("parameter-clock"),
+            Some(param) => param["typeRef"] == "ix://filament/native/Clock" || !on("parameter-clock"),
         }
     };
     let frame_fields = |anchor: &OrderedId| -> BTreeSet<String> {
@@ -15544,13 +15544,13 @@ fn tc_233_numeric_conversions_classify_and_rational_division_promotes_exactly() 
 
     let catalog = parsed_fixture(OPERATION_CATALOG);
     let package = parsed_fixture(POSITIVE_OPERATION_IDENTITIES);
-    let div = node_with_operation(&package, "quire.op.rational.div");
+    let div = node_with_operation(&package, "filament.op.rational.div");
     assert_eq!(package_operations_refusal(&package, &catalog), Ok(()));
     let entry = catalog["operations"]
         .as_array()
         .expect("catalog operations")
         .iter()
-        .find(|entry| entry["identity"] == "quire.op.rational.div")
+        .find(|entry| entry["identity"] == "filament.op.rational.div")
         .expect("rational.div is catalogued");
     assert!(
         entry.to_string().contains("promotes_exact"),
@@ -16181,7 +16181,7 @@ fn tc_367_timed_model_semantic_refusals_are_replayable_packages() {
                 adverse["semantic_graph"]["nodes"][45]["body"]["members"][2]["value"]["members"][0]["members"][2]["value"]["value"] = json!("ix://acme/orders/Order/unknown");
             }
             "wrong-terminal-clock-type" => {
-                adverse["semantic_graph"]["nodes"][45]["body"]["members"][2]["value"]["members"][0]["members"][3]["value"]["value"] = json!("ix://quire/native/Integer");
+                adverse["semantic_graph"]["nodes"][45]["body"]["members"][2]["value"]["members"][0]["members"][3]["value"]["value"] = json!("ix://filament/native/Integer");
             }
             "coherent-forged-selected-chain" => {
                 let place = &mut adverse["semantic_graph"]["nodes"][45]["body"]["members"];
@@ -16905,12 +16905,12 @@ fn temporal_clock_binding_vectors_are_closed_and_profile_typed() {
 #[test]
 fn tc_233_integer_operator_literal_operands_are_inline_in_the_published_packages() {
     let operators = [
-        "quire.op.integer.add",
-        "quire.op.integer.sub",
-        "quire.op.integer.mul",
-        "quire.op.integer.negate",
-        "quire.op.integer.eq",
-        "quire.op.integer.ne",
+        "filament.op.integer.add",
+        "filament.op.integer.sub",
+        "filament.op.integer.mul",
+        "filament.op.integer.negate",
+        "filament.op.integer.eq",
+        "filament.op.integer.ne",
     ];
     
     let mut inline = BTreeMap::<String, usize>::new();
@@ -16977,8 +16977,8 @@ fn tc_233_integer_operator_literal_operands_are_inline_in_the_published_packages
 
 /// FR-322-AC-82 and FR-322-AC-83: the published `population_reference_cases`.
 /// A `relation`/`population` node owned by a population the selected document
-/// declares is the operand of `quire.op.model.all_instances` and
-/// `quire.op.model.lookup`; two populations key and read differently; a
+/// declares is the operand of `filament.op.model.all_instances` and
+/// `filament.op.model.lookup`; two populations key and read differently; a
 /// population owned by anything else is refused at the owner join, one without
 /// an owner fails the V2 schema, and the node is no `collection_kind` operand.
 /// The published fixture's operand 0 is a `Population<Order>[2]` binding, which
@@ -17036,7 +17036,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
             });
             let mut node = json!({
                 "node_id": placeholder,
-                "schema_version": "quire.checked-semantic-graph/v2",
+                "schema_version": "filament.checked-semantic-graph/v2",
                 "node_tag": "relation",
                 "semantic_form": "population",
                 "semantic_type": placeholder,
@@ -17058,7 +17058,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
                 .expect("appended")["node_id"]
                 .clone();
             let application = node_index_where(&candidate, |node| {
-                node["body"]["operation"]["identity"] == format!("quire.op.{operation}").as_str()
+                node["body"]["operation"]["identity"] == format!("filament.op.{operation}").as_str()
             });
             let as_declaration = case["member_declaration"] == true;
             let as_link = case["member_population"] == true;
@@ -17074,7 +17074,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
             });
             if let Some(also) = case["also"].as_str() {
                 let second = node_index_where(&candidate, |node| {
-                    node["body"]["operation"]["identity"] == format!("quire.op.{also}").as_str()
+                    node["body"]["operation"]["identity"] == format!("filament.op.{also}").as_str()
                 });
                 edit_node(&mut candidate, second, |node| {
                     node["body"]["arguments"][0]["target"] = population_id.clone();
@@ -17104,7 +17104,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
             let application =
                 &candidate["semantic_graph"]["nodes"][node_index_where(&candidate, |node| {
                     node["body"]["operation"]["identity"]
-                        == format!("quire.op.{operation}").as_str()
+                        == format!("filament.op.{operation}").as_str()
                 })];
             assert!(
                 application["dependencies"]
@@ -17122,7 +17122,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
                         node["body"]["arguments"][0]["target"] == population_id
                             && [operation, also].iter().any(|name| {
                                 node["body"]["operation"]["identity"]
-                                    == format!("quire.op.{name}").as_str()
+                                    == format!("filament.op.{name}").as_str()
                             })
                     })
                     .count();
@@ -17173,7 +17173,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
 
 /// FR-341-AC-15, FR-341-AC-17, FR-464-AC-19: the published transition package
 /// carries one Boolean model-field `state`/`transition` node whose body is the
-/// five-binding `quire.op.state.transition` application. The closed
+/// five-binding `filament.op.state.transition` application. The closed
 /// schema refuses each body mutation, the operation step admits it
 /// and refuses another profile operator, and the
 /// transition depends on the anchor, subject, pre and post nodes.
@@ -17209,7 +17209,7 @@ fn tc_233_state_transition_package_binds_anchor_subject_pre_and_post() {
             .map(drop)
     };
 
-    let transition = node_with_operation(&package, "quire.op.state.transition");
+    let transition = node_with_operation(&package, "filament.op.state.transition");
     let body = |index: usize| format!("/semantic_graph/nodes/{index}/body");
     let refused = |pointer: String, value: Value, why: &str| {
         let mut candidate = package.clone();
@@ -17293,7 +17293,7 @@ fn tc_233_state_transition_package_binds_anchor_subject_pre_and_post() {
     );
 
     let clause_package = parsed_fixture(POSITIVE_CLAUSE_OPERATIONS);
-    let protocol = node_with_operation(&clause_package, "quire.op.protocol.control");
+    let protocol = node_with_operation(&clause_package, "filament.op.protocol.control");
     let mut protocol_transition = clause_package.clone();
     protocol_transition["semantic_graph"]["nodes"][protocol]["body"]["operation"]["member"]
         ["operator"] = json!("transition");
@@ -17331,7 +17331,7 @@ fn tc_233_state_transition_package_binds_anchor_subject_pre_and_post() {
         .as_array()
         .expect("nodes")
         .iter()
-        .position(|node| node["body"]["operation"]["identity"] == "quire.op.boolean.or")
+        .position(|node| node["body"]["operation"]["identity"] == "filament.op.boolean.or")
         .expect("the precondition term");
     refused(
         format!("{}/arguments/0", body(enabled)),
@@ -17436,7 +17436,7 @@ fn tc_233_application_result_types_and_literal_types_are_checked_not_inferred() 
     let catalog = parsed_fixture(OPERATION_CATALOG);
     let package = parsed_fixture(POSITIVE_OPERATION_IDENTITIES);
     let div = node_index_where(&package, |node| {
-        node["body"]["operation"]["identity"] == "quire.op.rational.div"
+        node["body"]["operation"]["identity"] == "filament.op.rational.div"
     });
     let id = |role: &str| {
         let (tag, form) = match role {
@@ -17519,7 +17519,7 @@ fn shapes_project_document(document: &Value) -> Value {
     let (mut objects, mut tuples, mut variants) = (Vec::new(), Vec::new(), Vec::new());
     for declared in document["types"].as_array().expect("types") {
         match meaning(declared).as_str() {
-            "quire.meaning.model.object-type/v1" => objects.push(json!({
+            "filament.meaning.model.object-type/v1" => objects.push(json!({
                 "node": declared["identity"],
                 "interfaceFeatures": null,
                 "supertypes": declared["supertypes"],
@@ -17537,13 +17537,13 @@ fn shapes_project_document(document: &Value) -> Value {
                 })).collect::<Vec<_>>(),
                 "operations": [],
             })),
-            "quire.meaning.model.tuple-value-type/v1" => tuples.push(json!({
+            "filament.meaning.model.tuple-value-type/v1" => tuples.push(json!({
                 "node": declared["identity"],
                 "positions": declared["positions"].as_array().expect("positions").iter().enumerate()
                     .map(|(ordinal, position)| json!({"ordinal": ordinal, "typeRef": position["typeRef"]}))
                     .collect::<Vec<_>>(),
             })),
-            "quire.meaning.model.variant-type/v1" => variants.push(json!({
+            "filament.meaning.model.variant-type/v1" => variants.push(json!({
                 "node": declared["identity"],
                 "cases": declared["variants"].as_array().expect("variants").iter().map(|case| json!({
                     "name": case["name"],
@@ -17583,7 +17583,7 @@ fn tc_940_the_selected_document_is_a_full_semantic_ir_whose_projection_is_derive
         .as_array()
         .unwrap()
         .iter()
-        .find(|entry| entry["construct"]["meaning"] == "quire.meaning.model.tuple-value-type/v1")
+        .find(|entry| entry["construct"]["meaning"] == "filament.meaning.model.tuple-value-type/v1")
         .expect("the tuple-value-type construct is declared");
     assert_eq!(tuple_construct["construct"]["shape"], "tuple");
     assert_eq!(
@@ -17813,7 +17813,7 @@ fn tc_233_two_owners_differ_by_package_in_every_node_id() {
             .find(|node| {
                 node["node_tag"] == "expression"
                     && node["semantic_form"] == "binary"
-                    && node["body"]["operation"]["identity"] == "quire.op.integer.add"
+                    && node["body"]["operation"]["identity"] == "filament.op.integer.add"
             })
             .expect("the `three` integer-add expression")
             .clone()
@@ -18468,7 +18468,7 @@ fn tc_233_node_id_ordinal_vectors_run_from_the_published_file() {
 /// that are not 0, not contiguous and not in graph order are admitted; two
 /// nodes of an equal `{package, path, ordinal}` are refused
 /// `invalid_semantic_graph` at the second node's `node_id`. The reader that
-/// decides the refusal is quire-contract-ir's and the vectors are authoritative
+/// decides the refusal is filament-contract-ir's and the vectors are authoritative
 /// for it; `duplicate_node_id_index` is a standalone helper, not wired into the
 /// shared model oracle, so the oracle's own refusal is not run on `NO-07`/`NO-08`.
 #[trace("TC-233", "FR-322-AC-272", "FR-322-AC-273")]
@@ -18570,7 +18570,7 @@ fn expand_structural_key_references(value: &mut Value, keys: &serde_json::Map<St
 
 /// FR-144-AC-9/AC-13 and FR-153-AC-9 (TC-189, TC-247): publish complete structural
 /// node keys for collection and population type forms. The consumer that
-/// computes these keys is QSL's checked-package reader; this QSpec test keeps
+/// computes these keys is FSL's checked-package reader; this QSpec test keeps
 /// every key schema-valid and every case's source type, element, bounds and
 /// selected key in sync.
 #[trace("TC-189", "TC-247", "FR-144-AC-9", "FR-144-AC-13", "FR-153-AC-9")]
@@ -18836,7 +18836,7 @@ const DIMENSION_EQUIVALENCE_VECTORS: &str =
 /// FR-322-AC-268 (TC-280 `MU-25`..`MU-30`): shape and consistency check of the
 /// published cross-package equivalence vectors. QSpec holds no reader for
 /// equivalence graphs: the reader that decides admission and each
-/// `invalid_semantic_graph` refusal is quire-contract-ir's (FR-063-AC-3,
+/// `invalid_semantic_graph` refusal is filament-contract-ir's (FR-063-AC-3,
 /// FR-063-AC-4), and the vectors are authoritative for it, so this test
 /// recomputes no outcome. It requires only that the vectors are well formed:
 /// every equivalence body and every derived dimension body meets the closed V2
@@ -19280,7 +19280,7 @@ fn tc_966_hybrid_model_nodes_meet_the_schema_and_are_self_typed() {
     assert_eq!(claim["body"]["arguments"][1]["value"], "model-time");
     assert_eq!(
         claim["body"]["operation"]["laws"],
-        json!([{"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "quire.temporal.infinite-trace/v1"}}])
+        json!([{"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "filament.temporal.infinite-trace/v1"}}])
     );
     assert_eq!(
         claim["body"]["arguments"][2],
@@ -19305,7 +19305,7 @@ fn tc_966_hybrid_model_nodes_meet_the_schema_and_are_self_typed() {
     let always = node_at(&claim["body"]["arguments"][5]["target"]);
     assert_eq!(
         always["body"]["operation"]["identity"],
-        "quire.op.temporal.always"
+        "filament.op.temporal.always"
     );
     assert_eq!(
         always["body"]["operation"]["member"],
@@ -19314,12 +19314,12 @@ fn tc_966_hybrid_model_nodes_meet_the_schema_and_are_self_typed() {
     let holds = node_at(&always["body"]["arguments"][0]["target"]);
     assert_eq!(
         holds["body"]["operation"]["identity"],
-        "quire.op.temporal.holds"
+        "filament.op.temporal.holds"
     );
     let below = node_at(&holds["body"]["arguments"][0]["target"]);
     assert_eq!(
         below["body"]["operation"]["identity"],
-        "quire.op.rational.lt"
+        "filament.op.rational.lt"
     );
     let v = at(&roles["variables"][0]);
     assert_eq!(
@@ -19338,7 +19338,7 @@ fn tc_966_hybrid_model_nodes_meet_the_schema_and_are_self_typed() {
     let negate = node_at(&rates[0]["target"]);
     assert_eq!(
         negate["body"]["operation"]["identity"],
-        "quire.op.rational.negate"
+        "filament.op.rational.negate"
     );
     assert_eq!(negate["body"]["arguments"][0]["target"], a["node_id"]);
     assert_eq!(node_at(&rates[1]["target"])["body"]["value"], "0");
@@ -19352,7 +19352,7 @@ fn tc_966_hybrid_model_nodes_meet_the_schema_and_are_self_typed() {
     let guard = node_at(&hybrid_binding(&transition["body"], "guard")["target"]);
     assert_eq!(
         guard["body"]["operation"]["identity"],
-        "quire.op.rational.eq"
+        "filament.op.rational.eq"
     );
     assert_eq!(guard["body"]["arguments"][0]["target"], v["node_id"]);
     assert_eq!(
@@ -19422,7 +19422,7 @@ fn tc_966_restored_hybrid_forms_meet_the_schema_and_are_self_typed() {
     let conditions = roles["initial_conditions"].as_array().expect("conditions");
     for (entry, role) in initial.iter().zip(conditions) {
         assert_eq!(hybrid_binding(entry, "condition")["target"], at(role)["node_id"]);
-        assert_eq!(at(role)["body"]["operation"]["identity"], "quire.op.boolean.and");
+        assert_eq!(at(role)["body"]["operation"]["identity"], "filament.op.boolean.and");
     }
     // Braking keeps the default initial entry, so its model has no binding.
     let braking = &base[vectors["roles"]["model"].as_u64().expect("model") as usize];
@@ -19453,7 +19453,7 @@ fn tc_966_restored_hybrid_forms_meet_the_schema_and_are_self_typed() {
     assert_eq!(hybrid_binding(&capture_type["body"], "numerator_max")["value"], "20");
     assert_eq!(
         slows["body"]["operation"]["laws"][0]["definition"]["identity"],
-        "quire.temporal.timed/v1"
+        "filament.temporal.timed/v1"
     );
     let fairness = by_id(&arguments[4]["members"][0]["target"]);
     assert_eq!(fairness["node_id"], at(&roles["fairness"])["node_id"]);
@@ -19472,7 +19472,7 @@ fn tc_966_restored_hybrid_forms_meet_the_schema_and_are_self_typed() {
     let recent = at(&roles["steps_claim"]);
     assert_eq!(recent["body"]["arguments"][1]["value"], "model-steps");
     let once = by_id(&recent["body"]["arguments"][5]["target"]);
-    assert_eq!(once["body"]["operation"]["identity"], "quire.op.temporal.once");
+    assert_eq!(once["body"]["operation"]["identity"], "filament.op.temporal.once");
     assert_eq!(
         once["body"]["operation"]["member"]["interval"],
         json!({"lower": "0", "upper": "2"})
@@ -19551,7 +19551,7 @@ fn tc_971_option_value_body_is_closed_and_binds_type_and_payload() {
             "ordinal": 0
         });
         let node = json!({
-            "schema_version":"quire.checked-semantic-graph/v2",
+            "schema_version":"filament.checked-semantic-graph/v2",
             "node_tag":"composite_type",
             "semantic_form":"option",
             "node_id":id,
@@ -19755,7 +19755,7 @@ fn selected_element(document: &Value, type_ref: &str) -> String {
         }
         Some(declared) if declared["kind"] == "map" => {
             let keys = declared["keys"].as_str().expect("keys");
-            let key = keys.strip_prefix("ix://quire/native/").map_or_else(|| selected_element(document, keys), str::to_owned);
+            let key = keys.strip_prefix("ix://filament/native/").map_or_else(|| selected_element(document, keys), str::to_owned);
             format!("Map<{key}, {}>", selected_element(document, declared["values"].as_str().expect("values")))
         }
         _ => type_ref.to_owned(),
@@ -19775,7 +19775,7 @@ fn selected_field_row(document: &Value, owner: &str, name: &str) -> Vec<String> 
     let type_ref = field["typeRef"].as_str().unwrap();
     let mut element = selected_element(document, type_ref);
     if field["presence"] == "optional" {
-        assert_eq!(type_ref, "ix://quire/native/Clock", "only the clock member shape is ruled");
+        assert_eq!(type_ref, "ix://filament/native/Clock", "only the clock member shape is ruled");
         element = format!("Option<{element}>");
     }
     let multiplicity = &field["multiplicity"];
@@ -20000,7 +20000,7 @@ fn tc_367_timed_slot_vectors_name_a_complete_selected_package() {
     assert_eq!(field["multiplicity"], nested["multiplicity"]);
     let definition = selected_type(&document, nested["typeRef"].as_str().unwrap()).unwrap();
     assert_eq!(definition["kind"], "sequence");
-    assert_eq!(definition["items"], "ix://quire/native/Clock");
+    assert_eq!(definition["items"], "ix://filament/native/Clock");
     assert_eq!(json!(definition["items"]), nested["type_definition"]["items"]);
     assert_eq!(selected_field_row(&document, "ix://acme/orders/Order", "g")[2], nested["rendered"].as_str().unwrap());
     // Only FCD typeDefinition and field members appear in the new definitions.
@@ -20032,13 +20032,13 @@ fn tc_367_selected_package_assertions_each_fail_on_their_mutation() {
     };
     // A changed document makes the join fail where the declaration changed.
     let swapped_items = edit_document(&|d| {
-        d["types"].as_array_mut().unwrap().iter_mut().find(|t| t["identity"] == "ix://acme/orders/ClockRow").unwrap()["items"] = json!("ix://quire/native/Integer");
+        d["types"].as_array_mut().unwrap().iter_mut().find(|t| t["identity"] == "ix://acme/orders/ClockRow").unwrap()["items"] = json!("ix://filament/native/Integer");
     });
     let found = defect(&vectors, &swapped_items, &package);
     assert!(found.contains("do not join"), "the nested typeRef shape decides the g rows: {found}");
     let flat_g = edit_document(&|d| {
         let order = d["types"].as_array_mut().unwrap().iter_mut().find(|t| t["identity"] == "ix://acme/orders/Order").unwrap();
-        order["fields"].as_array_mut().unwrap().iter_mut().find(|f| f["name"] == "g").unwrap()["typeRef"] = json!("ix://quire/native/Clock");
+        order["fields"].as_array_mut().unwrap().iter_mut().find(|f| f["name"] == "g").unwrap()["typeRef"] = json!("ix://filament/native/Clock");
     });
     assert!(defect(&vectors, &flat_g, &package).contains("slot step selects from a collection"));
     let wrong_bound = edit_document(&|d| {
@@ -20052,7 +20052,7 @@ fn tc_367_selected_package_assertions_each_fail_on_their_mutation() {
     };
     let bounded_map = clock_map(&|t| t["bound"]["upper"] = json!(2));
     assert!(defect(&vectors, &bounded_map, &package).contains("slot step does not carry"));
-    let integer_keys = clock_map(&|t| t["keys"] = json!("ix://quire/native/Integer"));
+    let integer_keys = clock_map(&|t| t["keys"] = json!("ix://filament/native/Integer"));
     assert!(defect(&vectors, &integer_keys, &package).contains("do not join"));
     // The vectors and the package.
     let mut moved = vectors.clone();
@@ -20179,8 +20179,8 @@ fn aggregate_argument_refusal(
     let whole = "/arguments/0".to_owned();
     let member = |at: usize| format!("/arguments/0/members/{at}");
     let profile_window = match profile {
-        "quire.temporal.event-position.false-extension/v1" => "positions",
-        "quire.temporal.timestamped-event.finite-window/v1" => "duration",
+        "filament.temporal.event-position.false-extension/v1" => "positions",
+        "filament.temporal.timestamped-event.finite-window/v1" => "duration",
         _ => return refuse("invalid_package", "invalid-value", String::new()),
     };
     let members = argument["members"].as_array().expect("an aggregate argument");
@@ -20355,8 +20355,8 @@ fn tc_303_window_aggregate_arguments_admit_each_kind_and_refuse_at_the_first_def
         .as_array()
         .expect("catalog operations are an array")
         .iter()
-        .find(|entry| entry["identity"] == "quire.op.temporal.aggregate")
-        .expect("quire.op.temporal.aggregate is catalogued");
+        .find(|entry| entry["identity"] == "filament.op.temporal.aggregate")
+        .expect("filament.op.temporal.aggregate is catalogued");
     assert_eq!(entry["operator"], "temporal_formula");
     assert_eq!(entry["operands"], json!(["aggregate"]));
     assert_eq!(entry["result"], "temporal");
@@ -20364,7 +20364,7 @@ fn tc_303_window_aggregate_arguments_admit_each_kind_and_refuse_at_the_first_def
     assert_eq!(entry["laws"], json!([]));
     let schema = parsed_fixture(SCHEMA);
     assert!(
-        string_set(&schema["$defs"]["OperationIdentity"]["enum"], "identities").contains("quire.op.temporal.aggregate"),
+        string_set(&schema["$defs"]["OperationIdentity"]["enum"], "identities").contains("filament.op.temporal.aggregate"),
         "the schema enumerates the aggregate identity"
     );
     let argument_shape = schema_for_def(&schema, "MemberTerm");
@@ -20782,7 +20782,7 @@ fn tc_233_a_deep_chain_has_linear_wire_and_fixed_depth() {
         for previous in 0..length {
             nodes.push(json!({"node_tag": "expression", "semantic_form": "application",
                 "node_id": {"package": "example",
-                    "path": ["expression", "application", "quire.op.integer.negate", {"operand": 0}],
+                    "path": ["expression", "application", "filament.op.integer.negate", {"operand": 0}],
                     "ordinal": 0}}));
             rows.push(json!([previous]));
         }
@@ -22038,7 +22038,7 @@ fn tc_280_bounded_quantity_refusal_vector_preserves_target_domain() {
         .find(|case| case["id"] == "BQ-09")
         .expect("BQ-09 bounded-quantity refusal vector");
 
-    assert_eq!(case["operation"], "quire.op.quantity.convert");
+    assert_eq!(case["operation"], "filament.op.quantity.convert");
     assert_eq!(case["target"]["unit_identity"], "ix://acme/rpc/unit/m");
     assert_eq!(case["target"]["min"], "-1/1");
     assert_eq!(case["target"]["max"], "1/1");
@@ -22073,7 +22073,7 @@ const QUANTITY_CARRIER_VECTORS: &str =
 /// FR-322-AC-301, FR-322-AC-302, FR-322-AC-382, FR-142-AC-28..FR-142-AC-31
 /// (TC-280 `MU-31`..`MU-34`, TC-187 `U41`..`U44`, TC-981 `RV-08` and `RV-10`): shape and consistency check of the published
 /// carried-quantity vectors. QSpec holds no reader or evaluator for them (the
-/// readers are quire-contract-ir's and quire-verification's), so this test
+/// readers are filament-contract-ir's and filament-verification's), so this test
 /// recomputes only what follows from exact arithmetic: that each carried node's
 /// path and body agree, that each carried node meets the closed
 /// `ScalarTypeNode` schema, that the schema enumerates the form, and that every
@@ -22135,7 +22135,7 @@ fn tc_280_quantity_carrier_vectors_are_consistent() {
         let mut dependencies = vec![id_of(unit), id_of(carrier)];
         dependencies.sort_by_key(|id| id["path"].to_string());
         let wire = json!({
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "node_id": id_of(key),
             "node_tag": "scalar_type",
             "semantic_form": "carried_quantity",
@@ -22170,7 +22170,7 @@ fn tc_280_quantity_carrier_vectors_are_consistent() {
         }
         if let Some(app) = case.get("application") {
             let result = &nodes[app["result_type"].as_str().unwrap()];
-            if app["operation"] == "quire.op.quantity.convert" {
+            if app["operation"] == "filament.op.quantity.convert" {
                 let dimension = |unit: &str| match nodes[unit].get("unit") {
                     Some(inner) => nodes[inner.as_str().unwrap()]["dimension"].clone(),
                     None => nodes[unit]["dimension"].clone(),

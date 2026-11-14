@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:quire:checked-package-extension-definitions:v2",
+  "$id": "urn:filament:checked-package-extension-definitions:v2",
   "title": "Published FR-467 extension definitions held by a checked-package reader",
   "type": "object",
   "additionalProperties": false,

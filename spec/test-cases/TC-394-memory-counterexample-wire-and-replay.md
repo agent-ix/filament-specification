@@ -3,9 +3,9 @@ id: TC-394
 title: "Weak-memory counterexample wire and replay"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-437
+  - target: ix://agent-ix/filament-specification/FR-437
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: verifies
 ---
 

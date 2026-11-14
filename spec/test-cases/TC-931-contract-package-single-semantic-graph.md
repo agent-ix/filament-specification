@@ -3,13 +3,13 @@ id: TC-931
 title: "ContractPackage has one identity-keyed semantic graph"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-4
+  - target: ix://agent-ix/filament-specification/FR-330-AC-4
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-22
+  - target: ix://agent-ix/filament-specification/FR-322-AC-22
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322-AC-66
+  - target: ix://agent-ix/filament-specification/FR-322-AC-66
     type: verifies
 ---
 
@@ -32,7 +32,7 @@ identities, references, and source correspondence with FR-322 and FR-330.
 Include an explicit recursion group and verify its keyed references remain
 finite serialized values. Repeat after changing construction order. In the
 fixture, use a `protocol_clause` node with the FR-464 clause body; verify its
-`quire.op.protocol.control` application carries the selected
+`filament.op.protocol.control` application carries the selected
 `protocol_profile` law and catalogued `profile_operator` member, as FR-322-AC-22
 requires.
 Add FR-322's `protocol`/`protocol_reference` carrier to that clause, with a

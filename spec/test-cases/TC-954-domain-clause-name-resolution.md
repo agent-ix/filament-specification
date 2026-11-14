@@ -3,7 +3,7 @@ id: TC-954
 title: "Domain clause name resolution"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-470
+  - target: ix://agent-ix/filament-specification/FR-470
     type: verifies
 ---
 
@@ -17,8 +17,8 @@ the owner's namespace membership and the clause text's leading form.
 
 ## Test Procedure
 
-Select `quire.model.complete/v1` through
-[`model-complete.md`](../../proposals/quire-v1/definitions/model-complete.md).
+Select `filament.model.complete/v1` through
+[`model-complete.md`](../../proposals/filament-v1/definitions/model-complete.md).
 Run every vector through the real local Rust check of domain clauses and
 compare the complete typed result with the criterion.
 

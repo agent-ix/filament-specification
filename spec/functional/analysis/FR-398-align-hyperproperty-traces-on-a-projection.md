@@ -3,19 +3,19 @@ id: FR-398
 title: "Align hyperproperty traces on a projection"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: references
-  - target: ix://agent-ix/quire-specification/FR-400
+  - target: ix://agent-ix/filament-specification/FR-400
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
 ---
 
@@ -99,7 +99,7 @@ joint step. The maximum depth counts moves of either kind.
   the match split and indexed reads.
 - [FR-191](FR-191-analyze-relational-hyperproperties.md) requires an explicit
   total alignment; the projection is that alignment for HP-6.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns
   the `align-skip` production.
 - [FR-363](../temporal/FR-363-settle-every-behaviour-temporal-verdicts.md) and [FR-367](../temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)
   own the safety fragment and its three-valued prefix evaluation.

@@ -3,13 +3,13 @@ id: FR-125
 title: "Produce deterministic output packages"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: references
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
-  - target: ix://agent-ix/quire-specification/FR-299
+  - target: ix://agent-ix/filament-specification/FR-299
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-034
+  - target: ix://agent-ix/filament-contract-ir/FR-034
     type: references
 ---
 ## Description

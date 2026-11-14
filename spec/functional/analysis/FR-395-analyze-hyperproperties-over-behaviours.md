@@ -3,27 +3,27 @@ id: FR-395
 title: "Analyze hyperproperties over every behaviour of a model"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
-  - target: ix://agent-ix/quire-specification/FR-398
+  - target: ix://agent-ix/filament-specification/FR-398
     type: references
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: references
 ---
 
@@ -96,7 +96,7 @@ One result per clause instance, classified by
   [FR-362](../temporal/FR-362-apply-fairness-constraints.md): `weak` and
   `whole` when unwritten. A quantifier with no constraint has the empty set.
 - **Profile.** A clause over `behaviours` selects
-  `quire.temporal.infinite-trace/v1`, and its body is an infinite-trace
+  `filament.temporal.infinite-trace/v1`, and its body is an infinite-trace
   formula over indexed atoms, interval operators nested under unbounded ones
   admitted as [FR-367](../temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)
   admits them.
@@ -169,7 +169,7 @@ One result per clause instance, classified by
 - When a match conjunct reads state, the checker SHALL refuse it as
   `unsupported_construct`/`expression-form`, located at the read.
 - When a clause over `behaviours` is checked under a temporal profile other
-  than `quire.temporal.infinite-trace/v1`, the negotiation SHALL settle it
+  than `filament.temporal.infinite-trace/v1`, the negotiation SHALL settle it
   `unsupported`, `unsupported_projection`/`unsupported-requested-capability`.
 
 ## Acceptance Criteria
@@ -189,7 +189,7 @@ One result per clause instance, classified by
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns the
   `hyper-clause`, `behaviours-domain`, `quantifier`, `fairness`,
   `match-block`, `step-label` and `indexed-read` productions.
 - [FR-191](FR-191-analyze-relational-hyperproperties.md) owns quantifier order,

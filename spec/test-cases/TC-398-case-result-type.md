@@ -3,7 +3,7 @@ id: TC-398
 title: "Case result type"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: verifies
 ---
 

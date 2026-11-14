@@ -3,7 +3,7 @@ id: TC-193
 title: "IEEE exceptional and rounding profiles"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-148
+  - target: ix://agent-ix/filament-specification/FR-148
     type: verifies
 ---
 
@@ -16,9 +16,9 @@ Evaluate NaN, infinity, signed zero, width and rounding-mode discriminator vecto
 ## Test Procedure
 
 Select language `ix:native`, edition `1-draft`, and the
-`quire.value.complete/v1` definition and the
-`quire.value.ieee754-2019-default/v1` definition through
-[`value-complete.md`](../../proposals/quire-v1/definitions/value-complete.md).
+`filament.value.complete/v1` definition and the
+`filament.value.ieee754-2019-default/v1` definition through
+[`value-complete.md`](../../proposals/filament-v1/definitions/value-complete.md).
 Invoke only the qualified intrinsics fixed
 by FR-148 and execute these comparison/propagation vectors through the real
 local Rust boundary:

@@ -3,11 +3,11 @@ id: FR-141
 title: "Evaluate text and declaration-qualified enumerations"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -40,7 +40,7 @@ Evolution never reuses a removed member identity for different meaning.
 
 `unicode-scalars` compares the decoded scalar sequence without normalization;
 `nfc`, `nfd`, `nfkc` and `nfkd` apply exactly the named Unicode normalization
-form using the `quire.value.text.unicode-17.0.0/v1` tables; `binary-utf8`
+form using the `filament.value.text.unicode-17.0.0/v1` tables; `binary-utf8`
 compares the admitted UTF-8 payload bytes. A source string's payload is the
 canonical UTF-8 encoding of its decoded scalar sequence, so raw `é` and
 `\u00e9` have one binary value while their different source spellings remain
@@ -103,7 +103,7 @@ it unchanged (FR-322). The same exact imported owner and declaration retain the
 same ids across otherwise different packages; an unrelated package edit cannot
 rename them. Neither id is a local name,
 source position or caller-computed assertion. Under
-`quire.value.accounting/v1`, text normalization charges the named input,
+`filament.value.accounting/v1`, text normalization charges the named input,
 normalization and result points before publishing a value; exhaustion is
 incomplete, not a truncated string.
 
@@ -122,7 +122,7 @@ incomplete, not a truncated string.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

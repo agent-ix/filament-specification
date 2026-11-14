@@ -3,7 +3,7 @@ id: TC-183
 title: "Uniform extension non-interference"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-133
+  - target: ix://agent-ix/filament-specification/FR-133
     type: verifies
 ---
 

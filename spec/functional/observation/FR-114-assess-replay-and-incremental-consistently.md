@@ -3,11 +3,11 @@ id: FR-114
 title: "Agree replay and incremental settled assessment"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
 ---
 ## Description
@@ -45,7 +45,7 @@ merely the same label.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
 - E owns temporal semantics; B owns protocol assessment semantics.
 
 ## Status

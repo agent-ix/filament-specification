@@ -3,27 +3,27 @@ id: FR-377
 title: "Decide refinement between two model subjects"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: references
-  - target: ix://agent-ix/quire-specification/FR-376
+  - target: ix://agent-ix/filament-specification/FR-376
     type: references
-  - target: ix://agent-ix/quire-specification/FR-378
+  - target: ix://agent-ix/filament-specification/FR-378
     type: references
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-468
+  - target: ix://agent-ix/filament-specification/FR-468
     type: references
 ---
 
@@ -170,7 +170,7 @@ One function decides each step, and every engine and replay answers to it.
 
 **Reading of behaviours.** A refinement item reads the behaviours of both
 subjects as maximal paths with a terminal stutter step (above), which is the
-`quire.temporal.infinite-trace/v1` reading of
+`filament.temporal.infinite-trace/v1` reading of
 [FR-361](../temporal/FR-361-read-model-behaviours-as-temporal-traces.md); a
 terminal-stutter path SHALL count as an infinite trace. A refinement item therefore
 classifies `unbounded` ([FR-368](../temporal/FR-368-negotiate-temporal-model-check-items.md)
@@ -305,7 +305,7 @@ until and since are non-strict ([FR-161](../temporal/FR-161-analyze-infinite-tra
 
 ## References
 
-- Design: quire-spec-language ADR-020 (RS-1 to RS-13, CO-1, CO-2, RE-1,
-  RE-2, QS-2, RU-2); ADR-026 §15 and QSL FR-430 (timed refinement).
+- Design: filament-spec-language ADR-020 (RS-1 to RS-13, CO-1, CO-2, RE-1,
+  RE-2, QS-2, RU-2); ADR-026 §15 and FSL FR-430 (timed refinement).
 - Tickets: Linear STD-133; paired QSL-367. The model-subject temporal
   requirement is Linear STD-131.

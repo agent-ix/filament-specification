@@ -4,17 +4,17 @@ title: "Compensation registration"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-237
+  - target: ix://agent-ix/filament-specification/FR-237
     type: references
-  - target: ix://agent-ix/quire-specification/FR-238
+  - target: ix://agent-ix/filament-specification/FR-238
     type: references
-  - target: ix://agent-ix/quire-specification/FR-239
+  - target: ix://agent-ix/filament-specification/FR-239
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-233: Compensation registration
@@ -122,7 +122,7 @@ receive, delivery or attempt that lacks the required successful effect" and that
   establishes that attempts, deliveries and effects are distinct subjects.
 - [FR-057](../../functional/protocol/FR-057-enforce-commit-recovery.md) establishes the
   forbidding-commit ordering rule.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) supplies the
   concrete forward-effect key.

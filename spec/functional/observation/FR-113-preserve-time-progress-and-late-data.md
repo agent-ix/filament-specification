@@ -3,15 +3,15 @@ id: FR-113
 title: "Preserve time, progress, and late-data authority"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: references
-  - target: ix://agent-ix/quire-specification/FR-267
+  - target: ix://agent-ix/filament-specification/FR-267
     type: references
-  - target: ix://agent-ix/quire-specification/FR-268
+  - target: ix://agent-ix/filament-specification/FR-268
     type: references
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: references
 ---
 ## Description
@@ -52,8 +52,8 @@ watermark equal to `b` does not prove inclusive coverage through `b`.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
-- [Observation binding and progress contract](../../../proposals/quire-v1/observation-contract.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
+- [Observation binding and progress contract](../../../proposals/filament-v1/observation-contract.md).
 - E owns clock, history, and closure meaning.
 
 ## Status

@@ -4,13 +4,13 @@ title: "Protocol channel"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-216
+  - target: ix://agent-ix/filament-specification/FR-216
     type: contains
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-215: Protocol channel
@@ -109,7 +109,7 @@ channel/component reference rather than becoming a participant role" (FR-054).
   channel positions to their required declaration kinds.
 - [FR-216](FR-216-channel-premise.md) is the premise value object this channel
   contains.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-288](FR-288-qualified-protocol-definition-identity.md) supplies the
   qualified linked-definition component.

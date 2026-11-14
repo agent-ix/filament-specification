@@ -4,9 +4,9 @@ title: "Declared finite population"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-264
+  - target: ix://agent-ix/filament-specification/FR-264
     type: references
 ---
 # FR-263: Declared finite population
@@ -117,7 +117,7 @@ configuration, or closure input".
 - [FR-264](FR-264-membership-rule.md) types the declared membership rule.
 - [FR-265](FR-265-selected-snapshot.md) and
   [FR-266](FR-266-event-time-window.md) type the two selected bounds subjects.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Completeness boundary
@@ -128,4 +128,4 @@ cannot be inferred from progress or closure alone.
 
 ## Status
 
-Proposed population identity closure for `quire-specification#40`.
+Proposed population identity closure for `filament-specification#40`.

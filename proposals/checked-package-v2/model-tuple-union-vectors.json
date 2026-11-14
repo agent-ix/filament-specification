@@ -1,5 +1,5 @@
 {
-  "version": "quire.model-tuple-union-vectors/v1",
+  "version": "filament.model-tuple-union-vectors/v1",
   "note": "STD-519 (review round 1: package-level nodes, recursion, application-node keys). The selected document of fixtures/positive-model-tuple-union.json is the full FCD semantic IR 2.0.0 domain-package-acme-shapes.json (STD-529, FR-322-AC-151); domain_package is its projection, the declarations FR-154 reads (tuple_types carry ordered positions, variant_types carry cases, all in document order). Cases are evaluated by the QSpec test over domain_package; wire_cases are RFC 6902 patches over the fixture. Node names are the declaration_nodes names. Intake cases that patch `/aliases` add FR-154 alias declarations (`node`, `target`) to the projection; an alias is read through to its target before the payload and position tests.",
   "base": "fixtures/positive-model-tuple-union.json",
   "domain_package": {
@@ -57,11 +57,11 @@
         "positions": [
           {
             "ordinal": 0,
-            "typeRef": "ix://quire/native/Boolean"
+            "typeRef": "ix://filament/native/Boolean"
           },
           {
             "ordinal": 1,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           }
         ]
       },
@@ -70,11 +70,11 @@
         "positions": [
           {
             "ordinal": 0,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           },
           {
             "ordinal": 1,
-            "typeRef": "ix://quire/native/Boolean"
+            "typeRef": "ix://filament/native/Boolean"
           }
         ]
       },
@@ -96,7 +96,7 @@
         "positions": [
           {
             "ordinal": 0,
-            "typeRef": "ix://quire/native/Integer"
+            "typeRef": "ix://filament/native/Integer"
           },
           {
             "ordinal": 1,
@@ -111,7 +111,7 @@
         "cases": [
           {
             "name": "Flag",
-            "payloadType": "ix://quire/native/Boolean"
+            "payloadType": "ix://filament/native/Boolean"
           },
           {
             "name": "Empty",
@@ -506,7 +506,7 @@
     {
       "name": "TQ-01",
       "criterion": "FR-322-AC-144",
-      "operation": "quire.op.structural.eq",
+      "operation": "filament.op.structural.eq",
       "type": "Shape",
       "expected": {
         "admitted": true
@@ -515,7 +515,7 @@
     {
       "name": "TQ-02",
       "criterion": "FR-322-AC-144",
-      "operation": "quire.op.enum.eq",
+      "operation": "filament.op.enum.eq",
       "type": "Shape",
       "expected": {
         "refused": {
@@ -528,7 +528,7 @@
     {
       "name": "TQ-03",
       "criterion": "FR-322-AC-144",
-      "operation": "quire.op.enum.eq",
+      "operation": "filament.op.enum.eq",
       "type": "Color",
       "expected": {
         "admitted": true
@@ -537,7 +537,7 @@
     {
       "name": "TQ-04",
       "criterion": "FR-322-AC-144",
-      "operation": "quire.op.structural.eq",
+      "operation": "filament.op.structural.eq",
       "type": "Color",
       "expected": {
         "refused": {
@@ -550,7 +550,7 @@
     {
       "name": "TQ-05",
       "criterion": "FR-322-AC-140",
-      "operation": "quire.op.structural.eq",
+      "operation": "filament.op.structural.eq",
       "type": "Pair",
       "expected": {
         "admitted": true
@@ -697,7 +697,7 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://quire/native/Clock"
+          "value": "ix://filament/native/Clock"
         }
       ],
       "expected": {
@@ -716,7 +716,7 @@
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/0/typeRef",
-          "value": "ix://quire/native/Clock"
+          "value": "ix://filament/native/Clock"
         }
       ],
       "expected": {
@@ -743,7 +743,7 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://quire/native/Rational"
+          "value": "ix://filament/native/Rational"
         }
       ],
       "expected": {
@@ -762,7 +762,7 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://quire/native/Decimal"
+          "value": "ix://filament/native/Decimal"
         }
       ],
       "expected": {
@@ -781,7 +781,7 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://quire/native/Text"
+          "value": "ix://filament/native/Text"
         }
       ],
       "expected": {
@@ -803,11 +803,11 @@
           "value": [
             {
               "node": "ix://acme/shapes/Label",
-              "native": "ix://quire/native/Text"
+              "native": "ix://filament/native/Text"
             },
             {
               "node": "ix://acme/shapes/Code",
-              "native": "ix://quire/native/Text",
+              "native": "ix://filament/native/Text",
               "lower": "0",
               "upper": "8",
               "profile": "nfc"
@@ -836,7 +836,7 @@
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/0/typeRef",
-          "value": "ix://quire/native/Rational"
+          "value": "ix://filament/native/Rational"
         }
       ],
       "expected": {
@@ -855,7 +855,7 @@
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/1/typeRef",
-          "value": "ix://quire/native/Decimal"
+          "value": "ix://filament/native/Decimal"
         }
       ],
       "expected": {
@@ -874,7 +874,7 @@
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/1/typeRef",
-          "value": "ix://quire/native/Text"
+          "value": "ix://filament/native/Text"
         }
       ],
       "expected": {
@@ -896,11 +896,11 @@
           "value": [
             {
               "node": "ix://acme/shapes/Label",
-              "native": "ix://quire/native/Text"
+              "native": "ix://filament/native/Text"
             },
             {
               "node": "ix://acme/shapes/Code",
-              "native": "ix://quire/native/Text",
+              "native": "ix://filament/native/Text",
               "lower": "0",
               "upper": "8",
               "profile": "nfc"
@@ -934,7 +934,7 @@
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/1/typeRef",
-          "value": "ix://quire/native/Rational"
+          "value": "ix://filament/native/Rational"
         }
       ],
       "expected": {
@@ -956,11 +956,11 @@
           "value": [
             {
               "node": "ix://acme/shapes/Label",
-              "native": "ix://quire/native/Text"
+              "native": "ix://filament/native/Text"
             },
             {
               "node": "ix://acme/shapes/Code",
-              "native": "ix://quire/native/Text",
+              "native": "ix://filament/native/Text",
               "lower": "0",
               "upper": "8",
               "profile": "nfc"
@@ -970,12 +970,12 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://quire/native/Float64"
+          "value": "ix://filament/native/Float64"
         },
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/0/typeRef",
-          "value": "ix://quire/native/Bytes"
+          "value": "ix://filament/native/Bytes"
         },
         {
           "op": "replace",
@@ -985,7 +985,7 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/2/payloadType",
-          "value": "ix://quire/native/JsonObject"
+          "value": "ix://filament/native/JsonObject"
         }
       ],
       "expected": {
@@ -1002,7 +1002,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/Money",
-              "native": "ix://quire/native/Decimal",
+              "native": "ix://filament/native/Decimal",
               "lower": "0",
               "upper": "9"
             }
@@ -1033,7 +1033,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/Ratio",
-              "native": "ix://quire/native/Rational"
+              "native": "ix://filament/native/Rational"
             }
           ]
         },
@@ -1062,7 +1062,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/Money",
-              "native": "ix://quire/native/Decimal",
+              "native": "ix://filament/native/Decimal",
               "lower": "0",
               "upper": "9"
             }
@@ -1093,7 +1093,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/Ratio",
-              "native": "ix://quire/native/Rational"
+              "native": "ix://filament/native/Rational"
             }
           ]
         },
@@ -1119,27 +1119,27 @@
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/0/typeRef",
-          "value": "ix://quire/native/Float32"
+          "value": "ix://filament/native/Float32"
         },
         {
           "op": "replace",
           "path": "/tuple_types/0/positions/1/typeRef",
-          "value": "ix://quire/native/String"
+          "value": "ix://filament/native/String"
         },
         {
           "op": "replace",
           "path": "/tuple_types/1/positions/0/typeRef",
-          "value": "ix://quire/native/UUID"
+          "value": "ix://filament/native/UUID"
         },
         {
           "op": "replace",
           "path": "/tuple_types/1/positions/1/typeRef",
-          "value": "ix://quire/native/Timestamp"
+          "value": "ix://filament/native/Timestamp"
         },
         {
           "op": "replace",
           "path": "/tuple_types/2/positions/0/typeRef",
-          "value": "ix://quire/native/Duration"
+          "value": "ix://filament/native/Duration"
         }
       ],
       "expected": {
@@ -1153,27 +1153,27 @@
         {
           "op": "replace",
           "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://quire/native/Float32"
+          "value": "ix://filament/native/Float32"
         },
         {
           "op": "add",
           "path": "/variant_types/0/cases/1/payloadType",
-          "value": "ix://quire/native/String"
+          "value": "ix://filament/native/String"
         },
         {
           "op": "replace",
           "path": "/variant_types/0/cases/2/payloadType",
-          "value": "ix://quire/native/UUID"
+          "value": "ix://filament/native/UUID"
         },
         {
           "op": "add",
           "path": "/variant_types/2/cases/0/payloadType",
-          "value": "ix://quire/native/Timestamp"
+          "value": "ix://filament/native/Timestamp"
         },
         {
           "op": "replace",
           "path": "/variant_types/2/cases/1/payloadType",
-          "value": "ix://quire/native/Duration"
+          "value": "ix://filament/native/Duration"
         }
       ],
       "expected": {
@@ -1190,7 +1190,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/RatioAlias",
-              "target": "ix://quire/native/Rational"
+              "target": "ix://filament/native/Rational"
             }
           ]
         },
@@ -1219,7 +1219,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/MoneyAlias",
-              "target": "ix://quire/native/Decimal"
+              "target": "ix://filament/native/Decimal"
             }
           ]
         },
@@ -1248,7 +1248,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/LabelAlias",
-              "target": "ix://quire/native/Text"
+              "target": "ix://filament/native/Text"
             }
           ]
         },
@@ -1277,7 +1277,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/RatioAlias",
-              "target": "ix://quire/native/Rational"
+              "target": "ix://filament/native/Rational"
             }
           ]
         },
@@ -1306,7 +1306,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/MoneyAlias",
-              "target": "ix://quire/native/Decimal"
+              "target": "ix://filament/native/Decimal"
             }
           ]
         },
@@ -1335,7 +1335,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/LabelAlias",
-              "target": "ix://quire/native/Text"
+              "target": "ix://filament/native/Text"
             }
           ]
         },
@@ -1364,7 +1364,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/Money",
-              "native": "ix://quire/native/Decimal",
+              "native": "ix://filament/native/Decimal",
               "lower": "0",
               "upper": "9"
             }
@@ -1409,7 +1409,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/FloatAlias",
-              "target": "ix://quire/native/Float64"
+              "target": "ix://filament/native/Float64"
             }
           ]
         },
@@ -1446,7 +1446,7 @@
             },
             {
               "node": "ix://acme/shapes/Last",
-              "target": "ix://quire/native/Float64"
+              "target": "ix://filament/native/Float64"
             }
           ]
         },
@@ -1475,7 +1475,7 @@
           "value": [
             {
               "node": "ix://acme/shapes/Ratio",
-              "native": "ix://quire/native/Rational",
+              "native": "ix://filament/native/Rational",
               "numerator_min": "-3",
               "numerator_max": "7",
               "denominator_min": "1",
@@ -1559,7 +1559,7 @@
       "name": "TR-04",
       "criterion": "FR-322-AC-147",
       "description": "structural.eq over two List values: the walk re-enters List and Cell, reaches no text, and so has no leaf",
-      "operation": "quire.op.structural.eq",
+      "operation": "filament.op.structural.eq",
       "type": "List",
       "expected": {
         "leaves": []
@@ -1792,7 +1792,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "union_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -1881,7 +1881,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "union_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -1995,7 +1995,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "union_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -2084,7 +2084,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "union_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -2161,7 +2161,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "union_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -2216,7 +2216,7 @@
               "term": "application",
               "operator": "case",
               "operation": {
-                "identity": "quire.op.control.case",
+                "identity": "filament.op.control.case",
                 "laws": [],
                 "leaves": [],
                 "member": null,
@@ -2412,7 +2412,7 @@
                 "expression",
                 "case",
                 "case",
-                "quire.op.control.case",
+                "filament.op.control.case",
                 {
                   "operand": 4
                 },
@@ -2440,7 +2440,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "case",
             "semantic_type": {
               "package": "example",
@@ -2461,7 +2461,7 @@
               "expression",
               "case",
               "case",
-              "quire.op.control.case",
+              "filament.op.control.case",
               {
                 "node": 15
               },
@@ -2516,7 +2516,7 @@
               "term": "application",
               "operator": "case",
               "operation": {
-                "identity": "quire.op.control.case",
+                "identity": "filament.op.control.case",
                 "laws": [],
                 "leaves": [],
                 "member": null,
@@ -2798,7 +2798,7 @@
                 "expression",
                 "case",
                 "case",
-                "quire.op.control.case",
+                "filament.op.control.case",
                 {
                   "operand": 5
                 },
@@ -2833,7 +2833,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "case",
             "semantic_type": {
               "package": "example",
@@ -2854,7 +2854,7 @@
               "expression",
               "case",
               "case",
-              "quire.op.control.case",
+              "filament.op.control.case",
               {
                 "node": 15
               },
@@ -2919,7 +2919,7 @@
               "term": "application",
               "operator": "query",
               "operation": {
-                "identity": "quire.op.tuple.project",
+                "identity": "filament.op.tuple.project",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -3010,7 +3010,7 @@
                 "expression",
                 "query",
                 "query",
-                "quire.op.tuple.project",
+                "filament.op.tuple.project",
                 {
                   "operand": 2
                 },
@@ -3030,7 +3030,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "query",
             "semantic_type": {
               "package": "example",
@@ -3051,7 +3051,7 @@
               "expression",
               "query",
               "query",
-              "quire.op.tuple.project",
+              "filament.op.tuple.project",
               {
                 "node": 0
               },
@@ -3094,7 +3094,7 @@
               "term": "application",
               "operator": "query",
               "operation": {
-                "identity": "quire.op.tuple.project",
+                "identity": "filament.op.tuple.project",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -3185,7 +3185,7 @@
                 "expression",
                 "query",
                 "query",
-                "quire.op.tuple.project",
+                "filament.op.tuple.project",
                 {
                   "operand": 3
                 },
@@ -3205,7 +3205,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "query",
             "semantic_type": {
               "package": "example",
@@ -3226,7 +3226,7 @@
               "expression",
               "query",
               "query",
-              "quire.op.tuple.project",
+              "filament.op.tuple.project",
               {
                 "node": 1
               },
@@ -3270,7 +3270,7 @@
               "term": "application",
               "operator": "query",
               "operation": {
-                "identity": "quire.op.tuple.project",
+                "identity": "filament.op.tuple.project",
                 "laws": [],
                 "leaves": [],
                 "member": {
@@ -3361,7 +3361,7 @@
                 "expression",
                 "query",
                 "query",
-                "quire.op.tuple.project",
+                "filament.op.tuple.project",
                 {
                   "operand": 2
                 },
@@ -3381,7 +3381,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "query",
             "semantic_type": {
               "package": "example",
@@ -3402,7 +3402,7 @@
               "expression",
               "query",
               "query",
-              "quire.op.tuple.project",
+              "filament.op.tuple.project",
               {
                 "node": 0
               },
@@ -3485,7 +3485,7 @@
                 "role": "declaration"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "enum_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -3572,7 +3572,7 @@
                 "role": "declaration"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "enum_value",
             "semantic_type": {
               "package": "acme/shapes",
@@ -3626,7 +3626,7 @@
               "term": "application",
               "operator": "binary",
               "operation": {
-                "identity": "quire.op.enum.eq",
+                "identity": "filament.op.enum.eq",
                 "laws": [],
                 "leaves": [],
                 "member": null,
@@ -3741,7 +3741,7 @@
                 "expression",
                 "binary",
                 "binary",
-                "quire.op.enum.eq",
+                "filament.op.enum.eq",
                 {
                   "operand": 3
                 },
@@ -3761,7 +3761,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "binary",
             "semantic_type": {
               "package": "example",
@@ -3782,7 +3782,7 @@
               "expression",
               "binary",
               "binary",
-              "quire.op.enum.eq",
+              "filament.op.enum.eq",
               {
                 "node": 23
               },
@@ -3815,7 +3815,7 @@
               "term": "application",
               "operator": "binary",
               "operation": {
-                "identity": "quire.op.structural.eq",
+                "identity": "filament.op.structural.eq",
                 "laws": [],
                 "leaves": [],
                 "member": null,
@@ -3930,7 +3930,7 @@
                 "expression",
                 "binary",
                 "binary",
-                "quire.op.structural.eq",
+                "filament.op.structural.eq",
                 {
                   "operand": 3
                 },
@@ -3950,7 +3950,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "binary",
             "semantic_type": {
               "package": "example",
@@ -3971,7 +3971,7 @@
               "expression",
               "binary",
               "binary",
-              "quire.op.structural.eq",
+              "filament.op.structural.eq",
               {
                 "node": 21
               },
@@ -4004,7 +4004,7 @@
               "term": "application",
               "operator": "binary",
               "operation": {
-                "identity": "quire.op.structural.eq",
+                "identity": "filament.op.structural.eq",
                 "laws": [],
                 "leaves": [
                   {
@@ -4127,7 +4127,7 @@
                 "expression",
                 "binary",
                 "binary",
-                "quire.op.structural.eq",
+                "filament.op.structural.eq",
                 {
                   "operand": 3
                 },
@@ -4147,7 +4147,7 @@
                 "role": "expression"
               }
             ],
-            "schema_version": "quire.checked-semantic-graph/v2",
+            "schema_version": "filament.checked-semantic-graph/v2",
             "semantic_form": "binary",
             "semantic_type": {
               "package": "example",
@@ -4168,7 +4168,7 @@
               "expression",
               "binary",
               "binary",
-              "quire.op.structural.eq",
+              "filament.op.structural.eq",
               {
                 "node": 19
               },

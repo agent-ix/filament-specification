@@ -3,7 +3,7 @@ id: TC-979
 title: "Declaration-less function node keys"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 

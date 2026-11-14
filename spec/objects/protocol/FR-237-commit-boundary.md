@@ -4,15 +4,15 @@ title: "Commit boundary"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-237: Commit boundary
@@ -114,7 +114,7 @@ pending/incomplete rather than treating the missing fact as permission.
   registration to its commit boundary.
 - [FR-052](../../functional/protocol/FR-052-represent-bounded-control.md) supplies the
   authored causal order.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-221](FR-221-protocol-node-occurrence.md) defines the concrete boundary
   occurrence.

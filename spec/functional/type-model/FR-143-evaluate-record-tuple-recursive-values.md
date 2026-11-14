@@ -3,21 +3,21 @@ id: FR-143
 title: "Evaluate records, tuples and finite recursive values"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-009
+  - target: ix://agent-ix/filament-specification/FR-009
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
-  - target: ix://agent-ix/quire-specification/FR-307
+  - target: ix://agent-ix/filament-specification/FR-307
     type: references
-  - target: ix://agent-ix/quire-specification/AD-015
+  - target: ix://agent-ix/filament-specification/AD-015
     type: references
-  - target: ix://agent-ix/quire-specification/FR-440
+  - target: ix://agent-ix/filament-specification/FR-440
     type: references
-  - target: ix://agent-ix/quire-specification/FR-441
+  - target: ix://agent-ix/filament-specification/FR-441
     type: references
 ---
 
@@ -141,7 +141,7 @@ exactly as for record and tuple declarations above.
 
 ## Value profile
 
-`quire.value.complete/v1` admits union declarations, union values, union
+`filament.value.complete/v1` admits union declarations, union values, union
 construction and `case` (FR-146) in every package that selects it, exactly
 where it admits record and tuple declarations and values. A package that
 declares or evaluates a union selects the same always-selected definitions,
@@ -265,7 +265,7 @@ Every construction refusal above is decided by type checking before any field
 expression is evaluated. After the last field or argument completes,
 construction charges one `composite.result-retain` with
 `value_occurrences = occ(result)` and `result_units += occ(result)` under
-`quire.value.accounting/v1`, then exposes the value. Record field expressions are evaluated in field
+`filament.value.accounting/v1`, then exposes the value. Record field expressions are evaluated in field
 declaration order, regardless of the order of the source fields. Tuple
 arguments and union payload arguments are evaluated in position order. A
 union value construction charges the same `composite.result-retain` after its
@@ -292,8 +292,8 @@ reference type, a receiver, a population member, an `allInstances` member, a
 also arrive through a parameter, `let` binding or composite field that carries
 such a value. Its identity is the snapshot-supplied FR-009/FR-204 triple
 (universe, object-type declaration identity, declared object identity). Under
-the selected `quire.model.complete/v1` definition the universe is the
-`quire.model.object-universe/v2` identity, the type is the effective
+the selected `filament.model.complete/v1` definition the universe is the
+`filament.model.object-universe/v2` identity, the type is the effective
 declaration identity of the object's most-specific type, never the static `T`,
 and `Reference<S>` converts to `Reference<T>` only by the FR-149 upcast row. Its retained observation is
 not part of identity. `Reference<T>` is terminal in containment, construction
@@ -313,12 +313,12 @@ and equality.
 | FR-143-AC-8 | Record fields are evaluated in declaration order, the first stopped field propagates its outcome with no later field evaluated or charged, and a completed construction charges `composite.result-retain`. | Test (TC-188) |
 | FR-143-AC-9 | `Reference<T>` admits only a model object type, and a runtime composite value from another checked package is `invalid_runtime_input` before evaluation, except a model record value type or event type value, whose key is its model node key and is admitted when it is a declaration key of the evaluating package's selected document. | Test (TC-188) |
 | FR-143-AC-10 | A `?` field projection is admitted only under `present` or `value`, an unguarded `value` is `undefined_expression` with cause `unproved-presence`, and any other use is `ill_typed` with cause `type-mismatch`. | Test (TC-188) |
-| FR-143-AC-11 | Under `quire.model.complete/v1`, a reference obtained by navigation, lookup or `allInstances` carries the object's most-specific effective type, and no other source creates a reference. | Test (TC-198) |
+| FR-143-AC-11 | Under `filament.model.complete/v1`, a reference obtained by navigation, lookup or `allInstances` carries the object's most-specific effective type, and no other source creates a reference. | Test (TC-198) |
 | FR-143-AC-12 | A `union-decl` construction admits exactly one declared member with its declared payload arity, two union values compare equal exactly when their active member and payload positions match, and equal member shapes from different declared unions never become interchangeable. | Test (TC-262) |
 | FR-143-AC-13 | The recursion rule treats a union member payload position as a named edge on the same basis as a record field, so a union recursion is admitted exactly when it escapes. | Test (TC-263) |
 | FR-143-AC-14 | `Shape::Rect(2, 3)` evaluates `2` then `3`, then charges one `composite.result-retain` with `value_occurrences = 3` and `result_units += 3`; `Shape::Empty` charges one `composite.result-retain` with `value_occurrences = 1` and evaluates nothing; a stopped first payload argument propagates its outcome with the second argument neither evaluated nor charged and no `composite.result-retain`. | Test (TC-399) |
 | FR-143-AC-15 | A supplied `Shape` argument is refused `invalid_runtime_input`/`wrong-value-kind` before any evaluation or charge when its member key is a member key of another union, when its member key is no member's key, when it carries one payload value for `Rect`, and when its `Circle` payload is a `Text` value; a well-formed supplied `Shape::Rect(2, 3)` is admitted. | Test (TC-400) |
-| FR-143-AC-16 | A package selecting `quire.value.complete/v1` with exactly the always-selected definitions and no trigger admits a union declaration, its construction and a `case` over it, and its selection equals that of the same package with the union replaced by a record. | Test (TC-400) |
+| FR-143-AC-16 | A package selecting `filament.value.complete/v1` with exactly the always-selected definitions and no trigger admits a union declaration, its construction and a `case` over it, and its selection equals that of the same package with the union replaced by a record. | Test (TC-400) |
 | FR-143-AC-17 | Two units that select one model under different aliases (`model M = ...` and `model N = ...`) give `Money` and `TaxedMoney` the same declaration keys, each equal to the record's model node key; a `TaxedMoney` built in one unit equals the same value built in the other, and a `Set<Money>` holding a `Money` and a `TaxedMoney` orders its two members identically in both. | Test (TC-188) |
 | FR-143-AC-18 | `absent` takes its `Option<T>` from the unique expected type of its position and denotes the `none` of that type: the write `self.v = absent` for `v: Option<Clock>` and for `v: Option<Integer>`, the argument for an `Option<Integer>` parameter, a function result typed `Option<Integer>`, an `if` branch whose other branch is an `Option<Integer>` operand, the record field `v: absent` for `v: Option<Integer>`, and either operand of `=` against an `Option<Integer>` operand are admitted; `(lookup<M::A>(p, r) absent empty) = absent` is true for a key `p` does not hold and false for one it holds; `x = y` of two `Option<Integer>`-typed operands (parameters or fields, not literals) that both hold no value is true, and `x = absent` is true exactly when `x` holds none; the literal against the literal, `absent = absent`, has no expected type and is refused (FR-143-AC-19). | Test (TC-188) |
 | FR-143-AC-19 | An `absent` with no unique expected type (both operands of `=`, `let x = absent in x`, `present(absent)`, `value(absent)`) is `refused { code: ill_typed, cause: ambiguous-literal }` before any charge, and one whose expected type is not an option (an `Integer` field or parameter, a `Reference<T>`, a `Set<Integer>`) is `refused { code: ill_typed, cause: type-mismatch }`; neither is read as the `none` of a guessed type. | Test (TC-188) |
@@ -326,7 +326,7 @@ and equality.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

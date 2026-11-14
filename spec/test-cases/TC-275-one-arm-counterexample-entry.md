@@ -3,7 +3,7 @@ id: TC-275
 title: "One-arm counterexample entry"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

@@ -3,7 +3,7 @@ id: TC-385
 title: "Counted-step interval distance and protocol anchors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-431
+  - target: ix://agent-ix/filament-specification/FR-431
     type: verifies
 ---
 

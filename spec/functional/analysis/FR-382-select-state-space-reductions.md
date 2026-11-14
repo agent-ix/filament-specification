@@ -3,19 +3,19 @@ id: FR-382
 title: "Select and admit state-space reductions for a model-check item"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-381
+  - target: ix://agent-ix/filament-specification/FR-381
     type: references
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: references
-  - target: ix://agent-ix/quire-specification/FR-385
+  - target: ix://agent-ix/filament-specification/FR-385
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
 ---
 
@@ -183,12 +183,12 @@ rules above unchanged.
 - [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) owns
   candidate computation.
 - [FR-181](../runtime/FR-181-simulate-finite-executions.md) owns state keys.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns
   the state-clause production this requirement extends.
 
 ## References
 
-- Design: quire-spec-language ADR-021 (RD-1 to RD-3, SYM-1, SYM-2, SYM-4,
+- Design: filament-spec-language ADR-021 (RD-1 to RD-3, SYM-1, SYM-2, SYM-4,
   SYM-5, SC-1, SC-3, EI-1, RV-6, RV-8, RV-9, QS-1, QS-3, QS-9); ADR-026 §15
-  and QSL FR-430 (reductions over a dense-time subject).
+  and FSL FR-430 (reductions over a dense-time subject).
 - Tickets: Linear STD-134; paired QSL-368.

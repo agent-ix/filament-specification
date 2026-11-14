@@ -4,11 +4,11 @@ title: "Analysis backend selection"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-291
+  - target: ix://agent-ix/filament-specification/FR-291
     type: references
 ---
 # FR-292: Analysis backend selection
@@ -37,7 +37,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 - **interface identity** — nonempty owner-qualified backend contract identity.
 - **admitted fragment** — exact FR-291 key.
-- **claim capabilities** — sorted distinct nonempty set of FR-290 protocol-family members; the interface selects the FR-290 vocabulary `quire.capability-kind/v1`.
+- **claim capabilities** — sorted distinct nonempty set of FR-290 protocol-family members; the interface selects the FR-290 vocabulary `filament.capability-kind/v1`.
 
 ## Identity and comparison
 
@@ -72,4 +72,4 @@ fragment, inherit another backend's success, or invoke an unreviewed fallback.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`.
+Proposed shared ruling for `filament-specification#40`.

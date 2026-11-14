@@ -4,11 +4,11 @@ title: "Ownership of Kani harness generation"
 type: ADR
 status: proposed
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: depends_on
-  - target: ix://agent-ix/quire-contract-ir/FR-036
+  - target: ix://agent-ix/filament-contract-ir/FR-036
     type: depends_on
-  - target: ix://agent-ix/quire-contract-codegen/FR-003
+  - target: ix://agent-ix/filament-contract-codegen/FR-003
     type: depends_on
 ---
 # ADR-005: Ownership of Kani harness generation
@@ -26,10 +26,10 @@ backend, and requires the harness to encode checked domain membership,
 model-derived inclusive integer and collection bounds, frame conditions and
 invariants.
 
-`quire-contract-ir` places oracle, strategy, lowering and harness generation
+`filament-contract-ir` places oracle, strategy, lowering and harness generation
 inside its bounded-Kani boundary, while its own architecture decision assigns
 deterministic provider generation, bounded Kani harnesses and replay adapters
-to codegen. `ix://agent-ix/quire-contract-codegen/FR-003` and its
+to codegen. `ix://agent-ix/filament-contract-codegen/FR-003` and its
 `interface-001` claim the same generation through `generate_kani_bundle`.
 
 The two detail contracts also differ. The codegen `kani_slice` binding is one

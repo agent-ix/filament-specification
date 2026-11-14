@@ -4,13 +4,13 @@ title: "Probability certificate and its checker"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
 ---
 
@@ -69,14 +69,14 @@ recomputes them.
 Every state key in `values`, `ranking`, `policy`, each component's `bias`
 and a state-located rejection SHALL preserve FR-411's complete product key:
 the model state key, monitor state and accumulator, including the
-activation flag. For the intermediate states of QSL
+activation flag. For the intermediate states of FSL
 FR-196 / ADR-028 SCH-2, it SHALL also preserve the pending scheduled
 identity and drawn vector. For an exact-only form, the absent monitor and
 accumulator remain absent. A model state key alone SHALL NOT stand for
 a bounded or intermediate product state.
 
-QSL FR-196 / ADR-028 PR-4 now own the complete canonical octet basis:
-`["quire.probability-product-key/v1", model, monitor, accumulator, pending]`
+FSL FR-196 / ADR-028 PR-4 now own the complete canonical octet basis:
+`["filament.probability-product-key/v1", model, monitor, accumulator, pending]`
 in RFC 8785 UTF-8, with every component present and actual None as null.
 FR-331 transports those complete octets as `ProbabilityProductKey` in
 each existing `state` row member and at `{product_key}` in a rejection.
@@ -172,7 +172,7 @@ re-enumeration plus one pass over the edges.
 
 ## References
 
-- QSL ADR-028 CE-1 to CE-7, FS-9.
+- FSL ADR-028 CE-1 to CE-7, FS-9.
 - K. Chatterjee, T. Quatmann et al., fixed-point certificates for MDP model
   checking, TACAS 2025; F. Funke, S. Jantsch and C. Baier, TACAS 2020.
 - Ticket: STD-137 (paired with QSL-371).

@@ -4,11 +4,11 @@ title: "Observation adequacy state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
 ---
 # FR-245: Observation adequacy state vocabulary
@@ -90,7 +90,7 @@ adequacy share the word 'adequacy' but have different authorities."
   establishes the E02 adequacy projection.
 - [FR-115](../../functional/observation/FR-115-report-activation-participation-and-adequacy.md)
   supplies the bare-adequacy spelling recorded above.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

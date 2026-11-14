@@ -3,17 +3,17 @@ id: FR-172
 title: "Bind choice evidence, obligations and captures"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: references
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: references
-  - target: ix://agent-ix/quire-specification/FR-227
+  - target: ix://agent-ix/filament-specification/FR-227
     type: references
-  - target: ix://agent-ix/quire-specification/FR-479
+  - target: ix://agent-ix/filament-specification/FR-479
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 
@@ -86,7 +86,7 @@ refuses the activation atomically and emits no partial capture list.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

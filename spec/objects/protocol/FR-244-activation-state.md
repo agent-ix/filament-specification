@@ -4,13 +4,13 @@ title: "Activation state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-231
+  - target: ix://agent-ix/filament-specification/FR-231
     type: references
 ---
 # FR-244: Activation state vocabulary
@@ -84,9 +84,9 @@ connected only by FR-062's explicit projection.
   establishes the E02 target names, which are not source labels.
 - [FR-093](../../functional/temporal/FR-093-bind-temporal-activation-and-captures.md)
   supplies the divergent temporal spelling recorded above.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status
 
-Proposed spelling reconciliation for `quire-specification#40`.
+Proposed spelling reconciliation for `filament-specification#40`.

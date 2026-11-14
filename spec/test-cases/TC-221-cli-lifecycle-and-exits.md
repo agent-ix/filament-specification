@@ -3,7 +3,7 @@ id: TC-221
 title: "CLI lifecycle and exits"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-301
+  - target: ix://agent-ix/filament-specification/FR-301
     type: verifies
 ---
 

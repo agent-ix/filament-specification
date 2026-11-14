@@ -3,9 +3,9 @@ id: TC-114
 title: "Isolate temporal triggers and immutable captures"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-479
+  - target: ix://agent-ix/filament-specification/FR-479
     type: verifies
 ---
 ## Description

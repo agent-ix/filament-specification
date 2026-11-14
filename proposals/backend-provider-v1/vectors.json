@@ -11,8 +11,8 @@
         "/results/3/cause": "FR-412"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -35,7 +35,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -48,7 +48,7 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -61,7 +61,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -74,7 +74,7 @@
           },
           {
             "request_index": 3,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -120,8 +120,8 @@
         "/manifest/0/bounds": "FR-461"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
             "backend": "kani",
@@ -172,8 +172,8 @@
         "/request/items/0/extent/bounds/0/kind": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
             "backend": "kani",
@@ -319,8 +319,8 @@
         "/request/items/2/probabilistic/evidence": "FR-290"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
             "backend": "kani",
@@ -442,8 +442,8 @@
         "/accounting/1/settled_by": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -524,8 +524,8 @@
         "/artifacts/1/kind": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -584,8 +584,8 @@
         "/counterexamples/0/counterexample/values/0/value": "FR-181"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -644,8 +644,8 @@
         "/results/2/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -715,8 +715,8 @@
         "/results/3/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -825,8 +825,8 @@
         "/results/5/diagnostic": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -965,8 +965,8 @@
         "/dispositions/2/diagnostic": "FR-290"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -1045,13 +1045,13 @@
         "/request/items/0/temporal/limits/max_task_product_work": "FR-415"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "tool": {
-              "name": "qsl-analyze",
+              "name": "fsl-analyze",
               "version": "0.1.0"
             },
             "advertises": [
@@ -1136,7 +1136,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "reductions": {
@@ -1220,8 +1220,8 @@
         "/results/6/cause": "FR-363"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -1256,14 +1256,14 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "refuted",
             "counterexample": 0
           },
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "proved",
             "certification": "uncertified",
@@ -1282,7 +1282,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -1292,7 +1292,7 @@
           },
           {
             "request_index": 3,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -1304,7 +1304,7 @@
           },
           {
             "request_index": 4,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -1316,7 +1316,7 @@
           },
           {
             "request_index": 5,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -1325,7 +1325,7 @@
           },
           {
             "request_index": 6,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -1336,7 +1336,7 @@
         "counterexamples": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "counterexample": {
               "trace": "model",
               "kind": "formula",
@@ -1454,8 +1454,8 @@
         "/results/6/certification": "FR-385"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -1552,7 +1552,7 @@
           },
           {
             "request_index": 5,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "proved",
             "certification": "certified",
@@ -1576,7 +1576,7 @@
           },
           {
             "request_index": 6,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "proved",
             "certification": "uncertified",
@@ -1670,8 +1670,8 @@
         "/results/8/certification": "FR-305"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -1904,8 +1904,8 @@
         "/results/24/cause": "FR-418"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -2109,7 +2109,7 @@
           },
           {
             "request_index": 8,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2125,7 +2125,7 @@
           },
           {
             "request_index": 9,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2141,7 +2141,7 @@
           },
           {
             "request_index": 10,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2162,7 +2162,7 @@
           },
           {
             "request_index": 11,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2193,7 +2193,7 @@
           },
           {
             "request_index": 12,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2210,7 +2210,7 @@
           },
           {
             "request_index": 13,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2223,7 +2223,7 @@
           },
           {
             "request_index": 14,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -2238,7 +2238,7 @@
           },
           {
             "request_index": 15,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -2253,7 +2253,7 @@
           },
           {
             "request_index": 16,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -2280,7 +2280,7 @@
           },
           {
             "request_index": 17,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2293,7 +2293,7 @@
           },
           {
             "request_index": 18,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2306,7 +2306,7 @@
           },
           {
             "request_index": 19,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2319,7 +2319,7 @@
           },
           {
             "request_index": 20,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2332,7 +2332,7 @@
           },
           {
             "request_index": 21,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2345,7 +2345,7 @@
           },
           {
             "request_index": 22,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2358,7 +2358,7 @@
           },
           {
             "request_index": 23,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2371,7 +2371,7 @@
           },
           {
             "request_index": 24,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2501,8 +2501,8 @@
         "/results/6/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -2537,7 +2537,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2553,7 +2553,7 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2571,7 +2571,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2584,7 +2584,7 @@
           },
           {
             "request_index": 3,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2597,7 +2597,7 @@
           },
           {
             "request_index": 4,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2610,7 +2610,7 @@
           },
           {
             "request_index": 5,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2623,7 +2623,7 @@
           },
           {
             "request_index": 6,
-            "backend": "qsl-refinement",
+            "backend": "fsl-refinement",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -2683,8 +2683,8 @@
         "/results/6/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -2719,7 +2719,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2769,7 +2769,7 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2823,7 +2823,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2873,7 +2873,7 @@
           },
           {
             "request_index": 3,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2888,7 +2888,7 @@
           },
           {
             "request_index": 4,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2915,7 +2915,7 @@
           },
           {
             "request_index": 5,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2934,7 +2934,7 @@
           },
           {
             "request_index": 6,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -2980,7 +2980,7 @@
       }
     },
     {
-      "name": "certificate-rejected-qsl-spellings",
+      "name": "certificate-rejected-fsl-spellings",
       "stage": "outcome",
       "owners": {
         "/results/0/cause": "FR-331",
@@ -3002,8 +3002,8 @@
         "/results/16/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -3128,7 +3128,7 @@
           },
           {
             "request_index": 4,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -3144,7 +3144,7 @@
           },
           {
             "request_index": 5,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -3157,7 +3157,7 @@
           },
           {
             "request_index": 6,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -3170,7 +3170,7 @@
           },
           {
             "request_index": 7,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -3183,7 +3183,7 @@
           },
           {
             "request_index": 8,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3198,7 +3198,7 @@
           },
           {
             "request_index": 9,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3213,7 +3213,7 @@
           },
           {
             "request_index": 10,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3231,7 +3231,7 @@
           },
           {
             "request_index": 11,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3253,7 +3253,7 @@
           },
           {
             "request_index": 12,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3278,7 +3278,7 @@
           },
           {
             "request_index": 13,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3306,7 +3306,7 @@
           },
           {
             "request_index": 14,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3327,7 +3327,7 @@
           },
           {
             "request_index": 15,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3345,7 +3345,7 @@
           },
           {
             "request_index": 16,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "refinement",
             "result": "inconclusive",
             "cause": {
@@ -3456,8 +3456,8 @@
         "/results/3/evidence": "FR-391"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -3480,7 +3480,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "proved",
             "certification": "certified",
@@ -3497,21 +3497,21 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "refuted",
             "counterexample": 0
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "refuted",
             "counterexample": 1
           },
           {
             "request_index": 3,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -3543,7 +3543,7 @@
         "counterexamples": [
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "counterexample": {
               "type": "graph-evidence",
               "arm": "trap",
@@ -3561,7 +3561,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "counterexample": {
               "type": "hyper-counterexample",
               "kind": "step-tuple",
@@ -3639,13 +3639,13 @@
         "/request/items/1/probabilistic/limits": "FR-411"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "tool": {
-              "name": "qsl-analyze",
+              "name": "fsl-analyze",
               "version": "0.1.0"
             },
             "advertises": [
@@ -3693,10 +3693,10 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-prob"
+                  "fsl-prob"
                 ]
               },
-              "backend": "qsl-prob",
+              "backend": "fsl-prob",
               "probabilistic": {
                 "evidence": "statistical",
                 "method": {
@@ -3733,10 +3733,10 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-prob"
+                  "fsl-prob"
                 ]
               },
-              "backend": "qsl-prob",
+              "backend": "fsl-prob",
               "probabilistic": {
                 "evidence": "exact",
                 "limits": {
@@ -3759,8 +3759,8 @@
         "/results/2/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -3779,7 +3779,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "measured",
             "verdict": {
@@ -3837,7 +3837,7 @@
               },
               "provenance": {
                 "seed": "7",
-                "sampler": "quire.simulation.sampler/v1",
+                "sampler": "filament.simulation.sampler/v1",
                 "tests": [
                   {
                     "index": 0,
@@ -3879,7 +3879,7 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "proved",
             "certification": "certified",
@@ -3935,7 +3935,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "unsupported",
             "cause": {
@@ -3978,8 +3978,8 @@
         "/results/3/certification": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -4097,13 +4097,13 @@
         "/manifest/1/bounds/max_solver_time": "FR-193"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "tool": {
-              "name": "qsl-analyze",
+              "name": "fsl-analyze",
               "version": "0.1.0"
             },
             "advertises": [
@@ -4298,8 +4298,8 @@
         "/results/1/cause": "FR-193"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -4431,8 +4431,8 @@
         "/results/1/cause/trace/loop": "FR-193"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -4770,8 +4770,8 @@
         "/results/1/cause/replay": "FR-193"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5117,8 +5117,8 @@
         "/results/0/cause": "FR-468"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5129,7 +5129,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -5167,8 +5167,8 @@
         "/counterexamples/0/counterexample": "FR-364"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5179,7 +5179,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "refuted",
             "counterexample": 0
@@ -5188,7 +5188,7 @@
         "counterexamples": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "counterexample": {
               "trace": "observed",
               "kind": "formula",
@@ -5224,8 +5224,8 @@
         "/counterexamples/0/counterexample": "FR-364"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5236,7 +5236,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "refuted",
             "counterexample": 0
@@ -5245,7 +5245,7 @@
         "counterexamples": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "counterexample": {
               "trace": "observed",
               "kind": {
@@ -5306,8 +5306,8 @@
         "/results/4/cause": "FR-439"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5334,7 +5334,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "unsupported",
             "cause": {
@@ -5366,7 +5366,7 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "unsupported",
             "cause": {
@@ -5400,7 +5400,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "unsupported",
             "cause": {
@@ -5434,7 +5434,7 @@
           },
           {
             "request_index": 3,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "unsupported",
             "cause": {
@@ -5468,7 +5468,7 @@
           },
           {
             "request_index": 4,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "unsupported",
             "cause": {
@@ -5534,8 +5534,8 @@
         "/results/0/task_search": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5546,7 +5546,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "incomplete",
             "cause": {
@@ -5682,8 +5682,8 @@
         "/results/0/cause": "FR-461"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5694,7 +5694,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-prob",
+            "backend": "fsl-prob",
             "kind": "probabilistic-satisfaction",
             "result": "incomplete",
             "cause": {
@@ -5727,8 +5727,8 @@
         "/results/0/cause": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -5739,7 +5739,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-analyze",
+            "backend": "fsl-analyze",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -5783,13 +5783,13 @@
       },
       "description": "FR-368 Item kinds, claim, extent, position, limits and the refinement item's abstract_subject. Items 0 and 1 are the caller's authored clauses over two subjects, item 2 a refinement item over subject 0 (its node id is an illustrative value: the package fixture holds no refinement node); items 3 to 6 are the derived items, grouped by subject in order of first occurrence and, within a subject, deadlock-freedom, time-lock-freedom, race-freedom. Anchors are the fixture's model_root node (occurrence role generated, ordinal 0) for the model subject and its Example::Handshake protocol clause node (declaration, ordinal 0) for the protocol subject. The authored and refinement items carry max_depth and limits; the derived items carry none and take the provider defaults. The refinement item's abstract package is positive-dependency-library.json, whose identity is abstract_subject.identity and whose v2 bytes the test composition adds as the request's one dependency, as it adds package.",
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "manifest": [
           {
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "tool": {
-              "name": "qsl-analyze",
+              "name": "fsl-analyze",
               "version": "0.1.0"
             },
             "advertises": [
@@ -5850,7 +5850,7 @@
                     {
                       "node": 3
                     },
-                    "quire.op.temporal.holds",
+                    "filament.op.temporal.holds",
                     "temporal_formula",
                     {
                       "node": 0
@@ -5877,7 +5877,7 @@
                           {
                             "node": 3
                           },
-                          "quire.op.temporal.holds",
+                          "filament.op.temporal.holds",
                           "temporal_formula",
                           {
                             "node": 0
@@ -5894,7 +5894,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -5934,7 +5934,7 @@
                     {
                       "node": 28
                     },
-                    "quire.op.temporal.eventually",
+                    "filament.op.temporal.eventually",
                     "temporal_formula",
                     {
                       "node": 0
@@ -5961,7 +5961,7 @@
                           {
                             "node": 28
                           },
-                          "quire.op.temporal.eventually",
+                          "filament.op.temporal.eventually",
                           "temporal_formula",
                           {
                             "node": 0
@@ -5978,7 +5978,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -6040,7 +6040,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -6116,7 +6116,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -6174,7 +6174,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -6236,7 +6236,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -6294,7 +6294,7 @@
               "candidates": {
                 "type": "set",
                 "backends": [
-                  "qsl-model-check"
+                  "fsl-model-check"
                 ]
               },
               "temporal": {
@@ -6333,10 +6333,10 @@
         "/results/11/cause/at": "FR-331",
         "/results/12/cause/at": "FR-331"
       },
-      "description": "FR-331 Zone node, Zone edge, Zone edge step and Certificate member loci of QSL FR-245's refinement-form rules: initial-mismatch at a node, post-differs at an edge, step-fails at an edge with its verdict, and malformed at each member FR-418 adds.",
+      "description": "FR-331 Zone node, Zone edge, Zone edge step and Certificate member loci of FSL FR-245's refinement-form rules: initial-mismatch at a node, post-differs at an edge, step-fails at an edge with its verdict, and malformed at each member FR-418 adds.",
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -6395,7 +6395,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6408,7 +6408,7 @@
           },
           {
             "request_index": 1,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6421,7 +6421,7 @@
           },
           {
             "request_index": 2,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6447,7 +6447,7 @@
           },
           {
             "request_index": 3,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6460,7 +6460,7 @@
           },
           {
             "request_index": 4,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6473,7 +6473,7 @@
           },
           {
             "request_index": 5,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6486,7 +6486,7 @@
           },
           {
             "request_index": 6,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6499,7 +6499,7 @@
           },
           {
             "request_index": 7,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6512,7 +6512,7 @@
           },
           {
             "request_index": 8,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6525,7 +6525,7 @@
           },
           {
             "request_index": 9,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6538,7 +6538,7 @@
           },
           {
             "request_index": 10,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6551,7 +6551,7 @@
           },
           {
             "request_index": 11,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6564,7 +6564,7 @@
           },
           {
             "request_index": 12,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "inconclusive",
             "cause": {
@@ -6640,8 +6640,8 @@
         "/counterexamples/0/counterexample/queue_growth": "FR-364"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -6652,7 +6652,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "refuted",
             "counterexample": 0
@@ -6661,7 +6661,7 @@
         "counterexamples": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "counterexample": {
               "trace": "model",
               "kind": "formula",
@@ -8843,8 +8843,8 @@
         "/results/0/task_search": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -8855,7 +8855,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "incomplete",
             "cause": {
@@ -8991,8 +8991,8 @@
         "/results/0/task_search": "FR-331"
       },
       "document": {
-        "contract_version": "quire.backend-provider/v1",
-        "capability_vocabulary": "quire.capability-kind/v1",
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
         "dispositions": [
           {
             "request_index": 0,
@@ -9003,7 +9003,7 @@
         "results": [
           {
             "request_index": 0,
-            "backend": "qsl-model-check",
+            "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
             "result": "incomplete",
             "cause": {
@@ -9202,7 +9202,7 @@
     },
     {
       "name": "query-part-step-row-leading-zero",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9362,7 +9362,7 @@
     },
     {
       "name": "query-part-step-row-empty",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9374,7 +9374,7 @@
     },
     {
       "name": "query-part-step-row-overflow",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9386,7 +9386,7 @@
     },
     {
       "name": "query-part-unrolling-row",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9398,7 +9398,7 @@
     },
     {
       "name": "query-part-base-row",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9410,7 +9410,7 @@
     },
     {
       "name": "proof-step-part-step-row-negative",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9422,7 +9422,7 @@
     },
     {
       "name": "product-state-bare-state-key",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9439,7 +9439,7 @@
     },
     {
       "name": "model-state-bare-state-key",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9455,7 +9455,7 @@
     },
     {
       "name": "entry-index-number",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9467,7 +9467,7 @@
     },
     {
       "name": "entry-other-rule",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9479,7 +9479,7 @@
     },
     {
       "name": "simulation-step-without-null-edge",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9490,7 +9490,7 @@
     },
     {
       "name": "simulation-step-without-null-verdict",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9525,7 +9525,7 @@
     },
     {
       "name": "step-verdict-type-tagged-cause",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9552,7 +9552,7 @@
     },
     {
       "name": "step-verdict-undetermined-cause-spelling",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9564,7 +9564,7 @@
     },
     {
       "name": "step-verdict-incomplete-without-limit",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9575,7 +9575,7 @@
     },
     {
       "name": "step-verdict-undefined-without-state-key",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9586,7 +9586,7 @@
     },
     {
       "name": "step-verdict-engine-undefined-form",
-      "base": "certificate-rejected-qsl-spellings",
+      "base": "certificate-rejected-fsl-spellings",
       "owner": "FR-331",
       "patch": [
         {
@@ -9607,7 +9607,7 @@
         {
           "op": "replace",
           "path": "/contract_version",
-          "value": "quire.backend-provider/v2"
+          "value": "filament.backend-provider/v2"
         }
       ]
     },
@@ -9630,7 +9630,7 @@
         {
           "op": "replace",
           "path": "/capability_vocabulary",
-          "value": "quire.capability-kind/v2"
+          "value": "filament.capability-kind/v2"
         }
       ]
     },
@@ -9894,7 +9894,7 @@
           "op": "replace",
           "path": "/request/package",
           "value": {
-            "contract_version": "quire.checked-package/v2"
+            "contract_version": "filament.checked-package/v2"
           }
         }
       ]

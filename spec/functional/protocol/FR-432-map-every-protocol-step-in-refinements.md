@@ -3,17 +3,17 @@ id: FR-432
 title: "Map every concrete protocol step class by an explicit refinement row"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-151
+  - target: ix://agent-ix/filament-specification/FR-151
     type: references
 ---
 
@@ -45,7 +45,7 @@ class.
 ### Step classes and their rows
 
 A protocol step row is a `step` row whose left side names one concrete step
-class, by the [shared grammar](../../../proposals/quire-v1/shared-grammar.md)'s `protocol-step-row` production, admitted
+class, by the [shared grammar](../../../proposals/filament-v1/shared-grammar.md)'s `protocol-step-row` production, admitted
 wherever the refinement declaration ([FR-375](../analysis/FR-375-declare-model-refinement.md))
 admits a step row. The left sides read:
 
@@ -120,7 +120,7 @@ and leaves an open field unconstrained.
 ### Effective field order of a record
 
 The fields of a record type `T` that a binder record lists are its effective
-fields in the **effective field order** that [FR-208](../../objects/foundation/FR-208-quire-meaning-vocabulary.md)
+fields in the **effective field order** that [FR-208](../../objects/foundation/FR-208-filament-meaning-vocabulary.md)
 "Generalization" states: supertypes' fields first in `supertypes` list order,
 then `T`'s own fields in declaration order, a field reached twice once, and a
 redefining field at the position of the field it hides. Every list of a
@@ -284,12 +284,12 @@ FR-177 over the same product.
   the unbuilt-feature refusal; [FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md)
   and [FR-323](../../objects/interfaces/FR-323-native-runtime-envelope.md)
   own its lock and replay.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns the
   `protocol-step-row` production.
 
 ## References
 
-- Design: quire-spec-language ADR-027 PR-1 to PR-3 and RU-5; the refinement
+- Design: filament-spec-language ADR-027 PR-1 to PR-3 and RU-5; the refinement
   step rows of ADR-020 RU-1.
 - Tickets: Linear STD-140; paired QSL-396 (with STD-133 and QSL-367 for model
   refinement); Linear STD-182 for the abstract protocol subject header; Linear STD-199 for

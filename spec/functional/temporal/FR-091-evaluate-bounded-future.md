@@ -3,27 +3,27 @@ id: FR-091
 title: "Evaluate bounded future temporal operators"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
-  - target: ix://agent-ix/quire-specification/FR-253
+  - target: ix://agent-ix/filament-specification/FR-253
     type: references
-  - target: ix://agent-ix/quire-specification/FR-254
+  - target: ix://agent-ix/filament-specification/FR-254
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-258
+  - target: ix://agent-ix/filament-specification/FR-258
     type: references
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: references
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: references
 ---
 ## Description
@@ -190,7 +190,7 @@ Where a bounded temporal profile is selected, the evaluator shall refuse an unbo
 - [FR-094](FR-094-interpret-progress-history-and-closure.md) for the inclusive
   watermark. The vectors are `proposals/finite-window/finite-window-vectors.json`.
 - Total Boolean predicate projection from
-  [contract-IR issue #63](https://github.com/agent-ix/quire-contract-ir/issues/63).
+  [contract-IR issue #63](https://github.com/agent-ix/filament-contract-ir/issues/63).
 
 ## Status
 

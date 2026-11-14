@@ -3,25 +3,25 @@ id: FR-363
 title: "Settle a temporal claim over every behaviour of a model"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: references
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
 ---
 
@@ -256,5 +256,5 @@ step counterexample to it settles `induction-not-closed{depth: 1}`.
 
 ## References
 
-- quire-spec-language ADR-018 §1 (TP-1 to TP-4, V-1 to V-8), SM-1, SM-5 and
+- filament-spec-language ADR-018 §1 (TP-1 to TP-4, V-1 to V-8), SM-1, SM-5 and
   QS-6, QS-7; Linear STD-131 (paired with QSL-366).

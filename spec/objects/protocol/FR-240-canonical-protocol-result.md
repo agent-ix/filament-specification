@@ -4,47 +4,47 @@ title: "Canonical protocol result"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-059
+  - target: ix://agent-ix/filament-specification/FR-059
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: references
-  - target: ix://agent-ix/quire-specification/FR-245
+  - target: ix://agent-ix/filament-specification/FR-245
     type: references
-  - target: ix://agent-ix/quire-specification/FR-246
+  - target: ix://agent-ix/filament-specification/FR-246
     type: references
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: references
-  - target: ix://agent-ix/quire-specification/FR-248
+  - target: ix://agent-ix/filament-specification/FR-248
     type: references
-  - target: ix://agent-ix/quire-specification/FR-280
+  - target: ix://agent-ix/filament-specification/FR-280
     type: references
-  - target: ix://agent-ix/quire-specification/FR-281
+  - target: ix://agent-ix/filament-specification/FR-281
     type: references
   - target: ix://agent-ix/engineering-assurance/FR-022
     type: references
-  - target: ix://agent-ix/quire-specification/FR-284
+  - target: ix://agent-ix/filament-specification/FR-284
     type: references
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: references
-  - target: ix://agent-ix/quire-specification/FR-286
+  - target: ix://agent-ix/filament-specification/FR-286
     type: references
-  - target: ix://agent-ix/quire-specification/FR-295
+  - target: ix://agent-ix/filament-specification/FR-295
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-291
+  - target: ix://agent-ix/filament-specification/FR-291
     type: references
-  - target: ix://agent-ix/quire-specification/FR-292
+  - target: ix://agent-ix/filament-specification/FR-292
     type: references
 ---
 # FR-240: Canonical protocol result
@@ -84,7 +84,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contractVersion | exactly `quire.protocol.result/v1-draft.1` (FR-061, FR-240-AC-1) |
+| contractVersion | exactly `filament.protocol.result/v1-draft.1` (FR-061, FR-240-AC-1) |
 | kind | exactly `ProtocolResult` (FR-061, FR-240-AC-1) |
 | decision_scope_progress | type not stated in source; see Field sources |
 | decision_scope_closure | type not stated in source; see Field sources |
@@ -106,7 +106,7 @@ artifact adds none.
 
 | Property | Description |
 | --- | --- |
-| `contractVersion` | Exactly `quire.protocol.result/v1-draft.1` on every canonical protocol result (FR-061). |
+| `contractVersion` | Exactly `filament.protocol.result/v1-draft.1` on every canonical protocol result (FR-061). |
 | `kind` | Exactly `ProtocolResult` (FR-061). |
 | `resultKey` | The structural key `{producer, request, ordinal}` defined by [FR-286](FR-286-canonical-protocol-result-identity-preimage.md). |
 | assessment execution | One state stating whether the requested evaluator completed or why it did not ([FR-241](FR-241-assessment-execution-disposition.md)). |
@@ -181,7 +181,7 @@ Assurance FR-022 vocabulary as a distinct source-bound value").
 ## Protocol claim authority
 
 FR-290 defines the six exact protocol-family claim-kind spellings. This result's
-contract version selects the FR-290 vocabulary `quire.capability-kind/v1`. FR-281 governs the
+contract version selects the FR-290 vocabulary `filament.capability-kind/v1`. FR-281 governs the
 single-valued strength drawn from Engineering Assurance FR-022, FR-291 the admitted fragment and FR-292 the backend
 selection. Equal display labels or implementation names establish none of them.
 
@@ -189,7 +189,7 @@ selection. Equal display labels or implementation names establish none of them.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-240-AC-1 | Every canonical protocol result carries `contractVersion` equal to `quire.protocol.result/v1-draft.1` and kind `ProtocolResult`. | Test (TC-061) |
+| FR-240-AC-1 | Every canonical protocol result carries `contractVersion` equal to `filament.protocol.result/v1-draft.1` and kind `ProtocolResult`. | Test (TC-061) |
 | FR-240-AC-2 | Withdrawn: existed only for the enclosing artifact digest, which is no longer computed. | Withdrawn |
 | FR-240-AC-3 | The five progress and closure axes remain independently readable; no axis is populated from completeness or assessment execution. | Test (TC-061) |
 | FR-240-AC-6 | Each of the four decision-scope and surrounding-execution axes carries exactly one FR-284 member, and the complete-global-conformance axis carries exactly one FR-247 member. | Test (TC-061) |
@@ -209,7 +209,7 @@ selection. Equal display labels or implementation names establish none of them.
 - [FR-061](../../functional/protocol/FR-061-report-orthogonal-results.md) supplies the
   contract version, kind, result key and every
   retained fact.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-280](FR-280-assumption-state.md) defines the assumption state vocabulary
   carried here.

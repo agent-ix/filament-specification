@@ -3,13 +3,13 @@ id: FR-001
 title: "Select an explicit native language profile"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-001"
+  - target: "ix://agent-ix/filament-specification/US-001"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-375"
+  - target: "ix://agent-ix/filament-specification/FR-375"
     type: references
-  - target: "ix://agent-ix/quire-specification/FR-090"
+  - target: "ix://agent-ix/filament-specification/FR-090"
     type: references
-  - target: "ix://agent-ix/quire-specification/FR-250"
+  - target: "ix://agent-ix/filament-specification/FR-250"
     type: references
 ---
 # FR-001: Select an explicit native language profile
@@ -33,10 +33,10 @@ The implementation target is `ix:native`, edition `0-draft`,
 schema files. Grammar admission remains distinct from successful typing,
 execution and backend support.
 
-FS01 accepts `Quire` as the product/language name, `native Quire` as its
+FS01 accepts `Filament` as the product/language name, `native Filament` as its
 descriptive source-language name and `ix:native` as its stable machine identity.
 It also accepts the composed `1-draft` profile hierarchy recorded by
-[AD-003](../../assurance/AD-003-native-quire-language-charter.md). When a
+[AD-003](../../assurance/AD-003-native-filament-language-charter.md). When a
 frontend recognizes that hierarchy, the frontend shall select semantic profiles
 by exact identity without treating recognition as compiler or backend support.
 
@@ -50,21 +50,21 @@ at the selected source location without falling back to another definition.
 ### Header-selectable layers
 
 Every AD-003 state, value, model and timed-model layer is header-selectable:
-`quire.state.core/v1`, `quire.state.queries/v1`, `quire.state.graph/v1`,
-`quire.value.complete/v1`, `quire.model.complete/v1` and
-`quire.temporal.complete/v1`. The [header-selectable layers table](../../../proposals/quire-v1/definitions/README.md#header-selectable-layers) gives each layer's identity, the layers it requires, its admitted-form
+`filament.state.core/v1`, `filament.state.queries/v1`, `filament.state.graph/v1`,
+`filament.value.complete/v1`, `filament.model.complete/v1` and
+`filament.temporal.complete/v1`. The [header-selectable layers table](../../../proposals/filament-v1/definitions/README.md#header-selectable-layers) gives each layer's identity, the layers it requires, its admitted-form
 definition and the FR-290 kind and extent its witness requests.
 
 - When a `profile` declaration names a layer's identity, the frontend shall
   select that layer and every layer its `requires` closure names, and no
   layer that requires it.
-- When the unit's selected layers include `quire.value.complete/v1`, counting the layers a governing infinite-trace profile requires for a refinement's rows (below), the frontend shall select the definitions the [package selection](../../../proposals/quire-v1/definitions/value-complete.md#package-selection) selects for the unit; otherwise it shall select exactly the `edition`.
+- When the unit's selected layers include `filament.value.complete/v1`, counting the layers a governing infinite-trace profile requires for a refinement's rows (below), the frontend shall select the definitions the [package selection](../../../proposals/filament-v1/definitions/value-complete.md#package-selection) selects for the unit; otherwise it shall select exactly the `edition`.
 - When a declaration's `using` names that profile's alias, the frontend
   shall admit the declaration under exactly the selected layer's
   admitted-form set, which includes the sets of the layers it requires.
 - When a refinement declaration's `using` names the infinite-trace profile
   alias, the frontend shall admit its row expressions under exactly
-  `quire.value.complete/v1`, `quire.model.complete/v1` and their `requires`
+  `filament.value.complete/v1`, `filament.model.complete/v1` and their `requires`
   closure, which that profile requires when it governs a refinement. Those
   layers count toward the unit's selected layers for the package selection: the unit then receives the `always` roles and, for
   a row using `div` or `rem`, the `integer_div_rem` trigger and its exactly-one
@@ -86,18 +86,18 @@ definition and the FR-290 kind and extent its witness requests.
 | FR-001-AC-2 | A unit selecting an unknown profile receives unknown_profile. | Test |
 | FR-001-AC-4 | An unavailable selected profile receives a located refusal; selecting it cannot execute under another profile or reuse that profile's semantic subject. | Test (TC-005) |
 | FR-001-AC-5 | For each of the six layers, a unit whose `profile` declaration names the layer and whose declarations use only that layer's forms is admitted, and its selected definitions are the layer and its `requires` closure and no layer that requires it; a state-layer unit selects the `edition` row and no other qualification row, and a complete-value, complete-model or complete-temporal unit selects the rows the package selections of the complete-value, complete-model and complete-temporal roots select. | Test (TC-005) |
-| FR-001-AC-6 | A unit selecting `quire.state.core/v1` that declares a named predicate refuses `unsupported_construct`/`declaration-form` at the declaration, and one that calls `filter` refuses `unsupported_construct`/`expression-form` at the call, each naming `quire.state.core/v1`; both units selecting `quire.state.queries/v1` are admitted. | Test (TC-005) |
-| FR-001-AC-8 | A unit whose `profile` declaration names `quire.temporal.complete/v1` and whose declarations use a `time` member, a `Clock` field and an atomic clock constraint is admitted, and its selected definitions are the layer, `quire.model.complete/v1`, `quire.state.graph/v1`, `quire.state.queries/v1`, `quire.value.complete/v1`, `quire.state.core/v1` and no layer that requires the layer, with the definitions the package selections of the complete-value, complete-model and complete-temporal roots select. The same unit with a `profile` declaration naming `quire.model.complete/v1` refuses the `time` member `unsupported_construct`/`declaration-form` at the declaration, naming `quire.model.complete/v1` and the required layer `quire.temporal.complete/v1`. | Test (TC-005) |
-| FR-001-AC-7 | A refinement governed by the infinite-trace profile admits a `mod` row and an `a div b` row in a unit whose own declarations select no layer; the unit's package selection then holds the `always` roles and exactly one integer-division law (`selection_trigger_unsatisfied` when no law is selected), and its `definition_selections` name the floor law when the unit's `integer_division_profile` selects floor and the Euclidean law when it selects Euclidean; a Boolean field row `ready = protocol Fill` naming a protocol declared in the unit refuses `unsupported_construct`/`expression-form` at the `protocol` token, naming `quire.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks. | Test (TC-310) |
+| FR-001-AC-6 | A unit selecting `filament.state.core/v1` that declares a named predicate refuses `unsupported_construct`/`declaration-form` at the declaration, and one that calls `filter` refuses `unsupported_construct`/`expression-form` at the call, each naming `filament.state.core/v1`; both units selecting `filament.state.queries/v1` are admitted. | Test (TC-005) |
+| FR-001-AC-8 | A unit whose `profile` declaration names `filament.temporal.complete/v1` and whose declarations use a `time` member, a `Clock` field and an atomic clock constraint is admitted, and its selected definitions are the layer, `filament.model.complete/v1`, `filament.state.graph/v1`, `filament.state.queries/v1`, `filament.value.complete/v1`, `filament.state.core/v1` and no layer that requires the layer, with the definitions the package selections of the complete-value, complete-model and complete-temporal roots select. The same unit with a `profile` declaration naming `filament.model.complete/v1` refuses the `time` member `unsupported_construct`/`declaration-form` at the declaration, naming `filament.model.complete/v1` and the required layer `filament.temporal.complete/v1`. | Test (TC-005) |
+| FR-001-AC-7 | A refinement governed by the infinite-trace profile admits a `mod` row and an `a div b` row in a unit whose own declarations select no layer; the unit's package selection then holds the `always` roles and exactly one integer-division law (`selection_trigger_unsatisfied` when no law is selected), and its `definition_selections` name the floor law when the unit's `integer_division_profile` selects floor and the Euclidean law when it selects Euclidean; a Boolean field row `ready = protocol Fill` naming a protocol declared in the unit refuses `unsupported_construct`/`expression-form` at the `protocol` token, naming `filament.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks. | Test (TC-310) |
 
 ## Dependencies
 
 - [US-001](../../usecase/US-001-understand-native-meaning.md) supplies the user need.
 - [Detailed contract or implementation evidence](../../../proposals/state-core/profile.md) supplies the scoped context.
 - [Native-source amendment](../../../proposals/native-source-1-draft/README.md) preserves the superseded candidate and its carried-forward constraints.
-- [AD-003](../../assurance/AD-003-native-quire-language-charter.md) fixes the language name, profile hierarchy and support-stage boundaries.
-- The [header-selectable layers table](../../../proposals/quire-v1/definitions/README.md#header-selectable-layers) lists the layers.
-- The [complete temporal definition](../../../proposals/quire-v1/definitions/temporal-complete.md) owns `quire.temporal.complete/v1`.
+- [AD-003](../../assurance/AD-003-native-filament-language-charter.md) fixes the language name, profile hierarchy and support-stage boundaries.
+- The [header-selectable layers table](../../../proposals/filament-v1/definitions/README.md#header-selectable-layers) lists the layers.
+- The [complete temporal definition](../../../proposals/filament-v1/definitions/temporal-complete.md) owns `filament.temporal.complete/v1`.
 - [FR-375](../analysis/FR-375-declare-model-refinement.md) admits refinement
   declarations; their rows are admitted under the layers the governing
   infinite-trace profile requires (FR-090, FR-250), and those layers count for the package selection.

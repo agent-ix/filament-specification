@@ -3,7 +3,7 @@ id: TC-219
 title: "Backend counterexample native replay"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: verifies
 ---
 

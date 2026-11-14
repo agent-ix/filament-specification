@@ -48,15 +48,15 @@ fn cases() -> Vec<Value> {
 
 fn outcome_validator() -> jsonschema::Validator {
     let registry = jsonschema::Registry::new()
-        .add("urn:quire:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
+        .add("urn:filament:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
         .expect("checked-package schema registers")
-        .add("urn:quire:backend-provider:v1", parsed(SCHEMA))
+        .add("urn:filament:backend-provider:v1", parsed(SCHEMA))
         .expect("backend-provider schema registers")
         .prepare()
         .expect("registry prepares");
     jsonschema::options()
         .with_registry(&registry)
-        .build(&json!({"$ref": "urn:quire:backend-provider:v1#/$defs/OutcomeStage"}))
+        .build(&json!({"$ref": "urn:filament:backend-provider:v1#/$defs/OutcomeStage"}))
         .expect("outcome stage compiles")
 }
 
@@ -357,15 +357,15 @@ fn proof_basis_certification_and_limits_follow_fr_483() {
     assert!(check_limit(&by_id("SH-11")).unwrap() > default_limit(&by_id("SH-11")).unwrap());
     // check.limits.max_cases is a wire member: a count of at least one, on the two kinds only.
     let registry = jsonschema::Registry::new()
-        .add("urn:quire:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
+        .add("urn:filament:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
         .unwrap()
-        .add("urn:quire:backend-provider:v1", parsed(SCHEMA))
+        .add("urn:filament:backend-provider:v1", parsed(SCHEMA))
         .unwrap()
         .prepare()
         .unwrap();
     let check = jsonschema::options()
         .with_registry(&registry)
-        .build(&json!({"$ref": "urn:quire:backend-provider:v1#/$defs/Check"}))
+        .build(&json!({"$ref": "urn:filament:backend-provider:v1#/$defs/Check"}))
         .unwrap();
     assert!(check.is_valid(&json!({"limits": {"max_cases": 1000}})));
     for bad in [json!({"limits": {"max_cases": 0}}), json!({"limits": {"max_cases": "9"}}), json!({"limits": {"max_cases": -1}}), json!({"limits": {}}), json!({"limits": {"max_cases": 5, "other": 1}})] {
@@ -806,15 +806,15 @@ fn schema_refuses_a_malformed_contract_counterexample() {
 #[test]
 fn descriptors_for_these_kinds_must_publish_a_positive_max_cases() {
     let registry = jsonschema::Registry::new()
-        .add("urn:quire:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
+        .add("urn:filament:checked-package:v2", parsed(CHECKED_PACKAGE_SCHEMA))
         .unwrap()
-        .add("urn:quire:backend-provider:v1", parsed(SCHEMA))
+        .add("urn:filament:backend-provider:v1", parsed(SCHEMA))
         .unwrap()
         .prepare()
         .unwrap();
     let validator = jsonschema::options()
         .with_registry(&registry)
-        .build(&json!({"$ref": "urn:quire:backend-provider:v1#/$defs/BackendDescriptor"}))
+        .build(&json!({"$ref": "urn:filament:backend-provider:v1#/$defs/BackendDescriptor"}))
         .unwrap();
     let descriptor = |kind: &str, bounds: &Value| {
         let mut d = json!({

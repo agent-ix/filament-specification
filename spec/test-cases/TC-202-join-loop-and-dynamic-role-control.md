@@ -3,7 +3,7 @@ id: TC-202
 title: "Join loop and dynamic-role control"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: verifies
 ---
 

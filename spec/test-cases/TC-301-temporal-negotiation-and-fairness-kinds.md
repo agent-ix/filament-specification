@@ -3,9 +3,9 @@ id: TC-301
 title: "Temporal negotiation, provider commitments and fairness kinds"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: verifies
 ---
 

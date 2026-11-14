@@ -4,9 +4,9 @@ title: "Lossless parsed-source artifact"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_002
+  - target: ix://agent-ix/filament-specification/interface_002
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-302
+  - target: ix://agent-ix/filament-specification/FR-302
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.parsed-source/v1` |
+| contract_version | exactly `filament.parsed-source/v1` |
 | edition | identity string (retained text: selected language edition identity) |
 | tokens | ordered list of token records: kind, byte region, original bytes |
 | trivia | ordered list of byte-region records |
@@ -44,7 +44,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | recoveries | list of recovery records with source loci; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.parsed-source/v1`.
+- `contract_version` — exactly `filament.parsed-source/v1`.
 - `source` — exact FR-202 source-document identity.
 - `edition` — the selected language edition identity.
 - `tokens` — ordered token kind, exact byte region and original bytes.

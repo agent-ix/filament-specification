@@ -3,7 +3,7 @@ id: TC-945
 title: "Composed documents declare no model node"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: verifies
 ---
 # TC-945: Composed documents declare no model node

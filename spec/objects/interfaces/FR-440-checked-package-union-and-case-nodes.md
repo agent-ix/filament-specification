@@ -3,19 +3,19 @@ id: FR-440
 title: "Checked-package union, union value and case nodes"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: references
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/FR-441
+  - target: ix://agent-ix/filament-specification/FR-441
     type: references
-  - target: ix://agent-ix/quire-specification/AD-015
+  - target: ix://agent-ix/filament-specification/AD-015
     type: references
 ---
 
@@ -23,7 +23,7 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` graph carries a `union-decl`, a
+When a `filament.checked-semantic-graph/v2` graph carries a `union-decl`, a
 union value construction or a `case` expression, the producer SHALL encode
 them as the `composite_type`/`union` node, the `value`/`union_value` node
 and the `expression`/`case` node below, and the reader SHALL refuse a node
@@ -67,13 +67,13 @@ whose joins below do not hold with the refusal this requirement names, in
   `aggregate`. It carries no `declaration`.
 - **Case node** — `node_tag: "expression"`, `semantic_form: "case"`. Its
   `body` root is an `application` with `operator: "case"` and
-  `operation: {identity: "quire.op.control.case", laws: [], mode: null,
+  `operation: {identity: "filament.op.control.case", laws: [], mode: null,
   member: null, leaves: []}`. Its `arguments` are the scrutinee term
   followed by one **arm** per member of the scrutinee's union, in that
   union's member declaration order, whatever order the source arms are
   written in. Its `result_type` and the node's `semantic_type` are the
   `case` result type ([FR-146](../../functional/expressions/FR-146-check-total-pure-functions.md),
-  "Case result type"). A `quire.op.control.case` application stands only as
+  "Case result type"). A `filament.op.control.case` application stands only as
   the body root of an `expression`/`case` node; a `case` used inside another
   term, including another `case`'s arm body, is a `reference` to its own
   `expression`/`case` node.
@@ -90,9 +90,9 @@ whose joins below do not hold with the refusal this requirement names, in
   member's payload type at the binder's position. Every occurrence has role
   `expression`.
 - **Catalog entry** — the published operation catalog
-  (`quire.checked-operation-catalog/v1`, owned by
-  `agent-ix/quire-verification-contracts`, FR-322) SHALL hold
-  `quire.op.control.case` with operator class `case`, operands `["union"]`, rest `binder`, result
+  (`filament.checked-operation-catalog/v1`, owned by
+  `agent-ix/filament-verification-contracts`, FR-322) SHALL hold
+  `filament.op.control.case` with operator class `case`, operands `["union"]`, rest `binder`, result
   form `arm_body`, no laws, no mode, no member kind, no leaf source and the
   one constraint `{kind: "union_arms", operands: [0]}`. The `arm_body` result
   form derives the case result type; the application's `result_type` must be
@@ -107,8 +107,8 @@ whose joins below do not hold with the refusal this requirement names, in
 - **Families and groups** — that catalog SHALL list `union` among its
   families, `arm_body` among its result forms and `union_arms` among its
   constraint kinds. The `union` family is a member of the
-  `any_value` and `structural_kind` groups, so `quire.op.structural.eq` and
-  `quire.op.structural.ne` compare two union values of one union type
+  `any_value` and `structural_kind` groups, so `filament.op.structural.eq` and
+  `filament.op.structural.ne` compare two union values of one union type
   (FR-143), and a union value fits every `any_value` operand position.
 - **Structural leaves** — in [FR-322](FR-322-checked-package-artifact.md)'s
   "Structural leaf walk" each union member is an anchor, as a record field
@@ -125,7 +125,7 @@ whose joins below do not hold with the refusal this requirement names, in
   `union Chain { Link(Text[0,8;nfc], Chain), End }` has the leaves
   `["member:Link", "position:0"]` and
   `["member:Link", "position:1", "recursion:0"]`; and nothing when none is,
-  so `quire.op.structural.eq` over two values of
+  so `filament.op.structural.eq` over two values of
   `union List { Cons(Integer, List), Nil }` is admitted with empty
   `leaves`.
 - **Declaration-wide leaf identity** — every declared member participates
@@ -142,7 +142,7 @@ whose joins below do not hold with the refusal this requirement names, in
   forms and `case` among `ExpressionNode` forms, and binds the three bodies
   above (`UnionTypeBody`, `UnionValueBody`, `CaseBody`). Both V2 schemas
   enumerate `case` among the application operator classes and
-  `quire.op.control.case` among the operation identities, so they enumerate
+  `filament.op.control.case` among the operation identities, so they enumerate
   exactly the catalog's identities and operator classes (FR-322-AC-17) once
   the catalog holds the entry above. The member identity of a union is
   defined by [FR-441](FR-441-union-member-key.md).
@@ -183,12 +183,12 @@ nested `Only` arm's `x` takes `5`.
 The reader checks these joins at FR-322's operation step, in ascending
 node-id order, each node at its place in that order:
 
-1. **Case placement.** A `quire.op.control.case` application at the body
+1. **Case placement.** A `filament.op.control.case` application at the body
    root of any node other than an `expression`/`case` node refuses
    `ill_typed`/`operator-ineligible` at the node that holds it. An
    `expression` node whose `semantic_form` contradicts its root
    application's operator class is FR-322's `invalid_semantic_graph`. A
-   `quire.op.control.case` application nested inside another term, such as
+   `filament.op.control.case` application nested inside another term, such as
    another application's arguments, an aggregate's members or a binding's
    value, refuses `ill_typed`/`operator-ineligible` at that nested
    application's `operator` member, not as an FR-322 body-grammar failure
@@ -227,12 +227,12 @@ changes no node id.
 | --- | --- | --- |
 | FR-440-AC-1 | `union Shape { Circle(Integer), Rect(Integer, Integer), Empty }` is a `composite_type`/`union` node carrying `declaration`, whose body is an `aggregate` of the bindings `Circle`, `Rect` and `Empty` in that order, holding one, two and zero `reference` terms to the `Integer` node; a duplicated member name refuses `invalid_package`/`duplicate-member` and a payload reference to a non-type node `ill_typed`/`operator-ineligible`, each at the union node. | Test (TC-395) |
 | FR-440-AC-2 | `Shape::Rect(2, 3)` is a `value`/`union_value` node whose `semantic_type` is the `Shape` node and whose body is one binding `Rect` over the two payload terms in order, and `Shape::Empty` is one binding `Empty` over the empty `aggregate`; a binding naming `Triangle`, a `Rect` binding with one payload term and a `Circle` binding whose payload term is `Text` each refuse `ill_typed`/`type-mismatch` at the node. | Test (TC-395) |
-| FR-440-AC-3 | `case s { Empty: 0; Rect(w, h): w * h; Circle(r): r }` is an `expression`/`case` node whose body is a `quire.op.control.case` application over the scrutinee and the arms `Circle`, `Rect` and `Empty` in member declaration order, each arm an `aggregate` of its binder aggregate and its body, with the binders `r`, `w` and `h` as `value`/`parameter` nodes typed `Integer`; the same `case` with its source arms in another order has the same node id. | Test (TC-395) |
+| FR-440-AC-3 | `case s { Empty: 0; Rect(w, h): w * h; Circle(r): r }` is an `expression`/`case` node whose body is a `filament.op.control.case` application over the scrutinee and the arms `Circle`, `Rect` and `Empty` in member declaration order, each arm an `aggregate` of its binder aggregate and its body, with the binders `r`, `w` and `h` as `value`/`parameter` nodes typed `Integer`; the same `case` with its source arms in another order has the same node id. | Test (TC-395) |
 | FR-440-AC-4 | A `case` application whose arms are out of member order, omit or repeat a member, carry a binder aggregate whose count differs from the member's payload arity, type a binder other than its payload position, or carry an arm body whose type is neither the `result_type` nor, for a record `result_type`, a record type that conforms to it, refuses `ill_typed`/`operator-ineligible` at the `case` node. | Test (TC-395) |
 | FR-440-AC-5 | In the "Binder levels" worked vector, `t`, `w`, `h`, `r` and `x` carry the levels `3`, `4`, `5`, `4` and `5`; with `let t = k in` removed (and `t` replaced by `k`), `w`, `h`, `r` and `x` carry `3`, `4`, `3` and `4`. | Test (TC-395) |
-| FR-440-AC-6 | `quire.op.structural.eq` over two `Shape` values is admitted, and over a `Shape` value and a value of another union refuses `ill_typed`/`operator-ineligible` by its `same_type` constraint. | Test (TC-395) |
-| FR-440-AC-7 | A `quire.op.control.case` application as the body root of a `function` node refuses `ill_typed`/`operator-ineligible` at that node, and the same `case` as an `expression`/`case` node referenced from the function body is admitted; the same `case` application nested in another application's arguments refuses `ill_typed`/`operator-ineligible` at that nested application's `operator` member, not `malformed_wire`. | Test (TC-395) |
-| FR-440-AC-8 | `quire.op.structural.eq` over two `Label` values carries the leaves `["member:Named", "position:0"]` and `["member:Tagged", "position:1"]` and none for `Empty`; over two `List` values of `union List { Cons(Integer, List), Nil }` it is admitted with empty `leaves`; and over two `Chain` values of `union Chain { Link(Text[0,8;nfc], Chain), End }` it is admitted with the leaves `["member:Link", "position:0"]` and `["member:Link", "position:1", "recursion:0"]`. | Test (TC-395) |
+| FR-440-AC-6 | `filament.op.structural.eq` over two `Shape` values is admitted, and over a `Shape` value and a value of another union refuses `ill_typed`/`operator-ineligible` by its `same_type` constraint. | Test (TC-395) |
+| FR-440-AC-7 | A `filament.op.control.case` application as the body root of a `function` node refuses `ill_typed`/`operator-ineligible` at that node, and the same `case` as an `expression`/`case` node referenced from the function body is admitted; the same `case` application nested in another application's arguments refuses `ill_typed`/`operator-ineligible` at that nested application's `operator` member, not `malformed_wire`. | Test (TC-395) |
+| FR-440-AC-8 | `filament.op.structural.eq` over two `Label` values carries the leaves `["member:Named", "position:0"]` and `["member:Tagged", "position:1"]` and none for `Empty`; over two `List` values of `union List { Cons(Integer, List), Nil }` it is admitted with empty `leaves`; and over two `Chain` values of `union Chain { Link(Text[0,8;nfc], Chain), End }` it is admitted with the leaves `["member:Link", "position:0"]` and `["member:Link", "position:1", "recursion:0"]`. | Test (TC-395) |
 | FR-440-AC-9 | Structural equality and inequality over each FR-322 Union text-leaf vector U1–U7 require exactly that vector's complete ordered list, independent of active values. U2's member rename, member reorder, payload swap and source arm reorder have exactly the effects stated with those vectors. | Test |
 | FR-440-AC-10 | Reordering the source arms of AC-3's `case` retains its declared-order body and node id. | Test (TC-395) |
 | FR-440-AC-11 | Withdrawn: the content-hash identity (package id, node key, digest or stale comparison) this criterion tested is removed. | Withdrawn |

@@ -4,15 +4,15 @@ title: "Temporal progress assertion"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: references
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: references
 ---
 # FR-256: Temporal progress assertion
@@ -150,7 +150,7 @@ repair settled history."
 - [FR-266](../observation/FR-266-event-time-window.md) records the half-open
   window convention this artifact settles against, and the conflict with the
   inclusive temporal convention.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Status

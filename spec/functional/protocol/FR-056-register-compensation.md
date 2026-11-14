@@ -3,19 +3,19 @@ id: FR-056
 title: "Register compensation only after a successful effect"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-233
+  - target: ix://agent-ix/filament-specification/FR-233
     type: references
-  - target: ix://agent-ix/quire-specification/FR-234
+  - target: ix://agent-ix/filament-specification/FR-234
     type: references
-  - target: ix://agent-ix/quire-specification/FR-237
+  - target: ix://agent-ix/filament-specification/FR-237
     type: references
-  - target: ix://agent-ix/quire-specification/FR-239
+  - target: ix://agent-ix/filament-specification/FR-239
     type: references
 ---
 ## Description

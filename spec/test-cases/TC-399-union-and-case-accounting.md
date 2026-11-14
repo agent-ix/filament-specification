@@ -3,9 +3,9 @@ id: TC-399
 title: "Union construction and case accounting"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: verifies
 ---
 
@@ -13,7 +13,7 @@ relationships:
 
 ## Description
 
-Record the exact `quire.value.accounting/v1` charges of union construction and
+Record the exact `filament.value.accounting/v1` charges of union construction and
 of `case` evaluation, and the work limit at which each first stops.
 
 ## Test Procedure

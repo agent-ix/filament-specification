@@ -3,7 +3,7 @@ id: TC-967
 title: "Checked-package schedulability claim node and obligation identity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-482
+  - target: ix://agent-ix/filament-specification/FR-482
     type: verifies
 ---
 

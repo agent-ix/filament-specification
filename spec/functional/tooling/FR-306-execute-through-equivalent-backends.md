@@ -3,25 +3,25 @@ id: FR-306
 title: "Execute through equivalent backends"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-004
+  - target: ix://agent-ix/filament-specification/AD-004
     type: references
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: references
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-193
+  - target: ix://agent-ix/filament-specification/FR-193
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: references
-  - target: ix://agent-ix/quire-specification/FR-460
+  - target: ix://agent-ix/filament-specification/FR-460
     type: references
 ---
 
@@ -104,7 +104,7 @@ emits nothing (FR-331-AC-2).
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.
@@ -114,4 +114,4 @@ emits nothing (FR-331-AC-2).
 
 ## References
 
-- Linear STD-141; QSL ADR-029 EB-1 to EB-8, CA-1 to CA-5, RU-5.
+- Linear STD-141; FSL ADR-029 EB-1 to EB-8, CA-1 to CA-5, RU-5.

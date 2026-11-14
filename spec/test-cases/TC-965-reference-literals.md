@@ -3,9 +3,9 @@ id: TC-965
 title: "Reference literals parse, type, lower and resolve against a subject"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-480
+  - target: ix://agent-ix/filament-specification/FR-480
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 

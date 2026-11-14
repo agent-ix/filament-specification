@@ -3,11 +3,11 @@ id: FR-036
 title: "Preserve original source locations through lexical recognition"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-202
+  - target: ix://agent-ix/filament-specification/FR-202
     type: references
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: references
 ---
 ## Description
@@ -38,8 +38,8 @@ The candidate lexical rules are in the shared grammar. Keywords match complete i
 
 ## Dependencies
 
-- [Proposed shared grammar](../../../proposals/quire-v1/shared-grammar.md).
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Proposed shared grammar](../../../proposals/filament-v1/shared-grammar.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 
 This contribution remains proposed until the integrated baseline review. It does
 not change historical definition bytes or claim current compiler support.

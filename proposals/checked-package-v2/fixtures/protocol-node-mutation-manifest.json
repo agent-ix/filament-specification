@@ -1,5 +1,5 @@
 {
-  "version": "quire.protocol-node-mutation-manifest/v1",
+  "version": "filament.protocol-node-mutation-manifest/v1",
   "note": "STD-609 PR 1. Executable form of the machine-derivable vectors of protocol-node-vectors.json. Each row edits fixtures/protocol-node-base.json with RFC 6902 operations and states the typed outcome. 'later' lists vectors a following pull request carries; 'pending' lists vectors whose outcome the spec text leaves open. Reproducibility: protocol-node-base.json and this manifest are the source of truth and are edited by patch only; there is no generator. The test recomputes every edited protocol node's dependencies from its body references, so a hand edit cannot be masked by a graph-stage refusal. A row states the first defect in reader order only (FR-464 'Reader order'); later defects are masked by design. The Q-LAYOUT vectors stay in 'pending' only as a partition record: STD-650 wires ProtocolControlApplication into the ProtocolNode body rule (the base stays schema-valid), and the 26 vectors with a first schema error path are the rows of protocol-node-layout-rows.json, checked by tests/protocol_node_layout_rows.rs. CH14a (a list of malformed delivery spellings in one vector) has no row yet.",
   "base": {
     "fixture": "protocol-node-base.json",
@@ -10,7 +10,7 @@
       "Constraints other than 'sent.order = order', 'got.order = order' and 'closed.order = order' are the Boolean literal true (the TC-946 source writes { true } for most).",
       "The compensation template Refund has no registration or activation captures, a literal-true trigger guard, retry relation and recovery predicate, and within [0, 30].",
       "The terminal-less spellings of the source ('terminal any', 'scheduling adversarial') are present as in the prose base.",
-      "IR quire-contract-ir cf7396b4 accepts no temporal_bindings row for a compensation node (FR-322-AC-305); the base carries the row the spec requires, and admission by that reader was checked with the refund-clock row removed."
+      "IR filament-contract-ir cf7396b4 accepts no temporal_bindings row for a compensation node (FR-322-AC-305); the base carries the row the spec requires, and admission by that reader was checked with the refund-clock row removed."
     ]
   },
   "reader_order": "When a row names no node, the first offending node is the lowest node-id (FR-322 ascending structural key order, which puts the clause Example::OrderFlow before its members) among the nodes the refusal's step visits; steps run in FR-464 'Reader order'. A row asserts only the first defect in reader order; later defects are masked by design.",
@@ -41,13 +41,13 @@
       "class": "refuse",
       "locus_basis": "node",
       "base": "protocol-node-base.json",
-      "edit_prose": "`Requested`'s body applies `quire.op.state.clause`",
+      "edit_prose": "`Requested`'s body applies `filament.op.state.clause`",
       "edit": [
         {
           "op": "replace",
           "path": "/semantic_graph/nodes/64/body/operation",
           "value": {
-            "identity": "quire.op.state.clause",
+            "identity": "filament.op.state.clause",
             "laws": [],
             "leaves": [],
             "member": {
@@ -74,7 +74,7 @@
       "class": "refuse",
       "locus_basis": "schema_error_path",
       "base": "protocol-node-base.json",
-      "edit_prose": "a `quire.op.protocol.control` application nested as an argument of `Main`",
+      "edit_prose": "a `filament.op.protocol.control` application nested as an argument of `Main`",
       "edit": [
         {
           "op": "replace",
@@ -83,12 +83,12 @@
             "term": "application",
             "operator": "protocol_control",
             "operation": {
-              "identity": "quire.op.protocol.control",
+              "identity": "filament.op.protocol.control",
               "laws": [
                 {
                   "definition": {
                     "authority": "agent-ix",
-                    "identity": "quire.protocol.finite-global/v1"
+                    "identity": "filament.protocol.finite-global/v1"
                   },
                   "role": "protocol_profile"
                 }
@@ -171,7 +171,7 @@
                       {
                         "operand": 4
                       },
-                      "quire.op.integer.eq",
+                      "filament.op.integer.eq",
                       "binary",
                       {
                         "operand": 5
@@ -279,7 +279,7 @@
             {
               "definition": {
                 "authority": "agent-ix",
-                "identity": "quire.temporal.event-position.false-extension/v1"
+                "identity": "filament.temporal.event-position.false-extension/v1"
               },
               "role": "temporal_profile"
             }
@@ -389,7 +389,7 @@
               ]
             }
           },
-          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"quire.op.state.clause\",\"state_clause\",{\"node\":0}]"
+          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"filament.op.state.clause\",\"state_clause\",{\"node\":0}]"
         },
         {
           "op": "replace",
@@ -449,7 +449,7 @@
               ]
             }
           ],
-          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"quire.op.state.clause\",\"state_clause\",{\"node\":0}]"
+          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"filament.op.state.clause\",\"state_clause\",{\"node\":0}]"
         },
         {
           "op": "replace",
@@ -457,7 +457,7 @@
           "value": {
             "operand": 5
           },
-          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"quire.op.state.clause\",\"state_clause\",{\"node\":0}]"
+          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"filament.op.state.clause\",\"state_clause\",{\"node\":0}]"
         },
         {
           "op": "replace",
@@ -465,7 +465,7 @@
           "value": {
             "operand": 6
           },
-          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"quire.op.state.clause\",\"state_clause\",{\"node\":0}]"
+          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"filament.op.state.clause\",\"state_clause\",{\"node\":0}]"
         },
         {
           "op": "replace",
@@ -473,7 +473,7 @@
           "value": {
             "operand": 7
           },
-          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"quire.op.state.clause\",\"state_clause\",{\"node\":0}]"
+          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"filament.op.state.clause\",\"state_clause\",{\"node\":0}]"
         },
         {
           "op": "replace",
@@ -481,7 +481,7 @@
           "value": {
             "operand": 8
           },
-          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"quire.op.state.clause\",\"state_clause\",{\"node\":0}]"
+          "node": "[\"state\",\"state_clause\",{\"node\":20},{\"node\":47},\"precondition\",{\"node\":3},\"filament.op.state.clause\",\"state_clause\",{\"node\":0}]"
         },
         {
           "op": "replace",
@@ -781,7 +781,7 @@
                 {
                   "operand": 7
                 },
-                "quire.op.state.clause",
+                "filament.op.state.clause",
                 "state_clause",
                 {
                   "operand": 8
@@ -901,7 +901,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 3
                 },
@@ -937,7 +937,7 @@
                 {
                   "operand": 7
                 },
-                "quire.op.state.clause",
+                "filament.op.state.clause",
                 "state_clause",
                 {
                   "operand": 8
@@ -1162,7 +1162,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 3
                 },
@@ -1200,8 +1200,8 @@
                 {
                   "operand": 6
                 },
-                "quire.op.temporal.clause",
-                "quire.temporal.event-position.false-extension/v1",
+                "filament.op.temporal.clause",
+                "filament.temporal.event-position.false-extension/v1",
                 "temporal",
                 {
                   "operand": 7
@@ -1398,7 +1398,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 3
                 },
@@ -1436,8 +1436,8 @@
                 {
                   "operand": 6
                 },
-                "quire.op.temporal.clause",
-                "quire.temporal.event-position.false-extension/v1",
+                "filament.op.temporal.clause",
+                "filament.temporal.event-position.false-extension/v1",
                 "temporal",
                 {
                   "operand": 7
@@ -1615,7 +1615,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 2
                 },
@@ -1728,7 +1728,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 2
                 },
@@ -2012,7 +2012,7 @@
                 {
                   "operand": 0
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 1
                 },
@@ -2042,7 +2042,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.integer.eq",
+                "filament.op.integer.eq",
                 "binary",
                 {
                   "operand": 5
@@ -2058,7 +2058,7 @@
                 {
                   "operand": 0
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 1
                 },
@@ -2544,7 +2544,7 @@
                 {
                   "operand": 0
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 1
                 },
@@ -2564,7 +2564,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.boolean.not",
+                "filament.op.boolean.not",
                 "unary",
                 {
                   "operand": 2
@@ -2630,7 +2630,7 @@
                         {
                           "operand": 0
                         },
-                        "quire.op.record.project",
+                        "filament.op.record.project",
                         {
                           "operand": 1
                         },
@@ -2698,7 +2698,7 @@
                         {
                           "operand": 3
                         },
-                        "quire.op.boolean.not",
+                        "filament.op.boolean.not",
                         "unary",
                         {
                           "operand": 2
@@ -3802,7 +3802,7 @@
                 {
                   "operand": 5
                 },
-                "quire.op.state.clause",
+                "filament.op.state.clause",
                 "state_clause",
                 {
                   "operand": 6
@@ -3872,7 +3872,7 @@
                 {
                   "operand": 5
                 },
-                "quire.op.state.clause",
+                "filament.op.state.clause",
                 "state_clause",
                 {
                   "operand": 6
@@ -4709,7 +4709,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.integer.eq",
+                "filament.op.integer.eq",
                 "binary",
                 {
                   "operand": 5
@@ -4757,7 +4757,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.integer.eq",
+                "filament.op.integer.eq",
                 "binary",
                 {
                   "operand": 5
@@ -4831,7 +4831,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.integer.eq",
+                "filament.op.integer.eq",
                 "binary",
                 {
                   "operand": 5
@@ -4879,7 +4879,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.integer.eq",
+                "filament.op.integer.eq",
                 "binary",
                 {
                   "operand": 5
@@ -4950,7 +4950,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -4988,7 +4988,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5063,7 +5063,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5101,7 +5101,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5176,7 +5176,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5204,7 +5204,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5279,7 +5279,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5307,7 +5307,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 4
                 },
@@ -5549,7 +5549,7 @@
                 "clause": "Example::OrderFlow",
                 "activation": "each",
                 "trigger": "[\"value\",\"parameter\",\"name\",{\"node\":2},\"opened\",\"level\",{\"node\":1},\"1\",{\"node\":9}]",
-                "temporal_clause": "[\"temporal\",\"temporal_clause\",{\"node\":19},{\"node\":2},\"model-steps\",\"kind\",\"origin\",{\"node\":57},\"quire.op.temporal.clause\",\"quire.temporal.event-position.false-extension/v1\",\"temporal\",{\"node\":0}]"
+                "temporal_clause": "[\"temporal\",\"temporal_clause\",{\"node\":19},{\"node\":2},\"model-steps\",\"kind\",\"origin\",{\"node\":57},\"filament.op.temporal.clause\",\"filament.temporal.event-position.false-extension/v1\",\"temporal\",{\"node\":0}]"
               }
             ]
           }
@@ -5845,7 +5845,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 3
                 },
@@ -5883,8 +5883,8 @@
                 {
                   "operand": 6
                 },
-                "quire.op.temporal.clause",
-                "quire.temporal.event-position.false-extension/v1",
+                "filament.op.temporal.clause",
+                "filament.temporal.event-position.false-extension/v1",
                 "temporal",
                 {
                   "operand": 7
@@ -6204,7 +6204,7 @@
                 {
                   "operand": 4
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 3
                 },
@@ -6242,8 +6242,8 @@
                 {
                   "operand": 6
                 },
-                "quire.op.temporal.clause",
-                "quire.temporal.event-position.false-extension/v1",
+                "filament.op.temporal.clause",
+                "filament.temporal.event-position.false-extension/v1",
                 "temporal",
                 {
                   "operand": 7
@@ -6513,7 +6513,7 @@
                 {
                   "operand": 0
                 },
-                "quire.op.record.project",
+                "filament.op.record.project",
                 {
                   "operand": 1
                 },
@@ -6533,7 +6533,7 @@
                 {
                   "operand": 3
                 },
-                "quire.op.boolean.not",
+                "filament.op.boolean.not",
                 "unary",
                 {
                   "operand": 2

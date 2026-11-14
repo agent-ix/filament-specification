@@ -3,7 +3,7 @@ id: TC-224
 title: "Model query and rendering determinism"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-304
+  - target: ix://agent-ix/filament-specification/FR-304
     type: verifies
 ---
 

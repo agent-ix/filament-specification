@@ -3,9 +3,9 @@ id: TC-948
 title: "Checked-package protocol control and compensation vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-466
+  - target: ix://agent-ix/filament-specification/FR-466
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-464
+  - target: ix://agent-ix/filament-specification/FR-464
     type: verifies
 ---
 
@@ -235,7 +235,7 @@ FR-466-AC-18.
 | CP32 | the retry relation reads `view` | `ill_typed`/`operator-ineligible` at the read, naming the retry relation |
 | CP33 | the recovery predicate reads `view` | `ill_typed`/`operator-ineligible` at the read, naming the recovery predicate |
 | CP34 | a registration capture reads `view`, the activation binder `opened` and a protocol capture | admitted |
-| CP35 | the trigger guard holds a `quire.op.model.deref` | `ill_typed`/`operator-ineligible` at the read, naming the guard |
+| CP35 | the trigger guard holds a `filament.op.model.deref` | `ill_typed`/`operator-ineligible` at the read, naming the guard |
 | CP36 | a registration capture reads a capture of another template `Other` | `missing_declaration`/`missing-name`, `read` `foreign` |
 | CP37 | a registration capture reads itself | `missing_declaration`/`missing-name`, `read` `forward` |
 

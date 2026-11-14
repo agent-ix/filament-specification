@@ -3,7 +3,7 @@ id: FR-038
 title: "Resolve predicate names under explicit lexical scopes"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -34,8 +34,8 @@ Aliases are source-unit scoped; native predicate declaration names are unique in
 
 ## Dependencies
 
-- [Proposed shared grammar](../../../proposals/quire-v1/shared-grammar.md).
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Proposed shared grammar](../../../proposals/filament-v1/shared-grammar.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 
 Accepted by FS03 for the composed state query/graph closure. It does not change
 historical definition bytes or claim complete compiler/backend coverage.

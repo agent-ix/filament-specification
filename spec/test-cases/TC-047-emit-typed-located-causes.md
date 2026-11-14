@@ -3,15 +3,15 @@ id: TC-047
 title: "Classify producer diagnostics from typed causes"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-273
+  - target: ix://agent-ix/filament-specification/FR-273
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-29
+  - target: ix://agent-ix/filament-specification/FR-272-AC-29
     type: verifies
 ---
 ## Description
@@ -23,7 +23,7 @@ No executable test or observed coverage is claimed.
 
 Trigger each declared failure through its real producer boundary and compare the structured outcomes before/after changing only presentation wording. Audit emitted catalog membership and independently vary similar refusal causes. Use repeated declaration names and multibyte source to verify original locus retention; exercise missing source context without inventing a span.
 
-Select the exact [native diagnostic candidate](../../proposals/quire-v1/definitions/native-diagnostics.md).
+Select the exact [native diagnostic candidate](../../proposals/filament-v1/definitions/native-diagnostics.md).
 Cover every required cause variant at
 the actual boundary that can emit it, after that producer adopts a supported
 response wire. Compare these paired failures independently:

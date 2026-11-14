@@ -3,11 +3,11 @@ id: IT-060
 title: "Integrate target output mappers through the common package boundary"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-120
+  - target: ix://agent-ix/filament-specification/FR-120
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-125
+  - target: ix://agent-ix/filament-specification/FR-125
     type: verifies
 ---
 ## Objective
@@ -20,7 +20,7 @@ separate target correspondence and implementation ownership.
 
 The integration joins strict FS05 packages and accepted native/model/temporal/
 observation semantics to qcir #55/#56/#57 through
-`quire.output.mapping/v1`. No target mapper invokes another target,
+`filament.output.mapping/v1`. No target mapper invokes another target,
 reads target text as native source or depends on an external runtime.
 
 ## Preconditions

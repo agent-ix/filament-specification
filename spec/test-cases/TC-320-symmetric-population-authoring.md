@@ -3,9 +3,9 @@ id: TC-320
 title: "Symmetric population authoring checks"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-381
+  - target: ix://agent-ix/filament-specification/FR-381
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: verifies
 ---
 

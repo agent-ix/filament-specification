@@ -4,11 +4,11 @@ title: "Protocol message"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-214: Protocol message
@@ -96,7 +96,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   into a channel contract.
 - [FR-210](FR-210-protocol-subject-vocabulary.md) records the complete subject
   vocabulary and contextual subset rule.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) defines the
   concrete message key and non-causal comparison order.

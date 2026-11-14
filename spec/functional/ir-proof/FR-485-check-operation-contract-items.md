@@ -3,37 +3,37 @@ id: FR-485
 title: "Check an operation-contract item: clauses, frames, step relations and simulation"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-483
+  - target: ix://agent-ix/filament-specification/FR-483
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: references
-  - target: ix://agent-ix/quire-specification/FR-397
+  - target: ix://agent-ix/filament-specification/FR-397
     type: references
-  - target: ix://agent-ix/quire-specification/FR-468
+  - target: ix://agent-ix/filament-specification/FR-468
     type: references
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: references
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
 ---
 

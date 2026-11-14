@@ -4,9 +4,9 @@ title: "Tool and plugin manifest"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_017
+  - target: ix://agent-ix/filament-specification/interface_017
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: references
 ---
 
@@ -34,7 +34,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.tool-plugin-manifest/v1` |
+| contract_version | exactly `filament.tool-plugin-manifest/v1` |
 | tool_id | type not stated in source; multiplicity not stated in source; see Field sources |
 | capabilities | list of operation/profile/format tuples; multiplicity not stated in source |
 | effects | type not stated in source; see Field sources |
@@ -43,7 +43,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | limits | record: input, output, memory, time, concurrency ceilings; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.tool-plugin-manifest/v1`.
+- `contract_version` — exactly `filament.tool-plugin-manifest/v1`.
 - `tool_id` — authority-qualified provider identity.
 - `capabilities` — exact operation/profile/format tuples.
 - `effects` — closed set of filesystem, network, clock, process and external-action effects.
@@ -54,7 +54,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 ## Identity and validation
 
 The key is every field above except transient availability. Compile-time traits and isolated executables are separate provider kinds.
-A document whose `contract_version` is not `quire.tool-plugin-manifest/v1`, missing required properties, duplicate keys,
+A document whose `contract_version` is not `filament.tool-plugin-manifest/v1`, missing required properties, duplicate keys,
 out-of-domain values and non-canonical encodings refuse before consumption.
 
 ## Acceptance Criteria

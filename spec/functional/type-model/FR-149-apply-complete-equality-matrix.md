@@ -3,27 +3,27 @@ id: FR-149
 title: "Apply the complete typed equality matrix"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-009
+  - target: ix://agent-ix/filament-specification/FR-009
     type: references
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: references
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: references
-  - target: ix://agent-ix/quire-specification/FR-140
+  - target: ix://agent-ix/filament-specification/FR-140
     type: references
-  - target: ix://agent-ix/quire-specification/FR-141
+  - target: ix://agent-ix/filament-specification/FR-141
     type: references
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: references
-  - target: ix://agent-ix/quire-specification/FR-148
+  - target: ix://agent-ix/filament-specification/FR-148
     type: references
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-056
+  - target: ix://agent-ix/filament-spec-language/FR-056
     type: references
 ---
 
@@ -72,15 +72,15 @@ carried-quantity conversion).
 | Value kind | Equality relation |
 | --- | --- |
 | Boolean | identical truth value |
-| UUID | identical canonical UUID payload content under QSL FR-056's K2 canonical native payload contract; a distinct native type, not text |
-| Timestamp | identical canonical Timestamp payload content under QSL FR-056's K2 canonical native payload contract; a distinct native type, not `Int` |
+| UUID | identical canonical UUID payload content under FSL FR-056's K2 canonical native payload contract; a distinct native type, not text |
+| Timestamp | identical canonical Timestamp payload content under FSL FR-056's K2 canonical native payload contract; a distinct native type, not `Int` |
 | Bytes | identical octet sequences: equal length and equal octet at every index, equivalently identical canonical payload (lowercase hexadecimal, two digits per octet); a distinct native type, not `String`, `Text` or `JsonObject` |
 | JsonObject | identical canonical payload, the RFC 8785 (JCS) serialization of the value, so two values are equal exactly when they have the same kind and, for objects, the same member names and recursively equal member values, independent of member order and insertion spelling; arrays compare by position, strings by their code points, numbers by their IEEE binary64 value, and `null`, `true` and `false` by kind; a distinct native type |
 | Integer, rational and decimal | exact mathematical value; operands of different numeric types first require an admitted [equality conversion](#equality-conversions), or the [arithmetic operand exception](#arithmetic-operand-against-a-bounded-integer) |
 | Duration | the Quantity relation over `Quantity<s>` (FR-322 "Model-owned members"): a `Duration` is a quantity in the unit `s`, so two durations are equal exactly when their exact rational seconds are equal |
 | Quantity | identical unit and exact value equality; a top-level quantity equality expression uses the FR-142 root-value comparison schedule, while a quantity leaf inside a composite equality plan compares by exact value in its identical unit and charges only its `equality.pair`; distinct units require an explicit prior FR-142 conversion |
 | Text | the FR-141 relation under the same pinned profile: normalized scalar sequence for scalar profiles and original UTF-8 bytes for `binary-utf8` |
-| String | identical Unicode scalar sequence (QSL FR-056's native `String`): no normalization, case folding or trimming, so a composed and a decomposed spelling of one character are unequal; a distinct native type, not `Text` |
+| String | identical Unicode scalar sequence (FSL FR-056's native `String`): no normalization, case folding or trimming, so a composed and a decomposed spelling of one character are unequal; a distinct native type, not `Text` |
 | Enumeration | the same qualified enumeration declaration and identical case; different declarations have no implicit common type |
 | Presence, absence and null | same declared type and state; two absent values are equal, two explicit null values are equal, and two present values recursively compare their payload; absent and explicit null are distinct |
 | Record and tuple | same FR-143 declaration key and recursively equal fields in declaration order or positions in order; two records of one static type whose most-specific declaration keys differ (a record subtype value and an ancestor value, FR-208) are unequal, and `=` is `false`, not a refusal |
@@ -102,7 +102,7 @@ does not rewrite the source value's declaration or object identity.
 For K2, the kernel SHALL admit reflexive equality of `UUID` with `UUID`
 and `Timestamp` with `Timestamp`, with distinct canonical payloads of one
 kind comparing unequal. The representation and admission contract is
-[QSL FR-056](ix://agent-ix/quire-spec-language/FR-056), "K2 canonical native
+[FSL FR-056](ix://agent-ix/filament-spec-language/FR-056), "K2 canonical native
 payloads". Each kind's total canonical key is its canonical payload string,
 compared unsigned ASCII bytewise with a proper prefix first; equal keys
 are equivalent to equality within that kind. This extends
@@ -230,7 +230,7 @@ converts with no rounding step, loss, undefined or refused outcome.
 | `Decimal[c1,c2;s1,s2;m]` | `Decimal[c3,c4;s3,s4;m2]` | `s3 <= s1`, `s2 <= s4`, and either `s3 = s1` with `c3 <= c1` and `c2 <= c4`, or `s3 < s1` with `c3 <= min(c1,0)` and `max(c2,0) <= c4` |
 | `Decimal[c1,c2;0,0;m]` | `Integer` or `Int[..]` | the row for source `Int[c1,c2]` admits it |
 | quantity in unit `U` | quantity in unit `V` with an exact rational value | FR-142 admits the conversion |
-| `Reference<S>` | `Reference<T>` | the package, or for a refinement row the governing infinite-trace profile, selects `quire.model.complete/v1` and `S` conforms to `T` in the closed FR-151 effective view |
+| `Reference<S>` | `Reference<T>` | the package, or for a refinement row the governing infinite-trace profile, selects `filament.model.complete/v1` and `S` conforms to `T` in the closed FR-151 effective view |
 
 An unbounded `Integer` source converts only to `Integer`. No conversion to or
 from `Float32` or `Float64`, and no text-profile, enumeration, record, tuple,
@@ -276,7 +276,7 @@ schedule plus the one-pair equality schedule. An unproved obligation is
 arithmetic node, not at the equality, and the value is never clamped, wrapped
 or widened.
 
-The checked package records the typed node as one `quire.op.numeric.narrow`
+The checked package records the typed node as one `filament.op.numeric.narrow`
 application with member `Int[lo,hi]`, located at the arithmetic expression. It
 is the node a range-narrowing conversion into `Int[lo,hi]` produces, but the
 source carries no `convert`: `convert<Int[lo,hi]>` of an unbounded `Integer`
@@ -302,14 +302,14 @@ expected type to their operands and need none: an ordering comparison between an
 Every explicit exact-numeric `convert<T>(e)` from static type `S` of `e`, inside
 or outside an equality, has exactly one class decided from declared bounds
 alone, first match wins, and the checked package records it as one
-`quire.checked-operation-catalog/v1` identity:
+`filament.checked-operation-catalog/v1` identity:
 
 | Class | When (`S` to `T`) | Operation | Meaning |
 | --- | --- | --- | --- |
-| exact | the equality conversion table above admits (`S`, `T`) | `quire.op.numeric.convert` | Every member of `S` is a member of `T`; no obligation, rounding or loss. |
-| scale reduction | `T` is `Decimal[..]` and `S` is a decimal of larger maximum scale, an unbounded `Decimal` or `Rational`, or a `Rational[..;d1,d2]` with `d2 > 1` | `quire.op.numeric.convert_rounding` | The FR-140 division or rescale into `T`'s target scale under the `rounding` mode `T` pins; the only class that rounds. |
-| rational narrowing | any other `Rational` to `Rational[n1,n2;d1,d2]` | `quire.op.rational.narrow` | A checked obligation that the normalized numerator lies in `[n1,n2]` and the denominator in `[d1,d2]` (FR-146 rational range obligation). |
-| range narrowing | any other conversion from `Integer` or `Int[..]`, from a decimal to a `Rational[..]` or `Decimal[..]`, from a bounded `Rational[..]` to an integer type or (with denominator bound 1) a `Decimal[..]`, or from a `Decimal[c1,c2;0,0;m]` to an integer type | `quire.op.numeric.narrow` | A checked obligation that the converted value is a member of `T` (FR-146 range obligation, `unproved-range`). |
+| exact | the equality conversion table above admits (`S`, `T`) | `filament.op.numeric.convert` | Every member of `S` is a member of `T`; no obligation, rounding or loss. |
+| scale reduction | `T` is `Decimal[..]` and `S` is a decimal of larger maximum scale, an unbounded `Decimal` or `Rational`, or a `Rational[..;d1,d2]` with `d2 > 1` | `filament.op.numeric.convert_rounding` | The FR-140 division or rescale into `T`'s target scale under the `rounding` mode `T` pins; the only class that rounds. |
+| rational narrowing | any other `Rational` to `Rational[n1,n2;d1,d2]` | `filament.op.rational.narrow` | A checked obligation that the normalized numerator lies in `[n1,n2]` and the denominator in `[d1,d2]` (FR-146 rational range obligation). |
+| range narrowing | any other conversion from `Integer` or `Int[..]`, from a decimal to a `Rational[..]` or `Decimal[..]`, from a bounded `Rational[..]` to an integer type or (with denominator bound 1) a `Decimal[..]`, or from a `Decimal[c1,c2;0,0;m]` to an integer type | `filament.op.numeric.narrow` | A checked obligation that the converted value is a member of `T` (FR-146 range obligation, `unproved-range`). |
 
 Every other exact-numeric pair has no conversion and is
 `refused { code: ill_typed, cause: operator-ineligible }`. A `convert<T>(e)`
@@ -317,7 +317,7 @@ whose `S` is a `Text[..]` type or `String` and whose `T` is an integer,
 decimal, rational, IEEE or quantity type is not an exact-numeric conversion
 and has none of these classes. It is
 [FR-478](FR-478-convert-text-to-a-number.md)'s text-to-number conversion, one
-of the `quire.op.text.to_*` or `quire.op.string.to_*` identities, and
+of the `filament.op.text.to_*` or `filament.op.string.to_*` identities, and
 FR-478 alone decides its value, rounding and refusals. Narrowing is never
 rounding: a narrowing obligation that is not proved refuses with
 `refused { code: undefined_expression, cause: unproved-range }`, and a value
@@ -326,7 +326,7 @@ conversions, rounding happens only in a scale reduction, and only there does a
 `rounding` mode appear.
 
 A rational `/` whose operands are `Integer`, `Int[..]` or `Rational[..]` and
-whose expected type is `Rational[..]` is `quire.op.rational.div`: each integer
+whose expected type is `Rational[..]` is `filament.op.rational.div`: each integer
 operand is promoted exactly to `n/1` before the division, with no obligation,
 rounding or loss, and the quotient is exact. Integer `div` and `rem` remain
 FR-147 operations under their selected division law; no operand type or result
@@ -377,7 +377,7 @@ order is unobservable.
 Every planned semantic occurrence-path pair receives one `equality.pair`
 charge. Immutable DAG sharing never reduces that normative charge: shared and
 duplicated representations of the same occurrence tree have identical
-accounting under `quire.value.accounting/v1`. An implementation may memoize as
+accounting under `filament.value.accounting/v1`. An implementation may memoize as
 an unobservable optimization but cannot change charges, outcome or identity.
 Object references are terminal and
 do not descend into referenced state. If evaluation required to construct a nested operand returns
@@ -405,7 +405,7 @@ collection and object-reference rows of this requirement.
 | FR-149-AC-9 | Top-level Boolean, numeric and reference equality charge exactly `equality.plan-form` and the one-pair equality schedule, while `=` on an IEEE-bearing type is `ill_typed`. | Test (TC-194) |
 | FR-149-AC-10 | Exactly the tabled equality conversions are admitted from declared bounds, every other conversion operand of `=` or `!=` is `ill_typed` before any charge even when the value fits, and admitted decimal and rational conversions charge their decimal schedule. | Test (TC-194) |
 | FR-149-AC-11 | Plan pair counts follow the structural-mismatch, keyed-rank and cardinality short-circuit rules exactly, every plan walk is charged by `equality.plan-form` before it happens, and a foreign-universe reference pair refuses after that charge and before `equality.plan`. | Test (TC-194) |
-| FR-149-AC-12 | Under `quire.model.complete/v1`, `Reference<Sub>` compares with `Reference<Super>` through the upcast row with no charge and unchanged identity, and a non-conforming reference pair is `ill_typed`. | Test (TC-198) |
+| FR-149-AC-12 | Under `filament.model.complete/v1`, `Reference<Sub>` compares with `Reference<Super>` through the upcast row with no charge and unchanged identity, and a non-conforming reference pair is `ill_typed`. | Test (TC-198) |
 | FR-149-AC-13 | `<`, `<=`, `>` and `>=` over two operands of one float type are the IEEE quiet comparisons of FR-148 (false when either operand is a NaN, `-0 < +0` false, `-0 <= +0` true) and, over unlike widths, unlike rounding modes or a float and an exact type, are `ill_typed` before any charge, while `totalOrder` orders the same operands by the total order. | Test (TC-194) |
 | FR-149-AC-14 | Independently admitted UUID values with payload `00112233-4455-6677-8899-aabbccddeeff` compare equal and have equal keys; changing the final digit to `e` compares unequal. Independently admitted Timestamp values with payload `0` compare equal and have equal keys; `0` versus `1` compares unequal. Each comparison is one terminal pair under the existing equality schedule. | Test |
 | FR-149-AC-15 | UUID versus Timestamp, either kind versus `Int`, `Integer`, `Text`, `String` or `Boolean`, and any attempted equality conversion between these kinds refuse `ill_typed`/`type-mismatch` before an equality charge and produce no Boolean. Direct kernel mixed-kind comparisons return the typed checked-invariant refusal and key comparison returns no key relation. | Test |
@@ -424,7 +424,7 @@ collection and object-reference rows of this requirement.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

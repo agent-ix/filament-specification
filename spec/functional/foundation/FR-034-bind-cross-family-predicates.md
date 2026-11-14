@@ -3,7 +3,7 @@ id: FR-034
 title: "Bind cross-family predicates to explicit evaluation environments"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
 ---
 ## Description
@@ -33,7 +33,7 @@ A state predicate remains a Boolean expression evaluated in its declared environ
 
 ## Dependencies
 
-- [Shared drafting foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared drafting foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Composed architecture](../../assurance/AD-001-composed-native-language.md).
 
 Accepted by FS03 for shared typed predicate bindings. It does not amend historical

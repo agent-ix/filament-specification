@@ -3,15 +3,15 @@ id: TC-934
 title: "ContractPackage source map is total for nodes, requests and refusals"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-2
+  - target: ix://agent-ix/filament-specification/FR-330-AC-2
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-7
+  - target: ix://agent-ix/filament-specification/FR-330-AC-7
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-14
+  - target: ix://agent-ix/filament-specification/FR-330-AC-14
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-16
+  - target: ix://agent-ix/filament-specification/FR-330-AC-16
     type: verifies
 ---
 # TC-934: ContractPackage source map is total for nodes, requests and refusals

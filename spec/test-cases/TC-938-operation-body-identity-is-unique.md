@@ -3,7 +3,7 @@ id: TC-938
 title: "Operation bodies are unique by resolved operation identity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-151
+  - target: ix://agent-ix/filament-specification/FR-151
     type: verifies
 ---
 # TC-938: Operation bodies are unique by resolved operation identity

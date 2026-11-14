@@ -3,21 +3,21 @@ id: FR-144
 title: "Preserve complete collection-kind semantics"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-008
+  - target: ix://agent-ix/filament-specification/FR-008
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-148
+  - target: ix://agent-ix/filament-specification/FR-148
     type: references
 ---
 
@@ -155,7 +155,7 @@ keys exactly when they are the same member under the relation.
 | `UUID`, `Timestamp` | the canonical payload's ASCII bytes, unsigned bytewise, a proper prefix first (FR-149) |
 | `Bytes` | the octet sequence, compared octet by octet as unsigned values, a proper prefix first, so the empty sequence is the least key; this is the order of the canonical lowercase hexadecimal payload's ASCII bytes (FR-149), because two digits encode each octet and `0`-`9` precede `a`-`f` |
 | `JsonObject` | the UTF-8 bytes of the value's canonical RFC 8785 (JCS) text, unsigned bytewise, a proper prefix first (FR-149); so `"x"` precedes `3`, `3` precedes `[]`, `[]` precedes `null` and `null` precedes `{}`, and a member-order or spelling variant of one value has the one key |
-| `Reference<T>` | the FR-204 identity triple (universe identity, object-type declaration identity, object identity), compared component by component; under `quire.model.complete/v1` the universe and type are structural identities compared componentwise (strings as unsigned UTF-8 bytes, arrays element by element with a proper prefix first), and the object bytes are the exact producer UTF-8 object identity compared unsigned bytewise with a proper prefix first |
+| `Reference<T>` | the FR-204 identity triple (universe identity, object-type declaration identity, object identity), compared component by component; under `filament.model.complete/v1` the universe and type are structural identities compared componentwise (strings as unsigned UTF-8 bytes, arrays element by element with a proper prefix first), and the object bytes are the exact producer UTF-8 object identity compared unsigned bytewise with a proper prefix first |
 | `Option<T>` | `none` before a present value, then the key of the payload |
 | record, tuple | for two records of distinct declarations, the ascending byte order of their 32-byte declaration node keys, compared before any slot; otherwise lexicographic over fields in declaration order or positions in order; a slot orders `absent` before `null` before a present value, and present values by key |
 | union | the active member's identifier ASCII bytes, lexicographically, never its declaration position; then, for two values of one member, lexicographic over the payload values' keys in position order |
@@ -296,7 +296,7 @@ canonical encoding of each kind.
 ## Collection charges
 
 Every collection construction, membership comparison and result retention is
-metered by the `quire.value.accounting/v1` collection family. A collection
+metered by the `filament.value.accounting/v1` collection family. A collection
 constructor expression such as `set[e1, ..., en]` charges, in this order:
 
 1. For each `i` from 1 to `n`: `collection.element` (one work unit), then the
@@ -373,7 +373,7 @@ FR-146 and FR-307; otherwise it is
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

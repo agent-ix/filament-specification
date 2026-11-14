@@ -4,22 +4,22 @@ title: "Compose native state, temporal and choreography semantics"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire v1 language and compiler boundaries
+system: native Filament v1 language and compiler boundaries
 relationships:
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: references
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-040
+  - target: ix://agent-ix/filament-specification/FR-040
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-048
+  - target: ix://agent-ix/filament-specification/FR-048
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: realizes
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
 ---
-# Composed native Quire architecture
+# Composed native Filament architecture
 
 FS01 accepts this architecture boundary and its subsystem decomposition. That
 acceptance does not adopt every referenced draft semantic definition or claim
@@ -27,11 +27,11 @@ that every compiler, runtime, backend or qualification path is implemented.
 
 ## System Boundary
 
-Native Quire is the editable language for formal obligations. The standard owns
+Native Filament is the editable language for formal obligations. The standard owns
 syntax, meaning, selected profiles and conformance. Its compiler owns native
 parsing, resolution, typing and source-preserving lowering. A spec's domain
-model is declared in its own artifacts and reaches Quire as a domain package, as
-[AD-006](AD-006-model-graph-state-contracts.md) defines. Quire owns the meaning
+model is declared in its own artifacts and reaches Filament as a domain package, as
+[AD-006](AD-006-model-graph-state-contracts.md) defines. Filament owns the meaning
 of that model. Existing IR, TL and protocol components own
 their specialized representations and execution; Quoin owns evidence retention
 and authored assurance decisions. No single executable IR defines the language.
@@ -42,7 +42,7 @@ temporal semantics; dynamic protocol/choreography; composed runtime and
 workflow adapters; verification methods; exact IR/backends; tooling/mappings;
 and evidence/qualification. Its authoritative scope is recorded in
 [`docs/v1-capability-inventory.md`](../../docs/v1-capability-inventory.md).
-The [shared drafting foundation](../../proposals/quire-v1/shared-foundation.md)
+The [shared drafting foundation](../../proposals/filament-v1/shared-foundation.md)
 defines cross-system, related-instance and selected population/window inputs.
 Runtime workflow, role, message, delivery, attempt and business-effect identities
 remain distinct. A single trace ID cannot replace their declared relationships.
@@ -89,24 +89,24 @@ one evaluator enum. Formatting consumes the same syntax structures.
 The common layer owns source/declaration identity, scalar/value types, imports,
 definedness and profile selection. Temporal nodes reference checked Boolean
 predicates; they do not contain a second arithmetic expression language.
-The [native temporal grammar](../../proposals/quire-v1/shared-grammar.md)
+The [native temporal grammar](../../proposals/filament-v1/shared-grammar.md)
 uses explicit `holds(expr)` leaves, distinct current and activation inputs,
 immutable captures and a named clock role. Temporal constants remain separate
 from atomic valuations so false-extension boundaries survive optimization and
 lowering. E's selected temporal profiles retain their own meaning.
-The [state contract](../../proposals/quire-v1/state-contract.md) defines the
+The [state contract](../../proposals/filament-v1/state-contract.md) defines the
 proposed query/graph extensions, exact arithmetic and pre-state/capture rules;
 they preserve first-profile restrictions under separate definition identities.
 Protocol nodes own control structure, participants and message relationships;
 they refer to state predicates, operation contracts and temporal obligations.
-The [choreography surface](../../proposals/quire-v1/choreography-surface.md)
+The [choreography surface](../../proposals/filament-v1/choreography-surface.md)
 requires explicit sequence, branch/join and iteration identities, with definite
 value availability along the causal graph. Compensation captures are bound at
 registration and activation separately; observing a transport receipt cannot
 create a successful effect or a compensating action.
 Composition is a typed dependency graph, not interpolation between strings.
 
-The [package contract](../../proposals/quire-v1/package-contract.md) closes the
+The [package contract](../../proposals/filament-v1/package-contract.md) closes the
 source inventory and exact definition/model selections before publication of
 checked declarations. The linker derives typed binding requirements with source
 correspondence; request binding maps those roles to explicit runtime inputs.

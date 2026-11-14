@@ -4,87 +4,87 @@ title: "Backend provider request and result envelope"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/TC-431
+  - target: ix://agent-ix/filament-specification/TC-431
     type: verifies
-  - target: ix://agent-ix/quire-specification/TC-372
+  - target: ix://agent-ix/filament-specification/TC-372
     type: verifies
-  - target: ix://agent-ix/quire-specification/interface_013
+  - target: ix://agent-ix/filament-specification/interface_013
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-029
+  - target: ix://agent-ix/filament-contract-ir/FR-029
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-193
+  - target: ix://agent-ix/filament-specification/FR-193
     type: references
-  - target: ix://agent-ix/quire-specification/FR-306
+  - target: ix://agent-ix/filament-specification/FR-306
     type: references
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: references
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: references
-  - target: ix://agent-ix/quire-specification/FR-392
+  - target: ix://agent-ix/filament-specification/FR-392
     type: references
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
-  - target: ix://agent-ix/quire-specification/FR-409
+  - target: ix://agent-ix/filament-specification/FR-409
     type: references
-  - target: ix://agent-ix/quire-specification/FR-410
+  - target: ix://agent-ix/filament-specification/FR-410
     type: references
-  - target: ix://agent-ix/quire-specification/FR-412
+  - target: ix://agent-ix/filament-specification/FR-412
     type: references
-  - target: ix://agent-ix/quire-specification/FR-413
+  - target: ix://agent-ix/filament-specification/FR-413
     type: references
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: references
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: references
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: references
-  - target: ix://agent-ix/quire-specification/FR-462
+  - target: ix://agent-ix/filament-specification/FR-462
     type: references
-  - target: ix://agent-ix/quire-specification/FR-483
+  - target: ix://agent-ix/filament-specification/FR-483
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-338
+  - target: ix://agent-ix/filament-spec-language/FR-338
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-314
+  - target: ix://agent-ix/filament-spec-language/FR-314
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-149
+  - target: ix://agent-ix/filament-spec-language/FR-149
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-163
+  - target: ix://agent-ix/filament-spec-language/FR-163
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-120
+  - target: ix://agent-ix/filament-spec-language/FR-120
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-280
+  - target: ix://agent-ix/filament-spec-language/FR-280
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-185
+  - target: ix://agent-ix/filament-spec-language/FR-185
     type: references
-  - target: ix://agent-ix/quire-specification/FR-300
+  - target: ix://agent-ix/filament-specification/FR-300
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-179
+  - target: ix://agent-ix/filament-spec-language/FR-179
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-169
+  - target: ix://agent-ix/filament-spec-language/FR-169
     type: references
-  - target: ix://agent-ix/quire-specification/FR-412
+  - target: ix://agent-ix/filament-specification/FR-412
     type: references
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: references
 ---
 
@@ -116,7 +116,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.backend-provider/v1` |
+| contract_version | exactly `filament.backend-provider/v1` |
 | manifest | array of backend descriptors, minItems 1; `proposals/backend-provider-v1/schema.json` `Manifest` |
 | request | JSON object; `proposals/backend-provider-v1/schema.json` `Request` |
 | temporal | JSON object; `proposals/backend-provider-v1/schema.json` `Temporal` |
@@ -128,16 +128,16 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | accounting | array of objects; `proposals/backend-provider-v1/schema.json` `OutcomeStage.accounting` |
 
 
-- `contract_version` — exactly `quire.backend-provider/v1`.
-- `capability_vocabulary` — exactly `quire.capability-kind/v1`; it selects the FR-290 vocabulary for every kind in `manifest`, `request` and `results`.
+- `contract_version` — exactly `filament.backend-provider/v1`.
+- `capability_vocabulary` — exactly `filament.capability-kind/v1`; it selects the FR-290 vocabulary for every kind in `manifest`, `request` and `results`.
 - `manifest` — one backend descriptor per registered backend in the registry snapshot: backend identity, advertised (FR-290 kind, mode) pairs, domains, options, bounds, where the backend declares one its obligation-form set (FR-349), the state-space reductions it applies, a subset of `symmetry`, `partial-order` and `constraint` (FR-382), the state-graph claim forms it decides (`state_graph_forms`, below), and, for `probabilistic-satisfaction`, its advertised evidence kinds (FR-290). A backend that advertises `temporal-satisfaction` also carries its `fairness_kinds` ([FR-368](../../functional/temporal/FR-368-negotiate-temporal-model-check-items.md)). A backend that advertises `temporal-satisfaction` may also carry `state_graph_forms`, a nonempty, duplicate-free subset of `possible`, `always-possible` and `unique-path` (FR-390). Its absence means it decides no state-graph claim form. A descriptor that does not advertise `temporal-satisfaction` carries no `state_graph_forms`. A backend that advertises `temporal-satisfaction` may also carry `memory_models`, the memory models it decides for items over a subject with a weak `parallel`, a nonempty set drawn from `sc`, `tso` and `ra` by the names of the `memory` clause ([FR-439](../../functional/memory/FR-439-bound-replay-and-report-weak-memory-runs.md) routes by it). A descriptor with no `memory_models` advertises `sc` only, so, of the items over a subject with a weak `parallel`, it receives only those resolved to `sc`; a descriptor that does not advertise `temporal-satisfaction` carries none. A backend that advertises `temporal-satisfaction` may also carry `dynamics`, the dynamics it decides, a nonempty set drawn from `discrete` and `hybrid`; a descriptor with no `dynamics` decides `discrete` only, a descriptor whose `dynamics` holds `hybrid` carries both hybrid solver budgets in `bounds`, and negotiation routes by it ([FR-193](../../functional/analysis/FR-193-analyze-continuous-hybrid-models.md) "Routing a hybrid item"). Every descriptor carries `tool` ("Backend tool" below). Backend identities are unique.
 - `request` — in the frame form sent to a process provider, the checked package as `package` ("Package bytes" below); in the in-process form ("In-process providers" below), the checked package as a typed value and no `package`; in both forms, the provider deadline `deadline_ms` and the requested items: each item's claim, its proof bounds (the substituted `ProofBound`s of its `extent`, and a temporal item's `subject.proof_bounds`), its `options`, its `requirements` (the hybrid-dynamics requirement of a hybrid item, FR-193 "Routing a hybrid item") and its own limits (`temporal.limits`, `probabilistic.limits`, `hybrid.limits`); there is no request-level `domains` or `limits` member. For each item, its one required FR-290 kind, its extent and #222 extent classification (`bounded` or `unbounded`), the backend the caller names when it names one, its `candidates`, and for a model-check item its `reductions` selection (FR-382); for a `probabilistic-satisfaction` item, its evidence kind (`statistical` or `exact`) and, for `statistical`, its method (`okamoto`, `sprt`, `clopper-pearson` or `regenerative` with `min_cycles`), seed, `max_witnesses`, `workers` (default 1), for a timed subject its grid exponent `q` and `max_sample_steps` (default `2^24`), and `StatisticalLimits{max_samples, max_draws, max_cycle_steps}` ([FR-408](../../functional/analysis/FR-408-settle-probabilistic-claims-statistically.md)), or, for `exact`, `ExactProbLimits` ([FR-411](../../functional/analysis/FR-411-settle-probabilistic-claims-exactly.md)). Every limit has the published default that [FR-461](../../functional/foundation/FR-461-name-the-limit-value-and-setting.md) gives it, and `max_sample_steps` defaults to `2^24`.
 - `temporal` (per `temporal-satisfaction` request item over a model subject) — the item's `subject` (initial-state references, universes, proof bounds), `item_kind` (`formula`, `deadlock-freedom`, `time-lock-freedom`, `race-freedom` or `refinement`), on a `refinement` item its `abstract_subject` (`identity`, `initial_states`), resolved `fairness` set, `max_depth` for a bounded search and `limits`, as [FR-368](../../functional/temporal/FR-368-negotiate-temporal-model-check-items.md) states. `limits` also holds `max_clocks` for a timed model ([FR-415](../../functional/temporal/FR-415-declare-clocks-and-timed-models.md)), with the setting name `model_check.max_clocks`; a state with more live clocks than `max_clocks` records `incomplete` with `limit-reached` whose `limit` is `max_clocks`. For a state-graph, hyper or step-relation item, `limits` also holds `max_walk_steps` (the step count of one witness-sampling walk; [FR-392](../../functional/analysis/FR-392-sample-possible-witnesses.md)), `max_witness_set` and `max_relation_tuples` ([FR-399](../../functional/analysis/FR-399-settle-hyperproperty-results.md)), with the setting names `model_check.max_walk_steps`, `model_check.max_witness_set` and `model_check.max_relation_tuples` that [FR-461](../../functional/foundation/FR-461-name-the-limit-value-and-setting.md) gives them; the routed provider publishes each default, which applies when the request sets none. `temporal` also holds the sampling settings `witness_samples` and `seed`, which are method parameters with provider-published defaults.
-- `candidates` (per request item) — exactly one of: the set of candidate backend identities that the `quire-spec-language` registry computes under FR-290's candidate-set rule, ordered bytewise by identity; or the unknown-backend mark carrying the unregistered backend identity that the request named.
+- `candidates` (per request item) — exactly one of: the set of candidate backend identities that the `filament-spec-language` registry computes under FR-290's candidate-set rule, ordered bytewise by identity; or the unknown-backend mark carrying the unregistered backend identity that the request named.
 - `dispositions` — supported, requires-bound, unsupported or invalid-request per item.
 - `artifacts` — immutable generated bytes with kind, identity and source map.
-- `results` — proved, refuted, tested, measured, inconclusive, unsupported, declined, incomplete or failed per item. `measured` is recorded only for a completed statistical run and carries the [FR-409](../protocol/FR-409-measured-decision.md) decision and the [FR-410](FR-410-statistical-verdict.md) `StatisticalVerdict`, with no truth and no settlement basis; it is never `proved`. A `proved` result carries its proof basis: `exact-value` or `value-bounds` with an [FR-412](FR-412-probability-certificate.md) certificate, `zone-certified` with an [FR-418](FR-418-zone-certificate.md) certificate, `closed-form{analysis}` with its recomputed evidence ([FR-419](../../functional/analysis/FR-419-analyze-task-set-schedulability.md)), each settled only after its certificate or evidence is checked; or `bounded-solver{method, horizon, jumps, exhaustive}` or `inductive-solver{method}` ([FR-193](../../functional/analysis/FR-193-analyze-continuous-hybrid-models.md)), a solver's own result with neither, labelled `uncertified`. Every `proved` result also carries exactly one `certification`, which says who stands behind the proof ("Certification" below). `unsupported` is recorded for a supported, routed item whose tool probe finds the tool missing, finds a version other than the descriptor's `tool.version` ("Backend tool"), errors or exceeds its limit, naming the capability kind and the backend; and, separately, for a supported item whose Kani run ends `Unavailable` (the solver or backend is absent after negotiation), naming the capability kind, the backend and the absent solver or backend identity. `declined` is recorded for a supported item whose Kani run ends `Refused`, `InvalidInput` or `IncompleteInput`, and names the typed refusal cause (QSL ADR-013 O-16 refusal category, QC-9); it keeps the item's `supported` disposition and is the item's one terminal accounting record, the same as a tool-absence `unsupported` result. A Kani proof run whose obligation has zero SUCCESS checks records `inconclusive` with a typed vacuity cause, never `proved`; this adds no result value (QSL ADR-013 FND-005, O-16 proof column). An item routed to a process provider over a checked package that `package` refuses to emit settles `unsupported` with a diagnostic ("In-process providers").
-- `counterexamples` — canonical assignments/traces (an `operation-contract` refutation carries a `contract-counterexample`, FR-485) plus originating run identity. A hybrid refutation carries an FR-193 `HybridCounterexample` (`type` `hybrid-counterexample`, `kind` `formula` or an `undefined-evaluation` envelope, and its `HybridTrace`), recorded only once exact replay reproduces it (FR-193 "Trace replay"); a hybrid solver's inconclusive trace is not a counterexample but the `trace` member of the item's `solver-inconclusive` cause (FR-193 "Hybrid trace"). A temporal refutation over a model subject or a supplied trace is an [FR-364](../../functional/temporal/FR-364-replay-temporal-counterexamples.md) `TemporalCounterexample`; a timed trace's steps carry their `delay` and a time-lock counterexample carries `kind` `time-lock` and the member `final_delay`, the exact rational delay that reaches the time-locked state (FR-181, [FR-417](../../functional/temporal/FR-417-settle-time-lock-freedom.md)); a probabilistic refutation carries an [FR-413](FR-413-probabilistic-counterexample.md) `ProbabilisticCounterexample`. Each entry names exactly one of: the transcript's `artifacts` entry, whose assignments are its decode and are never separately stored, or the canonical assignments of a counterexample with no transcript; never both (QSL ADR-013 O-25, QC-6).
+- `results` — proved, refuted, tested, measured, inconclusive, unsupported, declined, incomplete or failed per item. `measured` is recorded only for a completed statistical run and carries the [FR-409](../protocol/FR-409-measured-decision.md) decision and the [FR-410](FR-410-statistical-verdict.md) `StatisticalVerdict`, with no truth and no settlement basis; it is never `proved`. A `proved` result carries its proof basis: `exact-value` or `value-bounds` with an [FR-412](FR-412-probability-certificate.md) certificate, `zone-certified` with an [FR-418](FR-418-zone-certificate.md) certificate, `closed-form{analysis}` with its recomputed evidence ([FR-419](../../functional/analysis/FR-419-analyze-task-set-schedulability.md)), each settled only after its certificate or evidence is checked; or `bounded-solver{method, horizon, jumps, exhaustive}` or `inductive-solver{method}` ([FR-193](../../functional/analysis/FR-193-analyze-continuous-hybrid-models.md)), a solver's own result with neither, labelled `uncertified`. Every `proved` result also carries exactly one `certification`, which says who stands behind the proof ("Certification" below). `unsupported` is recorded for a supported, routed item whose tool probe finds the tool missing, finds a version other than the descriptor's `tool.version` ("Backend tool"), errors or exceeds its limit, naming the capability kind and the backend; and, separately, for a supported item whose Kani run ends `Unavailable` (the solver or backend is absent after negotiation), naming the capability kind, the backend and the absent solver or backend identity. `declined` is recorded for a supported item whose Kani run ends `Refused`, `InvalidInput` or `IncompleteInput`, and names the typed refusal cause (FSL ADR-013 O-16 refusal category, QC-9); it keeps the item's `supported` disposition and is the item's one terminal accounting record, the same as a tool-absence `unsupported` result. A Kani proof run whose obligation has zero SUCCESS checks records `inconclusive` with a typed vacuity cause, never `proved`; this adds no result value (FSL ADR-013 FND-005, O-16 proof column). An item routed to a process provider over a checked package that `package` refuses to emit settles `unsupported` with a diagnostic ("In-process providers").
+- `counterexamples` — canonical assignments/traces (an `operation-contract` refutation carries a `contract-counterexample`, FR-485) plus originating run identity. A hybrid refutation carries an FR-193 `HybridCounterexample` (`type` `hybrid-counterexample`, `kind` `formula` or an `undefined-evaluation` envelope, and its `HybridTrace`), recorded only once exact replay reproduces it (FR-193 "Trace replay"); a hybrid solver's inconclusive trace is not a counterexample but the `trace` member of the item's `solver-inconclusive` cause (FR-193 "Hybrid trace"). A temporal refutation over a model subject or a supplied trace is an [FR-364](../../functional/temporal/FR-364-replay-temporal-counterexamples.md) `TemporalCounterexample`; a timed trace's steps carry their `delay` and a time-lock counterexample carries `kind` `time-lock` and the member `final_delay`, the exact rational delay that reaches the time-locked state (FR-181, [FR-417](../../functional/temporal/FR-417-settle-time-lock-freedom.md)); a probabilistic refutation carries an [FR-413](FR-413-probabilistic-counterexample.md) `ProbabilisticCounterexample`. Each entry names exactly one of: the transcript's `artifacts` entry, whose assignments are its decode and are never separately stored, or the canonical assignments of a counterexample with no transcript; never both (FSL ADR-013 O-25, QC-6).
 - `accounting` — exactly one terminal record for every requested item. A temporal item's terminal record carries its [FR-363](../../functional/temporal/FR-363-settle-every-behaviour-temporal-verdicts.md) proof basis and depth or cause, and any [FR-369](../../functional/temporal/FR-369-name-excluding-strong-fairness.md) `fairness.strong-would-exclude` warnings. The terminal record of a state-graph, hyper or step-relation item also states its settlement method ([FR-391](../../functional/analysis/FR-391-settle-state-graph-claims.md), [FR-399](../../functional/analysis/FR-399-settle-hyperproperty-results.md)), its search horizon, and the seed and limits the run used.
 
 ### Certification
@@ -175,7 +175,7 @@ cause `certificate-rejected{rule, at}`: `rule` the check rule that failed and
 `at` where it failed, for every core checker.
 
 `rule` is a closed value: the name of the check rule, lower-case words
-joined by `-`, so QSL FR-338's `CertificateRule::QueryMismatch` is written
+joined by `-`, so FSL FR-338's `CertificateRule::QueryMismatch` is written
 `query-mismatch`. `at` is the locus the checker names, in its one wire form
 below. The owning requirement states what each locus means and which rule
 each failure takes; this requirement owns the spelling. Each rule is
@@ -188,7 +188,7 @@ Before consuming a rejection, the reader SHALL bind `request_index` to
 the originating request and its admitted checked claim in the request's
 package, subject and obligation context. It SHALL resolve the applicable
 checker from that claim's classified form and the requested evidence and
-method: QSL FR-314 for an SMT certificate; FR-338/339 for EN-1 temporal
+method: FSL FR-314 for an SMT certificate; FR-338/339 for EN-1 temporal
 closure/components; FR-163 for a hyper product closure; FR-169 for a
 state-graph certificate; FR-149 for a refinement simulation certificate;
 FR-412 for exact probabilistic evidence; and FR-418 for a zone
@@ -202,20 +202,20 @@ SHALL NOT invent one to select a checker.
 
 | Locus | `at` | Meaning owned by | Rules |
 | --- | --- | --- | --- |
-| Query part | `"unrolling"`, `"base"` or `"step"`; for a refinement certificate's step row `r`, `"step/<r>"`, `r` the zero-based row as a `U64String`, so `"step/3"` is the fourth row and `"step"` alone is an `Inductive` proof's step query | QSL FR-338's `Query { part }`, QSL FR-314; for the step row, `step/<r>` is the spelling QSL FR-338 specifies and FR-468's per-step refinement certificate supplies the row | `query-mismatch`, `shape-mismatch`, `malformed`, `not-refutation` |
-| Proof step | `{part, index}`: `part` a query part spelling, `step/<r>` included, and `index` the `U64String` of QSL FR-314's command number, the command's position from 0 in the proof's flattened text order whatever its `:id` | QSL FR-314's `ProofStep { part, index }` | `proof-step-invalid`, `not-refutation` |
-| Product state | `{model_state, automaton_state}`: the model state's key and the bytes of the automaton state's canonical key | QSL FR-338's `ProductState`, QSL FR-339 | `initial-missing`, `successor-missing`, `bad-state`, `not-partition`, `backward-edge`, `witness-fails`, `shape-mismatch` |
-| Hyper product state | `{states, automaton_state, witness_set}`: each component's `StateKey` in variable order; the automaton key's bytes, absent for an HP-1 member; for HP-3, the witness set's pairs `{states, automaton_state}` in their sorted order | QSL FR-163's `HyperProductState` | `initial-missing`, `successor-missing`, `not-partition`, `backward-edge`, `witness-fails`, `malformed`, `undefined-member`, `violating-member` |
-| State | `{key}`, the model state's key: the unpadded base64url spelling of the state's canonical `StateKey` octets (FR-181); under `malformed` the locus is that of a state-graph closure entry whose `key` need not be a valid state key, since FR-169 rejects such an entry at that entry | QSL FR-169's `ModelState`; FR-418 (the initial discrete state). FR-412's complete probabilistic product key is a separate identity, not this model key. | `initial-missing`, `successor-missing`, `bad-state`, `predicate-undefined`, `rank-missing`, `rank-broken`, `order-broken`, `count-broken`, `malformed` (any entry key; every other rule, a valid state key only) |
-| State-graph entry | `{entry}`, the `U64String` closure index that names no closure state | QSL FR-169's `Entry { index }` | `malformed` |
-| Probabilistic product state | `{product_key}`, the unpadded base64url spelling of the complete canonical QSL FR-196 product-key octets defined below | FR-411, FR-412 | `inequality-fails`, `rank-missing`, `rank-broken`, `threshold-missed` |
-| Hyper transition tuple | `{transitions}`: the ordered, nonempty tuple of labelled edges `{pre_state, transition, post_state, result}` defined below | QSL FR-163, FR-179, FR-120 | `undefined-member`, `violating-member` |
-| Simulation step | `{position, edge, verdict}`, every member present: `position` a `U64String`; `edge` a `U64String` for `post-differs` and `step-fails` and `null` for `initial-mismatch`, `successors-differ`, `bad-state` and `malformed`; `verdict` the step verdict below for `step-fails` and `null` for every other rule | QSL FR-149's `SimulationStep` | `initial-mismatch`, `successors-differ`, `bad-state`, `malformed`, `post-differs`, `step-fails` |
-| Zone node | `{node}`, its position in the certificate's `nodes` | FR-418; QSL FR-245 for `initial-mismatch` | `successor-missing`, `bad-state`, `witness-fails`, `initial-mismatch` |
-| Zone edge | `{edge}`, its position in the certificate's `edges` | FR-418; QSL FR-245 for `post-differs` | `backward-edge`, `post-differs` |
-| Zone edge step | `{edge, verdict}`, both present: `edge` as in a zone edge and `verdict` the step verdict below | QSL FR-245 | `step-fails` |
+| Query part | `"unrolling"`, `"base"` or `"step"`; for a refinement certificate's step row `r`, `"step/<r>"`, `r` the zero-based row as a `U64String`, so `"step/3"` is the fourth row and `"step"` alone is an `Inductive` proof's step query | FSL FR-338's `Query { part }`, FSL FR-314; for the step row, `step/<r>` is the spelling FSL FR-338 specifies and FR-468's per-step refinement certificate supplies the row | `query-mismatch`, `shape-mismatch`, `malformed`, `not-refutation` |
+| Proof step | `{part, index}`: `part` a query part spelling, `step/<r>` included, and `index` the `U64String` of FSL FR-314's command number, the command's position from 0 in the proof's flattened text order whatever its `:id` | FSL FR-314's `ProofStep { part, index }` | `proof-step-invalid`, `not-refutation` |
+| Product state | `{model_state, automaton_state}`: the model state's key and the bytes of the automaton state's canonical key | FSL FR-338's `ProductState`, FSL FR-339 | `initial-missing`, `successor-missing`, `bad-state`, `not-partition`, `backward-edge`, `witness-fails`, `shape-mismatch` |
+| Hyper product state | `{states, automaton_state, witness_set}`: each component's `StateKey` in variable order; the automaton key's bytes, absent for an HP-1 member; for HP-3, the witness set's pairs `{states, automaton_state}` in their sorted order | FSL FR-163's `HyperProductState` | `initial-missing`, `successor-missing`, `not-partition`, `backward-edge`, `witness-fails`, `malformed`, `undefined-member`, `violating-member` |
+| State | `{key}`, the model state's key: the unpadded base64url spelling of the state's canonical `StateKey` octets (FR-181); under `malformed` the locus is that of a state-graph closure entry whose `key` need not be a valid state key, since FR-169 rejects such an entry at that entry | FSL FR-169's `ModelState`; FR-418 (the initial discrete state). FR-412's complete probabilistic product key is a separate identity, not this model key. | `initial-missing`, `successor-missing`, `bad-state`, `predicate-undefined`, `rank-missing`, `rank-broken`, `order-broken`, `count-broken`, `malformed` (any entry key; every other rule, a valid state key only) |
+| State-graph entry | `{entry}`, the `U64String` closure index that names no closure state | FSL FR-169's `Entry { index }` | `malformed` |
+| Probabilistic product state | `{product_key}`, the unpadded base64url spelling of the complete canonical FSL FR-196 product-key octets defined below | FR-411, FR-412 | `inequality-fails`, `rank-missing`, `rank-broken`, `threshold-missed` |
+| Hyper transition tuple | `{transitions}`: the ordered, nonempty tuple of labelled edges `{pre_state, transition, post_state, result}` defined below | FSL FR-163, FR-179, FR-120 | `undefined-member`, `violating-member` |
+| Simulation step | `{position, edge, verdict}`, every member present: `position` a `U64String`; `edge` a `U64String` for `post-differs` and `step-fails` and `null` for `initial-mismatch`, `successors-differ`, `bad-state` and `malformed`; `verdict` the step verdict below for `step-fails` and `null` for every other rule | FSL FR-149's `SimulationStep` | `initial-mismatch`, `successors-differ`, `bad-state`, `malformed`, `post-differs`, `step-fails` |
+| Zone node | `{node}`, its position in the certificate's `nodes` | FR-418; FSL FR-245 for `initial-mismatch` | `successor-missing`, `bad-state`, `witness-fails`, `initial-mismatch` |
+| Zone edge | `{edge}`, its position in the certificate's `edges` | FR-418; FSL FR-245 for `post-differs` | `backward-edge`, `post-differs` |
+| Zone edge step | `{edge, verdict}`, both present: `edge` as in a zone edge and `verdict` the step verdict below | FSL FR-245 | `step-fails` |
 | Zone component | `{component}`, its component index | FR-418 | `witness-fails` |
-| Certificate member | `{member}`, the name of a member of the FR-412 or FR-418 certificate. Its closed 51-name set is `identity`, `node_id`, `model`, `ordinal`, `objective`, `kind`, `values`, `ranking`, `policy`, `components`, `scale`, `bounds`, `nodes`, `edges`, `reasons`, `divergence`, `initials`, `admitted`, `refinement`, `refinement_node`, `concrete_package`, `abstract_package`, `positions`, `taken`, `locked`, `start`, `nested`, `task_product`, `abstract_states`, `automaton`, `bias`, `bound`, `choice`, `clock`, `concrete`, `constraint`, `gain`, `history`, `lower`, `node`, `rank`, `set`, `state`, `strict`, `target`, `transition`, `transitions`, `type`, `upper`, `value` and `zone`: exactly the distinct property names, at any depth, of those certificates and the certificate-owned definitions they reference (`CertificateIdentity`, `DbmBound`, `ComponentReason`, `RefinementPart` and `ProbabilityProductKey`). Shared value types (`StateKey`, `TransitionIdentity`, `Rational`, `NodeId` and `Count`) are named by their type and contribute no member names. `task_product` names the fixed-work task-product evidence object; its closed schema validates its internal members. `refinement` names the refinement part, `refinement_node` its node id, and `node` the index member of an `edges` entry. The locus names one member and carries no path; its member order has no meaning. QSL FR-163 also owns `components` for an absent hyper component structure | FR-412, FR-418, QSL FR-163 | `malformed` |
+| Certificate member | `{member}`, the name of a member of the FR-412 or FR-418 certificate. Its closed 51-name set is `identity`, `node_id`, `model`, `ordinal`, `objective`, `kind`, `values`, `ranking`, `policy`, `components`, `scale`, `bounds`, `nodes`, `edges`, `reasons`, `divergence`, `initials`, `admitted`, `refinement`, `refinement_node`, `concrete_package`, `abstract_package`, `positions`, `taken`, `locked`, `start`, `nested`, `task_product`, `abstract_states`, `automaton`, `bias`, `bound`, `choice`, `clock`, `concrete`, `constraint`, `gain`, `history`, `lower`, `node`, `rank`, `set`, `state`, `strict`, `target`, `transition`, `transitions`, `type`, `upper`, `value` and `zone`: exactly the distinct property names, at any depth, of those certificates and the certificate-owned definitions they reference (`CertificateIdentity`, `DbmBound`, `ComponentReason`, `RefinementPart` and `ProbabilityProductKey`). Shared value types (`StateKey`, `TransitionIdentity`, `Rational`, `NodeId` and `Count`) are named by their type and contribute no member names. `task_product` names the fixed-work task-product evidence object; its closed schema validates its internal members. `refinement` names the refinement part, `refinement_node` its node id, and `node` the index member of an `edges` entry. The locus names one member and carries no path; its member order has no meaning. FSL FR-163 also owns `components` for an absent hyper component structure | FR-412, FR-418, FSL FR-163 | `malformed` |
 
 A model state's key is `{"key": <StateKey>}` in a State locus, as a product
 state's `model_state` and as an undefined evaluation's `state_key`, where
@@ -247,7 +247,7 @@ The required tuple's absence is invalid; an empty tuple is a present
 value. Its `witness_set` is required and retains every actual existential
 tuple/automaton-key pair, including the empty set. HP-1 state-member
 failures have no automaton key. An HP-1 failure on a labelled transition
-tuple SHALL preserve QSL FR-163's complete `HyperTransitionTuple`, not
+tuple SHALL preserve FSL FR-163's complete `HyperTransitionTuple`, not
 project it onto `states`. FR-412 state failures SHALL preserve the complete
 probabilistic product key in every keyed certificate member and rejection.
 For a zero-universal HP-3 claim, every supplied witness tuple has at least
@@ -270,17 +270,17 @@ variable bindings or reduced to the pre-state tuple; missing edge
 members, protocol transitions and extra members SHALL be refused. No
 automaton key is attached to this HP-1 tuple.
 
-`AutomatonStateKey` SHALL travel as unpadded base64url of exactly QSL
+`AutomatonStateKey` SHALL travel as unpadded base64url of exactly FSL
 FR-338 / ADR-018 PC-3's RFC 8785 UTF-8 octets of
-`["quire.automaton-state-key/v1", context, state]`. When the key's canonical sets, occurrence
+`["filament.automaton-state-key/v1", context, state]`. When the key's canonical sets, occurrence
 paths, past memory, windows or acceptance obligations differ from those the
 checked property derives, the reader SHALL refuse the rejection before
 consumption. Neither a materialization index nor an opaque residual body is a
 substitute.
 
-`ProbabilityProductKey` SHALL travel as unpadded base64url of exactly QSL
+`ProbabilityProductKey` SHALL travel as unpadded base64url of exactly FSL
 FR-196 / ADR-028 PR-4's RFC 8785 UTF-8 octets of
-`["quire.probability-product-key/v1", model, monitor, accumulator, pending]`.
+`["filament.probability-product-key/v1", model, monitor, accumulator, pending]`.
 All five members are required. `model` retains the full typed canonical
 simulation state (including digital clock, deadline and tail control when
 applicable). The remaining members retain their actual
@@ -295,7 +295,7 @@ The certificate's existing row member name `state` in `values`, `ranking`,
 `ProbabilityProductKey`; a rejection uses `{product_key}` to remain
 disjoint from the model-only `{key}` State locus. When a decoded
 key differs from the canonical re-encoding of the key that the checked claim
-and model derive under QSL FR-196 PR-4, or has an absent, extra or
+and model derive under FSL FR-196 PR-4, or has an absent, extra or
 inadmissible component, the reader SHALL refuse the certificate or rejection
 before consumption. Equality and sorting use complete decoded unsigned octets,
 never the base64url text's order, or a local index.
@@ -325,7 +325,7 @@ for these items with `invalid_result`/`unknown-cause`.
 | `proved` (proof basis) | `exact-value{value, reductions}`, `value-bounds{lower, upper, method, reductions}` with `method` `backward-induction{precision_bits}` or `interval-iteration{precision_bits, sweeps}`, `zone-certified`, `exhaustive`, `closed-form{analysis}` with `analysis` `fixed-priority`, `edf` or `amc-rtb`, `bounded-solver{method, horizon, jumps, exhaustive}` and `inductive-solver{method}`, each `method` from FR-193's closed method table ("Solver methods") |
 | `refuted` (cause) | `undefined-evaluation{where, cause}` |
 | `measured` (FR-409 cause) | `undefined-evaluation{where, cause}` for `rejected`; `indifference-region` and `undecided-successor` for `undecided` |
-| `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `refuted-ignoring-constraints` (QSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample |
+| `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `refuted-ignoring-constraints` (FSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample |
 | `incomplete` (cause) | `limit-reached{limit, value, setting}`, naming the limit, its value and the request setting that raises it, the one limit-stop cause of every engine; `timed-out`, the backend's own wall-clock limit, as a hybrid solver's `max_solver_time` or a provider's overrun of `deadline_ms` ("Hybrid solver budgets" below); `precision-budget{lower, upper}`; `cancelled{source}` for a cancelled run, `source` the cancellation cause, `requested` when the caller cancels and `deadline` when the caller's deadline ends the run |
 | `unsupported` (cause) | `missing-confidence`, `every-scheduler`, `exact-only-form`, `confidence-beyond-precision`, `not-markov{state, transition, post_states}`, `not-stochastic{state, identity}`, `time-locked-sample{state}`, `total-above-draw-range{total}`, `zero-weight-component{component}`, `delay-distribution{operation}`, `strict-clock-constraint{locus}`, `zero-delay-cycle{states}`, `timed-form-shape{locus}`, `punctual-interval{locus}`, `stopwatch-required` |
 
@@ -336,23 +336,23 @@ and carries no result.
 ## In-process providers
 
 An in-process provider is one whose engine runs in the producer's own
-process over the producer's checked package, such as a QSL `analyze` engine
-that `prove` routes to (QSL FR-280). The producer SHALL hand an in-process
+process over the producer's checked package, such as a FSL `analyze` engine
+that `prove` routes to (FSL FR-280). The producer SHALL hand an in-process
 provider the request's `manifest`, `deadline_ms` and items as typed values,
-together with its checked package and the subject binding (QSL FR-120) that
+together with its checked package and the subject binding (FSL FR-120) that
 `prove` and `analyze` take, as typed values with no `package`,
 `dependencies` or `provision` member: the checked package and its resolved
-dependencies are already in that process. The provider trait (QSL ADR-029
+dependencies are already in that process. The provider trait (FSL ADR-029
 PV-3) also gives such a provider `emitted: Option<&EmittedPackage>`, which the
 producer passes as `None` when `package` refuses to emit and as `Some`
-otherwise, and an in-process provider ignores it (QSL FR-280). Such a request is never written as
+otherwise, and an in-process provider ignores it (FSL FR-280). Such a request is never written as
 a request frame, so the "Package bytes" rules do not apply to it, and a
 request frame that lacks `package` still refuses before
 consumption (FR-331-AC-18).
 
 The in-process form exists because some checked packages have no v2 bytes:
 the `package` operation refuses a package that declares a random parameter,
-a workload, a reward or a probabilistic claim (QSL FR-185) while its checked
+a workload, a reward or a probabilistic claim (FSL FR-185) while its checked
 package remains, and a statistical engine decides the probabilistic claim
 over that checked package. An in-process provider's results, dispositions,
 counterexamples and accounting are the members this envelope defines for any
@@ -385,8 +385,8 @@ hash of the build inputs is carried; name and version identify the code.
   executable and its version.
 - A backend is a **pure in-process engine** when every result it gives is
   computed by code linked into the producer's build, in the producer's
-  process, and it runs no executable; the QSL engines `qsl-model-check` and
-  `qsl-prob` are such engines. Its `name` is the crate that implements the
+  process, and it runs no executable; the FSL engines `fsl-model-check` and
+  `fsl-prob` are such engines. Its `name` is the crate that implements the
   engine and its `version` that crate's package version in the producer's
   build.
 
@@ -413,10 +413,10 @@ descriptor carries.
 
 The normative wire of this value is the closed JSON schema
 [`proposals/backend-provider-v1/schema.json`](../../../proposals/backend-provider-v1/schema.json)
-(`urn:quire:backend-provider:v1`), with its positive and adverse vectors in
+(`urn:filament:backend-provider:v1`), with its positive and adverse vectors in
 [`vectors.json`](../../../proposals/backend-provider-v1/vectors.json). Each
 schema member names its owning requirement. A reader converts from this wire
-into its own types (QSL ADR-013 T-7); no shared Rust crate carries these
+into its own types (FSL ADR-013 T-7); no shared Rust crate carries these
 types, and no consumer holds a copy of the schema. The schema references the
 checked-package schema for `NodeId`, `Occurrence`, `Rational`
 and decimal strings.
@@ -435,7 +435,7 @@ One envelope has three stages. Each is a closed object carrying
 ### Package bytes
 
 `request.package` SHALL be the RFC 8785 byte string of the
-`quire.checked-package/v2` document
+`filament.checked-package/v2` document
 ([FR-322](FR-322-checked-package-artifact.md)), spelled as RFC 4648 section 5
 base64url with no padding and zero unused trailing bits, so that one byte
 string has exactly one spelling and the frame keeps one RFC 8785 encoding.
@@ -477,12 +477,12 @@ in milliseconds (FR-462).
   substituted `ProofBound`s (empty for an item whose domains are all finite),
   or `{classification: "unbounded", domains, finite_bound_available}`, each
   domain a `DomainKey` with its domain kind, as the boundedness architecture
-  (quire-spec-language#222, QSL ADR-014 §4) defines them: a `DomainKey` is
+  (filament-spec-language#222, FSL ADR-014 §4) defines them: a `DomainKey` is
   `{type: "node", node, path}` or `{type: "population", member_type,
   ordinal}` (`path` entries and `ordinal` unsigned 32-bit), and a
   `FiniteBound` is one of ADR-014's three substitution kinds:
   `cardinality{maximum}`, `integer-range{lower, upper}` or `depth{maximum}`
-  with `maximum` non-zero. QSL FR-358's `variants` is a harness bound, never
+  with `maximum` non-zero. FSL FR-358's `variants` is a harness bound, never
   a B-4 substitution kind, so it is not an `extent` bound.
 - **Model member domain keys.** A field and an operation of a selected
   domain package have no node of their own (FR-322 `model_member`), so a
@@ -495,7 +495,7 @@ in milliseconds (FR-462).
   never under the subtype it is reached through; an operation a subtype
   redefines is declared by that subtype and keyed under it. `path` is a
   member-kind tag, then the member's position, then the child-index path
-  into the member's declared type (QSL ADR-014 §4: element, field, variant
+  into the member's declared type (FSL ADR-014 §4: element, field, variant
   payload; empty for the whole value):
   - a field: `[0, f, ...]`, `f` the field's ordinal among the declaring
     type's own fields in ascending field-name UTF-8 byte order;
@@ -525,7 +525,7 @@ in milliseconds (FR-462).
   `proof_bounds`, is `{domain, kind, bound}`: `kind` is the bounded domain's
   ADR-014 domain kind, from the same vocabulary as an unbounded extent's
   `domains[].kind` (`collection`, `population`, `integer`, `recursive`,
-  `quantity`, `loop`, `infinite-trace`), written by QSL from its own
+  `quantity`, `loop`, `infinite-trace`), written by FSL from its own
   classification. Only a boundable kind takes a bound, and the bound matches
   it: `cardinality` for `collection` and `population`, `integer-range` for
   `integer`, `depth` for `recursive`; any other pairing, a non-boundable kind
@@ -925,7 +925,7 @@ probabilistic engine's is `exact_prob`.
 
 Request identity includes the capability vocabulary, manifest, package, the request's `memory` selections ([FR-434](../../functional/memory/FR-434-select-memory-models-for-parallel.md)), each item's claim, extent with its proof bounds, options and limits (a `value-validity` or `operation-contract` item's `check.limits`, FR-483), each item's kind, extent classification, `requirements`, named backend and candidates, each `operation-contract` item's `correspondence` (FR-490), each `composition` item's `premises` (FR-491), each temporal item's subject, `abstract_subject`, item kind, `stutter_closure`, fairness set, `max_depth`, `limits` and `smt_encoding` (FR-368), the `witness_samples` and `seed` of a state-graph item, and each item's symmetry declarations, partial-order selection and state constraint; the state constraint is also recorded in the item's terminal record. A different temporal horizon or deterministic budget can produce a different result, so a result belongs to exactly one request identity; a wall-clock setting, a hybrid item's `hybrid.limits.max_solver_time` or a temporal item's `temporal.limits.max_solver_time` (FR-368 "SMT solver budgets"), is outside it. Result identity includes artifacts and results.
 Unknown contract versions, missing required properties, duplicate keys,
-out-of-domain values and non-canonical encodings refuse before consumption; in a result entry or a `counterexamples` entry, a missing or unknown member and a value of the wrong kind or outside its domain refuse with the `invalid_result` causes of "Result entries". A `capability_vocabulary` other than `quire.capability-kind/v1`, or none, refuses the envelope as `invalid_capability`/`unknown-vocabulary`.
+out-of-domain values and non-canonical encodings refuse before consumption; in a result entry or a `counterexamples` entry, a missing or unknown member and a value of the wrong kind or outside its domain refuse with the `invalid_result` causes of "Result entries". A `capability_vocabulary` other than `filament.capability-kind/v1`, or none, refuses the envelope as `invalid_capability`/`unknown-vocabulary`.
 
 A backend's manifest identity is its complete admitted descriptor, compared
 componentwise: for a process provider, the descriptor at `/manifest/0` of its
@@ -947,7 +947,7 @@ computed.
 | FR-331-AC-4 | `negotiate_*` settles each item from its `candidates` and extent classification under FR-290: unknown-backend, inconsistent candidates, an absent extent classification, and more than one candidate with no named backend settle `invalid-request`; an empty set settles `unsupported` with a warning naming the item's kind; a single candidate settles through its negotiation arm. A request item without `candidates` refuses before consumption. | Test (TC-271) |
 | FR-331-AC-5 | Two requests whose items differ only in `candidates` have different request identities, and candidates serialize ordered by identity under every registration order. | Test (TC-271) |
 | FR-331-AC-6 | A tool-absence `unsupported` result keeps the item's `supported` disposition, is the item's one terminal accounting record, and names the capability kind and backend. | Test (TC-271) |
-| FR-331-AC-7 | An envelope whose `capability_vocabulary` is not exactly `quire.capability-kind/v1`, or is absent, refuses as `invalid_capability`/`unknown-vocabulary` with none of its kinds read. | Test (TC-271) |
+| FR-331-AC-7 | An envelope whose `capability_vocabulary` is not exactly `filament.capability-kind/v1`, or is absent, refuses as `invalid_capability`/`unknown-vocabulary` with none of its kinds read. | Test (TC-271) |
 | FR-331-AC-8 | A Kani proof run whose obligation has zero SUCCESS checks, and a `value-validity` or `operation-contract` item whose premises no assignment satisfies (FR-483), record the item's result as `inconclusive` with the typed vacuity cause `kani_vacuous_proof`, never as `proved`, and this cause is not a new result value. | Test (TC-274) |
 | FR-331-AC-9 | A `counterexamples` entry names exactly one of the transcript's `artifacts` entry or the canonical assignments of a counterexample with no transcript, never both; a transcript-backed entry's assignments are its decode of that entry and are not separately stored. | Test (TC-275) |
 | FR-331-AC-10 | A supported item whose Kani run ends `Refused`, `InvalidInput` or `IncompleteInput` records exactly one terminal result `declined` with a typed refusal cause; a supported item whose Kani run ends `Unavailable` records exactly one terminal result `unsupported` with a typed unavailability cause naming the capability kind, the backend and the absent solver or backend identity. | Test (TC-276) |
@@ -1003,7 +1003,7 @@ HP-3's present empty universal tuple with its required automaton and
 witness-set members, and FR-163's `components` member ownership are bound by
 the schema. The model-only State locus cannot losslessly bind FR-412's
 complete product key, so the separate `ProbabilityProductStateLocus` and the
-certificate row bindings above carry the QSL FR-196 forms.
+certificate row bindings above carry the FSL FR-196 forms.
 
 - [interface_013](./interface_013-backend-provider.md) owns the operation boundary.
 - FR-195 owns the behavior that produces or consumes this value.

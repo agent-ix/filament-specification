@@ -3,7 +3,7 @@ id: TC-002
 title: "Refuse role and reference identity substitutions"
 type: TC
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-017"
+  - target: "ix://agent-ix/filament-specification/FR-017"
     type: verifies
 ---
 # TC-002: Refuse role and reference identity substitutions

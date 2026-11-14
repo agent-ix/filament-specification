@@ -3,25 +3,25 @@ id: FR-058
 title: "Preserve retry, duplicate and partial-recovery outcomes"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-225
+  - target: ix://agent-ix/filament-specification/FR-225
     type: references
-  - target: ix://agent-ix/quire-specification/FR-226
+  - target: ix://agent-ix/filament-specification/FR-226
     type: references
-  - target: ix://agent-ix/quire-specification/FR-234
+  - target: ix://agent-ix/filament-specification/FR-234
     type: references
-  - target: ix://agent-ix/quire-specification/FR-235
+  - target: ix://agent-ix/filament-specification/FR-235
     type: references
-  - target: ix://agent-ix/quire-specification/FR-236
+  - target: ix://agent-ix/filament-specification/FR-236
     type: references
-  - target: ix://agent-ix/quire-specification/FR-238
+  - target: ix://agent-ix/filament-specification/FR-238
     type: references
-  - target: ix://agent-ix/quire-specification/FR-239
+  - target: ix://agent-ix/filament-specification/FR-239
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 ## Description

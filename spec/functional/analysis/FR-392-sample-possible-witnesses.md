@@ -3,19 +3,19 @@ id: FR-392
 title: "Sample witnesses for possibility claims"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
 ---
 

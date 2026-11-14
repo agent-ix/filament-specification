@@ -3,7 +3,7 @@ id: IT-040
 title: "Qualify supported native future lowering against TL"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: verifies
 ---
 ## Objective
@@ -54,6 +54,6 @@ claim exists until these planned steps execute against reviewed candidates.
 
 ## Dependencies
 
-- [Contract-IR issue #63](https://github.com/agent-ix/quire-contract-ir/issues/63)
-- [Contract-IR issue #64](https://github.com/agent-ix/quire-contract-ir/issues/64)
+- [Contract-IR issue #63](https://github.com/agent-ix/filament-contract-ir/issues/63)
+- [Contract-IR issue #64](https://github.com/agent-ix/filament-contract-ir/issues/64)
 - [FR-090](../functional/temporal/FR-090-select-temporal-profile-and-clock.md)

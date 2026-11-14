@@ -4,7 +4,7 @@ title: "Contain tool, plugin and generated-code execution"
 type: NFR
 quality_attribute: security
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: constrains
 ---
 

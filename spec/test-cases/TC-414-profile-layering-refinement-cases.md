@@ -3,7 +3,7 @@ id: TC-414
 title: "Profile-layering refinement cases"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-453
+  - target: ix://agent-ix/filament-specification/FR-453
     type: verifies
 ---
 
@@ -42,7 +42,7 @@ code. Each expected result is a literal in the test.
 | PL-07d | PL-07c with both backends settling the item `unsupported` | Regression naming state core and both backend identities with disposition `unsupported`; verdict violation, exit 10 |
 | PL-08 | Each edge's distinguishing unit compiled under its parent and its child | Holds on each edge: the parent gives `unsupported_construct` naming the parent layer and the child admits |
 | PL-09 | E1's distinguishing unit with a test-only fault that makes state core admit named predicates | Regression naming E1; verdict violation, exit 10 |
-| PL-10 | E6's distinguishing unit, a state model that writes `time M dense unit ms;`, compiled under `quire.model.complete/v1` and under `quire.temporal.complete/v1` | The parent gives `unsupported_construct`/`declaration-form` naming `quire.model.complete/v1`; the child admits; E6 holds |
+| PL-10 | E6's distinguishing unit, a state model that writes `time M dense unit ms;`, compiled under `filament.model.complete/v1` and under `filament.temporal.complete/v1` | The parent gives `unsupported_construct`/`declaration-form` naming `filament.model.complete/v1`; the child admits; E6 holds |
 
 ## Expected Results
 

@@ -3,9 +3,9 @@ id: FR-140
 title: "Evaluate exact decimal values"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
 ---
 
@@ -116,11 +116,11 @@ rule, and the accounting decimal division schedule. A rational source whose
 denominator bound is one converts exactly as the integer `n`. The rounding
 conversion is lossy, so FR-149 never admits it as an equality conversion. FR-149
 classifies it, and every decimal-to-decimal conversion to a smaller maximum
-scale, as a scale reduction (`quire.op.numeric.convert_rounding`), the only
+scale, as a scale reduction (`filament.op.numeric.convert_rounding`), the only
 exact-numeric conversion that rounds; an FR-478 text-to-decimal conversion
 rounds by this same rounding step under a non-`exact` target mode. A conversion that changes only the admitted range, such
 as `Int[0,300]` into `Decimal[0,20000;2,2;exact]`, is an FR-149 range narrowing
-(`quire.op.numeric.narrow`): its membership is an FR-146 obligation, and it
+(`filament.op.numeric.narrow`): its membership is an FR-146 obligation, and it
 never rounds or clamps.
 
 Decimal typing derives no default type. The operands of `+`, `-`, `*`, `/` and
@@ -155,7 +155,7 @@ source-admitted counterpart. A `Rational` to `Decimal` conversion in source is
 literals, because the integer operands of that division need not be members of
 `R`.
 
-Under `quire.value.accounting/v1`, the evaluator charges the named decimal
+Under `filament.value.accounting/v1`, the evaluator charges the named decimal
 points and counters before a power-of-ten expansion, coefficient operation or
 result retention. The first unavailable charge returns incomplete accounting
 without attempting a smaller or floating approximation. The zero-divisor
@@ -182,7 +182,7 @@ make no later charge.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

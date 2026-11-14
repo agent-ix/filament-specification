@@ -3,125 +3,125 @@ id: TC-233
 title: "Published checked-package and scalar contract vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-271-AC-7
+  - target: ix://agent-ix/filament-specification/FR-271-AC-7
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-22
+  - target: ix://agent-ix/filament-specification/FR-272-AC-22
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-23
+  - target: ix://agent-ix/filament-specification/FR-272-AC-23
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-24
+  - target: ix://agent-ix/filament-specification/FR-272-AC-24
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-25
+  - target: ix://agent-ix/filament-specification/FR-272-AC-25
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-28
+  - target: ix://agent-ix/filament-specification/FR-272-AC-28
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-78
+  - target: ix://agent-ix/filament-specification/FR-322-AC-78
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-310
+  - target: ix://agent-ix/filament-specification/FR-322-AC-310
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-311
+  - target: ix://agent-ix/filament-specification/FR-322-AC-311
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-312
+  - target: ix://agent-ix/filament-specification/FR-322-AC-312
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-313
+  - target: ix://agent-ix/filament-specification/FR-322-AC-313
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-388
+  - target: ix://agent-ix/filament-specification/FR-322-AC-388
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-314
+  - target: ix://agent-ix/filament-specification/FR-322-AC-314
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-315
+  - target: ix://agent-ix/filament-specification/FR-322-AC-315
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-316
+  - target: ix://agent-ix/filament-specification/FR-322-AC-316
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-317
+  - target: ix://agent-ix/filament-specification/FR-322-AC-317
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-318
+  - target: ix://agent-ix/filament-specification/FR-322-AC-318
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-27
+  - target: ix://agent-ix/filament-specification/FR-272-AC-27
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-269
+  - target: ix://agent-ix/filament-specification/FR-322-AC-269
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-387
+  - target: ix://agent-ix/filament-specification/FR-322-AC-387
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-272
+  - target: ix://agent-ix/filament-specification/FR-322-AC-272
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-273
+  - target: ix://agent-ix/filament-specification/FR-322-AC-273
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-278
+  - target: ix://agent-ix/filament-specification/FR-322-AC-278
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-279
+  - target: ix://agent-ix/filament-specification/FR-322-AC-279
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-280
+  - target: ix://agent-ix/filament-specification/FR-322-AC-280
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-281
+  - target: ix://agent-ix/filament-specification/FR-322-AC-281
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-282
+  - target: ix://agent-ix/filament-specification/FR-322-AC-282
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-392
+  - target: ix://agent-ix/filament-specification/FR-322-AC-392
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-393
+  - target: ix://agent-ix/filament-specification/FR-322-AC-393
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-394
+  - target: ix://agent-ix/filament-specification/FR-322-AC-394
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-395
+  - target: ix://agent-ix/filament-specification/FR-322-AC-395
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-274
+  - target: ix://agent-ix/filament-specification/FR-322-AC-274
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-55
+  - target: ix://agent-ix/filament-specification/FR-322-AC-55
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-262
+  - target: ix://agent-ix/filament-specification/FR-322-AC-262
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-266
+  - target: ix://agent-ix/filament-specification/FR-322-AC-266
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-270
+  - target: ix://agent-ix/filament-specification/FR-322-AC-270
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-271
+  - target: ix://agent-ix/filament-specification/FR-322-AC-271
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-79
+  - target: ix://agent-ix/filament-specification/FR-322-AC-79
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-75
+  - target: ix://agent-ix/filament-specification/FR-322-AC-75
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-114
+  - target: ix://agent-ix/filament-specification/FR-322-AC-114
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-81
+  - target: ix://agent-ix/filament-specification/FR-322-AC-81
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-287
+  - target: ix://agent-ix/filament-specification/FR-322-AC-287
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-82
+  - target: ix://agent-ix/filament-specification/FR-322-AC-82
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-83
+  - target: ix://agent-ix/filament-specification/FR-322-AC-83
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-108
+  - target: ix://agent-ix/filament-specification/FR-322-AC-108
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-478-AC-3
+  - target: ix://agent-ix/filament-specification/FR-478-AC-3
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-464-AC-19
+  - target: ix://agent-ix/filament-specification/FR-464-AC-19
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-451
+  - target: ix://agent-ix/filament-specification/FR-451
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-140
+  - target: ix://agent-ix/filament-specification/FR-140
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-270
+  - target: ix://agent-ix/filament-specification/FR-270
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: verifies
-  - target: ix://agent-ix/quire-specification/interface_004
+  - target: ix://agent-ix/filament-specification/interface_004
     type: verifies
 ---
 
@@ -137,7 +137,7 @@ vectors, and the complete-value and complete-model definition locks and
 package-selection vectors. This case proves producer-side schema closure,
 and operation-identity and diagnostic-cause closure
 through QSpec's Rust qualification. The dependency-closure reader outcomes
-below have implementation evidence in quire-contract-ir's diamond and
+below have implementation evidence in filament-contract-ir's diamond and
 transitive-only dependency-reference tests; the
 QSpec crate itself does not contain a production reader, linker, lowerer, or
 evaluator. Other reader and evaluator criteria remain with TC-217 and TC-187.
@@ -233,7 +233,7 @@ schema to refuse it; read the package's invariant and precondition through
 the full reader, requiring the state step to admit them, and read each
 authored anchor, parameter, `self`-type, arity, body-root misplaced-clause
 and anchor-before-clause mutation, requiring its exact state refusal and
-locus; require a `quire.op.state.clause` application nested in another
+locus; require a `filament.op.state.clause` application nested in another
 clause's condition to fail the schema and refuse `malformed_wire` at the
 nested application;
 and parse the native-diagnostics rows to require each cause in
@@ -259,11 +259,11 @@ table to hold exactly one row for each FR-271-AC-6 code. Require both
 FR-272-AC-12's labels-before-path precedence; require the catalog's payload
 value spellings to hold FR-272-AC-13's domain forms and widths, the flag order
 FR-148 names and the labels in the row's order; and require FR-044,
-`quire.value.accounting/v1` and the catalog to state FR-044-AC-10's
+`filament.value.accounting/v1` and the catalog to state FR-044-AC-10's
 evaluation-time refusals and `sum` carve-out, with FR-145 keeping a non-member
 `sum` seed or prefix a located undefined outcome; and require FR-140 and the
 decimal, unit-target and integer-target membership sentences of
-`quire.value.accounting/v1` to carry the same `sum` carve-out on
+`filament.value.accounting/v1` to carry the same `sum` carve-out on
 `decimal_out_of_domain` and the unit target refusals (FR-140-AC-5).
 Validate a Diagnostic entry carrying each of `type-mismatch`,
 `missing-selection`, `unsupported-selection`, `wrong-selection-role`,
@@ -273,9 +273,9 @@ Read every published positive fixture with the
 full reader.
 
 The positive fixtures are rebuilt in the same change. Producing them is a
-fixture-production step, not a test step: every node of a kind QSL's v2
-emission writes (QSL FR-093-AC-19's classification) is produced by running
-QSL's emitter, which replaces the non-emittable placeholders, among them
+fixture-production step, not a test step: every node of a kind FSL's v2
+emission writes (FSL FR-093-AC-19's classification) is produced by running
+FSL's emitter, which replaces the non-emittable placeholders, among them
 `positive-all-families.json`'s declared boolean `Example::Flag` and the
 nodes typed at it, and `positive-operation-identities.json`'s undeclared
 record node and its placeholder function `double` and model `Counter`.
@@ -283,13 +283,13 @@ The operation fixture's `Set<Reference<Order>>` population type forwards
 to the single `Reference` node over the generated `Order` model declaration
 (FR-322-AC-62, FR-322-AC-65); it carries no `Reference` over the anonymous
 record node, whose target is not a model or relation.
-Two sets of nodes are hand authored. The first is each node of a kind QSL
+Two sets of nodes are hand authored. The first is each node of a kind FSL
 never writes (FR-093-AC-19), kept so that the all-families fixture carries
 all 15 node tags (FR-322-AC-13); its node id is FR-322's structural id. The second is the all-families fixture's `Tank` hybrid model,
-written by hand in the form QSL's S4 emits (FR-481); each of its nodes
+written by hand in the form FSL's S4 emits (FR-481); each of its nodes
 carries FR-322's structural id. The pass/fail oracle for every node, emitted or hand authored,
 is the full reader's acceptance, never the node's provenance. Regenerating the fixtures needs
-QSL's emitter to write `owner` (QSL FR-093-AC-21, agent-ix/quire-spec-language#648),
+FSL's emitter to write `owner` (FSL FR-093-AC-21, agent-ix/filament-spec-language#648),
 which needs IR's `CheckedSemanticNodeV2` `owner` field (IR-646) first. The published fixtures carry the node `owner` member (FR-322
 "Owner member schema"). In every positive fixture each declared structural node carries
 the `SourceOwner` of its fixture's lock source (`agent-ix`/`example`, or
@@ -306,8 +306,8 @@ wire cases of `model-member-type-vectors.json` carry the owners TC-280
 lists. `adverse.json` gains `owner_mutations`, each applied to its base
 fixture, and `fixtures/` gains `positive-two-owners-a.json`
 and `positive-two-owners-b.json`, whose `Point` and `List` declarations carry
-the qualified names QSL emits (`["Point"]`, `["List"]`), so their `Point`,
-`List` and `Integer` nodes are the nodes QSL FR-093-AC-22 emits. The `three`
+the qualified names FSL emits (`["Point"]`, `["List"]`), so their `Point`,
+`List` and `Integer` nodes are the nodes FSL FR-093-AC-22 emits. The `three`
 application is a hand-authored anonymous `expression`/`binary` node, not a
 declaration or an output of AC-22.
 
@@ -331,7 +331,7 @@ lock and its declaration regions moved to it (FR-322-AC-53).
 `positive-all-families.json` also carries one clause function, a `function`
 node with no `declaration`, owned by the `ModelOwner` of the operation member
 `ix://acme/orders/Order/size` and whose body holds the one `clause` binding
-`precondition` (QSL FR-094); `model-member-type-vectors.json`'s
+`precondition` (FSL FR-094); `model-member-type-vectors.json`'s
 `domain_package` projection (derived from the selected document `domain-package-acme-orders.json`,
 which every fixture selecting it names by identity and version) declares
 `Order-order-Order` with the ends `order` and `next` (`bidirectional`) and `Order-invoiced-Invoice`
@@ -348,7 +348,7 @@ FR-152) and `relationship-end-names-missing-inverse`
 `reaches-population-names-absent-node` and `reaches-population-over-another-model-declaration`
 (`ill_typed`/`operator-ineligible`); and `reaches-population-omitted-from-dependencies`
 (`invalid_semantic_graph`), all FR-322-AC-73.
-`adverse.json` `field_population_cases` holds the `quire.op.model.reaches_field` field-member cases of
+`adverse.json` `field_population_cases` holds the `filament.op.model.reaches_field` field-member cases of
 FR-322-AC-398: `reaches-field-population-reference-max-3-admitted`,
 `reaches-field-population-reference-max-0-admitted`, `reaches-field-population-unbounded-admitted`,
 `reaches-field-population-option-admitted`, `reaches-field-population-sequence-admitted` and
@@ -406,24 +406,24 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| SE-01 | `quire.op.string.eq` over two `string` operands, result `boolean` | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-02 | `quire.op.string.ne` over two `string` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-03 | `quire.op.uuid.eq` over two `uuid` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-04 | `quire.op.uuid.ne` over two `uuid` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-05 | `quire.op.timestamp.eq` over two `timestamp` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-06 | `quire.op.timestamp.ne` over two `timestamp` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-07 | `quire.op.string.eq` over a `string` and a `text` operand | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
-| SE-08 | `quire.op.integer.lt` over two `uuid` operands | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
+| SE-01 | `filament.op.string.eq` over two `string` operands, result `boolean` | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-02 | `filament.op.string.ne` over two `string` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-03 | `filament.op.uuid.eq` over two `uuid` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-04 | `filament.op.uuid.ne` over two `uuid` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-05 | `filament.op.timestamp.eq` over two `timestamp` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-06 | `filament.op.timestamp.ne` over two `timestamp` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-07 | `filament.op.string.eq` over a `string` and a `text` operand | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
+| SE-08 | `filament.op.integer.lt` over two `uuid` operands | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
 | SE-09 | literal of `value_kind` `string`, `uuid` and `timestamp`, each typed by its own family with a canonical value | Admitted by both schemas and the literal rule | FR-322-AC-67 |
 | SE-10 | literal of `value_kind` `uuid` typed by a `string` type | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
-| SE-11 | `quire.op.uuid.eq` over a `uuid` and a `string` operand; `quire.op.timestamp.eq` over a `timestamp` and a `uuid` operand | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
-| SE-12 | `quire.op.string.eq` carrying a `text_profile` law | `invalid_package`/`operation-law-mismatch` | FR-322-AC-67 |
-| SE-13 | `quire.op.uuid.eq` carrying a `text_profile` mode | `invalid_package`/`operation-mode-mismatch` | FR-322-AC-67 |
-| SE-14 | `quire.op.integer.add` over two `uuid` operands; `quire.op.integer.lt` over two `timestamp` operands | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
+| SE-11 | `filament.op.uuid.eq` over a `uuid` and a `string` operand; `filament.op.timestamp.eq` over a `timestamp` and a `uuid` operand | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
+| SE-12 | `filament.op.string.eq` carrying a `text_profile` law | `invalid_package`/`operation-law-mismatch` | FR-322-AC-67 |
+| SE-13 | `filament.op.uuid.eq` carrying a `text_profile` mode | `invalid_package`/`operation-mode-mismatch` | FR-322-AC-67 |
+| SE-14 | `filament.op.integer.add` over two `uuid` operands; `filament.op.integer.lt` over two `timestamp` operands | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
 | SE-15 | literal of `value_kind` `string` typed by `uuid` or `text`; literal of `value_kind` `timestamp` typed by `integer` | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
 | SE-16 | literal of `value_kind` `uuid` with an uppercase value, no hyphens or 35 characters | `invalid_package`/`invalid-value` | FR-322-AC-67 |
 | SE-17 | literal of `value_kind` `timestamp` with value `-0`, `+1`, `01`, empty text or `170141183460469231731687303715884105728` | `invalid_package`/`invalid-value` | FR-322-AC-67 |
-| SE-18 | `quire.op.text.eq` over two `string` operands with a `text_profile` law and mode | `invalid_package`/`operation-mode-type-mismatch` | FR-322-AC-67 |
+| SE-18 | `filament.op.text.eq` over two `string` operands with a `text_profile` law and mode | `invalid_package`/`operation-mode-type-mismatch` | FR-322-AC-67 |
 | SE-19 | literal of `value_kind` `string` whose `value` is a number, `null` or an array | `invalid_package`/`invalid-value` | FR-322-AC-67 |
 | QL-01 | literal of `value_kind` `quantity` typed by a unit node, values `3`, `0`, `-5`, `1/1000` and `-7/2` | Admitted with family `quantity`; both schemas enumerate `quantity` | FR-322-AC-79 |
 | QL-02 | literal of `value_kind` `quantity` typed by `integer`, `string` or `boolean` | `ill_typed`/`operator-ineligible` | FR-322-AC-79 |
@@ -444,18 +444,18 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| TN-01 | `quire.op.text.to_integer` over a `text` operand, `integer` result and `type_argument` member naming that result | Admitted by both V2 schemas and the operation catalog with `text_profile`, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
-| TN-02 | `quire.op.text.to_decimal` over a `text` operand and a `decimal` result | Admitted with `text_profile`, `rounding` pinned by the decimal result, and `member_family` `decimal` | FR-322-AC-17; FR-478-AC-3 |
-| TN-03 | `quire.op.text.to_rational` over a `text` operand and a `rational` result | Admitted with `text_profile`, no mode and `member_family` `rational` | FR-322-AC-17; FR-478-AC-3 |
-| TN-04 | `quire.op.text.to_float32` over a `text` operand and a `float32` result | Admitted with `text_profile` and `ieee_profile`, `rounding` pinned by the result, and `member_family` `float32` | FR-322-AC-17; FR-478-AC-3 |
-| TN-05 | `quire.op.text.to_float64` over a `text` operand and a `float64` result | Admitted with `text_profile` and `ieee_profile`, `rounding` pinned by the result, and `member_family` `float64` | FR-322-AC-17; FR-478-AC-3 |
-| TN-06 | `quire.op.text.to_quantity` over a `text` operand and a `quantity` result | Admitted with `text_profile`, `rounding` pinned by the quantity result, and `member_family` `quantity` | FR-322-AC-17; FR-478-AC-3 |
-| TN-07 | `quire.op.string.to_integer` over a `string` operand, `integer` result and `type_argument` member naming that result | Admitted by both V2 schemas and the operation catalog with no law, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
-| TN-08 | `quire.op.string.to_decimal` over a `string` operand and a `decimal` result | Admitted with no law, `rounding` pinned by the decimal result, and `member_family` `decimal` | FR-322-AC-17; FR-478-AC-3 |
-| TN-09 | `quire.op.string.to_rational` over a `string` operand and a `rational` result | Admitted with no law, no mode and `member_family` `rational` | FR-322-AC-17; FR-478-AC-3 |
-| TN-10 | `quire.op.string.to_float32` over a `string` operand and a `float32` result | Admitted with `ieee_profile`, `rounding` pinned by the result, and `member_family` `float32` | FR-322-AC-17; FR-478-AC-3 |
-| TN-11 | `quire.op.string.to_float64` over a `string` operand and a `float64` result | Admitted with `ieee_profile`, `rounding` pinned by the result, and `member_family` `float64` | FR-322-AC-17; FR-478-AC-3 |
-| TN-12 | `quire.op.string.to_quantity` over a `string` operand and a `quantity` result | Admitted with no law, `rounding` pinned by the quantity result, and `member_family` `quantity` | FR-322-AC-17; FR-478-AC-3 |
+| TN-01 | `filament.op.text.to_integer` over a `text` operand, `integer` result and `type_argument` member naming that result | Admitted by both V2 schemas and the operation catalog with `text_profile`, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
+| TN-02 | `filament.op.text.to_decimal` over a `text` operand and a `decimal` result | Admitted with `text_profile`, `rounding` pinned by the decimal result, and `member_family` `decimal` | FR-322-AC-17; FR-478-AC-3 |
+| TN-03 | `filament.op.text.to_rational` over a `text` operand and a `rational` result | Admitted with `text_profile`, no mode and `member_family` `rational` | FR-322-AC-17; FR-478-AC-3 |
+| TN-04 | `filament.op.text.to_float32` over a `text` operand and a `float32` result | Admitted with `text_profile` and `ieee_profile`, `rounding` pinned by the result, and `member_family` `float32` | FR-322-AC-17; FR-478-AC-3 |
+| TN-05 | `filament.op.text.to_float64` over a `text` operand and a `float64` result | Admitted with `text_profile` and `ieee_profile`, `rounding` pinned by the result, and `member_family` `float64` | FR-322-AC-17; FR-478-AC-3 |
+| TN-06 | `filament.op.text.to_quantity` over a `text` operand and a `quantity` result | Admitted with `text_profile`, `rounding` pinned by the quantity result, and `member_family` `quantity` | FR-322-AC-17; FR-478-AC-3 |
+| TN-07 | `filament.op.string.to_integer` over a `string` operand, `integer` result and `type_argument` member naming that result | Admitted by both V2 schemas and the operation catalog with no law, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
+| TN-08 | `filament.op.string.to_decimal` over a `string` operand and a `decimal` result | Admitted with no law, `rounding` pinned by the decimal result, and `member_family` `decimal` | FR-322-AC-17; FR-478-AC-3 |
+| TN-09 | `filament.op.string.to_rational` over a `string` operand and a `rational` result | Admitted with no law, no mode and `member_family` `rational` | FR-322-AC-17; FR-478-AC-3 |
+| TN-10 | `filament.op.string.to_float32` over a `string` operand and a `float32` result | Admitted with `ieee_profile`, `rounding` pinned by the result, and `member_family` `float32` | FR-322-AC-17; FR-478-AC-3 |
+| TN-11 | `filament.op.string.to_float64` over a `string` operand and a `float64` result | Admitted with `ieee_profile`, `rounding` pinned by the result, and `member_family` `float64` | FR-322-AC-17; FR-478-AC-3 |
+| TN-12 | `filament.op.string.to_quantity` over a `string` operand and a `quantity` result | Admitted with no law, `rounding` pinned by the quantity result, and `member_family` `quantity` | FR-322-AC-17; FR-478-AC-3 |
 | TN-13 | TN-01 with its result and `type_argument` changed to `Boolean` | `ill_typed`/`operator-ineligible` because the catalogued `member_family` is `integer` | FR-322-AC-17; FR-478-AC-3 |
 | TN-14 | Each of TN-07 through TN-12 with an added `text_profile` law | `invalid_package`/`operation-law-mismatch` | FR-322-AC-17; FR-478-AC-3 |
 
@@ -463,13 +463,13 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| NF-01 | `quire.op.ieee.float64.negate` over one `Float64[nearest-even]` operand, `result_type` that operand's type node, the `ieee_profile` law, mode `null`; the same with `quire.op.ieee.float32.negate` over `Float32[toward-zero]` | Identities enumerated by both schemas; application admitted | FR-322-AC-111 |
-| NF-02 | `quire.op.ieee.float64.negate` over a `float32` operand; `quire.op.ieee.float32.negate` over a `float64` operand; over an `integer` operand; over two operands | `ill_typed`/`operator-ineligible` | FR-322-AC-111 |
+| NF-01 | `filament.op.ieee.float64.negate` over one `Float64[nearest-even]` operand, `result_type` that operand's type node, the `ieee_profile` law, mode `null`; the same with `filament.op.ieee.float32.negate` over `Float32[toward-zero]` | Identities enumerated by both schemas; application admitted | FR-322-AC-111 |
+| NF-02 | `filament.op.ieee.float64.negate` over a `float32` operand; `filament.op.ieee.float32.negate` over a `float64` operand; over an `integer` operand; over two operands | `ill_typed`/`operator-ineligible` | FR-322-AC-111 |
 | NF-03 | NF-01's `float64` application with `result_type` `Float64[toward-zero]` | `ill_typed`/`operator-ineligible` | FR-322-AC-111 |
 | NF-04 | NF-01's application with a `rounding` mode, with no law, and in a lock without the `ieee_profile` selection | `invalid_package`/`operation-mode-mismatch`; `operation-law-missing`; `operation-law-unselected` | FR-322-AC-111 |
-| NF-05 | `quire.op.ieee.float64.eq`, `quire.op.ieee.float64.ne` and `quire.op.ieee.float64.lt` | `invalid_package`/`unknown-operation` | FR-322-AC-111 |
-| NF-06 | `quire.op.structural.eq` over `record R { x: Float64[nearest-even]; t: Text[0,8;nfc]; }` | Admitted with the leaves `["field:x"]` (`ieee_profile`, mode `null`) then `["field:t"]` (the `nfc` law and mode) | FR-322-AC-112 |
-| NF-07 | `quire.op.structural.ne` over `Option<Float64[nearest-even]>`, `union U { V(Float32[exact]), N }` and `Sequence<Float64[nearest-even]>` | Admitted with the leaves `["inner"]`, `["member:V", "position:0"]` and `["inner"]` | FR-322-AC-112 |
+| NF-05 | `filament.op.ieee.float64.eq`, `filament.op.ieee.float64.ne` and `filament.op.ieee.float64.lt` | `invalid_package`/`unknown-operation` | FR-322-AC-111 |
+| NF-06 | `filament.op.structural.eq` over `record R { x: Float64[nearest-even]; t: Text[0,8;nfc]; }` | Admitted with the leaves `["field:x"]` (`ieee_profile`, mode `null`) then `["field:t"]` (the `nfc` law and mode) | FR-322-AC-112 |
+| NF-07 | `filament.op.structural.ne` over `Option<Float64[nearest-even]>`, `union U { V(Float32[exact]), N }` and `Sequence<Float64[nearest-even]>` | Admitted with the leaves `["inner"]`, `["member:V", "position:0"]` and `["inner"]` | FR-322-AC-112 |
 | NF-08 | NF-06's application with the `field:x` leaf omitted, with a `text_profile` law on it, and with a mode on it | The first failing leaf check refuses as for a text leaf | FR-322-AC-112 |
 
 ### Decimal literal vectors
@@ -491,7 +491,7 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 | TB-03 | a row naming an `await` control (`CB-07`); then compensations under a lock selecting no clock-configured profile with no `temporal_bindings` (`CB-08`) | `invalid_package`/`timed-node-reference` at `/temporal_bindings/1/declaration`; the second admitted | FR-322-AC-305 |
 | TB-04 | `text_bounds` nodes `Text[0, 64; nfc]` and `Text[2, 2; binary-utf8]` (`TS-01`, `TS-02`) | Admitted: the body is `aggregate{min, max, text_profile}` | FR-322-AC-306 |
 | TB-05 | a profile-only `Text[nfc]`, then nodes missing `min`, `max` and `text_profile`, a member beside the three, `min` 5 above `max` 4, the profile `nfkd2` and an empty body (`TS-03` to `TS-10`) | Each `invalid_package`/`invalid-derived-shape` at `/semantic_graph/nodes/{n}`, before any literal typed by the node is checked | FR-322-AC-306 |
-| FM-01 | `quire.op.ieee.float64.fma` over three `Float64[nearest-even]` operands and `quire.op.ieee.float32.fma` over three `Float32[toward-zero]` operands, operator `call`, `reference` arguments a, b, c, the `ieee_profile` law and a `rounding` mode (`FM-01`, `FM-02`) | Admitted; the wire is the generic application | FR-322-AC-307 |
+| FM-01 | `filament.op.ieee.float64.fma` over three `Float64[nearest-even]` operands and `filament.op.ieee.float32.fma` over three `Float32[toward-zero]` operands, operator `call`, `reference` arguments a, b, c, the `ieee_profile` law and a `rounding` mode (`FM-01`, `FM-02`) | Admitted; the wire is the generic application | FR-322-AC-307 |
 | FM-02 | two, four and one arguments (`FM-03` to `FM-05`) | `ill_typed`/`operator-ineligible` | FR-322-AC-307 |
 | FM-03 | `float32` operands under the `float64` identity, a mixed-width triple under either identity, an `integer` operand and a `float32` `result_type` under the `float64` identity (`FM-06` to `FM-10`) | `ill_typed`/`operator-ineligible` | FR-322-AC-307 |
 | FM-04 | `FM-01`'s application with mode `null`, then with no `ieee_profile` law (`FM-11`, `FM-12`) | `invalid_package`/`operation-mode-mismatch`; `invalid_package`/`operation-law-missing` | FR-322-AC-307 |
@@ -500,9 +500,9 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| OO-01 | `quire.op.collection.sequence.drop_first` over a `Sequence<Integer>[0,9]` operand and `quire.op.collection.ordered_set.drop_first` over an `OrderedSet<Integer>[0,9]` operand, each with `result_type` of the operand's family and bound `[0,8]` | Identities enumerated by both schemas; applications admitted with no law, mode, member or leaf | FR-322-AC-117 |
-| OO-02 | `quire.op.collection.sequence.drop_first` over a `Set<Integer>[0,9]` operand and over a `Bag<Integer>[0,9]` operand; `quire.op.collection.ordered_set.drop_first` over a `Sequence<Integer>[0,9]` operand; `quire.op.collection.sequence.drop_first` over two operands | `ill_typed`/`operator-ineligible` | FR-322-AC-117 |
-| OO-03 | `quire.op.collection.remove_one` over `Bag<Text[0,8;nfc]>[0,9]` and a `Text[0,8;nfc]` value; over `Set<Float64[nearest-even]>[0,9]` and a `Float64[nearest-even]` value; over `Sequence<Integer>[0,9]` and an `Integer` value | Admitted with the empty-path `nfc` text leaf, the empty-path `ieee_profile` float leaf with mode `null`, and no leaf | FR-322-AC-117 |
+| OO-01 | `filament.op.collection.sequence.drop_first` over a `Sequence<Integer>[0,9]` operand and `filament.op.collection.ordered_set.drop_first` over an `OrderedSet<Integer>[0,9]` operand, each with `result_type` of the operand's family and bound `[0,8]` | Identities enumerated by both schemas; applications admitted with no law, mode, member or leaf | FR-322-AC-117 |
+| OO-02 | `filament.op.collection.sequence.drop_first` over a `Set<Integer>[0,9]` operand and over a `Bag<Integer>[0,9]` operand; `filament.op.collection.ordered_set.drop_first` over a `Sequence<Integer>[0,9]` operand; `filament.op.collection.sequence.drop_first` over two operands | `ill_typed`/`operator-ineligible` | FR-322-AC-117 |
+| OO-03 | `filament.op.collection.remove_one` over `Bag<Text[0,8;nfc]>[0,9]` and a `Text[0,8;nfc]` value; over `Set<Float64[nearest-even]>[0,9]` and a `Float64[nearest-even]` value; over `Sequence<Integer>[0,9]` and an `Integer` value | Admitted with the empty-path `nfc` text leaf, the empty-path `ieee_profile` float leaf with mode `null`, and no leaf | FR-322-AC-117 |
 | OO-04 | OO-03's `Sequence<Integer>[0,9]` application with a `Text[0,8;nfc]` value, with one operand and with `result_type` `Set<Integer>[0,9]`; OO-01's applications with a `text_profile` law, a `rounding` mode or a `field` member | `ill_typed`/`operator-ineligible`; `invalid_package`/`operation-law-mismatch`, `operation-mode-mismatch` and `operation-member-mismatch` | FR-322-AC-117 |
 
 ### Node dependency vectors
@@ -525,7 +525,7 @@ order, a repeated `refinement` and a repeated spelling.
 
 Check a compiler-derived node: a refinement owner with step rows `R0` and `R1` from which one node per row is derived; require the node derived from `R1` to have an occurrence of role `generated`, ordinal 1 and the region of `R1`'s source row, and the same after swapping the source order of the rows (FR-322-AC-87).
 
-Scan every published producer-output package (every published positive package except the reader-admission fixture `positive-integer-literal-references.json`) for the applications of `quire.op.integer.add`, `sub`, `mul`, `negate`, `eq` and `ne`: require each integer literal operand typed at the builtin Integer node to be an inline `literal` term and no such operand to reference a `value`/`literal` node, and require the `three` application of the two-owner packages and the `integer.mul` and `integer.add` applications of the operation package to hold their operands inline, and the `7` and `-2` literal nodes to be present (FR-322-AC-92). For each operator the rule lists in FR-322 "Integer literal operands", require an `inline_literal_cases` entry, and no entry for an operator the rule omits. Read `positive-integer-literal-references.json`, the reference form of the `three` application, through the reader: it is admitted, and its `three` node differs from the inline form's (FR-322-AC-93).
+Scan every published producer-output package (every published positive package except the reader-admission fixture `positive-integer-literal-references.json`) for the applications of `filament.op.integer.add`, `sub`, `mul`, `negate`, `eq` and `ne`: require each integer literal operand typed at the builtin Integer node to be an inline `literal` term and no such operand to reference a `value`/`literal` node, and require the `three` application of the two-owner packages and the `integer.mul` and `integer.add` applications of the operation package to hold their operands inline, and the `7` and `-2` literal nodes to be present (FR-322-AC-92). For each operator the rule lists in FR-322 "Integer literal operands", require an `inline_literal_cases` entry, and no entry for an operator the rule omits. Read `positive-integer-literal-references.json`, the reference form of the `three` application, through the reader: it is admitted, and its `three` node differs from the inline form's (FR-322-AC-93).
 
 Check the refinement step occurrences of `refinement-step-occurrence-vectors.json`: `RS-01` (admitted, with an entry of another node ignored) and `RS-02` (the same rows written in the other source order, so `steps` and the region of each ordinal follow that order) are admitted with ordinal 0 at the `declaration` region and ordinal `i + 1` at the region of the row at `steps` position `i` (FR-322-AC-88, FR-322-AC-89). Each case carries an independent `refinement_step_rows` entry for each step position in declaration order, including the ineligible cases. `RS-03` (ordinal 3), `RS-04` (a repeated key), `RS-05` (ordinal 1 with the other row's region), `RS-06` (an `expression` occurrence at ordinal 1) and `RS-07` (a `declaration` occurrence at ordinal 1) are each refused `invalid_package`/`invalid-value` at the offending `source_map` entry, and `RS-08` (ordinal 2 omitted), `RS-09` (the `declaration` occurrence omitted) and `RS-10` and `RS-11` (`generated` ordinals 0 and 1 omitted) at `/source_map` (FR-322-AC-90); `RS-12` (a history field, `declaration` alone) and `RS-16` (the `Counter` rows `value` and `total` written in the other order) are admitted, and `RS-13` (an `any` row), `RS-14` (a hidden field: the abstract `Counter` has fields `total` and `value` and the `objects` entry has a row for `value` alone), `RS-15` (a history field with a `generated` entry) and `RS-17` (two `objects` entries of which only the second has a hidden field) are each refused at their first `generated` entry (FR-322-AC-91). `RS-18` omits the sidecar and `RS-21` omits one row, both refusing at `/refinement_step_rows`; `RS-19` names a non-owner, `RS-20` repeats an owner/ordinal pair, `RS-23` is withdrawn (the sidecar has no entry-order rule) and `RS-24` names an out-of-range ordinal, each of `RS-19`, `RS-20` and `RS-24` refusing at the offending sidecar entry. `RS-22` changes only the first sidecar region and refuses at generated ordinal 1's `source_map` entry while retaining the same node and package identities (FR-322-AC-128/129).
 
@@ -606,7 +606,7 @@ first FR-341 state-step refusal.
 | XT-04 | `pre` holding the precondition twice; `subject` an empty aggregate | Fails the schema | FR-341-AC-15 |
 | XT-05 | Law role `temporal_profile`; a `rounding` mode; occurrence role `declaration` | Fails the schema | FR-341-AC-15 |
 | XT-06 | Member operator `sequence` on the transition (XT-05 covers the law, mode and occurrence cases) | Fails the schema at the member operator (`malformed_wire` in a complete reader); see XT-19 for the operation step alone | FR-341-AC-15; FR-341-AC-19; FR-464-AC-19 |
-| XT-07 | A `quire.op.protocol.control` application naming operator `transition` | Fails the schema at the member operator (`malformed_wire` in a complete reader); see XT-20 for the operation step alone | FR-341-AC-19; FR-464-AC-19 |
+| XT-07 | A `filament.op.protocol.control` application naming operator `transition` | Fails the schema at the member operator (`malformed_wire` in a complete reader); see XT-20 for the operation step alone | FR-341-AC-19; FR-464-AC-19 |
 | XT-08 | The anchor's `operation` rewritten | The anchor, both clauses and the transition take new ids | FR-341-AC-17 |
 | XT-09 | A source-map region moved | Every node id unchanged | FR-341-AC-17 |
 | XT-10 | `anchor` naming the `Switch` model node | `invalid_model_binding`/`malformed-declaration` at the anchor's target | FR-341-AC-16 |
@@ -622,16 +622,16 @@ first FR-341 state-step refusal.
 | XT-20 | XT-07's edited document given to the operation step alone | `invalid_package`/`operation-member-mismatch` at the application | FR-341-AC-19; FR-464-AC-19 |
 
 XT-10 through XT-15 and XT-17 are reader outcomes the QSpec crate does not
-implement; the quire-contract-ir reader owns their execution evidence.
+implement; the filament-contract-ir reader owns their execution evidence.
 
 The QSpec crate executes XT-01 through XT-09, XT-16, XT-18, XT-19 and XT-20:
 the schema refusals (XT-02 through XT-06 and XT-07, each against the published
 `schema.json`) and the operation step alone
 (XT-19, XT-20). The `malformed_wire` code and its locus for XT-06 and XT-07
-are reader outcomes the quire-contract-ir reader owns; the crate proves only
-that the schema refuses. How QSL's first transition emitter chooses among
-several pre or post clauses is QSL-owned and OPEN (QSL-1163, e38), so XT-01
-through XT-20 do not close the QSL-authored part of IR-1052 AC-7.
+are reader outcomes the filament-contract-ir reader owns; the crate proves only
+that the schema refuses. How FSL's first transition emitter chooses among
+several pre or post clauses is FSL-owned and OPEN (QSL-1163, e38), so XT-01
+through XT-20 do not close the FSL-authored part of IR-1052 AC-7.
 
 ### Node id ordinal bound vectors
 
@@ -662,7 +662,7 @@ through XT-20 do not close the QSL-authored part of IR-1052 AC-7.
 | NI-10 | `source_map` entry `2`'s `node_id` naming `{"node": 4}` | `malformed_wire` at `/source_map/2/node_id/path/3/node` | FR-322-AC-279 |
 | NI-11 | node `2`'s row as `[2]`, itself | `malformed_wire` at `/semantic_graph/nodes/2/node_id/path/3/operand` | FR-322-AC-280 |
 | NI-12 | node `0`'s path extended with `{"operand": 0}` and its row as `[2]`, so `0` and `2` name each other | `malformed_wire` at `/semantic_graph/nodes/0/node_id/path/2/operand`, the first slot on the cycle by holding node | FR-322-AC-280 |
-| NI-13 | built by the test: a `semantic_graph.nodes` array of the Integer node and a chain of `n` derived `expression`/`application` nodes, chain node `k + 1` having the path `["expression", "application", "quire.op.integer.negate", {"operand": 0}]` and the row `[k]`, for `n` = 100 and `n` = 100,000 | Node ids of at most 200 bytes per node and one maximum JSON nesting depth for both lengths; the 100,000-node text parses under a nesting limit of 128; the operand checks admit it, every chain node has the same bytes, and the 100,001 rebuilt keys are distinct, each chain node's key ending with its predecessor's key | FR-322-AC-281 |
+| NI-13 | built by the test: a `semantic_graph.nodes` array of the Integer node and a chain of `n` derived `expression`/`application` nodes, chain node `k + 1` having the path `["expression", "application", "filament.op.integer.negate", {"operand": 0}]` and the row `[k]`, for `n` = 100 and `n` = 100,000 | Node ids of at most 200 bytes per node and one maximum JSON nesting depth for both lengths; the 100,000-node text parses under a nesting limit of 128; the operand checks admit it, every chain node has the same bytes, and the 100,001 rebuilt keys are distinct, each chain node's key ending with its predecessor's key | FR-322-AC-281 |
 | NI-14 | built by the test: `positive-dependency-call.json` reversed with its operand rows and document-held index segments rewritten; the id of its imported `Int[0, 9]` (`package` `test/predicates`) written as a document-held id, operand `{"node": 3}`, into a request-style document whose package is that reversed importer | Rebuilt against the importer's graph, the key equals `positive-dependency-library.json`'s `Int[0, 9]` key; index `3` of the library's graph is `Int[0, 9]` itself, so resolving by the id's `package` would be a self-cycle | FR-322-AC-282 |
 | NI-15 | `operand_rows` entry `3` removed | `malformed_wire` at `/semantic_graph/operand_rows` | FR-322-AC-393 |
 | NI-16 | node `2`'s segment as the index segment `{"node": 0}` | `malformed_wire` at `/semantic_graph/nodes/2/node_id/path/3/node` | FR-322-AC-393 |
@@ -711,7 +711,7 @@ the schema and admitted or refused by the order rule with exactly its
 recorded outcome and loci. The new closure vectors record the diamond's two
 dependency paths and its `invalid_package`/`conflicting-definition` refusal,
 and the transitive-only reference's `missing_declaration`/`missing-selection`
-refusal. The quire-contract-ir reader implements both outcomes: its diamond
+refusal. The filament-contract-ir reader implements both outcomes: its diamond
 test refuses conflicting transitive selections with both importer-rooted
 selection paths, and its transitive-reference test refuses a transitive-only
 package as `missing_declaration`/`missing-selection`. A `dependency_reference`
@@ -800,7 +800,7 @@ PL-R1-duplicate-term carries a `protocol_attempt` origin (FR-322-AC-313..318). `
 FR-322-AC-319 to FR-322-AC-341 and FR-272-AC-26 are retired (source-byte integrity removed); no published package carries a `source_integrity` member and no test checks one.
 
 Temporal clause names and per-occurrence clock bindings (FR-322 "Temporal clause names"
-and "Temporal clock bindings", IR-1278, QSL FR-515 `name()` and `clock()`, FR-518 row 8):
+and "Temporal clock bindings", IR-1278, FSL FR-515 `name()` and `clock()`, FR-518 row 8):
 `temporal-clause-name-vectors.json` over `positive-timed-clause-nodes.json` admits CN-P1
 (one named clause), CN-P2 (a shared node, two occurrences, two names, two binding rows)
 and CN-P3 (rename, identity unchanged); refuses CN-S1..CN-S8 in the closed schema

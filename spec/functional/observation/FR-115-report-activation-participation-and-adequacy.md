@@ -3,17 +3,17 @@ id: FR-115
 title: "Report observation adequacy without promoting missing evidence"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-245
+  - target: ix://agent-ix/filament-specification/FR-245
     type: references
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: references
-  - target: ix://agent-ix/quire-specification/FR-281
+  - target: ix://agent-ix/filament-specification/FR-281
     type: references
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: references
 ---
 ## Description
@@ -96,9 +96,9 @@ supplied as source values.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [B's reviewed FR-061 result contract](../protocol/FR-061-report-orthogonal-results.md) owns assessment execution, independent decision-scope and surrounding-execution progress and closure, the fifth typed complete-global-conformance closure record, settlement basis, decision support, and result-combination semantics.
-- [B's FR-007 result contract](ix://agent-ix/quire-verification/FR-007) owns independent execution, activation, observation, participation, assumption, logical, and provenance findings; Quoin retains evidence authority.
+- [B's FR-007 result contract](ix://agent-ix/filament-verification/FR-007) owns independent execution, activation, observation, participation, assumption, logical, and provenance findings; Quoin retains evidence authority.
 - [FR-285](../../objects/protocol/FR-285-participation-fact.md) defines the
   canonical source participation value object and its projection boundary.
 

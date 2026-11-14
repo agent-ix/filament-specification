@@ -3,7 +3,7 @@ id: TC-052
 title: "Preserve bounded causal control"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: verifies
 ---
 ## Description

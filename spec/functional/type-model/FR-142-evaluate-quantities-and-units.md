@@ -3,19 +3,19 @@ id: FR-142
 title: "Evaluate dimensions, quantities and exact unit conversions"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-140
+  - target: ix://agent-ix/filament-specification/FR-140
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
 ---
 
@@ -162,7 +162,7 @@ names no base dimension, so it creates no base-dimension obligation.
 
 The checker SHALL admit no unit mapping of a refused dimension. A refusal
 refuses the package, as every other refusal of this requirement does, and the
-`quire.checked-package/v2` strict reader refuses the same shapes, as an
+`filament.checked-package/v2` strict reader refuses the same shapes, as an
 already-built package, with `invalid_semantic_graph` (FR-322), not with these causes.
 
 A unit is affine exactly when the offset of its composed mapping to the
@@ -249,7 +249,7 @@ multiplication or division produced is negated in that compound unit. Negation
 has no zero divisor, no undefined condition and no range obligation, because a
 quantity magnitude has no bound. The operand of an affine unit refuses
 `ill_typed` at type checking before any charge, as every other arithmetic on an
-affine unit does. The operation lowers to `quire.op.quantity.negate` (FR-322).
+affine unit does. The operation lowers to `filament.op.quantity.negate` (FR-322).
 
 **Carried quantity.** `Quantity<u, C>` is the type of the quantities whose
 unit is `u` and whose magnitude is a value of the numeric carrier `C`, which is
@@ -327,7 +327,7 @@ result type is `N`.
 - When the summand `e` has the type `N` itself (the unit `u`, the carrier `C`
   with the same bounds, and the same mode), the checker SHALL admit the sum
   with result type `N` and SHALL lower it to
-  `quire.op.collection.sum.carried_quantity` (FR-322 "Carried-quantity sum").
+  `filament.op.collection.sum.carried_quantity` (FR-322 "Carried-quantity sum").
 - When `e` has any other type, the checker SHALL refuse
   `ill_typed`/`type-mismatch` at `e` before any charge: `Quantity<u>`, a carried
   type of another unit, of another carrier bound or of another mode, and a bare
@@ -336,7 +336,7 @@ result type is `N`.
   carried type are summed into `N` by converting each one,
   `sum<N>(x in c: convert<Quantity<u, C>>(x))`, which "Carried quantity" above
   decides per summand.
-- When `N` names `Quantity<u>`, the sum is `quire.op.collection.sum.quantity`,
+- When `N` names `Quantity<u>`, the sum is `filament.op.collection.sum.quantity`,
   and the checker SHALL refuse a carried summand `ill_typed`/`type-mismatch` at
   `e`; the sum of the exact magnitudes is written
   `sum<N>(x in c: convert<Quantity<u>>(x))`.
@@ -382,7 +382,7 @@ over the magnitudes in the unit `u`, with no unit edge, in these steps:
    `u`.
 
 Each addition charges the unit addition schedule with the carrier as its
-target (`quire.value.accounting/v1` "Collection sum schedule"): two
+target (`filament.value.accounting/v1` "Collection sum schedule"): two
 `unit.identity-read`, no `unit.edge`, one `unit.rational-arithmetic`,
 `unit.target-domain` sized for `C` as a conversion into `C` is sized, the
 uncharged membership decision, then `unit.result-retain`.
@@ -401,17 +401,17 @@ a checked source type forms is a separate thing: the I04
 forwarding", identified by FR-322's structural node id, whose terms follow
 this order. Neither identity is derived from the other. The value
 identity's closed schema and vectors are selected
-by `quire.value.complete/v1`. An explicit later conversion may select a
+by `filament.value.complete/v1`. An explicit later conversion may select a
 compatible declared I04 unit; multiplication never guesses one from a matching
 name or scale. For an integer exponent, `x^0` is exactly one for every `x`,
 including zero, and a zero base under a negative exponent is undefined.
 Integer power is written `e ^ n` with `n` a `signed-int` literal (the shared
 grammar's complete-V1 `power` production); its result unit is the power
 result unit of FR-322 "Quantity integer power", a compound unit for every
-`n`, and it lowers to `quire.op.quantity.pow` (FR-322).
+`n`, and it lowers to `filament.op.quantity.pow` (FR-322).
 All identity reads, traversed edges, exact rational operations, target-domain
 checks and result retention use the named points in
-`quire.value.accounting/v1`, in its unit schedule: operand identity reads, then
+`filament.value.accounting/v1`, in its unit schedule: operand identity reads, then
 the runtime undefined conditions, then every edge charge, then the rational
 events, then the target domain and result retention.
 
@@ -695,7 +695,7 @@ the element of `Option` and of the collection types, and the target of
   `Rational[..]`). It SHALL lower
   `Quantity<u, C>` to the anonymous `scalar_type`/`carried_quantity` node of
   FR-322 "Derived type forms and forwarding", and `convert<Quantity<u, C>>(e)`
-  to `quire.op.quantity.convert` whose `result_type` is that node and whose
+  to `filament.op.quantity.convert` whose `result_type` is that node and whose
   `rounding` mode is the carrier's.
 - The checker SHALL lower a quantity literal to a checked-package `literal` term
   of `value_kind` `quantity` typed by the unit's node.
@@ -714,7 +714,7 @@ the element of `Option` and of the collection types, and the target of
 | FR-142-AC-5 | Exact affine conversion composes through the unique canonical root; arithmetic on a unit with a nonzero composed offset refuses; quantity ordering compares root values. | Test (TC-187) |
 | FR-142-AC-6 | Multiplication, division and integer power produce the exact value in the canonical compound-unit identity, including dimensionless cancellation, `0^0 = 1` and an undefined zero base under a negative exponent. | Test (TC-187) |
 | FR-142-AC-7 | Exact-bound accounting succeeds and denial of a named next unit charge returns incomplete without a partial quantity or compound identity; every schedule boundary, including decimal-target rounding and membership, occurs at its defined charge position. | Test (TC-187) |
-| FR-142-AC-8 | The published `quire.value.compound-unit/v1` schema and vectors fix the compound-unit value identity: each vector is schema-valid, and its terms name admitted root-unit node ids with nonzero exponents in strictly ascending node-id order; each authored noncanonical mutation, including a `-0` exponent, is refused by exactly its named schema or semantic check. | Test (TC-233) |
+| FR-142-AC-8 | The published `filament.value.compound-unit/v1` schema and vectors fix the compound-unit value identity: each vector is schema-valid, and its terms name admitted root-unit node ids with nonzero exponents in strictly ascending node-id order; each authored noncanonical mutation, including a `-0` exponent, is refused by exactly its named schema or semantic check. | Test (TC-233) |
 | FR-142-AC-9 | Equality or ordering of quantities in distinct units refuses `ill_typed` before any charge, while identical-unit equality and ordering compare exact root values after the left and then the right root path. | Test (TC-187) |
 | FR-142-AC-10 | A conversion with a compound side compares normalized base-dimension maps, traverses only the declared side's root path, and admits a declared-to-compound-to-declared pivot in two explicit steps. | Test (TC-187) |
 | FR-142-AC-11 | With the dimension `T`, the unit `s` (root of `T`) and the unit `ms` (target `s`, scale `1/1000`), a function `f(d: Quantity<ms>)` called as `f(3 ms)` admits the argument `3 ms` and refuses `f(3 s)` with `ill_typed`/`type-mismatch` at the argument; `d: Quantity<T>` (a dimension) and `d: Quantity<nothing>` each refuse `missing_declaration`/`missing-name` at the name, and a bare `d: ms` refuses `missing_declaration`/`missing-name` at `ms`. | Test (TC-187) |
@@ -736,10 +736,10 @@ the element of `Option` and of the collection types, and the target of
 | FR-142-AC-27 | `Quantity<u, C>` is a distinct type from `Quantity<u>` and from every carried type of another unit, carrier bound or mode: a `Quantity<u, C>` where `Quantity<u>` is required, the reverse, and a carried quantity as an operand of quantity addition, subtraction, negation, multiplication, division, power, equality or ordering each refuse `ill_typed`/`type-mismatch` at the expression before any charge, while `convert<Quantity<u'>>(e)` of a carried quantity of the same dimension is admitted and of another dimension refuses `ill_typed` by incompatible dimensions (TC-187 U41). A carrier that is not a bounded `Int[..]`, `Decimal[..]` or `Rational[..]` (`Integer`, `Decimal`, `Rational`, `Text[..]`, a record) refuses `ill_typed`/`type-mismatch` at the carrier. | Test (TC-187) |
 | FR-142-AC-28 | Converting into a `Quantity<u, C>` under mode `exact` admits exactly the values the carrier holds and refuses every other exact value `refused { code: inexact_conversion, cause: inexact-conversion }` at the `convert` node, retaining the carrier as `expected`, before `unit.target-domain` and with no value: U07 (`1 in` into `Decimal[-100, 100; 2, 2; exact]` at scale two refuses, `25 cm` converts to `(25, 2) m`), U16 (the same refusal after one read, one edge and two rational events, four work units, under work limit six and under work limit four, where it is still refused and not incomplete) and U29 (`1 in` into `Int[-2, 2]` refuses likewise, `2 m` converts). The vectors are `quantity-carrier-vectors.json` `CQ-E01`, `CQ-E02`, `CQ-E07`, `CQ-E08`, `CQ-E12` and `CQ-E13`, with `CQ-E20` for a carrier whose `smin` is below `smax` (TC-187 U42). | Test (TC-187) |
 | FR-142-AC-29 | A conversion whose exact value is on the carrier's grid but outside its bounds, after rounding under a non-`exact` mode, refuses `decimal_out_of_domain` (a `Decimal` carrier) or `integer_out_of_domain` (an `Int` carrier) with `outside-domain` after `unit.target-domain` and before `unit.result-retain`, publishing no value (or returns `incomplete` where the charge is denied, as TC-187 U43 lists): U08 (`-2 m` and `2 m` into `Decimal[-2, 2; 0, 0; exact]` succeed, `-3 m` and `3 m` refuse), U17 (`3 m` refuses by membership under work limit two and is `incomplete` at `unit.target-domain` under work limit one), U18 (`1 m` into `Decimal[0, 1; 0, 4294967295; exact]` is `incomplete` at `unit.target-domain` for `decimal_digits` with the retained coefficient never materialized) and U29 (`3 m` into `Int[-2, 2]`). An inexact value that is also out of bounds refuses `inexact_conversion` first (TC-187 U43). | Test (TC-187) |
-| FR-142-AC-30 | The rounding mode of a carried quantity is the mode of its carrier and no operation supplies another: a `Decimal` carrier's mode is its own, an `Int` carrier's is as written (`exact` when omitted), a non-`exact` mode rounds under FR-140 with a `DecimalLoss` record and a conversion never rounds under a mode its target type does not name. The nearest-even outcomes of U07, U16 and U29 are unchanged by this requirement (TC-187 U44); `CQ-E17` to `CQ-E19` (rounding precedes the bounds check) give their carried forms. A record or collection holding a carried quantity compares it by exact value in its identical type like any quantity leaf (FR-149); `quire.op.collection.sum.quantity` is defined over `Quantity<u>` only, and a carried summand is summed only by `quire.op.collection.sum.carried_quantity`, whose mode is its carrier's and which never rounds (FR-142-AC-33 to FR-142-AC-38). | Test (TC-187) |
+| FR-142-AC-30 | The rounding mode of a carried quantity is the mode of its carrier and no operation supplies another: a `Decimal` carrier's mode is its own, an `Int` carrier's is as written (`exact` when omitted), a non-`exact` mode rounds under FR-140 with a `DecimalLoss` record and a conversion never rounds under a mode its target type does not name. The nearest-even outcomes of U07, U16 and U29 are unchanged by this requirement (TC-187 U44); `CQ-E17` to `CQ-E19` (rounding precedes the bounds check) give their carried forms. A record or collection holding a carried quantity compares it by exact value in its identical type like any quantity leaf (FR-149); `filament.op.collection.sum.quantity` is defined over `Quantity<u>` only, and a carried summand is summed only by `filament.op.collection.sum.carried_quantity`, whose mode is its carrier's and which never rounds (FR-142-AC-33 to FR-142-AC-38). | Test (TC-187) |
 | FR-142-AC-31 | `Quantity<m, Rational[-3, 7; 1, 12]>` is a carried quantity type whose mode is `exact`, distinct from `Quantity<m>`, from `Quantity<m, Rational[-3, 7; 1, 13]>` and from `Quantity<cm, Rational[-3, 7; 1, 12]>`, and refused as an operand of quantity arithmetic, equality and ordering as FR-142-AC-27 states, while `convert<Quantity<m>>` of two of its values compares them by `=` and `<`; `Quantity<m, Rational>` refuses `ill_typed`/`type-mismatch` at the carrier, and `Quantity<m, Rational[8, 7; 1, 12]>` and `Quantity<m, Rational[0, 7; 0, 12]>` refuse `ill_typed` at the carrier (FR-149 "Bounded rationals"). Converting into it, `25 cm` gives `1/4 m` and `-3 m` gives `-3 m`; `1 in`, `8 m` and `-4 m` refuse `rational_out_of_domain`/`outside-domain` after `unit.target-domain` and before `unit.result-retain`, with no value, and `8 m` under work limit one is `incomplete` at `unit.target-domain`; no conversion into it refuses `inexact_conversion`; `convert<Quantity<cm>>` of the `1/4 m` value gives `25 cm` (`CQ-W16` to `CQ-W19`, `CQ-E21` to `CQ-E26`). | Test (TC-981) |
 | FR-142-AC-32 | A checked-package conversion from `3/2 m` to the bounded result `Quantity<m>[-1, 1]` refuses `rational_out_of_domain`/`outside-domain` at `/semantic_graph/nodes/{n}/body/result_type`, with `expected` equal to `Quantity<ix://acme/rpc/unit/m>[-1/1, 1/1]` using the target unit's exact FR-154 identity and canonical reduced rational spellings; no converted magnitude is retained. The source language still has no `Quantity<u>[min,max]` type syntax: FR-154 unit bounds supply the target and FR-322 preserves it as `bounded_quantity`. | Test (TC-280) |
-| FR-142-AC-33 | With `type Li = Quantity<m, Int[-5, 5]>;`, `sum<Li>(x in q: x)` over `q: Sequence<Li>[0,3]` is admitted with result type `Li` and lowers to `quire.op.collection.sum.carried_quantity`; the same sum over a `Sequence` of `Quantity<m, Int[-5, 5; nearest-even]>`, of `Quantity<m, Int[-4, 4]>`, of `Quantity<cm, Int[-5, 5]>`, of `Quantity<m>` and of `Int[-5, 5]` each refuses `ill_typed`/`type-mismatch` at the summand before any charge; with `type Lm = Quantity<m>;`, `sum<Lm>(x in q: x)` over `Sequence<Li>[0,3]` refuses the same, while `sum<Lm>(x in q: convert<Quantity<m>>(x))` is admitted as `quire.op.collection.sum.quantity` and `sum<Li>(x in p: convert<Quantity<m, Int[-5, 5]>>(x))` over `p: Sequence<Quantity<m, Int[-2, 2]>>[0,3]` is admitted (TC-187 U45). | Test (TC-187) |
+| FR-142-AC-33 | With `type Li = Quantity<m, Int[-5, 5]>;`, `sum<Li>(x in q: x)` over `q: Sequence<Li>[0,3]` is admitted with result type `Li` and lowers to `filament.op.collection.sum.carried_quantity`; the same sum over a `Sequence` of `Quantity<m, Int[-5, 5; nearest-even]>`, of `Quantity<m, Int[-4, 4]>`, of `Quantity<cm, Int[-5, 5]>`, of `Quantity<m>` and of `Int[-5, 5]` each refuses `ill_typed`/`type-mismatch` at the summand before any charge; with `type Lm = Quantity<m>;`, `sum<Lm>(x in q: x)` over `Sequence<Li>[0,3]` refuses the same, while `sum<Lm>(x in q: convert<Quantity<m>>(x))` is admitted as `filament.op.collection.sum.quantity` and `sum<Li>(x in p: convert<Quantity<m, Int[-5, 5]>>(x))` over `p: Sequence<Quantity<m, Int[-2, 2]>>[0,3]` is admitted (TC-187 U45). | Test (TC-187) |
 | FR-142-AC-34 | A carried sum over `Li` is FR-145's left fold over exact magnitudes in the summand's unit charging the unit addition schedule with the carrier as target: `2 m, -1 m, 3 m` is `4 m` after fourteen work units and three result units, and is `incomplete` at `collection.result-retain` under thirteen work units and at `unit.rational-arithmetic` under `integer_bits` three (TC-187 U46). | Test (TC-187) |
 | FR-142-AC-35 | A carried sum decides the carrier's bounds after every addition, not at the end: over `Li`, `3 m, 3 m, -2 m` is a located undefined outcome at the second summand's addition with no later charge, never `integer_out_of_domain`; `5 m, 0 m` is `5 m` and `-3 m, -2 m` is `-5 m`; a linked sum over `Sequence<Li>[0,3]` refuses `undefined_expression`/`unproved-range` while one over `Sequence<Li>[0,1]` is admitted (TC-187 U47). | Test (TC-187) |
 | FR-142-AC-36 | An empty carried sum is the carrier's zero in the unit: over `Li` it is `0 m` after one scalar retain; over `Quantity<m, Int[1, 5]>` it is a located undefined outcome with no charge, its linked sum over a `Sequence<Quantity<m, Int[1, 5]>>[0,1]` source refusing `undefined_expression`/`unproved-range` and over a `[1,1]` source admitted (TC-187 U48). | Test (TC-187) |
@@ -750,7 +750,7 @@ the element of `Option` and of the collection types, and the target of
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

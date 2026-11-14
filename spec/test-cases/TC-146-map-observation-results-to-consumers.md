@@ -3,7 +3,7 @@ id: TC-146
 title: "Map observation results to consumers"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: verifies
 ---
 ## Description

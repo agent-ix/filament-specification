@@ -3,9 +3,9 @@ id: TC-381
 title: "Per-trigger activation and the instance budget"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-428
+  - target: ix://agent-ix/filament-specification/FR-428
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: verifies
 ---
 
@@ -38,7 +38,7 @@ The first instance takes the gate and finishes; every later instance waits at
 item through the real local Rust boundary under each budget below, recording the
 verdict, cause, counterexample and terminal accounting record.
 
-Parse the protocol text above at S1 under the `quire.value.complete/v1` profile and require it admissible with no diagnostic.
+Parse the protocol text above at S1 under the `filament.value.complete/v1` profile and require it admissible with no diagnostic.
 
 ## Vectors
 

@@ -3,18 +3,18 @@ id: TC-117
 title: "Prove or refuse native-to-TL temporal correspondence"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: verifies
 ---
 ## Description
 
 Accepted FS04 portable differential and identity-mutation controls for the
 native temporal bridge. Contract IR FR-350/TC-461 allocate execution to the
-bridge in `quire-integration` (IR-1005); publication of this procedure is not
+bridge in `filament-integration` (IR-1005); publication of this procedure is not
 runtime or exhaustive-coverage credit.
 
 ## Test Procedure
@@ -40,7 +40,7 @@ closure, surrounding-execution progress and closure, settlement basis, one
 decision-support identity, completeness and supersession. Offer numeric,
 nullable, unavailable and pending proposition inputs.
 
-Before each projection, use the actual checked-package/v2 subject and QSL
+Before each projection, use the actual checked-package/v2 subject and FSL
 classification. Admit the same producer bytes independently a second time and
 cross-wire the original subject/classification with it; separately test an
 unchanged clone of the original admission and the original subject borrow.

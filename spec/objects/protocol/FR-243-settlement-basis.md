@@ -4,11 +4,11 @@ title: "Settlement basis vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
 ---
 # FR-243: Settlement basis vocabulary
@@ -72,7 +72,7 @@ the supplied `unavailable` value.
   establish the decisive-settlement and closed-boundary conditions.
 - [FR-115](../../functional/observation/FR-115-report-activation-participation-and-adequacy.md)
   restates the vocabulary at the observation-result boundary.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

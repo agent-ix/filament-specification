@@ -4,17 +4,17 @@ title: "Runtime value path"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: composes
-  - target: ix://agent-ix/quire-specification/FR-265
+  - target: ix://agent-ix/filament-specification/FR-265
     type: composes
-  - target: ix://agent-ix/quire-specification/FR-274
+  - target: ix://agent-ix/filament-specification/FR-274
     type: references
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: references
-  - target: ix://agent-ix/quire-specification/FR-351
+  - target: ix://agent-ix/filament-specification/FR-351
     type: references
 ---
 # FR-207: Runtime value path
@@ -60,7 +60,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   exactly one of a named parameter binding, the result binding, or the receiver
   binding `self`. The receiver binding is the context the invocation is made
   on when that context has no declared object identity, such as a state-machine
-  context ([FR-208](FR-208-quire-meaning-vocabulary.md)); a receiver with a
+  context ([FR-208](FR-208-filament-meaning-vocabulary.md)); a receiver with a
   declared object identity is always a declared object identity subject, never
   the receiver binding. Two invocation bindings are equal exactly when they
   name one invocation and agree on binding kind and, for a parameter, on the
@@ -81,7 +81,7 @@ Each traversal step is exactly one of six kinds:
 
 | Step kind | Carries | Selects |
 | --- | --- | --- |
-| field selection | the exact declared field spelling | a declared field of a record value, or of a state-machine context ([FR-208](FR-208-quire-meaning-vocabulary.md)) |
+| field selection | the exact declared field spelling | a declared field of a record value, or of a state-machine context ([FR-208](FR-208-filament-meaning-vocabulary.md)) |
 | option-value selection | no name | the contained value of an option |
 | member selection | the exact declared member spelling | a declared member of a declared object, selected from a declared object identity or from the object a reference names |
 | index selection | an unsigned integer position | the element at that zero-based position of a collection value |
@@ -236,7 +236,7 @@ spelling; display renderings remain non-normative.
   kinds; [FR-046](../../functional/foundation/FR-046-validate-state-invocation-inputs.md)
   supplies the other and establishes that an absent input remains unavailable
   "without fabricating a delta, violation or Boolean" (FR-046-AC-4).
-- [FR-208](FR-208-quire-meaning-vocabulary.md) is the source of the receiver
+- [FR-208](FR-208-filament-meaning-vocabulary.md) is the source of the receiver
   binding `self`: its State-machine context anchors bind a context with no
   declared object identity as the receiver of an invocation.
 - [FR-265](../observation/FR-265-selected-snapshot.md) types the selected
@@ -254,7 +254,7 @@ spelling; display renderings remain non-normative.
   establishes that member spellings are retained exactly.
 - [FR-274](FR-274-diagnostic-location-kind.md) holds the three location kinds
   distinct.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 
 ## Status
 

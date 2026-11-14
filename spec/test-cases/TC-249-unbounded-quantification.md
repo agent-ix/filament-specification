@@ -3,7 +3,7 @@ id: TC-249
 title: "Unbounded quantification negotiation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-346
+  - target: ix://agent-ix/filament-specification/FR-346
     type: verifies
 ---
 

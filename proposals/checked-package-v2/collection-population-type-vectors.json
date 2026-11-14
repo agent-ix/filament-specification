@@ -1,6 +1,6 @@
 {
-  "version": "quire.collection-population-type-vectors/v1",
-  "note": "TC-189/TC-247: collection and population structural node keys. QSL's checked-package emitter confirmed the expanded keys. node_keys stores reusable structural NodeIds; nested operands use {node_key_ref} references to share each key without copying it.",
+  "version": "filament.collection-population-type-vectors/v1",
+  "note": "TC-189/TC-247: collection and population structural node keys. FSL's checked-package emitter confirmed the expanded keys. node_keys stores reusable structural NodeIds; nested operands use {node_key_ref} references to share each key without copying it.",
   "node_keys": {
     "integer": {
       "ordinal": 0,

@@ -1,5 +1,5 @@
 [package]
-name = "quire-specification-qualification"
+name = "filament-specification-qualification"
 version = "0.0.0"
 edition = "2024"
 rust-version = "1.98"
@@ -10,11 +10,11 @@ description = "Authored definition documents by reference, plus qualification te
 # The library has no dependencies, so a git-dependency consumer builds only the
 # authored bytes it exposes; everything below is dev-only qualification.
 [lib]
-name = "quire_specification"
+name = "filament_specification"
 path = "src/lib.rs"
 
 [dev-dependencies]
-quire-verification-contracts = { git = "https://github.com/agent-ix/quire-verification-contracts", branch = "main" }
+filament-verification-contracts = { git = "https://github.com/agent-ix/filament-verification-contracts", branch = "main" }
 jsonschema = { version = "=0.55.0", default-features = false }
 serde_json = "=1.0.151"
 num-bigint = "=0.4.8"

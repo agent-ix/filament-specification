@@ -3,15 +3,15 @@ id: FR-435
 title: "Classify memory accesses, orderings and fences"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: references
 ---
 
@@ -43,7 +43,7 @@ with shape `multi-location`, `join-policy` or `ordering-mismatch`.
 
 ### Orderings and fences
 
-The [shared grammar](../../../proposals/quire-v1/shared-grammar.md)'s `event-node`, `memory-order`, `fence` and
+The [shared grammar](../../../proposals/filament-v1/shared-grammar.md)'s `event-node`, `memory-order`, `fence` and
 `fence-order` productions carry the forms below.
 
 An `attempt` inside a `parallel` may carry `ordering o`. An attempt with no
@@ -189,13 +189,13 @@ current-view message.
   footprints.
 - [FR-434](FR-434-select-memory-models-for-parallel.md) owns the resolved
   model and the observation and write contributions.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns the
   `event-node`, `control`, `fence`, `memory-order` and `fence-order`
   productions.
 
 ## References
 
-- Design: quire-spec-language ADR-025 MM-6, MA-1 to MA-6, MV-1; QSL FR-220
+- Design: filament-spec-language ADR-025 MM-6, MA-1 to MA-6, MV-1; FSL FR-220
   states the same check-time and pre-check ordering rules (FR-220-AC-2,
   FR-220-AC-14).
 - Tickets: Linear STD-138; paired QSL-372.

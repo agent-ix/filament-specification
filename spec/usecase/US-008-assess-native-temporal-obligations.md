@@ -3,19 +3,19 @@ id: US-008
 title: "Assess bounded temporal obligations without losing time meaning"
 type: US
 relationships:
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: exercises
 ---
 ## Story
@@ -64,4 +64,4 @@ dimension; it never changes the native profile to fit the available backend.
   [FR-020](../functional/foundation/FR-020-compose-native-profiles.md).
 - Observation bindings and completeness/progress assertions supplied by Agent
   F's independently owned contract.
-- The [typed predicate projection ticket](https://github.com/agent-ix/quire-contract-ir/issues/63).
+- The [typed predicate projection ticket](https://github.com/agent-ix/filament-contract-ir/issues/63).

@@ -3,7 +3,7 @@ id: TC-983
 title: "Composition carries liveness and fairness premises"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-489
+  - target: ix://agent-ix/filament-specification/FR-489
     type: verifies
 ---
 

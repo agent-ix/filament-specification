@@ -4,23 +4,23 @@ title: "Sum types and case-expression exhaustiveness"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 semantic kernel
+system: native Filament V1 semantic kernel
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-003
+  - target: ix://agent-ix/filament-specification/AD-003
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-440
+  - target: ix://agent-ix/filament-specification/FR-440
     type: realizes
-  - target: ix://agent-ix/quire-specification/FR-441
+  - target: ix://agent-ix/filament-specification/FR-441
     type: realizes
 ---
 
@@ -31,14 +31,14 @@ relationships:
 This decision extends AD-005's complete value system with one closed sum-type
 declaration and one matching expression: `union-decl` (FR-143) and the `case`
 expression (FR-146). Their unproved exhaustiveness obligation is catalogued at
-`quire.native.diagnostics/v1`. It does not introduce a new
+`filament.native.diagnostics/v1`. It does not introduce a new
 value kind outside the record/tuple/union
 composite family, a new declaration-identity scheme, or a new code family; a
 union declaration identity is the same opaque I04 `composite_type` node key
 already used for records and tuples, and an unproved `case` exhaustiveness
 obligation is one new cause of the existing `undefined_expression` code.
 
-`quire.value.complete/v1` admits unions and `case` wherever it admits records
+`filament.value.complete/v1` admits unions and `case` wherever it admits records
 and tuples, with no further selection (FR-143 "Value profile"). A union value
 has an FR-144 canonical key, so it is admitted as a set, bag or ordered-set
 element exactly when its payload types admit `=`. A `case` result type follows

@@ -3,7 +3,7 @@ id: interface_007
 title: "I07 observation authority bundle"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-325
+  - target: ix://agent-ix/filament-specification/FR-325
     type: references
 ---
 

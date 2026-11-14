@@ -1,5 +1,5 @@
 {
-  "version": "quire.checked-package-dependency-order-vectors/v1",
+  "version": "filament.checked-package-dependency-order-vectors/v1",
   "fixture": "fixtures/positive-timed-model-nodes.json",
   "cases": [
     {

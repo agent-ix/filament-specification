@@ -4,13 +4,13 @@ title: "Decision-support record"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-282
+  - target: ix://agent-ix/filament-specification/FR-282
     type: references
 ---
 # FR-248: Decision-support record
@@ -115,7 +115,7 @@ relation."
   establishes the oracle-contribution derivation and the order-preservation rule.
 - [FR-094](../../functional/temporal/FR-094-interpret-progress-history-and-closure.md)
   establishes the inside/outside decision-support distinction.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-282](FR-282-dependence-relation.md) defines the dependence relation
   vocabulary carried on this record.

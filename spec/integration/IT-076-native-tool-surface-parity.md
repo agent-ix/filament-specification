@@ -3,7 +3,7 @@ id: IT-076
 title: "Native API, CLI and authoring tools preserve parity"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-300
+  - target: ix://agent-ix/filament-specification/FR-300
     type: verifies
 ---
 
@@ -16,7 +16,7 @@ language server preserve identical subjects and dispositions.
 
 ## Target Integration
 
-QSL/CLI/editor Rust components run locally through their public APIs
+FSL/CLI/editor Rust components run locally through their public APIs
 and command/process boundaries.
 
 ## Preconditions

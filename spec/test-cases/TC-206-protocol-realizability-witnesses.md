@@ -3,7 +3,7 @@ id: TC-206
 title: "Protocol realizability witnesses"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-175
+  - target: ix://agent-ix/filament-specification/FR-175
     type: verifies
 ---
 

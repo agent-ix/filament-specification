@@ -3,9 +3,9 @@ id: TC-411
 title: "Abstraction relation declaration refusals"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-450
+  - target: ix://agent-ix/filament-specification/FR-450
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: verifies
 ---
 

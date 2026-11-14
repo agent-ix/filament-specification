@@ -3,15 +3,15 @@ id: FR-355
 title: "Check SMT/native runtime differential parity"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/FR-349
+  - target: ix://agent-ix/filament-specification/FR-349
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/NFR-070
+  - target: ix://agent-ix/filament-specification/NFR-070
     type: references
 ---
 

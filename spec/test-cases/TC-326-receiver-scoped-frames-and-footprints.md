@@ -3,11 +3,11 @@ id: TC-326
 title: "Receiver-scoped frames and footprints"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: verifies
 ---
 

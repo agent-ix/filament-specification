@@ -3,7 +3,7 @@ id: TC-231
 title: "Complete V1 qualification coverage"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: verifies
 ---
 

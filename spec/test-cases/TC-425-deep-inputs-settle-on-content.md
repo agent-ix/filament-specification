@@ -3,9 +3,9 @@ id: TC-425
 title: "Deep inputs settle on their content at every stage"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-460
+  - target: ix://agent-ix/filament-specification/FR-460
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: verifies
 ---
 

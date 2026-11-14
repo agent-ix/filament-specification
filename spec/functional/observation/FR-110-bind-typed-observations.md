@@ -3,13 +3,13 @@ id: FR-110
 title: "Bind typed observations to exact source and semantic identities"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-260
+  - target: ix://agent-ix/filament-specification/FR-260
     type: references
-  - target: ix://agent-ix/quire-specification/FR-261
+  - target: ix://agent-ix/filament-specification/FR-261
     type: references
-  - target: ix://agent-ix/quire-specification/FR-296
+  - target: ix://agent-ix/filament-specification/FR-296
     type: references
 ---
 ## Description
@@ -45,8 +45,8 @@ externally observed.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
-- [Observation binding contract](../../../proposals/quire-v1/observation-contract.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
+- [Observation binding contract](../../../proposals/filament-v1/observation-contract.md).
 - [AD-006](../../assurance/AD-006-model-graph-state-contracts.md): observed subjects are typed by the spec-declared domain declarations of the checked package; A owns source/package/profile identity.
 
 ## Status

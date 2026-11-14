@@ -3,17 +3,17 @@ id: FR-484
 title: "Check a value-validity item: clause, case and scalar operation"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-483
+  - target: ix://agent-ix/filament-specification/FR-483
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-453
+  - target: ix://agent-ix/filament-specification/FR-453
     type: references
 ---
 
@@ -53,7 +53,7 @@ The `variables` of a check input are the free `value`/`parameter` nodes the goal
 
 The goal is the clause's Boolean node. A function application inside the goal is evaluated as the callee's declared body, with the arguments bound to its parameters in order; the arm SHALL NOT treat a call as an unconstrained value, and a call is *not evaluable* exactly when the callee's declaration body is in neither the checked package nor the dependency closure the arm was given (a dependency export that carries its signature only, or a reserved intrinsic the arm does not implement), and then the arm settles the item `unsupported` with reason `call-not-evaluable`. A call whose evaluation the arm starts and cannot finish within `max_cases` is `incomplete`, never `unsupported`. A recursive call is evaluated under the callee's declared measure ([FR-146](../expressions/FR-146-check-total-pure-functions.md)); an evaluation that exhausts the arm's `max_cases` is `incomplete` `limit-reached`, not a violation.
 
-The premises are empty. Arithmetic in the clause has the semantics of its operation family: `quire.op.integer` operations are exact mathematical-integer operations ([FR-147](../expressions/FR-147-evaluate-integer-division-domains.md)), so `x + 1` over `x: Int[0, 255]` is the integer `x + 1` with no narrowing to the type of `x`, and a clause is false or undefined where the mathematics says so. Hence `x + 1 > x` holds for every `x` in `[0, 255]` and `x + 1 < 256` is false at `x = 255`. A value leaves its declared type only through a range narrowing, which FR-290 assigns to the application it narrows. The goal is *defined* when every subexpression evaluates to a value; the arm treats an undefined subexpression as a violation, `refuted` with `undefined-evaluation{where, cause}`, `where.locus` the `{node, occurrence}` of the innermost undefined subexpression, which lies in the callee's body when the undefinedness is inside a function application, and `cause` the catalogued reason the native evaluator reports for it. The call site is not a second locus; the replay evaluates the same call and reaches the same innermost subexpression.
+The premises are empty. Arithmetic in the clause has the semantics of its operation family: `filament.op.integer` operations are exact mathematical-integer operations ([FR-147](../expressions/FR-147-evaluate-integer-division-domains.md)), so `x + 1` over `x: Int[0, 255]` is the integer `x + 1` with no narrowing to the type of `x`, and a clause is false or undefined where the mathematics says so. Hence `x + 1 > x` holds for every `x` in `[0, 255]` and `x + 1 < 256` is false at `x = 255`. A value leaves its declared type only through a range narrowing, which FR-290 assigns to the application it narrows. The goal is *defined* when every subexpression evaluates to a value; the arm treats an undefined subexpression as a violation, `refuted` with `undefined-evaluation{where, cause}`, `where.locus` the `{node, occurrence}` of the innermost undefined subexpression, which lies in the callee's body when the undefinedness is inside a function application, and `cause` the catalogued reason the native evaluator reports for it. The call site is not a second locus; the replay evaluates the same call and reaches the same innermost subexpression.
 
 ### Case over a sum type
 
@@ -90,9 +90,9 @@ A Kani arm maps a `value-validity` item to one harness ([FR-196](FR-196-generate
 | FR-484-AC-1 | A Boolean clause `x + 1 > x` over `x: Int[0, 255]`, requested `bounded`, settles `proved`, `exhaustive`, `uncertified`; the same clause over `x: Int[0, 255]` with the goal `x + 1 < 256` settles `refuted` with the assignment `x = 255`, replayed. | Test (TC-973) |
 | FR-484-AC-2 | A clause that applies a function evaluates the callee's declared body: with `double(n) = n + n`, the clause `double(x) >= x` over `x: Int[-3, 3]` settles `refuted` with a violating assignment such as `x = -1`, never `proved` as an unconstrained call would. | Test (TC-973) |
 | FR-484-AC-3 | A clause with a `case` over a union of three members settles `proved` only after every member and payload domain is covered; a violation under one member gives a counterexample whose union value names that member and payload. | Provider test (TC-973) |
-| FR-484-AC-4 | A function body with two occurrences of `a / b` is two items; the occurrence under `if b != 0` has the premise `b != 0` and settles `proved`, and the unguarded occurrence settles `refuted` with `undefined-evaluation` at its own occurrence with `b = 0`. The same holds for an integer `10 mod a` over `a: Int[0, 9]` at `a = 0` (VV-08). Both are delivered only by a package whose checker records no nonzero obligation for integer division, remainder and modulus; QSL FR-495 is the example host, where a `CheckMode::Linked` check refuses them and a `CheckMode::Kernel` check admits them. | Test (TC-973) |
+| FR-484-AC-4 | A function body with two occurrences of `a / b` is two items; the occurrence under `if b != 0` has the premise `b != 0` and settles `proved`, and the unguarded occurrence settles `refuted` with `undefined-evaluation` at its own occurrence with `b = 0`. The same holds for an integer `10 mod a` over `a: Int[0, 9]` at `a = 0` (VV-08). Both are delivered only by a package whose checker records no nonzero obligation for integer division, remainder and modulus; FSL FR-495 is the example host, where a `CheckMode::Linked` check refuses them and a `CheckMode::Kernel` check admits them. | Test (TC-973) |
 | FR-484-AC-5 | The right operand of `b != 0 and a / b > 0` carries the premise `b != 0`; a range narrowing, an `if`, a `let`, a Boolean connective and an occurrence in a termination measure are not forms and settle `declined` `invalid-input`. | Test (TC-973) |
-| FR-484-AC-6 | A scalar operation that is the operand of a range narrowing to `Int[0, 5]`, over `a: Int[0, 3]`, is checked against `Int[0, 5]`, not its own result type, and settles `proved`; an operand that leaves the narrowing's range at an assignment settles `refuted` with `undefined-evaluation` there, though a host that proves narrowing ranges at admission, as QSL's checker does under `CheckMode::Linked`, never delivers such a package. | Test (TC-973) |
+| FR-484-AC-6 | A scalar operation that is the operand of a range narrowing to `Int[0, 5]`, over `a: Int[0, 3]`, is checked against `Int[0, 5]`, not its own result type, and settles `proved`; an operand that leaves the narrowing's range at an assignment settles `refuted` with `undefined-evaluation` there, though a host that proves narrowing ranges at admission, as FSL's checker does under `CheckMode::Linked`, never delivers such a package. | Test (TC-973) |
 | FR-484-AC-7 | An undefined subexpression of a clause settles `refuted` with `undefined-evaluation{where, cause}` whose `where.locus` is that subexpression; a path condition no assignment satisfies settles `inconclusive` with `kani_vacuous_proof`. | Test (TC-973) |
 | FR-484-AC-8 | A claim over `Integer` parameters with no bounds is `unbounded` with `integer` domains and reaches the arm only on a candidate advertising `unbounded`; the same claim with an `integer-range` bound for each parameter is `bounded`; a clause quantifying over an unbounded population adds one `population` domain. | Test (TC-973) |
 | FR-484-AC-9 | A call whose callee body is in neither the package nor the given dependency closure settles `unsupported` with reason `call-not-evaluable`, never `proved`; a call the arm starts and cannot finish within `max_cases`, such as a recursive call that does not return (each body evaluation is one case), settles `incomplete` `limit-reached`. | Test (TC-973) |

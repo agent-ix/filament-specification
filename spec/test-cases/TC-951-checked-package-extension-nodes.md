@@ -3,9 +3,9 @@ id: TC-951
 title: "Checked-package extension form nodes"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-469
+  - target: ix://agent-ix/filament-specification/FR-469
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 

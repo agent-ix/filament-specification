@@ -3,25 +3,25 @@ id: FR-407
 title: "State probabilistic claims over events and measures"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: references
-  - target: ix://agent-ix/quire-specification/FR-411
+  - target: ix://agent-ix/filament-specification/FR-411
     type: references
-  - target: ix://agent-ix/quire-specification/FR-414
+  - target: ix://agent-ix/filament-specification/FR-414
     type: references
 ---
 
@@ -229,7 +229,7 @@ request settings and are outside the obligation identity.
 
 ## References
 
-- QSL ADR-024 PF-1 to PF-10, PM-8; QSL ADR-028 SP-4, XF-1 to XF-8; QSL ADR-026
+- FSL ADR-024 PF-1 to PF-10, PM-8; FSL ADR-028 SP-4, XF-1 to XF-8; FSL ADR-026
   SS-1.
 - Owner rulings recorded on QSL-371: confidence parameters appear only for
   statistical evidence, and a claim without them is exact-only; weighted

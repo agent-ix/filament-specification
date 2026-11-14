@@ -3,9 +3,9 @@ id: IT-050
 title: "Integrate admitted observations with temporal and protocol assessment"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-114
+  - target: ix://agent-ix/filament-specification/FR-114
     type: verifies
 ---
 ## Objective
@@ -14,7 +14,7 @@ Verify the planned boundary from F-owned admitted observations/progress to E-own
 
 ## Target Integration
 
-The integration joins the [observation binding contract](../../proposals/quire-v1/observation-contract.md), immutable captures, declared clock/history/closure inputs, and protocol obligation identities to selected temporal and protocol consumers.
+The integration joins the [observation binding contract](../../proposals/filament-v1/observation-contract.md), immutable captures, declared clock/history/closure inputs, and protocol obligation identities to selected temporal and protocol consumers.
 
 ## Preconditions
 

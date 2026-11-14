@@ -3,7 +3,7 @@ id: TC-186
 title: "Text and enum identity semantics"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-141
+  - target: ix://agent-ix/filament-specification/FR-141
     type: verifies
 ---
 
@@ -16,9 +16,9 @@ Compare normalized text and declaration-qualified enum members at valid and inva
 ## Test Procedure
 
 Select language `ix:native`, edition `1-draft`, and the
-`quire.value.complete/v1` definition and the
-`quire.value.text.unicode-17.0.0/v1` definition through
-[`value-complete.md`](../../proposals/quire-v1/definitions/value-complete.md).
+`filament.value.complete/v1` definition and the
+`filament.value.text.unicode-17.0.0/v1` definition through
+[`value-complete.md`](../../proposals/filament-v1/definitions/value-complete.md).
 Execute these vectors through the real
 local Rust boundary:
 

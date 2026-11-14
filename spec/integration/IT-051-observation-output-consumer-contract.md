@@ -3,9 +3,9 @@ id: IT-051
 title: "Integrate observation result mapping with executable and export consumers"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: verifies
 ---
 ## Objective
@@ -19,14 +19,14 @@ closure record.
 
 ## Target Integration
 
-The integration joins a structured per-obligation observation result through the [output-mapping contract](../../proposals/quire-v1/observation-output-mapping-contract.md) to the existing codegen/output mapping boundary. It does not alter native clause authority, IR producer types, or a consumer-owned evidence store.
+The integration joins a structured per-obligation observation result through the [output-mapping contract](../../proposals/filament-v1/observation-output-mapping-contract.md) to the existing codegen/output mapping boundary. It does not alter native clause authority, IR producer types, or a consumer-owned evidence store.
 
 ## Preconditions
 
 The selected A/B result and interchange interfaces are selected by exact
 identity; in particular, the result input conforms to [B's
-FR-061](ix://agent-ix/quire-specification/FR-061) and [B's
-FR-007](ix://agent-ix/quire-verification/FR-007). Every consumed
+FR-061](ix://agent-ix/filament-specification/FR-061) and [B's
+FR-007](ix://agent-ix/filament-verification/FR-007). Every consumed
 definition/profile dependency has an immutable identity. The consumer declares
 supported capabilities and mapping profile.
 

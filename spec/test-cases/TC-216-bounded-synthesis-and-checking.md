@@ -3,7 +3,7 @@ id: TC-216
 title: "Bounded synthesis and checking"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-194
+  - target: ix://agent-ix/filament-specification/FR-194
     type: verifies
 ---
 

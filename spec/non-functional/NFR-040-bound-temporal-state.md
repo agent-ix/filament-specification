@@ -4,13 +4,13 @@ title: "Bound temporal work and required retained state"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: constrains
 ---
 ## Statement

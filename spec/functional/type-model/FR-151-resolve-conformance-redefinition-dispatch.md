@@ -3,11 +3,11 @@ id: FR-151
 title: "Resolve conformance, redefinition and closed dispatch"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-150
+  - target: ix://agent-ix/filament-specification/FR-150
     type: references
 ---
 
@@ -24,7 +24,7 @@ rules over a closed declaration set.
 The effective view of FR-150; the declared supertypes, subsets and redefines of
 its declarations; operation signatures, frames and typed multiplicities; the
 `abstract` member of each object type; authored contract clauses and operation
-bodies; and the selected `quire.model.complete/v1` definition.
+bodies; and the selected `filament.model.complete/v1` definition.
 
 ## Outputs
 
@@ -48,7 +48,7 @@ and no linearization is applied. An abstract type has no direct instances.
 
 The checker SHALL admit actual authored contract clauses before running the
 entire conformance stage, in the stage order of the selected
-[`value-accounting.md`](../../../proposals/quire-v1/definitions/value-accounting.md).
+[`value-accounting.md`](../../../proposals/filament-v1/definitions/value-accounting.md).
 It SHALL retain the facts derived once from that admission on the one checker
 graph. It SHALL NOT accept caller-asserted facts, rebuild synthetic clauses,
 call a second checker or expose a public partially checked graph as authority.
@@ -77,7 +77,7 @@ multi-selection stage barriers and denial suppression are those of the selected
 accounting definition; a model meter is neither restarted nor charged twice
 at this boundary.
 
-Rule `quire.model.conformance.variance/v1` checks a redefining member against the
+Rule `filament.model.conformance.variance/v1` checks a redefining member against the
 member it redefines on these independent axes, in this order, charging one
 `conformance.axis` before each axis runs and reporting every failing axis in
 this order; checking is exhaustive under the limits (FR-150), while a runtime
@@ -99,7 +99,7 @@ check stops at its first failure:
 
 The receiver is parameter 0 and is covariant by construction: the redefining
 receiver type is the redefining owner. Rule
-`quire.model.conformance.multiplicity/v1`: typed multiplicity `[l2, u2]`
+`filament.model.conformance.multiplicity/v1`: typed multiplicity `[l2, u2]`
 conforms to `[l1, u1]` exactly when `l1 <= l2` and `u2 <= u1`, where
 `unbounded` is greater than every finite value; `ordered` and `unique` must be
 equal, otherwise `ill_typed`/`multiplicity-narrowing`. Subsetting is checked by
@@ -107,7 +107,7 @@ the same rule: the subsetting feature's type conforms to the subsetted
 feature's type (`ill_typed`/`subsetting-type`) and its multiplicity conforms
 (`ill_typed`/`multiplicity-narrowing`).
 
-Rule `quire.model.conformance.effect/v1`: an effect set is the operation's
+Rule `filament.model.conformance.effect/v1`: an effect set is the operation's
 declared frame `{modifies, creates, deletes}`. The redefining effect
 is included in the redefined effect exactly when each modified field is a
 modified field of the redefined effect or reaches one through `redefines`
@@ -116,7 +116,7 @@ type, respectively, of the redefined effect. A create or delete of a subtype is
 covered by a grant for its supertype. Any other entry is `effect-escape`, one
 refusal per entry. The same inclusion governs FR-013 frames under inheritance.
 
-Rule `quire.model.conformance.refinement/v1` makes contracts Liskov-correct by
+Rule `filament.model.conformance.refinement/v1` makes contracts Liskov-correct by
 construction, so no implication between authored expressions is proved. The
 checker SHALL form the effective precondition `eff(m)` of an operation member
 `m` as `own(m) or eff(r)` for the one member `r` that `m` redefines, and as
@@ -181,7 +181,7 @@ closure is not established is `incomplete_population`/`incomplete-scope`.
 
 ## Dispatch rules
 
-Rule `quire.model.dispatch.single/v1`. A dispatched call is
+Rule `filament.model.dispatch.single/v1`. A dispatched call is
 `receiver.member-name(args)` whose receiver is `self`, a `deref(...)` result or a
 `Reference<T>` value. `member-name` resolves statically to exactly one exposed
 effective operation `o` of the receiver's static type `T`; its arguments are
@@ -195,7 +195,7 @@ Across all source units linked into one package, at most one
 This uniqueness check SHALL use the resolved operation identity after each
 unit's local model or import alias is resolved, not the alias spelling. A
 second body resolving to an identity already targeted by a body in any linked
-unit SHALL be refused by a QSL implementation as
+unit SHALL be refused by a FSL implementation as
 `conflicting_declaration`/`duplicate-declaration`.
 
 At link time, the family of `o` is `o`'s original declaration together with
@@ -265,7 +265,7 @@ type.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

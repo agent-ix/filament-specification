@@ -3,19 +3,19 @@ id: FR-469
 title: "Checked-package extension form nodes"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-467
+  - target: ix://agent-ix/filament-specification/FR-467
     type: references
-  - target: ix://agent-ix/quire-specification/FR-133
+  - target: ix://agent-ix/filament-specification/FR-133
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-354
+  - target: ix://agent-ix/filament-spec-language/FR-354
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-092
+  - target: ix://agent-ix/filament-spec-language/FR-092
     type: references
 ---
 
@@ -23,7 +23,7 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` graph carries a declaration form of a
+When a `filament.checked-semantic-graph/v2` graph carries a declaration form of a
 selected extension ([FR-467](../../functional/source-package/FR-467-define-extension-definition-members.md)),
 the producer SHALL encode it as the `extension`/`extension_form` node below.
 When a reader reads an `extension` node, the reader SHALL refuse a node whose
@@ -203,5 +203,5 @@ FR-322's `invalid_semantic_graph` at `/dependencies`, at the graph-shape step.
   it.
 - [FR-272](../foundation/FR-272-typed-diagnostic-cause.md) owns the
   `unknown_required_capability` row and its `locus` and `document_pointer`.
-- QSL FR-354 admits extension forms and emits this node; QSL FR-092 owns the
+- FSL FR-354 admits extension forms and emits this node; FSL FR-092 owns the
   structural `node_id` function.

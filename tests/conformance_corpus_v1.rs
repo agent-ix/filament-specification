@@ -6,7 +6,7 @@
 use serde_json::{Value, json};
 
 use ix_trace_rs::trace;
-use quire_verification_contracts::jcs_canonicalize;
+use filament_verification_contracts::jcs_canonicalize;
 
 #[path = "support/operand_slots.rs"]
 mod operand_slots;
@@ -37,7 +37,7 @@ fn definition_validator(schema: &Value, name: &str) -> jsonschema::Validator {
 fn compile(schema: &Value) -> jsonschema::Validator {
     let registry = jsonschema::Registry::new()
         .add(
-            "urn:quire:checked-package:v2",
+            "urn:filament:checked-package:v2",
             parsed(CHECKED_PACKAGE_SCHEMA),
         )
         .expect("checked-package schema registers")
@@ -55,7 +55,7 @@ fn conformance_corpus_v1_fixture_is_admitted_and_invalid_shapes_are_refused() {
     let schema = parsed(SCHEMA);
     jsonschema::meta::validate(&schema).expect("Draft 2020-12 schema is valid");
     assert_eq!(
-        schema["$id"], "urn:quire:conformance-corpus:v1",
+        schema["$id"], "urn:filament:conformance-corpus:v1",
         "FR-336 contract id is fixed"
     );
     let validator = compile(&schema);
@@ -163,8 +163,8 @@ fn conformance_corpus_v1_fixture_is_admitted_and_invalid_shapes_are_refused() {
     let replay_provision_validator = definition_validator(&schema, "ReplayProvisionPath");
     let valid_provision_path = json!({
         "authority": "fixture",
-        "identity": "source.quire",
-        "bytes_path": "inputs/source.quire"
+        "identity": "source.native",
+        "bytes_path": "inputs/source.native"
     });
     assert!(replay_provision_validator.is_valid(&valid_provision_path));
 

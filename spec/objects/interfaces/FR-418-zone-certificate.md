@@ -3,25 +3,25 @@ id: FR-418
 title: "Zone certificate and its checker"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/TC-371
+  - target: ix://agent-ix/filament-specification/TC-371
     type: verifies
-  - target: ix://agent-ix/quire-specification/TC-372
+  - target: ix://agent-ix/filament-specification/TC-372
     type: verifies
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-201
+  - target: ix://agent-ix/filament-specification/FR-201
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-482
+  - target: ix://agent-ix/filament-specification/FR-482
     type: references
 ---
 
@@ -60,22 +60,22 @@ For a safety form (TT-1, TT-2, TT-3, the deadlock-freedom item):
 | `bounds` | The per-clock lower and upper bounds `L` and `U`, per discrete state, used by the simulation test. |
 | `nodes` | A finite list of nodes `(s, q, Z)`: discrete state key, claim-automaton state, canonical DBM. For a task-product certificate, `s` is the complete source-plus-scheduler product key modulo the finite live-job renaming below. |
 | `edges` | For each node and each recomputed source transition or finite task-transition template enabled from it, the index of a target node. |
-| `initials` | Nonempty. The position in `nodes` of the initial node of each initial state of the subject, in the subject's initial-state order (FR-361): the node that covers that state's initial symbolic state. A form with one initial state lists one position. QSL FR-244 reads its single `initial` as `initials[0]`; the wire carries no `initial` member. |
-| `admitted` | The ADR-026 TD-6 witness: a start node (in a refinement form, any positioned `initials[i]`, so a time-locked first initial state does not decide it) and a path of certificate edges to a quiescent node or to a node of a component with a cycle of positive total delay (QSL FR-244 `admitted`). |
-| `refinement` | Present only for the safety half of a timed refinement (QSL FR-430): the refinement part below. |
+| `initials` | Nonempty. The position in `nodes` of the initial node of each initial state of the subject, in the subject's initial-state order (FR-361): the node that covers that state's initial symbolic state. A form with one initial state lists one position. FSL FR-244 reads its single `initial` as `initials[0]`; the wire carries no `initial` member. |
+| `admitted` | The ADR-026 TD-6 witness: a start node (in a refinement form, any positioned `initials[i]`, so a time-locked first initial state does not decide it) and a path of certificate edges to a quiescent node or to a node of a component with a cycle of positive total delay (FSL FR-244 `admitted`). |
+| `refinement` | Present only for the safety half of a timed refinement (FSL FR-430): the refinement part below. |
 | `task_product` | Present for a fixed-work task-automaton proof or a verified no-reachable-release proof: the `bounded-subtraction-diagonal/v1` abstraction name, a structured `time_progress` closure method, each task's enforced arrival kind, minimum interarrival, nominal relative deadline and maximum candidate slot bound, each demand interval, auxiliary clock ceilings, diagonal constraints and typed `TaskTransitionTemplate` subtractions. Fixed-work closure requires equal `work_lower`/`work_upper`; no-reachable-release closure permits intervals only when the strict reader proves no checked release binding is reachable. |
 
-QSL FR-244 names `identity`, `bounds` and a node's `automaton` as `obligation`,
+FSL FR-244 names `identity`, `bounds` and a node's `automaton` as `obligation`,
 `lu_bounds` and `automaton_state`; the wire spellings here are the ones the
-FR-331 schema carries and QSL FR-245 writes in its loci. A node is marked
-`locked` (QSL FR-244 "Locked nodes") by a `locked` member present, as `true`,
+FR-331 schema carries and FSL FR-245 writes in its loci. A node is marked
+`locked` (FSL FR-244 "Locked nodes") by a `locked` member present, as `true`,
 on exactly that node.
 
 For a task-automaton certificate, the reader resolves `identity` to the exact
 checked task claim and derives fixed-priority or EDF policy from that claim.
 The checked claim is the FR-322 `schedulability_claims` identity row joined to
 the admitted FR-482 body. The IR reader owns that typed carrier read only.
-This FR-418 reader is the QSL checker: it joins the authenticated claim to
+This FR-418 reader is the FSL checker: it joins the authenticated claim to
 the selected timed model's source release declarations and recomputes the
 source-plus-scheduler successors. It does not ask IR to interpret
 `TaskTransitionTemplate` or run a second scheduler evaluator.
@@ -223,25 +223,25 @@ For TT-4 and the time-lock-freedom item, the certificate adds:
 
 For the safety half of a refinement whose concrete model is timed, the
 certificate is the same value with `refinement` present, the reachability part
-read over the refinement product (QSL FR-244 "Refinement form"):
+read over the refinement product (FSL FR-244 "Refinement form"):
 
 | Member | Content |
 | --- | --- |
 | `refinement_node` | The refinement node's `node_id` (FR-322). The part itself is `refinement` and an `edges` entry's `node` is an index, so no name stands for two things. |
 | `concrete_package`, `abstract_package` | The two packages' identities (FR-322 package `name`). |
 | `positions` | Nonempty (an admitted refinement half starts at a positioned initial node, so it certifies at least one position). The certified positions: each `{concrete, history, abstract_states}`, a concrete `StateKey`, the FR-378 history values as FR-181 typed values in history-row order, and the sorted abstract `StateKey`s. |
-| `taken` | One entry per element of `edges`, in order: `null` for an edge into or inside the locked region (QSL FR-244), else `{type: "stutter"}` or `{type: "abstract", transitions}` with FR-181 transition identities. |
+| `taken` | One entry per element of `edges`, in order: `null` for an edge into or inside the locked region (FSL FR-244), else `{type: "stutter"}` or `{type: "abstract", transitions}` with FR-181 transition identities. |
 
 A node's `automaton` is then an index into `positions`; the locked region's
 nodes carry the reserved index `len(positions)`, which names no position, and
 the initial node of a time-locked concrete initial state whose `check_initial`
-fails is such a `locked` node (QSL FR-245-AC-9).
+fails is such a `locked` node (FSL FR-245-AC-9).
 
 ### Canonical bytes
 
 The bytes of a zone certificate are the RFC 8785 (JCS) serialization, UTF-8,
 through ADR-013 §2's one encoder, of the FR-331 `ZoneCertificate` value, with
-no byte before or after it. Equal certificates give equal bytes (QSL FR-244-AC-3
+no byte before or after it. Equal certificates give equal bytes (FSL FR-244-AC-3
 and AC-5), and the encoding is a function of the value alone.
 
 - **Member order.** Object members are in ascending UTF-16 code-unit order of
@@ -326,7 +326,7 @@ budget. Its cost is linear in the certificate's edges times the DBM operations.
 | FR-418-AC-7 | An index is a JSON integer in 0 to 2^53 − 1 and a scale or a bound an integer string; a bound written as a JSON number, with a leading zero, a `+` or `-0`, or a scale `0`, is not a `ZoneCertificate`, and a bound of 27 digits is carried exactly. | Test (TC-371) |
 | FR-418-AC-8 | An absent optional member is omitted: `components`, `reasons`, `divergence`, `refinement` or `task_product` as `null` is not a `ZoneCertificate`, `locked` is present only as `true`, and a `taken` entry that is absent is `null`. | Test (TC-371) |
 | FR-418-AC-9 | `identity` is the structural obligation identity, and in a refinement form the part's `refinement_node` is a `node_id` and `concrete_package` and `abstract_package` are package identities; no member carries a digest, hash or checksum of the certificate or of another artifact. | Test (TC-371) |
-| FR-418-AC-10 | Every certificate lists `initials` (nonempty), and a refinement-form certificate lists, in its part, `positions` (nonempty) and `taken`, so a refinement part with empty `positions` is not a `ZoneCertificate`; ZC-12's first initial node (`initials[0]`) is a `locked` node with `automaton` equal to the number of positions and its `admitted` starts at the positioned `initials[1]`, a refinement form whose `initials[i]` does not cover concrete initial state `i` is `initial-missing` at that state's State record (the locus is the discrete state; two initial states sharing one discrete state share the locus, and the checker reports the lowest failing index first), `admitted` may start at any positioned `initials[i]`, and a certificate without `initials` or `admitted`, or with an `initial` member, is not a `ZoneCertificate`; nor is a refinement part whose node-id member is named `refinement` or `node` rather than `refinement_node`. | Test (TC-371); the checker clauses by QSL TC-700 and TC-371 ZC-14 |
+| FR-418-AC-10 | Every certificate lists `initials` (nonempty), and a refinement-form certificate lists, in its part, `positions` (nonempty) and `taken`, so a refinement part with empty `positions` is not a `ZoneCertificate`; ZC-12's first initial node (`initials[0]`) is a `locked` node with `automaton` equal to the number of positions and its `admitted` starts at the positioned `initials[1]`, a refinement form whose `initials[i]` does not cover concrete initial state `i` is `initial-missing` at that state's State record (the locus is the discrete state; two initial states sharing one discrete state share the locus, and the checker reports the lowest failing index first), `admitted` may start at any positioned `initials[i]`, and a certificate without `initials` or `admitted`, or with an `initial` member, is not a `ZoneCertificate`; nor is a refinement part whose node-id member is named `refinement` or `node` rather than `refinement_node`. | Test (TC-371); the checker clauses by FSL TC-700 and TC-371 ZC-14 |
 | FR-418-AC-11 | The `TaskProductCertificate` schema admits `abstraction: bounded-subtraction-diagonal/v1`, the structured `time_progress` object with method `closed-finite-product/v1`, a positive `live_job_cap` and closure label `recompute-all-reachable-successors/v1`, plus the queue-bound, clock-ceiling, diagonal-constraint and subtraction arrays; each task-scheduler edge and subtraction uses a finite `TaskTransitionTemplate`, source-operation edges retain their source identity, and task-search frontier edges retain exact `TaskTransitionIdentity`; the schema refuses an exact task identity, an occurrence or generation added to a template, an unknown method, zero cap or a producer-asserted closure label. This criterion covers wire shape only; the reader's exhaustive finite-product closure and SCC checks are normative in the behavior above. | Test (TC-371) |
 | FR-418-AC-12 | For a task-automaton certificate, the reader derives the scheduler policy from the checked claim named by `identity`, recomputes every policy successor and refuses an edge inconsistent with that policy; `task_product` carries no policy override. An EDF certificate with absent task priorities is admitted with no synthesized priorities, and a forged priority or ready order is refused. | Test (TC-371, TC-372) |
 | FR-418-AC-13 | In a fixed-work task certificate, every task-scheduler edge and bounded-subtraction row uses a finite `TaskTransitionTemplate`, while source-operation edges retain their source identity; the reader closes the source-plus-scheduler graph modulo capture-avoiding renaming of completed jobs, accepts a periodic cycle whose absolute activation occurrence grows on each traversal, and refuses a template with an out-of-range or mismatched live-job rank/slot. Concrete replay instantiates the template with the exact prefix occurrence and generation, including when a completed slot is reused. | Test (TC-371) |
@@ -342,8 +342,8 @@ budget. Its cost is linear in the certificate's edges times the DBM operations.
 
 ## References
 
-- QSL ADR-026 EZ-2 to EZ-4, CF-1 to CF-6, OV-12.
-- QSL FR-244 (the certificate's members), FR-245 (its checker) and FR-430 (the refinement form); Linear STD-522 and QSL STD-516.
+- FSL ADR-026 EZ-2 to EZ-4, CF-1 to CF-6, OV-12.
+- FSL FR-244 (the certificate's members), FR-245 (its checker) and FR-430 (the refinement form); Linear STD-522 and FSL STD-516.
 - S. Wimmer and J. von Mutius, TACAS 2020; S. Wimmer, F. Herbreteau and
   J. van de Pol, FORMATS 2020; F. Herbreteau, B. Srivathsan and
   I. Walukiewicz, LICS 2012.

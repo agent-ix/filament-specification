@@ -3,15 +3,15 @@ id: TC-155
 title: "Separate structural target observation from preservation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-122
+  - target: ix://agent-ix/filament-specification/FR-122
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-123
+  - target: ix://agent-ix/filament-specification/FR-123
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-124
+  - target: ix://agent-ix/filament-specification/FR-124
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-125
+  - target: ix://agent-ix/filament-specification/FR-125
     type: verifies
-  - target: ix://agent-ix/quire-specification/NFR-061
+  - target: ix://agent-ix/filament-specification/NFR-061
     type: verifies
 ---
 ## Description

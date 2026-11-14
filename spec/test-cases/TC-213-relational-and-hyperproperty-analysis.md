@@ -3,7 +3,7 @@ id: TC-213
 title: "Relational and hyperproperty analysis"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: verifies
 ---
 

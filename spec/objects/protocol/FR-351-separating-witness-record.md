@@ -4,25 +4,25 @@ title: "Separating witness record"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/FR-200
+  - target: ix://agent-ix/filament-specification/FR-200
     type: references
-  - target: ix://agent-ix/quire-specification/FR-207
+  - target: ix://agent-ix/filament-specification/FR-207
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
 ---
 # FR-351: Separating witness record
@@ -147,12 +147,12 @@ A separating witness accompanies only a `decisive-witness` or `decisive-countere
   one-axis-substitution refusal this record extends.
 - [FR-197](../../functional/ir-proof/FR-197-replay-backend-counterexamples.md)
   supplies the replay envelope this record's shape now types.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-243](FR-243-settlement-basis.md) supplies the protocol family's
   `decisive-witness` and `decisive-counterexample` bases this record
   substantiates.
-- [AD-003](../../assurance/AD-003-native-quire-language-charter.md) supplies the
+- [AD-003](../../assurance/AD-003-native-filament-language-charter.md) supplies the
   incomplete-execution and unsupported-projection dispositions this record
   stays witness-free under.
 
@@ -161,6 +161,6 @@ A separating witness accompanies only a `decisive-witness` or `decisive-countere
 Draft. Gives the separating witness or counterexample that FR-061, FR-094, FR-243
 and FR-041 already retain abstractly its exact field-level shape. Implementation
 and replay evidence remain planned under
-[agent-ix/quire-spec-language#186](https://github.com/agent-ix/quire-spec-language/issues/186),
-[agent-ix/quire-contract-codegen#50](https://github.com/agent-ix/quire-contract-codegen/issues/50)
-and [agent-ix/quire-verification#38](https://github.com/agent-ix/quire-verification/issues/38).
+[agent-ix/filament-spec-language#186](https://github.com/agent-ix/filament-spec-language/issues/186),
+[agent-ix/filament-contract-codegen#50](https://github.com/agent-ix/filament-contract-codegen/issues/50)
+and [agent-ix/filament-verification#38](https://github.com/agent-ix/filament-verification/issues/38).

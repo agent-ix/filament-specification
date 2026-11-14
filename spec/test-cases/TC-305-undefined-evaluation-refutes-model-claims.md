@@ -3,15 +3,15 @@ id: TC-305
 title: "Undefined evaluation refutes a model claim"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-365
+  - target: ix://agent-ix/filament-specification/FR-365
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: verifies
 ---
 
@@ -28,7 +28,7 @@ counterexample ends at that state and replays to the same undefined value.
 The **Counter** subject of TC-290, with universe `counters = {c, d}`, both at
 value 0, and the operation `drop` that removes `d` from `counters`. `rd` is a
 `Reference<Cnt::Counter>` parameter valued `d`. Under
-`quire.temporal.infinite-trace/v1`:
+`filament.temporal.infinite-trace/v1`:
 
 1. Check `always holds(lookup<Cnt::Counter>(counters, rd) absent undefined.value <= 3)`
    by explicit-state model checking.

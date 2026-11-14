@@ -3,17 +3,17 @@ id: FR-414
 title: "Evaluate window aggregates over observed traces"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-095
+  - target: ix://agent-ix/filament-specification/FR-095
     type: references
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: references
 ---
 
@@ -150,7 +150,7 @@ predicate is undefined at a position the filter admits (for example a
 division by zero), the atom evaluates `Undefined` with the cause of the first
 such position, and the evaluator stops there. This is an undefined evaluation
 of the clause: the result is `UndefinedEvaluation{where, cause}`, `where` the
-first position at which the atom is undefined (QSL FR-327), in the O-16 category violation,
+first position at which the atom is undefined (FSL FR-327), in the O-16 category violation,
 as for the same expression in a plain `holds` atom. The evaluator never skips
 the position, so a window result never improves by the loss of a position it
 could not evaluate. A value expression is read only at admitted positions.
@@ -165,7 +165,7 @@ The evaluator keeps the window's values. `max_window_values` is a run limit
 the caller sets per run, with a published default. A window that exceeds it
 yields `incomplete`, `limit-reached` naming `max_window_values`, its value
 and the request setting that raises it, never a truth value. Evaluation charges
-one unit of clause work at `temporal.visit` (`quire.value.accounting/v1`) per window position visited, whether or not the filter
+one unit of clause work at `temporal.visit` (`filament.value.accounting/v1`) per window position visited, whether or not the filter
 admits it, and under a stop at an undefined position, the positions visited
 up to and including it.
 
@@ -208,7 +208,7 @@ consumes the derived signal unchanged.
 
 ## References
 
-- QSL FR-194 states the same rule, charge and check-time refusals in the QSL
+- FSL FR-194 states the same rule, charge and check-time refusals in the FSL
   half (FR-194-AC-7, FR-194-AC-8).
-- QSL ADR-024 WA-1 to WA-8 (WA-4: insufficient data is O-16 undefined).
+- FSL ADR-024 WA-1 to WA-8 (WA-4: insufficient data is O-16 undefined).
 - Ticket: STD-137 (paired with QSL-371).

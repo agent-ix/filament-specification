@@ -5,7 +5,7 @@
 //!
 //! The authored rows in `spec/test-cases/TC-*.md` are the only source. This
 //! build step reads them with `std` alone and emits `static` data into
-//! `OUT_DIR`, so consumers iterate the rows through `quire_specification` and
+//! `OUT_DIR`, so consumers iterate the rows through `filament_specification` and
 //! never read or copy Markdown themselves.
 
 use std::fmt::Write as _;

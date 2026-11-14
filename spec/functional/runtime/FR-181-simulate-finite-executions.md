@@ -3,37 +3,37 @@ id: FR-181
 title: "Simulate finite composed executions reproducibly"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/TC-372
+  - target: ix://agent-ix/filament-specification/TC-372
     type: verifies
-  - target: ix://agent-ix/quire-specification/AD-008
+  - target: ix://agent-ix/filament-specification/AD-008
     type: references
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: references
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: references
-  - target: ix://agent-ix/quire-specification/FR-394
+  - target: ix://agent-ix/filament-specification/FR-394
     type: references
-  - target: ix://agent-ix/quire-specification/FR-406
+  - target: ix://agent-ix/filament-specification/FR-406
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: references
-  - target: ix://agent-ix/quire-specification/FR-420
+  - target: ix://agent-ix/filament-specification/FR-420
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-482
+  - target: ix://agent-ix/filament-specification/FR-482
     type: references
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: references
 ---
 
@@ -82,8 +82,8 @@ cause `state-key-limit-exceeded`; it SHALL NOT truncate or hash the key.
 
 A decimal string is `0`, or an optional `-` followed by `[1-9][0-9]*`. A
 domain-object reference is its FR-204 (universe, type, object_identity)
-triple, realized under `quire.model.complete/v1`
-([model-complete.md](../../../proposals/quire-v1/definitions/model-complete.md))
+triple, realized under `filament.model.complete/v1`
+([model-complete.md](../../../proposals/filament-v1/definitions/model-complete.md))
 as `{"type":"reference","universe":<node id>,"object_type":<node id>,"identity":"<lowercase hex of the identity bytes>"}`, where each `<node id>` is a structural checked-package node id `{package, path, ordinal}` (FR-322): `universe` that of the declaration node of the universe's least root type and `object_type` that of the declaration node of the object's most-specific type (model-complete.md "Object universe").
 The null literal is `{"type":"null"}`. Every value encodes as a tagged JCS
 object, `{"type": <tag>, ...}`:
@@ -105,16 +105,16 @@ object, `{"type": <tag>, ...}`:
   exact decimal string.
 - text — `{"type":"text","value":"<string>"}`.
 - string — `{"type":"string","value":"<string>"}`, the value of the native
-  `String` type (QSL FR-056): its exact Unicode scalar sequence as a JSON
+  `String` type (FSL FR-056): its exact Unicode scalar sequence as a JSON
   string, with no normalization, case folding or length limit. A composed
   and a decomposed spelling of one character are two different strings, and
   the empty string is a string. `string` is not `text`: a `text` form never
   reads as a `String` and a `string` form never reads as a `Text`.
 - UUID — `{"type":"uuid","value":"<uuid>"}`, the K2 canonical UUID payload
-  (QSL FR-056): 32 lowercase hexadecimal digits in groups `8-4-4-4-12`
+  (FSL FR-056): 32 lowercase hexadecimal digits in groups `8-4-4-4-12`
   joined by four hyphens.
 - Timestamp — `{"type":"timestamp","nanoseconds":"<decimal>"}`, the K2
-  canonical Timestamp payload (QSL FR-056): the exact signed count of
+  canonical Timestamp payload (FSL FR-056): the exact signed count of
   nanoseconds since `1970-01-01T00:00:00Z` on the POSIX scale, within the
   signed 128-bit domain, as a decimal string. No zone, calendar text or
   precision selector is part of the form.
@@ -268,8 +268,8 @@ reads a terminal state by
 closed under a bounded profile, and extended by the terminal stutter step
 `{"type":"terminal-stutter"}` under the infinite-trace profile. Sampling draws from
 the same successor relation with the counter-based generator that the
-`quire.simulation.sampler/v1` definition
-([sampler definition](../../../proposals/quire-v1/definitions/simulation-sampler.md))
+`filament.simulation.sampler/v1` definition
+([sampler definition](../../../proposals/filament-v1/definitions/simulation-sampler.md))
 defines; a sampled trace is named by
 its seed and trace index. A sampled step makes one or more draws, each with its own choice index: with no workload, one uniform draw over the enabled successor set; under a workload ([FR-406](../analysis/FR-406-interpret-probabilistic-models.md)), one draw for the operation by exact integer weight, one uniform draw for the scheduled identity, one draw per random parameter in declaration order by its exact integer weights and, over a timed subject, one draw per delay and per tie-break ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)). A statistical run assigns trace index `i · m + j` to sample `i` of test `j` among `m` tests. No draw selects a sampled trace's initial state. A sampled trace whose
 requirement names its initial state (an FR-392 walk, an FR-408 test) starts
@@ -463,7 +463,7 @@ so every timed refutation has a counterexample with exact rational delays.
 
 - [FR-383](../analysis/FR-383-explore-under-state-space-reduction.md) owns
   exploration under a selected state-space reduction.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.
@@ -473,6 +473,6 @@ so every timed refutation has a counterexample with exact rational delays.
 
 ## References
 
-- Protocol and memory members of the state key: quire-spec-language ADR-027
+- Protocol and memory members of the state key: filament-spec-language ADR-027
   PS-8, TS-2, QS-3 and QS-4, and ADR-025 MS-1; Linear STD-140 and STD-138,
   paired QSL-396 and QSL-372.

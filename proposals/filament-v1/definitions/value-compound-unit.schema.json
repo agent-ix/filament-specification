@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:filament:value-compound-unit:v1",
+  "title": "Evaluator-owned complete-V1 compound-unit identity",
+  "type": "object",
+  "required": ["version", "terms"],
+  "properties": {
+    "version": {"const": "filament.value.compound-unit/v1"},
+    "terms": {"type": "array", "items": {"$ref": "#/$defs/UnitTerm"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "NodeId": {"type": "object", "required": ["package", "path", "ordinal"], "properties": {"package": {"type": "string", "minLength": 1}, "path": {"type": "array", "minItems": 1, "items": {"oneOf": [{"type": "string"}, {"$ref": "#/$defs/NodeId"}]}}, "ordinal": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}}, "additionalProperties": false},
+    "IntegerString": {"type": "string", "pattern": "^(0|-?[1-9][0-9]*)$"},
+    "UnitTerm": {"type": "object", "required": ["unit_node_id", "exponent"], "properties": {"unit_node_id": {"$ref": "#/$defs/NodeId"}, "exponent": {"$ref": "#/$defs/IntegerString"}}, "additionalProperties": false}
+  }
+}

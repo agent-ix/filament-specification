@@ -1,5 +1,5 @@
 {
-  "version": "quire.structural-identity-vectors/v1",
+  "version": "filament.structural-identity-vectors/v1",
   "note": "TC-233 SI-01..SI-06 (FR-201-AC-11). Each case gives a base identity of `kind` and comparisons against it: `relation` is equal or different, and `base_orders: before` records that the base orders before the other under the comparison order of FR-201 'Structural identities'. Values are compared componentwise; nothing is hashed.",
   "cases": [
     {

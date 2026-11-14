@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Agent-IX
 
-//! FR-331 `quire.backend-provider/v1` schema and vector qualification.
+//! FR-331 `filament.backend-provider/v1` schema and vector qualification.
 //!
 //! The schema fixes the wire's structure; readers convert from it into their
-//! own types (QSL ADR-013 T-7). This test checks that every positive vector is
+//! own types (FSL ADR-013 T-7). This test checks that every positive vector is
 //! admitted, that every adverse vector is refused, and that the request's
 //! `package` member carries the canonical v2 bytes of a checked package.
 //! Reader behaviour beyond the schema (FR-290 negotiation, replay,
@@ -13,7 +13,7 @@
 use std::collections::BTreeSet;
 
 use ix_trace_rs::trace;
-use quire_verification_contracts::jcs_canonicalize;
+use filament_verification_contracts::jcs_canonicalize;
 use serde_json::Value;
 
 #[path = "support/operand_slots.rs"]
@@ -99,11 +99,11 @@ fn package_bytes() -> Vec<u8> {
 fn registry() -> jsonschema::Registry<'static> {
     jsonschema::Registry::new()
         .add(
-            "urn:quire:checked-package:v2",
+            "urn:filament:checked-package:v2",
             parsed(CHECKED_PACKAGE_SCHEMA),
         )
         .expect("checked-package schema registers")
-        .add("urn:quire:backend-provider:v1", parsed(SCHEMA))
+        .add("urn:filament:backend-provider:v1", parsed(SCHEMA))
         .expect("backend-provider schema registers")
         .prepare()
         .expect("registry prepares")
@@ -124,7 +124,7 @@ fn definition(name: &str) -> jsonschema::Validator {
     let registry = registry();
     jsonschema::options()
         .with_registry(&registry)
-        .build(&serde_json::json!({"$ref": format!("urn:quire:backend-provider:v1#/$defs/{name}")}))
+        .build(&serde_json::json!({"$ref": format!("urn:filament:backend-provider:v1#/$defs/{name}")}))
         .expect("definition compiles")
 }
 
@@ -577,7 +577,7 @@ fn tc_431_task_product_finite_gate_schema_is_typed() {
 
 /// The task queue-growth vector is a real schema fixture. This test checks
 /// its exact finite wire arithmetic and the affine word recurrence; it does
-/// not stand in for the downstream QSL product/replay implementation.
+/// not stand in for the downstream FSL product/replay implementation.
 #[trace("TC-431", "FR-364-AC-14")]
 #[trace("TC-431", "FR-419-AC-6")]
 #[test]
@@ -773,7 +773,7 @@ fn tc_431_package_member_carries_the_v2_bytes_of_its_package() {
         bytes,
         "the bytes are already canonical"
     );
-    assert_eq!(package["contract_version"], "quire.checked-package/v2");
+    assert_eq!(package["contract_version"], "filament.checked-package/v2");
 }
 
 /// The strict decoder and the schema's `Base64Url` pattern agree: both refuse
@@ -928,7 +928,7 @@ fn tc_431_item_level_causes_reach_negotiation() {
     assert!(!validator.is_valid(&missing));
 }
 
-/// The bound kind QSL's `DomainKind::finite_kind` pairs with each ADR-014
+/// The bound kind FSL's `DomainKind::finite_kind` pairs with each ADR-014
 /// domain kind, or `None` for a kind no finite bound stands for.
 fn finite_kind(kind: &str) -> Option<&'static str> {
     match kind {
@@ -1018,8 +1018,8 @@ fn tc_431_bounded_descriptors_carry_domains() {
     }
     assert!(bounded > 0, "a bounded descriptor is exercised");
     let unbounded_only = serde_json::json!({
-        "backend": "qsl-model-check",
-        "tool": {"name": "qsl-analyze", "version": "0.1.0"},
+        "backend": "fsl-model-check",
+        "tool": {"name": "fsl-analyze", "version": "0.1.0"},
         "advertises": [{"kind": "temporal-satisfaction", "mode": "unbounded"}],
         "fairness_kinds": ["weak"]
     });
@@ -1100,9 +1100,9 @@ fn tc_431_canonical_key_bindings_are_complete() {
         assert!(!locus.is_valid(&invalid));
     }
 
-    // Independent exact octet oracle: QSL TC-525's parameter-free Counter
+    // Independent exact octet oracle: FSL TC-525's parameter-free Counter
     // deadlock-freedom safety key. Codec/JCS checks only, not translation.
-    let octets = br#"["quire.automaton-state-key/v1",[["deadlock-freedom"],"quire.temporal.infinite-trace/v1","infinite",[]],["safety",[[[[[],"positive"]],[],[],[]]]]]"#;
+    let octets = br#"["filament.automaton-state-key/v1",[["deadlock-freedom"],"filament.temporal.infinite-trace/v1","infinite",[]],["safety",[[[[[],"positive"]],[],[],[]]]]]"#;
     assert_eq!(jcs_canonicalize(&serde_json::from_slice::<Value>(octets)
         .expect("literal canonical key")).expect("JCS"), octets.to_vec());
     let spelling = encode(octets);
@@ -1316,7 +1316,7 @@ fn tc_431_hyper_loci_have_closed_shapes_and_rule_pairs() {
 
 /// The `at` forms FR-331 catalogues, spelled here independently of the schema
 /// and the vectors: a query part is `unrolling`, `base`, `step` or
-/// `step/<row>` (QSL FR-338's specified spelling); a proof step is `{part,
+/// `step/<row>` (FSL FR-338's specified spelling); a proof step is `{part,
 /// index}`; a product state is `{model_state, automaton_state}`; a model
 /// state is `{key}`; a state-graph entry is `{entry}`;
 /// a simulation step always carries `position`, `edge` and `verdict`, null
@@ -1466,8 +1466,8 @@ fn tc_431_proof_step_index_admits_exactly_the_u64_range() {
 fn tc_431_memory_models_is_a_nonempty_unique_subset_on_temporal_descriptors() {
     let descriptor = definition("BackendDescriptor");
     let base = serde_json::json!({
-        "backend": "qsl-model-check",
-        "tool": {"name": "qsl-analyze", "version": "0.1.0"},
+        "backend": "fsl-model-check",
+        "tool": {"name": "fsl-analyze", "version": "0.1.0"},
         "advertises": [{"kind": "temporal-satisfaction", "mode": "unbounded"}],
         "fairness_kinds": ["weak"]
     });
@@ -1553,7 +1553,7 @@ fn tc_431_tool_version_is_manifest_content_outside_the_backend_id() {
     // A pure in-process engine names its implementing crate and version.
     let engine = composed(&positive("temporal-request"));
     let engine_entry = engine["manifest"][0].clone();
-    assert_eq!(engine_entry["tool"]["name"], "qsl-analyze");
+    assert_eq!(engine_entry["tool"]["name"], "fsl-analyze");
     assert_eq!(engine_entry["tool"]["version"], "0.1.0");
     assert!(whole.is_valid(&engine), "a pure engine's snapshot descriptor is admitted");
 
@@ -1759,7 +1759,7 @@ fn tc_431_derived_items_name_their_anchor_and_follow_the_structural_order() {
     assert_eq!(claim_of("deadlock-freedom"), claim_of("time-lock-freedom"));
 }
 
-/// FR-331 zone loci for QSL FR-245's refinement-form rules, and the
+/// FR-331 zone loci for FSL FR-245's refinement-form rules, and the
 /// certificate members FR-418 adds, as an independent matrix.
 #[trace("TC-431", "FR-331-AC-45")]
 #[trace("TC-431", "FR-331-AC-46")]

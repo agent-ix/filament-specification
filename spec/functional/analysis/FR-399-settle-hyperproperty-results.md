@@ -3,27 +3,27 @@ id: FR-399
 title: "Settle hyperproperty and step-relation results"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-396
+  - target: ix://agent-ix/filament-specification/FR-396
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-461
+  - target: ix://agent-ix/filament-specification/FR-461
     type: references
 ---
 

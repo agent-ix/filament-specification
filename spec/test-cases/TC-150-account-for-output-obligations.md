@@ -3,13 +3,13 @@ id: TC-150
 title: "Account for every output obligation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-120
+  - target: ix://agent-ix/filament-specification/FR-120
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-297
+  - target: ix://agent-ix/filament-specification/FR-297
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-298
+  - target: ix://agent-ix/filament-specification/FR-298
     type: verifies
 ---
 ## Description

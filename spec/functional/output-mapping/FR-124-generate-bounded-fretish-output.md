@@ -3,16 +3,16 @@ id: FR-124
 title: "Generate bounded FRETish 3.1 output"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: references
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: references
 ---
 ## Description
 
-When `quire.output.fretish31/v1` is selected, the FRETish
+When `filament.output.fretish31/v1` is selected, the FRETish
 mapper SHALL generate only the admitted Classic scope/condition/component/
 timing/response fragment with explicit clock/completeness conditions.
 
@@ -50,7 +50,7 @@ no substitute sentence.
 
 ## Dependencies
 
-- [FRETish profile](../../../proposals/quire-v1/output-mappings/fretish-3.1.md).
+- [FRETish profile](../../../proposals/filament-v1/output-mappings/fretish-3.1.md).
 - [FR-121](FR-121-account-for-every-output-obligation.md).
 - FS04 temporal/observation semantics; qcir #57 owns implementation.
 

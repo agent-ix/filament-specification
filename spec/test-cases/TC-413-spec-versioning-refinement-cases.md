@@ -3,7 +3,7 @@ id: TC-413
 title: "Spec-versioning refinement cases"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-452
+  - target: ix://agent-ix/filament-specification/FR-452
     type: verifies
 ---
 

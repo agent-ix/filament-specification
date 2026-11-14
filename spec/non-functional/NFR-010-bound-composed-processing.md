@@ -4,13 +4,13 @@ title: "Bound composed processing without fabricating results"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: constrains
 ---
 ## Statement
@@ -51,7 +51,7 @@ current defaults or confuse the local Cargo job limit with language semantics.
 
 ## Dependencies
 
-- [State/query/graph contract](../../proposals/quire-v1/state-contract.md).
+- [State/query/graph contract](../../proposals/filament-v1/state-contract.md).
 - [Typed producer causes](../functional/foundation/FR-047-emit-typed-located-causes.md).
 - [Historical exhaustion distinction](NFR-002-classify-resource-incompleteness.md).
 

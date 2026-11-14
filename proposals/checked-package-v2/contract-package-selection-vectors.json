@@ -1,18 +1,18 @@
 {
-  "version": "quire.contract-package-selection-vectors/v1",
-  "note": "STD-537. The authoritative machine-readable form of the typed source-selection vectors of TC-935 (FR-330-AC-10). `selections` are exact FR-322 `Selection` rows; the short labels T, D and U denote these typed values, never identifier-parsing rules. `compatibility_cases` give, per TC-935 table case, the `expected` result text and the `required_source_selections` and the input `lock.profile_selections` as lists of labels, in order; `repeat_controls` are the sentences of the TC-935 paragraph that begins \"Repeat the unrelated case\", verbatim and in order. A consumer reads this file (for example through QUIRE_SPECIFICATION_DIR) and never copies or redefines the rows; the QSpec test asserts they equal the fenced JSON block and table of spec/test-cases/TC-935-contract-package-profile.md.",
+  "version": "filament.contract-package-selection-vectors/v1",
+  "note": "STD-537. The authoritative machine-readable form of the typed source-selection vectors of TC-935 (FR-330-AC-10). `selections` are exact FR-322 `Selection` rows; the short labels T, D and U denote these typed values, never identifier-parsing rules. `compatibility_cases` give, per TC-935 table case, the `expected` result text and the `required_source_selections` and the input `lock.profile_selections` as lists of labels, in order; `repeat_controls` are the sentences of the TC-935 paragraph that begins \"Repeat the unrelated case\", verbatim and in order. A consumer reads this file (for example through FILAMENT_SPECIFICATION_DIR) and never copies or redefines the rows; the QSpec test asserts they equal the fenced JSON block and table of spec/test-cases/TC-935-contract-package-profile.md.",
   "selections": {
     "T": {
       "role": "temporal_profile",
-      "definition": {"authority": "agent-ix", "identity": "quire.temporal.infinite-trace/v1"}
+      "definition": {"authority": "agent-ix", "identity": "filament.temporal.infinite-trace/v1"}
     },
     "D": {
       "role": "temporal_profile",
-      "definition": {"authority": "agent-ix", "identity": "quire.temporal.event-position.false-extension/v1"}
+      "definition": {"authority": "agent-ix", "identity": "filament.temporal.event-position.false-extension/v1"}
     },
     "U": {
       "role": "protocol_profile",
-      "definition": {"authority": "agent-ix", "identity": "quire.protocol.finite-global/v1"}
+      "definition": {"authority": "agent-ix", "identity": "filament.protocol.finite-global/v1"}
     }
   },
   "compatibility_cases": [

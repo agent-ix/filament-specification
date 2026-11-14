@@ -4,9 +4,9 @@ title: "Truth disposition vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
 ---
 # FR-242: Truth disposition vocabulary
@@ -71,7 +71,7 @@ settlement basis `unavailable`.
 - [FR-091](../../functional/temporal/FR-091-evaluate-bounded-future.md) and
   [FR-092](../../functional/temporal/FR-092-evaluate-bounded-past.md) supply the temporal
   outcomes and explicit lower-boundary adaptation stated above.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

@@ -3,19 +3,19 @@ id: FR-381
 title: "Check symmetric population declarations for identity transparency"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-011
+  - target: ix://agent-ix/filament-specification/FR-011
     type: references
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-382
+  - target: ix://agent-ix/filament-specification/FR-382
     type: references
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
 ---
 
@@ -136,5 +136,5 @@ body, is checked by FR-145 alone and reports `operator-ineligible`.
 
 ## References
 
-- Design: quire-spec-language ADR-021 (SYM-3, SYM-8, QS-3, RU-5).
+- Design: filament-spec-language ADR-021 (SYM-3, SYM-8, QS-3, RU-5).
 - Tickets: Linear STD-134; paired QSL-368.

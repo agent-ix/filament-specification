@@ -3,7 +3,7 @@ id: TC-986
 title: "Planner settlement request"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-492
+  - target: ix://agent-ix/filament-specification/FR-492
     type: verifies
 ---
 

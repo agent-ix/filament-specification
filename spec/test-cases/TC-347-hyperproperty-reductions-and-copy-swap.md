@@ -3,9 +3,9 @@ id: TC-347
 title: "Hyperproperty reductions and copy-swap symmetry"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-403
+  - target: ix://agent-ix/filament-specification/FR-403
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: verifies
 ---
 

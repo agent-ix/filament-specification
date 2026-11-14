@@ -1,5 +1,5 @@
 {
-  "version": "quire.zone-certificate-vectors/v1",
+  "version": "filament.zone-certificate-vectors/v1",
   "encoding": "RFC 8785 JCS, UTF-8, over the FR-331 ZoneCertificate value; states are illustrative state keys, not computed from a model",
   "vectors": [
     {

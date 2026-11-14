@@ -3,7 +3,7 @@ id: TC-222
 title: "Lossless CST round trip"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-302
+  - target: ix://agent-ix/filament-specification/FR-302
     type: verifies
 ---
 

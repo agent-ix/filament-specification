@@ -3,17 +3,17 @@ id: FR-476
 title: "Checked-package model terminal declaration body"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
-  - target: ix://agent-ix/quire-specification/FR-465
+  - target: ix://agent-ix/filament-specification/FR-465
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
 ---
 
@@ -23,7 +23,7 @@ relationships:
 
 When a checked package carries a model `terminal` declaration
 ([FR-366](../../functional/temporal/FR-366-check-deadlock-freedom.md)), the
-producer SHALL emit it as one `quire.checked-semantic-graph/v2` node with
+producer SHALL emit it as one `filament.checked-semantic-graph/v2` node with
 `node_tag: "temporal"` and `semantic_form: "terminal"`, whose body is the
 aggregate below, and the reader SHALL refuse a node whose rules below do not
 hold, with the first refusal in the reader order below. The node is the only
@@ -148,5 +148,5 @@ which precedes this step.
 
 ## References
 
-- STD-303 (this requirement); quire-spec-language FR-124 and ADR-018 DL-1 to
+- STD-303 (this requirement); filament-spec-language FR-124 and ADR-018 DL-1 to
   DL-3.

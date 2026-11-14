@@ -1,20 +1,20 @@
-# Backend provider envelope `quire.backend-provider/v1`
+# Backend provider envelope `filament.backend-provider/v1`
 
 This directory is the normative wire contract of the
 [FR-331](../../spec/objects/interfaces/FR-331-backend-provider-envelope.md)
-backend provider envelope, the body of every `quire.plugin-wire/v1` frame
+backend provider envelope, the body of every `filament.plugin-wire/v1` frame
 ([FR-462](../../spec/functional/tooling/FR-462-speak-the-plugin-wire.md)) and
 the value a compile-time provider exchanges with the host. It is a
 schema-and-vector boundary. Each reader converts from this wire into its own
-types (QSL ADR-013 T-7): no shared Rust crate carries these types, and no
+types (FSL ADR-013 T-7): no shared Rust crate carries these types, and no
 consumer holds a copy of this schema.
 
 ## Contents
 
 - `schema.json` is the closed Draft 2020-12 schema
-  `urn:quire:backend-provider:v1`. Every member's description names its
+  `urn:filament:backend-provider:v1`. Every member's description names its
   owning requirement. It references the checked-package schema
-  `urn:quire:checked-package:v2` for `NodeId`, `Occurrence`,
+  `urn:filament:checked-package:v2` for `NodeId`, `Occurrence`,
   `Rational` and the decimal-string forms, so those shapes have one
   definition.
 - `vectors.json` holds positive vectors, each with an `owners` map from a JSON
@@ -40,7 +40,7 @@ consumer holds a copy of this schema.
 - `tests/backend_provider_v1.rs` validates every vector against the schema
   and checks the package-bytes rule (TC-431).
 - `tests/task_priority_vectors.rs` runs the FR-419/FR-364 priority vectors;
-  these QSpec checks do not replace the independent QSL strict-reader tests.
+  these QSpec checks do not replace the independent FSL strict-reader tests.
 
 ## Stages
 
@@ -64,7 +64,7 @@ descriptor as its provider gave it.
 ## Package bytes
 
 `request.package` is the RFC 8785 byte string of the
-`quire.checked-package/v2` document, spelled as RFC 4648 section 5 base64url
+`filament.checked-package/v2` document, spelled as RFC 4648 section 5 base64url
 with no padding and zero unused trailing bits, so one byte string has one
 spelling and the frame keeps one RFC 8785 encoding. A reader decodes
 `package` and admits it with the v2 reader.

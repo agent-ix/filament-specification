@@ -4,11 +4,11 @@ title: "Assessment execution disposition vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
 ---
 # FR-241: Assessment execution disposition vocabulary
@@ -70,7 +70,7 @@ closure or complete-global-conformance closure.
   five states and their combination rules.
 - [FR-062](../../functional/protocol/FR-062-project-results-to-portable-verification.md)
   establishes the total projection of each state into E02.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

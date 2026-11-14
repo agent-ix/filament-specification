@@ -4,15 +4,15 @@ title: "Receive occurrence"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-222
+  - target: ix://agent-ix/filament-specification/FR-222
     type: references
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: references
 ---
 # FR-223: Receive occurrence
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   an authored protocol node and carries the node occurrence identity.
 - **related send occurrence** ([FR-222](FR-222-send-occurrence.md)) — the exact
   concrete send the receive is related to. The
-  [choreography surface](../../../proposals/quire-v1/choreography-surface.md)
+  [choreography surface](../../../proposals/filament-v1/choreography-surface.md)
   states that `receive ... via C of SendNode` observes "A distinct receive
   related to the exact concrete send occurrence; duplicate transport receipts do
   not create another node occurrence."
@@ -96,7 +96,7 @@ message/effect obligation".
   duplicate receipt from minting another effect node.
 - [FR-054](../../functional/protocol/FR-054-bind-channel-premises.md) admits the
   duplicate receipt under an at-least-once premise.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Status

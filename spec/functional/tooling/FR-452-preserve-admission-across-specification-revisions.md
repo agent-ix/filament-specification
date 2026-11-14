@@ -3,15 +3,15 @@ id: FR-452
 title: "Preserve admission across specification revisions"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-202
+  - target: ix://agent-ix/filament-specification/FR-202
     type: references
-  - target: ix://agent-ix/quire-specification/FR-301
+  - target: ix://agent-ix/filament-specification/FR-301
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-340
+  - target: ix://agent-ix/filament-spec-language/FR-340
     type: references
 ---
 
@@ -102,7 +102,7 @@ An unresolved case is never reported as holding.
   (FR-290). It compares outcomes, never package identities or revision
   labels.
 
-quire-spec-language FR-340 to FR-344 implement this gate, including the
+filament-spec-language FR-340 to FR-344 implement this gate, including the
 classification of each compile and run result into the outcomes above.
 
 ## Acceptance Criteria
@@ -129,7 +129,7 @@ classification of each compile and run result into the outcomes above.
 ## References
 
 - Capability row V1-TOOL-011.
-- quire-spec-language ADR-017 §2 RF-1, RF-2, RF-4; FR-340 to FR-344.
+- filament-spec-language ADR-017 §2 RF-1, RF-2, RF-4; FR-340 to FR-344.
 - Specification ticket STD-117.
 
 ## Status

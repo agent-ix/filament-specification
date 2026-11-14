@@ -2,10 +2,10 @@
   "capability_report": [
     {
       "disposition": "available",
-      "feature": "quire.value.complete/v1"
+      "feature": "filament.value.complete/v1"
     }
   ],
-  "contract_version": "quire.checked-package/v2",
+  "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {
       "authority": "agent-ix",
@@ -24,13 +24,13 @@
     "edition": {
       "definition": {
         "authority": "agent-ix",
-        "identity": "quire-edition"
+        "identity": "filament-edition"
       },
       "role": "edition"
     },
     "profile_selections": [],
     "required_features": [
-      "quire.value.complete/v1"
+      "filament.value.complete/v1"
     ],
     "sources": [
       {
@@ -41,7 +41,7 @@
   },
   "name": "example",
   "semantic_graph": {
-    "graph_version": "quire.checked-semantic-graph/v2",
+    "graph_version": "filament.checked-semantic-graph/v2",
     "nodes": [
       {
         "body": {
@@ -64,7 +64,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer",
         "semantic_type": {
           "ordinal": 0,
@@ -96,7 +96,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "text",
         "semantic_type": {
           "ordinal": 0,
@@ -179,7 +179,7 @@
             "role": "type"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "integer_range",
         "semantic_type": {
           "ordinal": 0,
@@ -224,7 +224,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -272,7 +272,7 @@
             "role": "expression"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "literal",
         "semantic_type": {
           "ordinal": 0,
@@ -395,7 +395,7 @@
           "identity": "example",
           "kind": "source"
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "extension_form",
         "semantic_type": {
           "ordinal": 0,

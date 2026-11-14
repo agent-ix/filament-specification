@@ -3,7 +3,7 @@ id: TC-038
 title: "Resolve predicate names under explicit lexical scopes"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-038
+  - target: ix://agent-ix/filament-specification/FR-038
     type: verifies
 ---
 ## Description

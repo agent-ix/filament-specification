@@ -3,7 +3,7 @@ id: TC-210
 title: "Finite simulation reproducibility"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: verifies
 ---
 
@@ -23,7 +23,7 @@ Every positive and boundary result matches FR-181; each invalid, unsupported or 
 
 ## Sampler
 
-Seeded sampling selects the `quire.simulation.sampler/v1` sampler by its
+Seeded sampling selects the `filament.simulation.sampler/v1` sampler by its
 identity.
 
 ## Refusal vectors

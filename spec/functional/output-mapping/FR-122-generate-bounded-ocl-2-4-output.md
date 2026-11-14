@@ -3,16 +3,16 @@ id: FR-122
 title: "Generate bounded OCL 2.4 output"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-121
+  - target: ix://agent-ix/filament-specification/FR-121
     type: references
-  - target: ix://agent-ix/quire-specification/FR-033
+  - target: ix://agent-ix/filament-specification/FR-033
     type: references
-  - target: ix://agent-ix/quire-specification/FR-042
+  - target: ix://agent-ix/filament-specification/FR-042
     type: references
 ---
 ## Description
 
-When `quire.output.ocl24/v1` is selected, the OCL mapper SHALL
+When `filament.output.ocl24/v1` is selected, the OCL mapper SHALL
 generate only the admitted OCL 2.4 invariant/pre/post fragment.
 
 ## Inputs
@@ -51,7 +51,7 @@ as a state invariant. Tool/library acceptance is not semantic preservation.
 
 ## Dependencies
 
-- [OCL 2.4 profile](../../../proposals/quire-v1/output-mappings/ocl-2.4.md).
+- [OCL 2.4 profile](../../../proposals/filament-v1/output-mappings/ocl-2.4.md).
 - [FR-121](FR-121-account-for-every-output-obligation.md).
 - Qcir #55 owns implementation.
 

@@ -3,11 +3,11 @@ id: US-004
 title: "Retain evidence meaning across versions"
 type: US
 relationships:
-  - target: "ix://agent-ix/quire-specification/StR-001"
+  - target: "ix://agent-ix/filament-specification/StR-001"
     type: traces_to
-  - target: "ix://agent-ix/quire-specification/FR-014"
+  - target: "ix://agent-ix/filament-specification/FR-014"
     type: exercises
-  - target: "ix://agent-ix/quire-specification/FR-015"
+  - target: "ix://agent-ix/filament-specification/FR-015"
     type: exercises
 ---
 # US-004: Retain evidence meaning across versions

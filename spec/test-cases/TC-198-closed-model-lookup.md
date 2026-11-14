@@ -3,7 +3,7 @@ id: TC-198
 title: "Closed model lookup"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-153
+  - target: ix://agent-ix/filament-specification/FR-153
     type: verifies
 ---
 
@@ -17,8 +17,8 @@ Query lookup/all-instances with complete, unknown, foreign and over-bound popula
 
 Use the subject and inputs named by FR-153. Execute its positive case, each declared boundary, and each explicit refusal/non-conclusive mutation through the real local Rust boundary; compare the complete typed result and artifact accounting with the criterion.
 
-Select `quire.model.complete/v1` through
-[`model-complete.md`](../../proposals/quire-v1/definitions/model-complete.md).
+Select `filament.model.complete/v1` through
+[`model-complete.md`](../../proposals/filament-v1/definitions/model-complete.md).
 Node names, declaration keys, package identity and default limits follow
 TC-195. The model is TC-195 F1 imported as `M` by TC-195 S1's shape with
 profile alias `V`: object universe `U` = `{model_selection: {identity: test/orders}, root_types: [A]}`, effective types
@@ -27,7 +27,7 @@ every `A` member precedes every `B` member in reference-key order.
 
 F1 also declares population **PA**, from artifact `PA` with IR node identity
 `ix://test/orders/PA`, whose construct meaning is
-`quire.meaning.model.population/v1`, with member types `[A, B]` and extent
+`filament.meaning.model.population/v1`, with member types `[A, B]` and extent
 `closed`. A runtime member record names its object
 identity and the declaration key of its most-specific type.
 
@@ -68,7 +68,7 @@ P3. Every `ScalarLimitsV1` counter not stated is unlimited.
 | L10 | Over `g`, `reaches(ga2, ga2, M::A::x)`, `reaches(gb1, gb1, M::A::x)`, `reaches(ga1, ga2, M::A::x)` and `reaches(ga1, ga1, M::A::x)`; then the first with `work_units: 1`, the second with `work_units: 2`, and the fourth with `value_occurrences: 1` | `false` after `graph.expand` for `a2` and `graph.result-retain`: two work units and one result unit (the start is discovered but not reached, and `a2` has no `x` edge); `true` after `graph.expand` for `b1`, one `graph.edge` to `b1` and `graph.result-retain`: three work units; `true` after `graph.expand` for `a1`, one `graph.edge` to `a2` and `graph.result-retain`: three work units; `false` after `graph.expand` for `a1` (`value_occurrences` 1), `graph.edge` to `a2`, `graph.expand` for `a2` (`value_occurrences` 2) and `graph.result-retain`: four work units, because no edge returns to `a1` (FR-043-AC-2); `incomplete { limit_kind: work_units, limit: 1, consumed: 1, next_charge: 1, charge_point: graph.result-retain }`; `incomplete { limit_kind: work_units, limit: 2, consumed: 2, next_charge: 1, charge_point: graph.result-retain }`; `incomplete { limit_kind: value_occurrences, limit: 1, consumed: 1, next_charge: 2, charge_point: graph.expand }`; no incomplete run exposes a Boolean |
 | L11 | Over `g`, `deref(ga1).x`, then with `work_units: 1`; `deref(gz)`, then with `work_units: 0` | present `a2` as `Option<Reference<M::A>>` after `model.deref` and `model.navigate`: two work units and no result unit; `incomplete { limit_kind: work_units, limit: 1, consumed: 1, next_charge: 1, charge_point: model.navigate }`; `refused { code: dangling_reference, cause: absent-target-in-complete-population }` for `z9` after `model.deref`: one work unit; `incomplete { limit_kind: work_units, limit: 0, consumed: 0, next_charge: 1, charge_point: model.deref }` |
 | L12 | PA2: PA's extent and ModelSelection with member types `[A]` only, over runtime members P1 (`a1`, `a2` of type `A`, `b1` of type `B`, where `B` is a direct subtype of `A`); the identity check covers `a1` and `a2` before any edge, so only `b1`'s coverage walk follows an edge, exactly one, `B` to `A`. Run with `PopulationAdmissionLimitsV1` counters not stated unlimited and `ancestor_steps: 1`, then `ancestor_steps: 0`; then `population_members: 3, work_units: 2` with `ancestor_steps: 0` | At 1 the population is admitted; at 0 exactly incomplete(ancestor_steps,0,0,1,admission.ancestor-edge) at stage `population-admission` and no population; with `work_units: 2` the `binding.member` charge of `b1` is denied first, incomplete(work_units,2,2,1,binding.member), and no edge is followed |
-| L13 | A package whose header selects no `quire.model.complete/v1` profile and writes a `Population<T>[N]` binding type, `allInstances<T>(p)` and a record-field navigation `r.f`, each beside a `lookup`, a dispatched call and an `operation-body` | the `lookup`, dispatched call and `operation-body` each refuse `unsupported_construct`; the `Population<T>[N]` type, `allInstances` and the navigation raise no `unsupported_construct` and are admitted or refused only by the package's layer selection |
+| L13 | A package whose header selects no `filament.model.complete/v1` profile and writes a `Population<T>[N]` binding type, `allInstances<T>(p)` and a record-field navigation `r.f`, each beside a `lookup`, a dispatched call and an `operation-body` | the `lookup`, dispatched call and `operation-body` each refuse `unsupported_construct`; the `Population<T>[N]` type, `allInstances` and the navigation raise no `unsupported_construct` and are admitted or refused only by the package's layer selection |
 | L14 | F1 imported as alias `M`; PA's canonical member type is `A`, the least of `[A, B]` by declaration key (`ix://test/orders/A` precedes `ix://test/orders/B`), with no `bound` on PA. In `invariant I using V on M::A at current` the body `count<M::A>(o in allInstances<M::A>(M::PA) : true) = 3` over the L07 current snapshot (P1); in `pre Q using V on M::A::remove` the body `count<M::A>(o in allInstances<M::A>(M::PA) : true) = 3 and lookup<M::A>(M::PA, r2) absent refused = r2` over the pre snapshot (P1); in `post R using V on M::A::remove` the body `count<M::A>(o in allInstances<M::A>(M::PA) : true) = 2 and lookup<M::A>(M::PA, r2) absent empty = none and pre(lookup<M::A>(M::PA, r2) absent refused) = r2`, over pre P1 and post P1 without `a2`. Then the refusals: `allInstances<M::A>(M::Nope)`; `M::PA = M::PA`; `let z = M::PA in allInstances<M::A>(z)`; `size(M::PA)`; a clause body that is `M::PA`; alias `M` also an enum name; the same `allInstances<M::A>(M::PA)` in a function body. Then PA with extent `open`; PA with member types `[B]` and runtime members `b1` only, queried `allInstances<M::A>(M::PA)` in `Q`; a snapshot with no PA row | `I` is `true` over `[a1, a2, b1]`; `Q` is `true` (pre population `[a1, a2, b1]`, lookup present `a2` with pre type `A`); `R` is `true` (post population `[a1, b1]`, the lookup `none`, the `pre(...)` lookup present `a2`); each operand is typed `Population<M::A>` (no bracket); `missing_declaration`/`missing-name` at `Nope`; the next four each `ill_typed`/`operator-ineligible` at the name; `ambiguous_declaration`/`ambiguous-name` at the name; `missing_declaration`/`missing-name` in the function body; `incomplete_population`/`incomplete-scope`; `incomplete_population`/`unclosed-subtypes` naming F1's ModelSelection, PA, `M::A` and the uncovered type `A`; `incomplete_population`/`missing-required-artifact`, each with no collection |
 
 ## Expected Results

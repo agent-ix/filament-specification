@@ -3,13 +3,13 @@ id: FR-369
 title: "Name the strong fairness a refutation's loop would exclude"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
 ---
 
@@ -76,5 +76,5 @@ any engine receives it.
 
 ## References
 
-- quire-spec-language ADR-019 SV-6, RU-4 and QS-8; Linear STD-132 (paired with
+- filament-spec-language ADR-019 SV-6, RU-4 and QS-8; Linear STD-132 (paired with
   QSL-365).

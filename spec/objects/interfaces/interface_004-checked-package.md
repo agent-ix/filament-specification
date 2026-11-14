@@ -3,9 +3,9 @@ id: interface_004
 title: "I04 immutable checked package"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: references
 ---
 
@@ -52,7 +52,7 @@ invariants:
 
 ## Public boundary
 
-`quire.checked-package/v2` is the complete-V1 I04 interchange emitted for
+`filament.checked-package/v2` is the complete-V1 I04 interchange emitted for
 checked packages. Its normative closed schema and independently authored
 vectors are published under
 [`proposals/checked-package-v2`](../../../proposals/checked-package-v2/). The
@@ -74,8 +74,8 @@ five-stratum body grammar, so the wire's JSON depth is fixed by its schema.
 A V2 `application` term carries its operator class, its exact
 `operation: {identity, laws, mode, member, leaves}`, its declared
 `result_type` and its arguments: a closed
-`quire.checked-operation-catalog/v1` identity from the
-`contracts/checked-operation-catalog-v1.json` of `agent-ix/quire-verification-contracts`, the ordered `{role, definition}` laws the catalog
+`filament.checked-operation-catalog/v1` identity from the
+`contracts/checked-operation-catalog-v1.json` of `agent-ix/filament-verification-contracts`, the ordered `{role, definition}` laws the catalog
 requires for that identity, its `rounding`, `text_profile` or `absence` mode,
 its member (record field, tuple position, element, relationship end, dispatched
 operation or type argument, each naming its declaring node, or a clause's
@@ -98,7 +98,7 @@ reduction rounds.
 Every node whose body contains an application has a structural `node_id`
 over its derived form (FR-322), so a changed operation, law, mode, member,
 leaf, result type or declaration yields a different node. `read` refuses with the causes and order owned by
-`quire.native.diagnostics/v1`:
+`filament.native.diagnostics/v1`:
 
 | Order | Cause | Code |
 | --- | --- | --- |
@@ -126,7 +126,7 @@ defect: a `missing-name`/`missing_declaration` or `malformed-declaration`/
 `conflicting-binding`/`invalid_model_binding` defect, outranks that same frame
 node's own `invalid_semantic_graph` canonical-order defect; and then the state
 step ([FR-341](./FR-341-checked-package-state-clause-body.md)): the
-placement of every `quire.op.state.clause` application, then each
+placement of every `filament.op.state.clause` application, then each
 `state`/`operation_anchor` node's joins
 ([FR-342](./FR-342-checked-package-operation-anchor-body.md)), then each
 `state`/`state_clause` node's joins, each in ascending node-id order.

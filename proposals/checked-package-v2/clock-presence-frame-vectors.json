@@ -1,5 +1,5 @@
 {
-  "version": "quire.clock-presence-frame-vectors/v1",
+  "version": "filament.clock-presence-frame-vectors/v1",
   "rule": "FR-415-AC-21: an Option<Clock> place is live only when its presence bit is present; an unwritten bit does not change, a requirement is a constraint and never a write, and there is no implicit reset to 0. A presence requirement that nothing writes has no successor and refuses invalid_timed_model/clock-presence-unwritten when the precondition establishes absence.",
   "places": {
     "option": "v: Option<Clock>"

@@ -3,7 +3,7 @@ id: TC-008
 title: "Separate acyclic values from deferred reference behavior"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: verifies
 ---
 ## Description

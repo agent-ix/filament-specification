@@ -3,11 +3,11 @@ id: TC-180
 title: "Complete V1 profile bundle accounting"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-131
+  - target: ix://agent-ix/filament-specification/FR-131
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-339
+  - target: ix://agent-ix/filament-specification/FR-339
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: verifies
 ---
 

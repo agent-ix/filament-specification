@@ -4,15 +4,15 @@ title: "Compensation attempt"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-236
+  - target: ix://agent-ix/filament-specification/FR-236
     type: references
-  - target: ix://agent-ix/quire-specification/FR-225
+  - target: ix://agent-ix/filament-specification/FR-225
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-235: Compensation attempt
@@ -107,7 +107,7 @@ satisfy the other's binding.
 
 - [FR-058](../../functional/protocol/FR-058-preserve-retry-and-partial-recovery.md).
 - [FR-051](../../functional/protocol/FR-051-preserve-communication-identities.md).
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-225](FR-225-operation-attempt.md) types the forward operation attempt this
   one is held distinct from.

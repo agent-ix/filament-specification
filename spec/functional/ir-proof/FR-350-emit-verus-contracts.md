@@ -1,32 +1,32 @@
 ---
 id: FR-350
-title: "Emit Verus contracts from QSL state contracts"
+title: "Emit Verus contracts from FSL state contracts"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: references
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: references
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: references
 ---
 
-# FR-350: Emit Verus contracts from QSL state contracts
+# FR-350: Emit Verus contracts from FSL state contracts
 
 ## Description
 
 When Verus generation is requested for a named implementation Rust function,
 the backend SHALL derive its `requires`, `ensures` and loop invariant clauses
-from the function's bound QSL state contract and record the Verus
+from the function's bound FSL state contract and record the Verus
 version and options it ran.
 
 ## Inputs
 
-Target-neutral items carrying a QSL state contract (pre/post obligations and
+Target-neutral items carrying a FSL state contract (pre/post obligations and
 loop invariants), the named implementation Rust function the contract is
 bound to through the FR-353 abstraction relation, and the Verus options.
 
@@ -63,7 +63,7 @@ backend advertises at all, which remains `unsupported`.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-350-AC-1 | Emitted `requires`/`ensures`/loop-invariant clauses correspond exactly to the bound QSL state contract's precondition, postcondition and invariant. | Test (TC-267) |
+| FR-350-AC-1 | Emitted `requires`/`ensures`/loop-invariant clauses correspond exactly to the bound FSL state contract's precondition, postcondition and invariant. | Test (TC-267) |
 | FR-350-AC-2 | Emission targets only a named implementation Rust function; no clause is emitted onto an unnamed or synthesized target. | Test (TC-267) |
 | FR-350-AC-3 | Verus registers under the same AD-010 provider contract as Kani and the SMT backend, with no second contract shape. | Test (TC-267) |
 | FR-350-AC-4 | A refuted clause returns a replayable counterexample for the emitted function. | Test (TC-267) |

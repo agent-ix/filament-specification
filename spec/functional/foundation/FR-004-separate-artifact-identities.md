@@ -3,7 +3,7 @@ id: FR-004
 title: "Preserve independent artifact identities"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-002"
+  - target: "ix://agent-ix/filament-specification/US-002"
     type: traces_to
 ---
 # FR-004: Preserve independent artifact identities

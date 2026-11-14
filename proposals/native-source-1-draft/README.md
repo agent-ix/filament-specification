@@ -7,7 +7,7 @@ not an implemented profile, an alias, qualification evidence or a second ledger.
 
 ## Selected authority and definition identity
 
-Native Quire is the sole editable formal-clause language. OCL 2.4, SysML v2 and
+Native Filament is the sole editable formal-clause language. OCL 2.4, SysML v2 and
 FRETish are output-only mapping profiles under FS06. Generated text cannot become
 a second authority for the same clause. Shared model declarations supply the
 types a clause names; they are not another clause language.
@@ -38,12 +38,12 @@ removed by dead-code elimination or hidden by a more capable IR/backend.
 
 Native `present`/guarded `value`, short-circuit Boolean control, `if` and `let`
 retain their native definedness/evaluation requirements. Clause grammar and
-truth tables are Quire's own.
+truth tables are Filament's own.
 The carried-forward table below is binding; an external language's punctuation
 does not silently redefine a native construct. Exact rational spelling and the
 inherited-rule closure are now specified by the composed
-[shared grammar](../quire-v1/shared-grammar.md) and
-[state contract](../quire-v1/state-contract.md). Their implementation and
+[shared grammar](../filament-v1/shared-grammar.md) and
+[state contract](../filament-v1/state-contract.md). Their implementation and
 qualification remain FS03/backend work; this superseded candidate is not adopted.
 
 ## Carried-forward semantic admission
@@ -94,7 +94,7 @@ anchors, bare context types, foreign operations, historical-state access on a
 parameter and cross-observation guard reuse refuse. The existing 0-draft
 `pre(parameter)` rule is therefore not inherited. The exact treatment of aliases
 and composite pre expressions is now specified in the composed
-[state contract](../quire-v1/state-contract.md). A passing parameter fixture from
+[state contract](../filament-v1/state-contract.md). A passing parameter fixture from
 `0-draft` is not implementation evidence for that contract.
 
 ## Reference and ConfigVersion design gate

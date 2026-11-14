@@ -3,25 +3,25 @@ id: FR-417
 title: "Settle time-lock freedom for every timed subject"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: references
-  - target: ix://agent-ix/quire-specification/FR-366
+  - target: ix://agent-ix/filament-specification/FR-366
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: references
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: references
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -140,7 +140,7 @@ reachable, and settles only after the checker accepts it.
 
 ## References
 
-- QSL ADR-026 TD-1 to TD-4, TV-1, EZ-7; QSL ADR-022 trap evidence (its QSpec
+- FSL ADR-026 TD-1 to TD-4, TV-1, EZ-7; FSL ADR-022 trap evidence (its QSpec
   half: STD-135).
 - Owner ruling recorded on QSL-373: a non-local time-lock reuses the trap
   evidence, and `time-lock` stays its own counterexample kind.

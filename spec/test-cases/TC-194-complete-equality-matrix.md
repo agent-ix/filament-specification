@@ -3,7 +3,7 @@ id: TC-194
 title: "Complete equality matrix"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: verifies
 ---
 
@@ -16,10 +16,10 @@ Execute positive, negative and cross-type comparisons for every complete-V1 valu
 ## Test Procedure
 
 Select language `ix:native`, edition `1-draft`, the
-`quire.value.complete/v1` definition, and the
-`quire.value.text.unicode-17.0.0/v1` and `quire.value.ieee754-2019-default/v1`
+`filament.value.complete/v1` definition, and the
+`filament.value.text.unicode-17.0.0/v1` and `filament.value.ieee754-2019-default/v1`
 definitions through
-[`value-complete.md`](../../proposals/quire-v1/definitions/value-complete.md).
+[`value-complete.md`](../../proposals/filament-v1/definitions/value-complete.md).
 Build fixtures with distinct I04 semantic-node keys
 for declarations that intentionally share names or shapes. Execute every row
 through the real local Rust boundary:
@@ -62,7 +62,7 @@ under FR-144 literal typing.
 | E27 | Pair counts under unlimited limits: `Option<Integer>` `none`/`none`, the present value 1 / the present value 2, `none` / the present value 1; `record R { a: Integer; b: Integer?; }` `R { a: 1 }`/`R { a: 1 }`, `R { a: 1, b: null }`/`R { a: 1 }`, `R { a: 1, b: 2 }`/`R { a: 2, b: 2 }`; `Sequence<Integer>[0,3]` `sequence[1, 2]`/`sequence[1, 2, 3]` and `sequence[1, 2]`/`sequence[1, 3]`; `Set<Integer>[0,3]` `set[1, 2]`/`set[2, 1]` and `set[1, 2]`/`set[1, 2, 3]`; `Bag<Integer>[0,3]` `bag[1, 1, 2]`/`bag[1, 2, 2]`, all operands supplied as parameters of those types | as (Boolean, pairs, work units): `(true,1,5)`, `(false,2,8)`, `(false,1,6)`; `(true,3,9)`, `(false,3,9)`, `(false,3,11)`, with no early exit and `occ` 0 for `absent` and `null` slots; `(false,1,10)`, `(false,3,11)`; `(true,3,11)`, `(false,1,10)`; `(false,4,14)` from rank pairs `(1,1)`, `(1,2)` and `(2,2)`. Work units are `occ(left) + occ(right)` plus the pair count plus two |
 | E28 | `=` and `!=` on binary32 `float32(bits: 0x3f800000)` with itself, on `float32(bits: 0x7fc00000)` with itself, and on two values of `record F { x: Float32; }` holding `float32(bits: 0x80000000)` and `float32(bits: 0x00000000)`; then `s = s` for `s` of `Set<Float64>[0,2]` holding `float64(bits: 0x7ff8000000000000)` | `=` true and `!=` false; `=` false and `!=` true; `=` true; `true` for the set, because its one NaN member is the same member by bit identity |
 | E29 | Under `ScalarLimitsV1 { integer_bits: 8, decimal_digits: 3, scale_expansion: 2, text_input_bytes: 0, text_scalars: 0, normalized_scalars: 0, unit_edges: 0, value_occurrences: 1, work_units: 9, result_units: 2 }`, evaluate E26's first comparison, `convert<Decimal[0,200;2,2;exact]>(i) = decimal(100, 2)` for `i` of `Int[0,2]` holding 1; then with the same tuple except `work_units: 8` | true after `decimal.operands` (`integer_bits` 1, `decimal_digits` 1), `decimal.scale-expansion` (`scale_expansion` 2, `integer_bits = sbits(1,2) = bits(1) + bits(100) = 8`, `decimal_digits = sdigits(1,2) = 3`), `decimal.arithmetic`, `decimal.result-retain`, then the five-unit one-pair equality: nine work units and two result units; then `incomplete { limit_kind: work_units, limit: 8, consumed: 6, next_charge: 3, charge_point: equality.plan }`, because the four decimal charges and `equality.plan-form` consume six work units and `equality.plan` requires capacity for its pair and two more units |
-| E30 | For parameters `f`, `g` of `Float64` holding `float64(bits: 0x3ff0000000000000)` and `float64(bits: 0x4000000000000000)`: `f < g`, `f <= g`, `f > g`, `f >= g`; then `quire::value::ieee::totalOrder(f, g)` | true, true, false, false; `totalOrder` returns true |
+| E30 | For parameters `f`, `g` of `Float64` holding `float64(bits: 0x3ff0000000000000)` and `float64(bits: 0x4000000000000000)`: `f < g`, `f <= g`, `f > g`, `f >= g`; then `filament::value::ieee::totalOrder(f, g)` | true, true, false, false; `totalOrder` returns true |
 | E31 | The model record value type `Money` with subtype `TaxedMoney` (E10's pairs with a subtype): operands of static type `Money` holding a `TaxedMoney` and a `Money` of equal shared fields, in either order; the same two values as the `first` field of `Pair { first: Money; }`, as `Option<Money>` payloads, as `Sequence<Money>` elements, at a tuple position and as a union payload; a `TaxedMoney`-typed operand against a `Money`-typed operand | `false` for every pair, each one terminal unequal pair with no descent; `refused { code: ill_typed, cause: type-mismatch }` for the last |
 | E32 | `=` and `!=` over two `OrderPlaced` event operands, over two `Option<OrderPlaced>` operands and over tuples holding one; then declare `Set<OrderPlaced>[0,2]` | each is `refused { code: ill_typed, cause: operator-ineligible }` before any charge |
 | E33 | For package `M` with `Tally = Int[0,3]`, `record Retry { tally: Tally; }` and parameters `earlier`, `later`, `recovered` of `Retry`: `earlier.tally < 3 and later.tally = earlier.tally + 1`; then `later.tally = earlier.tally + 1`; then `recovered.tally = recovered.tally + 1` | checks, with the sum typed `Tally` and the relation charging the sum's own integer-arithmetic schedule plus the five-unit one-pair equality; `undefined_expression`/`unproved-range` at `earlier.tally + 1` (interval `[1,4]`); `undefined_expression`/`unproved-range` at `recovered.tally + 1` |

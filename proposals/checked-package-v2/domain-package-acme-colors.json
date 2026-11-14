@@ -6,7 +6,7 @@
     {
       "construct": {
         "identity": "value",
-        "meaning": "quire.meaning.model.variant-type/v1",
+        "meaning": "filament.meaning.model.variant-type/v1",
         "members": {
           "variants": "required"
         },

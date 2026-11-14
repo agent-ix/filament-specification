@@ -1,0 +1,22 @@
+{
+  "definition_identity": "filament.model.complete.rules/v1",
+  "normalization_rules": [
+    {"identity": "filament.model.normalize.intake/v1", "stage": "normalization", "phase": 1, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.features/v1", "stage": "normalization", "phase": 1, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.normalize.qualify/v1", "stage": "normalization", "phase": 2, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.normalize.inherit/v2", "stage": "normalization", "phase": 3, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.normalize.subset/v2", "stage": "normalization", "phase": 4, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.normalize.redefine/v2", "stage": "normalization", "phase": 4, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.normalize.canonicalize/v1", "stage": "normalization", "phase": 5, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.conformance.variance/v1", "stage": "conformance", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md"},
+    {"identity": "filament.model.conformance.multiplicity/v1", "stage": "conformance", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md"},
+    {"identity": "filament.model.conformance.effect/v1", "stage": "conformance", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md"},
+    {"identity": "filament.model.conformance.refinement/v1", "stage": "conformance", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md"},
+    {"identity": "filament.model.dispatch.single/v1", "stage": "dispatch", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md"},
+    {"identity": "filament.model.systems.kind-mapping/v1", "stage": "systems", "phase": null, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.systems.connection/v1", "stage": "systems", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-152-bind-systems-model-structures.md"},
+    {"identity": "filament.model.systems.allocation/v1", "stage": "systems", "phase": null, "defined_by": "model-complete.md"},
+    {"identity": "filament.model.environment.lookup/v1", "stage": "environment", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-153-query-closed-model-environments.md"},
+    {"identity": "filament.model.environment.population/v1", "stage": "environment", "phase": null, "defined_by": "../../../spec/functional/type-model/FR-153-query-closed-model-environments.md"}
+  ]
+}

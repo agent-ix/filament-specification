@@ -3,9 +3,9 @@ id: IT-073
 title: "Protocol analyzers share one checked graph"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-174
+  - target: ix://agent-ix/filament-specification/FR-174
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: verifies
 ---
 
@@ -18,7 +18,7 @@ refinement consume the same real checked Protocol graph and keep separate claims
 
 ## Target Integration
 
-QSL emits I08 through its Rust API; `quire-protocol` analyzers consume it
+FSL emits I08 through its Rust API; `filament-protocol` analyzers consume it
 and emit I09 results locally.
 
 ## Preconditions

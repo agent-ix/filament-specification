@@ -3,7 +3,7 @@ id: US-006
 title: "Assess distributed protocols without losing uncertainty"
 type: US
 relationships:
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: traces_to
 ---
 # US-006: Assess distributed protocols without losing uncertainty
@@ -50,7 +50,7 @@ choice remains open.
 
 ## Constraints (Contextual)
 
-Native Quire remains the single editable source language. The evaluator observes
+Native Filament remains the single editable source language. The evaluator observes
 recorded behavior and does not orchestrate messages or compensation. Existing
 Quoin and Engineering Assurance interfaces retain evidence and execution
 ownership instead of being recreated in the protocol component.

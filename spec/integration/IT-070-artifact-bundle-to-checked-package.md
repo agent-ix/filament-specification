@@ -3,11 +3,11 @@ id: IT-070
 title: "Artifact bundle to checked package"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-150
+  - target: ix://agent-ix/filament-specification/FR-150
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-152
+  - target: ix://agent-ix/filament-specification/FR-152
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: verifies
 ---
 
@@ -16,20 +16,20 @@ relationships:
 ## Objective
 
 Verify that a spec's artifact bundle becomes a checked package through the real
-chain: quire-rs extraction, FCD extraction-frontend lift, domain package, QSL
+chain: quire-rs extraction, FCD extraction-frontend lift, domain package, FSL
 model intake and linking. The chain must agree on declaration keys, effective
 declarations, systems-model relations and refusal behavior.
 
 ## Target Integration
 
 The quire-rs semantic extraction API reads an artifact bundle. The FCD
-extraction-frontend lifts the result into a domain package. QSL
+extraction-frontend lifts the result into a domain package. FSL
 model intake, normalization and package linking consume that domain package in
 one local process.
 
 ## Preconditions
 
-quire-rs, FCD and quire-spec-language build locally with their published Rust interfaces; `resources/native-v1/` is
+quire-rs, FCD and filament-spec-language build locally with their published Rust interfaces; `resources/native-v1/` is
 read-only.
 
 ## Inputs

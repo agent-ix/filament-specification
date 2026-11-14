@@ -3,21 +3,21 @@ id: FR-047
 title: "Classify producer diagnostics from typed causes"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-005
+  - target: ix://agent-ix/filament-specification/US-005
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: references
-  - target: ix://agent-ix/quire-specification/FR-270
+  - target: ix://agent-ix/filament-specification/FR-270
     type: references
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: references
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
-  - target: ix://agent-ix/quire-specification/FR-273
+  - target: ix://agent-ix/filament-specification/FR-273
     type: references
-  - target: ix://agent-ix/quire-specification/FR-274
+  - target: ix://agent-ix/filament-specification/FR-274
     type: references
-  - target: ix://agent-ix/quire-specification/FR-207
+  - target: ix://agent-ix/filament-specification/FR-207
     type: references
 ---
 ## Description
@@ -84,8 +84,8 @@ authority on the wire.
 
 ## Dependencies
 
-- [Detailed draft contract](../../../proposals/quire-v1/shared-foundation.md).
-- [Shared grammar](../../../proposals/quire-v1/shared-grammar.md).
+- [Detailed draft contract](../../../proposals/filament-v1/shared-foundation.md).
+- [Shared grammar](../../../proposals/filament-v1/shared-grammar.md).
 - [FR-207](../../objects/foundation/FR-207-runtime-value-path.md) types the runtime
   object or value path this requirement defines.
 

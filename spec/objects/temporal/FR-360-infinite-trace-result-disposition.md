@@ -4,23 +4,23 @@ title: "Infinite-trace result disposition vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: references
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: references
-  - target: ix://agent-ix/quire-specification/FR-174
+  - target: ix://agent-ix/filament-specification/FR-174
     type: references
-  - target: ix://agent-ix/quire-specification/FR-175
+  - target: ix://agent-ix/filament-specification/FR-175
     type: references
 ---
 # FR-360: Infinite-trace result disposition vocabulary
@@ -112,7 +112,7 @@ A completed analysis that found no counterexample up to a depth is
 - [FR-094](../../functional/temporal/FR-094-interpret-progress-history-and-closure.md)
   restates the settlement-basis vocabulary at FR-094-AC-7 and grounds the
   `inconclusive` -> `unsettled` mapping.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Status

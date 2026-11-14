@@ -5,7 +5,7 @@
 //!
 //! These tests qualify the authored vectors against the QSpec wire schema and
 //! the policy-order oracle written in those vectors. They do not replace the
-//! independent QSL strict-reader/replay tests required by TC-372.
+//! independent FSL strict-reader/replay tests required by TC-372.
 
 use ix_trace_rs::trace;
 use serde_json::{Value, json};
@@ -22,18 +22,18 @@ fn definition(name: &str) -> jsonschema::Validator {
     let schema = parsed(SCHEMA);
     let registry = jsonschema::Registry::new()
         .add(
-            "urn:quire:checked-package:v2",
+            "urn:filament:checked-package:v2",
             parsed(CHECKED_PACKAGE_SCHEMA),
         )
         .expect("checked-package schema registers")
-        .add("urn:quire:backend-provider:v1", schema)
+        .add("urn:filament:backend-provider:v1", schema)
         .expect("backend-provider schema registers")
         .prepare()
         .expect("registry prepares");
     jsonschema::options()
         .with_registry(&registry)
         .build(&json!({
-            "$ref": format!("urn:quire:backend-provider:v1#/$defs/{name}")
+            "$ref": format!("urn:filament:backend-provider:v1#/$defs/{name}")
         }))
         .expect("schema definition compiles")
 }

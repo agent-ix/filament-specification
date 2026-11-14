@@ -3,7 +3,7 @@ id: TC-314
 title: "Refinement history and hidden-field vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-378
+  - target: ix://agent-ix/filament-specification/FR-378
     type: verifies
 ---
 

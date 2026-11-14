@@ -3,15 +3,15 @@ id: FR-307
 title: "Package reusable semantic and domain libraries"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-002
+  - target: ix://agent-ix/filament-specification/FR-002
     type: references
-  - target: ix://agent-ix/quire-specification/FR-132
+  - target: ix://agent-ix/filament-specification/FR-132
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
 ---
 
@@ -19,7 +19,7 @@ relationships:
 
 ## Description
 
-When importing a reusable Quire library, the linker SHALL resolve its exported
+When importing a reusable Filament library, the linker SHALL resolve its exported
 declarations, semantic definitions and model dependencies, and record its
 direct library selections in the package lock.
 
@@ -140,7 +140,7 @@ derived closure. The reader does not infer which imports were direct from the lo
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

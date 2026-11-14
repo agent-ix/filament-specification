@@ -3,7 +3,7 @@ id: TC-001
 title: "Represent all six verification artifact roles"
 type: TC
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-017"
+  - target: "ix://agent-ix/filament-specification/FR-017"
     type: verifies
 ---
 # TC-001: Represent all six verification artifact roles

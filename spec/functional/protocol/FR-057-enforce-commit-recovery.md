@@ -3,19 +3,19 @@ id: FR-057
 title: "Enforce commit boundaries and authored recovery relations"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-234
+  - target: ix://agent-ix/filament-specification/FR-234
     type: references
-  - target: ix://agent-ix/quire-specification/FR-237
+  - target: ix://agent-ix/filament-specification/FR-237
     type: references
-  - target: ix://agent-ix/quire-specification/FR-238
+  - target: ix://agent-ix/filament-specification/FR-238
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 ## Description

@@ -4,13 +4,13 @@ title: "Compensation obligation lifecycle"
 type: FR
 object: state_machine
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-057
+  - target: ix://agent-ix/filament-specification/FR-057
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-233
+  - target: ix://agent-ix/filament-specification/FR-233
     type: references
 ---
 # FR-234: Compensation obligation lifecycle
@@ -186,7 +186,7 @@ vocabulary is [FR-236](FR-236-compensation-attempt-outcome.md).
 - [FR-057](../../functional/protocol/FR-057-enforce-commit-recovery.md).
 - [FR-058](../../functional/protocol/FR-058-preserve-retry-and-partial-recovery.md).
 - [FR-051](../../functional/protocol/FR-051-preserve-communication-identities.md).
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Closed lifecycle contract

@@ -4,9 +4,9 @@ title: "Admitted analysis fragment"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
 ---
 # FR-291: Admitted analysis fragment
@@ -36,7 +36,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 
 - **definition identity** — nonempty owner-qualified fragment identity.
-- **claim kinds** — sorted distinct nonempty set of FR-290 protocol-family members supported by the fragment; the fragment selects the FR-290 vocabulary `quire.capability-kind/v1`.
+- **claim kinds** — sorted distinct nonempty set of FR-290 protocol-family members supported by the fragment; the fragment selects the FR-290 vocabulary `filament.capability-kind/v1`.
 - **construct/profile set** — closed sorted identities of the syntax,
   semantic, clock and boundary profiles admitted by this fragment.
 
@@ -69,4 +69,4 @@ exact selected fragment.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`.
+Proposed shared ruling for `filament-specification#40`.

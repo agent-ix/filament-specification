@@ -3,15 +3,15 @@ id: FR-112
 title: "Declare finite population and window completeness"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-263
+  - target: ix://agent-ix/filament-specification/FR-263
     type: references
-  - target: ix://agent-ix/quire-specification/FR-264
+  - target: ix://agent-ix/filament-specification/FR-264
     type: references
-  - target: ix://agent-ix/quire-specification/FR-265
+  - target: ix://agent-ix/filament-specification/FR-265
     type: references
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: references
 ---
 ## Description
@@ -23,7 +23,7 @@ observation sources, configuration/closure identities and versions, and
 completeness/progress dependencies.
 
 When selecting a v1 membership rule, the observation service SHALL admit only
-`quire.observation.explicit-members/v1` with a sorted distinct bounded list of
+`filament.observation.explicit-members/v1` with a sorted distinct bounded list of
 every required semantic member identity; the rule is identified by that contract
 and list, and no digest of the list is derived.
 
@@ -68,7 +68,7 @@ the latter can participate only in a separately selected later window.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [AD-006](../../assurance/AD-006-model-graph-state-contracts.md): population declarations and their closed extents are spec-declared and keyed by domain package identity and IR node identity; E owns closure semantics.
 
 ## Status

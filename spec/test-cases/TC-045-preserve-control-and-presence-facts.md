@@ -3,7 +3,7 @@ id: TC-045
 title: "Preserve conditional evaluation and exact optional-value facts"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-045
+  - target: ix://agent-ix/filament-specification/FR-045
     type: verifies
 ---
 ## Description

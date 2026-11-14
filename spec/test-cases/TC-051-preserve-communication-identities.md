@@ -3,15 +3,15 @@ id: TC-051
 title: "Discriminate delivery, attempt and effect identity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-224
+  - target: ix://agent-ix/filament-specification/FR-224
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-225
+  - target: ix://agent-ix/filament-specification/FR-225
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-226
+  - target: ix://agent-ix/filament-specification/FR-226
     type: verifies
 ---
 ## Description

@@ -3,11 +3,11 @@ id: TC-976
 title: "Authenticated schedulability claim carrier and reader boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-482
+  - target: ix://agent-ix/filament-specification/FR-482
     type: verifies
 ---
 
@@ -18,7 +18,7 @@ relationships:
 Verify that the checked package carries an authenticated typed handle to each
 `claim`/`schedulability` occurrence, that the handle joins only to the exact
 FR-482 claim node and occurrence, and that the IR typed read is distinct from
-the QSL-owned FR-418 successor checker.
+the FSL-owned FR-418 successor checker.
 
 ## Test Procedure
 
@@ -35,7 +35,7 @@ for SCC-07, replace the row's declaration with the exact `claim` NodeRef from
 TC-960/SN-01, whose node has `semantic_form: "state_graph"`. Then run the
 FR-322 carrier join before the FR-482 body read. In SCC-10, keep the SC-06
 node's two declared occurrences and the one schema-valid row for occurrence 0;
-the missing occurrence 1 must refuse coverage at the top-level member. The QSL checker test resolves the same
+the missing occurrence 1 must refuse coverage at the top-level member. The FSL checker test resolves the same
 claim identity through FR-418, then independently recomputes the source and
 scheduler successors from the selected timed model. The IR read test returns
 the claim body and occurrence without a model-release or successor result.
@@ -50,6 +50,6 @@ at the exact locus in the vector file. A missing row refuses
 `invalid_package`/`invalid-value` at `/schedulability_claims`, and non-canonical
 order refuses `invalid_package`/`invalid-value` at the later row. IR returns
 the authenticated FR-482 body by reference and does not evaluate source
-releases, scheduler successors or task templates. QSL owns those joins and
+releases, scheduler successors or task templates. FSL owns those joins and
 recomputations. No `TaskTransitionTemplate` or `TaskProductCertificate` field
 is added to checked-package V2.

@@ -4,13 +4,13 @@ title: "History boundary"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-253
+  - target: ix://agent-ix/filament-specification/FR-253
     type: references
-  - target: ix://agent-ix/quire-specification/FR-293
+  - target: ix://agent-ix/filament-specification/FR-293
     type: references
 ---
 # FR-257: History boundary
@@ -123,7 +123,7 @@ for the other.
   are counted from.
 - [FR-293](FR-293-history-boundary-kind.md) supplies the closed boundary-kind
   vocabulary and restoration rule.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Restoration boundary
@@ -134,4 +134,4 @@ retains `history-cutoff`.
 
 ## Status
 
-Proposed history-boundary closure for `quire-specification#40`.
+Proposed history-boundary closure for `filament-specification#40`.

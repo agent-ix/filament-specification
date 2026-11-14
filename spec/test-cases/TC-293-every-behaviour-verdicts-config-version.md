@@ -3,11 +3,11 @@ id: TC-293
 title: "Every-behaviour verdicts on the ConfigVersion subject"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
 ---
 
@@ -32,14 +32,14 @@ Universe `config_history = {a, b}`; one initial snapshot with both at version
 with the two successors `upd(a)` and `upd(b)`.
 
 1. Check `always eventually holds(c.versionNumber = 2)` under
-   `quire.temporal.infinite-trace/v1`, `over (c: Config::ConfigVersion)`, with
+   `filament.temporal.infinite-trace/v1`, `over (c: Config::ConfigVersion)`, with
    `fair weak each Config::ConfigVersion::attemptUpdate;`.
 2. Check the same clause with `fair weak whole …` and with the unmarked
    `fair …`.
 3. Replace the postcondition with the shipped `VersionUnchanged`
    (`self.versionNumber = pre(self.versionNumber)`) and repeat step 1.
 4. Check `eventually[0,5] holds(c.versionNumber = 2)` under
-   `quire.temporal.event-position.false-extension/v1`, `on origin`, with the
+   `filament.temporal.event-position.false-extension/v1`, `on origin`, with the
    step 1 postcondition.
 5. Check `always[0,5] holds(c.versionNumber <= 2)` under the same profile with
    an exhaustive engine and with an engine that unrolls to depth 5.

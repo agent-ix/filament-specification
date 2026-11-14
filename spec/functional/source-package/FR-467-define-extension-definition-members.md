@@ -3,15 +3,15 @@ id: FR-467
 title: "Define an extension definition's grammar and typed-node schemas"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-133
+  - target: ix://agent-ix/filament-specification/FR-133
     type: references
-  - target: ix://agent-ix/quire-specification/FR-131
+  - target: ix://agent-ix/filament-specification/FR-131
     type: references
-  - target: ix://agent-ix/quire-specification/FR-339
+  - target: ix://agent-ix/filament-specification/FR-339
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -33,7 +33,7 @@ A validated extension definition that [FR-133](FR-133-extend-language-uniformly.
 
 ### Production
 
-A *production* is one declaration form of an extension. Every production has exactly this shape over the [complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) lexical contract:
+A *production* is one declaration form of an extension. Every production has exactly this shape over the [complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) lexical contract:
 
 ```ebnf
 extension-decl = leading-keyword, ident, '{', [ clause, { ',', clause } ], '}' ;

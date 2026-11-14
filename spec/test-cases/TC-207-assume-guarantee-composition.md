@@ -3,7 +3,7 @@ id: TC-207
 title: "Assume-guarantee composition"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-176
+  - target: ix://agent-ix/filament-specification/FR-176
     type: verifies
 ---
 

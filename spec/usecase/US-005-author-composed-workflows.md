@@ -3,49 +3,49 @@ id: US-005
 title: "Describe and assess a distributed workflow in one language"
 type: US
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-048
+  - target: ix://agent-ix/filament-specification/FR-048
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-037
+  - target: ix://agent-ix/filament-specification/FR-037
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-038
+  - target: ix://agent-ix/filament-specification/FR-038
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-039
+  - target: ix://agent-ix/filament-specification/FR-039
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-040
+  - target: ix://agent-ix/filament-specification/FR-040
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-042
+  - target: ix://agent-ix/filament-specification/FR-042
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-045
+  - target: ix://agent-ix/filament-specification/FR-045
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-046
+  - target: ix://agent-ix/filament-specification/FR-046
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: exercises
-  - target: ix://agent-ix/quire-specification/StR-002
+  - target: ix://agent-ix/filament-specification/StR-002
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-020
+  - target: ix://agent-ix/filament-specification/FR-020
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-031
+  - target: ix://agent-ix/filament-specification/FR-031
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-032
+  - target: ix://agent-ix/filament-specification/FR-032
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-033
+  - target: ix://agent-ix/filament-specification/FR-033
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-034
+  - target: ix://agent-ix/filament-specification/FR-034
     type: exercises
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: exercises
 ---
 ## Story
@@ -82,4 +82,4 @@ population/window. Unknown membership cannot establish aggregate success.
 
 ## Dependencies (Contextual)
 
-- [V1 capability decisions](../../proposals/quire-v1/capabilities.md).
+- [V1 capability decisions](../../proposals/filament-v1/capabilities.md).

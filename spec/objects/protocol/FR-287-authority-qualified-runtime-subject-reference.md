@@ -4,9 +4,9 @@ title: "Authority-qualified runtime subject reference"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-204
+  - target: ix://agent-ix/filament-specification/FR-204
     type: references
 ---
 # FR-287: Authority-qualified runtime subject reference
@@ -90,7 +90,7 @@ a second subject.
   behavioral authority for this value.
 - [FR-204](../foundation/FR-204-declared-object-identity.md) supplies the
   universe/type/object identity discipline specialized here.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the object
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the object
   identity discipline.
 
 ## Status

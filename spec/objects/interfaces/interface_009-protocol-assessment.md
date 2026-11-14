@@ -3,7 +3,7 @@ id: interface_009
 title: "I09 protocol assessment"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-327
+  - target: ix://agent-ix/filament-specification/FR-327
     type: references
 ---
 

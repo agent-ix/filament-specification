@@ -3,7 +3,7 @@ id: TC-110
 title: "Select one exact temporal profile and clock"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: verifies
 ---
 ## Description

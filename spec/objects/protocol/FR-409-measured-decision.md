@@ -4,17 +4,17 @@ title: "Measured decision vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-408
+  - target: ix://agent-ix/filament-specification/FR-408
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-241
+  - target: ix://agent-ix/filament-specification/FR-241
     type: references
-  - target: ix://agent-ix/quire-specification/FR-242
+  - target: ix://agent-ix/filament-specification/FR-242
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
 ---
 
@@ -83,7 +83,7 @@ FR-243 settlement basis.
 
 ## References
 
-- QSL ADR-024 SV-1, SV-3, SV-10, RU-2, RU-5.
+- FSL ADR-024 SV-1, SV-3, SV-10, RU-2, RU-5.
 - Owner ruling recorded on QSL-371: `measured: rejected` fails the pipeline;
   a separate `measured` axis, not an FR-243 basis.
 - Ticket: STD-137 (paired with QSL-371).

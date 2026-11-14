@@ -3,7 +3,7 @@ id: TC-278
 title: "Replay envelope members"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-323
+  - target: ix://agent-ix/filament-specification/FR-323
     type: verifies
 ---
 
@@ -16,7 +16,7 @@ Show that an FR-323 replay request's `replay` property carries the
 parameter node id, the semantic profile selections, for a function request the failing node's
 occurrence key, the proof bounds and declared domains, the trace position
 and the `backend` member, and that a non-replay request carries no `replay`
-property, per QSL ADR-013 O-25, O-26 and QC-8.
+property, per FSL ADR-013 O-25, O-26 and QC-8.
 Extend the same owning envelope case for the proposed supplied-phase
 request/result amendment, binding FR-323-AC-10..16 without a new TC id.
 
@@ -24,14 +24,14 @@ request/result amendment, binding FR-323-AC-10..16 without a new TC id.
 
 - FR-197's `ReplaySource` structural separation (`Witness`/`Input`) exists.
 - FR-322 owns the `source_map` occurrence key (`node_id`, `role`, `ordinal`).
-- QSL ADR-011 E9: the `replay` facade resolves the selected function by
+- FSL ADR-011 E9: the `replay` facade resolves the selected function by
   `QualifiedName`, the selected frame operation by `object` and `operation`,
   or the selected state clause by its declared name, against the recompiled
   package's declarations.
-- Supplied vectors require the reviewed real QSV FR-109 / QSL FR-277
+- Supplied vectors require the reviewed real FSV FR-109 / FSL FR-277
   bounded path and actual QSL-675 typed native mapping before execution is
   qualified. Default vectors use the published A/H default 16777216 units each
-  (QSL FR-277). Decimal waits for IR-718/IR-719 and typed
+  (FSL FR-277). Decimal waits for IR-718/IR-719 and typed
   integration, while its positive requirement remains mandatory once enabled.
 
 ## Test Procedure
@@ -94,13 +94,13 @@ and additional spend must be observed, not inferred from equal Booleans.
 | RE-26 | Equivalent requests with the same package/input/selection/options and explicit A/H: B omitted at the caller API; B stated 4096; B stated 4096 again; B stated 4095; B stated 4097 | Omitted, stated 4096 and restated 4096 have the SAME request identity and the effective wire object carries 4096 (an implementation whose identity changes when the default was applied fails); 4095 and 4097 each differ from it and from each other; package identity is the same in every case | FR-323-AC-15 |
 | RE-27 | B omitted at the caller API with an Integer interval type, a Rational domain type, and a type needing neither; compare with B stated 4096 | Omitted B behaves exactly as B = 4096 for all three types: a 4096-bit value admits and a 4097-bit value refuses by the AC-15 `limit` cause with `limit` 4096; the type needing no numeric comparison is unaffected. No unsupported outcome exists in the envelope | FR-323-AC-15 |
 | RE-28 | Malformed B: -1, 1.5, 18446744073709551616 (above the u64 range), `null`, "64", true, and a missing `numeric_magnitude_bits` in an otherwise complete wire object; and B moved into replay `stage_limits` | Each is a typed input refusal before consumption (the misplaced B under the unknown-stage-setting rule before stages run); no fallback to a default or `integer_bits`; A, H and `integer_bits` settings are unchanged by a stated B | FR-323-AC-15 |
-| RE-29 | NORM. Nested type links `Option<Int[0,9]>` and `Sequence<Int[0,9]>`: with the expected and actual endpoint set widened in turn, each of the four Integer endpoints (`type-link-expected-lower`, `type-link-expected-upper`, `type-link-actual-lower`, `type-link-actual-upper`) at exactly B bits, then in turn at B+1 bits with the other three within B; a Rational pair with each of the eight endpoints (the four names with `-numerator`/`-denominator`) likewise, and a Decimal pair with each of the four coefficients (`type-link-expected-lower-coefficient`, `type-link-expected-upper-coefficient`, `type-link-actual-lower-coefficient`, `type-link-actual-upper-coefficient`) likewise | At exactly B all admit; at B+1 each refuses by the `limit` cause with that `type-link-` `operand`, `limit` B, `consumed` 0, `next_charge` and `counter` the B+1 bit length and `event` `type-comparison`, stopping on the charged `type-comparison` event (phase spend includes that one event) before the endpoint equality runs; the first over-B endpoint in the stated order decides; the type-link helper and its QSV caller exist, so the vector is runnable | FR-323-AC-16 |
+| RE-29 | NORM. Nested type links `Option<Int[0,9]>` and `Sequence<Int[0,9]>`: with the expected and actual endpoint set widened in turn, each of the four Integer endpoints (`type-link-expected-lower`, `type-link-expected-upper`, `type-link-actual-lower`, `type-link-actual-upper`) at exactly B bits, then in turn at B+1 bits with the other three within B; a Rational pair with each of the eight endpoints (the four names with `-numerator`/`-denominator`) likewise, and a Decimal pair with each of the four coefficients (`type-link-expected-lower-coefficient`, `type-link-expected-upper-coefficient`, `type-link-actual-lower-coefficient`, `type-link-actual-upper-coefficient`) likewise | At exactly B all admit; at B+1 each refuses by the `limit` cause with that `type-link-` `operand`, `limit` B, `consumed` 0, `next_charge` and `counter` the B+1 bit length and `event` `type-comparison`, stopping on the charged `type-comparison` event (phase spend includes that one event) before the endpoint equality runs; the first over-B endpoint in the stated order decides; the type-link helper and its FSV caller exist, so the vector is runnable | FR-323-AC-16 |
 | RE-30 | A frame counterexample's replay request carrying `frame_operation` `{object, operation}`, no `function`, no `arguments` and no occurrence key | Admitted; the replay target resolves by `object` and `operation` | FR-323-AC-18 |
 | RE-31 | RE-30's request with `frame_operation` removed | `invalid_runtime_input`/`missing-member` at `/replay` | FR-323-AC-19 |
 | RE-32 | RE-30's request with a `function` member added | `invalid_runtime_input`/`invalid-value` at `/replay/frame_operation` | FR-323-AC-19 |
 | RE-33 | RE-32's request with a byte-provision entry removed | `invalid_runtime_input`/`invalid-value` at `/replay/frame_operation`, not the provision refusal | FR-323-AC-19 |
 | RE-34 | Withdrawn: the proved-package staleness refusal this vector tested is removed. | Withdrawn | - |
-| RE-35 | RE-30's request with: `operation` undeclared; `operation` naming an operation no clause or attempt names (no frame node is emitted for it, QSL FR-105, ADR-017); `object` naming a record value type; `object` naming a subtype that only inherits `operation`; `operation` exposed by two supertypes | `missing_declaration`/`missing-name`; `missing_declaration`/`missing-name`; `invalid_model_binding`/`malformed-declaration`; `invalid_model_binding`/`malformed-declaration`; `ambiguous_declaration`/`ambiguous-name`, each naming the target | FR-323-AC-20 |
+| RE-35 | RE-30's request with: `operation` undeclared; `operation` naming an operation no clause or attempt names (no frame node is emitted for it, FSL FR-105, ADR-017); `object` naming a record value type; `object` naming a subtype that only inherits `operation`; `operation` exposed by two supertypes | `missing_declaration`/`missing-name`; `missing_declaration`/`missing-name`; `invalid_model_binding`/`malformed-declaration`; `invalid_model_binding`/`malformed-declaration`; `ambiguous_declaration`/`ambiguous-name`, each naming the target | FR-323-AC-20 |
 | RE-36 | RE-30's request with `arguments` added; then with an occurrence key added | `invalid_runtime_input`/`unknown-member` at `/replay/arguments`; at `/replay/occurrence_key` | FR-323-AC-19 |
 | RE-37 | A state-clause counterexample's replay request (an operation's postcondition) carrying `state_clause` naming the clause, no `function`, no `frame_operation`, no `arguments` and no occurrence key | Admitted; the replay target resolves to that postcondition | FR-323-AC-18, FR-323-AC-21 |
 | RE-38 | RE-37's request with `state_clause` removed | `invalid_runtime_input`/`missing-member` at `/replay` | FR-323-AC-19 |
@@ -131,7 +131,7 @@ catalog variants. RE-21 is Analysis evidence bound to FR-323-AC-13, not a
 claimed runnable unsupported-result trace. Capability/mapping
 prerequisites are not discharged by authored shapes.
 The unchanged QSL-503 full Tree and evaluator parity controls remain owned
-by QSL TC-830/831/906 and cannot be replaced by this envelope case.
+by FSL TC-830/831/906 and cannot be replaced by this envelope case.
 RE-22 verifies the existing native fault route OUTSIDE the five supplied
 causes: it is not a new kernel cause, new API or a claim that ordinary inputs
 can reach an invariant break. Compare original typed accessors/payloads, not

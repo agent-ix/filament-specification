@@ -3,17 +3,17 @@ id: TC-143
 title: "Preserve time, progress, and late-data authority"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-296
+  - target: ix://agent-ix/filament-specification/FR-296
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-267
+  - target: ix://agent-ix/filament-specification/FR-267
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-268
+  - target: ix://agent-ix/filament-specification/FR-268
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-294
+  - target: ix://agent-ix/filament-specification/FR-294
     type: verifies
 ---
 ## Description

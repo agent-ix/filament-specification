@@ -4,7 +4,7 @@ title: "Require complete qualification coverage"
 type: NFR
 quality_attribute: compliance
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: constrains
 ---
 

@@ -3,19 +3,19 @@ id: FR-401
 title: "Replay hyper counterexamples"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-400
+  - target: ix://agent-ix/filament-specification/FR-400
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: references
-  - target: ix://agent-ix/quire-specification/FR-197
+  - target: ix://agent-ix/filament-specification/FR-197
     type: references
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
 ---
 

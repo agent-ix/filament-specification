@@ -4,13 +4,13 @@ title: "Protocol obligation instance"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-479
+  - target: ix://agent-ix/filament-specification/FR-479
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-232
+  - target: ix://agent-ix/filament-specification/FR-232
     type: contains
 ---
 # FR-230: Protocol obligation instance
@@ -119,7 +119,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   which every instance is constructed.
 - [FR-051](../../functional/protocol/FR-051-preserve-communication-identities.md) supplies
   the distinctness of message, send, receive, delivery, attempt and effect.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

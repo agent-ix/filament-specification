@@ -3,7 +3,7 @@ id: TC-953
 title: "Proof gate discharge acceptance"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/NFR-076
+  - target: ix://agent-ix/filament-specification/NFR-076
     type: verifies
 ---
 

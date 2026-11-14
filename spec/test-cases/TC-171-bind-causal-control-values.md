@@ -3,9 +3,9 @@ id: TC-171
 title: "Preserve causal structure and definite value availability"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: verifies
 ---
 ## Description

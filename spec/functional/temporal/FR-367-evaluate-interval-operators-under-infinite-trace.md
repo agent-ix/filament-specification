@@ -3,21 +3,21 @@ id: FR-367
 title: "Evaluate interval operators inside infinite-trace formulas"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
 ---
 
@@ -67,7 +67,7 @@ that reaches before position 0 reads atomic predicates there as false, FR-092's
 complete-history rule. An unbounded operator has the meaning
 [FR-161](FR-161-analyze-infinite-trace-properties.md) states.
 
-The offset reading above applies to the integer-position profiles, the infinite-trace, event-position and fixed-sample profiles; the `quire.temporal.timed/v1` profile reads an interval over time stamps with the meaning of [FR-416](FR-416-evaluate-timed-temporal-claims.md), and the `quire.temporal.timestamped-event.finite-window/v1` profile follows the timestamped rule of FR-091 and FR-092.
+The offset reading above applies to the integer-position profiles, the infinite-trace, event-position and fixed-sample profiles; the `filament.temporal.timed/v1` profile reads an interval over time stamps with the meaning of [FR-416](FR-416-evaluate-timed-temporal-claims.md), and the `filament.temporal.timestamped-event.finite-window/v1` profile follows the timestamped rule of FR-091 and FR-092.
 
 A lower-bounded operator has the offset meaning with no upper bound. At
 position `i`: `eventually[a,*] p` holds when `p` holds at some `j >= i + a`;
@@ -146,5 +146,5 @@ bounds.
 
 ## References
 
-- quire-spec-language ADR-018 §11 (IV-1 to IV-7), RU-4 and QS-13; Linear
+- filament-spec-language ADR-018 §11 (IV-1 to IV-7), RU-4 and QS-13; Linear
   STD-131 (paired with QSL-366) and STD-99.

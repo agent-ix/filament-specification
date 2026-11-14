@@ -3,27 +3,27 @@ id: FR-488
 title: "Attach a temporal guarantee to implementation Rust through checked correspondence"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: references
-  - target: ix://agent-ix/quire-specification/FR-350
+  - target: ix://agent-ix/filament-specification/FR-350
     type: references
-  - target: ix://agent-ix/quire-specification/FR-354
+  - target: ix://agent-ix/filament-specification/FR-354
     type: references
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-380
+  - target: ix://agent-ix/filament-specification/FR-380
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-490
+  - target: ix://agent-ix/filament-specification/FR-490
     type: references
-  - target: ix://agent-ix/quire-specification/FR-492
+  - target: ix://agent-ix/filament-specification/FR-492
     type: references
 ---
 

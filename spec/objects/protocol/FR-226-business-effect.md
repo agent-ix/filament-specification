@@ -4,15 +4,15 @@ title: "Business effect"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-225
+  - target: ix://agent-ix/filament-specification/FR-225
     type: references
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-226: Business effect
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   an authored protocol node.
 - **establishing attempt** ([FR-225](FR-225-operation-attempt.md)) — the
   concrete attempt the effect is of. The
-  [choreography surface](../../../proposals/quire-v1/choreography-surface.md)
+  [choreography surface](../../../proposals/filament-v1/choreography-surface.md)
   states that `effect ... of AttemptNode` observes "A separately established
   successful business effect of that concrete attempt. A successful transport
   status or an attempt's existence is insufficient."
@@ -96,7 +96,7 @@ delivery, trace identifier or equal payload alone", and FR-049-AC-2 states that
   requires each effect identity to be preserved and names the duplicate effect.
 - [FR-057](../../functional/protocol/FR-057-enforce-commit-recovery.md) supplies the
   commit-ordering relations an effect participates in.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) defines the
   concrete effect key and non-causal comparison order.

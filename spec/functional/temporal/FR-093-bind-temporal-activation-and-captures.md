@@ -3,21 +3,21 @@ id: FR-093
 title: "Bind temporal activation and immutable captures"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-008
+  - target: ix://agent-ix/filament-specification/US-008
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-034
+  - target: ix://agent-ix/filament-specification/FR-034
     type: references
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: references
-  - target: ix://agent-ix/quire-specification/FR-230
+  - target: ix://agent-ix/filament-specification/FR-230
     type: references
-  - target: ix://agent-ix/quire-specification/FR-231
+  - target: ix://agent-ix/filament-specification/FR-231
     type: references
-  - target: ix://agent-ix/quire-specification/FR-232
+  - target: ix://agent-ix/filament-specification/FR-232
     type: references
-  - target: ix://agent-ix/quire-specification/FR-253
+  - target: ix://agent-ix/filament-specification/FR-253
     type: references
-  - target: ix://agent-ix/quire-specification/FR-479
+  - target: ix://agent-ix/filament-specification/FR-479
     type: references
 ---
 ## Description

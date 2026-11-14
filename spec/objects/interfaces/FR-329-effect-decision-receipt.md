@@ -4,9 +4,9 @@ title: "Authorized effect decision and receipt"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_011
+  - target: ix://agent-ix/filament-specification/interface_011
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-182
+  - target: ix://agent-ix/filament-specification/FR-182
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.effect-decision/v1` |
+| contract_version | exactly `filament.effect-decision/v1` |
 | decision | record: semantic result and recommended action identity |
 | authority_grant | record: actor, action, subject, scope, expiry, rights; multiplicity not stated in source |
 | idempotency_key | caller-owned key string |
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | lineage | record: retry, duplicate, supersession, refusal relations; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.effect-decision/v1`.
+- `contract_version` — exactly `filament.effect-decision/v1`.
 - `decision` — exact semantic result and recommended action identity.
 - `authority_grant` — actor, action, subject, scope, expiry and rights.
 - `idempotency_key` — caller-owned key bound to the canonical effect request.

@@ -3,11 +3,11 @@ id: TC-035
 title: "Retain explicit ecosystem scope identities in assessment requests"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: verifies
 ---
 ## Description

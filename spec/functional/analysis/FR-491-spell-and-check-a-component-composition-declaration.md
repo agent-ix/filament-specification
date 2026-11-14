@@ -3,25 +3,25 @@ id: FR-491
 title: "Spell and check a component composition declaration"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-489
+  - target: ix://agent-ix/filament-specification/FR-489
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-348
+  - target: ix://agent-ix/filament-specification/FR-348
     type: references
-  - target: ix://agent-ix/quire-specification/FR-176
+  - target: ix://agent-ix/filament-specification/FR-176
     type: references
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: references
-  - target: ix://agent-ix/quire-specification/FR-380
+  - target: ix://agent-ix/filament-specification/FR-380
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
-  - target: ix://agent-ix/quire-specification/FR-490
+  - target: ix://agent-ix/filament-specification/FR-490
     type: references
-  - target: ix://agent-ix/quire-specification/FR-492
+  - target: ix://agent-ix/filament-specification/FR-492
     type: references
 ---
 
@@ -39,7 +39,7 @@ each with its own obligation identity and source correspondence.
 ## Inputs
 
 - The unit's `composition-decl` declarations, recognized by the
-  [complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md)
+  [complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md)
   "Component composition declaration" production.
 - The checked packages the unit imports (`import-decl`), with their model
   and protocol subjects and temporal clauses, and the unit's selected
@@ -84,7 +84,7 @@ lists are derived and kept separate:
 
 The compiler SHALL refuse, in source order, naming the member:
 
-1. A package that does not select `quire.model.complete/v1`:
+1. A package that does not select `filament.model.complete/v1`:
    `unsupported_construct` at the declaration. Fewer than two `component`
    members, a member that is not one of the forms above, or a rule spelling
    outside the four: `invalid_syntax` at the offending token.
@@ -155,7 +155,7 @@ admitted cycle. Their items and slot keys (FR-492) are:
 
 ### Checked-package node
 
-`S` is emitted as one `quire.checked-semantic-graph/v2` node with
+`S` is emitted as one `filament.checked-semantic-graph/v2` node with
 `node_tag: "correspondence"` and `semantic_form: "component_composition"`:
 
 - **body** — `{term: "component_composition", rule, components, guarantees,

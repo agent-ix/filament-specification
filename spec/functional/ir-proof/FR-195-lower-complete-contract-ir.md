@@ -3,19 +3,19 @@ id: FR-195
 title: "Lower the complete language to target-neutral contract IR"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/FR-031
+  - target: ix://agent-ix/filament-specification/FR-031
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-035
+  - target: ix://agent-ix/filament-contract-ir/FR-035
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-028
+  - target: ix://agent-ix/filament-contract-ir/FR-028
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-038
+  - target: ix://agent-ix/filament-contract-ir/FR-038
     type: references
-  - target: ix://agent-ix/quire-contract-ir/AD-003
+  - target: ix://agent-ix/filament-contract-ir/AD-003
     type: references
 ---
 
@@ -61,7 +61,7 @@ the failed body's source correspondence; they do not replace ordinary reader
 refusal or incomplete results. FR-330's serialized `feature_accounting` admits
 all seven dispositions under the exact payloads FR-038 consumes. A lowered
 item includes all reachable dependencies.
-The complete-V1 lowerer consumes an admitted `quire.checked-package/v2` package through the I04
+The complete-V1 lowerer consumes an admitted `filament.checked-package/v2` package through the I04
 V2 reader and requires the nominal identity evidence carried by that contract.
 The V2 reader refuses an unknown member or node tag before admission.
 
@@ -78,7 +78,7 @@ The V2 reader refuses an unknown member or node tag before admission.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [I04 CheckedPackage contract](../../objects/interfaces/FR-322-checked-package-artifact.md)
   owns the V2 complete-V1 checked semantic input and its strict

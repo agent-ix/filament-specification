@@ -4,13 +4,13 @@ title: "Unbounded declaration and quantifier-negotiation architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 unbounded collections and quantifier negotiation
+system: native Filament V1 unbounded collections and quantifier negotiation
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/AD-009
+  - target: ix://agent-ix/filament-specification/AD-009
     type: references
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
 ---
 

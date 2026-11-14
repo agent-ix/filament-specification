@@ -3,11 +3,11 @@ id: TC-336
 title: "Witness sampling for possibility claims"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-392
+  - target: ix://agent-ix/filament-specification/FR-392
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-391
+  - target: ix://agent-ix/filament-specification/FR-391
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

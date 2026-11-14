@@ -3,13 +3,13 @@
 
 //! FR-322 "Record conformance" and event equality (TC-281 `EV-` and `RCF-`
 //! vectors): the published catalog's operand positions and constraints are
-//! read from `quire-verification-contracts`, and the decisions the catalog
+//! read from `filament-verification-contracts`, and the decisions the catalog
 //! does not carry (record conformance, the event equality exception, call
 //! argument typing and slot typing) are the prose rules of FR-322 and FR-440
 //! applied over a small selected document.
 
 use ix_trace_rs::trace;
-use quire_verification_contracts::operation_catalog::CHECKED_OPERATION_CATALOG_V1;
+use filament_verification_contracts::operation_catalog::CHECKED_OPERATION_CATALOG_V1;
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
@@ -166,7 +166,7 @@ fn owner_join(doc: &BTreeMap<&str, Declared>, form: &str, owner: &str) -> Outcom
     }
 }
 
-/// `quire.op.record.project` over `operand` with a `field` member.
+/// `filament.op.record.project` over `operand` with a `field` member.
 fn project(
     catalog: &Value,
     doc: &BTreeMap<&str, Declared>,
@@ -174,7 +174,7 @@ fn project(
     declaration: &'static str,
     name: &str,
 ) -> Outcome {
-    let entry = entry(catalog, "quire.op.record.project");
+    let entry = entry(catalog, "filament.op.record.project");
     assert_eq!(constraint_kinds(&entry), ["member_of"]);
     let position = entry["operands"][0].as_str().expect("position");
     if !group_admits(catalog, position, operand.family()) {
@@ -193,7 +193,7 @@ fn project(
     }
 }
 
-/// `quire.op.structural.eq` or `.ne` over two operands, with event equality.
+/// `filament.op.structural.eq` or `.ne` over two operands, with event equality.
 fn equality(
     catalog: &Value,
     doc: &BTreeMap<&str, Declared>,
@@ -228,7 +228,7 @@ fn parameter_nodes() -> BTreeMap<&'static str, Ty> {
     ])
 }
 
-/// The `function` nodes of the package as wire bodies (QSL FR-092 "Function
+/// The `function` nodes of the package as wire bodies (FSL FR-092 "Function
 /// nodes"): the first binding of the body is `parameters`, an `aggregate` of
 /// `reference` terms to the parameter nodes in parameter order; a function
 /// without parameters has no such binding.
@@ -294,8 +294,8 @@ fn call(
         "{identity} carries no constraint"
     );
     let params = match identity {
-        "quire.op.function.call" => operations(),
-        "quire.op.model.dispatch_call" => operations(),
+        "filament.op.function.call" => operations(),
+        "filament.op.model.dispatch_call" => operations(),
         other => panic!("{other} is not a call"),
     };
     let params = &params[callee];
@@ -311,7 +311,7 @@ fn contains(
     collection: &Ty,
     element: &Ty,
 ) -> Outcome {
-    let entry = entry(catalog, "quire.op.collection.contains");
+    let entry = entry(catalog, "filament.op.collection.contains");
     assert_eq!(constraint_kinds(&entry), ["inner_type"]);
     let (Ty::Set(inner) | Ty::Sequence(inner)) = collection else {
         return Outcome::Ineligible;
@@ -403,7 +403,7 @@ fn tc_281_event_type_joins_its_owner_projects_and_refuses_equality() {
     );
     // EV-04, EV-05
     let order_placed = model("OrderPlaced");
-    for identity in ["quire.op.structural.eq", "quire.op.structural.ne"] {
+    for identity in ["filament.op.structural.eq", "filament.op.structural.ne"] {
         for ty in [
             order_placed.clone(),
             Ty::Option(Box::new(order_placed.clone())),
@@ -456,7 +456,7 @@ fn tc_281_record_conformance_decides_projection_calls_and_slots() {
         );
     }
     // RCF-03 to RCF-05, for both call forms
-    for identity in ["quire.op.function.call", "quire.op.model.dispatch_call"] {
+    for identity in ["filament.op.function.call", "filament.op.model.dispatch_call"] {
         let call_of = |callee: &str, args: &[Ty]| call(&catalog, &doc, identity, callee, args);
         assert_eq!(
             call_of("take_money", std::slice::from_ref(&taxed)),
@@ -503,7 +503,7 @@ fn tc_281_record_conformance_decides_projection_calls_and_slots() {
         Outcome::Ineligible
     );
     // RCF-08
-    for identity in ["quire.op.collection.set", "quire.op.collection.sequence"] {
+    for identity in ["filament.op.collection.set", "filament.op.collection.sequence"] {
         let result = if identity.ends_with("set") {
             set_money.clone()
         } else {
@@ -524,7 +524,7 @@ fn tc_281_record_conformance_decides_projection_calls_and_slots() {
         construct(
             &catalog,
             &doc,
-            "quire.op.collection.set",
+            "filament.op.collection.set",
             &set_taxed,
             std::slice::from_ref(&money)
         ),
@@ -543,7 +543,7 @@ fn tc_281_record_conformance_decides_projection_calls_and_slots() {
     assert_eq!(union_value(&doc, &money, &taxed), Outcome::Admitted);
     assert_eq!(union_value(&doc, &taxed, &money), Outcome::TypeMismatch);
     // RCF-10
-    for identity in ["quire.op.structural.eq", "quire.op.structural.ne"] {
+    for identity in ["filament.op.structural.eq", "filament.op.structural.ne"] {
         assert_eq!(
             equality(&catalog, &doc, identity, &money, &money),
             Outcome::Admitted
@@ -569,7 +569,7 @@ fn tc_281_an_operation_call_takes_a_conforming_record_argument() {
             call(
                 &catalog,
                 &doc,
-                "quire.op.model.dispatch_call",
+                "filament.op.model.dispatch_call",
                 callee,
                 &[model(arg)]
             ),

@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "note": "FR-322-AC-307 (TC-233 FM-01..FM-04): the generic application `call` of quire.op.ieee.float{32,64}.fma with three reference arguments a, b, c (no dedicated node), per QVC checked-operation-catalog-v1.json. The positive wire body is derived by the QSpec test from the `quire.op.ieee.float64.add` application of fixtures/positive-operation-identities.json with the identity, operator `call` and three arguments; `argument_widths`, `result_width`, `mode` (`rounding` or null) and `laws` describe each case. The reader that decides the outcomes is quire-contract-ir's; QSpec's test checks each against the catalog entry.",
+  "note": "FR-322-AC-307 (TC-233 FM-01..FM-04): the generic application `call` of filament.op.ieee.float{32,64}.fma with three reference arguments a, b, c (no dedicated node), per QVC checked-operation-catalog-v1.json. The positive wire body is derived by the QSpec test from the `filament.op.ieee.float64.add` application of fixtures/positive-operation-identities.json with the identity, operator `call` and three arguments; `argument_widths`, `result_width`, `mode` (`rounding` or null) and `laws` describe each case. The reader that decides the outcomes is filament-contract-ir's; QSpec's test checks each against the catalog entry.",
   "cases": [
     {
       "id": "FM-01",
       "note": "three float64 operands, nearest-even",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64",
@@ -21,7 +21,7 @@
     {
       "id": "FM-02",
       "note": "three float32 operands",
-      "identity": "quire.op.ieee.float32.fma",
+      "identity": "filament.op.ieee.float32.fma",
       "argument_widths": [
         "float32",
         "float32",
@@ -37,7 +37,7 @@
     {
       "id": "FM-03",
       "note": "two arguments",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64"
@@ -54,7 +54,7 @@
     {
       "id": "FM-04",
       "note": "four arguments",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64",
@@ -73,7 +73,7 @@
     {
       "id": "FM-05",
       "note": "one argument",
-      "identity": "quire.op.ieee.float32.fma",
+      "identity": "filament.op.ieee.float32.fma",
       "argument_widths": [
         "float32"
       ],
@@ -89,7 +89,7 @@
     {
       "id": "FM-06",
       "note": "float32 operands under the float64 identity",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float32",
         "float32",
@@ -107,7 +107,7 @@
     {
       "id": "FM-07",
       "note": "mixed width: the third operand is float32",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64",
@@ -125,7 +125,7 @@
     {
       "id": "FM-08",
       "note": "mixed width: the first operand is float64 under the float32 identity",
-      "identity": "quire.op.ieee.float32.fma",
+      "identity": "filament.op.ieee.float32.fma",
       "argument_widths": [
         "float64",
         "float32",
@@ -143,7 +143,7 @@
     {
       "id": "FM-09",
       "note": "an integer operand",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "integer",
@@ -161,7 +161,7 @@
     {
       "id": "FM-10",
       "note": "float32 result_type under the float64 identity",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64",
@@ -179,7 +179,7 @@
     {
       "id": "FM-11",
       "note": "no rounding mode",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64",
@@ -197,7 +197,7 @@
     {
       "id": "FM-12",
       "note": "no ieee_profile law",
-      "identity": "quire.op.ieee.float64.fma",
+      "identity": "filament.op.ieee.float64.fma",
       "argument_widths": [
         "float64",
         "float64",

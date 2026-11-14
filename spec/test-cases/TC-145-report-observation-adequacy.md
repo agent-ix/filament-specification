@@ -3,9 +3,9 @@ id: TC-145
 title: "Report observation adequacy without promotion"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-285
+  - target: ix://agent-ix/filament-specification/FR-285
     type: verifies
 ---
 ## Description

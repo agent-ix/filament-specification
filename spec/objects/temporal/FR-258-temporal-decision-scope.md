@@ -4,23 +4,23 @@ title: "Temporal decision scope and closure"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-256
+  - target: ix://agent-ix/filament-specification/FR-256
     type: references
-  - target: ix://agent-ix/quire-specification/FR-243
+  - target: ix://agent-ix/filament-specification/FR-243
     type: references
-  - target: ix://agent-ix/quire-specification/FR-240
+  - target: ix://agent-ix/filament-specification/FR-240
     type: references
-  - target: ix://agent-ix/quire-specification/FR-261
+  - target: ix://agent-ix/filament-specification/FR-261
     type: references
-  - target: ix://agent-ix/quire-specification/FR-264
+  - target: ix://agent-ix/filament-specification/FR-264
     type: references
-  - target: ix://agent-ix/quire-specification/FR-284
+  - target: ix://agent-ix/filament-specification/FR-284
     type: references
-  - target: ix://agent-ix/quire-specification/FR-295
+  - target: ix://agent-ix/filament-specification/FR-295
     type: references
 ---
 # FR-258: Temporal decision scope and closure
@@ -175,7 +175,7 @@ artifact names its members only where the temporal prose names them.
 - [FR-261](../observation/FR-261-observation-binding.md) and
   [FR-264](../observation/FR-264-membership-rule.md) supply the pattern for
   holding an observed, changing set outside a key.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Resolved vocabulary history
@@ -189,5 +189,5 @@ closure axis does not make the axes equal or substitutable.
 
 ## Status
 
-Proposed completeness reconciliation for `quire-specification#40`; the
+Proposed completeness reconciliation for `filament-specification#40`; the
 settlement-basis portion was previously accepted under FR-243.

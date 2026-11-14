@@ -3,7 +3,7 @@ id: TC-230
 title: "Semantic assurance traceability"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-310
+  - target: ix://agent-ix/filament-specification/FR-310
     type: verifies
 ---
 

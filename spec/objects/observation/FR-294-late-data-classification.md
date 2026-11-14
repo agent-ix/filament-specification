@@ -4,9 +4,9 @@ title: "Late-data classification"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-268
+  - target: ix://agent-ix/filament-specification/FR-268
     type: references
 ---
 # FR-294: Late-data classification
@@ -47,8 +47,8 @@ does not infer a cutoff from ingestion order or wall-clock time.
 
 - [FR-113](../../functional/observation/FR-113-preserve-time-progress-and-late-data.md) establishes classification against a selected cutoff.
 - [FR-268](FR-268-progress-and-late-data-authority.md) defines that cutoff's identity and use.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity discipline.
 
 ## Status
 
-Proposed late-data vocabulary closure for `quire-specification#40`.
+Proposed late-data vocabulary closure for `filament-specification#40`.

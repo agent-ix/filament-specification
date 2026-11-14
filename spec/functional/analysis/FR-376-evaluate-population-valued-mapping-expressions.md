@@ -3,15 +3,15 @@ id: FR-376
 title: "Evaluate population-valued expressions in refinement mappings"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-145
+  - target: ix://agent-ix/filament-specification/FR-145
     type: references
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
 ---
 
@@ -38,7 +38,7 @@ A typed value, or `map` undetermined at that state
 ## Surface syntax
 
 Inside a refinement declaration, and only there, the `primary` production of
-the [complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md)
+the [complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md)
 admits a population name and the productions `count`, `sum`, `exists`, `all`,
 `only` and `seq`, with the `binder` production and the `..` token that `seq`
 uses. The grammar owns the spellings; this requirement owns what they mean.
@@ -85,7 +85,7 @@ refuses `missing_declaration`/`missing-name`.
 
 **Undefinedness.** An `only` whose `S` is empty or has two or more objects
 makes the enclosing row undefined at that state with the undefined reason `only-not-one`, the same reason for no object and for several
-([native diagnostics](../../../proposals/quire-v1/definitions/native-diagnostics.md)),
+([native diagnostics](../../../proposals/filament-v1/definitions/native-diagnostics.md)),
 and the refinement settles
 `refuted` with cause `undefined-evaluation` at that state (FR-377, FR-379).
 The same holds for any undefined sub-expression. A refused or incomplete
@@ -113,10 +113,10 @@ sub-expression makes `map` undetermined at that state (FR-377).
   refused or incomplete row as `map` undetermined.
 - [FR-145](../expressions/FR-145-convert-and-query-collections.md) owns the
   collection algebra whose set type the population value has.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns
   the expression productions this requirement extends.
 
 ## References
 
-- Design: quire-spec-language ADR-020 (RM-8, QS-10, RU-5).
+- Design: filament-spec-language ADR-020 (RM-8, QS-10, RU-5).
 - Tickets: Linear STD-133; paired QSL-367.

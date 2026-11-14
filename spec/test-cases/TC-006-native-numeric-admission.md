@@ -3,7 +3,7 @@ id: TC-006
 title: "Enforce finite integer and normalized rational admission"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: verifies
 ---
 ## Description

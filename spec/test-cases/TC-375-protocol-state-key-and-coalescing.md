@@ -3,7 +3,7 @@ id: TC-375
 title: "Protocol state key and coalescing"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: verifies
 ---
 

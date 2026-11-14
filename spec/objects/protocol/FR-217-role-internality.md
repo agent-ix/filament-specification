@@ -4,13 +4,13 @@ title: "Role internality vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
-  - target: ix://agent-ix/quire-specification/FR-465
+  - target: ix://agent-ix/filament-specification/FR-465
     type: references
 ---
 # FR-217: Role internality vocabulary
@@ -70,7 +70,7 @@ When a protocol declares a role, the protocol linker SHALL apply the same identi
   internal/external distinction, the shared identity rules and the observability
   limit.
 - [FR-211](FR-211-protocol-role.md) is the role this vocabulary classifies.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) supplies the
   concrete participant key.

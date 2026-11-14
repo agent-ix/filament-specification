@@ -3,11 +3,11 @@ id: FR-116
 title: "Map observation outcomes to executable and output consumers"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-009
+  - target: ix://agent-ix/filament-specification/US-009
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: references
-  - target: ix://agent-ix/quire-specification/FR-269
+  - target: ix://agent-ix/filament-specification/FR-269
     type: references
 ---
 ## Description
@@ -59,8 +59,8 @@ or refused; missing representation SHALL NOT be classified as preserved.
 
 ## Dependencies
 
-- [Shared foundation](../../../proposals/quire-v1/shared-foundation.md).
-- [Observation result consumer and output-mapping contract](../../../proposals/quire-v1/observation-output-mapping-contract.md).
+- [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
+- [Observation result consumer and output-mapping contract](../../../proposals/filament-v1/observation-output-mapping-contract.md).
 - A owns interchange/versioning; B owns result semantics; D/E own their mapping meanings.
 
 ## Status

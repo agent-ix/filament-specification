@@ -3,14 +3,14 @@ id: TC-007
 title: "Preserve authored presence and null distinctions"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-019
+  - target: ix://agent-ix/filament-specification/FR-019
     type: verifies
 ---
 ## Description
 
 Check the authored presence contract without inventing native clause syntax.
 Presence is declared in the artifact `## Properties` `Presence` column. It
-reaches Quire as IR `Field.presence` in the domain package
+reaches Filament as IR `Field.presence` in the domain package
 ([AD-006](../assurance/AD-006-model-graph-state-contracts.md)). The extraction,
 intake and runtime-value portions remain planned.
 

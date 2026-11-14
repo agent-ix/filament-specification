@@ -4,7 +4,7 @@ title: "Distinguishable observation time facts"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: specifies
 ---
 # FR-267: Distinguishable observation time facts
@@ -100,7 +100,7 @@ axis and cannot supply a missing clock selection.
   against event time.
 - [FR-268](FR-268-progress-and-late-data-authority.md) types the progress
   authority these facts are interpreted against.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Clock-selection boundary
@@ -111,4 +111,4 @@ other.
 
 ## Status
 
-Proposed time-fact vocabulary closure for `quire-specification#40`.
+Proposed time-fact vocabulary closure for `filament-specification#40`.

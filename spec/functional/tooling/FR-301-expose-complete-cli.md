@@ -3,11 +3,11 @@ id: FR-301
 title: "Expose the complete native CLI lifecycle"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-300
+  - target: ix://agent-ix/filament-specification/FR-300
     type: references
-  - target: ix://agent-ix/quire-spec-language/FR-010
+  - target: ix://agent-ix/filament-spec-language/FR-010
     type: references
 ---
 
@@ -15,7 +15,7 @@ relationships:
 
 ## Description
 
-When a user invokes the Quire CLI, the command SHALL map parse, check, lower,
+When a user invokes the FSL CLI, the command SHALL map parse, check, lower,
 execute, replay, monitor, inspect, format and version requests to the exact Rust
 lifecycle contracts.
 
@@ -86,7 +86,7 @@ so two outcomes of one category exit alike whichever path produced them.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

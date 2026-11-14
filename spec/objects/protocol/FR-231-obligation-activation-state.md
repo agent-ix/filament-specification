@@ -4,15 +4,15 @@ title: "Obligation activation state"
 type: FR
 object: state_machine
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-055
+  - target: ix://agent-ix/filament-specification/FR-055
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-093
+  - target: ix://agent-ix/filament-specification/FR-093
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-230
+  - target: ix://agent-ix/filament-specification/FR-230
     type: references
-  - target: ix://agent-ix/quire-specification/FR-244
+  - target: ix://agent-ix/filament-specification/FR-244
     type: references
 ---
 # FR-231: Obligation activation state
@@ -129,7 +129,7 @@ once reported, so none is drawn here.
 - [FR-061](../../functional/protocol/FR-061-report-orthogonal-results.md).
 - [FR-244](FR-244-activation-state.md) defines the activation label vocabulary
   this machine's states are read against.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Axis ruling
@@ -144,4 +144,4 @@ trigger. `incomplete` and `open` are not activation values.
 
 ## Status
 
-Proposed activation-axis reconciliation for `quire-specification#40`.
+Proposed activation-axis reconciliation for `filament-specification#40`.

@@ -3,7 +3,7 @@ id: TC-225
 title: "Rust plugin validation and containment"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-305
+  - target: ix://agent-ix/filament-specification/FR-305
     type: verifies
 ---
 

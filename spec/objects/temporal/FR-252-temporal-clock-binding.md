@@ -4,13 +4,13 @@ title: "Temporal clock binding"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-090
+  - target: ix://agent-ix/filament-specification/FR-090
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-250
+  - target: ix://agent-ix/filament-specification/FR-250
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
 ---
 # FR-252: Temporal clock binding
@@ -31,7 +31,7 @@ A temporal claim over a model subject has exactly one of two bindings:
   infinite-trace profiles.
 - **`model-time`** — the claim is bound to the model's time source
   ([FR-415](../../functional/temporal/FR-415-declare-clocks-and-timed-models.md)),
-  and an interval counts time units. It selects `quire.temporal.timed/v1`. A
+  and an interval counts time units. It selects `filament.temporal.timed/v1`. A
   dense source gives each position the sum of the delays before it; a digital
   source (`time tick O period p`) gives it `p` times the number of `O` steps up
   to it. Both give non-decreasing exact rational time stamps in unit `u`, with
@@ -161,7 +161,7 @@ is therefore a precondition of applying a progress assertion
   establishes that a progress assertion applies only to its named clock and
   binding.
 - [FR-250](FR-250-temporal-semantic-profile.md) supplies the profile identity.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Status

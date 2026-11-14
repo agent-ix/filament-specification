@@ -3,7 +3,7 @@ id: TC-182
 title: "Complete package capabilities and identity domains"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-132
+  - target: ix://agent-ix/filament-specification/FR-132
     type: verifies
 ---
 

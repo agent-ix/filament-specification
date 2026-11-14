@@ -4,11 +4,11 @@ title: "Source region"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-003
+  - target: ix://agent-ix/filament-specification/FR-003
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: specifies
 ---
 # FR-203: Source region
@@ -66,7 +66,7 @@ replace original spelling or offsets (FR-036).
 - **Causal order** — none.
 - **Absence** — a region that is not available is explicitly absent. Byte zero,
   an empty path or a name-search match cannot stand in for it
-  ([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)),
+  ([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)),
   and FR-047-AC-4 requires that diagnostics do not reconstruct a location by
   searching for a repeated name.
 
@@ -74,7 +74,7 @@ replace original spelling or offsets (FR-036).
 
 An authored source span, a JSON field or index path, and a runtime object or
 value path remain different location kinds and are not interchangeable
-([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)).
+([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)).
 This artifact types the first kind only.
 
 ## Acceptance Criteria
@@ -101,7 +101,7 @@ no omitted byte changes token spelling or relative order.
   [FR-036](../../functional/foundation/FR-036-retain-lexical-source-locations.md) establish
   the region conventions.
 - [FR-202](FR-202-authored-source-document.md) supplies the document identity.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 
 ## Status
 

@@ -2,7 +2,7 @@
 // Copyright (C) 2026 Agent-IX
 
 //! FR-091-AC-10 to FR-091-AC-26 and FR-094 (TC-980): the timestamped-event
-//! finite-window profile. The evaluator is QSL's; this test applies the stated
+//! finite-window profile. The evaluator is FSL's; this test applies the stated
 //! rule (the established window of FR-091 over the FR-160 possibility sets) to
 //! the published vectors, so a vector that the rule does not produce is a defect
 //! in the vector or in the rule.

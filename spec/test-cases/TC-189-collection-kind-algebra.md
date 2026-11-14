@@ -3,7 +3,7 @@ id: TC-189
 title: "Collection kind algebra"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: verifies
 ---
 
@@ -17,12 +17,12 @@ Construct, permute, compare and overflow sequence, set, bag and ordered-set valu
 
 Use the subject and inputs named by FR-144. Execute its positive case, each declared boundary, and each explicit refusal/non-conclusive mutation through the real local Rust boundary; compare the complete typed result and artifact accounting with the criterion.
 
-Use the `quire.value.complete/v1` definition
-[`value-complete.md`](../../proposals/quire-v1/definitions/value-complete.md),
+Use the `filament.value.complete/v1` definition
+[`value-complete.md`](../../proposals/filament-v1/definitions/value-complete.md),
 its accounting definition
-[`value-accounting.md`](../../proposals/quire-v1/definitions/value-accounting.md)
+[`value-accounting.md`](../../proposals/filament-v1/definitions/value-accounting.md)
 and the edition
-[`edition.md`](../../proposals/quire-v1/definitions/edition.md).
+[`edition.md`](../../proposals/filament-v1/definitions/edition.md).
 Unless a row states limits, run it under limits large enough that no charge is
 denied. Integer literals, parameters, `let` names and field projections make no
 charge. Every `ill-typed` expectation is a type-checking

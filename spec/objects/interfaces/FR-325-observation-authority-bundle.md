@@ -4,9 +4,9 @@ title: "Observation authority bundle"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_007
+  - target: ix://agent-ix/filament-specification/interface_007
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.observation-authority/v1` |
+| contract_version | exactly `filament.observation-authority/v1` |
 | authority | type not stated in source; multiplicity not stated in source; see Field sources |
 | revision | type not stated in source; multiplicity not stated in source; see Field sources |
 | records | type not stated in source; multiplicity not stated in source; see Field sources |
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | conflicts | type not stated in source; multiplicity not stated in source; see Field sources |
 
 
-- `contract_version` — exactly `quire.observation-authority/v1`.
+- `contract_version` — exactly `filament.observation-authority/v1`.
 - `authority` — producer, scope and contract identity.
 - `revision` — immutable revision and explicit predecessor/supersession relation.
 - `records` — typed subject, occurrence, value and availability facts.

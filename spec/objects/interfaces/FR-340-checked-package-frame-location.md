@@ -4,17 +4,17 @@ title: "Checked-package frame body"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
 ---
 
@@ -22,7 +22,7 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` node has `node_tag: "state"` and
+When a `filament.checked-semantic-graph/v2` node has `node_tag: "state"` and
 `semantic_form: "frame"`, the producer SHALL encode its `body` as exactly four members,
 `modifies`, `creates`, `deletes` and `deletes_scoped`, lifted from the model
 contract's operation frame (`model-complete.md`'s Frames rule and
@@ -130,7 +130,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   `event_type`, `persistence_interface`, `namespace`, `model_import` and the
   five systems forms) has no frame meaning at all. A state machine is a field
   entry's declaring node but never a `creates` or `deletes` entry: it has no
-  object universe ([FR-208](../foundation/FR-208-quire-meaning-vocabulary.md)).
+  object universe ([FR-208](../foundation/FR-208-filament-meaning-vocabulary.md)).
 
 ## Field entries
 
@@ -165,7 +165,7 @@ individually (`object_type`, `value_type`, `variant_type`,
 `persistence_interface`, `namespace`), `model_import`, and FR-208's five
 systems meanings (`systems_part`, `systems_port`, `systems_interface`,
 `systems_connection` and `systems_allocation`, one per
-`quire.meaning.systems.<x>/v1` value FR-208 lists and
+`filament.meaning.systems.<x>/v1` value FR-208 lists and
 [FR-152](../../functional/type-model/FR-152-bind-systems-model-structures.md)
 binds). A member is named everywhere by its declaring node and its name.
 A relationship is encoded exactly one way, `relation`/`relationship`, and a
@@ -337,7 +337,7 @@ The frame step runs before the state step of
 | FR-340-AC-5 | The frame body shape validates only as a `state`/`frame` node's `body`; a `value` node's `body` carrying this shape, and a `state`/`frame` node's `body` carrying an ordinary `SemanticTerm` shape, both fail the published schema. | Test (TC-233) |
 | FR-340-AC-6 | When one frame node carries a meaning-join defect and a canonical-order defect at once, the reported diagnostic is the meaning-join refusal the precedence rule selects, with its exact code, cause and locus, regardless of which member carries which defect; two field entries of one declaring node tie on the node id and break by field name; the same frame node reports that same selected diagnostic regardless of collection or scan order. | Test (TC-233) |
 | FR-340-AC-7 | A frame body missing any of its four members `modifies`, `creates`, `deletes` or `deletes_scoped` fails the schema, and so does a `modifies` field entry with no `scope`; every published fixture's frame node carries all four members and a `scope` on every field entry, and is admitted with no defect by the same reader rule `read_package_semantics` applies. | Test (TC-233) |
-| FR-340-AC-8 | `ModelNode.semantic_form` names each of FR-208's five systems meanings -- `systems_part`, `systems_port`, `systems_interface`, `systems_connection` and `systems_allocation`, one per `quire.meaning.systems.<x>/v1` value -- and none of the five is admitted as a field entry's declaring node or as a `creates` or `deletes` entry. | Test (TC-233) |
+| FR-340-AC-8 | `ModelNode.semantic_form` names each of FR-208's five systems meanings -- `systems_part`, `systems_port`, `systems_interface`, `systems_connection` and `systems_allocation`, one per `filament.meaning.systems.<x>/v1` value -- and none of the five is admitted as a field entry's declaring node or as a `creates` or `deletes` entry. | Test (TC-233) |
 | FR-340-AC-9 | When a package publishes more than one `state`/`frame` node, the reader reports the first defect found while checking frame nodes in ascending `node_id` order; a lower-id frame node's own canonical-order defect is reported even when a higher-id frame node carries a meaning-join defect that would otherwise outrank it. | Test (TC-233) |
 | FR-340-AC-10 | A field entry on an object type for a field typed with a record value type, and a field entry on that record value type's node for one of its own fields, are distinct entries; a frame body naming both is admitted with no defect. | Test (TC-233) |
 | FR-340-AC-11 | A `modifies` entry naming a relationship is one node id, and a `relation`/`relationship` node carries no `declaration`; that single key is the whole grant, covering every link of the relationship observed from each end, including a link with an end at an object the same invocation creates. | Test (TC-233) |
@@ -368,10 +368,10 @@ The frame step runs before the state step of
   "Effect frames" as a declared-artifact model feature (`Modifies:`,
   `Creates:`, `Deletes:` lines lowering to `Operation.frame`); this
   artifact is the checked-package V2 carrier of that same feature.
-- `proposals/quire-v1/definitions/model-complete.md`'s Frames row is the
+- `proposals/filament-v1/definitions/model-complete.md`'s Frames row is the
   business-model rule this artifact lifts from: its members and refusal causes
   map onto the V2 wire as the Description states.
-- [FR-208](../foundation/FR-208-quire-meaning-vocabulary.md) fixes which
+- [FR-208](../foundation/FR-208-filament-meaning-vocabulary.md) fixes which
   business-model meanings (field, relationship, object type, process) are
   eligible frame-entry targets.
 - [FR-047](../../functional/foundation/FR-047-emit-typed-located-causes.md)
@@ -388,6 +388,6 @@ body.
 
 ## References
 
-- Receiver scope design: quire-spec-language ADR-021 (POR-3, RU-1, QS-4).
-- Scoped `deletes`: quire-spec-language SR-1140 FND-004.
+- Receiver scope design: filament-spec-language ADR-021 (POR-3, RU-1, QS-4).
+- Scoped `deletes`: filament-spec-language SR-1140 FND-004.
 - Tickets: Linear STD-134; paired QSL-368.

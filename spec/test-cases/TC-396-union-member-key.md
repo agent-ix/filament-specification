@@ -3,7 +3,7 @@ id: TC-396
 title: "Withdrawn: union member key"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-441
+  - target: ix://agent-ix/filament-specification/FR-441
     type: verifies
 ---
 

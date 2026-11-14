@@ -3,9 +3,9 @@ id: TC-412
 title: "Checked-package abstraction relation node"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-451
+  - target: ix://agent-ix/filament-specification/FR-451
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: verifies
 ---
 

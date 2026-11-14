@@ -4,13 +4,13 @@ title: "Complete-global-conformance closure state vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-059
+  - target: ix://agent-ix/filament-specification/FR-059
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-115
+  - target: ix://agent-ix/filament-specification/FR-115
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: specifies
 ---
 # FR-247: Complete-global-conformance closure state vocabulary
@@ -99,7 +99,7 @@ FR-284's closed scope-progress-and-closure vocabulary.
   and
   [FR-116](../../functional/observation/FR-116-map-observation-results-to-consumers.md)
   restate the record at the observation-result and consumer boundaries.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

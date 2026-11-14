@@ -4,9 +4,9 @@ title: "Producer stage"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: references
 ---
 # FR-273: Producer stage
@@ -24,7 +24,7 @@ observing producer stage and its catalogued code. ... a wrapper retains the
 originating stage and cause instead of replacing them with its own display
 stage. This catalog does not rename historical stage labels or create a
 competing pipeline enum"
-([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)).
+([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)).
 
 This artifact types the stage as a **value**, not as one ecosystem-wide
 enumeration. Its value is the pair of the exact selected producer-interface
@@ -129,11 +129,11 @@ identities remain the membership authority.
 
 - [FR-047](../../functional/foundation/FR-047-emit-typed-located-causes.md) establishes the
   stage-retention and producer-interface selection obligations.
-- [Native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)
+- [Native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)
   is the proposed, non-adopted source of the eleven-stage list.
 - [FR-272](FR-272-typed-diagnostic-cause.md) supplies the typed cause retained
   alongside the stage.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Status

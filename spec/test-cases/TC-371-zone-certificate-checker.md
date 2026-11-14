@@ -3,15 +3,15 @@ id: TC-371
 title: "Zone certificate checker"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: verifies
 ---
 
@@ -27,9 +27,9 @@ Run each vector through the real local Rust boundary of the frontend or provider
 
 ## Models
 
-The models below are defined here in full; the citation names the QSL design record each one comes from. `ev` selects `quire.temporal.event-position.false-extension/v1`, `inf` selects `quire.temporal.infinite-trace/v1` and `timed` selects `quire.temporal.timed/v1`.
+The models below are defined here in full; the citation names the FSL design record each one comes from. `ev` selects `filament.temporal.event-position.false-extension/v1`, `inf` selects `filament.temporal.infinite-trace/v1` and `timed` selects `filament.temporal.timed/v1`.
 
-- **`Rpc`**, **`NoLateReply`** and **`Settles`** (from QSL ADR-026 §11). `time Rpc dense unit ms;`. One object `c: Call { phase: Phase, inflight: Boolean, late: Boolean, x: Clock }`, `Phase` one of `Idle`, `Waiting`, `Replied` and `TimedOut`; universe `{c}`; initially `phase = Idle`, `inflight` and `late` false, `x = 0`. `Call::send` has pre `phase = Idle` and post `phase = Waiting`, `inflight`, `not late` and `x = 0`. `Call::reply` has pre `inflight and x >= 1 ms` and post `not inflight`, `late = (pre(phase) = TimedOut)`, and `phase = Replied` when `pre(phase) = Waiting`, unchanged otherwise. `Call::timeout` has pre `phase = Waiting and x >= T` and post `phase = TimedOut`. `Call::reset` has pre `not inflight and (phase = Replied or phase = TimedOut)` and post `phase = Idle`. The time invariants are `x <= 3 ms` while `inflight` and `x <= T` while `phase = Waiting`. `T` is a time constant each vector fixes. `NoLateReply` is `temporal NoLateReply using inf over (k: Rpc::Call) clock "model-steps" on origin { always holds(not k.late) }`. `Settles` is `temporal Settles using timed over (k: Rpc::Call) clock "model-time" on origin { always (holds(k.phase = Waiting) implies eventually[0 ms, 3 ms] holds(k.phase != Waiting)) }`.
+- **`Rpc`**, **`NoLateReply`** and **`Settles`** (from FSL ADR-026 §11). `time Rpc dense unit ms;`. One object `c: Call { phase: Phase, inflight: Boolean, late: Boolean, x: Clock }`, `Phase` one of `Idle`, `Waiting`, `Replied` and `TimedOut`; universe `{c}`; initially `phase = Idle`, `inflight` and `late` false, `x = 0`. `Call::send` has pre `phase = Idle` and post `phase = Waiting`, `inflight`, `not late` and `x = 0`. `Call::reply` has pre `inflight and x >= 1 ms` and post `not inflight`, `late = (pre(phase) = TimedOut)`, and `phase = Replied` when `pre(phase) = Waiting`, unchanged otherwise. `Call::timeout` has pre `phase = Waiting and x >= T` and post `phase = TimedOut`. `Call::reset` has pre `not inflight and (phase = Replied or phase = TimedOut)` and post `phase = Idle`. The time invariants are `x <= 3 ms` while `inflight` and `x <= T` while `phase = Waiting`. `T` is a time constant each vector fixes. `NoLateReply` is `temporal NoLateReply using inf over (k: Rpc::Call) clock "model-steps" on origin { always holds(not k.late) }`. `Settles` is `temporal Settles using timed over (k: Rpc::Call) clock "model-time" on origin { always (holds(k.phase = Waiting) implies eventually[0 ms, 3 ms] holds(k.phase != Waiting)) }`.
 
 ## Vectors
 
@@ -48,7 +48,7 @@ The models below are defined here in full; the citation names the QSL design rec
 | ZC-11 | A time-lock-freedom certificate with a component index per node, two reasons (`missing-acceptance`, `weak-fairness`) and a divergence target per node | Valid; bytes equal `ZC-11`'s published `bytes_hex` (1432 bytes) |
 | ZC-12 | A refinement form with two initial states, the first a `locked` node with the reserved index and `admitted` starting at the positioned second | Valid; bytes equal `ZC-12`'s published `bytes_hex` (1617 bytes); `taken` is `[]` |
 | ZC-13 | ZC-10 with a zone entry or a bound as a bare JSON number, a bound as the JSON number `-1`, a bound `"01"`, `scale` `"0"`, `components` as `null`, `locked` `false`, `initials` removed or `initial` added | Each is not a `ZoneCertificate` |
-| ZC-14 | ZC-12 with `initials[1]` replaced by a node whose zone does not cover concrete initial state 1's symbolic state | `certificate-rejected` with rule `initial-missing` at `{key}`, the State record of that initial state's discrete state (the QSL checker's vector, QSL TC-700 step 8) |
+| ZC-14 | ZC-12 with `initials[1]` replaced by a node whose zone does not cover concrete initial state 1's symbolic state | `certificate-rejected` with rule `initial-missing` at `{key}`, the State record of that initial state's discrete state (the FSL checker's vector, FSL TC-700 step 8) |
 | ZC-15 | A fixed-work task product with one task type with `bcet = wcet = 1` and deadline 2, one live job slot, its service/deadline clocks, the exact `M_x` values, diagonal constraints and subtraction by 1; the certificate covers every reachable refined region | Accepted only when `task_product` matches the recompiled product and every edge is covered by the refined-region relation; aLU-only successor coverage is insufficient |
 | ZC-16 | ZC-15 with, in turn, its queue bound, one clock ceiling, one diagonal constraint, or the subtraction guard/constant omitted or changed; one subtraction enabled below `c` or above `M_x`, or yielding a negative value | Each is rejected at the task product/certificate locus; the checker recomputes all values from the admitted task set and product |
 | ZC-17 | ZC-15 with a reachable deadline-miss node having a verified positive-delay continuation; then a deadline-miss node with no such continuation and marked `locked`; then a task-product certificate containing a queue-cap overflow node | The first certificate is rejected as `bad-state`; the locked time-lock-only path does not refute the timed claim and remains separately reportable by FR-417; the queue-cap overflow node is not a legal task-product state and the checker refuses the certificate |

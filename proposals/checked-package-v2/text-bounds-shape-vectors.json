@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "FR-322-AC-306 (TC-233 TB-04..TB-05): the body of a bounded_domain/text_bounds node as its aggregate members in order (each a binding with the literal's value_kind and value). The reader that decides these outcomes is quire-contract-ir's (FR-038); QSpec's test applies the stated shape rule and checks that the published fixture's text_bounds node passes it.",
+  "note": "FR-322-AC-306 (TC-233 TB-04..TB-05): the body of a bounded_domain/text_bounds node as its aggregate members in order (each a binding with the literal's value_kind and value). The reader that decides these outcomes is filament-contract-ir's (FR-038); QSpec's test applies the stated shape rule and checks that the published fixture's text_bounds node passes it.",
   "profiles": [
     "unicode-scalars",
     "nfc",

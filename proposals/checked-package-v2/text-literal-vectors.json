@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "FR-322-AC-304 (TC-233 DL-07..DL-10): text literals typed by a text_bounds node. `types` name Text[min, max; profile]; `value` is the retained sequence the reader receives and never normalizes; `normalized` records whether it equals its own normalization under the profile; `length` is the scalar count, or the UTF-8 byte count under binary-utf8. The refusal locus is the literal's `value` member, `pointer` with `{n}` the node index for a root literal. QSpec's test recomputes lengths and checks the expectation against the stated rule, taking `normalized` as authored (QSpec holds no normalization tables); the reader that decides these outcomes is quire-contract-ir's (FR-038).",
+  "note": "FR-322-AC-304 (TC-233 DL-07..DL-10): text literals typed by a text_bounds node. `types` name Text[min, max; profile]; `value` is the retained sequence the reader receives and never normalizes; `normalized` records whether it equals its own normalization under the profile; `length` is the scalar count, or the UTF-8 byte count under binary-utf8. The refusal locus is the literal's `value` member, `pointer` with `{n}` the node index for a root literal. QSpec's test recomputes lengths and checks the expectation against the stated rule, taking `normalized` as authored (QSpec holds no normalization tables); the reader that decides these outcomes is filament-contract-ir's (FR-038).",
   "types": {
     "nfc23": {
       "min": 2,

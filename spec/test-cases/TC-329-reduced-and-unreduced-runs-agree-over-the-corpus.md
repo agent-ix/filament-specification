@@ -3,7 +3,7 @@ id: TC-329
 title: "Reduced and unreduced runs agree over the conformance corpus"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: verifies
 ---
 

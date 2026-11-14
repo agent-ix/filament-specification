@@ -3,11 +3,11 @@ id: FR-180
 title: "Execute the complete reference workflow corpus"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-008
+  - target: ix://agent-ix/filament-specification/AD-008
     type: references
-  - target: ix://agent-ix/quire-specification/FR-114
+  - target: ix://agent-ix/filament-specification/FR-114
     type: references
 ---
 
@@ -40,7 +40,7 @@ compensation and partial recovery.
 ## Reference verdict contract
 
 Each corpus case's source/package bytes are emitted by I04 `link_and_check`
-as `quire.checked-package/v2` with its `state` nodes; the corpus holds those
+as `filament.checked-package/v2` with its `state` nodes; the corpus holds those
 exact bytes, and the runtime admits them only
 through I04 `read`. ConfigVersion cases replay on the complete-V1 value
 runtime only.
@@ -67,7 +67,7 @@ disposition, not merely a Boolean projection.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

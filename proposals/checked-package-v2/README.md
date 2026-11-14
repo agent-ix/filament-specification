@@ -2,12 +2,12 @@
 
 This directory is the normative public transport contract for I04 immutable
 checked packages. It is intentionally a schema-and-vector boundary, not a
-native Rust package API: QSL remains free to use internal parser/CST/package
+native Rust package API: FSL remains free to use internal parser/CST/package
 structures, but any external consumer receives only the contract.
 
 ## Contract contents
 
-- `schema.json` defines the closed `quire.checked-package/v2` wire shape.
+- `schema.json` defines the closed `filament.checked-package/v2` wire shape.
 - Operand references (FR-322 "Operand index segments"): every node id held
   inside a node names its operands by operand slots `{"operand": k}` into that
   node's row of `semantic_graph.operand_rows`, so a node's bytes hold no graph
@@ -26,8 +26,8 @@ structures, but any external consumer receives only the contract.
   document it selects (TC-233, FR-322-AC-266). Several documents carry the
   identity `acme/orders`, so a reader takes a fixture's document, and the
   document of a vector patch of that fixture, from this map.
-- The closed `quire.checked-operation-catalog/v1` is not kept here. Its only copy is
-  `contracts/checked-operation-catalog-v1.json` in `agent-ix/quire-verification-contracts`,
+- The closed `filament.checked-operation-catalog/v1` is not kept here. Its only copy is
+  `contracts/checked-operation-catalog-v1.json` in `agent-ix/filament-verification-contracts`,
   which the tests read through that crate. It holds
   every application operation identity with its operator class, operand
   positions and rest, result form, constraints, required law roles (integer
@@ -42,7 +42,7 @@ structures, but any external consumer receives only the contract.
   (a `state_transition` application does too and is published in
   `fixtures/positive-state-transition.json`). The
   same package carries an invariant and a precondition as
-  `state`/`state_clause` nodes whose `quire.op.state.clause` applications
+  `state`/`state_clause` nodes whose `filament.op.state.clause` applications
   carry a `state_clause` member and no law, the precondition's
   `state`/`operation_anchor` node, its `state`/`frame` node with a scoped
   field entry and the four frame members, and the `value`/`parameter` node
@@ -55,7 +55,7 @@ structures, but any external consumer receives only the contract.
   `Reference<Switch>`, the `self` and `flag` parameters, a `deref` and a field
   `project` node (the subject), the `flag || on` term, the frame, the no-point
   operation anchor, the precondition and postcondition state clauses and one
-  `state`/`transition` node whose `quire.op.state.transition` application binds
+  `state`/`transition` node whose `filament.op.state.transition` application binds
   `anchor`, `subject`, `inputs`, `pre` and `post` (FR-341 "State transition
   body", FR-464-AC-19, TC-233). Its node ids are structural
   (`{package, path, ordinal}`).
@@ -76,7 +76,7 @@ structures, but any external consumer receives only the contract.
   refusals cover malformed row shape, foreign/wrong-form references, unowned
   occurrences, duplicate keys, absent coverage and row order. This typed claim
   handle is in checked-package-v2; FR-418 `TaskTransitionTemplate` remains in
-  the separate backend-provider-v1 certificate, where QSL owns successor
+  the separate backend-provider-v1 certificate, where FSL owns successor
   recomputation.
 - `operation-effect-vectors.json` publishes the optional `operation_effects`
   carrier of FR-103's per-operation declared effect (modifies, creates, deletes
@@ -84,10 +84,10 @@ structures, but any external consumer receives only the contract.
   operation name with provenance. Positive cases OEC-01 to OEC-07 cover each
   kind, the empty effect, several members and one member name under different
   objects and documents; the schema and reader refusals OES-* and OER-* carry
-  exact codes and loci (FR-322-AC-303). QSL emits the carrier and the IR strict
+  exact codes and loci (FR-322-AC-303). FSL emits the carrier and the IR strict
   reader admits or refuses it.
 - `operation-body-vectors.json` publishes the optional `operation_bodies`
-  carrier of QSL FR-576's per-operation body: a reference to the checked body
+  carrier of FSL FR-576's per-operation body: a reference to the checked body
   function node or the typed absence `no_body`, keyed by selected document,
   declaring node and original operation name as `operation_effects`. Positive
   cases OBC-01 to OBC-07 cover a body, no body, mixed members, one member name
@@ -100,12 +100,12 @@ structures, but any external consumer receives only the contract.
   compensation-template and hybrid-transition targets, plus closed-shape
   mutations rejected by the V2 `OperationMember` schema (FR-322-AC-293).
 - `temporal-aggregate-vectors.json` publishes the one `aggregate` argument of
-  `quire.op.temporal.aggregate` (FR-370 "Window aggregate atom"): a positive
+  `filament.op.temporal.aggregate` (FR-370 "Window aggregate atom"): a positive
   per aggregate kind, the clause clock unit (`clock_unit`) of the duration
   windows, and the reader cases AR-*, each one mutation of its `base`
   positive, with the first defect's code, cause and body-relative pointer
   (FR-370-AC-17, FR-370-AC-18). The reader
-  that decides them is quire-contract-ir's.
+  that decides them is filament-contract-ir's.
 - `fixtures/protocol-node-base.json` is the checked OrderFlow base package of
   the protocol node vectors (TC-946, TC-947, TC-948).
   `fixtures/protocol-node-mutation-manifest.json` is their executable form
@@ -129,7 +129,7 @@ structures, but any external consumer receives only the contract.
   domain package `acme/shapes` (tuples `Pair`, `Swap`, `Nest`, `Cell`; variant
   types `Shape`, `Color`, `List`): its `model`/`tuple_value_type` and
   `model`/`variant_type` declaration nodes, the `model_root`, and the
-  `union_value`, `enum_value`, `quire.op.tuple.project`, `case` and equality nodes
+  `union_value`, `enum_value`, `filament.op.tuple.project`, `case` and equality nodes
   over them, each with a structural node id
   (FR-322 "Tuple value types and payload-bearing variant types", FR-440,
   FR-441, TC-940). `domain-package-acme-shapes.json` is its selected document, a full FCD
@@ -146,7 +146,7 @@ structures, but any external consumer receives only the contract.
   `redDiffersFromGreen` expects `true`. A native
   compile of this pair is expected to retain one `model_root`, one
   `model`/`variant_type` declaration, the two `value`/`enum_value` cases and
-  admitted decisions for `quire.op.enum.eq` and `quire.op.enum.ne`. This is
+  admitted decisions for `filament.op.enum.eq` and `filament.op.enum.ne`. This is
   a consumer compilation input; it is not a runtime comparison result or
   generated-code agreement claim. The dependency-free Rust library exposes
   its exact bytes as `ACME_COLORS_DOMAIN_PACKAGE` and
@@ -155,12 +155,12 @@ structures, but any external consumer receives only the contract.
   option value types (FR-154 "Option value types"; `kind` `option` with one
   `inner` type reference), the FR-322 step 4 member types of fields typed by
   them and the intake cases (FR-154-AC-39 to AC-41, FR-322-AC-298, TC-234, TC-280).
-  No strict reader consumes it yet; the FCD `option` kind and the QSL intake and
+  No strict reader consumes it yet; the FCD `option` kind and the FSL intake and
   type-projection readers are follow-up work.
 - `contract-package-selection-vectors.json` publishes the typed source-selection
   rows `T`, `D` and `U` and the four compatibility cases of TC-935 (FR-330-AC-10)
   as the authoritative machine-readable form, so a conformance test reads them
-  (for example through `QUIRE_SPECIFICATION_DIR`) rather than copying them; the QSpec
+  (for example through `FILAMENT_SPECIFICATION_DIR`) rather than copying them; the QSpec
   test asserts they equal the Markdown of TC-935 (FR-322-AC-180).
 - `option-value-vectors.json` selects an option element type and checked
   payload from published package fixtures, plus closed-body and reader
@@ -176,7 +176,7 @@ structures, but any external consumer receives only the contract.
   reads. `extension-definition-vectors.json` lists the withheld-definition
   controls: a fixture read with `retention` withheld refuses
   `unknown_required_capability` at the extension node (FR-469, TC-951).
-- `hybrid-node-vectors.json` holds the graph nodes of QSL FR-447's `Braking`
+- `hybrid-node-vectors.json` holds the graph nodes of FSL FR-447's `Braking`
   hybrid declaration and its `SlowEnough` claim: one `hybrid`/`hybrid_model`
   node, two `hybrid`/`hybrid_mode` nodes, one `hybrid`/`hybrid_transition`
   node, the continuous variables' `value`/`parameter` nodes, the term nodes
@@ -192,8 +192,8 @@ structures, but any external consumer receives only the contract.
   cases over them (FR-322-AC-72, FR-340-AC-19/AC-20, FR-341-AC-11/AC-12,
   FR-342-AC-7 to AC-9). Its model declaration nodes are read from the
   projection by owner.
-- `quantity-carrier-vectors.json` supplies the cases `CQ-W01` to `CQ-W15` (TC-280 `MU-31` to `MU-34`; FR-322-AC-301, FR-322-AC-302) and `CQ-E01` to `CQ-E20` (TC-187 `U42` to `U44`; FR-142-AC-28, FR-142-AC-29): the anonymous `scalar_type`/`carried_quantity` node of `Quantity<u, C>` over a bounded `Int` or `Decimal` carrier, its three refusal mutations, the `quire.op.quantity.convert` application into it with its `rounding` mode pinned by the node, and the exact halves of TC-187 `U07`, `U08`, `U16`, `U17`, `U18` and `U29` (`inexact_conversion`/`inexact-conversion` at the convert node, and the out-of-domain refusals). The reader and evaluator that decide them are quire-contract-ir's and quire-verification's; QSpec's test checks only shape and that each `completed` or `refused` outcome follows from the exact value and the carrier.
-- `dimension-equivalence-vectors.json` supplies the cases `XP-01` to `XP-15` of TC-280 `MU-25` to `MU-30`: equivalences over dimension nodes of three packages, each foreign operand written as a package operand `PackageNodeRef{package, node}`, two consistent graphs and thirteen refusals, `XP-11` to `XP-15` the selection, name and self-minted operand refusals (FR-322-AC-268, FR-322-AC-299). The reader that decides them is quire-contract-ir's (FR-063); the vectors are authoritative for it and QSpec's test checks only their shape.
+- `quantity-carrier-vectors.json` supplies the cases `CQ-W01` to `CQ-W15` (TC-280 `MU-31` to `MU-34`; FR-322-AC-301, FR-322-AC-302) and `CQ-E01` to `CQ-E20` (TC-187 `U42` to `U44`; FR-142-AC-28, FR-142-AC-29): the anonymous `scalar_type`/`carried_quantity` node of `Quantity<u, C>` over a bounded `Int` or `Decimal` carrier, its three refusal mutations, the `filament.op.quantity.convert` application into it with its `rounding` mode pinned by the node, and the exact halves of TC-187 `U07`, `U08`, `U16`, `U17`, `U18` and `U29` (`inexact_conversion`/`inexact-conversion` at the convert node, and the out-of-domain refusals). The reader and evaluator that decide them are filament-contract-ir's and filament-verification's; QSpec's test checks only shape and that each `completed` or `refused` outcome follows from the exact value and the carrier.
+- `dimension-equivalence-vectors.json` supplies the cases `XP-01` to `XP-15` of TC-280 `MU-25` to `MU-30`: equivalences over dimension nodes of three packages, each foreign operand written as a package operand `PackageNodeRef{package, node}`, two consistent graphs and thirteen refusals, `XP-11` to `XP-15` the selection, name and self-minted operand refusals (FR-322-AC-268, FR-322-AC-299). The reader that decides them is filament-contract-ir's (FR-063); the vectors are authoritative for it and QSpec's test checks only their shape.
 - `node-ordinal-vectors.json` supplies the cases `NO-01` to `NO-04` of TC-233: a `node_id.ordinal` of 0 and of 9007199254740991 is admitted, and 9007199254740992, -1, `1.5`, `1e2` and the string `"1"` are each `malformed_wire` at the ordinal (FR-322-AC-171). `uniqueness_cases` add `NO-05` to `NO-08` (FR-322-AC-272, FR-322-AC-273): sibling nodes of one `package` and `path` at ordinals that are not `0`, not contiguous or out of graph order are admitted, and two nodes of an equal `{package, path, ordinal}` are `invalid_semantic_graph` at the second.
 - `dependency-order-vectors.json` reverses the two dependencies of node 34 in `positive-timed-model-nodes.json`; the malformed twin is descending by structural `NodeId` and expects `invalid_semantic_graph` at `/semantic_graph/nodes/34/dependencies` (FR-322-AC-10, AC-96).
 - `structural-identity.schema.json` and `structural-identity-vectors.json` give the closed shapes of FR-201's `MemberId`, `VariantId`, `UnitId`, `UniverseId` and `PopulationId` (and the `EffectiveId` an effective `MemberId` owner holds) and the TC-233 cases `SI-01` to `SI-06` (FR-201-AC-11): each comparison is equal or different, and orders as recorded, componentwise; nothing is hashed.
@@ -251,7 +251,7 @@ structures, but any external consumer receives only the contract.
   `value`/`parameter` nodes that carry no `declaration`.
   `fixtures/positive-dependency-call.json` selects that library by its
   identity and declares `App::check`, whose body is a
-  `quire.op.function.call` with a `dependency_reference` callee naming
+  `filament.op.function.call` with a `dependency_reference` callee naming
   `Lib::is_small`, the Boolean node as `result_type` and no `dependencies`
   entry for the target; it is admitted when the library is supplied.
   `dependency-call-vectors.json` carries FR-322-AC-37's mutations of that
@@ -283,9 +283,9 @@ structures, but any external consumer receives only the contract.
   `node_key_ref` to share the referenced key without copying it; `segments`
   holds the structural key's `path`. Collection
   entries also reference their element type key, while population entries reference the semantic
-  `Set<Reference<T>>` key. The keys were confirmed against QSL's checked-package
+  `Set<Reference<T>>` key. The keys were confirmed against FSL's checked-package
   emitter and are intended for its checked-package reader vectors.
-- The checked semantic graph is a closed `quire.checked-semantic-graph/v2`
+- The checked semantic graph is a closed `filament.checked-semantic-graph/v2`
   tagged union. It is source-language-neutral transport, not Contract IR and
   not an alternative language semantic authority.
 - A protocol reference is a `protocol`/`protocol_reference` node in that graph,
@@ -293,7 +293,7 @@ structures, but any external consumer receives only the contract.
   `expression` occurrences, one per source reference to the target. FR-322 binds its
   target to a local protocol node by exact typed key; no extra graph collection
   or dependency-package target lookup is defined.
-- The structural type forms used by QSL's StateModel lowering are settled by
+- The structural type forms used by FSL's StateModel lowering are settled by
   FR-322: a source type alias forwards to the node of its resolved type and
   creates no `alias` node; `Reference<T>` is an anonymous
   `composite_type`/`reference`; `Population<T>[N]` is an anonymous
@@ -304,7 +304,7 @@ structures, but any external consumer receives only the contract.
   a `relation`/`population` model declaration node (FR-322 "Population
   references"): self-typed, with an empty body and a `ModelOwner` that is the
   population's declaration key, identified like every model declaration
-  node by its structural node id. It is operand 0 of `quire.op.model.all_instances` and `quire.op.model.lookup`
+  node by its structural node id. It is operand 0 of `filament.op.model.all_instances` and `filament.op.model.lookup`
   and carries no member type or maximum. `fixtures/adverse.json`'s
   `population_reference_cases` read it through the full reader against the FCD populations of its `selected_document_populations`, and
   `model-owner-form-vectors.json` carries the `populations` list of its
@@ -360,7 +360,7 @@ its term node ids; a unit's `semantic_type` equals its dimension node id and its
 dependencies are exactly that dimension plus its non-null target. Changing a
 body/type/dependency while retaining the nominal declaration therefore refuses.
 Runtime compound-unit values are evaluator-owned
-`quire.value.compound-unit/v1` identities defined with the complete-value
+`filament.value.compound-unit/v1` identities defined with the complete-value
 profile; they are not I04 graph nodes. The concrete RFC 6902
 patches in `invalid_mutations` must all refuse as `invalid_semantic_graph`.
 
@@ -388,30 +388,30 @@ Every V2 `application` term carries its `operator`,
 `result_type` and its `arguments`, and every `literal` term carries its
 declared `type`, so the package alone gives each application exactly one
 meaning and no type is inferred. The identity is a member of the
-`quire-verification-contracts` operation catalog, and its entry fixes the rest:
+`filament-verification-contracts` operation catalog, and its entry fixes the rest:
 
 - the operator class equals the entry's class;
 - `laws` lists exactly the entry's roles in order. A value role
   (`integer_division`, `ieee_profile`, `text_profile`) names one of that role's
   catalogued definitions that is also a member of the lock's
   `definition_selections`. A clause role (`temporal_profile` for
-  `quire.op.temporal.clause` and `quire.op.claim.clause`, `protocol_profile`
-  for `quire.op.protocol.control` and `quire.op.state.transition`) names a
+  `filament.op.temporal.clause` and `filament.op.claim.clause`, `protocol_profile`
+  for `filament.op.protocol.control` and `filament.op.state.transition`) names a
   published profile definition of that kind that equals the lock's
   `profile_selections` row of that role;
 - `mode` is `null` when the entry names no mode kind, and otherwise one of that
   kind's values; for `rounding` and `text_profile` the operand and result types
-  are authoritative and must pin exactly that value. `quire.op.quantity.convert`,
-  `quire.op.collection.sum.quantity` and
-  `quire.op.collection.sum.carried_quantity` carry a `rounding` mode checked
+  are authoritative and must pin exactly that value. `filament.op.quantity.convert`,
+  `filament.op.collection.sum.quantity` and
+  `filament.op.collection.sum.carried_quantity` carry a `rounding` mode checked
   this way; the carried sum's binder bound, `type_argument` and `result_type`
   are one `carried_quantity` node (FR-322 "Carried-quantity sum");
 - `member` is `null` or the entry's member kind naming its declaring node
   (record field, tuple position, element, relationship end, dispatched
   operation or type argument), or for a clause
   `{kind: "profile_operator", operator}` naming an operator the law's profile
-  defines, or for `quire.op.state.clause` `{kind: "state_clause", clause}`
-  naming the clause kind (FR-341). `quire.op.model.reaches_field` carries a
+  defines, or for `filament.op.state.clause` `{kind: "state_clause", clause}`
+  naming the clause kind (FR-341). `filament.op.model.reaches_field` carries a
   `field` member and the `reference_edge` constraint (FR-322 "Reaches over a
   field"). A dispatched operation's declaring node is a `model` node whose own
   `semantic_form` is `object_type`, `process`, `state_machine` or
@@ -436,7 +436,7 @@ meaning and no type is inferred. The identity is a member of the
 - `leaves` is empty unless the entry names a leaf source, and then names every
   text leaf of the compared type (`operand:0`, `inner:0`) or of a `set`, `bag`
   or `ordered_set` result's element type (`result_inner`: the collection
-  constructors, `map`, `flat_map`, `flatten` and `quire.op.collection.convert`)
+  constructors, `map`, `flat_map`, `flatten` and `filament.op.collection.convert`)
   with its law and type-pinned mode;
 - the arguments fit the entry's operand positions, rest, constraints and result
   form, and `result_type` is the type that form derives.
@@ -444,29 +444,29 @@ meaning and no type is inferred. The identity is a member of the
 The families, groups, constraints, result forms and FR-149 conversion classes
 are decided by the normative table in
 [FR-322](../../spec/objects/interfaces/FR-322-checked-package-artifact.md#operation-families-groups-and-constraints).
-`quire.op.rational.div` takes `integer` or `rational` operands and promotes them
-exactly (`promotes_exact`); `quire.op.numeric.narrow` and
-`quire.op.rational.narrow` are checked range and rational narrowing
-obligations with no mode, and only `quire.op.numeric.convert_rounding`, a
+`filament.op.rational.div` takes `integer` or `rational` operands and promotes them
+exactly (`promotes_exact`); `filament.op.numeric.narrow` and
+`filament.op.rational.narrow` are checked range and rational narrowing
+obligations with no mode, and only `filament.op.numeric.convert_rounding`, a
 decimal scale reduction, rounds.
 
 IEEE values have no `eq`, `ne` or ordering identity: numeric equality, total
 order and bit identity are three distinct identities, and the source `=` and
-`!=` over floats lower to `quire.op.ieee.numeric_equal` and its
-`quire.op.boolean.not`. `quire.op.ieee.float32.negate` and
-`quire.op.ieee.float64.negate` flip the sign bit of one float, with the
+`!=` over floats lower to `filament.op.ieee.numeric_equal` and its
+`filament.op.boolean.not`. `filament.op.ieee.float32.negate` and
+`filament.op.ieee.float64.negate` flip the sign bit of one float, with the
 `ieee_profile` law, no mode and the operand's type as result. A
-`quire.op.structural.eq` or `.ne` over a type holding a float lists that float
+`filament.op.structural.eq` or `.ne` over a type holding a float lists that float
 leaf with the `ieee_profile` law.
 
 A reader reports the first refusal in the order owned by
-`quire.native.diagnostics/v1`: graph-shape refusals, then
+`filament.native.diagnostics/v1`: graph-shape refusals, then
 declaration refusals, then frame refusals at
 the first `state`/`frame` node carrying one, visiting them in ascending
 node-id order
 (that node's own `missing_declaration`/`invalid_model_binding` meaning-join
 defect outranking its `invalid_semantic_graph` canonical-order defect, per
-FR-340), then state refusals (the placement of `quire.op.state.clause`, then
+FR-340), then state refusals (the placement of `filament.op.state.clause`, then
 each `state`/`operation_anchor` node and then each `state`/`state_clause`
 node, visiting each kind in ascending node-id order, per FR-341 and
 FR-342), then nodes, visited in ascending node-id order and, inside a
@@ -501,12 +501,12 @@ and derives the member type from the resolved field or operation record. The
 rule, its type tables and its refusals are
 [FR-322's "Model-owned members"](../../spec/objects/interfaces/FR-322-checked-package-artifact.md#model-owned-members).
 
-A field of a model object is `quire.op.record.project` over a
-`quire.op.model.deref` result: `deref` yields the object type's model
+A field of a model object is `filament.op.record.project` over a
+`filament.op.model.deref` result: `deref` yields the object type's model
 declaration node, of family `object`, which the projection's `field_owner`
-operand group admits. `quire.op.reference.eq` and `quire.op.reference.ne`
+operand group admits. `filament.op.reference.eq` and `filament.op.reference.ne`
 compare two references whose object types conform one to the other
-(`conforming_reference`), and `quire.op.reference.upcast` retypes a
+(`conforming_reference`), and `filament.op.reference.upcast` retypes a
 reference only to a type its object type conforms to (`conforming_upcast`),
 each decided over the owners the same recovery yields
 ([FR-322's "Reference conformance"](../../spec/objects/interfaces/FR-322-checked-package-artifact.md#reference-conformance)).
@@ -557,13 +557,13 @@ and two nodes declaring one name refuse as `ambiguous-name`
 - `clock-presence-frame-vectors.json` publishes the frame rule of FR-415-AC-21
   (no implicit reset on a presence change) for an `Option<Clock>` place
   (TC-367 CK-31).
-- `text-literal-vectors.json` publishes the text-literal membership cases `TX-01` to `TX-14` (and `TX-13s`) over `Text[min, max; profile]` (FR-322-AC-304, TC-233 `DL-07` to `DL-10`): exact bounds, below min, above max, non-normalized retained sequences and the `binary-utf8` byte count. The reader that decides them is quire-contract-ir's (FR-038); QSpec's test checks lengths and the stated rule.
-- `temporal-clock-binding-vectors.json` also publishes `compensation_cases` `CB-01` to `CB-08` (FR-322-AC-305, TC-233 `TB-01` to `TB-03`): a `temporal_bindings` row keyed by a `protocol`/`compensation` node, beside a clause and in refusal. The `TemporalBinding` schema is unchanged. The reader that decides them is quire-contract-ir's.
-- `temporal-clause-name-vectors.json` (IR-1278, FR-322-AC-342..358, FR-370-AC-16): the top-level `temporal_clause_names` member, one `{declaration, occurrence, name}` row per `claim` occurrence of a `temporal_clause` node, so structurally shared clauses keep their own declared names. The node and its `node_id` are unchanged. `temporal-clock-occurrence-vectors.json` (FR-322-AC-359..370): `TemporalBinding` gains the required `occurrence`, so the clock configuration is per occurrence. The reader that decides them is quire-contract-ir's.
-- `text-bounds-shape-vectors.json` publishes the completeness cases `TS-01` to `TS-10` of a `bounded_domain`/`text_bounds` node (FR-322-AC-306, TC-233 `TB-04`, `TB-05`): the complete `min`, `max`, `text_profile` body and the profile-only, missing-member, extra-member, inverted-bound and unknown-profile refusals. The reader that decides them is quire-contract-ir's (FR-038).
-- `fma-application-vectors.json` publishes the fused multiply-add cases `FM-01` to `FM-12` (FR-322-AC-307, TC-233 `FM-01` to `FM-04`): `quire.op.ieee.float32.fma` and `float64.fma` as the generic `call` application with three `reference` arguments, and the arity, width, mode and law refusals. The reader that decides them is quire-contract-ir's.
-- `tick-cover-vectors.json` publishes the counter-tick cover cases `TCV-01` to `TCV-15` (FR-160-AC-6 to FR-160-AC-8, TC-199): the half-open cover `[k, k + 1)` and the endpoint rule that decides `ack - req <= bound` and definite ordering (the 2998/3000/3001 boundary of QSL FR-251-AC-1). The evaluator is QSL's; QSpec's test applies the stated rule.
-- `monitor-plan-vectors.json` publishes the tick-monitor plan cases `MP-01` to `MP-82` (FR-487-AC-1 to FR-487-AC-12, FR-322-AC-308, TC-978): a base plan, single-edit mutations that the reader refuses with FR-487's codes and loci, and the append expression over the existing collection operations. The reader that decides them is quire-contract-ir's.
+- `text-literal-vectors.json` publishes the text-literal membership cases `TX-01` to `TX-14` (and `TX-13s`) over `Text[min, max; profile]` (FR-322-AC-304, TC-233 `DL-07` to `DL-10`): exact bounds, below min, above max, non-normalized retained sequences and the `binary-utf8` byte count. The reader that decides them is filament-contract-ir's (FR-038); QSpec's test checks lengths and the stated rule.
+- `temporal-clock-binding-vectors.json` also publishes `compensation_cases` `CB-01` to `CB-08` (FR-322-AC-305, TC-233 `TB-01` to `TB-03`): a `temporal_bindings` row keyed by a `protocol`/`compensation` node, beside a clause and in refusal. The `TemporalBinding` schema is unchanged. The reader that decides them is filament-contract-ir's.
+- `temporal-clause-name-vectors.json` (IR-1278, FR-322-AC-342..358, FR-370-AC-16): the top-level `temporal_clause_names` member, one `{declaration, occurrence, name}` row per `claim` occurrence of a `temporal_clause` node, so structurally shared clauses keep their own declared names. The node and its `node_id` are unchanged. `temporal-clock-occurrence-vectors.json` (FR-322-AC-359..370): `TemporalBinding` gains the required `occurrence`, so the clock configuration is per occurrence. The reader that decides them is filament-contract-ir's.
+- `text-bounds-shape-vectors.json` publishes the completeness cases `TS-01` to `TS-10` of a `bounded_domain`/`text_bounds` node (FR-322-AC-306, TC-233 `TB-04`, `TB-05`): the complete `min`, `max`, `text_profile` body and the profile-only, missing-member, extra-member, inverted-bound and unknown-profile refusals. The reader that decides them is filament-contract-ir's (FR-038).
+- `fma-application-vectors.json` publishes the fused multiply-add cases `FM-01` to `FM-12` (FR-322-AC-307, TC-233 `FM-01` to `FM-04`): `filament.op.ieee.float32.fma` and `float64.fma` as the generic `call` application with three `reference` arguments, and the arity, width, mode and law refusals. The reader that decides them is filament-contract-ir's.
+- `tick-cover-vectors.json` publishes the counter-tick cover cases `TCV-01` to `TCV-15` (FR-160-AC-6 to FR-160-AC-8, TC-199): the half-open cover `[k, k + 1)` and the endpoint rule that decides `ack - req <= bound` and definite ordering (the 2998/3000/3001 boundary of FSL FR-251-AC-1). The evaluator is FSL's; QSpec's test applies the stated rule.
+- `monitor-plan-vectors.json` publishes the tick-monitor plan cases `MP-01` to `MP-82` (FR-487-AC-1 to FR-487-AC-12, FR-322-AC-308, TC-978): a base plan, single-edit mutations that the reader refuses with FR-487's codes and loci, and the append expression over the existing collection operations. The reader that decides them is filament-contract-ir's.
 - `entry-key-vectors.json` publishes the declaration-less function key cases `EK-01` to `EK-08` (FR-322-AC-309, TC-979): the derived path of a producer-emitted function from its parameter, body-root and measure index segments, the duplicate `node_id` and a model-owned accessor label. The producer derives the key; the reader recomputes none.
 - `bounded-quantity-vectors.json` publishes BQ-01..BQ-10 for `Quantity<u>[min,max]`, including unit/bound identity, canonical exact endpoints, add/convert/lt admission and refusals; it does not replace the existing `carried_quantity` vectors.
 - `map-type-vectors.json` publishes MT-01..MT-07 for the structural `composite_type`/`map` arm and its key/value identities.

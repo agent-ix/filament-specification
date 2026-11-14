@@ -4,11 +4,11 @@ title: "Protocol role"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-049
+  - target: ix://agent-ix/filament-specification/FR-049
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-288
+  - target: ix://agent-ix/filament-specification/FR-288
     type: references
 ---
 # FR-211: Protocol role
@@ -101,7 +101,7 @@ participant role" (FR-054).
   owning role per labeled choice.
 - [FR-054](../../functional/protocol/FR-054-bind-channel-premises.md) forbids a queue or
   endpoint becoming a participant role.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-288](FR-288-qualified-protocol-definition-identity.md) supplies the
   qualified linked-definition component.

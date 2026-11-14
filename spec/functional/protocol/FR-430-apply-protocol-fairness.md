@@ -3,15 +3,15 @@ id: FR-430
 title: "Apply scheduler and authored fairness over protocol steps"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-161
+  - target: ix://agent-ix/filament-specification/FR-161
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-370
+  - target: ix://agent-ix/filament-specification/FR-370
     type: depends_on
 ---
 
@@ -77,7 +77,7 @@ constraints, `each` constraints included, are added to the scheduler
 constraints.
 
 A protocol clause with the member `scheduling adversarial;`, by the
-[shared grammar](../../../proposals/quire-v1/shared-grammar.md)'s `protocol-scheduling` production, carries no scheduler
+[shared grammar](../../../proposals/filament-v1/shared-grammar.md)'s `protocol-scheduling` production, carries no scheduler
 constraint: its fairness set is its authored and memory constraints, and a scheduler may
 starve any thread. The member is part of the checked package, so the same
 protocol with and without it is two obligations. A second `scheduling` member
@@ -123,11 +123,11 @@ never changes a safety verdict; the default changes liveness verdicts only.
 - [FR-161](../temporal/FR-161-analyze-infinite-trace-properties.md) states that
   fairness filters traces before evaluation.
 - [FR-426](FR-426-apply-protocol-steps.md) owns protocol step enabledness.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns the
   `protocol-scheduling` production and the fairness constraint spelling.
 
 ## References
 
-- Design: quire-spec-language ADR-027 PA-1 to PA-4, QS-6 and QS-13; weak and
+- Design: filament-spec-language ADR-027 PA-1 to PA-4, QS-6 and QS-13; weak and
   strong fairness over operations in ADR-018 FA-1 to FA-6.
 - Tickets: Linear STD-140; paired QSL-396.

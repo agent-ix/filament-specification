@@ -3,35 +3,35 @@ id: StR-001
 title: "Trust native finite-state assessments"
 type: StR
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-001"
+  - target: "ix://agent-ix/filament-specification/FR-001"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-002"
+  - target: "ix://agent-ix/filament-specification/FR-002"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-003"
+  - target: "ix://agent-ix/filament-specification/FR-003"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-004"
+  - target: "ix://agent-ix/filament-specification/FR-004"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-005"
+  - target: "ix://agent-ix/filament-specification/FR-005"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-006"
+  - target: "ix://agent-ix/filament-specification/FR-006"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-007"
+  - target: "ix://agent-ix/filament-specification/FR-007"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-008"
+  - target: "ix://agent-ix/filament-specification/FR-008"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-009"
+  - target: "ix://agent-ix/filament-specification/FR-009"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-010"
+  - target: "ix://agent-ix/filament-specification/FR-010"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-011"
+  - target: "ix://agent-ix/filament-specification/FR-011"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-012"
+  - target: "ix://agent-ix/filament-specification/FR-012"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-013"
+  - target: "ix://agent-ix/filament-specification/FR-013"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-014"
+  - target: "ix://agent-ix/filament-specification/FR-014"
     type: satisfied_by
-  - target: "ix://agent-ix/quire-specification/FR-015"
+  - target: "ix://agent-ix/filament-specification/FR-015"
     type: satisfied_by
 ---
 # StR-001: Trust native finite-state assessments

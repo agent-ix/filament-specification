@@ -3,7 +3,7 @@ id: interface_010
 title: "I10 composed execution bundle"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-328
+  - target: ix://agent-ix/filament-specification/FR-328
     type: references
 ---
 

@@ -3,15 +3,15 @@ id: FR-437
 title: "Explore a parallel under the RC11 release-acquire memory model"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-435
+  - target: ix://agent-ix/filament-specification/FR-435
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-439
+  - target: ix://agent-ix/filament-specification/FR-439
     type: references
 ---
 
@@ -286,7 +286,7 @@ RC11 excludes.
 
 ## References
 
-- Design: quire-spec-language ADR-025 RA-1 to RA-8, PSC-1 to PSC-7, MS-2,
+- Design: filament-spec-language ADR-025 RA-1 to RA-8, PSC-1 to PSC-7, MS-2,
   MF-2, RU-3 and RU-6; Lahav et al., PLDI 2017; Kang et al., POPL 2017;
   Lahav et al., OOPSLA 2021.
 - Tickets: Linear STD-138; paired QSL-372.

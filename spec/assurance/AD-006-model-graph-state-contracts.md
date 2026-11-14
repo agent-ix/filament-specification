@@ -4,11 +4,11 @@ title: "Domain model declared in spec artifacts"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 model and state semantics
+system: native Filament V1 model and state semantics
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
   - target: ix://agent-ix/filament-core-data/FR-097
     type: references
@@ -20,9 +20,9 @@ relationships:
 
 ## System Boundary
 
-Quire is a typed formal specification language. A spec's domain model, such as
+Filament is a typed formal specification language. A spec's domain model, such as
 `Order`, `Customer` and their relationships and operations, is declared in the
-spec's own artifacts. Quire reads those declarations, types them and checks
+spec's own artifacts. Filament reads those declarations, types them and checks
 them. S3 owns that model view and the runtime state environments bound to it.
 
 ### Object types and instances
@@ -39,7 +39,7 @@ them. S3 owns that model view and the runtime state environments bound to it.
   written for it.
 - FCD types documents and generates native Rust, TypeScript and Python types
   for both layers: artifact types and object types from their module, and
-  domain objects from the domain package. Quire owns the meaning of the
+  domain objects from the domain package. Filament owns the meaning of the
   domain model the artifacts declare.
 
 ```markdown
@@ -66,7 +66,7 @@ flowchart TD
   A[Spec artifacts: object entity, domain, ...] --> X[quire-rs semantic extraction]
   X --> L[FCD extraction-frontend lift]
   L --> D[Domain package: semantic IR]
-  D --> I[QSL model intake]
+  D --> I[FSL model intake]
   I --> M[Internal structural model view and original inventory]
   M --> CF[Source resolution and checked-fact admission]
   CF --> CV[Exhaustive conformance and dispatch]
@@ -85,29 +85,29 @@ flowchart TD
 2. **Lift.** FCD `extraction-frontend` lowers the extracted declarations of one
    spec package into a semantic IR 2.0.0 document: the **domain package**.
    Each type definition names its module-qualified kind, and the document
-   embeds each kind's construct with its Quire meaning id. The
+   embeds each kind's construct with its Filament meaning id. The
    lowering is deterministic and serialized with RFC 8785.
-3. **Intake.** QSL admits the domain package supplied under a selected identity, records its identity in the package lock,
-   and builds Quire model declarations from its IR nodes. It checks every model rule in
+3. **Intake.** FSL admits the domain package supplied under a selected identity, records its identity in the package lock,
+   and builds Filament model declarations from its IR nodes. It checks every model rule in
    this document. A domain package that fails a rule refuses with a located
    diagnostic that retains the node's IR identity and `origin`.
 4. **Consumers.** FCD code generation reads the same domain package and emits
-   Rust, TypeScript and Python types. Those types and Quire's formal model
+   Rust, TypeScript and Python types. Those types and Filament's formal model
    therefore describe the same `Order`, which is what lets a proof over
-   generated code cite a Quire clause.
+   generated code cite a Filament clause.
 
 ## Model features
 
 Each feature is declared in an artifact. It is carried by one extraction rule
 in quire-rs, one member of the semantic IR and one manifest section in the
-object type's module. Quire gives it meaning.
+object type's module. Filament gives it meaning.
 
-| Feature | Declared in the artifact | Semantic IR member | Quire meaning |
+| Feature | Declared in the artifact | Semantic IR member | Filament meaning |
 | --- | --- | --- | --- |
 | Fields | `## Properties` rows: `Field`, `Type`, `Multiplicity`, `Constraints` | `TypeDefinition.fields[]` with `typeRef`, `multiplicity`, `presence` | Typed attributes with checked bounds |
 | Presence | `Presence` column (`required`, `optional`) | `Field.presence` | Absent versus empty stay distinct |
 | Identity and name | Artifact `id`; artifact title | `TypeDefinition.identity` (artifact id); `TypeDefinition.displayName` (title) | A declaration's identity is its artifact id, admitted under FR-154; source-language qualified-name spelling is governed by the language grammar separately. The title is presentation only, so retitling keeps every key |
-| Construct meaning | The object type's module declares one construct with a Quire meaning id | `TypeDefinition.kind` `{module, name}` naming an entry of the embedded `constructs` table, whose `meaning` is a Quire meaning id (FR-208) | Quire binds a declaration by its construct's meaning id, never by its kind name |
+| Construct meaning | The object type's module declares one construct with a Filament meaning id | `TypeDefinition.kind` `{module, name}` naming an entry of the embedded `constructs` table, whose `meaning` is a Filament meaning id (FR-208) | Filament binds a declaration by its construct's meaning id, never by its kind name |
 | Generalization | Frontmatter relationship `specializes` | `TypeDefinition.supertypes[]` | Acyclic conformance; closed subtype sets |
 | Abstract types | Frontmatter `abstract: true` | `TypeDefinition.abstract` | No direct instances; dispatch covers concrete subtypes |
 | Subsetting | `Subsets` column | `Field.subsets[]` | Values of the field are contained in the named supertype field |
@@ -115,16 +115,16 @@ object type's module. Quire gives it meaning.
 | Relationships | `## Relationships` rows with target and multiplicity | `TypeDefinition.relationships[]` with `multiplicity` | Typed reference edges with checked bounds |
 | Operations | `## Operations` signature, `Pre:`, `Post:` | `Operation.params`, `returns`, `pre[]`, `post[]` | Typed contracts over pre and post anchors |
 | Effect frames | `Modifies:`, `Creates:`, `Deletes:` lines under an operation | `Operation.frame` | Everything outside the frame is unchanged |
-| Invariants | `## Invariants`, one `### <clauseId>` with one `quire` fence | `Clause` with `language: quire` | Checked and evaluated by Quire |
+| Invariants | `## Invariants`, one `### <clauseId>` with one `quire` fence | `Clause` with `language: quire` | Checked and evaluated by Filament |
 | Populations | `population` artifact listing member types and extent | Population node | Closed extents for quantification |
-| Systems structure | One artifact per interface, part, port, connection and allocation (spec-objects-architecture) | Type definitions whose constructs name a `quire.meaning.systems.*` meaning, each identified by its artifact id, with `owner` and end references | Interfaces, parts, ports, connections and allocations resolved in the model view, interfaces first; ownership places a construct in the view and is never part of its identity |
+| Systems structure | One artifact per interface, part, port, connection and allocation (spec-objects-architecture) | Type definitions whose constructs name a `filament.meaning.systems.*` meaning, each identified by its artifact id, with `owner` and end references | Interfaces, parts, ports, connections and allocations resolved in the model view, interfaces first; ownership places a construct in the view and is never part of its identity |
 
 Clauses in any language other than `quire` are carried with their span and are
 never evaluated or used as proof obligations.
 
 ## Language surface
 
-- A Quire package imports a domain package by identity alone, as it imports a
+- A Filament package imports a domain package by identity alone, as it imports a
   library (FR-307). The package's `model_root` node records the
   identity; the row is
   part of the package and no digest of the document exists.
@@ -144,7 +144,7 @@ selecting by source or registration order.
 An original declaration is keyed by (domain package identity, IR node identity); it carries no digest. The immutable
 selection inventory retains every original and its FCD origin; effective
 entries exist only where the selected normalization rules derive them.
-An effective declaration has its own `quire.model.effective-declaration/v2`
+An effective declaration has its own `filament.model.effective-declaration/v2`
 identity over original keys, derivation facts and the identities of its direct parents. CheckedPackage `model_root` nodes name the domain
 package. Runtime subject references in observation and protocol records use
 these declaration keys.
@@ -171,8 +171,8 @@ adds no normalization rule or effective-identity member.
 | The spec's artifacts declare the domain model | One authority. Reviewers, generators and the checker read the same text. |
 | One artifact per domain object, typed by a module object type | Authors add a domain object without touching any type system. |
 | quire-rs is the only artifact parser | One reading of the markdown. Extraction spans point at the real source. |
-| The semantic IR domain package is the exchange form | Generated code and Quire's model share one shape. |
-| Quire owns model semantics | Conformance, redefinition, dispatch, frames and populations are checked by the language that proves over them. |
+| The semantic IR domain package is the exchange form | Generated code and Filament's model share one shape. |
+| Filament owns model semantics | Conformance, redefinition, dispatch, frames and populations are checked by the language that proves over them. |
 | Keep original and effective declarations | Diagnostics and evidence trace both meanings. |
 | Closed conformance and dispatch sets | The same package resolves deterministically; a missing closure refuses. |
 | Explicit state anchors and frames | Pre, post and capture meaning survives lowering and replay. |

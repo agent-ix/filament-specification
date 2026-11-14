@@ -3,9 +3,9 @@ id: TC-378
 title: "Channels under each ordering, delivery and overflow policy"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-170
+  - target: ix://agent-ix/filament-specification/FR-170
     type: verifies
 ---
 

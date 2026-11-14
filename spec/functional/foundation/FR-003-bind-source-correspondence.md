@@ -3,15 +3,15 @@ id: FR-003
 title: "Bind clause locations to exact source bytes"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-002"
+  - target: "ix://agent-ix/filament-specification/US-002"
     type: traces_to
-  - target: ix://agent-ix/quire-specification/FR-202
+  - target: ix://agent-ix/filament-specification/FR-202
     type: references
-  - target: ix://agent-ix/quire-specification/FR-203
+  - target: ix://agent-ix/filament-specification/FR-203
     type: references
-  - target: ix://agent-ix/quire-specification/FR-271
+  - target: ix://agent-ix/filament-specification/FR-271
     type: references
-  - target: ix://agent-ix/quire-specification/FR-134
+  - target: ix://agent-ix/filament-specification/FR-134
     type: references
 ---
 # FR-003: Bind clause locations to exact source bytes

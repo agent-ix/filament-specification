@@ -4,19 +4,19 @@ title: "Bounded temporal interval"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-091
+  - target: ix://agent-ix/filament-specification/FR-091
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-252
+  - target: ix://agent-ix/filament-specification/FR-252
     type: references
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: references
-  - target: ix://agent-ix/quire-specification/FR-367
+  - target: ix://agent-ix/filament-specification/FR-367
     type: references
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: references
 ---
 # FR-255: Bounded temporal interval
@@ -25,8 +25,8 @@ relationships:
 
 When a bounded temporal operator is applied, the evaluator SHALL read its interval as the bound pair of the selected profile, with the end openness that profile admits, without shortening that interval to the supplied file.
 
-Under every profile except `quire.temporal.timed/v1` both ends are closed and
-the bounds are integers. Under `quire.temporal.timed/v1` the bounds are exact
+Under every profile except `filament.temporal.timed/v1` both ends are closed and
+the bounds are integers. Under `filament.temporal.timed/v1` the bounds are exact
 rational time quantities `0 <= a <= b` in the binding's unit, converted
 exactly (FR-142), each end closed or open, written `[a, b]`, `(a, b]`,
 `[a, b)` or `(a, b)`; an interval with an open end has `a < b`, and the upper
@@ -136,7 +136,7 @@ finite-window empty truth to an incomplete input."
 | FR-255-AC-3 | An interval is not shortened to the extent of the supplied data. | Test |
 | FR-255-AC-4 | An absent bound compares only to absence and is not defaulted to zero. | Test |
 | FR-255-AC-5 | The declared key order over intervals is never cited as a causal or containment relation. | Test |
-| FR-255-AC-6 | An interval `[a,b]` on an operator under `quire.temporal.infinite-trace/v1` is admitted, keyed with that profile identity, and compares unequal to the same bound pair under a bounded profile. | Test (TC-298) |
+| FR-255-AC-6 | An interval `[a,b]` on an operator under `filament.temporal.infinite-trace/v1` is admitted, keyed with that profile identity, and compares unequal to the same bound pair under a bounded profile. | Test (TC-298) |
 | FR-255-AC-7 | Under the timed profile, `[0, 3]`, `[0, 3)`, `(0, 3]` and `(0, 3)` in ms are four unequal intervals, an offset of exactly 3 ms lies in the first and third only, and an open-ended interval with `a = b` refuses `invalid_timed_model`/`invalid-interval`. | Test (TC-368) |
 | FR-255-AC-8 | The same numeric bounds under the timed profile and under a step-counting profile compare unequal. | Test (TC-368) |
 
@@ -149,7 +149,7 @@ finite-window empty truth to an incomplete input."
   establishes that progress covers an inclusive boundary.
 - [FR-252](FR-252-temporal-clock-binding.md) supplies the binding under which
   offsets and clock distances are counted.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the
   identity discipline.
 
 ## Cross-family boundary rule
@@ -164,4 +164,4 @@ requires an explicit greater end and never invents epsilon.
 ## Status
 
 Proposed cross-family reconciliation under FR-289 for
-`quire-specification#40`.
+`filament-specification#40`.

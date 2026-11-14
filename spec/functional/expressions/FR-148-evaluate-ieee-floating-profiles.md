@@ -3,11 +3,11 @@ id: FR-148
 title: "Evaluate explicit IEEE floating-point profiles"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-005
+  - target: ix://agent-ix/filament-specification/AD-005
     type: references
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: references
 ---
 
@@ -35,7 +35,7 @@ NaN payloads, infinities and signed zero remain representable. Numeric equality,
 total ordering and bitwise identity are distinct selected operations. Each
 arithmetic step rounds once under the declared mode. Cross-width or exact-number
 conversion is explicit and reports loss. The checked package selects
-`quire.value.ieee754-2019-default/v1`; absence, a different version or multiple
+`filament.value.ieee754-2019-default/v1`; absence, a different version or multiple
 IEEE policy selections refuses semantic admission.
 
 ## IEEE profile
@@ -101,9 +101,9 @@ bits. `totalOrder` requires the same width and orders the unsigned bit pattern
 `b` by key `not(b)` when its sign bit is one and by `b xor sign_mask` otherwise;
 this fixes the order of signed zeros, infinities and every signaling/quiet NaN
 payload. The exact qualified intrinsic identities are
-`quire::value::ieee::sqrt`, `quire::value::ieee::fma`,
-`quire::value::ieee::numericEqual`, `quire::value::ieee::totalOrder` and
-`quire::value::ieee::bitIdentical`.
+`filament::value::ieee::sqrt`, `filament::value::ieee::fma`,
+`filament::value::ieee::numericEqual`, `filament::value::ieee::totalOrder` and
+`filament::value::ieee::bitIdentical`.
 
 Every IEEE operation or comparison whose IEEE operands differ in width, or that
 mixes an IEEE operand with an exact type, is refused by type checking with
@@ -153,7 +153,7 @@ changes sign (`-(+0)` is `-0`, `-(-0)` is `+0`), an infinity changes sign, and a
 NaN, quiet or signaling, keeps its payload and quiet bit and changes its sign,
 so a signaling NaN stays signaling. Negation sets no flag, consumes no NaN and
 never refuses, so `-(-x)` has the bits of `x` for every `x`. It is the
-operation `quire.op.ieee.float32.negate` or `quire.op.ieee.float64.negate`
+operation `filament.op.ieee.float32.negate` or `filament.op.ieee.float64.negate`
 (FR-322) and charges `ieee.operands` (the width as `integer_bits`, one value
 occurrence, one work unit) and `ieee.result-retain` (one work unit, one result
 unit).
@@ -183,7 +183,7 @@ extends `=` and `!=` to a structure that holds a float.
 
 Before decoding retained operands or constructing an exact-real intermediate,
 the evaluator charges only the named IEEE points and counters from
-`quire.value.accounting/v1`. An unavailable charge returns incomplete without a
+`filament.value.accounting/v1`. An unavailable charge returns incomplete without a
 partial bit pattern or a host-float retry. I13 negotiation for a backend missing the
 selected width, operation, rounding direction, NaN/flag policy or resource proof
 returns a per-item `unsupported` or `requires-bound` disposition without
@@ -210,7 +210,7 @@ host floating point.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

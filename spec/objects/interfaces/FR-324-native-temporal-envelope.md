@@ -4,9 +4,9 @@ title: "Native temporal artifact and result envelope"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_006
+  - target: ix://agent-ix/filament-specification/interface_006
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-160
+  - target: ix://agent-ix/filament-specification/FR-160
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.native-temporal/v1` |
+| contract_version | exactly `filament.native-temporal/v1` |
 | artifact | record: formula graph, typed atoms, interval bounds, profile identity; multiplicity not stated in source |
 | clock_binding | record: authority, epoch, unit, resolution, ordering contract; multiplicity not stated in source |
 | history_boundary | record: origin, cutoff, closure facts; multiplicity not stated in source |
@@ -45,7 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | supersession | record: prior result and revision relation; present when repaired |
 
 
-- `contract_version` — exactly `quire.native-temporal/v1`.
+- `contract_version` — exactly `filament.native-temporal/v1`.
 - `artifact` — formula graph, typed atoms, interval bounds and semantic-profile identity.
 - `clock_binding` — clock authority, epoch, unit, resolution and ordering contract.
 - `history_boundary` — execution origin, cutoff and closure facts.

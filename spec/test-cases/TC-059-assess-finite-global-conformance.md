@@ -3,7 +3,7 @@ id: TC-059
 title: "Assess finite global conformance"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-059
+  - target: ix://agent-ix/filament-specification/FR-059
     type: verifies
 ---
 ## Description

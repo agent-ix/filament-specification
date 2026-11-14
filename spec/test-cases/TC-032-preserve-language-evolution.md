@@ -3,7 +3,7 @@ id: TC-032
 title: "Refuse unsupported required features"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-032
+  - target: ix://agent-ix/filament-specification/FR-032
     type: verifies
 ---
 ## Description

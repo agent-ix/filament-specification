@@ -3,7 +3,7 @@ id: TC-215
 title: "Continuous hybrid analysis"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-193
+  - target: ix://agent-ix/filament-specification/FR-193
     type: verifies
 ---
 

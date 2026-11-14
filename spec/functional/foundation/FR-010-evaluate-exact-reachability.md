@@ -3,7 +3,7 @@ id: FR-010
 title: "Evaluate finite parent reachability"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-003"
+  - target: "ix://agent-ix/filament-specification/US-003"
     type: traces_to
 ---
 # FR-010: Evaluate finite parent reachability
@@ -24,13 +24,13 @@ Exact reachability value or resource incompleteness.
 
 Visited identities suppress repeated expansion after the reached target is tested. A self-loop and a cycle returning to start therefore satisfy reachability to self. Optional absence terminates traversal. Runtime work ceilings never become an implicit authored path-depth bound.
 
-Under a package selecting `quire.model.complete/v1`, V1-TYPE-024 traversal of
+Under a package selecting `filament.model.complete/v1`, V1-TYPE-024 traversal of
 typed model relationships and inheritance is owned by
 [FR-043](FR-043-evaluate-finite-graph-relations.md): `reaches(a, b, e)` over a
 closed population binding keeps this requirement's semantics (the start is not
 reached without an edge, and a self-loop or a cycle returning to the start
 reaches it), with conformance to the edge owner, most-specific-type identity and
-the `graph.*` charges defined there and by `quire.value.accounting/v1`.
+the `graph.*` charges defined there and by `filament.value.accounting/v1`.
 
 ## Acceptance Criteria
 

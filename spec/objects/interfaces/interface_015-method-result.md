@@ -3,7 +3,7 @@ id: interface_015
 title: "I15 verification method result"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-333
+  - target: ix://agent-ix/filament-specification/FR-333
     type: references
 ---
 

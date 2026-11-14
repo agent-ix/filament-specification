@@ -3,7 +3,7 @@ id: TC-397
 title: "Union canonical key and union collection elements"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: verifies
 ---
 

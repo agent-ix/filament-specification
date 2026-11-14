@@ -3,23 +3,23 @@ id: FR-478
 title: "Convert text to a number"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-141
+  - target: ix://agent-ix/filament-specification/FR-141
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-140
+  - target: ix://agent-ix/filament-specification/FR-140
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-142
+  - target: ix://agent-ix/filament-specification/FR-142
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-148
+  - target: ix://agent-ix/filament-specification/FR-148
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-044
+  - target: ix://agent-ix/filament-specification/FR-044
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -55,7 +55,7 @@ mode. Every text that is not a number in the grammar has no value.
   - an unbounded `Rational` or `Rational[lo, hi; dmin, dmax]`;
   - `Float32[m]` or `Float64[m]`, where an omitted `m` is strict `exact`;
   - `Quantity<u>`.
-- The selected `quire.value.accounting/v1` limits.
+- The selected `filament.value.accounting/v1` limits.
 
 ## Outputs
 
@@ -83,21 +83,21 @@ result type is `T`. For any other `T` there is no conversion from text: a
 `refused { code: ill_typed, cause: operator-ineligible }`.
 
 The checked package records the conversion as one
-`quire.checked-operation-catalog/v1` identity. Every row has operator
+`filament.checked-operation-catalog/v1` identity. Every row has operator
 `convert`, result `member` and member `type_argument` naming `T`'s type node.
-A `Text[..]` operand selects the `quire.op.text.*` row: operands `["text"]`,
+A `Text[..]` operand selects the `filament.op.text.*` row: operands `["text"]`,
 and laws `text_profile` plus any law the target needs. A `String` operand
-selects the `quire.op.string.*` row: operands `["string"]`, and no
+selects the `filament.op.string.*` row: operands `["string"]`, and no
 `text_profile` law, because a `String` has no text profile.
 
 | Target | Text identity | String identity | Further law | Mode | Constraint |
 | --- | --- | --- | --- | --- | --- |
-| `Integer`, `Int[..]` | `quire.op.text.to_integer` | `quire.op.string.to_integer` | none | none | `member_family` `integer` |
-| `Decimal`, `Decimal[..]` | `quire.op.text.to_decimal` | `quire.op.string.to_decimal` | none | `rounding`, pinned by `T` | `member_family` `decimal` |
-| `Rational`, `Rational[..]` | `quire.op.text.to_rational` | `quire.op.string.to_rational` | none | none | `member_family` `rational` |
-| `Float32[..]` | `quire.op.text.to_float32` | `quire.op.string.to_float32` | `ieee_profile` | `rounding`, pinned by `T` | `member_family` `float32` |
-| `Float64[..]` | `quire.op.text.to_float64` | `quire.op.string.to_float64` | `ieee_profile` | `rounding`, pinned by `T` | `member_family` `float64` |
-| `Quantity<u>` | `quire.op.text.to_quantity` | `quire.op.string.to_quantity` | none | `rounding` = `exact`, pinned by `T` | `member_family` `quantity` |
+| `Integer`, `Int[..]` | `filament.op.text.to_integer` | `filament.op.string.to_integer` | none | none | `member_family` `integer` |
+| `Decimal`, `Decimal[..]` | `filament.op.text.to_decimal` | `filament.op.string.to_decimal` | none | `rounding`, pinned by `T` | `member_family` `decimal` |
+| `Rational`, `Rational[..]` | `filament.op.text.to_rational` | `filament.op.string.to_rational` | none | none | `member_family` `rational` |
+| `Float32[..]` | `filament.op.text.to_float32` | `filament.op.string.to_float32` | `ieee_profile` | `rounding`, pinned by `T` | `member_family` `float32` |
+| `Float64[..]` | `filament.op.text.to_float64` | `filament.op.string.to_float64` | `ieee_profile` | `rounding`, pinned by `T` | `member_family` `float64` |
+| `Quantity<u>` | `filament.op.text.to_quantity` | `filament.op.string.to_quantity` | none | `rounding` = `exact`, pinned by `T` | `member_family` `quantity` |
 
 The conversion is a `convert`, so its `rounding` mode is pinned by the result
 type alone (FR-322 `type_pinned_modes`). A decimal or IEEE target pins its
@@ -233,7 +233,7 @@ are evaluation outcomes that propagate, and none of them refuses linking.
 
 ### Accounting
 
-Under `quire.value.accounting/v1` the conversion SHALL charge, in this order:
+Under `filament.value.accounting/v1` the conversion SHALL charge, in this order:
 
 1. `text.input-bytes` and `text.decode-scalars` for its operand.
 2. For a `Text[..]` operand under `nfc`, `nfd`, `nfkc` or `nfkd`,
@@ -267,7 +267,7 @@ charges and any target-specific rounding charge. A denied named charge returns
 | --- | --- | --- |
 | FR-478-AC-1 | Under `unicode-scalars`, `convert<Integer>` of `0`, `42`, `-7` and `170141183460469231731687303715884105728` gives `0`, `42`, `-7` and that exact integer. `convert<Int[0, 99]>` of `42` gives `42`, and of `100` and of `-1` refuses `integer_out_of_domain`/`outside-domain`. `convert<Decimal>` of `1.50` gives coefficient `150` and scale `2`, of `-0.5` coefficient `-5` and scale `1`, and of `3` coefficient `3` and scale `0`. | Test (TC-964) |
 | FR-478-AC-2 | Each of these texts is undefined with no value for `convert<Integer>` under `unicode-scalars`: the empty text, `+5`, `05`, `-0`, ` 5`, `5 `, `1,000`, `1e3`, `1.0`, `2/1`, `٣` (U+0663) and `５` (U+FF15). For `convert<Decimal>` the same holds for `.5`, `5.`, `-0.00`, `1.2.3`, `1,5`, `1e3` and `3/4`. Under `nfkc`, `５` normalizes to `5` and converts to `5`; under `nfc` it is undefined. | Test (TC-964) |
-| FR-478-AC-3 | The type checker admits `convert<T>` of a `Text[..]` operand, and of a `String` operand, to each of `Integer`, `Decimal[0, 1000; 0, 2; exact]`, `Rational[-9, 9; 1, 9]`, `Float32[nearest-even]`, `Float64` and `Quantity<ms>` (AC-10's units). Over `t: Text[0, 64; unicode-scalars]`, to `Boolean`, `Text[0, 8; nfc]`, an enum, `UUID` or a record it refuses `ill_typed`/`operator-ineligible`. Over `t: Text[0, 8; nfc]` the checked package records `quire.op.text.to_integer` for `Int[0, 99]` with mode `null`, `quire.op.text.to_decimal` for `Decimal[0, 1000; 0, 2; nearest-even]` with mode `rounding` `nearest-even`, `quire.op.text.to_rational` for `Rational[-9, 9; 1, 9]` with mode `null`, `quire.op.text.to_float64` for `Float64[toward-zero]` with laws `text_profile` and `ieee_profile` and mode `rounding` `toward-zero`, and `quire.op.text.to_quantity` for `Quantity<ms>` with mode `rounding` `exact`. Each has member `type_argument` naming the target, and each `quire.op.text.*` row carries the `text_profile` law. Over `s: String`, the same targets record the `quire.op.string.*` identity of the same name, with no `text_profile` law. | Test (TC-964) |
+| FR-478-AC-3 | The type checker admits `convert<T>` of a `Text[..]` operand, and of a `String` operand, to each of `Integer`, `Decimal[0, 1000; 0, 2; exact]`, `Rational[-9, 9; 1, 9]`, `Float32[nearest-even]`, `Float64` and `Quantity<ms>` (AC-10's units). Over `t: Text[0, 64; unicode-scalars]`, to `Boolean`, `Text[0, 8; nfc]`, an enum, `UUID` or a record it refuses `ill_typed`/`operator-ineligible`. Over `t: Text[0, 8; nfc]` the checked package records `filament.op.text.to_integer` for `Int[0, 99]` with mode `null`, `filament.op.text.to_decimal` for `Decimal[0, 1000; 0, 2; nearest-even]` with mode `rounding` `nearest-even`, `filament.op.text.to_rational` for `Rational[-9, 9; 1, 9]` with mode `null`, `filament.op.text.to_float64` for `Float64[toward-zero]` with laws `text_profile` and `ieee_profile` and mode `rounding` `toward-zero`, and `filament.op.text.to_quantity` for `Quantity<ms>` with mode `rounding` `exact`. Each has member `type_argument` naming the target, and each `filament.op.text.*` row carries the `text_profile` law. Over `s: String`, the same targets record the `filament.op.string.*` identity of the same name, with no `text_profile` law. | Test (TC-964) |
 | FR-478-AC-4 | `function n using v(t: Text[0, 8; unicode-scalars]): Int[0, 99] pure { convert<Int[0, 99]>(t) }` links with no body obligation. Called with `abc` it is undefined, and with `100` it is refused `integer_out_of_domain`, each at evaluation. | Test (TC-964) |
 | FR-478-AC-5 | With exact limits, `convert<Int[0, 99]>` of `42` succeeds after `text.input-bytes` and `text.decode-scalars`; denying `text.input-bytes` returns `incomplete` with no value. `abc` is undefined after operand and applicable normalization charges, with no value. `100` into `Int[0, 99]` is refused after those charges and before a result is returned. | Test (TC-964) |
 | FR-478-AC-6 | Decimal rounding is the target's. `convert<Decimal[0, 1000; 0, 2; exact]>` of `1.555` refuses `inexact_decimal`/`nonzero-discarded-digit`, of `1.500` gives coefficient `150` and scale `2`, of `1.5` gives coefficient `15` and scale `1` (retained as spelled, not rescaled to scale 2), and of `10.01` refuses `decimal_out_of_domain`/`outside-domain`. `convert<Decimal[0, 1000; 0, 2; nearest-even]>` of `1.555` gives coefficient `156` and scale `2`, with `DecimalLoss` exact value `311/200` and mode `nearest-even`, and of `1.565` gives coefficient `156`, a tie to even. The `nearest-even` conversion of `1.555` charges `decimal.rounding` with `integer_bits` 11 and `decimal_digits` 4 after the operand and applicable normalization charges. The `exact` refusal charges no `decimal.rounding`. | Test (TC-964) |
@@ -286,6 +286,6 @@ charges and any target-specific rounding charge. A denied named charge returns
   undefined outcomes this one follows), FR-146 (pure-function totality),
   FR-149 (conversion classes), FR-322 (the checked operation catalog, the
   `convert` operator, `type_pinned_modes` and the `string` family).
-- The twelve catalog rows above follow in `quire-verification-contracts`'s
+- The twelve catalog rows above follow in `filament-verification-contracts`'s
   `checked-operation-catalog-v1` (a cross-repository dependency). Both checked-package V2 schemas then
   enumerate them, because the schemas list exactly the catalogued identities.

@@ -3,7 +3,7 @@ id: interface_008
 title: "I08 checked protocol artifact"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-326
+  - target: ix://agent-ix/filament-specification/FR-326
     type: references
 ---
 

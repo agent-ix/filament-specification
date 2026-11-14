@@ -3,15 +3,15 @@ id: TC-142
 title: "Declare population and completeness"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-112
+  - target: ix://agent-ix/filament-specification/FR-112
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-263
+  - target: ix://agent-ix/filament-specification/FR-263
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-264
+  - target: ix://agent-ix/filament-specification/FR-264
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-265
+  - target: ix://agent-ix/filament-specification/FR-265
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: verifies
 ---
 ## Description

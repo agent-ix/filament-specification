@@ -3,21 +3,21 @@ id: TC-937
 title: "ContractPackage reader admits only a complete canonical value"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-330
+  - target: ix://agent-ix/filament-specification/FR-330
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-9
+  - target: ix://agent-ix/filament-specification/FR-330-AC-9
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-4
+  - target: ix://agent-ix/filament-specification/FR-330-AC-4
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-11
+  - target: ix://agent-ix/filament-specification/FR-330-AC-11
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-12
+  - target: ix://agent-ix/filament-specification/FR-330-AC-12
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-13
+  - target: ix://agent-ix/filament-specification/FR-330-AC-13
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-330-AC-15
+  - target: ix://agent-ix/filament-specification/FR-330-AC-15
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272-AC-21
+  - target: ix://agent-ix/filament-specification/FR-272-AC-21
     type: verifies
 ---
 # TC-937: ContractPackage reader admits only a complete canonical value

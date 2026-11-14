@@ -4,13 +4,13 @@ title: "Complete protocol and choreography architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 protocol semantics
+system: native Filament V1 protocol semantics
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-002
+  - target: ix://agent-ix/filament-specification/AD-002
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
 ---
 
@@ -19,8 +19,8 @@ relationships:
 ## System Boundary
 
 S5 owns immutable checked protocol graphs and pure conformance, projection,
-realizability, assume-guarantee and refinement analyses. QSL owns source
-checking; `quire-protocol` owns the portable graph, runtime and analyzers.
+realizability, assume-guarantee and refinement analyses. FSL owns source
+checking; `filament-protocol` owns the portable graph, runtime and analyzers.
 External business effects are outside S5 and require S6 authorization.
 
 ## Views

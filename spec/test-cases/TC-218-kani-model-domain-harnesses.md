@@ -3,7 +3,7 @@ id: TC-218
 title: "Kani model-domain harnesses"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-196
+  - target: ix://agent-ix/filament-specification/FR-196
     type: verifies
 ---
 

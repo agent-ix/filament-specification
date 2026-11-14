@@ -4,9 +4,9 @@ title: "Attributed human decision record"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_021
+  - target: ix://agent-ix/filament-specification/interface_021
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.human-decision/v1` |
+| contract_version | exactly `filament.human-decision/v1` |
 | actor | record: authenticated human identity and authority reference; multiplicity not stated in source |
 | scope | record: qualification, release, capability, artifact identities |
 | evidence | type not stated in source; multiplicity not stated in source; see Field sources |
@@ -44,7 +44,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | supersedes | optional prior `decision_id` string (compared as exact string) |
 
 
-- `contract_version` — exactly `quire.human-decision/v1`.
+- `contract_version` — exactly `filament.human-decision/v1`.
 - `decision_id` — the identity assigned to the decision when it is recorded, compared as an exact string.
 - `actor` — authenticated human identity and authority reference.
 - `scope` — exact qualification, release, capability and artifact identities.

@@ -3,11 +3,11 @@ id: IT-021
 title: "Observation and conformance results preserve shared meaning"
 type: IT
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-059
+  - target: ix://agent-ix/filament-specification/FR-059
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-061
+  - target: ix://agent-ix/filament-specification/FR-061
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: verifies
 ---
 ## Objective
@@ -41,7 +41,7 @@ progress/closure and complete-global-conformance closure identities.
    - IT-021-SC-01: every case yields one typed result or an owned execution failure; the runner does not throw away the local result.
 2. Read every result through the OB03 and Engineering Assurance strict readers.
    - IT-021-SC-02: both readers accept valid results and preserve every orthogonal dimension and identity.
-3. Project every result into the exact E02 obligation and assess it through the quire-verification strict reader.
+3. Project every result into the exact E02 obligation and assess it through the filament-verification strict reader.
    - IT-021-SC-03: every FR-007 finding is preserved, the derived result retains the canonical protocol-result artifact, and observation adequacy remains distinct from protocol adequacy.
 4. Delete or substitute each trigger, role, member, binding and progress dependency independently.
    - IT-021-SC-04: no mutation improves truth, completeness, adequacy or package status.

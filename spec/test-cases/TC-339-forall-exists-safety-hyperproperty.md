@@ -3,17 +3,17 @@ id: TC-339
 title: "∀∃ safety hyperproperty and the witness-set limit"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-395
+  - target: ix://agent-ix/filament-specification/FR-395
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-400
+  - target: ix://agent-ix/filament-specification/FR-400
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-191
+  - target: ix://agent-ix/filament-specification/FR-191
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

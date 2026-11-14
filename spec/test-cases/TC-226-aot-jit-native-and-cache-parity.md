@@ -3,9 +3,9 @@ id: TC-226
 title: "AOT JIT native parity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-306
+  - target: ix://agent-ix/filament-specification/FR-306
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 

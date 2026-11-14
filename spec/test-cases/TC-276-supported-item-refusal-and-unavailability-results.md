@@ -3,7 +3,7 @@ id: TC-276
 title: "Supported-item refusal and unavailability results"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
 ---
 
@@ -15,7 +15,7 @@ Show that a supported item whose Kani run ends `Refused`, `InvalidInput` or
 `IncompleteInput` records exactly one terminal FR-331 result `declined` with a
 typed refusal cause, and that a supported item whose Kani run ends
 `Unavailable` records exactly one terminal result `unsupported` with a typed
-unavailability cause, per the QSL ADR-013 O-16 proof column.
+unavailability cause, per the FSL ADR-013 O-16 proof column.
 
 ## Preconditions
 

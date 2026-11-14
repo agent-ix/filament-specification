@@ -3,15 +3,15 @@ id: FR-450
 title: "Spell and check an abstraction relation declaration"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-353
+  - target: ix://agent-ix/filament-specification/FR-353
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-339
+  - target: ix://agent-ix/filament-specification/FR-339
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
 ---
 
@@ -19,7 +19,7 @@ relationships:
 
 ## Description
 
-When a source unit that selects `quire.model.complete/v1` declares an
+When a source unit that selects `filament.model.complete/v1` declares an
 `abstraction-decl`, the compiler SHALL read each of its bindings as one
 FR-353 binding, keyed as FR-353 states, and SHALL refuse each binding whose
 model name, Rust spelling or map entries are not admissible, naming the
@@ -28,7 +28,7 @@ binding's key.
 ## Inputs
 
 - The source unit's `abstraction-decl` declarations, recognized by the
-  [complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md)
+  [complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md)
   "Abstraction relation declaration" production.
 - The admitted domain packages the unit's `model` declarations select, with
   their object types, fields, populations and operations.
@@ -132,7 +132,7 @@ no evaluation and is carried in the checked package as one node
 | --- | --- | --- |
 | FR-450-AC-1 | A declaration with one `type` binding naming two fields, one `population` binding and one `operation` binding parses losslessly and checks into a relation of exactly three bindings, keyed by the object type's and the population's effective-declaration keys and by the operation key. | Test (TC-410) |
 | FR-450-AC-2 | A declaration binding only an object type, with no braces, checks with that one binding and an empty field map. | Test (TC-410) |
-| FR-450-AC-3 | An `abstraction-decl` in a package that does not select `quire.model.complete/v1` refuses `unsupported_construct` at the declaration's span; a declaration with no binding, and a binding with an unquoted Rust path, refuse `invalid_syntax` at the offending token. | Test (TC-410) |
+| FR-450-AC-3 | An `abstraction-decl` in a package that does not select `filament.model.complete/v1` refuses `unsupported_construct` at the declaration's span; a declaration with no binding, and a binding with an unquoted Rust path, refuse `invalid_syntax` at the offending token. | Test (TC-410) |
 | FR-450-AC-4 | A `type` name absent from the domain package, a `population` name absent from it, and an `operation` its type only inherits each refuse `missing_declaration`/`missing-name` naming the name and its owning domain package identity; the same operation keyed at its declaring type checks. | Test (TC-411) |
 | FR-450-AC-5 | The Rust paths `"type"`, `"9lives"`, `"a::"`, `"r#crate"` and `"a-b"`, the field index `"01"` and a non-NFC identifier each refuse `invalid_model_binding`/`malformed-declaration` naming the segment and its source span; `"r#type"`, `"config_store::Store"`, the field index `"0"` and the receiver `"self"` are admitted. | Test (TC-411) |
 | FR-450-AC-6 | A field named twice in one object binding refuses `invalid_model_binding`/`conflicting-binding` naming both field bindings and the name. A field binding naming an undeclared field, and an operation binding that omits a parameter, names an undeclared one, maps two parameters to one Rust parameter or maps a parameter to the receiver's spelling each refuse `invalid_model_binding`/`malformed-declaration` naming the entry; a field the object type inherits is admitted. | Test (TC-411) |
@@ -152,7 +152,7 @@ no evaluation and is carried in the checked package as one node
 
 ## References
 
-- quire-spec-language ADR-017 §3 AR-1 to AR-3 and §6 Q-1; ADR-020 §7 (the
+- filament-spec-language ADR-017 §3 AR-1 to AR-3 and §6 Q-1; ADR-020 §7 (the
   abstraction relation is a declaration separate from model refinement).
 - Specification ticket STD-116.
 

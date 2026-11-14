@@ -3,7 +3,7 @@ id: TC-388
 title: "Memory model selection, nesting and identity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: verifies
 ---
 

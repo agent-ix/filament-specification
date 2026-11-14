@@ -3,7 +3,7 @@ id: FR-014
 title: "Read the selected closed interchange version"
 type: FR
 relationships:
-  - target: "ix://agent-ix/quire-specification/US-004"
+  - target: "ix://agent-ix/filament-specification/US-004"
     type: traces_to
 ---
 # FR-014: Read the selected closed interchange version

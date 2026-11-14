@@ -4,11 +4,11 @@ title: "Verification method and plan architecture"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 verification methods
+system: native Filament V1 verification methods
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
 ---
 
@@ -18,7 +18,7 @@ relationships:
 
 S7 owns versioned verification plans and pure method-provider contracts for
 model-based testing, relational and finite-trace-set hyperproperties,
-continuous/hybrid analysis and bounded synthesis. `quire-verification` owns
+continuous/hybrid analysis and bounded synthesis. `filament-verification` owns
 planning and result composition; providers execute methods. A plan selects
 methods but cannot widen language admission or relabel a provider outcome.
 

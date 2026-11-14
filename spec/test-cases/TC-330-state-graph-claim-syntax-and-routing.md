@@ -3,9 +3,9 @@ id: TC-330
 title: "State-graph claim syntax, refusals and routing"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-390
+  - target: ix://agent-ix/filament-specification/FR-390
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
 ---
 

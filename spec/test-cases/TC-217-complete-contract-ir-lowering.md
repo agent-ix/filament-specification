@@ -3,9 +3,9 @@ id: TC-217
 title: "Complete contract IR lowering"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -13,7 +13,7 @@ relationships:
 
 ## Description
 
-Read the I04 `quire.checked-package/v2` positive, boundary, refusal, mutation
+Read the I04 `filament.checked-package/v2` positive, boundary, refusal, mutation
 and canonical-byte vectors through the real Contract IR V2 public reader;
 then lower supported complete-V1 nodes and mutate source/type/anchor/bounds plus
 unsupported nodes.

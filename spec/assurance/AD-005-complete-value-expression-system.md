@@ -4,11 +4,11 @@ title: "Complete value, type, expression and collection system"
 type: ArchitectureDescription
 status: accepted
 owner: quire-agent-a
-system: native Quire V1 semantic kernel
+system: native Filament V1 semantic kernel
 relationships:
-  - target: ix://agent-ix/quire-specification/AD-001
+  - target: ix://agent-ix/filament-specification/AD-001
     type: references
-  - target: ix://agent-ix/quire-specification/AD-003
+  - target: ix://agent-ix/filament-specification/AD-003
     type: references
 ---
 
@@ -18,7 +18,7 @@ relationships:
 
 S2 owns the versioned value/type algebra, pure expressions, functions,
 definedness and collection semantics shared by state clauses, temporal atoms,
-protocol guards, analyzers and mappings. QSL is the reference checker and
+protocol guards, analyzers and mappings. FSL is the reference checker and
 evaluator. The cycle-free contract model may represent these meanings, but no
 Rust type, IR encoding or backend limit defines the language.
 
@@ -47,7 +47,7 @@ encode absence as a scalar. Records and tuples use declared structural
 equality, while object references use qualified identity. Recursive type
 definitions require finite runtime values and bounded traversal.
 
-The `quire.value.complete/v1` definition owns the common value algebra. A
+The `filament.value.complete/v1` definition owns the common value algebra. A
 checked package using text, integer division or IEEE operations also retains
 the applicable definitions below in its ordered profile closure; their
 identities participate in package identity.
@@ -55,12 +55,12 @@ There is no installed-tool or backend default.
 
 | Semantic selection | Closed complete-V1 definition |
 | --- | --- |
-| Scalar resource accounting | `quire.value.accounting/v1` |
-| Derived compound-unit value identity | `quire.value.compound-unit/v1` |
-| Normative scalar rule closure | `quire.value.complete.rules/v1` |
-| Unicode normalization tables | `quire.value.text.unicode-17.0.0/v1` |
-| Integer `div`/`rem` law | exactly one of `quire.value.integer-division.truncating/v1`, `quire.value.integer-division.floor/v1` or `quire.value.integer-division.euclidean/v1` |
-| IEEE exceptional-value and flag policy | `quire.value.ieee754-2019-default/v1` |
+| Scalar resource accounting | `filament.value.accounting/v1` |
+| Derived compound-unit value identity | `filament.value.compound-unit/v1` |
+| Normative scalar rule closure | `filament.value.complete.rules/v1` |
+| Unicode normalization tables | `filament.value.text.unicode-17.0.0/v1` |
+| Integer `div`/`rem` law | exactly one of `filament.value.integer-division.truncating/v1`, `filament.value.integer-division.floor/v1` or `filament.value.integer-division.euclidean/v1` |
+| IEEE exceptional-value and flag policy | `filament.value.ieee754-2019-default/v1` |
 
 An absent optional rounding spelling means strict `exact`: a representable
 result succeeds without loss and a result requiring discarded information

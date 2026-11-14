@@ -3,9 +3,9 @@ id: TC-978
 title: "Tick-monitor plan root node"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-487
+  - target: ix://agent-ix/filament-specification/FR-487
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
 ---
 
@@ -25,8 +25,8 @@ Read `proposals/checked-package-v2/monitor-plan-vectors.json` and
 edits to `base` and decide the plan in FR-487's reader order (shape, reference
 kinds, signatures, premise ranges, buffers and state). MP-01, MP-02, MP-33, MP-43, MP-44, MP-45, MP-53, MP-58, MP-81 and MP-82 are
 admitted. Every refusal case holds one defect and names its code, cause and
-locus. The vectors check the reader order over an abstract description of the plan; the reader itself is quire-contract-ir's (IR-721). The `gap_cases` (MP-54 to MP-57, MP-66 to MP-73) apply FR-487's counter-gap path to abstract live instances and a reading sequence: open instances fail with `ReadingGapExceeded` and leave the state, decided ones stay, the faulting reading is the new baseline and a clock poll does not move it, buffers are dropped with a history-start marker after a gap, and each instance is reported once on settlement with pending ones at watermark steps (MP-70 to MP-72), and event_position counts admitted events only (MP-77). The `limit_cases` (MP-78 to MP-80) fix the closed `LimitReached` kinds: an atom with no admitted projection reports Incomplete(LimitReached{atom_projection}) without changing the Outcome shape. MP-32 names `quire.op.collection.flatten` and
-`quire.op.collection.sequence`; both must be in the closed operation catalog, and
+locus. The vectors check the reader order over an abstract description of the plan; the reader itself is filament-contract-ir's (IR-721). The `gap_cases` (MP-54 to MP-57, MP-66 to MP-73) apply FR-487's counter-gap path to abstract live instances and a reading sequence: open instances fail with `ReadingGapExceeded` and leave the state, decided ones stay, the faulting reading is the new baseline and a clock poll does not move it, buffers are dropped with a history-start marker after a gap, and each instance is reported once on settlement with pending ones at watermark steps (MP-70 to MP-72), and event_position counts admitted events only (MP-77). The `limit_cases` (MP-78 to MP-80) fix the closed `LimitReached` kinds: an atom with no admitted projection reports Incomplete(LimitReached{atom_projection}) without changing the Outcome shape. MP-32 names `filament.op.collection.flatten` and
+`filament.op.collection.sequence`; both must be in the closed operation catalog, and
 the `Operation` identity enum and the `temporal` `semantic_form` enum must be
 the published ones (`monitor_plan` present, no new operation identity).
 
@@ -40,4 +40,4 @@ MP-23 to MP-28, MP-30, MP-31, MP-35, MP-37, MP-39 to MP-42, MP-48, MP-49, MP-60 
 `ill_typed`/`type-mismatch`; MP-18 to MP-22, MP-34, MP-36, MP-38, MP-46, MP-47 and MP-59 refuse
 `invalid_package`/`invalid-value`. MP-32 is admitted with no catalog change.
 
-Call closure (FR-487-AC-13): a producer rule with no reader-visible vector in this repository; its verifier is quire-spec-language FR-251-AC-38 (TC-1081), where two plans differing only in a called helper's body have different root keys and equal helper bodies give an equal key.
+Call closure (FR-487-AC-13): a producer rule with no reader-visible vector in this repository; its verifier is filament-spec-language FR-251-AC-38 (TC-1081), where two plans differing only in a called helper's body have different root keys and equal helper bodies give an equal key.

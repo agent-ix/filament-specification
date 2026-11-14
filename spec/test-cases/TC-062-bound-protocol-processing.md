@@ -3,7 +3,7 @@ id: TC-062
 title: "Enforce every protocol resource boundary"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/NFR-020
+  - target: ix://agent-ix/filament-specification/NFR-020
     type: verifies
 ---
 ## Description

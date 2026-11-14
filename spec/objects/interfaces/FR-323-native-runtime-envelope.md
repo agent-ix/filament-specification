@@ -4,17 +4,17 @@ title: "Native runtime request and result envelope"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_005
+  - target: ix://agent-ix/filament-specification/interface_005
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-180
+  - target: ix://agent-ix/filament-specification/FR-180
     type: references
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: references
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
 ---
 
@@ -45,25 +45,25 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.native-runtime/v1` |
+| contract_version | exactly `filament.native-runtime/v1` |
 | package | exact FR-322 checked-package reference |
 | byte_provision | present on a replay request only |
 | selection | ordered clause/function identifiers |
 | state_environment | JSON object: typed anchors, values, object populations, frames and invocation captures (retained bullet) |
-| limits | `quire.value.accounting/v1` limit objects |
+| limits | `filament.value.accounting/v1` limit objects |
 | stage_limits | present on a replay request |
 | results | one ordered typed disposition per selected item |
 | replay | present only on a replay request; carries one of `function`, `frame_operation` or `state_clause` (sub-members, see Field sources) |
 
 
-- `contract_version` — exactly `quire.native-runtime/v1`.
+- `contract_version` — exactly `filament.native-runtime/v1`.
 - `request_id` — the identity assigned to the request, compared as an exact string. It is not computed from the other members.
 - `package` — exact FR-322 checked-package reference; a non-replay request
   carries the reference alone, and the reference is the same checked-package v2
   document a replay request carries (a corpus schema for a non-replay request is
   added when the first non-replay corpus vector lands). In a replay request `package` is the proved
   FR-322 checked-package document itself (its `contract_version` is the constant
-  `quire.checked-package/v2`), which supplies the package `name`, its lock
+  `filament.checked-package/v2`), which supplies the package `name`, its lock
   `sources` and, when its lock has one, the lock's `refinement_internals`; the
   request's `dependencies` are separate `{identity, sources}` entries, as the
   corpus schema's `$defs.ReplayRequest` states them
@@ -113,7 +113,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 - `byte_provision` — present on a replay request only: the bytes of every
   source and definition input the replay recompiles, each keyed by the
   `{authority, identity}` its lock `sources` entry names, and every
-  domain-package document, keyed by the identity its own `package.identity` member declares (QSL ADR-013 QC-1), the entries forming one ordered provision whose position is the request's position (FR-336), with no version, digest or expected value compared. A second document under one key is a duplicate definition and refuses `invalid_package`/`conflicting-definition`. The executor obtains every recompilation input from this
+  domain-package document, keyed by the identity its own `package.identity` member declares (FSL ADR-013 QC-1), the entries forming one ordered provision whose position is the request's position (FR-336), with no version, digest or expected value compared. A second document under one key is a duplicate definition and refuses `invalid_package`/`conflicting-definition`. The executor obtains every recompilation input from this
   provision and never from a path, environment variable or search location.
   Before any recompile, an input the `package` reference names that the
   provision does not carry refuses `missing_import`/`missing-selection`,
@@ -122,7 +122,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   the `package` reference that names it.
 - `selection` — ordered clause/function identifiers.
 - `state_environment` — typed anchors, values, object populations, frames and invocation captures.
-- `limits` — the `quire.value.accounting/v1` limit objects: `ScalarLimitsV1`,
+- `limits` — the `filament.value.accounting/v1` limit objects: `ScalarLimitsV1`,
   plus `PopulationAdmissionLimitsV1` when the request binds a population.
   Work maps to `work_units`, output to `result_units`, and allocation to the
   high-water size counters. A zero limit admits zero units. The supplied-value
@@ -147,7 +147,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   semantic profile selections; for a function request, `occurrence_key`, the failing node's
   occurrence key (`node_id`, `role`, `ordinal`, FR-322 `source_map` key); the proof bounds
   and declared domains carried from the obligation identity; the trace
-  position; and the `backend` member (QSL ADR-013 O-19). No replay member is
+  position; and the `backend` member (FSL ADR-013 O-19). No replay member is
   inferred from the package or from the non-replay properties above (QC-8).
 
 The *replay target* of a replay request is exactly one of three members, and
@@ -172,11 +172,11 @@ the others are absent (never `null`, an empty name or a placeholder):
 When the producer builds a replay request, the producer SHALL carry exactly one
 of the three members. A frame request carries no `arguments` and no occurrence
 key: the invocation and the frame's identity travel in the frame packet's own
-payload, the single carrier of that identity (QSL FR-116, ADR-017 PF-4). A
+payload, the single carrier of that identity (FSL FR-116, ADR-017 PF-4). A
 state-clause request carries no `arguments` and no occurrence key either: the
 observation the clause is evaluated over travels in the state-clause packet's
 payload, and the clause's node and `claim` occurrence on that packet's
-envelope (QSL FR-122).
+envelope (FSL FR-122).
 The replay target is the one item a replay request selects and `results`
 carries its one disposition; on a frame or a state-clause request `selection`
 holds no entry for it, and a function request is otherwise unchanged.
@@ -215,7 +215,7 @@ naming the target.
 
 This is a PROPOSED amendment of this closed bootstrap envelope, not a claim
 of a released reader or qualified implementation. Its
-`contract_version` remains exactly `quire.native-runtime/v1`; no compatibility
+`contract_version` remains exactly `filament.native-runtime/v1`; no compatibility
 reader, private extension or alternate version is introduced. The existing
 closed validation, byte-provision/dependency precedence and replay-only
 members remain unchanged. The authoritative producer/consumer reader must
@@ -234,7 +234,7 @@ and may omit `supplied`; a supplied-value request lacking an effective
 applicable ceiling SHALL NOT be admitted with an unbounded or evaluator-derived
 fallback. Zero admits zero logical units.
 
-QSL FR-277 owns the A/H units and defaults; QSL FR-098 and FR-255 carry the
+FSL FR-277 owns the A/H units and defaults; FSL FR-098 and FR-255 carry the
 same names. The members are `supplied.admission_work_units` (A) and
 `supplied.conversion_work_units` (H), each with the published default
 16777216 units. Caller API omission SHALL be resolved from each field's own
@@ -254,10 +254,10 @@ identity. Replay/non-replay structural separation is unchanged.
 
 A and H SHALL each retain one cumulative budget across all supplied arguments
 and nested helpers, using the original caller Cancel. One actual event has
-ONE initiating owner: conversion-triggered QSV work spends H; direct/final
+ONE initiating owner: conversion-triggered FSV work spends H; direct/final
 membership spends A, with final replay membership retaining the admission
 budget already spent. Neither budget resets on entry/cache/helper/argument
-boundaries, seeds the other, nor debits the evaluator Meter. QSL FR-098's
+boundaries, seeds the other, nor debits the evaluator Meter. FSL FR-098's
 converted-node C and semantic occurrence limits remain per argument with
 their original units and zero call-meter debit. Population admission is
 independent and SHALL NOT be renamed or repurposed as A.
@@ -269,7 +269,7 @@ The `limits.supplied` object carries a third member,
 caller-owned finite magnitude bound for supplied Integer and Rational
 admission, with the published default 4096 bits. It is the only carrier of B.
 B is not `integer_bits` of `ScalarLimitsV1` (an evaluation counter that keeps
-its own meaning and its `u64::MAX` default), is not a QSL family check
+its own meaning and its `u64::MAX` default), is not a FSL family check
 constant, and is not declared per type or per argument. The effective wire
 object is complete: `admission_work_units`, `conversion_work_units` and
 `numeric_magnitude_bits` are its only members and all three are required on
@@ -292,29 +292,29 @@ the wire.
    that appears in `stage_limits`, is a typed input refusal before
    consumption, as an incomplete or malformed `limits.supplied` object is.
 4. **Omitted B.** An omitted B means the published default 4096; there is no
-   separate unsupported outcome in this envelope. (A QSV-level caller that
-   passes NO B to QSV supplied admission still receives QSV's typed
-   `UnsupportedHelper { family: NumericDomain }`; that is QSV's own contract,
+   separate unsupported outcome in this envelope. (A FSV-level caller that
+   passes NO B to FSV supplied admission still receives FSV's typed
+   `UnsupportedHelper { family: NumericDomain }`; that is FSV's own contract,
    outside this envelope.)
 5. **Coverage, value-in-domain.** Every Integer or
    Rational operand of one value-in-domain comparison is checked against B
    after the initiating event is charged and before that comparison runs, in
    this order, the first operand over B deciding. Integer: `value`, `lower`,
    `upper` (3 operands). Rational (a numerator interval plus a denominator
-   interval, QSV `RationalDomain`): `value-numerator`, `value-denominator`,
+   interval, FSV `RationalDomain`): `value-numerator`, `value-denominator`,
    `numerator-lower`, `numerator-upper`, `denominator-lower`,
    `denominator-upper` (6 operands). An operand's size is the bit length of
    its absolute value, with zero counted as ONE bit (QSpec
-   `proposals/quire-v1/definitions/value-accounting.md`, `bits(x)`, "zero is
-   one"; quire-exact FR-380 Inputs: zero has magnitude length one). Every value
+   `proposals/filament-v1/definitions/value-accounting.md`, `bits(x)`, "zero is
+   one"; filament-exact FR-380 Inputs: zero has magnitude length one). Every value
    therefore has bit length at least 1: B = 0 admits no operand and B >= 1
    admits zero. An operand is within B when its bit length is at most B; at
    the default, a value of 4096 bits is admitted and a value of 4097 bits is
    refused. B applies in whichever phase initiates the comparison, and a
    declared endpoint is checked against B like a supplied value. The bounded
-   kernel helper exists under quire-exact FR-380, and the QSV caller exists.
+   kernel helper exists under filament-exact FR-380, and the FSV caller exists.
 6. **Coverage, type-link comparison (NORM).**
-   QSV FR-109 "Nested retained type": type-link comparisons carry input-sized
+   FSV FR-109 "Nested retained type": type-link comparisons carry input-sized
    numeric data. The `type-comparison` event (one compared pair of chain
    links) is charged first; then, before the endpoint equality runs, every
    numeric endpoint of the pair is checked against B by the same bit-length
@@ -333,7 +333,7 @@ the wire.
    upper (a Decimal endpoint's scale is not a bounded operand). The first
    over B stops ON the charged `type-comparison` event with the same `limit`
    cause below, `event: type-comparison`. The bounded cancellable
-   type-to-type equality helper and its QSV caller exist and implement this
+   type-to-type equality helper and its FSV caller exist and implement this
    rule for Integer, Rational and Decimal pairs, with tests over every
    endpoint.
 7. **Over B.** An operand above B yields the `limit` cause below with
@@ -352,9 +352,9 @@ the wire.
    exists.
 8. **Budgets and order.** The size checks charge no A or H unit of their own
    and the evaluator Meter nothing. The initiating event is charged first
-   (QSV FR-109: poll and request one unit when ValueVisit, or the type
+   (FSV FR-109: poll and request one unit when ValueVisit, or the type
    comparison, is requested; only after a successful charge perform it), then
-   the qualified helper runs under that one logical event (quire-exact FR-380
+   the qualified helper runs under that one logical event (filament-exact FR-380
    Behavior 6 / AC-6). For the value path the comparison is at most two
    Integer comparisons (Integer) or four (Rational) of at most B bits. An
    over-B operand stops on that charged event: the A (or H) budget spend of
@@ -363,9 +363,9 @@ the wire.
    budget resets or is refunded.
 
 Qualification: a B check discharges the "actual finite operand bounds" premise
-of QSL FR-277 AC-6 and QSV FR-109 AC-7 for Integer and Rational value-in-domain
+of FSL FR-277 AC-6 and FSV FR-109 AC-7 for Integer and Rational value-in-domain
 membership once its reviewed typed mapping exists, and for type-link
-comparison, which the type-link helper and its QSV caller now provide. It does
+comparison, which the type-link helper and its FSV caller now provide. It does
 not qualify Decimal value-in-domain membership, temporary storage,
 cancellation response or typed mapping.
 
@@ -373,7 +373,7 @@ Rationale: B lives beside A and H because `limits.supplied` is the closed
 caller-owned pre-call carrier that never derives from evaluation limits;
 `integer_bits` is an evaluator counter whose default is `u64::MAX`, so reusing
 it would inherit that default or let evaluation limits bound admission. B has
-a published default because QSL FR-277 requires every enforced bound to be a
+a published default because FSL FR-277 requires every enforced bound to be a
 caller limits field with a published default; omission therefore normalizes
 into request identity as for A and H. An over-B operand reuses the catalogued
 `limit` cause with a new field name and an `operand` locator instead of a new
@@ -397,9 +397,9 @@ context and SHALL use the separate native fault route below:
 - `event` SHALL be the actual owning logical event: one of `value-visit`,
   `type-comparison`, `child-scheduling`, `descriptor-query`,
   `witness-preflight`, `witness-materialization`, `converted-node` or
-  `value-occurrence`. The first four use QSV FR-109's definitions/order;
+  `value-occurrence`. The first four use FSV FR-109's definitions/order;
   type comparison is exactly ONE compared PAIR OF chain LINKS including the
-  initial pair, with no extra entry. The other events/counters use QSL
+  initial pair, with no extra entry. The other events/counters use FSL
   FR-098, not new semantic ChargePoints. Cancellation outside a scheduled
   event has `event: null`, not a fictional step.
 - `locus` SHALL preserve the owning producer's actual typed input/value/source
@@ -412,7 +412,7 @@ context and SHALL use the separate native fault route below:
 | Cause form | Required meaning and payload |
 | --- | --- |
 | `{ kind: limit, limit_kind, field, limit, next_charge, counter }` | Actual pre-call bound denial. `field` names the actual owning caller field; `limit_kind` is its counter, `limit` its configured u64 ceiling, `next_charge` the exact nonnegative denied amount. For A/H it is one. For `supplied.numeric_magnitude_bits` the cause also carries `operand` and no other limit cause does; the supplied-context member `consumed` (not a cause field) is 0 and `next_charge` and `counter` are the operand's bit length (see Numeric magnitude bound rule 7). `counter` is the checked attempted count, or the explicit tagged value `{overflow: true}` when counter representation overflows. No narrowing/wrapping; the denied A/H event is unperformed/unspent (an over-B numeric operand instead stops on its charged initiating event, see Numeric magnitude bound rule 8). |
-| `{ kind: input, native }` | Actual invalid kind/domain/member input with original QSL InputRefusal/QSV membership cause and provenance, never a fabricated limit or failed predicate. |
+| `{ kind: input, native }` | Actual invalid kind/domain/member input with original FSL InputRefusal/FSV membership cause and provenance, never a fabricated limit or failed predicate. |
 | `{ kind: cancelled, native }` | Original caller Cancel cause and provenance, including Requested vs Deadline where observed; never a fresh token or work exhaustion. |
 | `{ kind: storage, native, requested, unit }` | Actual allocator denial at fallible reservation before mutation. Preserve the measured request exactly and its native `bytes` or `additional-elements` unit; do not convert the amount into work units. |
 | `{ kind: capacity, native }` | Actual checked representation-size/capacity failure, distinct from allocator denial and cumulative counter overflow; preserve its original operation and measured quantities where available. |
@@ -420,7 +420,7 @@ context and SHALL use the separate native fault route below:
 `native` SHALL be the original CLOSED typed cause/provenance from the selected
 owning producer contract: its interface/stage, diagnostic catalog/code/cause
 when applicable, and actual payload. It is not an untyped map, an English
-message or a newly guessed kernel variant. QSL-675 FR-090/096 and QSV FR-109
+message or a newly guessed kernel variant. QSL-675 FR-090/096 and FSV FR-109
 own those payloads; this envelope embeds their reviewed typed form without
 renaming native fields or reclassifying a declaration EnvironmentFailure/Stop
 as supplied membership. An unavailable native variant/serialization mapping
@@ -435,14 +435,14 @@ owning operation's existing typed failure classification, with this phase
 context. No new blanket `failed` classification is selected for those causes.
 A pre-call stop SHALL yield no partial admitted value/replay agreement and
 report zero semantic evaluation consumption, with no evaluated FunctionCall
-or fabricated charge point. Replay preserves QSL's inconclusive/NoValue
+or fabricated charge point. Replay preserves FSL's inconclusive/NoValue
 settlement for a pre-call limit and the distinct existing invalid/cancel/
 storage/capacity boundaries. Input byte/dependency/recompile refusals retain
 their existing precedence and are not wrapped as supplied-phase work.
 
 `supplied` SHALL be absent on evaluated semantic outcomes. An evaluated
 accounting `incomplete` retains EXACTLY `limit_kind, limit, consumed,
-next_charge, charge_point` under `quire.value.accounting/v1`; this amendment
+next_charge, charge_point` under `filament.value.accounting/v1`; this amendment
 adds nothing to that record. A pre-call limit uses the separate envelope
 context above and SHALL NOT instantiate that kernel record. No reader may
 fill its mandatory charge_point with FunctionCall, omit phase provenance or
@@ -460,14 +460,14 @@ replay basis, not an ordinary InputRefusal/Inconclusive settlement. The
 absence of `supplied` does not imply evaluation occurred: the original
 detecting operation and stage SHALL retain its pre-call origin.
 
-This explicitly preserves the converter's QSL-owned `replay` faults naming
+This explicitly preserves the converter's FSL-owned `replay` faults naming
 `converted-payload`, `converted-slots`, `converted-elements` or
 `one-converted-argument`. These retain their own identifiers, not a received
 kernel CheckedInvariantCause, an input error, capacity denial or an evaluated
 invariant. The receiving mapping SHALL NOT synthesize a kernel payload or
 replace the detecting stage/invariant. A received typed kernel fault, when
 actually present, retains its distinct original typed provenance under
-QSL FR-096; no blanket conversion to a QSL-owned fault is permitted.
+FSL FR-096; no blanket conversion to a FSL-owned fault is permitted.
 
 Fault propagation SHALL add no meter event or fault-specific helper debit,
 perform no later conversion/evaluation/result retention, and return no
@@ -483,7 +483,7 @@ serialize it cannot justify coercion into one of the five supplied arms.
 
 ### Qualification prerequisites
 
-Every supported supplied path SHALL satisfy QSL FR-277 AC-6 / QSV FR-109
+Every supported supplied path SHALL satisfy FSL FR-277 AC-6 / FSV FR-109
 AC-7: authoritative helper operation, actual finite input/operand bounds,
 finite work AND peak temporary storage, original-Cancel response boundary,
 fallible reservation where needed and reviewed native typed mapping. Logical
@@ -506,25 +506,25 @@ falsifier remains required. Positive Decimal replay remains mandatory once
 enabled. Future union requires the reviewed public declaration/member/helper
 baseline after IR-713. The unchanged QSL-503 full 10,000-level fixture, its
 29,998/29,999 occurrence and 39,996/39,997 evaluator controls remain with
-QSL TC-830/831/906, not replaced or qualified by this envelope proposal.
+FSL TC-830/831/906, not replaced or qualified by this envelope proposal.
 
 ## Outcome-to-verdict map
 
-QSpec fixes the replay outcome-to-verdict map once per QSL ADR-013 O-16
+QSpec fixes the replay outcome-to-verdict map once per FSL ADR-013 O-16
 category (FND-009; QC-8); no request instance selects or overrides a
 category's verdict.
 
 - When a replay outcome is settled, the producer SHALL apply the verdict
-  fixed for the outcome's QSL ADR-013 O-16 category.
+  fixed for the outcome's FSL ADR-013 O-16 category.
 - The producer SHALL settle no agreement for an `Undefined` outcome or for
-  a refused `FamilyOutcome` (its `Refused` case, QSL ADR-011 #209 FND-008
+  a refused `FamilyOutcome` (its `Refused` case, FSL ADR-011 #209 FND-008
   S6a stage), regardless of the `replay` property's expected originating
   verdict.
 
 ## Identity and validation
 
 Two requests are equal exactly when every semantic input and limit is equal, compared componentwise, and two results exactly when their canonical per-item results are also equal. Neither `request_id` nor any result identity is computed from those members.
-A document whose `contract_version` is not `quire.native-runtime/v1`, missing required properties, duplicate keys,
+A document whose `contract_version` is not `filament.native-runtime/v1`, missing required properties, duplicate keys,
 out-of-domain values and non-canonical encodings refuse before consumption.
 
 ## Acceptance Criteria
@@ -534,7 +534,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-1 | Every selected item yields exactly one value, false/violation, refusal, undefined, incomplete or failed disposition; `undefined` is its own disposition carrying its reason and locus. Evaluator invariant failure remains `runtime_invariant`/`established-invariant-broken`; an actual constructor/input-boundary fault retains QSL-675's reviewed original fault provenance and is not relabelled a failed evaluation. Supplied input, cancellation, storage and capacity stops retain their owning typed classifications, not a newly invented invariant fault. | Analysis |
 | FR-323-AC-2 | Replay uses the same evaluator and inputs rather than a generated-oracle shortcut. | Analysis |
 | FR-323-AC-3 | Missing anchors, exhausted limits and false predicates remain distinct. | Analysis |
-| FR-323-AC-4 | The outcome-to-verdict map assigns one verdict per QSL ADR-013 O-16 category, fixed independently of any request; an `Undefined` outcome and a refused `FamilyOutcome` never settle agreement. | Test (TC-273) |
+| FR-323-AC-4 | The outcome-to-verdict map assigns one verdict per FSL ADR-013 O-16 category, fixed independently of any request; an `Undefined` outcome and a refused `FamilyOutcome` never settle agreement. | Test (TC-273) |
 | FR-323-AC-5 | A replay request's `byte_provision` supplies every source and definition input the replay recompiles, each located by the `{authority, identity}` its lock `sources` entry names, and every domain-package document, an entry of the ordered provision located by the identity it declares; the executor reads no recompilation input by path, environment variable or search location. Before any recompile, a named input the provision does not carry refuses `missing_import`/`missing-selection` naming the requested `{authority, identity}`, or the requested domain-package identity, and the `package` member that names it; a second document under one key is a duplicate definition and refuses `invalid_package`/`conflicting-definition`. | Test (TC-277) |
 | FR-323-AC-6 | A replay request's `replay` property carries the `ReplaySource`, the replay target (`function`, `frame_operation` or `state_clause`), for a function request arguments keyed by parameter node id, the semantic profile selections, for a function request the failing node's occurrence key, the proof bounds and declared domains, the trace position and the `backend` member; a non-replay request carries no `replay` property. | Test (TC-278) |
 | FR-323-AC-7 | A replay request's `package` is the proved checked-package document, whose lock `sources` are the proved package's own, and the request carries one `dependencies` entry per identity in its derived closure, in ascending UTF-8 identity order, each carrying that dependency's `identity` and own lock `sources`, including transitive-only dependencies. The executor refuses by the first rule of its order: swapped or repeated entries `invalid_package`/`invalid-value` at `/dependencies` before any recompile; an entry whose source shares the authority and identity of another source `invalid_package`/`conflicting-definition` naming both; a removed entry `missing_import`/`missing-selection`; an entry no import in the dependency tree reaches `invalid_package`/`invalid-value`. An edit removing an export the proved package calls instead refuses in the recompile, `missing_declaration`/`missing-name`. None yields a result. | Test (TC-277) |
@@ -552,7 +552,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-19 | A replay request with none of `function`, `frame_operation` and `state_clause` refuses `invalid_runtime_input`/`missing-member` at `/replay`; one with `function` and `frame_operation` refuses `invalid_runtime_input`/`invalid-value` at `/replay/frame_operation`, and one with `state_clause` and either other member, or with all three members, at `/replay/state_clause`; and a frame or a state-clause request carrying `arguments` or an occurrence key refuses `invalid_runtime_input`/`unknown-member` at `/replay/arguments` or `/replay/occurrence_key`; each at decode before the byte-provision rule and any recompile, so a request with two members and a missing provision entry reports the member refusal. | Test (TC-278) |
 | FR-323-AC-20 | A `frame_operation` is resolved against the recompiled package: an undeclared operation or an operation with no frame node refuses `missing_declaration`/`missing-name`, an `object` naming a record value type and an operation that `object` only inherits refuse `invalid_model_binding`/`malformed-declaration`, and a name two supertypes expose refuses `ambiguous_declaration`/`ambiguous-name`, each naming the target. | Test (TC-278) |
 | FR-323-AC-21 | A `state_clause` is resolved against the recompiled package: a `state_clause` naming a declared invariant, precondition or postcondition resolves to that clause, and one naming no declaration or naming a function refuses `missing_declaration`/`missing-name` naming the target. | Test (TC-278) |
-| FR-323-AC-22 | A `function` replay request with no `occurrence_key` refuses `invalid_runtime_input`/`missing-member` at `/replay/occurrence_key` at decode, before the byte-provision rule and any recompile, so the same request with a byte-provision entry removed reports the same refusal. The occurrence key selects the claim the replay decides (QSL FR-098). | Test (TC-278) |
+| FR-323-AC-22 | A `function` replay request with no `occurrence_key` refuses `invalid_runtime_input`/`missing-member` at `/replay/occurrence_key` at decode, before the byte-provision rule and any recompile, so the same request with a byte-provision entry removed reports the same refusal. The occurrence key selects the claim the replay decides (FSL FR-098). | Test (TC-278) |
 | FR-323-AC-23 | A replay whose recompiled sources select a domain package that `byte_provision` carries no entry for refuses `missing_import`/`missing-selection` naming the requested domain-package identity when the recompile reaches that selection, after the source and definition inputs of FR-323-AC-5 are present and before any result is produced. | Test (TC-277) |
 | FR-323-AC-24 | Withdrawn: a changed domain-package document is not detected by intake or replay. | Withdrawn |
 | FR-323-AC-25 | A `byte_provision` carrying two domain-package entries that declare one identity refuses `invalid_package`/`conflicting-definition` naming both entries at decode, before any recompile, whichever `package.version` members the two documents state (a document's own member; no version is compared); `duplicate_selection`/`duplicate-identity` applies only to a source that selects one identity twice (FR-321-AC-5). | Test (TC-277) |
@@ -573,36 +573,36 @@ out-of-domain values and non-canonical encodings refuse before consumption.
   is the corpus schema's `$defs.ReplayRequest`: `/dependencies`,
   `/dependencies/<n>/sources`, `/dependencies/<n>/refinement_internals/<pointer>`,
   `/package/lock/sources` and `/package/lock/refinement_internals/<pointer>`.
-  The QSL replay executor still emits the earlier `/package/dependencies...`
+  The FSL replay executor still emits the earlier `/package/dependencies...`
   spelling; its change follows as its own ticket.
 - [interface_005](./interface_005-native-runtime.md) owns the operation boundary.
 - FR-180 owns the behavior that produces or consumes this value.
 - [FR-340](FR-340-checked-package-frame-location.md) and
   [FR-342](FR-342-checked-package-operation-anchor-body.md) own the frame node
-  and the operation resolution a frame replay target uses; QSL
-  [FR-116](ix://agent-ix/quire-spec-language/FR-116) and ADR-017 PF-4 own the
+  and the operation resolution a frame replay target uses; FSL
+  [FR-116](ix://agent-ix/filament-spec-language/FR-116) and ADR-017 PF-4 own the
   frame packet and its payload.
 - [FR-341](FR-341-checked-package-state-clause-body.md) owns the state clause
-  node a `state_clause` replay target names; QSL
-  [FR-122](ix://agent-ix/quire-spec-language/FR-122) owns the state-clause
+  node a `state_clause` replay target names; FSL
+  [FR-122](ix://agent-ix/filament-spec-language/FR-122) owns the state-clause
   packet, its payload and its envelope's clause identities.
-- [QSL FR-098](ix://agent-ix/quire-spec-language/FR-098) and
-  [FR-277](ix://agent-ix/quire-spec-language/FR-277) own QSL-681 conversion
+- [FSL FR-098](ix://agent-ix/filament-spec-language/FR-098) and
+  [FR-277](ix://agent-ix/filament-spec-language/FR-277) own QSL-681 conversion
   nodes/occurrences, A/H units/defaults and consumer settlement.
-- [QSV FR-109](ix://agent-ix/quire-semantic-value/FR-109) owns shared supplied
+- [FSV FR-109](ix://agent-ix/filament-semantic-value/FR-109) owns shared supplied
   logical events, initiating owner, cumulative Cancel and helper proof gates.
-- QSL-675 [FR-090](ix://agent-ix/quire-spec-language/FR-090) /
-  [FR-096](ix://agent-ix/quire-spec-language/FR-096) own native fault/context
+- QSL-675 [FR-090](ix://agent-ix/filament-spec-language/FR-090) /
+  [FR-096](ix://agent-ix/filament-spec-language/FR-096) own native fault/context
   mapping. Their reviewed serialized native payload is an integration gate.
-- QSL [FR-277](ix://agent-ix/quire-spec-language/FR-277) AC-6 and QSV
+- FSL [FR-277](ix://agent-ix/filament-spec-language/FR-277) AC-6 and FSV
   FR-109 AC-7 own the operand-bound qualification premise that B discharges
   for Integer and Rational membership.
-- [Accounting definition](../../../proposals/quire-v1/definitions/value-accounting.md)
+- [Accounting definition](../../../proposals/filament-v1/definitions/value-accounting.md)
   owns the unchanged scalar/population objects and closed evaluated incomplete.
 - IR-718 /
   IR-719
   own Decimal capability qualification; QSL-503 owns full-fixture integration.
-- QSL FR-255 / ADR-014 owners retain setting-registry, default and B-2
+- FSL FR-255 / ADR-014 owners retain setting-registry, default and B-2
   phase-projection amendments; this envelope does not approve those gates.
 
 ## Status

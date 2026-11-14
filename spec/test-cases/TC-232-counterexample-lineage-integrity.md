@@ -3,7 +3,7 @@ id: TC-232
 title: "Counterexample lineage integrity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-312
+  - target: ix://agent-ix/filament-specification/FR-312
     type: verifies
 ---
 

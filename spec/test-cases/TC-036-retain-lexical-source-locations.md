@@ -3,7 +3,7 @@ id: TC-036
 title: "Preserve original source locations through lexical recognition"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-036
+  - target: ix://agent-ix/filament-specification/FR-036
     type: verifies
 ---
 ## Description

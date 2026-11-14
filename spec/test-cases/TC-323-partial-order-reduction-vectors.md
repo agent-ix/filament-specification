@@ -3,11 +3,11 @@ id: TC-323
 title: "Partial-order reduction vectors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-383-AC-17
+  - target: ix://agent-ix/filament-specification/FR-383-AC-17
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-383
+  - target: ix://agent-ix/filament-specification/FR-383
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-385
+  - target: ix://agent-ix/filament-specification/FR-385
     type: verifies
 ---
 

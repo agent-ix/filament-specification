@@ -1249,7 +1249,7 @@
             "role": "generated"
           }
         ],
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "semantic_form": "frame",
         "semantic_type": {
           "ordinal": 0,
@@ -1675,7 +1675,7 @@
       "name": "DS-02",
       "parameter": {
         "name": "p0",
-        "typeRef": "ix://quire/native/Integer"
+        "typeRef": "ix://filament/native/Integer"
       }
     },
     {

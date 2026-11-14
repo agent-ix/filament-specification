@@ -3,19 +3,19 @@ id: TC-050
 title: "Bind exact protocol roles and instances"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-210
+  - target: ix://agent-ix/filament-specification/FR-210
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-211
+  - target: ix://agent-ix/filament-specification/FR-211
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-212
+  - target: ix://agent-ix/filament-specification/FR-212
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-213
+  - target: ix://agent-ix/filament-specification/FR-213
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-214
+  - target: ix://agent-ix/filament-specification/FR-214
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-215
+  - target: ix://agent-ix/filament-specification/FR-215
     type: verifies
 ---
 ## Description

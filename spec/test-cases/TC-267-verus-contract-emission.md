@@ -1,17 +1,17 @@
 ---
 id: TC-267
-title: "Verus contract emission from QSL state contracts"
+title: "Verus contract emission from FSL state contracts"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-350
+  - target: ix://agent-ix/filament-specification/FR-350
     type: verifies
 ---
 
-# TC-267: Verus contract emission from QSL state contracts
+# TC-267: Verus contract emission from FSL state contracts
 
 ## Description
 
-Emit Verus `requires`/`ensures`/loop-invariant clauses from a bound QSL state
+Emit Verus `requires`/`ensures`/loop-invariant clauses from a bound FSL state
 contract onto a named implementation Rust function and verify them.
 
 ## Test Procedure

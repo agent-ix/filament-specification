@@ -3,9 +3,9 @@ id: TC-943
 title: "A protocol reference parses, resolves and binds by typed key"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-463
+  - target: ix://agent-ix/filament-specification/FR-463
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-66
+  - target: ix://agent-ix/filament-specification/FR-322-AC-66
     type: verifies
 ---
 # TC-943: A protocol reference parses, resolves and binds by typed key

@@ -3,21 +3,21 @@ id: TC-372
 title: "Task-set schedulability"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-419
+  - target: ix://agent-ix/filament-specification/FR-419
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-418
+  - target: ix://agent-ix/filament-specification/FR-418
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-416
+  - target: ix://agent-ix/filament-specification/FR-416
     type: verifies
 ---
 
@@ -27,7 +27,7 @@ relationships:
 
 Decide schedulability and response bounds by closed-form analysis and recompute the evidence before settlement.
 
-The task-product rows below are normative vectors for the downstream QSL
+The task-product rows below are normative vectors for the downstream FSL
 implementation PR ([FR-419](../functional/analysis/FR-419-analyze-task-set-schedulability.md)
 and [FR-364](../functional/temporal/FR-364-replay-temporal-counterexamples.md)).
 They are not executable provider trace-tag bindings in this QSpec PR;

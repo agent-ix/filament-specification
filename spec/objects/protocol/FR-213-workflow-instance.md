@@ -4,13 +4,13 @@ title: "Workflow instance"
 type: FR
 object: entity
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-051
+  - target: ix://agent-ix/filament-specification/FR-051
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-287
+  - target: ix://agent-ix/filament-specification/FR-287
     type: references
 ---
 # FR-213: Workflow instance
@@ -101,7 +101,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   admits only explicit typed relationships between related instances.
 - [FR-052](../../functional/protocol/FR-052-represent-bounded-control.md) supplies the
   authored causal order.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 - [FR-287](FR-287-authority-qualified-runtime-subject-reference.md) defines the
   concrete runtime key and non-causal comparison order.

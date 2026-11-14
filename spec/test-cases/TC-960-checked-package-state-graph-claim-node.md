@@ -3,7 +3,7 @@ id: TC-960
 title: "Checked-package state-graph claim node and obligation identity"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-475
+  - target: ix://agent-ix/filament-specification/FR-475
     type: verifies
 ---
 
@@ -42,7 +42,7 @@ to the body's targets, as TC-233 does for its patched vectors, and feed the pack
 | SN-13 | SN-03 with `from` the empty aggregate | `invalid_semantic_graph` at the `from` binding |
 | SN-14 | SN-01 with `over` the text literal `c` | `invalid_semantic_graph` at the `over` binding |
 | SN-15 | one unit declaring SN-01's claim twice, as `ReachesTwo` and `AlsoReachesTwo` | one node with two `claim` occurrences, ordinals 0 and 1 |
-| SN-16 | SN-01's `c = a` instance requested over quire-spec-language ADR-022 §7.1's subject with initial state `(0, 0)` and with initial state `(1, 0)` | one node id; two different obligation identities |
+| SN-16 | SN-01's `c = a` instance requested over filament-spec-language ADR-022 §7.1's subject with initial state `(0, 0)` and with initial state `(1, 0)` | one node id; two different obligation identities |
 | SN-17 | SN-01 with `target` a reference to an added `temporal`/`temporal_clause` node, `always holds(c.versionNumber = 2)` over `c` | `ill_typed`/`operator-ineligible` at the target |
 
 ## Expected Results

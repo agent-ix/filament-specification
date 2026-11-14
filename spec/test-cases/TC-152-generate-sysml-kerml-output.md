@@ -3,7 +3,7 @@ id: TC-152
 title: "Generate bounded SysML and KerML output"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-123
+  - target: ix://agent-ix/filament-specification/FR-123
     type: verifies
 ---
 ## Description

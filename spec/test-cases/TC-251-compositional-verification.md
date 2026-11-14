@@ -3,7 +3,7 @@ id: TC-251
 title: "Compositional verification obligation negotiation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-348
+  - target: ix://agent-ix/filament-specification/FR-348
     type: verifies
 ---
 

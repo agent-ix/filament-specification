@@ -3,17 +3,17 @@ id: FR-196
 title: "Generate exact Kani contracts and harnesses"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-010
+  - target: ix://agent-ix/filament-specification/AD-010
     type: references
-  - target: ix://agent-ix/quire-specification/FR-195
+  - target: ix://agent-ix/filament-specification/FR-195
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-036
+  - target: ix://agent-ix/filament-contract-ir/FR-036
     type: references
-  - target: ix://agent-ix/quire-contract-codegen/FR-003
+  - target: ix://agent-ix/filament-contract-codegen/FR-003
     type: references
-  - target: ix://agent-ix/quire-contract-codegen/interface-001
+  - target: ix://agent-ix/filament-contract-codegen/interface-001
     type: references
 ---
 
@@ -67,7 +67,7 @@ it ran, its target, solver, unwind/loop bounds and command options.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

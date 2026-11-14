@@ -4,15 +4,15 @@ title: "Progress and late-data authority"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-113
+  - target: ix://agent-ix/filament-specification/FR-113
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-266
+  - target: ix://agent-ix/filament-specification/FR-266
     type: references
-  - target: ix://agent-ix/quire-specification/FR-255
+  - target: ix://agent-ix/filament-specification/FR-255
     type: references
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: references
-  - target: ix://agent-ix/quire-specification/FR-294
+  - target: ix://agent-ix/filament-specification/FR-294
     type: references
 ---
 # FR-268: Progress and late-data authority
@@ -134,7 +134,7 @@ half-open end/watermark and the inclusive deadline is insufficient.
 - [FR-255](../temporal/FR-255-bounded-temporal-interval.md) records the
   inclusive temporal convention this authority is asked to cover, and the
   conflict with the half-open observation convention.
-- [FR-200](../foundation/FR-200-quire-assessment-domain.md) supplies the identity
+- [FR-200](../foundation/FR-200-filament-assessment-domain.md) supplies the identity
   discipline.
 
 ## Authority boundary
@@ -145,4 +145,4 @@ no one of them derives either of the others.
 
 ## Status
 
-Proposed progress/cutoff identity closure for `quire-specification#40`.
+Proposed progress/cutoff identity closure for `filament-specification#40`.

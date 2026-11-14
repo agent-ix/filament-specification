@@ -3,7 +3,7 @@ id: TC-196
 title: "Conformance redefinition and dispatch"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-151
+  - target: ix://agent-ix/filament-specification/FR-151
     type: verifies
 ---
 
@@ -17,15 +17,15 @@ Resolve valid specialization/dispatch and reject cycles, weakening and ambiguity
 
 Use the subject and inputs named by FR-151. Execute its positive case, each declared boundary, and each explicit refusal/non-conclusive mutation through the real local Rust boundary; compare the complete typed result and artifact accounting with the criterion.
 
-Select `quire.model.complete/v1` through
-[`model-complete.md`](../../proposals/quire-v1/definitions/model-complete.md).
+Select `filament.model.complete/v1` through
+[`model-complete.md`](../../proposals/filament-v1/definitions/model-complete.md).
 Node names, declaration keys, package identity and default limits follow
 TC-195. Every multiplicity is written `{lower,upper}` with `ordered: false` and
 `unique: true` unless stated, and every field has presence `optional` unless
 stated. Value types `Count` and `Small` are declared in the package by
 artifacts `Count` and `Small`, bound as `Int[0,9]` and `Int[0,5]`, and each
-names a construct whose meaning is `quire.meaning.model.value-type/v1`; every
-object type's construct meaning is `quire.meaning.model.object-type/v1`. Effective type identities are TC-195 N02's:
+names a construct whose meaning is `filament.meaning.model.value-type/v1`; every
+object type's construct meaning is `filament.meaning.model.object-type/v1`. Effective type identities are TC-195 N02's:
 `A` < `B` < `C` < `D` in ascending identity order.
 
 Fixtures:

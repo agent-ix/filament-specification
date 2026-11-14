@@ -3,51 +3,51 @@ id: TC-280
 title: "Model-owned member types"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322-AC-80
+  - target: ix://agent-ix/filament-specification/FR-322-AC-80
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-82
+  - target: ix://agent-ix/filament-specification/FR-322-AC-82
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-98
+  - target: ix://agent-ix/filament-specification/FR-322-AC-98
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-99
+  - target: ix://agent-ix/filament-specification/FR-322-AC-99
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-102
+  - target: ix://agent-ix/filament-specification/FR-322-AC-102
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-103
+  - target: ix://agent-ix/filament-specification/FR-322-AC-103
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-104
+  - target: ix://agent-ix/filament-specification/FR-322-AC-104
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-105
+  - target: ix://agent-ix/filament-specification/FR-322-AC-105
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-106
+  - target: ix://agent-ix/filament-specification/FR-322-AC-106
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-107
+  - target: ix://agent-ix/filament-specification/FR-322-AC-107
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-149-AC-23
+  - target: ix://agent-ix/filament-specification/FR-149-AC-23
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-149-AC-24
+  - target: ix://agent-ix/filament-specification/FR-149-AC-24
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-116
+  - target: ix://agent-ix/filament-specification/FR-322-AC-116
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-298
+  - target: ix://agent-ix/filament-specification/FR-322-AC-298
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-301
+  - target: ix://agent-ix/filament-specification/FR-322-AC-301
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322-AC-302
+  - target: ix://agent-ix/filament-specification/FR-322-AC-302
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-144-AC-27
+  - target: ix://agent-ix/filament-specification/FR-144-AC-27
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-144-AC-28
+  - target: ix://agent-ix/filament-specification/FR-144-AC-28
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-154
+  - target: ix://agent-ix/filament-specification/FR-154
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-342
+  - target: ix://agent-ix/filament-specification/FR-342
     type: verifies
 ---
 
@@ -89,8 +89,8 @@ the member type from the resolved record.
   constrained field `total` (`<Name><Field>`), with its constraints under
   `constraint/Order-total-min` and `-max`.
 - The wire cases are hand authored: each is a single model declaration
-  node, a shape QSL emits only inside a package, as emitter output would be. The model declaration nodes of the positive
-  fixtures are QSL emitter output (TC-233).
+  node, a shape FSL emits only inside a package, as emitter output would be. The model declaration nodes of the positive
+  fixtures are FSL emitter output (TC-233).
 - `proposals/checked-package-v2/model-owner-form-vectors.json` carries a
   second projection, `acme/runs`, in the same shape and with the lists
   `processes`, `state_machines` and `persistence_interfaces` beside
@@ -187,31 +187,31 @@ process or state machine.
 | MA-17 | `operation` `size` on M5, over the document whose `Sub/size` carries no `Operation.redefines` and whose `Sub` lists the pair `Sub/size`, `Order/size` only in an extension payload, once with `required` false (MA-17a) and once with `required` true (MA-17b), the consumer admitting the extension | `ambiguous_declaration`/`ambiguous-name` both times: an extension declares no redefinition to intake | FR-154-AC-16 |
 | MA-18 | The document with `Sub/size`'s `Operation.redefines` set to `ix://acme/orders/Order/missing` | Selection refused `missing_declaration`/`missing-name` at `Sub/size` and `Operation.redefines` | FR-154-AC-16 |
 | MA-19 | The document whose `Sub` lists the pair `Sub/size`, `Order/size` in an extension payload with `required` true, supplied to a consumer that does not admit that extension | Document refused before intake `unknown_required_feature`/`unsupported-feature`, naming the extension identity and the consuming scope, at `Sub` and its `extensions` member | FR-154-AC-16 |
-| MU-01 | `field` `window` on T1 (`Timer` of the `acme/timing` domain package, which no checked-package fixture selects), `typeRef` `ix://quire/unit/ms`, checked units `ms` and `s` | Resolves `Timer/window`; type `Quantity<ms>` | FR-322-AC-80 |
+| MU-01 | `field` `window` on T1 (`Timer` of the `acme/timing` domain package, which no checked-package fixture selects), `typeRef` `ix://filament/unit/ms`, checked units `ms` and `s` | Resolves `Timer/window`; type `Quantity<ms>` | FR-322-AC-80 |
 | MU-02 | `field` `waits` on T1, the same `typeRef`, `[0, unbounded]`, unordered, unique | `Set<Quantity<ms>>` | FR-322-AC-80 |
 | MU-03 | `operation` `wait` on T1 with a `Quantity<ms>` argument | Resolves `Timer/wait`; result `Integer` | FR-322-AC-80 |
-| MU-04 | `field` `ghost` on T1, `typeRef` `ix://quire/unit/ghost` | `missing_declaration`/`missing-name` | FR-322-AC-80 |
+| MU-04 | `field` `ghost` on T1, `typeRef` `ix://filament/unit/ghost` | `missing_declaration`/`missing-name` | FR-322-AC-80 |
 | MU-05 | `operation` `wait` on T1 with a `Quantity<s>` argument | `ill_typed`/`operator-ineligible` | FR-322-AC-80 |
 | MU-06 | `operation` `wait` on T1 with an `Integer` argument | `ill_typed`/`operator-ineligible` | FR-322-AC-80 |
-| MU-07 | `field` `budget` on T2 (`Call` of the admitted domain package `acme/rpc`, which declares base dimension `Rate`, root unit `us` of `Rate` and its own unit `ms` of `Rate`, `target` `us`, `scale` `1000`), `typeRef` `ix://quire/unit/acme/rpc/ms`, beside MU-01's source units `ms` and `s` of the source dimension `Time` | Resolves `Call/budget`; type `Quantity<M::ms>` (with `model M = "acme/rpc"`) over the package unit's `scalar_type`/`unit` node, which carries no `declaration`, has `owner` `{kind: "model", identity: "acme/rpc", node: "ix://acme/rpc/unit/ms"}`, a `node_id.path` `["scalar_type", "unit", "ix://acme/rpc/unit/ms"]`, and a node id distinct from the source `ms` node's, and depends exactly on the package `Rate` and `us` nodes; no `ambiguous_declaration` | FR-322-AC-99 |
-| MU-08 | `field` `limit` on T2, `typeRef` `ix://quire/unit/ms` | Resolves `Call/limit`; type `Quantity<ms>` over the source unit's node, distinct from MU-07's | FR-322-AC-99 |
-| MU-09 | `field` `stale` on T2, `typeRef` `ix://quire/unit/rpc/ms` | `missing_declaration`/`missing-name` | FR-322-AC-99 |
-| MU-10 | `field` `x` on T2, `typeRef` `ix://quire/native/Clock` with FR-154's clock field shape, resolved as a `field` member; then a `field` application over `x` used as a value; then `x` as the clock operand of the atomic clock constraint `self.x >= 1 ms` in a guard | The member resolves to the clock type with no checked-package node; the value application refuses `invalid_timed_model`/`clock-read-outside-constraint`; the clock-constraint operand raises no such refusal | FR-322-AC-99 |
+| MU-07 | `field` `budget` on T2 (`Call` of the admitted domain package `acme/rpc`, which declares base dimension `Rate`, root unit `us` of `Rate` and its own unit `ms` of `Rate`, `target` `us`, `scale` `1000`), `typeRef` `ix://filament/unit/acme/rpc/ms`, beside MU-01's source units `ms` and `s` of the source dimension `Time` | Resolves `Call/budget`; type `Quantity<M::ms>` (with `model M = "acme/rpc"`) over the package unit's `scalar_type`/`unit` node, which carries no `declaration`, has `owner` `{kind: "model", identity: "acme/rpc", node: "ix://acme/rpc/unit/ms"}`, a `node_id.path` `["scalar_type", "unit", "ix://acme/rpc/unit/ms"]`, and a node id distinct from the source `ms` node's, and depends exactly on the package `Rate` and `us` nodes; no `ambiguous_declaration` | FR-322-AC-99 |
+| MU-08 | `field` `limit` on T2, `typeRef` `ix://filament/unit/ms` | Resolves `Call/limit`; type `Quantity<ms>` over the source unit's node, distinct from MU-07's | FR-322-AC-99 |
+| MU-09 | `field` `stale` on T2, `typeRef` `ix://filament/unit/rpc/ms` | `missing_declaration`/`missing-name` | FR-322-AC-99 |
+| MU-10 | `field` `x` on T2, `typeRef` `ix://filament/native/Clock` with FR-154's clock field shape, resolved as a `field` member; then a `field` application over `x` used as a value; then `x` as the clock operand of the atomic clock constraint `self.x >= 1 ms` in a guard | The member resolves to the clock type with no checked-package node; the value application refuses `invalid_timed_model`/`clock-read-outside-constraint`; the clock-constraint operand raises no such refusal | FR-322-AC-99 |
 | MT-25 | `field` `a`, an option value type over native `Integer` with presence `required`; `field` `b`, native `Integer` with presence `optional`; `field` `d`, the option value type with `[0, 3]`, ordered, not unique (`field_type_cases` OP-01 to OP-08 of `model-option-type-vectors.json`, package `acme/optionals`) | `Option<Integer>` and `Option<Integer>` over one `composite_type`/`option` node; `Sequence<Option<Integer>>[0, 3]` | FR-322-AC-298, FR-154-AC-39 |
 | MT-20 | `field` `blob`, native `Bytes`; `field` `blob2`, native `Bytes` carrying a `maxLength` constraint | Each: `Bytes` over one `scalar_type`/`bytes` node, distinct from `String` and `Text` | FR-322-AC-102 |
 | MT-21 | `field` `meta`, native `JsonObject` | `JsonObject` over `scalar_type`/`json_object` | FR-322-AC-102 |
 | MT-22 | `field` `blobs`, native `Bytes`, `[0, unbounded]`, unordered, unique | `Set<Bytes>` | FR-322-AC-102 |
 | MT-23 | `field` `metas`, native `JsonObject`, `[0, 3]`, ordered, not unique | `Sequence<JsonObject>[0, 3]` | FR-322-AC-102 |
 | MT-24 | `field` `metas`, native `JsonObject`, `[0, unbounded]`, unordered, unique; `field` `keys`, native `Bytes`, `[0, 4]`, unordered, not unique | `Set<JsonObject>`; `Bag<Bytes>[0, 4]`, each admitted with a canonical key (FR-144) | FR-322-AC-102, FR-144-AC-27 |
-| MA-20 | `quire.op.bytes.concat` over a `bytes` operand and a `json_object` operand; `quire.op.integer.lt` over two `bytes` operands | `ill_typed`/`operator-ineligible` each | FR-322-AC-103 |
+| MA-20 | `filament.op.bytes.concat` over a `bytes` operand and a `json_object` operand; `filament.op.integer.lt` over two `bytes` operands | `ill_typed`/`operator-ineligible` each | FR-322-AC-103 |
 | MA-21 | `bytes` literal `value` `"00FF"`, `"0"`, `"0x00"`, `"00 ff"`; `json_object` literal `value` `"{\"b\":1,\"a\":1}"`, `"{\"a\": 1}"`, `"{\"a\":1.0}"`, `"{\"a\":9007199254740993}"`, `""`, `"{"`, `"{\"a\":1,\"a\":2}"` | `invalid_package`/`invalid-value` at the literal's `value`, each | FR-322-AC-103 |
 | MA-22 | `bytes` literal `value` `"00FF"` whose `type` is the `uuid` node | `ill_typed`/`operator-ineligible`, not `invalid-value` | FR-322-AC-103 |
-| MU-11 | The source declares `dimension Time; unit s : Time = 1; unit ms : Time = 1/1000 * s;`; `field` `at` on T2, native `Duration`; then `field` `at2` on T2, `typeRef` `ix://quire/unit/s`; then `field` `d` on T2, native `Duration`, compared with a `Quantity<ms>` field `m` | `at` has type `Quantity<s>` over the node of `s`, the node of `at2`; the comparison of `d` and `m` refuses `ill_typed` (FR-142's identical-unit rule) until `m` is converted to `s`, and `1500 ms` converted to `s` equals the `Duration` `3/2` | FR-322-AC-104 |
-| MU-12 | `field` `at` on a type of the admitted domain package `acme/rpc` declaring base dimension `Time` and root unit `s`, native `Duration`, the source declaring no `s`; then the source also declaring `dimension Time; unit s : Time = 1`; then the package declaring `s` typed by a dimension `Length`; then neither declaring `s` | `Quantity<s>` over the package unit's node (`ix://quire/unit/acme/rpc/s`); the same, the package's `s`, with no refusal and a distinct type from the source `s`; `ill_typed`/`operator-ineligible`; `missing_declaration`/`missing-name` | FR-322-AC-104, FR-322-AC-116 |
+| MU-11 | The source declares `dimension Time; unit s : Time = 1; unit ms : Time = 1/1000 * s;`; `field` `at` on T2, native `Duration`; then `field` `at2` on T2, `typeRef` `ix://filament/unit/s`; then `field` `d` on T2, native `Duration`, compared with a `Quantity<ms>` field `m` | `at` has type `Quantity<s>` over the node of `s`, the node of `at2`; the comparison of `d` and `m` refuses `ill_typed` (FR-142's identical-unit rule) until `m` is converted to `s`, and `1500 ms` converted to `s` equals the `Duration` `3/2` | FR-322-AC-104 |
+| MU-12 | `field` `at` on a type of the admitted domain package `acme/rpc` declaring base dimension `Time` and root unit `s`, native `Duration`, the source declaring no `s`; then the source also declaring `dimension Time; unit s : Time = 1`; then the package declaring `s` typed by a dimension `Length`; then neither declaring `s` | `Quantity<s>` over the package unit's node (`ix://filament/unit/acme/rpc/s`); the same, the package's `s`, with no refusal and a distinct type from the source `s`; `ill_typed`/`operator-ineligible`; `missing_declaration`/`missing-name` | FR-322-AC-104, FR-322-AC-116 |
 | MU-14 | the unit of compilation declaring `dimension Time; unit s : Time = 1; dimension Speed = R::Time ^ -1; unit tenth : R::Time = 1/10 * R::s;` with `acme/rpc` (alias `R`) and `acme/flow` (alias `F`) each declaring base dimension `Time` and root unit `s`; read the unit graph | Three `scalar_type`/`dimension` nodes named `Time` with pairwise distinct node ids (one under a `SourceOwner`, two under the `ModelOwner`s `acme/rpc` and `acme/flow`, the package nodes carrying no `declaration` and a `node_id.path` `["scalar_type", "dimension", <its FCD identity>]`); each package `s` depends on its own `Time`; `Speed` is self-typed with the `acme/rpc` `Time` key at exponent `-1` as its one term; `tenth` is typed by the `acme/rpc` `Time` and targets the `acme/rpc` `s`; no `ambiguous_declaration`; the package is admitted | FR-322-AC-105 |
-| MU-15 | `field` `a` on T2 typed `ix://quire/unit/acme/rpc/s` and `field` `b` typed `ix://quire/unit/acme/flow/s`, beside the source `s` of MU-14 | `Call/a` has type `Quantity<R::s>` over the `acme/rpc` unit node and `Call/b` has type `Quantity<F::s>` over the `acme/flow` unit node, two distinct `scalar_type`/`unit` nodes typed by two distinct dimension nodes; no `ambiguous_declaration` | FR-322-AC-105 |
+| MU-15 | `field` `a` on T2 typed `ix://filament/unit/acme/rpc/s` and `field` `b` typed `ix://filament/unit/acme/flow/s`, beside the source `s` of MU-14 | `Call/a` has type `Quantity<R::s>` over the `acme/rpc` unit node and `Call/b` has type `Quantity<F::s>` over the `acme/flow` unit node, two distinct `scalar_type`/`unit` nodes typed by two distinct dimension nodes; no `ambiguous_declaration` | FR-322-AC-105 |
 | MU-16 | The document of FR-322-AC-106: `Call` with clock field `x` and optional clock field `w`, `Timer` with clock field `x` and data field `n` held by field `t`, operation `reset` with a `Clock` parameter `c`, operation `clk` with a `Clock` result; `field` members `x`, `t`, `w` resolved, then a `field` application over `x`, over `t.x` and over `w` used as a value, then the `Timer` record node read | The members resolve; `w` is `Option<Clock>`; each value-position application `invalid_timed_model`/`clock-read-outside-constraint`; the `Timer` node lists `n` only and no node stands for `x`, `t.x`, `w`, `c` or the result of `clk` | FR-322-AC-106 |
-| MU-17 | T2's package with alias `D` (`target` `ix://quire/unit/acme/rpc/ms`), a sequence type with that `items`, a map type with `keys` `ix://quire/native/Text`, that `values` and `bound` `{lower: 0}`, and a field `d` typed `D` | `d` is `Quantity<M::ms>`; the sequence `Sequence<Quantity<M::ms>>`; the map `Map<Text, Quantity<M::ms>>`; one `scalar_type`/`unit` node for `ms` and no node for `D`, the sequence or the map | FR-322-AC-107 |
+| MU-17 | T2's package with alias `D` (`target` `ix://filament/unit/acme/rpc/ms`), a sequence type with that `items`, a map type with `keys` `ix://filament/native/Text`, that `values` and `bound` `{lower: 0}`, and a field `d` typed `D` | `d` is `Quantity<M::ms>`; the sequence `Sequence<Quantity<M::ms>>`; the map `Map<Text, Quantity<M::ms>>`; one `scalar_type`/`unit` node for `ms` and no node for `D`, the sequence or the map | FR-322-AC-107 |
 | MU-18 | The document of FR-322-AC-109: `Call` with `s` (`Clock`, `{0, 3, true, false}`), `b` (`Clock`, `{0, 3, false, false}`), `ts` (`Timer`, `{0, 3, true, false}`), a sequence type `CS` over `Clock` and a map type `CM` over `Clock` (`keys` `Text`, `bound` `{lower: 0}`); `s`, `b`, `ts` read as members, then a `field` application over each in a value position, then a clock constraint over `ts`'s elements; the same document with `Timer` held at `{1, 1}` and at `{0, 3, false, true}`; the same document with the maximum of `s` changed to `4` | `s`, `b`, `CS`, `CM` have no node; `ts` is the `collection_bounds` node over the sequence node over the `Timer` node listing `n` only; each value-position application `invalid_timed_model`/`clock-read-outside-constraint` and the constraint none; the `Timer` node is the same node in all three runs; the maximum change gives a different package identity | FR-322-AC-109, FR-322-AC-110 |
 | MU-19 | `field` `a` on a type of `acme/rpc` (base dimension `Time`, root `s`, `min` of scale 60 to `s`), native `Duration`; `field` `b` on a type of the unit of compilation, native `Duration`, the source declaring `dimension Time; unit s : Time = 1`; then `a` compared with `b` in an equality | `a` is `Quantity<s>` over the package unit's node and `b` over the source unit's node; the comparison refuses `ill_typed` (two distinct units, FR-142) | FR-322-AC-116 |
 | MU-20 | `field` `a` on a type of a package declaring `Time` with root `sec` and `s` of scale 60 to `sec`; the same with `s` of scale 1 and offset 5 to its root; the same with `s` reaching the root through `t` (scale 60 from `s` to `t`, scale 1/60 from `t` to the root); the same with the root `s` itself | `ill_typed`/`operator-ineligible`; `ill_typed`/`operator-ineligible`; admitted as `Quantity<s>`; admitted as `Quantity<s>` | FR-322-AC-104, FR-322-AC-116 |
@@ -227,10 +227,10 @@ process or state machine.
 | MU-30 | MU-25's (`clock`, `flow`) with the `flow` operand written as a plain `NodeRef` of package `acme/flow` (`XP-14`) | `invalid_semantic_graph` at the second operand: a foreign dimension is named only as a package operand | FR-322-AC-299 |
 | MU-31 | The carried quantity nodes of [`quantity-carrier-vectors.json`](../../proposals/checked-package-v2/quantity-carrier-vectors.json) over the unit `m`: `Decimal[-100, 100; 2, 2; exact]` (`CQ-W01`), `Int[-2, 2]` (`CQ-W02`) and `Int[-2, 2; nearest-even]` (`CQ-W03`); the last two compared (`CQ-W04`) | Admitted: each is self-typed, of family `quantity`, with the path of "Derived type forms and forwarding"; the `exact` and `nearest-even` integer nodes are two nodes | FR-322-AC-301 |
 | MU-32 | The carried quantity of `MU-31` with, in turn, a dimension node as its unit (`CQ-W05`), a `rational` carrier (`CQ-W06`), the unbounded `decimal` carrier (`CQ-W07`) and a `rounding` that differs from a decimal carrier's own (`CQ-W08`) | Each `invalid_package`/`invalid-derived-shape` at the node (`RM-CQ-UNIT`, `RM-CQ-CARRIER`, `RM-CQ-MODE`) | FR-322-AC-301 |
-| MU-33 | `quire.op.quantity.convert` of a quantity of unit `in` into the `MU-31` decimal node with `mode` `exact` (`CQ-W09`), into its `nearest-even` twin with `nearest-even` (`CQ-W10`), then the twin with `exact` (`CQ-W11`) and the `exact` node with a `null` mode (`CQ-W12`), and a carried quantity operand into the `exact` node (`CQ-W15`) | The first two and `CQ-W15` admitted; `CQ-W11` and `CQ-W12` `invalid_package`/`operation-mode-type-mismatch` at the application | FR-322-AC-302 |
-| MU-34 | `MU-33`'s conversion into a carried quantity over the time unit `s` (`CQ-W13`), and `quire.op.quantity.add` over two carried quantity operands (`CQ-W14`) | Each `ill_typed`/`operator-ineligible` at the application | FR-322-AC-302 |
+| MU-33 | `filament.op.quantity.convert` of a quantity of unit `in` into the `MU-31` decimal node with `mode` `exact` (`CQ-W09`), into its `nearest-even` twin with `nearest-even` (`CQ-W10`), then the twin with `exact` (`CQ-W11`) and the `exact` node with a `null` mode (`CQ-W12`), and a carried quantity operand into the `exact` node (`CQ-W15`) | The first two and `CQ-W15` admitted; `CQ-W11` and `CQ-W12` `invalid_package`/`operation-mode-type-mismatch` at the application | FR-322-AC-302 |
+| MU-34 | `MU-33`'s conversion into a carried quantity over the time unit `s` (`CQ-W13`), and `filament.op.quantity.add` over two carried quantity operands (`CQ-W14`) | Each `ill_typed`/`operator-ineligible` at the application | FR-322-AC-302 |
 | MU-35 | `quantity.convert` to a bounded quantity whose exact result is outside its inclusive interval (`BQ-09`) | `rational_out_of_domain`/`outside-domain` at `/semantic_graph/nodes/{n}/body/result_type`; `expected` is `Quantity<ix://acme/rpc/unit/m>[-1/1, 1/1]`, with no converted magnitude | FR-142-AC-32, FR-322-AC-384, FR-271, FR-272 |
-| KS-01 | Equality of two `Bytes` values `00ff` and `00ff`, then `00ff` and `00fe`, `00ff` and `00ff00`, `` (empty) and `00`; `quire.op.bytes.length` of `00ff00` and of the empty sequence; `quire.op.bytes.concat` of `00ff` and `01` | `true`, `false`, `false`, `false`; `3` and `0`; `00ff01` | FR-149-AC-23, FR-322-AC-103 |
+| KS-01 | Equality of two `Bytes` values `00ff` and `00ff`, then `00ff` and `00fe`, `00ff` and `00ff00`, `` (empty) and `00`; `filament.op.bytes.length` of `00ff00` and of the empty sequence; `filament.op.bytes.concat` of `00ff` and `01` | `true`, `false`, `false`, `false`; `3` and `0`; `00ff01` | FR-149-AC-23, FR-322-AC-103 |
 | KS-02 | Equality of `{"a":1,"b":[true,null]}` with itself, with `{"a":1,"b":[null,true]}`, with `{"a":2,"b":[true,null]}`, with `{"a":1}`, with `{"a":1,"b":[true,null],"c":{}}`; `{}` with `{}`; `[]` with `{}`; `3` with `3`; `null` with `{}` | `true`, `false`, `false`, `false`, `false`; `true`; `false`; `true`; `false` | FR-149-AC-23 |
 | KS-03 | `Duration` `3/2` against `Duration` `3/2`, against `Duration` `2`, against the quantity `3/2 s`, and against `1500 ms` unconverted and then converted to `s` | `true`, `false`, `true`; the unconverted comparison `ill_typed` (FR-142), the converted `true` | FR-149-AC-23, FR-322-AC-104 |
 | KS-04 | `Bytes` against `JsonObject`, `Bytes` against `String`, `JsonObject` against `Boolean`, `UUID` against `Bytes` in an equality | `ill_typed`/`type-mismatch` before an equality charge, no Boolean | FR-149-AC-24 |
@@ -269,7 +269,7 @@ process or state machine.
 | MS-03 | A document with `OrderTotal`'s upper bound changed to 8, supplied under the root's identity, identity equal | Passes the selection admission checks: the reader compares identity only | FR-322-AC-32 |
 | MS-05 | Withdrawn: it selected by a recorded version, and selection compares identity only. | Withdrawn |
 | MS-06 | The selection names identity `acme/invoices` | `invalid_model_binding`/`wrong-model-selection` | FR-322-AC-32 |
-| MS-07 | The selected document with `dimensions` `[Time (base), Rate (terms [{Time, "-1"}])]`, `units` `[s (root of Time), ms (target s, scale 1/1000)]` and a clock field `Order/x` typed `ix://quire/native/Clock` with the clock field shape, selected; then the same document with `dimensions` and `units` removed, selected | The first read holds the dimension nodes `Time` then `Rate`, the unit nodes `s` then `ms` and the clock field `Order/x`, in authored order; the second read holds no dimension and no unit node and is otherwise equal | FR-322-AC-98 |
+| MS-07 | The selected document with `dimensions` `[Time (base), Rate (terms [{Time, "-1"}])]`, `units` `[s (root of Time), ms (target s, scale 1/1000)]` and a clock field `Order/x` typed `ix://filament/native/Clock` with the clock field shape, selected; then the same document with `dimensions` and `units` removed, selected | The first read holds the dimension nodes `Time` then `Rate`, the unit nodes `s` then `ms` and the clock field `Order/x`, in authored order; the second read holds no dimension and no unit node and is otherwise equal | FR-322-AC-98 |
 | MS-08 | MS-07's first document with unit `ms`'s `scale` set to `0`, selected | `invalid_model_binding`/`malformed-declaration` at stage `package_read`, naming `ix://acme/orders/unit/ms` and `Unit.scale` | FR-322-AC-98 |
 | FF-01 | Frame field entry `(M1, "total")` | Resolves `Order/total` | FR-340-AC-13 |
 | FF-02 | Frame field entry `(M5, "total")` | Resolves the inherited `Order/total` | FR-340-AC-13 |

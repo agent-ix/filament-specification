@@ -1,5 +1,5 @@
 {
-  "version": "quire.checked-package-option-value-cases/v1",
+  "version": "filament.checked-package-option-value-cases/v1",
   "fixture": "positive-integer-literal-references.json",
   "positive": [
     {

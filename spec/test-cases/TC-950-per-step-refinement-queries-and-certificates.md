@@ -3,9 +3,9 @@ id: TC-950
 title: "Per-step refinement queries and certificates"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-468
+  - target: ix://agent-ix/filament-specification/FR-468
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: verifies
 ---
 

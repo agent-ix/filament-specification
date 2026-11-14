@@ -3,9 +3,9 @@ id: TC-350
 title: "Probabilistic declarations admission"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-405
+  - target: ix://agent-ix/filament-specification/FR-405
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-272
+  - target: ix://agent-ix/filament-specification/FR-272
     type: verifies
 ---
 

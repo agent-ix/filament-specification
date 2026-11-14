@@ -4,11 +4,11 @@ title: "History boundary kind vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-092
+  - target: ix://agent-ix/filament-specification/FR-092
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-257
+  - target: ix://agent-ix/filament-specification/FR-257
     type: references
 ---
 # FR-293: History boundary kind vocabulary
@@ -61,4 +61,4 @@ missing, evicted or unmatched predecessor remains missing history.
 
 ## Status
 
-Proposed shared ruling for `quire-specification#40`.
+Proposed shared ruling for `filament-specification#40`.

@@ -124,16 +124,16 @@
       "id": "BQ-08",
       "description": "add, convert and lt each accept an operand/result typed by the bounded quantity form when existing dimensional and exact-conversion rules hold",
       "operations": [
-        "quire.op.quantity.add",
-        "quire.op.quantity.convert",
-        "quire.op.quantity.lt"
+        "filament.op.quantity.add",
+        "filament.op.quantity.convert",
+        "filament.op.quantity.lt"
       ],
       "expected": "admitted"
     },
     {
       "id": "BQ-09",
       "description": "quantity.convert result outside the inclusive target bounds",
-      "operation": "quire.op.quantity.convert",
+      "operation": "filament.op.quantity.convert",
       "target": {
         "unit_identity": "ix://acme/rpc/unit/m",
         "min": "-1/1",
@@ -151,7 +151,7 @@
     {
       "id": "BQ-10",
       "description": "quantity.lt operands with dimensionally incompatible units",
-      "operation": "quire.op.quantity.lt",
+      "operation": "filament.op.quantity.lt",
       "expected": {
         "code": "ill_typed",
         "cause": "operator-ineligible"

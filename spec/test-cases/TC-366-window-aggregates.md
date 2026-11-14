@@ -3,7 +3,7 @@ id: TC-366
 title: "Window aggregates in monitors"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-414
+  - target: ix://agent-ix/filament-specification/FR-414
     type: verifies
 ---
 

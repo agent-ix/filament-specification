@@ -3,7 +3,7 @@ id: TC-181
 title: "Recursive function termination profiles"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: verifies
 ---
 

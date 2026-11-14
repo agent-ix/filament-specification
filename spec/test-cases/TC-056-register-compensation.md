@@ -3,7 +3,7 @@ id: TC-056
 title: "Register compensation after effect success"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-056
+  - target: ix://agent-ix/filament-specification/FR-056
     type: verifies
 ---
 ## Description

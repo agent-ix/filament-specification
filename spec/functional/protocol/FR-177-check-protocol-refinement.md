@@ -3,17 +3,17 @@ id: FR-177
 title: "Check protocol implementation refinement"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-060
+  - target: ix://agent-ix/filament-specification/FR-060
     type: references
-  - target: ix://agent-ix/quire-specification/AD-007
+  - target: ix://agent-ix/filament-specification/AD-007
     type: references
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: references
-  - target: ix://agent-ix/quire-specification/FR-360
+  - target: ix://agent-ix/filament-specification/FR-360
     type: references
 ---
 
@@ -113,7 +113,7 @@ states:
 - [FR-379](../analysis/FR-379-report-and-replay-refinement-counterexamples.md)
   owns the verdict table and [FR-360](../../objects/temporal/FR-360-infinite-trace-result-disposition.md)
   the result vocabulary that this requirement's outputs are read through.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.
@@ -123,5 +123,5 @@ states:
 
 ## References
 
-- Design: quire-spec-language ADR-020 (MC-1, QS-8, RU-2).
+- Design: filament-spec-language ADR-020 (MC-1, QS-8, RU-2).
 - Tickets: Linear STD-133; paired QSL-367.

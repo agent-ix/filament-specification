@@ -4,9 +4,9 @@ title: "Reproduce results deterministically"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-132
+  - target: ix://agent-ix/filament-specification/FR-132
     type: constrains
-  - target: ix://agent-ix/quire-specification/FR-311
+  - target: ix://agent-ix/filament-specification/FR-311
     type: constrains
 ---
 

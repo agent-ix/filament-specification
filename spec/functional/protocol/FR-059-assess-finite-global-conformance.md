@@ -3,19 +3,19 @@ id: FR-059
 title: "Assess finite global protocol conformance"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-053
+  - target: ix://agent-ix/filament-specification/FR-053
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-054
+  - target: ix://agent-ix/filament-specification/FR-054
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-058
+  - target: ix://agent-ix/filament-specification/FR-058
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-240
+  - target: ix://agent-ix/filament-specification/FR-240
     type: references
-  - target: ix://agent-ix/quire-specification/FR-247
+  - target: ix://agent-ix/filament-specification/FR-247
     type: references
 ---
 ## Description

@@ -3,7 +3,7 @@ id: TC-941
 title: "Resolve a variant type name and a case literal"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-208
+  - target: ix://agent-ix/filament-specification/FR-208
     type: verifies
 ---
 # TC-941: Resolve a variant type name and a case literal

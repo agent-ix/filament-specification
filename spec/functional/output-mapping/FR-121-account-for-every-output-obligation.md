@@ -3,13 +3,13 @@ id: FR-121
 title: "Account for every output obligation"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-116
+  - target: ix://agent-ix/filament-specification/FR-116
     type: references
-  - target: ix://agent-ix/quire-specification/FR-269
+  - target: ix://agent-ix/filament-specification/FR-269
     type: references
-  - target: ix://agent-ix/quire-specification/FR-298
+  - target: ix://agent-ix/filament-specification/FR-298
     type: references
-  - target: ix://agent-ix/quire-contract-ir/FR-033
+  - target: ix://agent-ix/filament-contract-ir/FR-033
     type: references
 ---
 ## Description

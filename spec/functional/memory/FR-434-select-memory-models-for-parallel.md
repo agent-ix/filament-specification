@@ -3,21 +3,21 @@ id: FR-434
 title: "Select the memory model of each parallel from source and request"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-228
+  - target: ix://agent-ix/filament-specification/FR-228
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-425
+  - target: ix://agent-ix/filament-specification/FR-425
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-436
+  - target: ix://agent-ix/filament-specification/FR-436
     type: references
-  - target: ix://agent-ix/quire-specification/FR-437
+  - target: ix://agent-ix/filament-specification/FR-437
     type: references
 ---
 
@@ -46,7 +46,7 @@ conflicting default or an invalid selection.
 ### Source default
 
 A `parallel` control declares its default memory model after its name, by the
-[shared grammar](../../../proposals/quire-v1/shared-grammar.md)'s `memory-clause` production: `parallel Name memory M { … }
+[shared grammar](../../../proposals/filament-v1/shared-grammar.md)'s `memory-clause` production: `parallel Name memory M { … }
 join all [ … ];`, with `M` one of `sc`, `tso` and `ra`. A `parallel` with no
 `memory` clause has default `sc`, the interleaving meaning of
 [FR-052](../protocol/FR-052-represent-bounded-control.md). `tso` and `ra` are
@@ -143,11 +143,11 @@ point.
   contributions act on.
 - [FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md) owns
   the request envelope that carries the `memory` member.
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns the
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns the
   `parallel` and `memory-clause` productions.
 
 ## References
 
-- Design: quire-spec-language ADR-025 MM-1 to MM-5, SC-1 and RU-2;
+- Design: filament-spec-language ADR-025 MM-1 to MM-5, SC-1 and RU-2;
   ADR-027 SE-1, SE-2 and SE-4.
 - Tickets: Linear STD-138; paired QSL-372.

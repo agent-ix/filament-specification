@@ -4,9 +4,9 @@ title: "Immutable evidence intake record"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/interface_020
+  - target: ix://agent-ix/filament-specification/interface_020
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-310
+  - target: ix://agent-ix/filament-specification/FR-310
     type: references
 ---
 
@@ -35,7 +35,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| contract_version | exactly `quire.evidence-intake/v1` |
+| contract_version | exactly `filament.evidence-intake/v1` |
 | subjects | record: requirement, semantic, implementation, run identities |
 | results | list of result references; multiplicity not stated in source |
 | artifacts | record: retained bytes, media type, availability; multiplicity not stated in source |
@@ -44,7 +44,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | limitations | record: missing, redacted, non-replayable material and claim impact; multiplicity not stated in source |
 
 
-- `contract_version` — exactly `quire.evidence-intake/v1`.
+- `contract_version` — exactly `filament.evidence-intake/v1`.
 - `evidence_id` — the evidence's identifier, assigned at intake and compared as an exact string.
 - `subjects` — exact requirement, semantic, implementation and run identities.
 - `results` — immutable native/method/qualification result references.

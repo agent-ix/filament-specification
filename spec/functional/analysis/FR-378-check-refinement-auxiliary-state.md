@@ -3,13 +3,13 @@ id: FR-378
 title: "Check refinement with history fields and hidden abstract fields"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-375
+  - target: ix://agent-ix/filament-specification/FR-375
     type: references
-  - target: ix://agent-ix/quire-specification/FR-377
+  - target: ix://agent-ix/filament-specification/FR-377
     type: references
-  - target: ix://agent-ix/quire-specification/FR-379
+  - target: ix://agent-ix/filament-specification/FR-379
     type: references
 ---
 
@@ -123,6 +123,6 @@ abstract state keys, sorted ascending by their JCS bytes.
 
 ## References
 
-- Design: quire-spec-language ADR-020 (AX-1 to AX-5, QS-3, RU-4).
+- Design: filament-spec-language ADR-020 (AX-1 to AX-5, QS-3, RU-4).
 - Tickets: Linear STD-133; paired QSL-367. Liveness through hidden fields is
   explored later in Linear QSL-380.

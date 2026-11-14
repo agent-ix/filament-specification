@@ -3,9 +3,9 @@ id: FR-182
 title: "Drive authorized idempotent workflow effects"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-012
+  - target: ix://agent-ix/filament-specification/US-012
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-008
+  - target: ix://agent-ix/filament-specification/AD-008
     type: references
 ---
 
@@ -56,7 +56,7 @@ adapter directly.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

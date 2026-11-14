@@ -4,13 +4,13 @@ title: "Declared object identity"
 type: FR
 object: value_object
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-009
+  - target: ix://agent-ix/filament-specification/FR-009
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-043
+  - target: ix://agent-ix/filament-specification/FR-043
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: references
-  - target: ix://agent-ix/quire-specification/FR-151
+  - target: ix://agent-ix/filament-specification/FR-151
     type: references
 ---
 # FR-204: Declared object identity
@@ -39,12 +39,12 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 
 - **universe** (identity component) — the declared universe the object belongs
-  to. Under `quire.model.complete/v1` it is the `quire.model.object-universe/v2`
+  to. Under `filament.model.complete/v1` it is the `filament.model.object-universe/v2`
   identity of the object type's generalization component, not a population. Identity comparison across pre and post states is permitted only within
   one declared universe
   ([FR-009](../../functional/foundation/FR-009-preserve-object-identity.md)).
 - **type** (identity component) — the declared type of the object (FR-009).
-  Under the selected `quire.model.complete/v1` definition it is the effective
+  Under the selected `filament.model.complete/v1` definition it is the effective
   declaration identity of the object's most-specific type, as supplied by the
   population member's `typeIdentity`, never a static supertype through which
   the object is viewed. Which population a `creates`/`deletes` entry naming a
@@ -100,7 +100,7 @@ same object compared across pre and post of one universe compares equal
   universe/type/object triple and the refusal.
 - [FR-043](../../functional/foundation/FR-043-evaluate-finite-graph-relations.md) evaluates
   identity and reachability in explicit finite graphs.
-- [FR-200](FR-200-quire-assessment-domain.md) supplies the identity discipline.
+- [FR-200](FR-200-filament-assessment-domain.md) supplies the identity discipline.
 - [FR-013](../../functional/foundation/FR-013-validate-operation-frames.md) owns the
   frame-grant enforcement this subtype-inclusive population rule serves.
 - [FR-151](../../functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md)

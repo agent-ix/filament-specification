@@ -3,9 +3,9 @@ id: TC-115
 title: "Settle inclusive deadlines from valid progress"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-094
+  - target: ix://agent-ix/filament-specification/FR-094
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-289
+  - target: ix://agent-ix/filament-specification/FR-289
     type: verifies
 ---
 ## Description

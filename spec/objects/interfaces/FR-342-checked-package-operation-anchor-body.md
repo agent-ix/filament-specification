@@ -3,15 +3,15 @@ id: FR-342
 title: "Checked-package operation anchor body"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: references
-  - target: ix://agent-ix/quire-specification/FR-341
+  - target: ix://agent-ix/filament-specification/FR-341
     type: references
-  - target: ix://agent-ix/quire-specification/AD-006
+  - target: ix://agent-ix/filament-specification/AD-006
     type: references
-  - target: ix://agent-ix/quire-specification/FR-047
+  - target: ix://agent-ix/filament-specification/FR-047
     type: references
 ---
 
@@ -19,7 +19,7 @@ relationships:
 
 ## Description
 
-When a `quire.checked-semantic-graph/v2` node has `node_tag: "state"` and
+When a `filament.checked-semantic-graph/v2` node has `node_tag: "state"` and
 `semantic_form: "operation_anchor"`, the producer SHALL encode its `body` as
 an aggregate of three or four bindings, in this order: `context`, the
 object type, process or state machine declaring the operation; `operation`,
@@ -47,7 +47,7 @@ below.
   the body, so it participates in the node's identity (two anchors differing in execution point are distinct nodes).
 - **semantic_type** — `C`, the context's node. A reference to the anchor
   therefore has family `object`, which is the anchor position of
-  `quire.op.state.clause`
+  `filament.op.state.clause`
   ([FR-341](FR-341-checked-package-state-clause-body.md)).
 - **occurrences** — every occurrence has role `anchor`, one per clause,
   protocol attempt or `state`/`transition` node

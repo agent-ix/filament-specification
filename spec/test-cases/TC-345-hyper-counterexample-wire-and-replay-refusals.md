@@ -3,11 +3,11 @@ id: TC-345
 title: "Hyper counterexample wire and replay refusals"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-400
+  - target: ix://agent-ix/filament-specification/FR-400
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-401
+  - target: ix://agent-ix/filament-specification/FR-401
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-399
+  - target: ix://agent-ix/filament-specification/FR-399
     type: verifies
 ---
 

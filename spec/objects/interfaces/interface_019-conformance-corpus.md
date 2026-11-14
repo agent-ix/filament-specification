@@ -3,7 +3,7 @@ id: interface_019
 title: "I19 independent conformance corpus and result"
 type: interface
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-336
+  - target: ix://agent-ix/filament-specification/FR-336
     type: references
 ---
 
@@ -25,7 +25,7 @@ operations:
     inputs: [corpus, qualification subject]
     output: per-vector and per-capability results
     semantics: covers every inventory capability with positive boundary and refusal vectors
-    corpus_wire: quire.conformance-corpus/v1
+    corpus_wire: filament.conformance-corpus/v1
     capability_entries: coverage.primary
     vector_members: [id, capability_id, class, subject, applicability, input, expected]
     input_file_kinds: [source, model, input, call, object-context, population, replay-request, bytes]

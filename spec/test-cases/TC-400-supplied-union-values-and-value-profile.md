@@ -3,7 +3,7 @@ id: TC-400
 title: "Supplied union values and the value profile"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-143
+  - target: ix://agent-ix/filament-specification/FR-143
     type: verifies
 ---
 
@@ -12,7 +12,7 @@ relationships:
 ## Description
 
 Validate supplied union values before evaluation, and show that a union-bearing
-package is admitted under `quire.value.complete/v1` with the same selection as
+package is admitted under `filament.value.complete/v1` with the same selection as
 a record-only package.
 
 ## Test Procedure
@@ -29,7 +29,7 @@ and call `area` with each supplied argument. Then compare package selections.
 | P04 | `Shape`'s key, `Rect`'s member key, payload `[2]` | the same refusal |
 | P05 | `Shape`'s key, `Circle`'s member key, payload `["x"]` | the same refusal |
 | P06 | a declaration key that is not a key of the evaluating package | the same refusal |
-| P07 | a union package selecting `quire.value.complete/v1` with exactly the always-selected definitions and no trigger; the same package with `Shape` replaced by a record and `area` by a record function | both admitted with equal selections |
+| P07 | a union package selecting `filament.value.complete/v1` with exactly the always-selected definitions and no trigger; the same package with `Shape` replaced by a record and `area` by a record function | both admitted with equal selections |
 
 ## Expected Results
 

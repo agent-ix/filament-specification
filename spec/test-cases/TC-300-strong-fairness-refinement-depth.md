@@ -3,9 +3,9 @@ id: TC-300
 title: "Strong-fairness refinement past one level"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-365
+  - target: ix://agent-ix/filament-specification/FR-365
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-362
+  - target: ix://agent-ix/filament-specification/FR-362
     type: verifies
 ---
 
@@ -32,7 +32,7 @@ initial `pos = 0`, and these operations, each with frame `modifies [pos]`:
 | `reset` | `pos = 3` | `pos = 0` |
 
 State 4 is terminal. Check `always eventually holds(l.pos = 4)` under
-`quire.temporal.infinite-trace/v1`:
+`filament.temporal.infinite-trace/v1`:
 
 1. with `fair strong Lad::L::a; fair strong Lad::L::b;`
 2. with `fair weak Lad::L::a; fair weak Lad::L::b;`

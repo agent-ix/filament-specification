@@ -3,11 +3,11 @@ id: FR-171
 title: "Evaluate joins, proved loops and dynamic roles"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: references
-  - target: ix://agent-ix/quire-specification/AD-007
+  - target: ix://agent-ix/filament-specification/AD-007
     type: references
 ---
 
@@ -64,7 +64,7 @@ Population closure and a finite upper bound are separate premises.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

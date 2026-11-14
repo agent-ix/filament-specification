@@ -3,21 +3,21 @@ id: FR-366
 title: "Declare intended terminal states and check deadlock freedom"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-361
+  - target: ix://agent-ix/filament-specification/FR-361
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: references
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: references
-  - target: ix://agent-ix/quire-specification/FR-363
+  - target: ix://agent-ix/filament-specification/FR-363
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-364
+  - target: ix://agent-ix/filament-specification/FR-364
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-322
+  - target: ix://agent-ix/filament-specification/FR-322
     type: references
 ---
 
@@ -171,5 +171,5 @@ A `terminal` declaration changes only the deadlock-freedom item.
 
 ## References
 
-- quire-spec-language ADR-018 §10 (DL-1 to DL-7), RU-3 and QS-12; Linear
+- filament-spec-language ADR-018 §10 (DL-1 to DL-7), RU-3 and QS-12; Linear
   STD-131 (paired with QSL-366).

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "FR-160-AC-6, FR-160-AC-7 (TC-199): counter-tick covers. A reading k covers the half-open interval [k - u, k + 1 + u) for uncertainty u (ticks): lower end closed, upper end open. `within_bound` decides `ack - req <= bound`: true when the difference's upper end is at most the bound, false when its lower end exceeds the bound or equals it and is open, else indeterminate. `definitely_before` is true when every point of a is below every point of b. QSL FR-251-AC-1 (3 ms = 3000 ticks) and RT FR-276-AC-1 hold only with this half-open cover. The reader/evaluator is QSL's and RT's; QSpec's test applies the stated endpoint rule.",
+  "note": "FR-160-AC-6, FR-160-AC-7 (TC-199): counter-tick covers. A reading k covers the half-open interval [k - u, k + 1 + u) for uncertainty u (ticks): lower end closed, upper end open. `within_bound` decides `ack - req <= bound`: true when the difference's upper end is at most the bound, false when its lower end exceeds the bound or equals it and is open, else indeterminate. `definitely_before` is true when every point of a is below every point of b. FSL FR-251-AC-1 (3 ms = 3000 ticks) and RT FR-276-AC-1 hold only with this half-open cover. The reader/evaluator is FSL's and RT's; QSpec's test applies the stated endpoint rule.",
   "cases": [
     {
       "id": "TCV-01",

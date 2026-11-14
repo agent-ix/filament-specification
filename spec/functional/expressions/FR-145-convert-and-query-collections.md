@@ -3,15 +3,15 @@ id: FR-145
 title: "Convert and query every collection kind explicitly"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: references
-  - target: ix://agent-ix/quire-specification/FR-144
+  - target: ix://agent-ix/filament-specification/FR-144
     type: references
-  - target: ix://agent-ix/quire-specification/FR-146
+  - target: ix://agent-ix/filament-specification/FR-146
     type: references
-  - target: ix://agent-ix/quire-specification/FR-149
+  - target: ix://agent-ix/filament-specification/FR-149
     type: references
 ---
 
@@ -73,7 +73,7 @@ order, and sets and bags in FR-144 canonical-key order. `forall` stops at the
 first false and `exists` at the first true; the empty cases are true and false.
 `contains(c, v)` scans in the same visiting order (a bag's distinct members
 once each) and stops at the first equal member, matching the
-[state contract](../../../proposals/quire-v1/state-contract.md)'s
+[state contract](../../../proposals/filament-v1/state-contract.md)'s
 first-equality stop; an empty `c` is false. `size`
 returns the FR-144 bound count, and `count<N>` and `sum<N>` keep the
 `state-contract` result-domain rules for every kind. `dropFirst(c)` and
@@ -202,7 +202,7 @@ materialization.
 
 ## Accounting
 
-Every form charges the `quire.value.accounting/v1` collection family. A
+Every form charges the `filament.value.accounting/v1` collection family. A
 *visit* is one `collection.visit` (one work unit) charged before the binder is
 bound to that occurrence; the body, predicate or step is then evaluated with its
 own charges. *Formation* is FR-144 construction steps 2 to 4 (membership
@@ -223,7 +223,7 @@ the accounting `integer-arithmetic` family, and Boolean `and` and `or` charge
 | `fold` | the identity expression; then a visit and step per occurrence; then an accumulator retain |
 | `reduce` | a visit of the first occurrence, which initializes the accumulator; then a visit and step per later occurrence; then an accumulator retain; an empty source reached by direct kernel evaluation charges nothing |
 | `forall`, `exists`, `count` | a visit and predicate per occurrence until a short-circuit stops the query; then a scalar retain |
-| `sum<N>` | exactly the `quire.value.accounting/v1` [collection sum schedule](../../../proposals/quire-v1/definitions/value-accounting.md#collection-sum-schedule), including the per-family addition charges and the type-pinned rounding mode |
+| `sum<N>` | exactly the `filament.value.accounting/v1` [collection sum schedule](../../../proposals/filament-v1/definitions/value-accounting.md#collection-sum-schedule), including the per-family addition charges and the type-pinned rounding mode |
 | `dropFirst` | formation of the surviving occurrences only, with no visit and no membership comparison |
 | `removeOne(c, v)` | the `contains(c, v)` scan charges for every member in scan order up to and including the first equal one, or over all members when none is equal, without that scan's scalar retain; then formation of the result occurrences, with no membership comparison because the survivors are already distinct or grouped |
 | `size` | a scalar retain only |
@@ -254,7 +254,7 @@ named charge, an unbounded source can never evaluate unmetered.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.

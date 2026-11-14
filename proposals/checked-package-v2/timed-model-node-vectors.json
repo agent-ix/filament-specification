@@ -1,5 +1,5 @@
 {
-  "version": "quire.checked-timed-model-node-vectors/v1",
+  "version": "filament.checked-timed-model-node-vectors/v1",
   "fixture": "fixtures/positive-timed-model-nodes.json",
   "node_indexes": {
     "dimension": 42,

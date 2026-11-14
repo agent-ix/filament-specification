@@ -3,39 +3,39 @@ id: FR-425
 title: "Define protocol subjects and their state keys"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-006
+  - target: ix://agent-ix/filament-specification/US-006
     type: implements
-  - target: ix://agent-ix/quire-specification/US-011
+  - target: ix://agent-ix/filament-specification/US-011
     type: implements
-  - target: ix://agent-ix/quire-specification/FR-181
+  - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-052
+  - target: ix://agent-ix/filament-specification/FR-052
     type: depends_on
-  - target: ix://agent-ix/quire-specification/FR-171
+  - target: ix://agent-ix/filament-specification/FR-171
     type: references
-  - target: ix://agent-ix/quire-specification/FR-221
+  - target: ix://agent-ix/filament-specification/FR-221
     type: references
-  - target: ix://agent-ix/quire-specification/FR-426
+  - target: ix://agent-ix/filament-specification/FR-426
     type: references
-  - target: ix://agent-ix/quire-specification/FR-427
+  - target: ix://agent-ix/filament-specification/FR-427
     type: references
-  - target: ix://agent-ix/quire-specification/FR-428
+  - target: ix://agent-ix/filament-specification/FR-428
     type: references
-  - target: ix://agent-ix/quire-specification/FR-434
+  - target: ix://agent-ix/filament-specification/FR-434
     type: references
-  - target: ix://agent-ix/quire-specification/FR-050
+  - target: ix://agent-ix/filament-specification/FR-050
     type: references
-  - target: ix://agent-ix/quire-specification/FR-466
+  - target: ix://agent-ix/filament-specification/FR-466
     type: references
-  - target: ix://agent-ix/quire-specification/FR-429
+  - target: ix://agent-ix/filament-specification/FR-429
     type: references
-  - target: ix://agent-ix/quire-specification/FR-438
+  - target: ix://agent-ix/filament-specification/FR-438
     type: references
-  - target: ix://agent-ix/quire-specification/FR-415
+  - target: ix://agent-ix/filament-specification/FR-415
     type: references
-  - target: ix://agent-ix/quire-specification/FR-368
+  - target: ix://agent-ix/filament-specification/FR-368
     type: references
-  - target: ix://agent-ix/quire-specification/FR-417
+  - target: ix://agent-ix/filament-specification/FR-417
     type: references
 ---
 
@@ -302,5 +302,5 @@ state holds the model state and no instance.
 
 ## References
 
-- Design: quire-spec-language ADR-027 PS-1 to PS-8, FO-3, AE-2, QS-1 and QS-3.
+- Design: filament-spec-language ADR-027 PS-1 to PS-8, FO-3, AE-2, QS-1 and QS-3.
 - Tickets: Linear STD-140; paired QSL-396.

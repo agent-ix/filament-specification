@@ -4,7 +4,7 @@ title: "Projection refusal code vocabulary"
 type: FR
 object: enumeration
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-062
+  - target: ix://agent-ix/filament-specification/FR-062
     type: specifies
 ---
 # FR-283: Projection refusal code vocabulary
@@ -14,7 +14,7 @@ relationships:
 When a projection adapter refuses to map a protocol result to portable verification, the adapter SHALL emit exactly one code from this closed vocabulary rather than an English explanation.
 
 This vocabulary is selected as
-`quire.protocol.projection-refusal/v1-draft.1`. Its kebab-case members are exact
+`filament.protocol.projection-refusal/v1-draft.1`. Its kebab-case members are exact
 values in that catalog, not aliases for native producer codes in another catalog.
 
 ## Values
@@ -39,7 +39,7 @@ case convention or cross-catalog spelling alias.
   compared componentwise as an exact string.
 - **Key** — the label itself, matched exactly. Hyphenated and underscored
   spellings stay exact and are not normalized aliases
-  ([native diagnostics catalog](../../../proposals/quire-v1/definitions/native-diagnostics.md)).
+  ([native diagnostics catalog](../../../proposals/filament-v1/definitions/native-diagnostics.md)).
   Message text, locale, formatting and rendering never participate: FR-047-AC-1
   requires that changing or localizing human-readable messages leaves the typed
   failure's classification unchanged.

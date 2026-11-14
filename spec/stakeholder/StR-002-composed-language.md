@@ -3,18 +3,18 @@ id: StR-002
 title: "Express state, temporal and choreography obligations together"
 type: StR
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: satisfied_by
-  - target: ix://agent-ix/quire-specification/FR-035
+  - target: ix://agent-ix/filament-specification/FR-035
     type: satisfied_by
-  - target: ix://agent-ix/quire-specification/FR-041
+  - target: ix://agent-ix/filament-specification/FR-041
     type: satisfied_by
-  - target: ix://agent-ix/quire-specification/FR-020
+  - target: ix://agent-ix/filament-specification/FR-020
     type: satisfied_by
 ---
 ## Stakeholder Need
 
-Specification authors require that native Quire V1 shall express, execute and
+Specification authors require that native Filament V1 shall express, execute and
 analyze the complete declared language capability inventory under one source
 authority while preserving exact meaning across runtimes, monitors, proof
 backends, mappings, tools and evidence consumers.
@@ -38,5 +38,5 @@ or backend slice must not redefine, narrow or defer the intended product.
 
 ## Dependencies
 
-- [V1 capability matrix](../../proposals/quire-v1/capabilities.md).
+- [V1 capability matrix](../../proposals/filament-v1/capabilities.md).
 - [Existing state need](StR-001-native-assessment-trust.md).

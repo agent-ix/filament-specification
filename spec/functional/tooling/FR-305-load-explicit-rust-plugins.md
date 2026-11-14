@@ -3,15 +3,15 @@ id: FR-305
 title: "Load explicit Rust plugins"
 type: FR
 relationships:
-  - target: ix://agent-ix/quire-specification/US-010
+  - target: ix://agent-ix/filament-specification/US-010
     type: implements
-  - target: ix://agent-ix/quire-specification/AD-004
+  - target: ix://agent-ix/filament-specification/AD-004
     type: references
-  - target: ix://agent-ix/quire-specification/FR-462
+  - target: ix://agent-ix/filament-specification/FR-462
     type: references
-  - target: ix://agent-ix/quire-specification/FR-331
+  - target: ix://agent-ix/filament-specification/FR-331
     type: references
-  - target: ix://agent-ix/quire-specification/FR-290
+  - target: ix://agent-ix/filament-specification/FR-290
     type: references
 ---
 
@@ -37,12 +37,12 @@ tool-failure or `incomplete` settlement of each affected item.
 
 A plugin is a third-party provider: either a compile-time Rust
 implementation of the provider trait, linked into the binary, or an executable that runs as its own
-operating-system process and speaks the `quire.plugin-wire/v1` wire
+operating-system process and speaks the `filament.plugin-wire/v1` wire
 ([FR-462](FR-462-speak-the-plugin-wire.md)). The host loads no dynamic
 library. An installed plugin is a trusted program, like any program the user
 installs, and runs with the user's own authority. A first-party provider,
-one the producer runs as its own engine, such as a QSL engine or the Kani
-backend that `quire-contract-codegen` implements, registers through the same
+one the producer runs as its own engine, such as a FSL engine or the Kani
+backend that `filament-contract-codegen` implements, registers through the same
 provider boundary, linked or as a process, and is not a plugin.
 
 ## Provider boundary
@@ -85,7 +85,7 @@ provider boundary, linked or as a process, and is not a plugin.
 
 ## Dependencies
 
-- [Complete-V1 grammar](../../../proposals/quire-v1/shared-grammar.md) owns every
+- [Complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md) owns every
   source form used by this requirement.
 - [Subsystem and interface index](../../subsystems/index.md) identifies the
   typed producer/consumer boundary and dependency direction.
@@ -95,4 +95,4 @@ provider boundary, linked or as a process, and is not a plugin.
 
 ## References
 
-- Linear STD-141; QSL ADR-029 PL-1, PL-7, PV-1, RU-4.
+- Linear STD-141; FSL ADR-029 PL-1, PL-7, PV-1, RU-4.

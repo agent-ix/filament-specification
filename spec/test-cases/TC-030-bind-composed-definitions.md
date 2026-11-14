@@ -3,9 +3,9 @@ id: TC-030
 title: "Bind every clause to its exact semantic definitions"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-130
+  - target: ix://agent-ix/filament-specification/FR-130
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-030
+  - target: ix://agent-ix/filament-specification/FR-030
     type: verifies
 ---
 ## Description
@@ -38,7 +38,7 @@ Apply each control independently:
 Compare complete structured static components and references. Do not use a tool-generated expected result or diagnostic English
 as the oracle. Concrete typed extraction, intake and binder execution is specified by IT-010.
 
-For the [whole-package reference](../../proposals/quire-v1/definitions/package-reference.md),
+For the [whole-package reference](../../proposals/filament-v1/definitions/package-reference.md),
 use a package declaring a predicate and all three clause families. Its outer
 selection is the package interpretation and its four exact required features;
 the inner state/temporal/protocol selections remain separate. Substitute one

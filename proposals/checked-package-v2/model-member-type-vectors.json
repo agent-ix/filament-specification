@@ -1,5 +1,5 @@
 {
-  "version": "quire.model-member-type-vectors/v1",
+  "version": "filament.model-member-type-vectors/v1",
   "domain_package": {
     "identity": "acme/orders",
     "version": "1.0.0",
@@ -23,7 +23,7 @@
           },
           {
             "name": "note",
-            "typeRef": "ix://quire/native/Boolean",
+            "typeRef": "ix://filament/native/Boolean",
             "presence": "optional",
             "multiplicity": {
               "lower": "1",
@@ -35,7 +35,7 @@
           },
           {
             "name": "lines",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "0",
@@ -47,7 +47,7 @@
           },
           {
             "name": "pick",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "0",
@@ -59,7 +59,7 @@
           },
           {
             "name": "history",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "0",
@@ -83,7 +83,7 @@
           },
           {
             "name": "label",
-            "typeRef": "ix://quire/native/Text",
+            "typeRef": "ix://filament/native/Text",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -95,7 +95,7 @@
           },
           {
             "name": "tags",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "0",
@@ -107,7 +107,7 @@
           },
           {
             "name": "backlog",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -119,7 +119,7 @@
           },
           {
             "name": "floor",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -246,7 +246,7 @@
             "name": "size",
             "parameters": [],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -261,7 +261,7 @@
             "parameters": [
               {
                 "name": "n",
-                "typeRef": "ix://quire/native/Integer",
+                "typeRef": "ix://filament/native/Integer",
                 "multiplicity": {
                   "lower": "1",
                   "upper": "1",
@@ -271,7 +271,7 @@
               }
             ],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -296,7 +296,7 @@
         "fields": [
           {
             "name": "number",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -321,7 +321,7 @@
             "name": "size",
             "parameters": [],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -336,7 +336,7 @@
             "parameters": [
               {
                 "name": "m",
-                "typeRef": "ix://quire/native/Integer",
+                "typeRef": "ix://filament/native/Integer",
                 "multiplicity": {
                   "lower": "1",
                   "upper": "1",
@@ -346,7 +346,7 @@
               }
             ],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -365,7 +365,7 @@
         "fields": [
           {
             "name": "code",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -385,7 +385,7 @@
         "fields": [
           {
             "name": "code",
-            "typeRef": "ix://quire/native/Boolean",
+            "typeRef": "ix://filament/native/Boolean",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -420,7 +420,7 @@
             "name": "size",
             "parameters": [],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -442,7 +442,7 @@
             "name": "rate",
             "parameters": [],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -461,7 +461,7 @@
         "fields": [
           {
             "name": "id",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -473,7 +473,7 @@
           },
           {
             "name": "on",
-            "typeRef": "ix://quire/native/Boolean",
+            "typeRef": "ix://filament/native/Boolean",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -485,7 +485,7 @@
           },
           {
             "name": "level",
-            "typeRef": "ix://quire/native/Integer",
+            "typeRef": "ix://filament/native/Integer",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -502,7 +502,7 @@
             "parameters": [
               {
                 "name": "flag",
-                "typeRef": "ix://quire/native/Boolean",
+                "typeRef": "ix://filament/native/Boolean",
                 "multiplicity": {
                   "lower": "1",
                   "upper": "1",
@@ -520,27 +520,27 @@
     "value_types": [
       {
         "node": "ix://acme/orders/OrderTotal",
-        "native": "ix://quire/native/Integer",
+        "native": "ix://filament/native/Integer",
         "lower": "0",
         "upper": "9"
       },
       {
         "node": "ix://acme/orders/Code",
-        "native": "ix://quire/native/Text",
+        "native": "ix://filament/native/Text",
         "lower": "0",
         "upper": "64",
         "profile": "nfc"
       },
       {
         "node": "ix://acme/orders/Inverted",
-        "native": "ix://quire/native/Text",
+        "native": "ix://filament/native/Text",
         "lower": "5",
         "upper": "2",
         "profile": "nfc"
       },
       {
         "node": "ix://acme/orders/Folded",
-        "native": "ix://quire/native/Text",
+        "native": "ix://filament/native/Text",
         "lower": "0",
         "upper": "64",
         "profile": "casefold"
@@ -549,8 +549,8 @@
     "map_types": [
       {
         "node": "ix://acme/orders/ClockMap",
-        "keys": "ix://quire/native/Text",
-        "values": "ix://quire/native/Clock",
+        "keys": "ix://filament/native/Text",
+        "values": "ix://filament/native/Clock",
         "bound": {
           "lower": "0",
           "upper": "unbounded"
@@ -630,7 +630,7 @@
         "fields": [
           {
             "name": "window",
-            "typeRef": "ix://quire/unit/ms",
+            "typeRef": "ix://filament/unit/ms",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -642,7 +642,7 @@
           },
           {
             "name": "waits",
-            "typeRef": "ix://quire/unit/ms",
+            "typeRef": "ix://filament/unit/ms",
             "presence": "required",
             "multiplicity": {
               "lower": "0",
@@ -654,7 +654,7 @@
           },
           {
             "name": "ghost",
-            "typeRef": "ix://quire/unit/ghost",
+            "typeRef": "ix://filament/unit/ghost",
             "presence": "required",
             "multiplicity": {
               "lower": "1",
@@ -671,7 +671,7 @@
             "parameters": [
               {
                 "name": "d",
-                "typeRef": "ix://quire/unit/ms",
+                "typeRef": "ix://filament/unit/ms",
                 "multiplicity": {
                   "lower": "1",
                   "upper": "1",
@@ -681,7 +681,7 @@
               }
             ],
             "result": {
-              "typeRef": "ix://quire/native/Integer",
+              "typeRef": "ix://filament/native/Integer",
               "multiplicity": {
                 "lower": "1",
                 "upper": "1",
@@ -1656,7 +1656,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1701,7 +1701,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1754,7 +1754,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1802,7 +1802,7 @@
           ],
           "ordinal": 1
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1850,7 +1850,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1898,7 +1898,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1940,7 +1940,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "model",
         "semantic_form": "object_type",
         "semantic_type": {
@@ -1988,7 +1988,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2050,7 +2050,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2112,7 +2112,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2177,7 +2177,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2242,7 +2242,7 @@
           ],
           "ordinal": 1
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2307,7 +2307,7 @@
           ],
           "ordinal": 1
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2369,7 +2369,7 @@
           ],
           "ordinal": 2
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2434,7 +2434,7 @@
           ],
           "ordinal": 3
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2499,7 +2499,7 @@
           ],
           "ordinal": 4
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2581,7 +2581,7 @@
           ],
           "ordinal": 5
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2628,7 +2628,7 @@
           ],
           "ordinal": 0
         },
-        "schema_version": "quire.checked-semantic-graph/v2",
+        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
         "semantic_form": "pure_function",
         "semantic_type": {
@@ -2860,7 +2860,7 @@
   "reference_equality_cases": [
     {
       "name": "RC-01",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M5"
@@ -2875,7 +2875,7 @@
     },
     {
       "name": "RC-02",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M1"
@@ -2890,7 +2890,7 @@
     },
     {
       "name": "RC-03",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M7"
@@ -2905,7 +2905,7 @@
     },
     {
       "name": "RC-04",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M1"
@@ -2920,7 +2920,7 @@
     },
     {
       "name": "RC-05",
-      "operation": "quire.op.reference.ne",
+      "operation": "filament.op.reference.ne",
       "operands": [
         {
           "reference": "M5"
@@ -2935,7 +2935,7 @@
     },
     {
       "name": "RC-06",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M1"
@@ -2953,7 +2953,7 @@
     },
     {
       "name": "RC-07",
-      "operation": "quire.op.reference.ne",
+      "operation": "filament.op.reference.ne",
       "operands": [
         {
           "reference": "M5"
@@ -2971,7 +2971,7 @@
     },
     {
       "name": "RC-08",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M1"
@@ -2989,7 +2989,7 @@
     },
     {
       "name": "RC-09",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M2"
@@ -3007,7 +3007,7 @@
     },
     {
       "name": "RC-10",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "object": "M1"
@@ -3025,7 +3025,7 @@
     },
     {
       "name": "RC-11",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M4"
@@ -3043,7 +3043,7 @@
     },
     {
       "name": "RC-12",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M2"
@@ -3061,7 +3061,7 @@
     },
     {
       "name": "RC-13",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M6"
@@ -3076,7 +3076,7 @@
     },
     {
       "name": "RC-14",
-      "operation": "quire.op.reference.ne",
+      "operation": "filament.op.reference.ne",
       "operands": [
         {
           "reference": "M9"
@@ -3091,7 +3091,7 @@
     },
     {
       "name": "RC-15",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M8"
@@ -3109,7 +3109,7 @@
     },
     {
       "name": "RC-16",
-      "operation": "quire.op.reference.eq",
+      "operation": "filament.op.reference.eq",
       "operands": [
         {
           "reference": "M8"
@@ -3126,7 +3126,7 @@
   "reference_upcast_cases": [
     {
       "name": "RU-01",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M5"
@@ -3141,7 +3141,7 @@
     },
     {
       "name": "RU-02",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M7"
@@ -3156,7 +3156,7 @@
     },
     {
       "name": "RU-03",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M1"
@@ -3171,7 +3171,7 @@
     },
     {
       "name": "RU-04",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M6"
@@ -3186,7 +3186,7 @@
     },
     {
       "name": "RU-05",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M1"
@@ -3204,7 +3204,7 @@
     },
     {
       "name": "RU-06",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M1"
@@ -3222,7 +3222,7 @@
     },
     {
       "name": "RU-07",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M5"
@@ -3240,7 +3240,7 @@
     },
     {
       "name": "RU-08",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M8"
@@ -3258,7 +3258,7 @@
     },
     {
       "name": "RU-09",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M1"
@@ -3276,7 +3276,7 @@
     },
     {
       "name": "RU-10",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M2"
@@ -3294,7 +3294,7 @@
     },
     {
       "name": "RU-11",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M1"
@@ -3312,7 +3312,7 @@
     },
     {
       "name": "RU-12",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "object": "M1"
@@ -3330,7 +3330,7 @@
     },
     {
       "name": "RU-13",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M6"
@@ -3345,7 +3345,7 @@
     },
     {
       "name": "RU-14",
-      "operation": "quire.op.reference.upcast",
+      "operation": "filament.op.reference.upcast",
       "operands": [
         {
           "reference": "M4"

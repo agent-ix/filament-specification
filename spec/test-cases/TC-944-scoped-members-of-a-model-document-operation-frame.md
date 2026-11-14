@@ -3,9 +3,9 @@ id: TC-944
 title: "Scoped members of a model-document operation frame"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-013
+  - target: ix://agent-ix/filament-specification/FR-013
     type: verifies
-  - target: ix://agent-ix/quire-specification/FR-340
+  - target: ix://agent-ix/filament-specification/FR-340
     type: verifies
 ---
 # TC-944: Scoped members of a model-document operation frame

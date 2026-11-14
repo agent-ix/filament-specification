@@ -3,7 +3,7 @@ id: TC-208
 title: "Protocol refinement relation"
 type: TC
 relationships:
-  - target: ix://agent-ix/quire-specification/FR-177
+  - target: ix://agent-ix/filament-specification/FR-177
     type: verifies
 ---
 

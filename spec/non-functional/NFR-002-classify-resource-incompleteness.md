@@ -4,13 +4,13 @@ title: "Keep exhaustion distinct from logical violation"
 type: NFR
 quality_attribute: reliability
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-005"
+  - target: "ix://agent-ix/filament-specification/FR-005"
     type: constrains
-  - target: "ix://agent-ix/quire-specification/FR-010"
+  - target: "ix://agent-ix/filament-specification/FR-010"
     type: constrains
-  - target: "ix://agent-ix/quire-specification/FR-011"
+  - target: "ix://agent-ix/filament-specification/FR-011"
     type: constrains
-  - target: "ix://agent-ix/quire-specification/FR-015"
+  - target: "ix://agent-ix/filament-specification/FR-015"
     type: constrains
 ---
 # NFR-002: Keep exhaustion distinct from logical violation

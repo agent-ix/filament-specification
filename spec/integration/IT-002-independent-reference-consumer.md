@@ -3,11 +3,11 @@ id: IT-002
 title: "Qualify the shared reference consumer"
 type: IT
 relationships:
-  - target: "ix://agent-ix/quire-specification/FR-003"
+  - target: "ix://agent-ix/filament-specification/FR-003"
     type: verifies
-  - target: "ix://agent-ix/quire-specification/FR-004"
+  - target: "ix://agent-ix/filament-specification/FR-004"
     type: verifies
-  - target: "ix://agent-ix/quire-specification/FR-014"
+  - target: "ix://agent-ix/filament-specification/FR-014"
     type: verifies
 ---
 # IT-002: Qualify the shared reference consumer
