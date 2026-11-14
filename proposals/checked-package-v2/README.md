@@ -90,8 +90,10 @@ structures, but any external consumer receives only the contract.
   carrier of QSL FR-576's per-operation body: a reference to the checked body
   function node or the typed absence `no_body`, keyed by selected document,
   declaring node and original operation name as `operation_effects`. Positive
-  cases OBC-01 to OBC-06 cover a body, no body, mixed members, one member name
-  under different objects and documents, a dispatch candidate, and the empty member; the schema and reader
+  cases OBC-01 to OBC-07 cover a body, no body, mixed members, one member name
+  under different objects and documents, a dispatch candidate, the empty member,
+  and several candidates of one dispatch table joined to their rows through the
+  selection key (STD-661); the schema and reader
   refusals OBS-* and OBR-* carry exact codes and loci (FR-322-AC-397).
 - `temporal-fairness-target-vectors.json` publishes complete fairness members
   for operation, protocol-root, attempt-node, parallel-branch,

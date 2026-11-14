@@ -22792,14 +22792,23 @@ fn read_operation_bodies(case: &Value, rows: &[Value]) -> Result<(), OperationEf
             .unwrap()
             .iter()
             .find(|candidate| candidate["name"] == operation);
-        let Some(declared_operation) = declared_operation else {
+        if declared_operation.is_none() {
             return Err(refuse(
                 "ill_typed",
                 Some("operator-ineligible"),
                 at("/operation"),
             ));
-        };
-        let has_body = declared_operation["has_body"].as_bool().unwrap();
+        }
+        let member = format!(
+            "ix://{document_id}/{}/{operation}",
+            declaring.1[2].rsplit('/').next().unwrap()
+        );
+        // A document carries no `has_body`: the graph decides.
+        let has_body = case["graph_nodes"].as_array().unwrap().iter().any(|entry| {
+            entry["form"] == "function"
+                && entry["clause"] == "body"
+                && entry["owner"]["node"] == member
+        });
         let body = &row["body"];
         if (body["kind"] == "function") != has_body {
             return Err(refuse(
@@ -22824,14 +22833,7 @@ fn read_operation_bodies(case: &Value, rows: &[Value]) -> Result<(), OperationEf
                     at("/body/node"),
                 ));
             }
-            let owner = format!(
-                "ix://{document_id}/{}/{operation}",
-                declaring.1[2].rsplit('/').next().unwrap()
-            );
-            if entry["owner"]["identity"] != row["document"]
-                || entry["owner"]["node"] != owner
-                || entry["clause"] != "body"
-            {
+            if entry["owner"]["node"] != member || entry["clause"] != "body" {
                 return Err(refuse(
                     "invalid_package",
                     Some("invalid-value"),
@@ -22840,9 +22842,34 @@ fn read_operation_bodies(case: &Value, rows: &[Value]) -> Result<(), OperationEf
             }
         }
         for candidate in &candidates {
-            let witness = &candidate["selected_operation"];
-            if effect_node_order(&witness["declaring"]) == declaring
-                && witness["operation"] == row["operation"]
+            // Joined through the selection key: the declaration that declares the
+            // operation for the receiver, the receiver itself or an ancestor.
+            let receiver = candidate["selection_key"]["original"]["node"].as_str().unwrap();
+            let mut at_type = receiver.rsplit('/').next().unwrap().to_owned();
+            let joined = loop {
+                let Some(found) = documents
+                    .iter()
+                    .flat_map(|document| document["types"].as_array().unwrap())
+                    .find(|ty| ty["name"] == at_type.as_str())
+                else {
+                    break None;
+                };
+                if found["operations"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|op| op["name"] == candidate["selected_operation"]["operation"])
+                {
+                    break Some(at_type.clone());
+                }
+                match found["extends"].as_str() {
+                    Some(parent) => at_type = parent.to_owned(),
+                    None => break None,
+                }
+            };
+            if joined.as_deref() == declaring.1[2].rsplit('/').next()
+                && candidate["selected_operation"]["operation"] == row["operation"]
+                && receiver.starts_with(&format!("ix://{document_id}/"))
             {
                 let agrees = has_body && candidate["operation_body"] == body["node"];
                 if !agrees {
@@ -22929,6 +22956,7 @@ fn operation_body_carrier_vectors_match_the_closed_member_schema_and_reader() {
             "OBC-04-same-member-name",
             "OBC-05-dispatch-candidate",
             "OBC-06-no-operations",
+            "OBC-07-candidates-per-redefinition",
         ]
     );
     for case in positive {
