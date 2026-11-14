@@ -1,5 +1,5 @@
 {
-  "note": "STD-660. The operation_bodies rows carry QSL FR-576's per-operation body: a reference to the checked body function node or the typed absence no_body, keyed by selected document, declaring node and original operation name (the key of operation_effects). Each case's documents are compact excerpts of the selected FR-154 model documents (types with their declared operations and has_body); graph_nodes lists the package graph nodes the body references resolve against, each with its form and, for a function node, its FR-094 owner and clause; the optional dispatch_candidates are excerpts of checked_term_data dispatch candidates. schema_refusals and reader_refusals are RFC 6902 patches over the rows of their base positive case, applied to {\"operation_bodies\": rows}; a reader case may replace the base dispatch_candidates. Loci are absolute JSON pointers into that package member.",
+  "note": "STD-660, STD-661. The operation_bodies rows carry QSL FR-576's per-operation body: a reference to the checked body function node or the typed absence no_body, keyed by selected document, declaring node and original operation name (the key of operation_effects). Each case's documents are compact excerpts of the selected FR-154 model documents (types with their declared operations and an optional extends listing the identities of the declared supertypes; an operation carries an optional redefines naming the identity of the supertype operation it redefines, Operation.redefines of FR-154, and an operation of the same name without it redefines nothing); a document carries no has_body, so whether an operation has a body is derived from graph_nodes alone: a function node whose owner is the operation member and whose clause is body. graph_nodes lists the package graph nodes the body references resolve against, each with its form and, for a function node, its FR-094 owner and clause; every owner-bearing node already joined its owner. The optional dispatch_candidates are excerpts of checked_term_data dispatch candidates with their selected_operation, selection_key and operation_body; a candidate joins the row of the type that declares the effective operation of its selection_key receiver, when the receiver is in the family of the candidate's selected_operation (FR-322 \"Candidate join\"). dispatch_join_refusals are cases the carrier admits because their candidate is outside the family; the recorded code and locus are the dispatch join's (FR-322-AC-290) in checked_term_data, not the carrier's. schema_refusals and reader_refusals are RFC 6902 patches over the rows of their base positive case, applied to {\"operation_bodies\": rows}; a reader case may replace the base dispatch_candidates. Loci are absolute JSON pointers into that package member.",
   "positive": [
     {
       "id": "OBC-01-with-body",
@@ -16,8 +16,7 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 }
               ]
             }
@@ -99,8 +98,7 @@
               "operations": [
                 {
                   "name": "touch",
-                  "params": [],
-                  "has_body": false
+                  "params": []
                 }
               ]
             }
@@ -157,13 +155,11 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 },
                 {
                   "name": "touch",
-                  "params": [],
-                  "has_body": false
+                  "params": []
                 }
               ]
             }
@@ -261,8 +257,7 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 }
               ]
             }
@@ -281,8 +276,7 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": false
+                  "params": []
                 }
               ]
             },
@@ -295,13 +289,11 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 },
                 {
                   "name": "touch",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 }
               ]
             },
@@ -309,7 +301,10 @@
               "name": "Premium",
               "form": "object_type",
               "fields": [],
-              "operations": []
+              "operations": [],
+              "extends": [
+                "ix://acme/orders/Order"
+              ]
             }
           ]
         }
@@ -386,24 +381,6 @@
             "node": "ix://acme/orders/Order/settle"
           },
           "clause": "precondition"
-        },
-        {
-          "node": {
-            "package": "acme/orders",
-            "path": [
-              "function",
-              "pure_function",
-              "ix://acme/orders/Order/settle/foreign-owner"
-            ],
-            "ordinal": 0
-          },
-          "form": "function",
-          "owner": {
-            "kind": "model",
-            "identity": "acme/billing",
-            "node": "ix://acme/orders/Order/settle"
-          },
-          "clause": "body"
         },
         {
           "node": {
@@ -527,8 +504,7 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 }
               ]
             }
@@ -547,8 +523,7 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": false
+                  "params": []
                 }
               ]
             },
@@ -561,13 +536,11 @@
               "operations": [
                 {
                   "name": "settle",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 },
                 {
                   "name": "touch",
-                  "params": [],
-                  "has_body": true
+                  "params": []
                 }
               ]
             },
@@ -575,7 +548,10 @@
               "name": "Premium",
               "form": "object_type",
               "fields": [],
-              "operations": []
+              "operations": [],
+              "extends": [
+                "ix://acme/orders/Order"
+              ]
             }
           ]
         }
@@ -706,6 +682,13 @@
               "ix://acme/orders/Order/settle/body"
             ],
             "ordinal": 0
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/orders",
+              "node": "ix://acme/orders/Order"
+            }
           }
         }
       ],
@@ -835,6 +818,311 @@
         }
       ],
       "rows": []
+    },
+    {
+      "id": "OBC-07-candidates-per-redefinition",
+      "description": "Service.run is redefined by FastService.run and SafeService.run (each with Operation.redefines naming it) and inherited by Plain; the dispatch table has three candidates of one selected_operation, each in the family of Service.run and joined through its selection_key to the row of the type that declares its receiver's effective run. Stray conforms to no type",
+      "documents": [
+        {
+          "identity": "acme/svc",
+          "relationships": [],
+          "types": [
+            {
+              "name": "FastService",
+              "form": "object_type",
+              "fields": [],
+              "operations": [
+                {
+                  "name": "run",
+                  "params": [],
+                  "redefines": "ix://acme/svc/Service/run"
+                }
+              ],
+              "extends": [
+                "ix://acme/svc/Service"
+              ]
+            },
+            {
+              "name": "Plain",
+              "form": "object_type",
+              "fields": [],
+              "operations": [],
+              "extends": [
+                "ix://acme/svc/Service"
+              ]
+            },
+            {
+              "name": "SafeService",
+              "form": "object_type",
+              "fields": [],
+              "operations": [
+                {
+                  "name": "run",
+                  "params": [],
+                  "redefines": "ix://acme/svc/Service/run"
+                }
+              ],
+              "extends": [
+                "ix://acme/svc/Service"
+              ]
+            },
+            {
+              "name": "Service",
+              "form": "object_type",
+              "fields": [],
+              "operations": [
+                {
+                  "name": "run",
+                  "params": []
+                }
+              ]
+            },
+            {
+              "name": "Stray",
+              "form": "object_type",
+              "fields": [],
+              "operations": []
+            }
+          ]
+        }
+      ],
+      "graph_nodes": [
+        {
+          "node": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/FastService/run/body"
+            ],
+            "ordinal": 0
+          },
+          "form": "function",
+          "owner": {
+            "kind": "model",
+            "identity": "acme/svc",
+            "node": "ix://acme/svc/FastService/run"
+          },
+          "clause": "body"
+        },
+        {
+          "node": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/SafeService/run/body"
+            ],
+            "ordinal": 0
+          },
+          "form": "function",
+          "owner": {
+            "kind": "model",
+            "identity": "acme/svc",
+            "node": "ix://acme/svc/SafeService/run"
+          },
+          "clause": "body"
+        },
+        {
+          "node": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/Service/run/body"
+            ],
+            "ordinal": 0
+          },
+          "form": "function",
+          "owner": {
+            "kind": "model",
+            "identity": "acme/svc",
+            "node": "ix://acme/svc/Service/run"
+          },
+          "clause": "body"
+        },
+        {
+          "node": {
+            "package": "acme/svc",
+            "path": [
+              "expression",
+              "literal",
+              "1"
+            ],
+            "ordinal": 0
+          },
+          "form": "expression"
+        }
+      ],
+      "dispatch_candidates": [
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/FastService"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/FastService/run/body"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/SafeService"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/SafeService/run/body"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/Plain"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/Service/run/body"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "rows": [
+        {
+          "document": "acme/svc",
+          "declaring": {
+            "package": "acme/svc",
+            "path": [
+              "model",
+              "object_type",
+              "ix://acme/svc/FastService"
+            ],
+            "ordinal": 0
+          },
+          "operation": "run",
+          "body": {
+            "kind": "function",
+            "node": {
+              "package": "acme/svc",
+              "path": [
+                "function",
+                "pure_function",
+                "ix://acme/svc/FastService/run/body"
+              ],
+              "ordinal": 0
+            }
+          }
+        },
+        {
+          "document": "acme/svc",
+          "declaring": {
+            "package": "acme/svc",
+            "path": [
+              "model",
+              "object_type",
+              "ix://acme/svc/SafeService"
+            ],
+            "ordinal": 0
+          },
+          "operation": "run",
+          "body": {
+            "kind": "function",
+            "node": {
+              "package": "acme/svc",
+              "path": [
+                "function",
+                "pure_function",
+                "ix://acme/svc/SafeService/run/body"
+              ],
+              "ordinal": 0
+            }
+          }
+        },
+        {
+          "document": "acme/svc",
+          "declaring": {
+            "package": "acme/svc",
+            "path": [
+              "model",
+              "object_type",
+              "ix://acme/svc/Service"
+            ],
+            "ordinal": 0
+          },
+          "operation": "run",
+          "body": {
+            "kind": "function",
+            "node": {
+              "package": "acme/svc",
+              "path": [
+                "function",
+                "pure_function",
+                "ix://acme/svc/Service/run/body"
+              ],
+              "ordinal": 0
+            }
+          }
+        }
+      ]
     }
   ],
   "schema_refusals": [
@@ -1507,8 +1795,8 @@
       "locus": "/operation_bodies/2/body/node"
     },
     {
-      "id": "OBR-20-no-body-for-dispatch-candidate",
-      "description": "no_body for an operation that is the selected_operation of a dispatch candidate",
+      "id": "OBR-20-no-body-for-candidate-with-body",
+      "description": "no_body row for Invoice.settle while the dispatch candidate of the Invoice family (selected_operation Invoice.settle, receiver Invoice) carries a body node that exists in the graph; the candidate is in its family and joins the Invoice row",
       "base": "OBC-04-same-member-name",
       "patch": [],
       "schema": "valid",
@@ -1529,12 +1817,19 @@
             },
             "operation": "settle"
           },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/orders",
+              "node": "ix://acme/orders/Invoice"
+            }
+          },
           "operation_body": {
             "package": "acme/orders",
             "path": [
               "function",
               "pure_function",
-              "ix://acme/orders/Invoice/settle/body"
+              "ix://acme/orders/Order/settle/body"
             ],
             "ordinal": 0
           }
@@ -1542,28 +1837,150 @@
       ]
     },
     {
-      "id": "OBR-21-body-node-owner-identity",
-      "description": "a body function node whose owner node is the row's operation member but whose owner identity is another document",
-      "base": "OBC-04-same-member-name",
-      "patch": [
+      "id": "OBR-22-candidate-carries-another-candidates-body",
+      "description": "the SafeService candidate carries the body of the FastService candidate, which the SafeService row does not name",
+      "base": "OBC-07-candidates-per-redefinition",
+      "patch": [],
+      "schema": "valid",
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/operation_bodies/1/body",
+      "dispatch_candidates": [
         {
-          "op": "replace",
-          "path": "/operation_bodies/2/body/node",
-          "value": {
-            "package": "acme/orders",
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/FastService"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
             "path": [
               "function",
               "pure_function",
-              "ix://acme/orders/Order/settle/foreign-owner"
+              "ix://acme/svc/FastService/run/body"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/SafeService"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/FastService/run/body"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/Plain"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/Service/run/body"
+            ],
+            "ordinal": 0
+          }
+        }
+      ]
+    }
+  ],
+  "dispatch_join_refusals": [
+    {
+      "id": "OBD-01-candidate-outside-the-family",
+      "description": "a dispatch candidate whose receiver Stray does not conform to Service, the declaring type of selected_operation Service.run: the carrier leaves it to the dispatch join and admits the rows; the dispatch join refuses the candidate's selection key",
+      "base": "OBC-07-candidates-per-redefinition",
+      "patch": [],
+      "carrier": "admits",
+      "dispatch_candidates": [
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/Stray"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/Service/run/body"
             ],
             "ordinal": 0
           }
         }
       ],
-      "schema": "valid",
       "expected_code": "invalid_package",
       "expected_cause": "invalid-value",
-      "locus": "/operation_bodies/2/body/node"
+      "locus": "/checked_term_data/dispatch_tables/0/candidates/0/selection_key"
     }
   ]
 }
