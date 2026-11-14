@@ -23,12 +23,12 @@ codes and loci.
 Read `proposals/checked-package-v2/operation-body-vectors.json` and
 `proposals/checked-package-v2/schema.json` by reference. Validate every row of
 each positive case against `$defs.OperationBodyRow`, then read each case's rows
-against its `documents` (types, their operations and optional `extends`), `graph_nodes` (each with form,
+against its `documents` (types with their identities, operations and optional `extends` and `redefines`), `graph_nodes` (each with form,
 `owner` and `clause`; whether an operation has a body is derived from them, a document carries no `has_body`) and optional `dispatch_candidates` (each with `selected_operation`, `selection_key` and `operation_body`, joined to a row through its `selection_key`), requiring one row per
 operation, keyed and ordered by `(document, declaring, operation)`. OBC-01 is a
 body, OBC-02 `no_body`, OBC-03 two members of one object, OBC-04 the same member
 name `settle` under a process and two object types with a subtype that inherits
-it and has no row, OBC-05 a dispatch candidate that agrees with the row, OBC-06 the present empty member, and OBC-07 three candidates of one dispatch table (two types redefining the operation, one inheriting it) sharing one `selected_operation` and each agreeing with the row its `selection_key` joins.
+it and has no row, OBC-05 a dispatch candidate that agrees with the row, OBC-06 the present empty member, and OBC-07 three candidates of one dispatch table (two types redefining the operation through `Operation.redefines`, one inheriting it) sharing one `selected_operation`, each in the family and agreeing with the row its `selection_key` joins. A candidate is in the family when its receiver conforms to the selected declaring type and its effective operation reaches the selected one through `redefines`; the reference reader implements that rule and nothing by name alone.
 
 For each `schema_refusals` and `reader_refusals` case, apply its RFC 6902 `patch`
 to `{"operation_bodies": <rows of base>}`. A schema case fails
@@ -48,7 +48,7 @@ OBR-14, OBR-15, OBR-16, OBR-17, OBR-18, OBR-19, OBR-20 and OBR-22
 OBR-17 to OBR-19 at `body/node` for a body of another operation, a precondition
 clause function, and a node of another package; OBR-20 and OBR-22 at the row's `body`, a `no_body` row whose joined candidate carries a body and a candidate carrying another candidate's body); OBR-13
 `invalid_package`/`conflicting-definition`; OBR-04, OBR-06, OBR-07 and OBR-11
-`ill_typed`/`operator-ineligible`. The IR reader exposes the admitted body by
+`ill_typed`/`operator-ineligible`. OBD-01 passes the carrier and is refused by the dispatch join `invalid_package`/`invalid-value` at `/checked_term_data/dispatch_tables/0/candidates/0/selection_key`. The IR reader exposes the admitted body by
 key and owns no mirror type; QSL owns emission.
 
 OBR-21 (a body node whose owner identity is another document) is retired: the

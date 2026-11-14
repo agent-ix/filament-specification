@@ -22707,6 +22707,103 @@ type BodyNodeKey = (String, Vec<String>, u64);
 type BodyRowKey = (Vec<u8>, BodyNodeKey, Vec<u8>);
 type BodyDeclared<'a> = BTreeMap<BodyNodeKey, (&'a Value, String, Option<&'a Value>)>;
 
+type CandidateRowKey = (String, String, String);
+
+/// FR-322 "Candidate join": the row key `(document, declaring type identity,
+/// operation)` a dispatch candidate joins, or `None` when it is outside the
+/// family of its selected operation and left to the dispatch join. Types and
+/// operations are resolved by identity (`ix://<document>/<type>[/<operation>]`).
+fn candidate_row_key(documents: &[Value], candidate: &Value) -> Option<CandidateRowKey> {
+    let mut types: BTreeMap<String, &Value> = BTreeMap::new();
+    let mut operations: BTreeMap<String, (String, &Value)> = BTreeMap::new();
+    for document in documents {
+        let identity = document["identity"].as_str().unwrap();
+        for ty in document["types"].as_array().unwrap() {
+            let type_id = format!("ix://{identity}/{}", ty["name"].as_str().unwrap());
+            for operation in ty["operations"].as_array().unwrap() {
+                let operation_id = format!("{type_id}/{}", operation["name"].as_str().unwrap());
+                operations.insert(operation_id, (type_id.clone(), operation));
+            }
+            types.insert(type_id, ty);
+        }
+    }
+    let ancestors = |start: &str| -> Vec<String> {
+        let mut reached: Vec<String> = Vec::new();
+        let mut pending = vec![start.to_owned()];
+        while let Some(current) = pending.pop() {
+            let Some(ty) = types.get(&current) else {
+                continue;
+            };
+            for parent in ty["extends"].as_array().into_iter().flatten() {
+                let parent = parent.as_str().unwrap().to_owned();
+                if !reached.contains(&parent) {
+                    reached.push(parent.clone());
+                    pending.push(parent);
+                }
+            }
+        }
+        reached
+    };
+    let conforms_to = |sub: &str, sup: &str| sub == sup || ancestors(sub).iter().any(|a| a == sup);
+    let receiver = candidate["selection_key"]["original"]["node"].as_str()?;
+    let package = candidate["selection_key"]["original"]["package"].as_str()?;
+    let declaring = candidate["selected_operation"]["declaring"]["path"][2].as_str()?;
+    let name = candidate["selected_operation"]["operation"].as_str()?;
+    if !conforms_to(receiver, declaring) {
+        return None;
+    }
+    let mut anchors = types.get(declaring)?["operations"]
+        .as_array()?
+        .iter()
+        .filter(|operation| operation["name"] == name);
+    let anchor = format!("{declaring}/{}", anchors.next()?["name"].as_str()?);
+    if anchors.next().is_some() {
+        return None;
+    }
+    // The receiver's effective operation of that name: declared by the receiver or
+    // an ancestor and not hidden by a redefinition; it must be unique.
+    let mut owners = vec![receiver.to_owned()];
+    owners.extend(ancestors(receiver));
+    let mut hidden: Vec<&str> = Vec::new();
+    let mut named: Vec<(String, String)> = Vec::new();
+    for owner in &owners {
+        for operation in types.get(owner)?["operations"].as_array()? {
+            if let Some(target) = operation["redefines"].as_str() {
+                hidden.push(target);
+            }
+            if operation["name"] == name {
+                named.push((owner.clone(), format!("{owner}/{name}")));
+            }
+        }
+    }
+    named.retain(|(_, identity)| !hidden.contains(&identity.as_str()));
+    let [(effective_owner, effective)] = named.as_slice() else {
+        return None;
+    };
+    // The effective operation reaches the anchor through `redefines` links, each
+    // to an operation of a distinct declared supertype of its owner.
+    let mut current = effective.clone();
+    let mut seen: Vec<String> = Vec::new();
+    let mut reaches = false;
+    loop {
+        if seen.contains(&current) {
+            return None;
+        }
+        seen.push(current.clone());
+        let (owner, operation) = operations.get(&current)?;
+        reaches |= current == anchor;
+        let Some(target) = operation["redefines"].as_str() else {
+            break;
+        };
+        let (target_owner, _) = operations.get(target)?;
+        if owner == target_owner || !conforms_to(owner, target_owner) {
+            return None;
+        }
+        current = target.to_owned();
+    }
+    reaches.then(|| (package.to_owned(), effective_owner.clone(), name.to_owned()))
+}
+
 /// Reference reader for the FR-322 `operation_bodies` carrier join: per-row
 /// joins in array order, then key checks, then coverage.
 fn read_operation_bodies(case: &Value, rows: &[Value]) -> Result<(), OperationEffectRefusal> {
@@ -22746,6 +22843,16 @@ fn read_operation_bodies(case: &Value, rows: &[Value]) -> Result<(), OperationEf
         .as_array()
         .cloned()
         .unwrap_or_default();
+    // Candidates in their family, each with the row key it joins and its body.
+    let joined_candidates: Vec<(CandidateRowKey, Value)> = candidates
+        .iter()
+        .filter_map(|candidate| {
+            Some((
+                candidate_row_key(documents, candidate)?,
+                candidate["operation_body"].clone(),
+            ))
+        })
+        .collect();
     let mut keys: Vec<BodyRowKey> = Vec::new();
     for (index, row) in rows.iter().enumerate() {
         let at = |suffix: &str| format!("/operation_bodies/{index}{suffix}");
@@ -22841,37 +22948,14 @@ fn read_operation_bodies(case: &Value, rows: &[Value]) -> Result<(), OperationEf
                 ));
             }
         }
-        for candidate in &candidates {
-            // Joined through the selection key: the declaration that declares the
-            // operation for the receiver, the receiver itself or an ancestor.
-            let receiver = candidate["selection_key"]["original"]["node"].as_str().unwrap();
-            let mut at_type = receiver.rsplit('/').next().unwrap().to_owned();
-            let joined = loop {
-                let Some(found) = documents
-                    .iter()
-                    .flat_map(|document| document["types"].as_array().unwrap())
-                    .find(|ty| ty["name"] == at_type.as_str())
-                else {
-                    break None;
-                };
-                if found["operations"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .any(|op| op["name"] == candidate["selected_operation"]["operation"])
-                {
-                    break Some(at_type.clone());
-                }
-                match found["extends"].as_str() {
-                    Some(parent) => at_type = parent.to_owned(),
-                    None => break None,
-                }
-            };
-            if joined.as_deref() == declaring.1[2].rsplit('/').next()
-                && candidate["selected_operation"]["operation"] == row["operation"]
-                && receiver.starts_with(&format!("ix://{document_id}/"))
-            {
-                let agrees = has_body && candidate["operation_body"] == body["node"];
+        let own_key = (
+            document_id.to_owned(),
+            declaring.1[2].clone(),
+            operation.to_owned(),
+        );
+        for joined in &joined_candidates {
+            if joined.0 == own_key {
+                let agrees = has_body && joined.1 == body["node"];
                 if !agrees {
                     return Err(refuse(
                         "invalid_package",
@@ -23020,6 +23104,30 @@ fn operation_body_carrier_vectors_match_the_closed_member_schema_and_reader() {
         assert_eq!(
             loci,
             vec![case["locus"].as_str().unwrap().to_owned()],
+            "{id}"
+        );
+    }
+
+    let dispatch_join = vectors["dispatch_join_refusals"]
+        .as_array()
+        .expect("dispatch join refusals");
+    assert_eq!(dispatch_join.len(), 1);
+    for case in dispatch_join {
+        let id = case["id"].as_str().unwrap();
+        assert_eq!(case["carrier"], "admits", "{id}");
+        let mut context = base_for(case["base"].as_str().unwrap()).clone();
+        context["dispatch_candidates"] = case["dispatch_candidates"].clone();
+        let rows = patched_rows(case);
+        // The carrier skips the candidate: it is outside its family.
+        for candidate in context["dispatch_candidates"].as_array().unwrap() {
+            assert_eq!(candidate_row_key(context["documents"].as_array().unwrap(), candidate), None, "{id}");
+        }
+        assert_eq!(read_operation_bodies(&context, &rows), Ok(()), "{id}");
+        assert_eq!(case["expected_code"], "invalid_package", "{id}");
+        assert_eq!(case["expected_cause"], "invalid-value", "{id}");
+        assert_eq!(
+            case["locus"],
+            "/checked_term_data/dispatch_tables/0/candidates/0/selection_key",
             "{id}"
         );
     }

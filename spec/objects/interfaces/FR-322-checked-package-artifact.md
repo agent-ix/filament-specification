@@ -3978,16 +3978,17 @@ holds a `function` node whose `owner` is the `ModelOwner` naming the member and
 whose `clause` binding (QSL FR-094) is `body`. The derivation is the rule; no
 document member, name or path states it.
 
-**Check order.** The reader runs the carrier after the graph stages of "One
-total order of the join stages", so every owner-bearing node, a clause function
-included, has already joined its owner (stage 2), and before it validates the
-`checked_term_data` records. The owner join therefore outranks every carrier
-check: a clause function whose owner names no declared operation member refuses
-`missing_declaration`/`missing-selection` at its `node_id` and is never reached
-as a body, so the carrier meets only functions whose owner is a declared member.
-Because the member identity `<declaring owner node>/<operation>` names its
-document, an owner `node` that equals the row's member already has the row's
-document as `identity`; the carrier compares the owner `node` only.
+**Check order.** The reader runs the graph stages of "One total order of the join
+stages" first, so every owner-bearing node, a clause function included, has
+already joined its owner (stage 2); then the `operation_effects` carrier; then
+the `operation_bodies` carrier; then the `checked_term_data` records. The owner
+join therefore outranks every carrier check: a clause function whose owner names
+no declared operation member refuses `missing_declaration`/`missing-selection` at
+its `node_id` and is never reached as a body, so the carrier meets only functions
+whose owner is a declared member. Because the member identity
+`<declaring owner node>/<operation>` names its document, an owner `node` that
+equals the row's member already has the row's document as `identity`; the carrier
+compares the owner `node` only.
 
 The reader checks rows in array order after aggregate-order validation. For
 each row it checks, in order, the `operation_effects` joins for `document`,
@@ -4009,21 +4010,31 @@ row agree with it.
 
 **Candidate join.** A `checked_term_data` dispatch candidate joins a row through
 its `selection_key`, never through `selected_operation` alone: the candidates of
-one dispatch table share the family's `selected_operation` and each carries its
-own `operation_body`. The candidate's receiver is the declaration
-`selection_key.original`. The candidate joins the row whose `document` is that
-declaration's package and whose `declaring` and `operation` name the declaration
-that declares the operation the receiver effectively exposes: the receiver itself
-when it declares (redefines) the operation `selected_operation.operation`,
-otherwise the nearest ancestor that declares it under FR-154 inheritance. A
-candidate whose receiver is not in its table's family, or that joins no row, is
-not the carrier's to refuse; the dispatch join of FR-322-AC-290 refuses it. Every
-candidate joined to a row requires the row's `body` to be a `function` whose node
-equals the candidate's `operation_body` (`invalid_package`/`invalid-value` at
-`body`), so a `no_body` row refuses when a joined candidate carries a body, and a
-candidate that carries another candidate's body refuses at its own row. The
-carrier compares the `NodeRef` only; whether the candidate's handle joins the
-admitted package is the dispatch join's.
+one dispatch table share the table's `selected_operation`
+`{declaring, operation}` and each carries its own `operation_body`. The candidate
+is **in the family** of the selected operation when all of these hold:
+its receiver, the declaration `selection_key.original`, conforms to the
+selected `declaring` type (the receiver is that type or a declared supertype
+chain leads from it to that type, FR-151); `declaring` declares exactly one
+operation named `operation`, the family anchor; the receiver has one effective
+operation of that name (FR-154 and FR-150: a same-named operation without
+`Operation.redefines` is a second member of that name and leaves the name
+ambiguous, so the receiver is then not in the family); and that effective
+operation reaches the anchor through `Operation.redefines` links, each link from
+an operation of a type to an operation of a distinct declared supertype of it,
+with no repeated operation (the effective operation is the anchor itself when the
+receiver only inherits it). The candidate joins the row whose `document` is the
+receiver's package, whose `declaring` is the type that declares that effective
+operation, and whose `operation` is the selected `operation`. A candidate that is
+not in the family, or whose effective operation has no row, is not the carrier's
+to refuse: the carrier skips it and the dispatch join of FR-322-AC-290 refuses it
+(`invalid_package`/`invalid-value` at its `selection_key`). Every candidate
+joined to a row requires the row's `body` to be a `function` whose node equals
+the candidate's `operation_body` (`invalid_package`/`invalid-value` at `body`), so
+a `no_body` row refuses when a joined candidate carries a body, and a candidate
+that carries another candidate's body refuses at its own row. The carrier
+compares the `NodeRef` only; whether the candidate's handle joins the admitted
+package is the dispatch join's.
 
 After the row joins it visits
 each later row in array order and checks its key against every earlier key
@@ -4829,7 +4840,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-394 | An operand row not numbered by first occurrence refuses `malformed_wire`, with no cause, before every `semantic_graph` check: node `2`'s only slot written `1` over the row `[1, 0]`, at `/semantic_graph/nodes/2/node_id/path/3/operand` (`NI-19`); node `2`'s path extended with slot `1` over the row `[0, 0]`, a repeated entry, at `/semantic_graph/operand_rows/2/1` (`NI-20`); and node `2`'s row `[0, 1]`, whose entry `1` no slot of node `2` names, at `/semantic_graph/operand_rows/2/1` (`NI-21`). | Test (TC-233; NI-19..NI-21) |
 | FR-322-AC-395 | Node bytes are not identity, and a reader follows a node-held reference only through its holding node's row. A node appended with node `2`'s bytes and the row `[1]` (`NI-22`) has a structural key different from node `2`'s and passes the operand checks and the duplicate-`node_id` check; appended with the row `[0]` (`NI-23`) it has node `2`'s key and refuses `invalid_semantic_graph` at `/semantic_graph/nodes/4/node_id`. In the published fixture, the literal `type` that node `3` holds and node `2`'s own `node_id` have equal bytes and, each resolved through its own holding node's row, the same key, so the reference names node `2`. | Test (TC-233; NI-22, NI-23) |
 | FR-322-AC-396 | A field typed by the map type `M` of FR-154-AC-48 (`keys` `ix://quire/native/Text`, `values` `Timer`, `bound` `{lower: 0, upper: 2}`) with multiplicity `{1, 1}` has the member type `Map<Text, Timer>[0, 2]`, its row rendering `Map<Text, ix://acme/maps/Timer>` with minimum `0` and maximum `2`, and with `bound` `{lower: 0}` the maximum `unbounded` (`PM-01`, `PM-02`); the `ClockMap` place `clock` of the selected timed package carries kind `map` and bounds `0` and `unbounded` read from its `bound`, a `ClockMap` with `upper` `2` or `keys` `Integer` failing the join. | Test (TC-367, TC-234) |
-| FR-322-AC-397 | A package carries `operation_bodies` or omits it; when omitted the bodies are unavailable, not empty, and no other member changes. When present it has exactly one closed `{document, declaring, operation, body}` row per operation member of every admitted `object_type`, `process` and `state_machine` declaring node, keyed and sorted by `(document, declaring, operation)` as `operation_effects`, and is an empty array only when no selected document declares an operation member. `body` is `{"kind": "function", "node"}` naming a package `function` node exactly when the operation has a body, derived from the package graph alone (a `function` node whose `owner` is the operation member and whose `clause` binding is `body`; a domain document carries no `has_body`), and `{"kind": "no_body"}` otherwise; no row or `body` is omitted, null or defaulted, the `function` node is the operation's own body clause function (its `owner` node is the operation member and its clause kind is `body`), and each dispatch candidate joins a row through its `selection_key` (the row of the declaration that declares the operation for the candidate's receiver `selection_key.original`: the receiver itself or the nearest ancestor), never through `selected_operation` alone, and requires a `function` row whose node equals the candidate's `operation_body`, so two candidates of one table with different bodies are each admitted against their own row. The owner join of every owner-bearing node precedes every carrier check, and the carrier precedes `checked_term_data` validation, so a clause function whose owner names no declared member refuses in the owner join. The positive vectors OBC-01 to OBC-07 are schema-valid and read back; the exact `malformed_wire`, `missing_declaration`, `ill_typed` and `invalid_package` refusals and loci for missing or extra members, a malformed `body`, an unselected, absent, ineligible or foreign declaring node, a field or inherited operation, a body that disagrees with the document, an absent, non-function, other-operation, precondition or other-package body node, a candidate mismatch, a candidate carrying another candidate's body or a `no_body` row for a joined candidate that carries a body, a repeated key, key order and missing coverage are in TC-987. QSL emits the carrier and the IR strict reader admits or refuses it; the IR does not mirror it. | Test (TC-987) |
+| FR-322-AC-397 | A package carries `operation_bodies` or omits it; when omitted the bodies are unavailable, not empty, and no other member changes. When present it has exactly one closed `{document, declaring, operation, body}` row per operation member of every admitted `object_type`, `process` and `state_machine` declaring node, keyed and sorted by `(document, declaring, operation)` as `operation_effects`, and is an empty array only when no selected document declares an operation member. `body` is `{"kind": "function", "node"}` naming a package `function` node exactly when the operation has a body, derived from the package graph alone (a `function` node whose `owner` is the operation member and whose `clause` binding is `body`; a domain document carries no `has_body`), and `{"kind": "no_body"}` otherwise; no row or `body` is omitted, null or defaulted, the `function` node is the operation's own body clause function (its `owner` node is the operation member and its clause kind is `body`), and each dispatch candidate in the family of its table's selected operation (its receiver `selection_key.original` conforms to the selected declaring type and its effective operation reaches the selected one through `Operation.redefines`) joins the row of the type that declares that effective operation, never a row by `selected_operation` alone, and a candidate outside the family is left to the dispatch join (OBD-01), and requires a `function` row whose node equals the candidate's `operation_body`, so two candidates of one table with different bodies are each admitted against their own row. The owner join of every owner-bearing node precedes `operation_effects`, which precedes this carrier, which precedes `checked_term_data` validation, so a clause function whose owner names no declared member refuses in the owner join. The positive vectors OBC-01 to OBC-07 are schema-valid and read back; the exact `malformed_wire`, `missing_declaration`, `ill_typed` and `invalid_package` refusals and loci for missing or extra members, a malformed `body`, an unselected, absent, ineligible or foreign declaring node, a field or inherited operation, a body that disagrees with the document, an absent, non-function, other-operation, precondition or other-package body node, a candidate mismatch, a candidate carrying another candidate's body or a `no_body` row for a joined candidate that carries a body, a repeated key, key order and missing coverage are in TC-987. QSL emits the carrier and the IR strict reader admits or refuses it; the IR does not mirror it. | Test (TC-987) |
 
 ## Dependencies
 

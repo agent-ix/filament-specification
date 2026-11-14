@@ -1,5 +1,5 @@
 {
-  "note": "STD-660, STD-661. The operation_bodies rows carry QSL FR-576's per-operation body: a reference to the checked body function node or the typed absence no_body, keyed by selected document, declaring node and original operation name (the key of operation_effects). Each case's documents are compact excerpts of the selected FR-154 model documents (types with their declared operations and an optional extends naming the supertype); a document carries no has_body, so whether an operation has a body is derived from graph_nodes alone: a function node whose owner is the operation member and whose clause is body. graph_nodes lists the package graph nodes the body references resolve against, each with its form and, for a function node, its FR-094 owner and clause; every owner-bearing node already joined its owner. The optional dispatch_candidates are excerpts of checked_term_data dispatch candidates with their selected_operation, selection_key and operation_body; a candidate joins the row of the declaration that declares the operation for its selection_key receiver. schema_refusals and reader_refusals are RFC 6902 patches over the rows of their base positive case, applied to {\"operation_bodies\": rows}; a reader case may replace the base dispatch_candidates. Loci are absolute JSON pointers into that package member.",
+  "note": "STD-660, STD-661. The operation_bodies rows carry QSL FR-576's per-operation body: a reference to the checked body function node or the typed absence no_body, keyed by selected document, declaring node and original operation name (the key of operation_effects). Each case's documents are compact excerpts of the selected FR-154 model documents (types with their declared operations and an optional extends listing the identities of the declared supertypes; an operation carries an optional redefines naming the identity of the supertype operation it redefines, Operation.redefines of FR-154, and an operation of the same name without it redefines nothing); a document carries no has_body, so whether an operation has a body is derived from graph_nodes alone: a function node whose owner is the operation member and whose clause is body. graph_nodes lists the package graph nodes the body references resolve against, each with its form and, for a function node, its FR-094 owner and clause; every owner-bearing node already joined its owner. The optional dispatch_candidates are excerpts of checked_term_data dispatch candidates with their selected_operation, selection_key and operation_body; a candidate joins the row of the type that declares the effective operation of its selection_key receiver, when the receiver is in the family of the candidate's selected_operation (FR-322 \"Candidate join\"). dispatch_join_refusals are cases the carrier admits because their candidate is outside the family; the recorded code and locus are the dispatch join's (FR-322-AC-290) in checked_term_data, not the carrier's. schema_refusals and reader_refusals are RFC 6902 patches over the rows of their base positive case, applied to {\"operation_bodies\": rows}; a reader case may replace the base dispatch_candidates. Loci are absolute JSON pointers into that package member.",
   "positive": [
     {
       "id": "OBC-01-with-body",
@@ -302,7 +302,9 @@
               "form": "object_type",
               "fields": [],
               "operations": [],
-              "extends": "Order"
+              "extends": [
+                "ix://acme/orders/Order"
+              ]
             }
           ]
         }
@@ -547,7 +549,9 @@
               "form": "object_type",
               "fields": [],
               "operations": [],
-              "extends": "Order"
+              "extends": [
+                "ix://acme/orders/Order"
+              ]
             }
           ]
         }
@@ -817,7 +821,7 @@
     },
     {
       "id": "OBC-07-candidates-per-redefinition",
-      "description": "two types redefine Service.run and a third inherits it; the dispatch table has three candidates of one selected_operation, each joined through its selection_key to the row of the declaration that declares run for its receiver",
+      "description": "Service.run is redefined by FastService.run and SafeService.run (each with Operation.redefines naming it) and inherited by Plain; the dispatch table has three candidates of one selected_operation, each in the family of Service.run and joined through its selection_key to the row of the type that declares its receiver's effective run. Stray conforms to no type",
       "documents": [
         {
           "identity": "acme/svc",
@@ -830,17 +834,22 @@
               "operations": [
                 {
                   "name": "run",
-                  "params": []
+                  "params": [],
+                  "redefines": "ix://acme/svc/Service/run"
                 }
               ],
-              "extends": "Service"
+              "extends": [
+                "ix://acme/svc/Service"
+              ]
             },
             {
               "name": "Plain",
               "form": "object_type",
               "fields": [],
               "operations": [],
-              "extends": "Service"
+              "extends": [
+                "ix://acme/svc/Service"
+              ]
             },
             {
               "name": "SafeService",
@@ -849,10 +858,13 @@
               "operations": [
                 {
                   "name": "run",
-                  "params": []
+                  "params": [],
+                  "redefines": "ix://acme/svc/Service/run"
                 }
               ],
-              "extends": "Service"
+              "extends": [
+                "ix://acme/svc/Service"
+              ]
             },
             {
               "name": "Service",
@@ -864,6 +876,12 @@
                   "params": []
                 }
               ]
+            },
+            {
+              "name": "Stray",
+              "form": "object_type",
+              "fields": [],
+              "operations": []
             }
           ]
         }
@@ -1778,7 +1796,7 @@
     },
     {
       "id": "OBR-20-no-body-for-candidate-with-body",
-      "description": "no_body row for Invoice.settle (the graph holds no body function owned by it) while the dispatch candidate whose receiver is Invoice carries a body node that exists in the graph",
+      "description": "no_body row for Invoice.settle while the dispatch candidate of the Invoice family (selected_operation Invoice.settle, receiver Invoice) carries a body node that exists in the graph; the candidate is in its family and joins the Invoice row",
       "base": "OBC-04-same-member-name",
       "patch": [],
       "schema": "valid",
@@ -1793,7 +1811,7 @@
               "path": [
                 "model",
                 "object_type",
-                "ix://acme/orders/Order"
+                "ix://acme/orders/Invoice"
               ],
               "ordinal": 0
             },
@@ -1919,6 +1937,50 @@
           }
         }
       ]
+    }
+  ],
+  "dispatch_join_refusals": [
+    {
+      "id": "OBD-01-candidate-outside-the-family",
+      "description": "a dispatch candidate whose receiver Stray does not conform to Service, the declaring type of selected_operation Service.run: the carrier leaves it to the dispatch join and admits the rows; the dispatch join refuses the candidate's selection key",
+      "base": "OBC-07-candidates-per-redefinition",
+      "patch": [],
+      "carrier": "admits",
+      "dispatch_candidates": [
+        {
+          "selected_operation": {
+            "declaring": {
+              "package": "acme/svc",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/svc/Service"
+              ],
+              "ordinal": 0
+            },
+            "operation": "run"
+          },
+          "selection_key": {
+            "owner_effective_type": null,
+            "original": {
+              "package": "acme/svc",
+              "node": "ix://acme/svc/Stray"
+            }
+          },
+          "operation_body": {
+            "package": "acme/svc",
+            "path": [
+              "function",
+              "pure_function",
+              "ix://acme/svc/Service/run/body"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/checked_term_data/dispatch_tables/0/candidates/0/selection_key"
     }
   ]
 }
