@@ -30,9 +30,3 @@ SpecReview (SR-202611141914001).
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | No findings (placeholder) | - |
-
-## Dispositions
-
-| FND | outcome | reason |
-| --- | --- | --- |
-| FND-001 | fixed | The row records no finding. Counts after the fix round: 7 positive cases, 13 schema refusals, 21 reader refusals (OBR-01 to OBR-20 and OBR-22, OBR-21 retired and not reused) and 1 dispatch-join refusal (OBD-01), consistent across FR-322 AC-397, TC-987, the README and the vectors. |

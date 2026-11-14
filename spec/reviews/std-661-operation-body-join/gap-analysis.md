@@ -31,4 +31,4 @@ CONDITIONAL on FND-001.
 
 | FND | outcome | reason |
 | --- | --- | --- |
-| FND-001 | fixed | OBD-01 (`dispatch_join_refusals`) holds a candidate whose receiver does not conform to the selected declaring type. The test asserts the carrier skips it and admits the rows, and records the dispatch join's `invalid_package`/`invalid-value` at `/checked_term_data/dispatch_tables/0/candidates/0/selection_key`, which quire-contract-ir `dispatch_projection.rs` raises for a candidate outside `operation_in_family`. OBR-20 is now an in-family case. |
+| FND-001 | fixed | OBD-01's test runs the carrier half: `candidate_row_key` returns None and the carrier admits. The dispatch-join code and locus are pinned in the vector, not executed, which is the repo's existing pattern for DT-R* cases. They match quire-contract-ir `dispatch_projection.rs`, which raises `invalid_package`/`invalid-value` at `candidates/{j}/selection_key` when `operation_in_family` fails, the same refusal and locus DT-R5 records. Adequate for this repo. |

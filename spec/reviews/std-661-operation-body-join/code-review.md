@@ -34,5 +34,5 @@ name. That reading is the one FR-154 and the IR reject.
 
 | FND | outcome | reason |
 | --- | --- | --- |
-| FND-001 | fixed | `candidate_row_key` implements the FR-322 rule: conformance to the selected declaring type, one anchor, one effective operation of that name, and `redefines` reachability to the anchor through links to distinct declared supertypes. A candidate outside the family returns no row key. OBC-07 and OBR-22 now depend on `redefines`. |
-| FND-002 | fixed | Types and operations are resolved by identity (`ix://<document>/<type>[/<operation>]`); `extends` and `redefines` carry identities. |
+| FND-001 | fixed | `candidate_row_key` checks conformance, a unique anchor, a unique effective operation (a same-named operation hidden by `redefines`) and `redefines` reachability through distinct conforming supertypes. A wrong join fails the suite: without the `redefines` hiding, OBR-22 would be admitted, and a join by `selected_operation` would make OBC-07 refuse. 169 of 169 tests pass at d9c44085. |
+| FND-002 | fixed | Types and operations are keyed by identity `ix://<document>/<type>[/<operation>]`, and `extends` and `redefines` are identities. |
