@@ -16,6 +16,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-341
     type: references
+  - target: ix://agent-ix/filament-specification/FR-550
+    type: references
 ---
 
 # FR-323: Native runtime request and result envelope
@@ -135,7 +137,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   request does not name under its published default (FR-460). An entry
   whose name is not a stage-limit setting name refuses before any stage
   runs.
-- `results` — one ordered typed disposition per selected item.
+- `results` — one ordered typed disposition per selected item, each item settled independently; every supplied argument value and every completed value is the FR-181 typed canonical form of its declared type, and a population argument names a supplied binding ([FR-550](../../functional/runtime/FR-550-carry-native-runtime-arguments-and-per-item-results-as-typed-canonical-values.md)).
   Supplied conversion/admission limit, input, cancellation, storage and
   capacity stops carry the typed `supplied` context below, never an
   evaluated-call limit record. An existing pre-call `InternalFault` instead
@@ -154,7 +156,17 @@ The *replay target* of a replay request is exactly one of three members, and
 the others are absent (never `null`, an empty name or a placeholder):
 
 - `function`: the selected function's `QualifiedName`, for the replay of a
-  function's counterexample;
+  function's counterexample. Beside it, the optional member
+  `function_owner` names the library that declares the function: the
+  identity of one of the recompiled unit's direct imports, a non-empty
+  string. Absent, `function` names a function the unit declares; present, it
+  names a function of that library, which replay executes against the
+  library's checked package, recompiled from the request's `dependencies`
+  entry of that identity. The owner is part of the target and is never
+  inferred from the name or from the `dependencies` list, because one name
+  can be declared by the unit and by an imported library at once, and the
+  two are different functions. `function_owner` is present only beside
+  `function`;
 - `frame_operation`: `{object, operation}`, `object` the `QualifiedName` of the
   object type, process or state machine that declares the operation and
   `operation` its `Identifier` ([FR-340](FR-340-checked-package-frame-location.md),
@@ -192,12 +204,28 @@ that applies:
    with `function` and `frame_operation`, `/replay/state_clause` for any request
    carrying `state_clause` with one or both other members); a frame or a state-clause request that carries
    `arguments` or an occurrence key, `invalid_runtime_input`/`unknown-member`
-   at `/replay/arguments` or at `/replay/occurrence_key`; and a `function`
+   at `/replay/arguments` or at `/replay/occurrence_key`; a request carrying
+   `function_owner` with no `function`, `invalid_runtime_input`/`unknown-member`
+   at `/replay/function_owner`; and a `function`
    request with no `occurrence_key`, `invalid_runtime_input`/`missing-member`
    at `/replay/occurrence_key`;
 2. the resolution of the replay target against the recompiled package.
 
-The executor SHALL resolve a `function` by `QualifiedName` and a
+The executor SHALL resolve a `function` with no `function_owner` by
+`QualifiedName` among the recompiled unit's own declarations. It SHALL
+resolve a `function` with a `function_owner` among the declarations of that
+library's recompiled checked package and SHALL NOT search the unit's own
+declarations, refusing, before any argument join or call and with no charge:
+a `function_owner` that is not one of the recompiled unit's direct imports,
+a library the request carries in `dependencies` only as a transitive import
+included, `missing_import`/`missing-selection` at `/replay/function_owner`
+naming the owner and the unit's package; a name the library declares no
+function for, `missing_declaration`/`missing-name` naming the target and the
+library; and a function whose signature names a type of the library's own
+package, so that no importing package can call it,
+`ill_typed`/`operator-ineligible` naming the target. The `dependencies`
+carriage rules above are unchanged: the owner is resolved among the direct
+imports the recompile binds. The executor SHALL resolve a
 `frame_operation` by FR-342's operation resolution, refusing: no declaration
 named by `object`, or no operation member of that name, or an operation with
 no frame node, `missing_declaration`/`missing-name` naming the target; an
@@ -566,6 +594,8 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-33 | **RETIRED (source-byte integrity removed).** Withdrawn with no replacement: a `sources` entry is `{authority, identity}` and no entry's bytes are digested. | Test (TC-277), retired |
 | FR-323-AC-34 | **RETIRED (source-byte integrity removed).** Withdrawn with no replacement: a `sources` entry is `{authority, identity}` and no entry's bytes are digested. | Test (TC-277), retired |
 | FR-323-AC-35 | **RETIRED (source-byte integrity removed).** Withdrawn with no replacement: a `sources` entry is `{authority, identity}` and no entry's bytes are digested. | Test (TC-277), retired |
+| FR-323-AC-36 | A `function` replay request for a unit `q` that imports the library `test/units`, with `replay` `{"function": "big", "function_owner": "test/units", ...}` and `test/units` as its one `dependencies` entry, executes `big` of `test/units` against that library's recompiled package, joining the arguments by that package's parameter node ids; with the unit also declaring a function `big`, the owner-carrying request still executes the library's `big`, and the same request without `function_owner` executes the unit's. The corpus schema's `$defs.ReplayTargetMembers` admits `function_owner` only in the `function` arm, as a non-empty string, and the request round-trips with its owner. | Test (TC-1484) |
+| FR-323-AC-37 | A request carrying `function_owner` beside `frame_operation` or `state_clause` refuses `invalid_runtime_input`/`unknown-member` at `/replay/function_owner` at decode, before the byte-provision rule and any recompile, and fails the corpus schema; a `function_owner` of `test/absent`, which the unit does not import, or of a library present in `dependencies` only as the import of another dependency, refuses `missing_import`/`missing-selection` at `/replay/function_owner`; an owner-carrying request for a name `test/units` does not declare refuses `missing_declaration`/`missing-name`; one for a function whose signature names a record type of `test/units` refuses `ill_typed`/`operator-ineligible`; each refuses before any argument join or call, with no charge and no result. | Test (TC-1484) |
 
 ## Dependencies
 

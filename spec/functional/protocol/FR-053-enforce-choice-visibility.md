@@ -32,6 +32,16 @@ available only to another role and no causal message exposes it to the owner.
 Rejecting an unobservable choice SHALL NOT imply that every global trace is
 invalid or that a general projection theorem has been attempted.
 
+The protocol input `over` denotes the model state at each step, which no role
+observes at its decision. The linker SHALL refuse a choice or repeat guard, a
+`visible` entry or a `check` condition that reads `over` with
+`ill_typed`/`operator-ineligible`, located at the smallest term that reads
+`over` (the field-read path rooted at it, or the bare name) and naming the
+slot (FR-464). A decision that depends on the input reads a protocol capture of
+it instead: the capture fixes the value at activation and every role holds it,
+so the owner knows it and the choice projects to the owner's local behaviour.
+A guard may read a protocol capture without a `visible` entry.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -40,6 +50,7 @@ invalid or that a general projection theorem has been attempted.
 | FR-053-AC-2 | The same choice is refused when the payment outcome remains visible only to the external provider. | Test (TC-053) |
 | FR-053-AC-3 | Ownerless, multiply owned, duplicate-label and guard-overlap mutants are refused independently. | Test (TC-053) |
 | FR-053-AC-4 | The refusal identifies the exact choice, owner and unavailable distinguishing fact without reporting global conformance success. | Test (TC-053) |
+| FR-053-AC-5 | A choice whose guards read a protocol capture of the input (`capture ready: Boolean = input.ready`) is admitted with no `visible` entry; the same guards reading `input.ready` directly each refuse `ill_typed`/`operator-ineligible` located at the term `input.ready`, naming the guard slot, and never at the guard block, the choice or the protocol declaration. | Test (TC-1521) |
 
 ## Dependencies
 

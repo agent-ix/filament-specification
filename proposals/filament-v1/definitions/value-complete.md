@@ -55,7 +55,10 @@ places that role in exactly one slot. Catalog membership is not selection.
   `ieee_profile` when `ieee_operation` is present.
 - Exactly-one role: one of `integer_division_euclidean`,
   `integer_division_floor` or `integer_division_truncating` (selector
-  `integer_division_profile`) when `integer_div_rem` is present.
+  `integer_division_profile`) when `integer_div_rem` is present. A unit fills
+  the selector with a header `profile` naming the law
+  ([FR-570](../../../spec/functional/expressions/FR-570-select-the-integer-division-law-from-a-unit-header.md)),
+  or a caller supplies it as the lock selection's alternative role.
 
 Each role names the definition artifact of the same name in the tables of this
 document. A unit that does not select this root selects only the `edition`

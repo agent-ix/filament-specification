@@ -28,10 +28,14 @@ Selected definition identity or a located unsupported-profile diagnostic.
 
 ## Behavior
 
-The implementation target is `ix:native`, edition `0-draft`,
-`state-finite/0-draft`, defined by the `proposals/state-core` definition and
-schema files. Grammar admission remains distinct from successful typing,
-execution and backend support.
+The implementation target is `ix:native`, edition `1-draft`, the only edition
+the standard defines; any other edition string, the retired `0-draft` included,
+refuses `unknown_edition`/`unsupported-selection` at the edition string literal
+([FR-500](../source-package/FR-500-select-the-edition-and-profiles-of-a-source-unit.md)).
+The retired `state-finite/0-draft` profile and its `proposals/state-core`
+definition and schema files remain as design record only. A unit may declare
+no `profile`; it then selects no layer (FR-500). Grammar admission remains
+distinct from successful typing, execution and backend support.
 
 FS01 accepts `Filament` as the product/language name, `native Filament` as its
 descriptive source-language name and `ix:native` as its stable machine identity.
@@ -59,6 +63,9 @@ definition and the FR-290 kind and extent its witness requests.
   select that layer and every layer its `requires` closure names, and no
   layer that requires it.
 - When the unit's selected layers include `filament.value.complete/v1`, counting the layers a governing infinite-trace profile requires for a refinement's rows (below), the frontend shall select the definitions the [package selection](../../../proposals/filament-v1/definitions/value-complete.md#package-selection) selects for the unit; otherwise it shall select exactly the `edition`.
+- A `profile` declaration naming one of the three integer-division law
+  definitions selects that law, not a layer
+  ([FR-570](../expressions/FR-570-select-the-integer-division-law-from-a-unit-header.md)).
 - When a declaration's `using` names that profile's alias, the frontend
   shall admit the declaration under exactly the selected layer's
   admitted-form set, which includes the sets of the layers it requires.

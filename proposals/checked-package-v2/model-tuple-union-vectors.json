@@ -692,7 +692,7 @@
     },
     {
       "name": "TK-08",
-      "criterion": "FR-322-AC-145",
+      "criterion": "FR-322-AC-399",
       "patch": [
         {
           "op": "replace",
@@ -701,17 +701,12 @@
         }
       ],
       "expected": {
-        "refused": {
-          "code": "unsupported_construct",
-          "cause": "declaration-form",
-          "at": "/variant_types/0/cases/0/payloadType",
-          "stage": "reader"
-        }
+        "admitted": true
       }
     },
     {
       "name": "TK-09",
-      "criterion": "FR-322-AC-145",
+      "criterion": "FR-322-AC-399",
       "patch": [
         {
           "op": "replace",
@@ -720,12 +715,7 @@
         }
       ],
       "expected": {
-        "refused": {
-          "code": "invalid_model_binding",
-          "cause": "malformed-declaration",
-          "at": "/tuple_types/0/positions/0",
-          "stage": "reader"
-        }
+        "admitted": true
       }
     },
     {

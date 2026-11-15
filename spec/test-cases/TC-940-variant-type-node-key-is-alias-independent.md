@@ -77,7 +77,8 @@ the package `acme/shapes` declares the tuples `Pair` (`p0: Boolean`,
    over `Shape`, and structural and enum equality over `Shape`.
 10. Present a tuple with no position, a gap, an absent `typeRef`, a field, an
     unresolved `typeRef`, a repeated ordinal, and a case with an unresolved
-    `payloadType` and one typed `ix://filament/native/Clock`.
+    `payloadType`. (A case or position typed `ix://filament/native/Clock` is
+    admitted as a clock member; TC-1361 covers it.)
 11. Read `fixtures/positive-model-tuple-union.json` with the full reader: the
     `union_value`, `enum_value`, `filament.op.tuple.project`, `case` and equality
     nodes it carries over `Pair`, `Shape`, `Color` and `List`, then each wire case

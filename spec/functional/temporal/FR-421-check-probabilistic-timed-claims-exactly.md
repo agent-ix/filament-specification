@@ -3,6 +3,10 @@ id: FR-421
 title: "Check probabilistic timed claims exactly through digital clocks"
 type: FR
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-641
+    type: references
   - target: ix://agent-ix/filament-specification/US-011
     type: implements
   - target: ix://agent-ix/filament-specification/FR-411
@@ -48,6 +52,10 @@ or `punctual-interval`.
 ## Behavior
 
 ### Delays
+
+The provider reads each `delay` declaration from its `delay_distribution`
+node of the checked package ([FR-640](../../objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)),
+and the items it settles are the timed rows of FR-641.
 
 `under every scheduler`, with or without a fairness set, chooses every delay
 and every scheduled identity, and random arguments are drawn by FR-406; a

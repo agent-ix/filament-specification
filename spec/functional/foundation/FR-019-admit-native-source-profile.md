@@ -52,7 +52,7 @@ The frontend shall reject duplicate clause authorities
 and mismatched evaluation anchors before lowering. Invalid or unsupported input
 does not produce a Boolean; runtime exhaustion remains incomplete.
 
-The adopted `state-finite/0-draft` rules and fixtures remain historical evidence.
+The retired `state-finite/0-draft` rules and fixtures remain design record only; no frontend admits them (FR-500).
 Their division/remainder, object/record equality, reachability and pre(parameter)
 rules do not establish those capabilities in the composed profiles. The
 superseded `state-finite/1-draft` identity shall not be admitted or aliased.

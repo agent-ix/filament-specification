@@ -91,6 +91,44 @@ order (FR-160-AC-5). Under uncertainty 0 the bound `b - a <= 0` is therefore
 indeterminate, `b - a <= 1` true and `b - a <= -1` false.
 The vectors are `proposals/checked-package-v2/tick-cover-vectors.json`.
 
+## Timestamp uncertainty beyond counter ticks
+
+A timestamp that is not a counter reading carries uncertainty in one of two
+forms, both in the clock binding's timestamp unit and exact:
+
+- **Bounded cover.** A trace input declares a clock uncertainty `u >= 0` for
+  every point stamp `t`, which then covers the closed interval `[t - u, t + u]`.
+  A point stamp under no declared cover is the instant itself (`u = 0`).
+- **Interval stamp.** An observation carries its own interval `[earliest,
+  latest]` with an open or closed flag at each end, `earliest <= latest`, and
+  `earliest < latest` when either end is open. A per-observation interval
+  overrides the trace's bounded cover for that observation. An empty interval
+  is refused as invalid input, never read as a point.
+
+Both forms are read with the endpoint rules of "Counter-tick intervals and
+endpoints": definitely before, possibly before, the difference interval and
+the true, false and indeterminate outcomes of a bound. Over a timestamped
+finite window:
+
+- An observation is **in** a window when its interval lies inside the window,
+  **out of** it when the two are disjoint, and **possibly in** it otherwise. A
+  possibly-in observation contributes both possibilities to every operator
+  that reads the window, so a verdict that depends on it is indeterminate with
+  the reason that a stamp straddles the window or bound, and is pending while
+  progress could still resolve it.
+- Canonical order is by `earliest`, then `latest`, then the order key. Two
+  observations whose intervals overlap and that carry no order key from one
+  order authority are unordered: `until`, `release`, `since` and `triggered`
+  refuse over them as over equal stamps (FR-090-AC-4).
+- A window is established only when progress covers its deadline plus the
+  largest upper widening among its observations, `u` for a bounded cover and
+  `latest - t` for an interval stamp with nominal stamp `t`, or `latest`
+  itself when no nominal stamp is given.
+
+Midpoints are never substituted for an interval, and widening never narrows a
+definite verdict that the point stamps would give into a different definite
+verdict: it can only turn it indeterminate.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -103,6 +141,8 @@ The vectors are `proposals/checked-package-v2/tick-cover-vectors.json`.
 | FR-160-AC-6 | A counter reading `k` covers the half-open interval `[k, k + 1)`, widened by an uncertainty of `u` ticks to `[k - u, k + 1 + u)`. Two adjacent ticks are definitely ordered, a tick is not definitely before itself, and an interval open at an endpoint is definitely before one starting there. | Test (TC-199) |
 | FR-160-AC-7 | With a bound of 3000 ticks, uncertainty 0 and a request at tick 0, `ack - req <= 3000` is true for an acknowledgement at tick 2998, indeterminate at tick 3000 and false at tick 3001; the same bound with uncertainty 1 decides the neighbouring ticks by the same endpoint rule (`proposals/checked-package-v2/tick-cover-vectors.json`, `TCV-01` to `TCV-12`). | Test (TC-199) |
 | FR-160-AC-8 | Two events at the same tick `k` under uncertainty 0 have the difference `(-1, 1)`, open at both ends and not clamped to zero: `b - a <= 0` is indeterminate, `b - a <= 1` true and `b - a <= -1` false (`proposals/checked-package-v2/tick-cover-vectors.json`, `TCV-13` to `TCV-15`). | Test (TC-199) |
+| FR-160-AC-9 | Under a bounded cover `u` 2 ms, a request stamped 0 ms and `eventually[0,10] holds(ack)` with completeness and watermark through 17 ms: `ack` stamped 5 ms gives true (difference `[1, 9]`), 10 ms gives indeterminate (difference `[6, 14]` straddles the bound) and 15 ms gives false (difference `[11, 19]`); with `u` 0 the three give true, true and false. With no `ack`, the activation is pending at watermark 11 ms and established false at watermark 12 ms. | Test (TC-1044) |
+| FR-160-AC-10 | An observation with interval stamp `[3, 5]` beside one with `[4, 6)` and no shared order authority makes `p until[0,5] q` refuse as unordered, while `eventually[0,5]` evaluates; an interval stamp `[5, 5)` or `[6, 5]` is refused as invalid input; an interval stamp overrides the trace's bounded cover for its observation; and no case substitutes a midpoint. | Test (TC-1044) |
 
 ## Dependencies
 

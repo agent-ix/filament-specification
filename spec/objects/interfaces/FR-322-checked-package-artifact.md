@@ -4,6 +4,8 @@ title: "Immutable checked-package artifact"
 type: FR
 object: value_object
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-610
+    type: references
   - target: ix://agent-ix/filament-specification/interface_004
     type: specifies
   - target: ix://agent-ix/filament-specification/FR-468
@@ -57,6 +59,8 @@ relationships:
   - target: ix://agent-ix/filament-spec-language/FR-019
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-093
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-660
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-103
     type: references
@@ -1830,6 +1834,83 @@ and a reader refuses it `malformed_wire` at
 `/semantic_graph/nodes/{i}/owner`, or at `/semantic_graph/nodes/{i}` when a
 required `owner` is absent (FR-322-AC-51).
 
+## Source-declared object types
+
+A native `object` declaration (FR-610) is emitted with the node forms a
+domain-package object type uses; no node kind is added for it. What tells the
+two apart is the owner and the `declaration`, never the node's position or a
+display name:
+
+1. **Object type node.** A source-declared object type is one
+   `model`/`object_type` node that carries a `declaration`
+   `{qualified_name: [<type name>]}` and the declaring unit's `SourceOwner`
+   (the owner-presence row "structural, carries `declaration`"). It is
+   self-typed. Its body is an `aggregate` of one binding per field of the
+   type's effective view, inherited fields first (in `extends` order, each
+   supertype's fields in its own binding order) and then its own fields in
+   source order; each binding is written exactly as a declared record's field
+   binding (the field name bound to a reference to the field's type node, an
+   optional field with its `optional` group), and a type with no field has
+   `aggregate{[]}`. Its `dependencies` are the type nodes its bindings
+   reference, ascending. It has one `declaration` occurrence. Its node id is a
+   declared node's structural id `{package, [<type name>], ordinal}`, so a
+   change to a field, operation or population leaves it unchanged and a
+   rename changes it.
+2. **Member resolution.** A `field` member whose declaring node is a
+   source-declared object type resolves to the binding of its name in that
+   node's body; the member's type is the binding's type node. A name no
+   binding carries refuses `missing_declaration`/`missing-name` at the
+   member. No domain package document is read for it.
+3. **Anchors and frames.** A `state`/`operation_anchor` (FR-342) and a frame
+   entry (FR-340) whose `context` or declaring node is a source-declared object
+   type name a member of the source declaration. They are not resolved against
+   a domain document; the producer's source-object identity rows (FR-610
+   "Identity rows") supply the operation set a reader checks them against.
+4. **Population reference.** A source-declared population that a checked node
+   names is one `relation`/`population` node carrying a `declaration`
+   `{qualified_name: [<population name>]}` and the unit's `SourceOwner`, keyed
+   as a declared node. This is the one `relation` node that carries a
+   `declaration`: `DeclarationTagRules` exempts `relation`/`population` and no
+   other `relation` form, so a `relation`/`relationship` node with a
+   `declaration` still fails the schema.
+5. **Clause functions.** A clause function of a source-declared operation
+   carries the unit's `SourceOwner` and a `declaration` distinct for every
+   clause function of the package: `[<type>, <operation>, "precondition",
+   <label>]` for an authored precondition, `[<type>, <operation>,
+   "effective_precondition"]` for an effective precondition and `[<type>,
+   <operation>, "body"]` for a body, with that name as its id path, ordinal
+   `0` and one `declaration` occurrence. Every segment meets the identifier
+   rule `[A-Za-z_][A-Za-z0-9_]*`, so the one-holder-per-qualified-name rule
+   admits sibling clause functions with no change. The owner-presence row for
+   a clause function with no `declaration` (`ModelOwner`) is unchanged.
+6. **Operation effects.** An FR-496 `operation_effects` row of a
+   source-declared declaring node keeps `document` a string and holds the
+   declaring node's `SourceOwner` `identity` in it, so the `(document,
+   declaring, operation)` sort is unchanged; `declaring` is the source-declared
+   node; `provenance.origin` is `source_declaration_operation_frame` (a model
+   row keeps `model_document_operation_frame`); and `provenance.member` is the
+   source identity `<type>::<operation>`. A reader joins such a row through the
+   declaring node's `SourceOwner` and identity row and checks `effect` against
+   the source frame.
+7. **Dispatch tables.** An FR-494 dispatch-table row whose receiver context
+   and candidate declaring types are source-declared nodes is admitted; the
+   reader joins the context and each candidate's declaring family through the
+   nodes' `SourceOwner` and identity rows, not through a selected model row.
+
+**Identity against a domain declaration.** A source-declared object type is
+identified by its `SourceOwner` and qualified name; a domain-package object
+type by its `ModelOwner` (the domain package identity and the IR node
+identity) with no `declaration`. The two never compare equal and never stand
+for one another, even when the source name equals the last segment of a
+model declaration's identity. The owner join keeps them apart: a
+`model`/`object_type` node carrying a `declaration` and a `ModelOwner`, or
+carrying a `SourceOwner` and no `declaration`, fails the schema and is
+`malformed_wire` at its `owner` (FR-322-AC-51); a source-declared node whose
+`SourceOwner` joins no `lock.sources` entry is
+`missing_declaration`/`missing-selection` at its `node_id`; and two nodes
+with one `node_id` are refused as any duplicate id is. FR-610's acceptance
+criteria and TC-1441 test these rules.
+
 ## Model-owned members
 
 A `model_member` is resolved in four steps. Step 1 runs before graph
@@ -1903,7 +1984,10 @@ constraints ("Reference conformance" below).
    its kind was refused `missing_declaration`/`missing-selection` there. A node that carries a
    `declaration` carries a `SourceOwner` (the V2 schema refuses a
    `ModelOwner` on it), so it is not a model declaration node and has no
-   `T`.
+   `T`. A member whose declaring node is a source-declared object type (a
+   `model`/`object_type` node carrying a `declaration`) is not resolved by
+   these steps; "Source-declared object types" below resolves it from the
+   package alone.
 3. **Resolution.** The member resolves among the effective members of `T`
    that name resolution exposes: `T`'s own and those inherited along its
    declared supertypes, less every member a redefinition hides and every
@@ -1944,7 +2028,7 @@ constraints ("Reference conformance" below).
    | `ix://filament/native/Duration` | `Duration`, an amount of elapsed time: the type `Quantity<s>` where `s` is the unit named `s` that the member resolves, and `s` is the 1-second unit of its own owner's `Time`. A member declared by a selected package resolves the unit `s` that its own selection declares (`ix://filament/unit/<p>/s`, `<p>` that selection's identity), and only when that selection declares no `s` the unit `s` the unit of compilation declares; a member declared by the unit of compilation resolves the unit `s` the unit of compilation declares (`ix://filament/unit/s`). A source `s` and a package `s` are two distinct units (FR-142), so a unit of compilation and a package that both declare `s` never make a `Duration` ambiguous. The resolved `s` SHALL be typed by a base dimension whose declared name is `Time` and that its own owner declares (the unit of compilation's `Time` for a source `s`, the selection's `Time` for a package `s`, never another owner's `Time` of the same name), and SHALL have exact scale 1 and offset 0 to the root unit of that dimension: the root unit itself, or a unit whose composed edges to the root have scale 1 and offset 0. A `Duration` member and a `Quantity<s>` member have one type, with the exact rational magnitude in seconds that "Scalar literal values" spells; a quantity in another unit of `Time` reaches `Duration` only through FR-142's explicit conversion to `s`. If no `s` is resolved the member refuses `missing_declaration`/`missing-name`; if the resolved `s` is typed by a dimension that is not such a base dimension named `Time`, or has a scale other than 1 or an offset other than 0 to the root, the member has no type and the application refuses `ill_typed`/`operator-ineligible` | the `scalar_type`/`unit` node of the resolved `s` (family `quantity`); no node is introduced |
    | `ix://filament/native/Float32` | `Float32`, an IEEE binary32 value (FR-148); a field names no rounding mode, so the type is strict `exact`; a field value is compared by `=` under numeric equality (FR-149) and by its bits in a collection (FR-144) | `scalar_type`/`float32` |
    | `ix://filament/native/Float64` | `Float64`, an IEEE binary64 value (FR-148), with the same rules as `Float32` | `scalar_type`/`float64` |
-   | `ix://filament/native/Clock`, or an alias of it, on a field, an operation parameter or an operation result with FR-154's clock member shape (presence `optional`, or a result of multiplicity `{0, 1}`, is `Option<Clock>`) | `Clock`, the clock type of FR-415: a clock field is one clock per object of its owning type (and per record or tuple path that holds it), holds no data value, is read only as the clock operand of an atomic clock constraint (in a guard or a time invariant) and is written only by a reset (FR-415); a clock parameter or result is a clock place passed or returned by place (FR-415 "Clock places") | none: no node stands for a clock. This artifact carries no clock constraint, reset or timed-model member; the checker reads a clock operand there by (declaring node, field path) and records the timed model (FR-415, FSL FR-230). An operation member whose parameter or result is a clock member has that member's type from the row and no node for the parameter or result; the operation's other members are typed as usual. A record value type with a clock field has the `model`/`record_value_type` node of its data fields only, and its clock fields are read by (declaring node, field name) as an object type's are. The multiplicity table below applies to a clock member: `{0, 3, true, false}` makes it a `Sequence<Clock>[0, 3]`, and a `sequence` or `map` type whose `items` or `values` is `Clock` is a `Sequence<Clock>` or `Map<K, Clock>`, `K` the map's scalar `keys` type, with the map's `bound` (FR-415 "Clock collections", FR-154 "Map types"). A clock collection whose element holds data (a `Sequence<Timer>`) is typed by the `composite_type` node of its kind over the element's **data part** node, the `record_value_type` node that lists the data fields only, with the `collection_bounds` node of its bounds when it has them; a clock collection whose element holds no data (a `Set<Clock>`, a `Bag<Clock>`, a `Sequence<Option<Clock>>`) has no node, and the timed model records its kind, bounds and key domain with the clock place, so that the shape reads (`size`, `present`, an index or key being in range) are recorded data predicates of the timed model and read no clock. A `field` application whose member resolves to a clock field or a clock collection in any other position, a value position, refuses `invalid_timed_model`/`clock-read-outside-constraint` |
+   | `ix://filament/native/Clock`, or an alias of it, on a field, an operation parameter or an operation result, or as a tuple position or variant payload ("Clock positions and payloads"), with FR-154's clock member shape (presence `optional`, or a result of multiplicity `{0, 1}`, is `Option<Clock>`) | `Clock`, the clock type of FR-415: a clock field is one clock per object of its owning type (and per record or tuple path that holds it), holds no data value, is read only as the clock operand of an atomic clock constraint (in a guard or a time invariant) and is written only by a reset (FR-415); a clock parameter or result is a clock place passed or returned by place (FR-415 "Clock places") | none: no node stands for a clock. This artifact carries no clock constraint, reset or timed-model member; the checker reads a clock operand there by (declaring node, field path) and records the timed model (FR-415, FSL FR-230). An operation member whose parameter or result is a clock member has that member's type from the row and no node for the parameter or result; the operation's other members are typed as usual. A record value type with a clock field has the `model`/`record_value_type` node of its data fields only, and its clock fields are read by (declaring node, field name) as an object type's are. The multiplicity table below applies to a clock member: `{0, 3, true, false}` makes it a `Sequence<Clock>[0, 3]`, and a `sequence` or `map` type whose `items` or `values` is `Clock` is a `Sequence<Clock>` or `Map<K, Clock>`, `K` the map's scalar `keys` type, with the map's `bound` (FR-415 "Clock collections", FR-154 "Map types"). A clock collection whose element holds data (a `Sequence<Timer>`) is typed by the `composite_type` node of its kind over the element's **data part** node, the `record_value_type` node that lists the data fields only, with the `collection_bounds` node of its bounds when it has them; a clock collection whose element holds no data (a `Set<Clock>`, a `Bag<Clock>`, a `Sequence<Option<Clock>>`) has no node, and the timed model records its kind, bounds and key domain with the clock place, so that the shape reads (`size`, `present`, an index or key being in range) are recorded data predicates of the timed model and read no clock. A `field` application whose member resolves to a clock field or a clock collection in any other position, a value position, refuses `invalid_timed_model`/`clock-read-outside-constraint` |
    | a value type (FR-208 `filament.meaning.model.value-type/v1`) of the same domain package bound as `Int[lo, hi]`, `lo <= hi`, as TC-196's `Count` and `Small` and TC-197's `Count` are | `Int[lo, hi]` | `bounded_domain`/`integer_range` with bounds `lo` and `hi` over the `Integer` node |
    | a value type of the same domain package bound as `Text[min, max; profile]`, `0 <= min <= max`, with `profile` one of FR-141's `unicode-scalars`, `nfc`, `nfd`, `nfkc`, `nfkd` and `binary-utf8` | `Text[min, max; profile]`, whose length, bounds and comparison are FR-141's under `profile` | `bounded_domain`/`text_bounds` with bounds `min` and `max` and `text_profile` `profile` over the `scalar_type`/`text` node |
    | a Rational value type of the same domain package (FR-154 "Rational value types") with bounds `n1`, `n2`, `d1`, `d2` and no `unit`, directly or through an alias | `Rational[n1, n2; d1, d2]`, the rationals in lowest terms whose numerator is in `[n1, n2]` and whose positive denominator is in `[d1, d2]`, with FR-149's equality, ordering and conversions | `bounded_domain`/`rational_range` over the `scalar_type`/`rational` node, whose body is the bindings `numerator_min` `n1`, `numerator_max` `n2`, `denominator_min` `d1` and `denominator_max` `d2`, in that order, each an `integer` literal; two value types of equal bounds name one node |
@@ -2208,14 +2292,38 @@ no operation identity, and the published operation catalog is unchanged.
   FR-154 itself admits these natives (FR-154-AC-17), so the refusal is this reader's: a
   `payloadType` of one is `unsupported_construct`/`declaration-form` at
   `Variant.payloadType`, a position `typeRef` of one is
-  `invalid_model_binding`/`malformed-declaration` at the position, exactly as for
-  `ix://filament/native/Clock`. A consumer of the selected document (the semantic IR intake,
+  `invalid_model_binding`/`malformed-declaration` at the position. A consumer of the selected document (the semantic IR intake,
   the FCD reader) that admits such a `typeRef` as a payload or position refuses at its
   intake with the same code and locus; it never carries the type on to an operation
   lookup. A *member* (field, parameter or result) of one of the four types is not an
   intake refusal: it gives the member no type and the application refuses
   `ill_typed`/`operator-ineligible` ("A declared type outside the table"), as a bare `Text`
   field does (FR-322-AC-31).
+- **Clock positions and payloads.** A tuple position `typeRef` or a variant case
+  `payloadType` that is `ix://filament/native/Clock`, or an alias of it, is
+  admitted as a clock member (FR-415 "Clock places"), as a record field of that
+  type is: a clock place is a clock reached through an aggregate path, and the
+  path steps `tuple(index)` and `union(case)` of a `clock_place` ("Timed-model
+  nodes") exist to name it. Such a position or payload holds no data value and
+  has no type node. A tuple with a clock position keeps all its positions in
+  the selected document; its data positions are typed as above, and a clock
+  position is read only as the clock operand of an atomic clock constraint and
+  written only by a reset, so `filament.op.tuple.project` of a clock position
+  in a value position refuses `invalid_timed_model`/`clock-read-outside-constraint`
+  at the application. A case whose payload is a clock is a union member of
+  payload arity 0 in every data read: its `union_value` carries the empty
+  payload `aggregate` and its `case` arm binds no data. `=` and `!=` over a
+  clock-bearing tuple or union would read its clocks, so they refuse
+  `invalid_timed_model`/`clock-read-outside-constraint`, as over a clock
+  collection (FR-415). The clock under such a case is a guarded place
+  that is live exactly while that case is the union's active member; its
+  presence is read from the union's active member and needs no presence bit,
+  and a postcondition write of the union value that selects the case with a
+  time constant as its payload is a reset of that place (FR-415), recorded as a
+  `clock_reset` beside the write of a `union_value` with the empty payload. A clock-bearing position or
+  payload makes the tuple or union a clock-bearing type: a collection of it is a
+  clock collection, and a map key of it is refused, as FR-415 "Clock collections"
+  states.
 - **Refusals.** In FR-322's order: the closed V2 schema refuses (`malformed_wire`)
   a `tuple_value_type` node with no `owner`, with a `SourceOwner` and no
   `declaration`, with a `declaration` beside a `ModelOwner`, or with a
@@ -2238,11 +2346,11 @@ no operation identity, and the published operation catalog is unchanged.
   ordinal, `conflicting-binding` at the later position; then (2) no position, or a
   tuple member other than `node` and `positions`, `malformed-declaration` at the
   tuple; then (3) the first position whose ordinal is not its index or whose
-  `typeRef` is absent, `ix://filament/native/Clock` or one of the four refused types above,
+  `typeRef` is absent or one of the four refused types above,
   `malformed-declaration` at the position; then (4) the first position whose `typeRef` names no package type or
   native, `missing-name` at the position; then each variant of `variant_types` in
-  document order, the first case whose `payloadType` is unresolved,
-  `ix://filament/native/Clock` or one of the four refused types above, `unsupported_construct`/`declaration-form` at
+  document order, the first case whose `payloadType` is unresolved or
+  one of the four refused types above, `unsupported_construct`/`declaration-form` at
   `payloadType`. The tuples are all read before any variant type, so a document
   with a defect of each kind reports the tuple's.
 - **Recursion.** Model types may refer to one another and to themselves through
@@ -3465,6 +3573,26 @@ type), and no law, mode, member, constraint or leaves. It takes no `rounding`
 mode, because negation is exact, and its operand is a non-affine unit's
 quantity.
 
+**Quantity scaling.** `filament.op.quantity.scale` and
+`filament.op.quantity.scale_div` are FR-142 "Quantity scaling", the product and
+the quotient of a quantity and an exact number. Each is an application of
+operator `binary` with exactly two arguments, in the order quantity, factor,
+whatever the source order (`2 * d` and `d * 2` are one node): argument 0 is a
+`quantity` typed by a `scalar_type`/`unit` node of a non-affine unit or by a
+`scalar_type`/`compound_unit` node, and argument 1 is of the `exact_numeric`
+group (`integer`, `rational` or `decimal`). The catalog entry of each is operator
+`binary`, operands `["quantity", "exact_numeric"]`, no rest, result `operand:0`
+(the quantity operand's own unit type), and no law, mode, member, constraint or
+leaves; it takes no `rounding` mode, because scaling is exact. A third or a
+missing argument, a factor of another family (a `float64`, a `quantity`), a
+quantity argument that is a carried quantity or of an affine unit, and a
+`result_type` other than argument 0's type each refuse
+`ill_typed`/`operator-ineligible` at the application; a `mode` value refuses
+`invalid_package`/`operation-mode-mismatch` and a `laws` entry
+`invalid_package`/`operation-law-mismatch`. The catalog and both V2 schemas'
+`OperationIdentity` enumerate the two identities together, directly after
+`filament.op.quantity.pow` (FR-322-AC-17).
+
 **Quantity integer power.** `filament.op.quantity.pow` is the integer power of
 FR-142 (source `e ^ n`, the shared grammar's complete-V1 `power` production):
 an application of operator `binary` with exactly two arguments, in the order
@@ -3526,6 +3654,17 @@ A reader refuses a document with any other `contract_version` as
 package, and infers nothing from its content. Exact selected resource limits are admitted;
 one-over-limit input returns an incomplete resource disposition without a
 partial checked package.
+
+**Versions of this contract.** `contract_version` is the document type, not a
+revision number. A revision of the closed sets and rules above, including an
+in-place revision of the `node_tag` set, is published as a release of the
+standard, and because the reader is closed every such extension is a breaking
+release ([FR-660](../../functional/ecosystem/FR-660-version-the-wire-the-published-files-and-the-consumer-facades.md)).
+The document type changes only when bytes admitted under it would be read with
+a different meaning. A producer writes, and a reader admits, the document type
+of the standard release it pins through Cargo; the facts a consumer reads from a
+producer's public API about an admitted package are listed in the consumer-fact
+inventory (FR-661, consumer fact `CF-IR-01` for the document type).
 
 **Integers.** An integer *value*, meaning a literal's `value` of `value_kind`
 `integer` and so every range or cardinality bound, is an `IntegerString`, the
@@ -3608,6 +3747,7 @@ legacy `clock:` prefix or derives the name from the profile identity.
 | `event_position` | `sequence_authority`: non-empty name | `filament.temporal.event-position.false-extension/v1` |
 | `fixed_sample` | `epoch` and `period`: exact typed numbers; `period` is positive; `unit`: non-empty name | `filament.temporal.fixed-sample.false-extension/v1` |
 | `timestamped_event` | `timestamp_unit`: non-empty name | `filament.temporal.timestamped-event.finite-window/v1` |
+| `timed` | `unit`: non-empty name | `filament.temporal.timed/v1`, for a clause over a trace subject only (below) |
 
 The reader resolves `declaration`, reads the clause's `temporal_profile` law,
 and requires that law to equal the matching `lock.profile_selections` entry.
@@ -3628,20 +3768,29 @@ positive. The rational components are in lowest terms. `period` is a strictly
 positive exact number. The authority and unit values are non-empty strings
 compared byte-for-byte; no trimming, normalization or alias resolution occurs.
 
-`filament.temporal.timed/v1` is the no-row alternative: it does not select one of
-the three `ClockConfiguration` row kinds and never manufactures a
-`temporal_bindings` row. A timed clause's `clock_name` is `model-time`. For a
-checked timed-model subject, the checked package's `timed_model` root and its
-`time_source` provide the model time binding and exact time unit (FR-415); the
-reader joins that source to the clause's model subject. For a trace subject,
-the time-stamped positions and their admitted order are inputs to the selected
-temporal profile, not configuration copied into the checked package. The
-temporal profile reader admits that runtime binding. A timed clause without a
-matching timed-model source when it names a model subject refuses
-`invalid_package`/`timed-node-reference` at its clause body; supplying any
-`temporal_bindings` row for a timed clause refuses the same code and cause at
-that row. The other three profile kinds retain their existing row requirements
-unchanged.
+`filament.temporal.timed/v1` has two cases, decided by the clause's subject.
+
+- **Timed-model subject: no row.** A timed clause over a model subject takes
+  its time binding from the model and never has a `temporal_bindings` row; its
+  `clock_name` is `model-time`. The checked package's `timed_model` root and its
+  `time_source` provide the model time binding and exact time unit (FR-415); the
+  reader joins that source to the clause's model subject. Such a clause without a
+  matching timed-model source refuses `invalid_package`/`timed-node-reference` at
+  its clause body, and a `temporal_bindings` row for it refuses the same code and
+  cause at that row.
+- **Trace subject: one `timed` row.** A timed clause over a trace subject has
+  exactly one `temporal_bindings` row per occurrence whose `clock_name` is the
+  clause's clock role (FR-090 "Clock names") and whose `clock` is `{kind:
+  "timed", unit}`, the time unit the caller's clock selection binds the role to
+  ([FR-540](../../functional/temporal/FR-540-supply-clock-configurations-by-clock-role.md)).
+  The time-stamped positions and their admitted order remain inputs to the
+  temporal profile at run time ([FR-541](../../functional/temporal/FR-541-evaluate-timed-claims-over-a-recorded-timed-trace.md)),
+  not configuration in the package. A missing row, a `timed` row whose
+  `clock_name` is `model-time` or `model-steps`, and a `timed` row for a clause
+  over a model subject each refuse `invalid_package`/`timed-node-reference` at
+  the clause body or the row.
+
+The other three profile kinds retain their existing row requirements unchanged.
 
 A row for an absent or wrong-kind declaration, an `occurrence` that is not an
 occurrence of the stated role, a repeated key, a row out of order, a missing row
@@ -4519,6 +4668,15 @@ The `TimedModelNotEmitted` condition is not a valid package-read
 outcome for an S3-admitted model. I2 reconstructs the checked timed model from
 the graph and verifies the same normalized constraints.
 
+### Probabilistic-model nodes
+
+CheckedPackage V2 carries admitted random parameters, workloads, rewards and
+delay distributions as nodes with `node_tag: "probabilistic"` and the semantic
+forms `random_parameter`, `workload`, `reward` and `delay_distribution`.
+[FR-640](FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)
+owns their bodies, emission, reader checks and typed read; the closed schema
+admits exactly those bodies.
+
 ### Tick-monitor plan nodes
 
 A tick-monitor plan is one `temporal` node of `semantic_form` `monitor_plan`
@@ -4588,7 +4746,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-54 | The derived-shape semantic checks leave every `correspondence`/`abstraction_relation` node untouched: `positive-clause-operations.json`'s `correspondence`/`abstraction_relation` node passes the stage and the full reader admits the package. | Test |
 | FR-322-AC-55 | The owner join resolves every `ModelOwner` against the selected document, whether or not anything reaches the node: a model declaration node whose owner `node` the document does not declare, and a `model`/`object_type` node whose owner names the relationship `Order-order-Order`, each refuse `missing_declaration`/`missing-selection`; a precondition clause function owned by the operation member `Order/size` (MW-11, and the `clause-precondition-operation-owner` function of `positive-all-families.json`), an invariant owned by the object type `Order` (MW-12) and a body clause function owned by `Order/size` (MW-17) pass the join, while a clause function owned by an undeclared member `Order/missing` (MW-13), one owned by the field `Order/total` (MW-14), a precondition owned by the object type `Order` (MW-16, `clause-precondition-owned-by-object-type`), an invariant owned by the operation member `Order/size` (MW-18, `clause-invariant-owned-by-operation-member`), an invariant owned by the systems interface `Flow` (MW-22, `clause-invariant-owned-by-systems-interface`), a `postcondition` kind (MW-19, `clause-kind-postcondition`), a clause function with two `clause` bindings (MW-20, `clause-two-kind-bindings`) and one with none (MW-21, `clause-without-kind`) refuse `missing_declaration`/`missing-selection` at the clause function's `node_id`. The `clause-*` ids are the `adverse.json` `clause_owner_cases`. | Test |
 | FR-322-AC-56 | A `relationship_end` member of a model-owned relationship resolves to one of the relationship's named ends, `sourceEnd.role` or, when the document declares one, `targetEnd.role`, and refuses `missing_declaration`/`missing-name` for any other name. The `Order-invoiced-Invoice` relationship of the published document declares no `targetEnd.role`, so it names only `invoiced`: `invoiced` resolves (`relationship-end-forward-without-inverse` in `adverse.json` `relationship_end_cases`, admitted by the full reader) and `next` refuses (`relationship-end-names-missing-inverse`; RE-ends-4 and RE-ends-5). `Order-order-Order` is `bidirectional` and names `order` and `next`. `Order-follows-Order` is `source-to-target` and names `follows` and `followedBy`: `follows` resolves (RE-ends-7) and `followedBy`, a named inverse traversed from target to source against that direction, refuses `ill_typed`/`operator-ineligible` at `member.name` (`relationship-end-inverse-against-direction`; RE-ends-8). `Order-twin-Order` names `twin` as both its source and its target role, so `twin` refuses `ambiguous_declaration`/`ambiguous-name` at `member.name` (`relationship-end-names-ambiguous-role`; RE-ends-9). A `relationship_end` whose `declaration` is not a relationship refuses `ill_typed`/`operator-ineligible` at `member.declaration`, after owner recovery and before role lookup (RE-ends-6). A missing role refuses at `member.name`. | Test |
-| FR-322-AC-57 | `filament.op.model.navigate` has operator class `query`. `filament.op.model.navigate` and `filament.op.model.reaches` over a model-owned relationship end apply the checks in this order, each refusing at its recorded application pointer: declaration kind (`member.declaration`), role lookup (`member.name`: missing-name, ambiguous-name), receiver effective endpoint (`arguments/0`, and for `reaches` `arguments/1`: an operand conforms to the receiver endpoint type directly or through a supertype, else `ill_typed`/`operator-ineligible`), direction (FR-152; `member.name`), destination multiplicity (an unbounded upper or an ordered destination is `unsupported_construct`/`expression-form` at `member.name`), then the operation's own type comparison (`navigate`: `result_type` equals the canonical `Reference<U>`, `Option<Reference<U>>`, `Set<Reference<U>>[l,u]` or `Bag<Reference<U>>[l,u]` of FR-152, else `ill_typed`/`operator-ineligible` at `result_type`; `reaches`: a destination end of the receiver endpoint's own type, whether single-valued (`[0,1]`, `[1,1]`) or finite multi-valued (`Set`/`Bag` shaped, unique or not), else `ill_typed`/`operator-ineligible` at `member.name`; a `reaches` has no result type to compare, so a multi-valued destination end admits exactly as a single-valued one does). The published `relationship_navigation_cases` RN-01 to RN-27 record each. | Test |
+| FR-322-AC-57 | `filament.op.model.navigate` has operator class `query`. `filament.op.model.navigate` and `filament.op.model.reaches` over a model-owned relationship end apply the checks in this order, each refusing at its recorded application pointer: declaration kind (`member.declaration`), role lookup (`member.name`: missing-name, ambiguous-name), receiver effective endpoint (`arguments/0`, and for `reaches` `arguments/1`: an operand conforms to the receiver endpoint type directly or through a supertype, else `ill_typed`/`operator-ineligible`), direction (FR-152; `member.name`), destination multiplicity (for `navigate`, a destination end that declares no multiplicity is `ill_typed`/`operator-ineligible` at `member.name`; an unbounded upper bound and an ordered destination are admitted; `reaches` admits every destination multiplicity, declared or not), then the operation's own type comparison (`navigate`: `result_type` equals the canonical `Reference<U>`, `Option<Reference<U>>`, `Set<Reference<U>>[l,u]`, `Bag<Reference<U>>[l,u]`, `OrderedSet<Reference<U>>[l,u]` or `Sequence<Reference<U>>[l,u]` of FR-152, with no cardinality bound for an unbounded end, else `ill_typed`/`operator-ineligible` at `result_type`; `reaches`: a destination end of the receiver endpoint's own type, single-valued (`[0,1]`, `[1,1]`) or multi-valued (finite or unbounded, ordered or not, unique or not, or with no declared multiplicity), else `ill_typed`/`operator-ineligible` at `member.name`; a `reaches` has no result type to compare, so a multi-valued destination end admits exactly as a single-valued one does). The published `relationship_navigation_cases` RN-01 to RN-27 record each. | Test |
 | FR-322-AC-58 | Withdrawn: the content-hash identity (package id, node key, digest or stale comparison) this criterion tested is removed. | Withdrawn |
 | FR-322-AC-59 | Structural equality and inequality over U1–U7 require exactly their complete ordered leaf lists. U2's member rename, member reorder, payload swap and source arm reorder have exactly the effects stated with the vectors; U2 requires all three text leaves even when both operands select `Empty`. A missing final leaf refuses `invalid_package`/`operation-law-missing`; reordered leaves or a recursion leaf with a text law refuse `invalid_package`/`operation-law-mismatch`. | Test |
 | FR-322-AC-60 | For each `K` of `set`, `bag` and `ordered_set`, equality over `K<Choice>` (U2) requires U2's leaves with one leading `inner` per path; `contains` over that collection (`inner:0`) and a catalogued `result_inner` operation yielding `K<Choice>` require U2's leaves without that prefix. A `result_inner` operation yielding `sequence<Choice>` requires `[]`, while equality over `sequence<Choice>` requires U2's leaves with one leading `inner`. | Test |
@@ -4606,6 +4764,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-72 | A selected domain package that declares the process `Flow` (`filament.meaning.model.process/v1`, field `n`, operation `go`) and the state machine `Gate` (`filament.meaning.model.state-machine/v1`, field `open`, operation `toggle`) admits a self-typed `model`/`process` declaration node owned by `Flow` and a self-typed `model`/`state_machine` declaration node owned by `Gate`, each with a `ModelOwner`, family `object`; `Flow.n` and `Flow.go` resolve through step 3 as an object type's members do, and `Reference<Flow>` and `Reference<Gate>` derive `composite_type`/`reference` nodes over the two declaration nodes. A `model`/`persistence_interface` node owned by a declared persistence interface passes the owner join. A process node owned by an object type, a state machine owned by a process, or either owned by a node absent from the selected document refuses `missing_declaration`/`missing-selection` in the owner join, and either carrying no `owner` fails the V2 schema (`malformed_wire`); both V2 schemas enumerate the three forms in the owner-presence rule. | Test (TC-233, TC-280) |
 | FR-322-AC-73 | A `filament.op.model.reaches` application whose `relationship_end` member carries `population`, the id of a `bounded_domain`/`model_population` node over `Set<Reference<Order>>` where `Order` is the type of the end the member's role names, validates against both V2 schemas, lists the population node in its `dependencies`, and is admitted by the full reader, for a `max` of `3` and of `0`. `population` naming a `bounded_domain`/`integer_range` node, a node absent from the graph, or a `model_population` node over another model declaration refuses `ill_typed`/`operator-ineligible`; a `dependencies` list without the population node is refused `invalid_semantic_graph`; the published `adverse.json` `reaches_population_cases` record each. | Test |
 | FR-322-AC-398 | A `filament.op.model.reaches_field` application whose `field` member carries `population`, the id of a `bounded_domain`/`model_population` node over `Set<Reference<Order>>` where `Order` is the object type that owns the field (field type `Reference<Order>`, `Option<Reference<Order>>` or `Sequence<Reference<Order>>[l, u]`), validates against the V2 schema, lists the population node in its `dependencies`, and is admitted by the full reader, for a `max` of `3`, of `0` and with `max` absent, including when the member's `declaration` is a proper subtype of `Order` and the node is over `Order`. `population` naming a `bounded_domain`/`integer_range` node, a node absent from the graph, or a `model_population` node over a model declaration other than the field's owner (the member's `declaration` `D` when `D` is a proper subtype of the owner included) refuses `ill_typed`/`operator-ineligible` at `member.population`; a `dependencies` list without the population node is refused `invalid_semantic_graph`; a set-typed or unbounded-sequence field edge with a valid `population` refuses `ill_typed`/`operator-ineligible` at the application; a `population` on the `field` member of a field projection fails the V2 schema, and on a `navigate` application refuses `ill_typed`/`operator-ineligible`; the published `adverse.json` `field_population_cases` record each except the `navigate` refusal. | Test |
+| FR-322-AC-399 | A selected timed document whose tuple `Slot` has position `p0` typed `ix://filament/native/Clock` and `p1` typed `Integer`, and whose variant type `Phase` has the cases `Armed` with `payloadType` `ix://filament/native/Clock` and `Idle` with none, is admitted (`TK-08` and `TK-09` admitted): a field `s: Slot` has the clock place whose path is `field(s)`, `tuple(0)` and a field `p: Phase` the clock place whose path is `field(p)`, `union(Armed)`, each with a `resolved_path` row per step ending at the `Clock` terminal; no node stands for either clock; `Phase::Armed` is a `union_value` with the empty payload `aggregate`; the `Armed` place is live exactly while `p` is `Armed`, carries no presence bit, and a postcondition writing `self.p = Phase::Armed(0 ms)` records a `clock_reset` of it; `filament.op.tuple.project` of position `0` in a value position refuses `invalid_timed_model`/`clock-read-outside-constraint`; `Set<Slot>[0, 2]` is a clock collection (FR-415); and a map type keyed by `Slot` or `Phase` refuses `ill_typed`/`operator-ineligible` at its key type. | Test (TC-1361) |
 | FR-322-AC-74 | A `bounded_domain`/`model_population` node over `Set<Reference<Order>>` whose body is the empty `aggregate`, with the `max` member absent, is the unbounded population: it validates against the V2 schema and is admitted by the full reader, as the `population` of a `filament.op.model.reaches` application, as a node distinct from the same node with `max` `3`; the node with `max` `3` stays admitted as a bounded population. A `max` of `-1`, a `max` that is not an integer, and a second member beside `max` each refuse `invalid_package`/`invalid-derived-shape` at the population node, and the unbounded node is distinct from the same node with `max` `0`. The three `max` refusals are made by join stage 3 of FR-322-AC-275 (the derived-shape semantic checks, `RM-POP-MAX`), at the population node's `node_id`, and no later stage restates or reaches them. The absent `max` is admitted all the way through the `reaches` application and is not refused `ill_typed`/`operator-ineligible` at `member.population`; the consumer projection of the unbounded node is `AdmittedUnbounded` with no finite extent (Contract IR FR-038-AC-279, FR-053-AC-4). The published `adverse.json` `unbounded_population_cases` record each. | Test |
 | FR-322-AC-75 | A diamond with two direct dependencies whose recursively derived closures reach one library identity as structurally unequal packages refuses `invalid_package`/`conflicting-definition`, with both importer-rooted selection-path JSON pointers as loci. A `dependency_reference` naming a transitive-only package refuses `missing_declaration`/`missing-selection` even when that package is in the derived closure. | Test |
 | FR-322-AC-76 | Withdrawn: the content-hash identity (package id, node key, digest or stale comparison) this criterion tested is removed. | Withdrawn |
@@ -4676,7 +4835,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-142 | The tuple `node_id` is a function of `owner` alone. Swapping the position types of `Pair` (positions `Integer`, `Boolean`) leaves the `node_id` of the `Pair` node unchanged and changes the selected document, and leaves the `model_root` node unchanged; two tuples with equal positions and different names have different `node_id`s; the same package selected under two model aliases derives one `Pair` node. The type identity of a tuple node is the pair of its `node_id` and its owner's `identity`. | Test (TC-940) |
 | FR-322-AC-143 | A variant type `Shape` with the nullary case `Empty` and the payload cases `Flag(Boolean)` and `Both(Pair)` is admitted as the same self-typed `model`/`variant_type` declaration node and owner join as an enumeration, and its family is `union`: its members are `Both`, `Empty`, `Flag` in ascending UTF-8 byte order of case name regardless of the order of `variants`, with payload arities 1, 0, 1 and payload types the `Pair` node, none and the `Boolean` node. A `case` over `Shape` has the arms `Both`, `Empty`, `Flag`; the same arms in the order `Flag`, `Empty`, `Both` refuse `ill_typed`/`operator-ineligible`. A variant type none of whose cases carries a `payloadType` keeps family `enum`. A field, parameter, result, tuple position or payload typed `Shape` derives the `Shape` node. The `Shape` node's `node_id` is the same whether `Shape` declares only `Empty` or also `Flag`; the two documents differ. | Test (TC-940) |
 | FR-322-AC-144 | The package fixture carries a `value`/`union_value` over the body-less `Shape` node for `Empty`, `Flag` and `Both`, a `union_value` over `List`, an `enum_value` over `Color`, two `filament.op.tuple.project` over `Pair`, a `case` over `Shape` and the equalities over `Shape`, `List` and `Color`, and the full reader enforces the rules below on them. A `value`/`union_value` node whose `semantic_type` is the `Shape` node is admitted with the case `Empty` and the empty payload `aggregate`, with `Flag` and one `Boolean` payload term, and with `Both` and one `Pair` payload term; the case `Flag` with an `Integer` payload term, with no payload term or with two, and a case `Missing`, refuse `ill_typed`/`type-mismatch`. A `union_value` over the enumeration `Color` refuses `ill_typed`/`type-mismatch`, and an `enum_value` over `Shape` naming `Empty` or `Flag` refuses `invalid_semantic_graph` at the node. `filament.op.structural.eq` over two `Shape` operands is admitted and `filament.op.enum.eq` refuses `ill_typed`/`operator-ineligible`, as does `filament.op.structural.eq` over two `Color` operands; a `case` over a `Shape` operand has one arm per member in the member order above, and an arm missing refuses `ill_typed`/`operator-ineligible`. A `filament.op.tuple.project` over `Pair` at position `2`, at the beyond-safe `KeyOrdinal` string `9007199254740993` or with the tuple `Swap` as its `declaration` refuses `ill_typed`/`operator-ineligible`, and one whose position is a string that is no `KeyOrdinal` fails the V2 schema. | Test (TC-940) |
-| FR-322-AC-145 | A selected document with a tuple that has no position, a gap in its position ordinals, a position without `typeRef`, or a field, identity field, operation, supertype or clause refuses `invalid_model_binding`/`malformed-declaration` at stage `package_read`; a position `typeRef` naming no package type refuses `missing_declaration`/`missing-name`; two positions with one ordinal refuse `invalid_model_binding`/`conflicting-binding`; a variant case whose `payloadType` is unresolved or is `ix://filament/native/Clock` refuses `unsupported_construct`/`declaration-form`. Each is the first refusal in FR-154's report order, in the order "Intake refusal order" states, and precedes every graph refusal. | Test (TC-940) |
+| FR-322-AC-145 | A selected document with a tuple that has no position, a gap in its position ordinals, a position without `typeRef`, or a field, identity field, operation, supertype or clause refuses `invalid_model_binding`/`malformed-declaration` at stage `package_read`; a position `typeRef` naming no package type refuses `missing_declaration`/`missing-name`; two positions with one ordinal refuse `invalid_model_binding`/`conflicting-binding`; a variant case whose `payloadType` is unresolved refuses `unsupported_construct`/`declaration-form`, while a position `typeRef` or `payloadType` of `ix://filament/native/Clock` is admitted as a clock member (FR-322-AC-399). Each is the first refusal in FR-154's report order, in the order "Intake refusal order" states, and precedes every graph refusal. | Test (TC-940) |
 | FR-322-AC-146 | `model-tuple-union-vectors.json` publishes the declarations, the cases of FR-322-AC-141 to FR-322-AC-145, the recursion cases of FR-322-AC-147 and the wire cases of FR-322-AC-140 and FR-322-AC-144; and `fixtures/positive-model-tuple-union.json` is a schema-valid package with one `model_root` per selection and a tuple node and a payload-bearing variant node whose owners join the published document. The QSpec test runs all three from the files. | Test (TC-940) |
 | FR-322-AC-147 | A selected document in which the tuple `Cell` (positions `Integer`, `List`) and the variant type `List` (cases `Nil`, `Cons(Cell)`) refer to one another is admitted by intake. The `Cell` and `List` nodes carry no `recursion_group`, each `node_id` is a function of its owner alone, and `List` has family `union` and `Cell` family `tuple`. The structural walk out of `List` has the one step `member:Cons`, `position:0` to `Cell`, and out of `Cell` the steps `position:0` to `Integer` and `position:1` to `List`; `filament.op.structural.eq` over two `List` operands, which re-enters `List` and reaches no text, has no leaf and is admitted with the empty `leaves`, and one that supplies a leaf refuses `invalid_package`/`operation-law-mismatch`. A `union_value` of `List` with the case `Cons` and a `Cell` payload term, and with `Nil` and none, is admitted. | Test (TC-940) |
 | FR-322-AC-148 | The slot selector of a template step is symbolic. For `ts: Sequence<Timer>[0, 3]` with `Timer { x: Clock; n: Int }`, the place `ts.0.x` is the one `clock_place` whose path is `field(ts)`, `slot(sequence, <Integer type node>, 0, 3)`, `field(x)`; `Set`, `Bag` and `OrderedSet` differ only in the `collection` literal, the declared field (`c`, `b` and `o`: one model declares one field of each name once) and the resulting path, `Sequence<Sequence<Clock>>` carries one Integer-typed slot step for each level, and `Map<Text, Clock>` carries the Text type node (the published fixture place). A slot selector that is an integer literal, a reference to the Text type node under a `Sequence`, a reference to an expression node, or a reference to the Integer type node under a `Map<Text, _>` refuses `invalid_package`/`malformed-clock-place` at the path step `/semantic_graph/nodes/{i}/body/members/1/value/members/{j}`. | Test (TC-367; CK-26; SL-01..SL-06, SR-01..SR-04) |
@@ -4704,7 +4863,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-171 | A `node_id.ordinal` of 0 and of 9007199254740991 is admitted and compares numerically (9007199254740991 after 9); an `ordinal` of 9007199254740992, of -1, of `1.5`, of `1e2` or the string `"1"` is refused `malformed_wire` at `/semantic_graph/nodes/{i}/node_id/ordinal`. | Test (TC-233) |
 | FR-322-AC-180 | `contract-package-selection-vectors.json` publishes the typed source-selection rows `T`, `D` and `U` of TC-935 (`selections`, each an exact FR-322 `Selection` with its `role` and closed `{authority, identity}` `definition`) and the four compatibility cases `matching`, `missing`, `differing identity` and `unrelated selection` (`compatibility_cases`, each stating its `required_source_selections` and `lock_profile_selections` as ordered label lists). It is the authoritative machine-readable form: a consumer reads it (for example through `FILAMENT_SPECIFICATION_DIR`) and neither copies nor redefines the rows. The fenced JSON block and the case table of TC-935 equal it exactly, and the QSpec test fails when either differs in any row, role, authority, identity, case name or label order. | Test (TC-935) |
 | FR-322-AC-181 | A variant case whose `payloadType` is the native `Rational`, the native `Decimal`, the native `Text` (bare), or a package value type bound as `Text` without `min`, `max` and `profile`, refuses `unsupported_construct`/`declaration-form` at `Variant.payloadType` in step 1, at stage `package_read`, with FR-154's code and no graph refusal; a package value type bound to `Decimal[0, 9]`, a Rational value type with no `constraints` (FR-154 "Rational value types") or a value type bound to `Text` without bounds refuses the same (`TK-14`, `TK-21`, `TK-22`), and so does an FR-154 alias declaration whose `target` is one of the four types, directly or through a chain of aliases that each resolve (`TK-27` to `TK-29`, `TK-33`). The cases whose `payloadType` is an alias of `Float64`, also through a chain of aliases (`TK-34`, `TK-35`), `Float32`, `Float64`, `Bytes`, `JsonObject`, `String`, `UUID`, `Timestamp`, `Duration`, a `Text[0, 8; nfc]` value type, or a declared tuple or variant type are admitted, so unbounded `Bytes` and `JsonObject` are not refused (`TK-20`, `TK-26`). | Test (TC-940) |
-| FR-322-AC-182 | A tuple position whose `typeRef` is the native `Rational`, the native `Decimal`, a bare native `Text`, or a package value type bound as `Text` without bounds refuses `invalid_model_binding`/`malformed-declaration` at the position in step 1, at stage `package_read`, as `ix://filament/native/Clock` does and ahead of the `missing-name` check of a later position; a position typed `Float32`, `Float64`, `String`, `UUID`, `Timestamp`, `Duration`, `Bytes` or a `Text[0, 8; nfc]` value type is admitted, a package value type bound to `Decimal[0, 9]`, or a Rational value type with no `constraints`, is refused (`TK-18`, `TK-23`, `TK-24`), and so is an FR-154 alias whose `target` is `Rational`, `Decimal` or a bare `Text` (`TK-30` to `TK-32`); a bounded Rational value type as a position and as a payload is admitted (`TK-36`); an alias of `Float64` is admitted (`TK-34`, `TK-35`). The other refused positions are `TK-15` to `TK-17` and `TK-19`, and `TK-25` is admitted. | Test (TC-940) |
+| FR-322-AC-182 | A tuple position whose `typeRef` is the native `Rational`, the native `Decimal`, a bare native `Text`, or a package value type bound as `Text` without bounds refuses `invalid_model_binding`/`malformed-declaration` at the position in step 1, at stage `package_read`, ahead of the `missing-name` check of a later position; a position typed `Float32`, `Float64`, `String`, `UUID`, `Timestamp`, `Duration`, `Bytes` or a `Text[0, 8; nfc]` value type is admitted, a package value type bound to `Decimal[0, 9]`, or a Rational value type with no `constraints`, is refused (`TK-18`, `TK-23`, `TK-24`), and so is an FR-154 alias whose `target` is `Rational`, `Decimal` or a bare `Text` (`TK-30` to `TK-32`); a bounded Rational value type as a position and as a payload is admitted (`TK-36`); an alias of `Float64` is admitted (`TK-34`, `TK-35`). The other refused positions are `TK-15` to `TK-17` and `TK-19`, and `TK-25` is admitted. | Test (TC-940) |
 | FR-322-AC-183 | A field, an operation parameter or an operation result typed `Rational`, `Decimal` or bare `Text` is admitted by FR-154 intake and gives the member no type: the application that resolves it refuses `ill_typed`/`operator-ineligible`, never a mapping to a `scalar_type` node, whether the declared type is the native or a package value type bound as `Decimal[...]`, or a Rational value type with no `constraints`. The four types of FR-322-AC-181 have no node mapping and no identity rule, and no operation lookup is reached for them. | Test (TC-280) |
 | FR-322-AC-240 | The slot vectors name a complete selected package. `domain-package-acme-timed-slots.json` is a full FCD semantic IR 2.0.0 document of `acme/orders` (built as FR-322-AC-151: the whole document, with no view substituted) declaring the object type `Order` with the fields `sku`, `v`, `ts`, `c`, `b`, `o`, `g`, `s`, `q` and `clock`, the record value type `Timer` (clock field `x`, data field `n`), the `sequence` type `ClockRow` and the `map` type `ClockMap`. `Order` also declares, copied unchanged from `domain-package-acme-orders.json`, the relationship `ix://acme/orders/relationship/Order-order-Order` and the operation `ix://acme/orders/Order/size`, so every model-owned node of the package (the relationship node, the `size` clause function and the `Order` object type) is declared by the selected document (the strict FR-322 owner join; no node is added or removed). `fixtures/positive-timed-slot-nodes.json` is the dense timed fixture with `SL-01` to `SL-05`, `SL-06` (the published place) and `SL-07`, the places `v` and `q`, the parameters `other`, `i` and `e` and `PR-01` and `PR-03` added before the model root and every place listed by the timed root. The vectors' `selection_identity` and the owner identity of its `model_root` are the document's identity; each `package_node` index of a vector names the published node; the rows of every place are derived from the document alone. The Bag and OrderedSet places `SL-03` and `SL-04` declare the fields `b` and `o`. | Test (TC-367; CK-28; SL-01..SL-07, PR-01, PR-03) |
 | FR-322-AC-241 | The nested collection `g: Sequence<Sequence<Clock>>` of `SL-05` is declared by FCD members alone: the `Order` field `g` has `typeRef` `ix://acme/orders/ClockRow`, presence `required` and multiplicity `{lower: 0, ordered: true, unique: false}` (no `upper`), and `ix://acme/orders/ClockRow` is a type definition of kind `sequence` whose `items` is `ix://filament/native/Clock`. The `sequence` definition gives the inner `Sequence<ix://filament/native/Clock>` and the multiplicity the outer level, so the member type renders `Sequence<Sequence<ix://filament/native/Clock>>` and the rows 0, 1 and 2 of the place are `g` (kind `sequence`, bounds `0` and `unbounded`), `Sequence<Sequence<ix://filament/native/Clock>>[slot]` (declaring type `Sequence<ix://filament/native/Clock>`, member type `Sequence<ix://filament/native/Clock>`, kind `sequence`, `0`, `unbounded`) and `Sequence<ix://filament/native/Clock>[slot]` (declaring type and member type `ix://filament/native/Clock`, kind `none`). The map place `clock` is declared the same way by the `map` definition `ClockMap` (`keys` `ix://filament/native/Text`, `values` `Clock`, `bound` `{lower: 0}`) under multiplicity `{1, 1}`, so its row is kind `map`, bounds `0` and `unbounded`, read from `bound`; a `ClockMap` whose `bound` has `upper` `2`, or whose `keys` is `Integer`, fails the join. A `typeRef` that is a rendered string, a type definition without `items` or `values`, a `map` definition without `keys` or `bound`, and a bound on a `sequence` definition are not FCD members and no encoding is read from them (FR-154 refuses a `keys` or `bound` on a definition that is not a `map`). | Test (TC-367; CK-28; SL-05, SL-06) |
@@ -4841,6 +5000,8 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-395 | Node bytes are not identity, and a reader follows a node-held reference only through its holding node's row. A node appended with node `2`'s bytes and the row `[1]` (`NI-22`) has a structural key different from node `2`'s and passes the operand checks and the duplicate-`node_id` check; appended with the row `[0]` (`NI-23`) it has node `2`'s key and refuses `invalid_semantic_graph` at `/semantic_graph/nodes/4/node_id`. In the published fixture, the literal `type` that node `3` holds and node `2`'s own `node_id` have equal bytes and, each resolved through its own holding node's row, the same key, so the reference names node `2`. | Test (TC-233; NI-22, NI-23) |
 | FR-322-AC-396 | A field typed by the map type `M` of FR-154-AC-48 (`keys` `ix://filament/native/Text`, `values` `Timer`, `bound` `{lower: 0, upper: 2}`) with multiplicity `{1, 1}` has the member type `Map<Text, Timer>[0, 2]`, its row rendering `Map<Text, ix://acme/maps/Timer>` with minimum `0` and maximum `2`, and with `bound` `{lower: 0}` the maximum `unbounded` (`PM-01`, `PM-02`); the `ClockMap` place `clock` of the selected timed package carries kind `map` and bounds `0` and `unbounded` read from its `bound`, a `ClockMap` with `upper` `2` or `keys` `Integer` failing the join. | Test (TC-367, TC-234) |
 | FR-322-AC-397 | A package carries `operation_bodies` or omits it; when omitted the bodies are unavailable, not empty, and no other member changes. When present it has exactly one closed `{document, declaring, operation, body}` row per operation member of every admitted `object_type`, `process` and `state_machine` declaring node, keyed and sorted by `(document, declaring, operation)` as `operation_effects`, and is an empty array only when no selected document declares an operation member. `body` is `{"kind": "function", "node"}` naming a package `function` node exactly when the operation has a body, derived from the package graph alone (a `function` node whose `owner` is the operation member and whose `clause` binding is `body`; a domain document carries no `has_body`), and `{"kind": "no_body"}` otherwise; no row or `body` is omitted, null or defaulted, the `function` node is the operation's own body clause function (its `owner` node is the operation member and its clause kind is `body`), and each dispatch candidate in the family of its table's selected operation (its receiver `selection_key.original` conforms to the selected declaring type and its effective operation reaches the selected one through `Operation.redefines`) joins the row of the type that declares that effective operation, never a row by `selected_operation` alone, and a candidate outside the family is left to the dispatch join (OBD-01), and requires a `function` row whose node equals the candidate's `operation_body`, so two candidates of one table with different bodies are each admitted against their own row. The owner join of every owner-bearing node precedes `operation_effects`, which precedes this carrier, which precedes `checked_term_data` validation, so a clause function whose owner names no declared member refuses in the owner join. The positive vectors OBC-01 to OBC-07 are schema-valid and read back; the exact `malformed_wire`, `missing_declaration`, `ill_typed` and `invalid_package` refusals and loci for missing or extra members, a malformed `body`, an unselected, absent, ineligible or foreign declaring node, a field or inherited operation, a body that disagrees with the document, an absent, non-function, other-operation, precondition or other-package body node, a candidate mismatch, a candidate carrying another candidate's body or a `no_body` row for a joined candidate that carries a body, a repeated key, key order and missing coverage are in TC-987. FSL emits the carrier and the IR strict reader admits or refuses it; the IR does not mirror it. | Test (TC-987) |
+| FR-322-AC-450 | A timed clause over a trace subject with one `{kind: "timed", unit}` row naming its clock role is admitted, and the `timed` alternative is closed with a required non-empty `unit`; the same clause without a row, a `timed` row whose `clock_name` is `model-time`, and a `timestamped_event` row for it each refuse `invalid_package`/`timed-node-reference`; a timed clause over a timed-model subject has no row and the clock name `model-time`, and a `timed` or `event_position` row for it refuses at that row. | Test (TC-1164) |
+| FR-322-AC-451 | An `application` of `filament.op.quantity.scale` with arguments `[reference(Q), reference(N)]`, `Q` a `quantity` typed by the unit node of `ms` and `N` an `integer`, is admitted with result type the unit node of `ms`, no laws, `mode` `null` and no member, and so is `filament.op.quantity.scale_div` with a `decimal` or `rational` factor; a third argument, a `float64` or `quantity` factor, the arguments in the order factor then quantity, a carried-quantity argument 0 and a `result_type` other than the unit node of `ms` each refuse `ill_typed`/`operator-ineligible`, a `mode` value refuses `invalid_package`/`operation-mode-mismatch` and a `laws` entry refuses `invalid_package`/`operation-law-mismatch`; both V2 schemas enumerate `filament.op.quantity.scale` and `filament.op.quantity.scale_div` in `OperationIdentity` directly after `filament.op.quantity.pow`, and the catalog entry of `filament-verification-contracts` carries them. | Test (TC-1326) |
 
 ## Dependencies
 
@@ -4857,6 +5018,9 @@ unchanged (FR-322-AC-308).
   owns domain package admission, and
   [FR-150](../../functional/type-model/FR-150-preserve-model-normalization-provenance.md)
   owns the effective view a model-owned member resolves in.
+- [FR-610](../../functional/type-model/FR-610-declare-object-types-in-native-source.md)
+  owns the meaning of a native `object` declaration, its member types and the
+  identity rows "Source-declared object types" reads.
 - [FR-153](../../functional/type-model/FR-153-query-closed-model-environments.md)
   owns the population binding a population reference names, and FSL FR-391
   the state-clause population name that lowers to it.

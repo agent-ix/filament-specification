@@ -5,6 +5,8 @@ type: FR
 relationships:
   - target: ix://agent-ix/filament-specification/US-011
     type: implements
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: references
   - target: ix://agent-ix/filament-specification/FR-405
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-406
@@ -44,6 +46,10 @@ are timed behaviours, or an `unsupported` result with cause `not-stochastic` or
 
 ### Delay distributions
 
+A `delay` declaration is carried in the checked package as a
+`delay_distribution` node ([FR-640](../../objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)),
+and the provider reads the family and its parameters from that node.
+
 An operation's `delay M::o ~ D;` declaration gives one of these families, every
 parameter an exact rational and every delay a time quantity converted exactly
 to the model's unit (FR-142):
@@ -79,7 +85,9 @@ racing identity with a free delay. The smallest delay wins: the model delays
 by it and takes the winning identity with its random arguments drawn
 (FR-406). When several identities tie at the smallest delay, the workload
 orders them, drawing without replacement by operation weight and then
-uniformly within an operation; the model delays once and takes them in that
+uniformly within an operation, an operation of weight 0 drawn only when no
+tied operation of positive weight remains, and then uniformly among such
+operations (FR-406); the model delays once and takes them in that
 order at the same instant, each only when it is still enabled at its turn.
 Every identity redraws at the new state. With every racing delay given, the
 timed subject under the workload is a Markov chain over timed states; free
@@ -151,6 +159,7 @@ model and ignore distributions.
 | FR-420-AC-5 | A sample exceeding `max_sample_steps` stops the run with `incomplete`, `limit-reached` naming `max_sample_steps`, its value and how to raise it; an omitted `max_sample_steps` is `2^24`. | Test (TC-374) |
 | FR-420-AC-6 | With `reply` under `delay Call::reply ~ uniform;` the event's probability is 0, the statistical item settles `measured: accepted`, and the every-behaviour claim `NoLateReply` settles `refuted`. | Test (TC-374) |
 | FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon settles the item `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |
+| FR-420-AC-8 | Under a workload with weight 0 on `Call::retry` and weight 1 on `Call::reply`, when both tie at the smallest delay `reply` is taken first and `retry` second; when two weight-0 operations tie with no positive-weight operation, each order has probability `1/2`. The model's `delay` declarations are read from its `delay_distribution` nodes. | Test (TC-1561) |
 
 ## Dependencies
 

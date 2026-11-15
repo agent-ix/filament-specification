@@ -9,6 +9,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-360
     type: references
+  - target: ix://agent-ix/filament-specification/FR-094
+    type: references
 ---
 ## Description
 
@@ -26,6 +28,24 @@ progress/closure remains open; that result SHALL retain the exact settlement
 basis and decision support. A replay result SHALL NOT claim execution by a
 production monitor.
 
+### Incremental state and step equality
+
+An incremental assessment SHALL carry between observations exactly the state
+the next observation needs: the positions an open activation or a past operator
+can still read, each obligation's open future requirements or its settled
+result, the progress ledger of FR-094, and the stamp order. After each
+observation, every obligation's disposition SHALL equal the batch assessment of
+the same obligation over the observations received so far, under the latest
+progress assertion and an open surrounding execution; at the end of input it
+SHALL equal the batch assessment over the closed or open trace the end declares.
+A disposition once settled SHALL NOT change at a later observation. A refused
+observation (out of order, contradicting the ledger, or failing admission)
+SHALL leave the carried state unchanged. When retained state would exceed its
+limit, only the obligation that needs it SHALL report a resource disposition.
+The carried state SHALL be restorable from a checkpoint, which is the
+state-restoration contract FR-094-AC-6 requires of a restarted monitor, and a
+checkpoint taken for another package or obligation set SHALL be refused.
+
 When the temporal analysis reports settlement basis `unsettled` (FR-243,
 [FR-161](../temporal/FR-161-analyze-infinite-trace-properties.md)
 `inconclusive`, [FR-360](../../objects/temporal/FR-360-infinite-trace-result-disposition.md)),
@@ -42,6 +62,7 @@ merely the same label.
 | FR-114-AC-2 | An open prefix without a recorded decisive witness or counterexample, incomplete history, and ambiguous membership remain distinct from violation in both modes. | Test (TC-144) |
 | FR-114-AC-3 | Unsupported capability and exhausted retained state remain explicit and cannot become settled success. | Test (TC-144) |
 | FR-114-AC-4 | For a temporal result carrying settlement basis `unsettled`, QObs batch and incremental assessment agree on the non-conclusive disposition and its exact progress identity, and neither mode resolves it to a settled truth. | Test (TC-239) |
+| FR-114-AC-5 | Observations fed one at a time give, after each, the dispositions of the batch assessment over the prefix received; a settled violation stays unchanged at later observations; a refused out-of-order observation leaves the state unchanged; a checkpoint resumed gives the same later dispositions, and one taken for another package is refused. | Test (TC-1162) |
 
 ## Dependencies
 

@@ -76,7 +76,13 @@ admits every behaviour.
 
 A fairness constraint is admitted on an infinite-trace clause only. On a clause
 under a bounded profile it refuses `unsupported_construct`/`declaration-form`
-at the constraint, naming the selected profile.
+at the constraint, naming the selected profile. This refusal is the specified
+behaviour under the event-position (counted-window), fixed-sample and
+timestamped-event profiles, not a placeholder: a bounded-profile verdict
+depends on a finite window only, and by machine closure (below) no fairness set
+changes it, so an admitted constraint would be a premise with no effect that a
+reader would take to have one. A property that needs fairness is written under
+the infinite-trace profile.
 
 ### Enabled and taken
 

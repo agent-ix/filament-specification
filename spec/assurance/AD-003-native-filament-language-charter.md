@@ -37,8 +37,9 @@ FRETish and later external forms are output mappings with explicit preservation,
 condition, loss or refusal results. TL representations and evaluators remain an
 internal temporal boundary. No external mapping or IR is normative source.
 
-The released `ix:native` / `0-draft` / `state-finite/0-draft` definition remains
-an immutable historical profile. FS01 accepts and reserves the composed hierarchy
+The earlier `ix:native` / `0-draft` / `state-finite/0-draft` definition is
+retired: no frontend admits it, a `0-draft` header refuses `unknown_edition`
+(FR-500), and its documents remain as design record only. FS01 accepts and reserves the composed hierarchy
 under `ix:native` / `1-draft`; the owning FS02–FS06 requirements still determine
 when each semantic definition is accepted, implemented or qualified. The earlier
 `state-finite/1-draft` replacement candidate is superseded as an adoption target.
@@ -120,7 +121,7 @@ edition-syntax rule above: it accepts the unbounded temporal operator grammar
 (no interval bound) as its own exact edition definition under the existing
 `ix:native` / `1-draft` edition, admitted only under the selected
 `filament.temporal.infinite-trace/v1` profile, without reinterpreting the
-bracketed-interval productions or any `0-draft` bytes.
+bracketed-interval productions.
 
 ### Q1–Q11 disposition
 

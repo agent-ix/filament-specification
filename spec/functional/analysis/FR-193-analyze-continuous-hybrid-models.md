@@ -698,8 +698,21 @@ item settles `inconclusive`, `replay-parity` (FR-364).
 A trace that is not a point trace, that dwells in a mode without a
 polynomial flow, or whose replay would evaluate a recursive call, SHALL be
 replayed statically only, and its item SHALL NOT
-refute. The reader SHALL record a trace in the item's `counterexamples` only
-when exact replay reproduces it.
+refute, unless the trace carries an
+[FR-652](FR-652-check-hybrid-enclosure-and-witness-certificates.md)
+`validated-witness` certificate that the reader accepts, which refutes as
+FR-652 "Settlement" states. The reader SHALL record a trace in the item's
+`counterexamples` only when exact replay reproduces it or its validated
+witness is accepted.
+
+## Certificates
+
+A provider MAY attach to its result entry a `certificate` member, an
+`inductive-enclosure`, `flowpipe` or `validated-witness` certificate stated
+in the names of the source declaration. Its forms, its check and its effect
+on certification and refutation are
+[FR-652](FR-652-check-hybrid-enclosure-and-witness-certificates.md). An entry
+without a certificate is settled by this requirement alone.
 
 ## Acceptance Criteria
 
@@ -726,6 +739,7 @@ when exact replay reproduces it.
 | FR-193-AC-19 | The schema refuses before consumption an item carrying `requirements` `[]`, `["hybrid-dynamics", "hybrid-dynamics"]` or `["stochastic-dynamics"]`, an item of kind `value-validity` carrying `requirements`, an item carrying `hybrid` without `requirements`, a temporal descriptor with `dynamics` `[]`, `["hybrid", "hybrid"]` or `["continuous"]`, a `dynamics` on a descriptor advertising only `operation-contract`, and a descriptor with `dynamics` `["hybrid"]` whose `bounds` lack `max_solver_time`; a registration not on the wire with each of these `dynamics` defects is refused `invalid_capability`/`invalid-dynamics` retaining `empty`, `duplicate-label` naming `hybrid`, `unknown-label` naming `continuous` and `missing-bounds` naming `max_solver_time`, and one with `dynamics` `"hybrid"` retaining `not-a-list`; a registration with `dynamics` `["continuous", "hybrid"]` and `bounds` lacking `max_solver_time` reports `unknown-label`, and one that also has a `fairness_kinds` defect reports `invalid-fairness-kinds`. | Test (TC-373, TC-431) |
 | FR-193-AC-20 | The method table settles each pair as stated: `delta-complete` with `unsat` and `flowpipe-outward-rounded` with a disjoint enclosure, each covering, settle `proved`, `bounded-solver` carrying that spelling; `inductive-enclosure` with a disjoint enclosure settles `proved`, `inductive-solver{method: inductive-enclosure}`; `flowpipe-unrounded` and `unclassified` with any outcome, `delta-complete` with a disjoint enclosure and `flowpipe-outward-rounded` with `unsat` each settle `inconclusive`, `solver-inconclusive`. The schema refuses a `bounded-solver` with `method` `dreal` or `inductive-enclosure` and an `inductive-solver` with `method` `delta-complete`; a reader refuses an `uncertified` `bounded-solver` proof with `method` `flowpipe-unrounded` `invalid_result`/`invalid-value` at `/basis/method`, and admits the same proof as a plugin's `trusted` entry. | Test (TC-373, TC-431) |
 | FR-193-AC-21 | Over `Braking`, whose one jump occurs at time `v0 / a`, anywhere in `[0, 20]`, and which takes no second jump: against `always [0, 10] holds(h.v < 30)`, a `delta-complete` `unsat` with `horizon` 10, `jumps` 1 and `exhaustive` `["time"]`, and one with `horizon` 21/2, settle `proved`, `bounded-solver`; one with `horizon` 1 settles `inconclusive`, `insufficient-horizon{horizon: 1, jumps: 1, exhaustive: ["time"]}`; one with `horizon` 10, `jumps` 0 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 0, exhaustive: []}`, and one with `horizon` 20, `jumps` 3 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `always [0, 10] eventually [0, 5] holds(h.v < 30)` a `horizon` 10 proof with `exhaustive` `["time"]` settles `insufficient-horizon`; under `clock "model-steps"`, against `eventually [0, 1] holds(h.v = 0)`, `jumps` 1 with `horizon` 20 and `exhaustive` `["jumps"]` settles `proved`, `jumps` 1 with `horizon` 10 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 1, exhaustive: []}`, and `jumps` 0 with `horizon` 100 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `once [0, 2] holds(h.v = 20)` under `model-steps` (horizon 0 positions) a proof with `jumps` 0 and `exhaustive` `[]` settles `proved`; against `always holds(h.v < 30)` and against FR-193-AC-15's `on each (q: Braking) when (q.v > 10)` claim, every `bounded-solver` proof settles `insufficient-horizon` and an `inductive-solver` proof settles `proved`; a plugin's `trusted` `bounded-solver` entry with `horizon` 1 against the first claim settles `insufficient-horizon` at the reader; an `insufficient-horizon` cause on an FR-468 refinement item is refused `invalid_result`/`invalid-value` at `/cause/type`. | Test (TC-373) |
+| FR-193-AC-22 | A point trace through a mode whose flow is not polynomial refutes only with an accepted FR-652 `validated-witness`, and is then recorded in `counterexamples`; without one it is replayed statically and stays `inconclusive`. | Test (TC-1605) |
 
 ## Dependencies
 

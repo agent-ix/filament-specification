@@ -3,6 +3,8 @@ id: FR-465
 title: "Checked-package protocol role, channel, queue and obligation bodies"
 type: FR
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-610
+    type: references
   - target: ix://agent-ix/filament-specification/FR-464
     type: specifies
   - target: ix://agent-ix/filament-specification/FR-322
@@ -110,6 +112,13 @@ The reader checks, for one role, in this order:
    `malformed-declaration`. A role is a participant contract: a
    `record_value_type`, `tuple_value_type`, `event_type`, `variant_type` or any
    node that is not a `model` node is not a role's model. The locus is the target.
+   A source-declared object type (a `model`/`object_type` node carrying a
+   `declaration` and the declaring unit's `SourceOwner`, FR-610) is a role's
+   model as a selected object type is: it joins through its `SourceOwner` to a
+   `lock.sources` entry instead of through a selected model row, and one that
+   joins none is refused `missing_declaration`/`missing-selection` at its own
+   `node_id` by FR-322's owner join before this check. A text `model` names
+   only a `model_root` node, never a source object type.
 2. **Replication shape.** `until` is present exactly when `lifetime` is
    `until`, else the layout is violated (`malformed_wire`). `max` is at least 1, else
    `ill_typed`/`type-mismatch` at `max`, retaining `expected` and `actual`.
@@ -353,6 +362,7 @@ runtime dimension of the control's key and are not a member of any node.
 | FR-465-AC-10 | A channel whose `delivery` is `[0,3]`, `[0,0]`, `[2,2]` or `[0,18446744073709551615]` is admitted; `[0,3]` and `[0,4]` give different channel bodies, and `[1,1]` and `exactly-once-premise`, otherwise equal, give different channel bodies; `[4,3]` (`lo > hi`), `[0, 3]`, `[00,3]`, `[+0,3]`, `[-1,3]`, `[0.5,3]`, `[0,18446744073709551616]`, `[3]`, `[0,3` and `0,3` each refuse `malformed_wire` at the channel node pointer `/semantic_graph/nodes/{i}`: the V2 schema refuses a spelling that is not an interval shape (a space, a leading zero, a sign, a fraction, a missing bound, an unclosed or unopened bracket) at the channel node pointer `/semantic_graph/nodes/{i}`, and the reader's strict wire layout check refuses `lo > hi` and a numeral above 18446744073709551615 at the same pointer, because no JSON Schema keyword expresses either. | Test (TC-947) |
 | FR-465-AC-11 | Over the architecture fixture whose component `Sys` owns the Port `pump_out` and the Port `tank_in`, the role `Outlet` on `M::pump_out` carries the `model_member` Group `{package: P, node: N}` with `P` the package identity of `M` and `N` the declaration identity of `pump_out`, and its `model` reference targets `Sys`; the role `Inlet` on `M::tank_in` carries the same `package` and the `node` of `tank_in`, and the two roles have different node ids. The role `Operator` on the type `M::Sys` and a role on the whole model `M` carry no third argument, and a package with only such roles has the bytes it had before the argument existed. | Test (TC-947) |
 | FR-465-AC-12 | Of a role on a Port: a `model_member` whose `package` names a package other than the one the `model` target belongs to, one whose `node` names a declaration that is a part, a component or a connection, and one whose `node` names no declaration each refuse `invalid_model_binding`/`malformed-declaration` at the role node, retaining `package` and `node`; an empty `package` or `node` text, a `model_member` that holds a third binding, and a `model_member` Group that is empty each refuse `malformed_wire`; a `model_member` on a role whose `model` is the text of an existing `model_root` node refuses `invalid_model_binding`/`malformed-declaration`, and on a role whose `model` text names no `model_root` node it refuses `missing_declaration`/`missing-selection`, the selection check coming first. | Test (TC-947) |
+| FR-465-AC-13 | The text form of a whole-model role is mandatory for every conforming strict reader: over the package of a protocol with `role w on M` and `role v on M::Cell`, a reader admits both roles; a reader that admits only the reference form and refuses the text `model` with `malformed_wire` does not conform, and a producer emits the text form and never refuses the role to work around such a reader. | Test (TC-1525) |
 
 ## Dependencies
 

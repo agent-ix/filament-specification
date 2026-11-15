@@ -161,6 +161,7 @@ keys exactly when they are the same member under the relation.
 | union | the active member's identifier ASCII bytes, lexicographically, never its declaration position; then, for two values of one member, lexicographic over the payload values' keys in position order |
 | `Sequence<T>`, `OrderedSet<T>` | lexicographic over element keys; a proper prefix comes first |
 | `Set<T>`, `Bag<T>` | lexicographic over the ascending element-key list, with a bag occurrence listed once per multiplicity |
+| `Map<K, V>` | lexicographic over the entries in ascending key order, each entry compared by its key's key and then its value's key; a proper prefix comes first |
 
 Records of distinct declarations meet in one collection when a record subtype
 value is held at an ancestor-typed element (FR-208): `Set<Money>` can hold a
@@ -204,6 +205,97 @@ type, a count outside `min..max` returns
 materialization, with the collection type, the bound and the formed count. An
 unbounded type admits every formed count and makes no `cardinality_out_of_bound`
 refusal.
+
+## Indexing
+
+`c[i]`, the complete-V1 `postfix` alternative `'[', expr, ']'`, reads one
+element of an ordered collection or one value of a map:
+
+| Operand `c` | Index `i` | Result type | Value |
+| --- | --- | --- | --- |
+| `Sequence<T>` or `Sequence<T>[a,b]` | `Integer` or `Int[..]` | `T` | the occurrence at zero-based position `i` in occurrence order |
+| `OrderedSet<T>` or `OrderedSet<T>[a,b]` | `Integer` or `Int[..]` | `T` | the member at zero-based position `i` in first-occurrence order |
+| `Map<K, V>` or `Map<K, V>[a,b]` | checked against the expected type `K` | `V` | the value of the entry whose key is `i` ("Map values" below) |
+| a tuple | a `uint` literal | the type of that position | FR-143 "Tuple position read" |
+
+Indexing composes with field projection and with itself, left to right:
+`r.xs[0]`, `s[i][j]` and `m[k].f` are admitted when each step is. Complete V1
+has no slicing form; `c[a..b]` is `invalid_syntax`.
+
+A `Set<T>` or `Bag<T>` has no semantic order (above), so a position names no
+member of it: `c[i]` over a set or bag is
+`refused { code: ill_typed, cause: operator-ineligible }` at the indexing
+expression. Every other operand type (a scalar, a record, a union, an `Option`,
+a `Reference`, a `Population`, a float) is refused the same way. A sequence or
+ordered-set index whose type is not `Integer` or `Int[..]`, and a map key that
+does not check against `K`, is `refused { code: ill_typed, cause: type-mismatch }`
+at the index. A map key is checked against the expected type `K` exactly as a
+literal is at any other position with an expected type, so an integer literal
+key adopts an `Int[..]` key type and a literal outside it is `type-mismatch`.
+
+The result is the element type, not `Option<T>`. Indexing is a partial
+operation in the sense of FR-146, like `value(e)` and division: it carries the
+**index obligation** that an element exists, `0 <= i` and `i < size(c)` for a
+sequence or ordered set and `contains(c, i)` for a map. When the body is linked,
+an index obligation that FR-146 does not prove is
+`refused { code: undefined_expression, cause: unproved-presence }` at the index
+`i`, the same refusal the FR-415 clock-place selection `self.ts[i].x` makes; an
+index that is provably outside every possible size, such as `s[5]` over a
+`Sequence<T>[0,3]`, is unproved in the same way. Indexing never returns a default,
+never wraps and never clamps. Only direct kernel evaluation, which runs no
+linking proof, meets an index with no element, and it returns the located
+undefined outcome with no value. The element type was chosen over `Option<T>`
+because the obligation keeps a proved read free of `present`/`value`
+ceremony, and because the clock-place selection of FR-415 already reads an
+element place by this form and could not read it through an option.
+
+Evaluation completes `c` and then `i`, left before right, and the first stopped
+operand propagates with the other not evaluated (FR-143). Selection then
+charges one `collection.element` (one work unit) and one
+`collection.result-retain` with `result_units += occ(result)` under
+`filament.value.accounting/v1`. A map entry is located by its key's canonical
+key and makes no `collection.member-walk` or `collection.member-test` charge.
+
+The checked package records a sequence, ordered-set or map index as one
+`filament.op.collection.index` application with arguments `[ref(c), ref(i)]`
+and `result_type` the element type's node (`V`'s node for a map), located at the
+indexing expression. A tuple position read is the FR-143
+`filament.op.tuple.project` application instead, never a collection index.
+
+## Map values
+
+`Map<K, V>[a,b]`, and the unbounded `Map<K, V>`, are complete-V1 source type
+forms (the grammar's `type-ref`). Each is the same type that FR-154 "Map types"
+reads from a domain-package map type and that FR-322 keys as a
+`composite_type`/`map` node: a finite function from keys of type `K` to values
+of type `V` that holds at least `a` and at most `b` entries, one for each key it
+holds. `K` SHALL be a scalar key type (the `Map` key rule under "Element
+admission and canonical keys" above), otherwise
+`refused { code: ill_typed, cause: operator-ineligible }` at `K`; `V` may be any
+complete-V1 value type. The bound is part of the type exactly as a collection
+bound is ("Bound and type identity"): two map types are the same type exactly
+when their key types, value types and bounds (or bound absence) are the same. A
+supplied map value is read from the FR-181 `map` form, and a present bound is
+checked at admission as a collection bound is.
+
+A source map type is admitted wherever a type is written: a record field, a
+tuple position, a union payload, a parameter, a result, a `let` annotation, a
+collection element and a `convert` target of the same map type. A map value
+reaches an expression through a model field, a parameter or runtime input, a
+`let` binding, or a field, position or payload that holds one; Complete V1 has
+no map literal. A map is read by indexing (`m[k]`, above), by `size(m)`, its
+entry count typed as `size` of a collection with the same bound is (FR-145),
+and by `contains(m, k)`, true exactly when `m` holds an entry whose key is `k`
+(the key `k` checked against `K`; values are not searched). `contains(m, k)`
+yields the FR-146 membership fact that proves the index obligation of `m[k]`.
+
+`=` and `!=` over two maps of one map type use the FR-149 `Map` row. A map
+admits the collection membership relation exactly when `V` does, so a
+`Set<Map<K, V>>` is admitted for such a `V` and keyed by the `Map<K, V>` row of
+the canonical-key table; a `V` that is or contains an event type gives a map no
+equality (`ill_typed`/`operator-ineligible`), and a clock-bearing `V` makes `=`
+refuse `invalid_timed_model`/`clock-read-outside-constraint` exactly as a
+collection of clock-bearing elements does.
 
 ## Supplied collection values
 
@@ -338,6 +430,41 @@ to such a name resolves only to a checked user or library pure function under
 FR-146 and FR-307; otherwise it is
 `refused { code: missing_declaration, cause: missing-name }`.
 
+## Unavailable occurrences
+
+A sequence value read from an observation can hold an *unavailable
+occurrence*: an occurrence whose position in the sequence is observed and
+whose value is not. It arises only where an observation supplies the
+sequence with one element missing; evaluation never produces one, because a
+form that meets one returns incomplete (FR-145 "Unavailable occurrences")
+instead of building a result that holds it. An unavailable occurrence is
+distinct from an absent optional value, from a nullable value and from an
+empty sequence: it holds a position, so it counts toward the sequence's
+occurrence count and its bound, and it has no value, so it is never equal or
+unequal to anything. A sequence whose length is not observed is not a
+sequence holding unavailable occurrences; the whole sequence is unavailable
+(FR-008).
+
+On the supplied FR-181 `sequence` form, an unavailable occurrence is the
+entry `{"type": "unavailable"}` in `elements`, at the occurrence's position,
+with no other member. An `unavailable` entry with another member is
+`invalid_runtime_input`/`unknown-member`.
+
+Only a sequence holds unavailable occurrences. A set, bag or ordered set
+decides uniqueness, multiplicity and its visiting order from the value of
+every member, so a member whose value is not observed leaves the collection's
+membership unknown: the observation supplies such a collection as unavailable
+as a whole, and an `unavailable` entry in the `elements` of a supplied set,
+bag or ordered set is `invalid_runtime_input`/`invalid-value` at that entry.
+
+`=` between two sequences either of which holds an unavailable occurrence
+compares occurrence counts first: unequal counts are a completed `false`,
+because the comparison never reads an element value. Equal counts compare
+the elements in occurrence order, a completed `false` at the first pair of
+available, unequal elements before any unavailable occurrence, and otherwise
+incomplete at the first unavailable occurrence met, with the cause of FR-145
+"Unavailable occurrences".
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -370,6 +497,11 @@ FR-146 and FR-307; otherwise it is
 | FR-144-AC-26 | `Set<Timer>` over `record Timer { x: Clock; n: Int }` is admitted and holds one element for each distinct `n`; `Set<Clock>` holds at most one element; `Bag<Clock>` holds one element for each occurrence; `OrderedSet<Timer>` keeps the first occurrence of each `n`; the canonical key of a `Timer` element is the key of its `n`; a `Set` of an event type still refuses `ill_typed`/`operator-ineligible`; `=` between two `Set<Timer>` values refuses `invalid_timed_model`/`clock-read-outside-constraint`; `Map<Timer, Int>` refuses `ill_typed`/`operator-ineligible`, as do `Map<Cfg, Int>` over `record Cfg { a: Boolean }` and `Map<Option<Text>, Int>`. | Test (TC-367) |
 | FR-144-AC-27 | A `Set<Bytes>` or `Bag<Bytes>` holding `2000`, `00`, `10` and `0000` (hexadecimal payloads) visits `00`, `0000`, `10`, `2000`, with `00` before `0000` as a proper prefix and the empty sequence, when held, before all of them; a `Set<JsonObject>` holding `{}`, `null`, `[]`, `3` and `"x"` visits `"x"`, `3`, `[]`, `null`, `{}`; one holding `"z"` and `"é"` visits `"z"` first, because the UTF-8 bytes of `é` begin `c3`; and `{"b":1,"a":2}` and `{"a":2,"b":1}` are one member whose key is the text `{"a":2,"b":1}`. A `Bytes` and a `JsonObject` never meet in one collection. | Test (TC-189) |
 | FR-144-AC-28 | A supplied `Set<Bytes>` of `{"type":"bytes","value":"00ff"}` and `{"type":"bytes","value":""}` is admitted with the empty sequence first, and of `00ff` twice is `invalid_runtime_input`/`duplicate-member` at the later element; a `Bag<Bytes>` of `00ff` twice holds `00ff` with multiplicity 2; `{"type":"bytes","value":"0"}`, `"00FF"`, `"0g"` and `"0x00"` are `invalid-value`, and `{"type":"string","value":"00ff"}` is `wrong-value-kind`. A supplied `Set<JsonObject>` of `{"type":"json_object","value":"{\"a\":1,\"b\":[true,null]}"}` and `{"type":"json_object","value":"[]"}` is admitted, of `{"b":1,"a":2}` (not canonical JCS text) is `invalid-value`, and of the same canonical text twice is `duplicate-member`. | Test (TC-189) |
+| FR-144-AC-29 | A supplied `Sequence<Int[0, 9]>[0, 3]` with `elements` `[{"type":"integer","value":"1"}, {"type":"unavailable"}]` is admitted as a two-occurrence sequence whose second occurrence is unavailable, `size` 2; with three available elements and one `unavailable` entry it is `cardinality_out_of_bound`/`above-maximum`; `{"type":"unavailable","value":"1"}` is `invalid_runtime_input`/`unknown-member`; and an `unavailable` entry in a supplied `Set<Int[0, 9]>`, `Bag<Int[0, 9]>` or `OrderedSet<Int[0, 9]>` is `invalid_runtime_input`/`invalid-value` at that entry. | Test (TC-1482) |
+| FR-144-AC-30 | With `u` the unavailable occurrence, `[1, u] = [1, 2, 3]` is a completed `false` (unequal counts), `[2, u] = [1, 5]` is a completed `false` (first pair unequal), and `[1, u] = [1, 2]` and `[u, 2] = [1, 3]` are each incomplete at the unavailable occurrence, never `true` or `false`. | Test (TC-1482) |
+| FR-144-AC-31 | Over `s: Sequence<Integer>[0, 3]` holding `7, 8, 7` and `o: OrderedSet<Integer>[0, 3]` holding `7, 8`, `s[0]` under the guard `size(s) >= 1` is `7` typed `Integer`, `s[i]` under `0 <= i and i < size(s)` with `i = 2` is `7`, and `o[1]` under `size(o) >= 2` is `8`; `r.xs[0]` over a record field `xs: Sequence<Integer>[1, 2]` is admitted with no guard (declared minimum 1); each charges one `collection.element` and one `collection.result-retain` after both operands, and is recorded as one `filament.op.collection.index` application with arguments `[ref(c), ref(i)]` and the element type's node as `result_type`. | Test (TC-1320) |
+| FR-144-AC-32 | With no fact, `s[0]`, `s[i]` and `s[5]` over `s: Sequence<Integer>[0, 3]` are each `refused { code: undefined_expression, cause: unproved-presence }` at the index; `t[0]` over `t: Set<Integer>[0, 3]` or `Bag<Integer>[0, 3]`, and `n[0]` over `n: Integer` or a record, are `ill_typed`/`operator-ineligible` at the indexing expression; `s[true]` is `ill_typed`/`type-mismatch` at `true`; `s[0..1]` is `invalid_syntax`; and no evaluation returns `Option<T>`, a default or a wrapped index. | Test (TC-1320) |
+| FR-144-AC-33 | A parameter `m: Map<Text[0, 8; nfc], Int[0, 9]>[0, 4]` and a record field of type `Map<Int[0, 3], Boolean>` are admitted; `m[k]` under `contains(m, k)` is typed `Int[0, 9]` and is the value at `k`, `m[k]` without that fact is `undefined_expression`/`unproved-presence` at `k`, `size(m)` is the entry count and `contains(m, k)` tests keys only; `Map<Cfg, Integer>` over `record Cfg { a: Boolean; }`, `Map<Option<Integer>, Integer>` and `Map<Rational, Integer>` are `ill_typed`/`operator-ineligible` at the key type; `Map<Integer, Integer>[0, 2]` and `Map<Integer, Integer>` are different types; a `Set<Map<Integer, Boolean>>` orders its members by the `Map<K, V>` canonical-key row. | Test (TC-1321) |
 
 ## Dependencies
 

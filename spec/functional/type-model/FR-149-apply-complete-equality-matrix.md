@@ -89,6 +89,7 @@ carried-quantity conversion).
 | Set | equal member count and recursively equal members independent of iteration order |
 | Bag | equal occurrence count and recursively equal members with equal multiplicity |
 | Ordered set | recursively equal unique values in the same occurrence order |
+| Map | the same map type, an equal entry count, identical key sets under the key type's equality, and recursively equal values at every key; entry order never matters, because a map is a function from keys (FR-144 "Map values") |
 | Object reference | identical FR-143 identity triple (universe, object-type declaration, object identity); referenced state and observation are not inspected; different universes return `refused { code: foreign_reference, cause: foreign-universe }` |
 | IEEE binary32/binary64 | the grammar's `=` and `!=` over two operands of one float type select FR-148 `numericEqual` and its Boolean negation (false for a NaN operand, true for `+0` against `-0`); `totalOrder` and `bitIdentical` are selected only by their explicit intrinsic calls; see [IEEE relations](#ieee-relations) |
 
@@ -122,6 +123,14 @@ and key comparison has no cross-kind key. Their keys define only canonical
 representation order, not `<`, `<=`, `>` or `>=`; those operators SHALL refuse
 `ill_typed`/`operator-ineligible` before any charge. No timestamp arithmetic,
 timezone, calendar conversion or precision operation is selected here.
+
+`String` and every `Text[..]` type likewise have no common equality type and
+no equality conversion: `String` compares scalar sequences without
+normalization and `Text` under a pinned profile, so neither relation is the
+other's. `=` or `!=` over a `String` and a `Text` operand SHALL refuse at type
+checking with `ill_typed`/`type-mismatch` before any charge, the cause every
+pair of distinct types without a common type receives; `operator-ineligible`
+is kept for a type that has no equality at all, such as an event type.
 
 ## IEEE relations
 
@@ -162,25 +171,24 @@ and the membership relation compares the members of a set, bag or ordered set
 and everything inside them, because the collection defines which of its members
 are one member.
 
-
 A `Set`, `Bag` or `OrderedSet` decides whether two members are one member by
 FR-144's collection membership relation. That relation is this matrix with
 exactly one change: a `Float32` or `Float64` leaf, at any depth inside the
 member, is compared by FR-148 `bitIdentical`. A float member is therefore
-admitted, and the relation exists for every type except an event type and a
-type containing one. The relation is selected by the collection kind and is not
-an equality conversion; `=` over the collection uses it for the collection's
-members as the second bullet above states.
+admitted, `+0` and `-0` are two members, and two NaNs are one member exactly
+when their bits are identical. The relation exists for every type except an
+event type and a type containing one. The relation is selected by the
+collection kind and is not an equality conversion; `=` over the collection uses
+it for the collection's members as the second bullet above states.
 
-A `Set`, `Bag` or `OrderedSet` decides whether two members are one member by
-FR-144's collection membership relation, not by `=`. That relation is this
-matrix with exactly one change: a `Float32` or `Float64` leaf, at any depth
-inside the member, is compared by FR-148 `bitIdentical`. A float member is
-therefore admitted, `+0` and `-0` are two members, and two NaNs are one member
-exactly when their bits are identical. The relation exists for every
-type except an event type and a type containing one. The relation is not an equality conversion and does not
-make `=` or `!=` eligible: `=` over a set, a record or a union containing a
-float remains `ill_typed`/`operator-ineligible`.
+`=` and `!=` are therefore eligible over every type that holds a float, at any
+depth and under any composite or collection kind: a float leaf never makes an
+equality `ill_typed`. A model that stores measurements in records, options,
+unions, sequences or sets compares them with the same operator it uses for any
+other value, and the relation each leaf uses is fixed by where it sits
+(`numericEqual` outside a set, bag or ordered set, `bitIdentical` inside one),
+never chosen by the author. Only an event type, or a type containing one,
+is `ill_typed`/`operator-ineligible` under `=` and `!=`.
 
 ## Selected schedules
 
@@ -191,8 +199,8 @@ Boolean. A top-level text operand pair uses the FR-141 text schedule, an
 enumeration pair `enum.*` and a quantity pair the FR-142 top-level comparison
 schedule. A top-level pair of two floats is `numericEqual` and charges as FR-148
 states for it (`ieee.operands`, `ieee.result-retain`). Every other common type (Boolean, `Integer`, `Int[..]`, `Rational[..]`,
-`Decimal[..]`, `UUID`, `Timestamp`, `Reference<T>`, `Option<T>`, record, tuple and every collection
-kind) uses the equality schedule `equality.plan-form`, `equality.plan`, one
+`Decimal[..]`, `UUID`, `Timestamp`, `Reference<T>`, `Option<T>`, record, tuple, every collection
+kind and `Map<K, V>`) uses the equality schedule `equality.plan-form`, `equality.plan`, one
 `equality.pair` per planned pair and `equality.result-retain`; a float leaf of a
 composite plan is one planned pair, compared by `numericEqual` (or by
 `bitIdentical` inside a set, bag or ordered set), charging one `equality.pair`
@@ -287,6 +295,19 @@ compares as `Integer` and carries no range obligation. A consumer reads the
 obligation as the unproved-range check; it does not infer that the source
 wrote a conversion.
 
+The rule types the arithmetic node at the bounded operand's range rather than
+comparing both operands at the join of their types, and that choice is
+deliberate. An equality against a bounded place is how a postcondition or a
+relation states a bounded next value (`self.charged = pre(self.charged) + amount`),
+and the obligation reports at check time a value that could leave the place's
+range, instead of leaving an operation that silently has no successor state.
+The facts that discharge it are FR-146's, including the facts a postcondition
+receives from its operation's preconditions. A comparison at the join is still
+available and is written explicitly: `convert<Integer>(c) = a + b` compares two
+`Integer` operands and carries no range obligation. The `unproved-range` refusal
+names the arithmetic node's derived interval, the expected `Int[lo,hi]` and the
+operand that supplied it, so the author sees which bound failed and by how much.
+
 The rule is narrow. Only a binary `+`, `-` or `*` node that is directly an
 operand of `=` or `!=` is typed this way. Unary `-` (typed `Integer`), a path,
 a call, `div`, `rem`, `count`, `sum`, a `let`-bound name without its own
@@ -357,6 +378,9 @@ walk:
   ordered by the FR-144 canonical key, which every admitted element type has,
   a bag listing each occurrence, and the pair has `n` child pairs matched by
   rank.
+- A map pair with different entry counts, or whose key sets differ, is one
+  terminal unequal pair. Otherwise it has one child pair per key, in ascending
+  FR-144 canonical key order, the pair of the two values at that key.
 
 The pair count is the number of nodes in this tree. It depends only on the two
 values, never on representation sharing, insertion order or hash order, and
@@ -402,7 +426,7 @@ collection and object-reference rows of this requirement.
 | FR-149-AC-6 | Absence and explicit null remain distinct, while equal present values recursively compare their payload under the declared option/field type. | Test (TC-194) |
 | FR-149-AC-7 | A nested operand-construction non-result or exhausted recursive comparison propagates its typed disposition before any outer value/Boolean is produced. | Test (TC-194) |
 | FR-149-AC-8 | Set/bag equality matches both sides by FR-144 canonical-key rank, so insertion and iteration order change neither equality nor accounting. | Test (TC-194) |
-| FR-149-AC-9 | Top-level Boolean, numeric and reference equality charge exactly `equality.plan-form` and the one-pair equality schedule, while `=` on an IEEE-bearing type is `ill_typed`. | Test (TC-194) |
+| FR-149-AC-9 | Top-level Boolean, exact numeric and reference equality charge exactly `equality.plan-form` and the one-pair equality schedule; a top-level pair of two floats of one type charges FR-148's `numericEqual` schedule (`ieee.operands`, `ieee.result-retain`); and `=` over a record, tuple, option, union, sequence, set, bag or ordered set holding a float leaf is admitted under the equality schedule, never `ill_typed`. | Test (TC-194) |
 | FR-149-AC-10 | Exactly the tabled equality conversions are admitted from declared bounds, every other conversion operand of `=` or `!=` is `ill_typed` before any charge even when the value fits, and admitted decimal and rational conversions charge their decimal schedule. | Test (TC-194) |
 | FR-149-AC-11 | Plan pair counts follow the structural-mismatch, keyed-rank and cardinality short-circuit rules exactly, every plan walk is charged by `equality.plan-form` before it happens, and a foreign-universe reference pair refuses after that charge and before `equality.plan`. | Test (TC-194) |
 | FR-149-AC-12 | Under `filament.model.complete/v1`, `Reference<Sub>` compares with `Reference<Super>` through the upcast row with no charge and unchanged identity, and a non-conforming reference pair is `ill_typed`. | Test (TC-198) |
@@ -415,12 +439,14 @@ collection and object-reference rows of this requirement.
 | FR-149-AC-19 | With `tally` of `Int[0,3]` and the guard `earlier.tally < 3`, the relation `earlier.tally < 3 and later.tally = earlier.tally + 1` checks: the sum's interval `[1,3]` lies inside `Int[0,3]`, the sum is typed `Int[0,3]` by the expected-type rule, and the relation charges the sum's own integer-arithmetic schedule plus the equality's one-pair schedule. | Test (TC-194) |
 | FR-149-AC-20 | With the guard removed, `later.tally = earlier.tally + 1` over `tally` of `Int[0,3]` refuses `undefined_expression`/`unproved-range` at `earlier.tally + 1`, because the sum's interval `[1,4]` exceeds `Int[0,3]`; `recovered.tally = recovered.tally + 1` refuses the same way at its sum. No Boolean is produced and the value is not clamped. | Test (TC-194) |
 | FR-149-AC-21 | The rule applies only to a binary `+`, `-` or `*` operand of `=` or `!=` against an `Int[..]` operand, on either side and parenthesized: an `Integer` path, a call, `div`, `rem`, `count`, an unannotated `let`-bound name or unary `-` against `Int[0,3]` is `ill_typed`/`type-mismatch` without `convert`, an arithmetic operand against a `Rational[..]` or `Decimal[..]` operand is `ill_typed`, and `<`, `<=`, `>` and `>=` over the same operands supply no expected type and are accepted, so `n + 1 <= later.tally` for `n` of `Integer` and `earlier.tally + 1 <= later.tally` are well typed. | Test (TC-194) |
-| FR-149-AC-22 | The `String` values `é` (U+00E9) and U+0065 U+0301 compare unequal under `=`, two `String` values of identical scalars compare equal, a `String` and a `Text` operand are `ill_typed`/`operator-ineligible`, and the types `Set<Float64>`, `record F { x: Float32; }` and `union U { V(Float64), N }` are admitted both as set element types under FR-144's membership relation and as `=` operands (FR-149-AC-25 and FR-149-AC-26). | Test (TC-194) |
+| FR-149-AC-22 | The `String` values `é` (U+00E9) and U+0065 U+0301 compare unequal under `=`, two `String` values of identical scalars compare equal, a `String` and a `Text` operand are `ill_typed`/`type-mismatch` before any charge (two distinct types with no common equality type and no equality conversion), and the types `Set<Float64>`, `record F { x: Float32; }` and `union U { V(Float64), N }` are admitted both as set element types under FR-144's membership relation and as `=` operands (FR-149-AC-25 and FR-149-AC-26). | Test (TC-194) |
 | FR-149-AC-23 | Independently admitted Bytes values with payload `00ff` compare equal and have equal keys; `00ff` versus `00fe`, `00ff` versus `00ff00` and the empty payload versus `00` compare unequal. Independently admitted JsonObject values with payload `{"a":1,"b":[true,null]}` compare equal; `{"a":1,"b":[true,null]}` versus `{"a":1,"b":[null,true]}`, versus `{"a":2,"b":[true,null]}`, versus `{"a":1}` and versus `{"a":1,"b":[true,null],"c":{}}` compare unequal; `{}` equals `{}`. Two Durations of `3/2` seconds compare equal and `3/2` versus `2` compares unequal; a Duration of `3/2` compares equal to the quantity `3/2 s` and to `1500 ms` only after the explicit conversion to `s`. Each comparison is one terminal pair under the existing equality schedule. | Test (TC-280) |
 | FR-149-AC-24 | Bytes versus JsonObject, Bytes versus `String`, `Text` or `Integer`, JsonObject versus `String`, `Text` or `Boolean`, and UUID versus Bytes refuse `ill_typed`/`type-mismatch` before an equality charge and produce no Boolean. The four ordering operators on Bytes or JsonObject, and `+` on either, refuse `ill_typed`/`operator-ineligible` before any charge; a Bytes key and a JsonObject key create no ordering or arithmetic capability. Same-kind keys compare canonical payload content unsigned bytewise with a proper prefix first: Bytes with payload `10` order before `2000`, `00` before `0000`, and the empty payload before `00`; JsonObject `[]` orders before `{}`; and equal payloads have equal keys. | Test (TC-280) |
 | FR-149-AC-25 | In FR-149-AC-25 and FR-149-AC-26, `+0`, `-0`, `one`, `qnan` and `qnan2` are the float values of bits `0x0000000000000000`, `0x8000000000000000`, `0x3ff0000000000000`, `0x7ff8000000000000` and `0x7ff8000000000001`, supplied as parameters. `=` and `!=` over two `Float64` parameters follow `numericEqual`: `+0` and `-0` are equal, `qnan = qnan` is false and `qnan != qnan` is true. Over `record F { x: Float64; y: Integer; }`, `Option<Float64>`, a tuple holding a `Float32`, `union U { V(Float64), N }` and `Sequence<Float64>[0,2]` the float leaf compares by `numericEqual`: `F { x: +0, y: 1 } = F { x: -0, y: 1 }` is true, `F { x: qnan, y: 1 } = F { x: qnan, y: 1 }` is false and `!=` of it true, `F { x: +0, y: 1 } = F { x: +0, y: 2 }` is false, `U::V(+0) = U::V(-0)` is true, `U::V(+0) = U::N` is false, the present `qnan` against itself is false, `none = none` is true, and `sequence[+0, one] = sequence[-0, one]` is true. A float read out of the structure (`r.x`) compares as a bare float. | Test (TC-194) |
 | FR-149-AC-26 | Over `Set<Float64>[0,2]` parameters, `set[qnan] = set[qnan]` is true (one NaN member, identical bits), `set[+0] = set[-0]` is false and `set[+0] != set[-0]` is true, `set[+0, -0] = set[-0, +0]` is true, `set[qnan] = set[qnan2]` for two NaNs of different payload is false, and `bag[+0, +0] = bag[+0]` is false; `contains(set[+0], -0)` is false while `+0 = -0` is true; `F` of `record F { x: Float32; }` in `Set<F>[0,2]` compares its members by bit identity under `=`. A `Sequence<Float64>[0,1]` of `qnan` compares unequal to itself under `=`, because a sequence is not a set. | Test (TC-194) |
 | FR-149-AC-27 | `Rational[-3, 7; 1, 12]` is well formed and admits `1/4`, `-3` (`-3/1`), `0` and `7/12` and no `8`, `-4`, `1/13` or `127/5000`; `Rational[8, 7; 1, 12]`, `Rational[0, 1; 0, 12]`, `Rational[0, 1; -1, 12]` and `Rational[0, 1; 13, 12]` each refuse `ill_typed` at the type, and so does each as the carrier `C` of `Quantity<m, C>`. | Test (TC-981) |
+| FR-149-AC-28 | Over two parameters of type `Map<Int[0, 3], Integer>[0, 4]`, maps holding `{1: 5, 2: 6}` and `{2: 6, 1: 5}` compare equal and `!=` is false; `{1: 5}` against `{1: 6}`, against `{2: 5}` and against `{1: 5, 2: 6}` compare unequal; a map pair with equal keys forms one child pair per key in ascending key order; `=` between `Map<Int[0, 3], Integer>` and `Map<Int[0, 3], Integer>[0, 4]` or `Map<Int[0, 4], Integer>` is `ill_typed`/`type-mismatch`; and a map whose value type is an event type is `ill_typed`/`operator-ineligible` under `=`. | Test (TC-1321) |
+| FR-149-AC-29 | Over `a`, `b` and `c` of `Int[0, 10]`, `c = a + b` is `undefined_expression`/`unproved-range` at `a + b`, and the refusal names the derived interval `[0, 20]`, the expected type `Int[0, 10]` and the operand `c` that supplied it; `c = a + b` under the guard `a <= 4 and b <= 5` checks; and `convert<Integer>(c) = a + b` checks with no range obligation and is `false` at `a = 8`, `b = 9`, `c = 10`. | Test (TC-1325) |
 
 ## Dependencies
 

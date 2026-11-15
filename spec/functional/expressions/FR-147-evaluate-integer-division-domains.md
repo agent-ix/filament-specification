@@ -51,6 +51,8 @@ Without it, each occurrence is a located `unsupported_construct` refusal even
 inside an unreachable branch. `/` never denotes integer division; rational `/`
 follows FR-044 and FR-149. The required `div`/`rem` law is selected by the
 checked package, never inferred from operator spelling or backend availability.
+A unit states it with a header `profile` naming the law definition
+([FR-570](FR-570-select-the-integer-division-law-from-a-unit-header.md)).
 
 ## Division profiles
 
@@ -101,6 +103,33 @@ with the measures defined by `filament.value.accounting/v1`. For `div`/`rem` and
 `mod`, the zero-divisor undefined check follows the operands charge and
 precedes the arithmetic charge; an undefined outcome makes no later charge.
 
+## Checking
+
+The typechecker proves each `div`, `rem` and `mod` before evaluation
+([FR-007](../foundation/FR-007-prove-integer-definedness.md),
+[FR-044](../foundation/FR-044-check-composed-numeric-definedness.md)). The
+same two obligations apply to all three operators under every law; `mod` is
+not exempt because it needs no law.
+
+- **Nonzero divisor.** A divisor whose range contains zero with no exact
+  nonzero guard is refused `undefined_expression`/`unproved-nonzero` at the
+  operator, before the range obligation. A checked program therefore meets no
+  zero divisor at evaluation; the undefined outcome above is reached only by an
+  evaluation the check did not prove.
+- **Result interval and type.** The operator's result type is the smallest
+  interval holding the exposed member for every operand pair in the operand
+  ranges with a nonzero divisor, and is the mathematical integer type only
+  when that interval is unbounded. A remainder is bounded by its divisor
+  alone: for a divisor range excluding zero with largest magnitude `m`, the
+  Euclidean remainder (of `mod`, and of `rem` under the Euclidean law) lies in
+  `[0, m - 1]`, the truncating `rem` in `[-(m - 1), m - 1]` narrowed by the
+  sign of the dividend's range and the floor `rem` in `[-(m - 1), m - 1]`
+  narrowed by the sign of the divisor's range, even for an unbounded
+  dividend. A bounded consumer whose domain contains that interval is proved;
+  otherwise the check refuses `undefined_expression`/`unproved-range`. The
+  result is typed this way so that a remainder that is in fact bounded can
+  flow into a bounded consumer without a guard.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -116,6 +145,8 @@ precedes the arithmetic charge; an undefined outcome makes no later charge.
 | FR-147-AC-9 | Under each profile, a bounded consumer's `div` whose quotient is outside its domain returns `refused { code: division_out_of_domain, cause: quotient-outside-domain }`, a `rem` whose remainder is outside it returns `refused { code: division_out_of_domain, cause: remainder-outside-domain }`, and a `mod` whose Euclidean remainder is outside it returns `refused { code: modulo_out_of_domain, cause: outside-domain }`; no refusal exposes a member. | Test (TC-192) |
 | FR-147-AC-10 | The unexposed member never refuses: over the consumer domain `Int[1,10]`, `10 div y` at `y = 5` returns `2` although the remainder `0` is outside the domain, and over `Int[-10,5]`, `x rem -1` at `x = -10` returns `0` although the quotient `10` is outside the domain. | Test (TC-192) |
 | FR-147-AC-11 | In the shared grammar, `div`, `rem` and `mod` parse at product precedence in both a complete-value declaration and a declaration without `filament.value.complete/v1`; semantic admission accepts each well-typed complete-value form under its selected law, but returns a located `unsupported_construct` for each occurrence without that facet, including in an unreachable branch. `/` never becomes integer division; only under complete value may a rational `/` with an expected rational result type promote integer operands exactly under FR-149. | Test |
+| FR-147-AC-12 | For `a: Int[0, 100]` and `b: Int[1, 12]`, `a mod b` has result type `Int[0, 11]` and is admitted into an `Int[0, 11]` consumer, and is refused `unproved-range` into `Int[0, 10]`; with `a` of the unbounded integer type `a mod b` still has type `Int[0, 11]`. For `a: Int[-100, 100]` and `b: Int[1, 12]`, `a rem b` has type `Int[0, 11]` under the Euclidean and floor laws and `Int[-11, 11]` under the truncating law, and `a div b` over `a: Int[0, 100]` has type `Int[0, 100]`. | Test (TC-1281) |
+| FR-147-AC-13 | Under every law, `a div b`, `a rem b` and `a mod b` with `b: Int[0, 12]` and no exact nonzero guard are each refused `undefined_expression`/`unproved-nonzero` at the operator before any range obligation; with `b: Int[1, 12]` or under the guard `b != 0` the nonzero obligation is discharged. | Test (TC-1281) |
 
 ## Dependencies
 

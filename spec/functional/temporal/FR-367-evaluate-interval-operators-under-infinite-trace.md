@@ -85,7 +85,8 @@ of the unbounded operator. Under a bounded profile `[a,*]` is not admitted
 
 Strong previous is `once[1,1]` under every profile, the infinite-trace profile
 included: at position `i > 0` it is its operand's truth at `i - 1`, and at
-position 0 it is false. It has no separate spelling and no unbounded form; the
+position 0 it reads its operand at FR-092's pre-origin position, so it is false
+for an atomic operand and true for `not p`. It has no separate spelling and no unbounded form; the
 unbounded past operators are `once`, `historically`, `since` and `triggered`.
 
 ### Safety fragment

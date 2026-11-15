@@ -1,11 +1,15 @@
 {
-  "version": 1,
-  "note": "QSL-1747 / FR-322: filament.temporal.timed/v1 has no ClockConfiguration row. A timed-model subject takes its time binding from the checked timed_model/time_source graph; a trace subject supplies time-stamped positions and admitted order through the temporal profile input.",
+  "version": 2,
+  "note": "QSL-1747 / FR-322 \"Temporal clock bindings\": filament.temporal.timed/v1 has two cases. A timed-model subject has no ClockConfiguration row and takes its time binding from the checked timed_model/time_source graph; its clock_name is model-time. A trace subject has exactly one `timed` row per occurrence whose clock_name is the clause's clock role and whose clock is {kind: timed, unit} (FR-540); its time-stamped positions and admitted order stay runtime inputs (FR-541). `subject` is `model` or `trace`; `row` is the clause's temporal_bindings row without its declaration key, or null for none.",
   "cases": [
-    {"id":"TN-01","subject":"checked timed model with one matching TimedModelNode/time_source","clock_name":"model-time","temporal_bindings":null,"expected":"admitted"},
-    {"id":"TN-02","subject":"timed trace with time-stamped positions and admitted order","clock_name":"model-time","temporal_bindings":null,"expected":"admitted"},
-    {"id":"TN-03","subject":"model-time clause with no matching timed_model/time_source","expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/semantic_graph/nodes/{clause-index}/body"}},
-    {"id":"TN-04","subject":"timed-profile clause with an event_position temporal_bindings row","expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/temporal_bindings/0"}},
-    {"id":"TN-05","subject":"existing event_position/fixed_sample/timestamped_event rows","expected":"unchanged"}
+    {"id":"TN-01","subject":"model","detail":"checked timed model with one matching TimedModelNode/time_source","clock_name":"model-time","row":null,"expected":"admitted"},
+    {"id":"TN-02","subject":"trace","detail":"timed clause over a trace subject with no row","clock_name":"plant","row":null,"expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/semantic_graph/nodes/{clause-index}/body"}},
+    {"id":"TN-03","subject":"model","detail":"model-time clause with no matching timed_model/time_source","clock_name":"model-time","row":null,"timed_model_source":false,"expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/semantic_graph/nodes/{clause-index}/body"}},
+    {"id":"TN-04","subject":"model","detail":"timed-model clause with an event_position row","clock_name":"model-time","row":{"occurrence":0,"clock_name":"model-time","clock":{"kind":"event_position","sequence_authority":"order-events"}},"expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/temporal_bindings/0"}},
+    {"id":"TN-05","subject":"model","detail":"existing event_position/fixed_sample/timestamped_event rows of the other profiles","expected":"unchanged"},
+    {"id":"TN-06","subject":"trace","detail":"timed clause over a trace subject with one timed row naming its role","clock_name":"plant","row":{"occurrence":0,"clock_name":"plant","clock":{"kind":"timed","unit":"ms"}},"expected":"admitted"},
+    {"id":"TN-07","subject":"model","detail":"timed-model clause with a timed row","clock_name":"model-time","row":{"occurrence":0,"clock_name":"model-time","clock":{"kind":"timed","unit":"ms"}},"expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/temporal_bindings/0"}},
+    {"id":"TN-08","subject":"trace","detail":"timed row whose clock_name is model-time","clock_name":"model-time","row":{"occurrence":0,"clock_name":"model-time","clock":{"kind":"timed","unit":"ms"}},"expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/temporal_bindings/0"}},
+    {"id":"TN-09","subject":"trace","detail":"trace-subject timed clause with a timestamped_event row","clock_name":"plant","row":{"occurrence":0,"clock_name":"plant","clock":{"kind":"timestamped_event","timestamp_unit":"ms"}},"expected":{"code":"invalid_package","cause":"timed-node-reference","pointer":"/temporal_bindings/0"}}
   ]
 }

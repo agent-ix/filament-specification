@@ -232,6 +232,80 @@ two cannot meet, and a `lookup` carries its mode in either position of a larger
 expression (`lookup<T>(p, r) absent empty = absent` parses as the lookup with
 mode `empty`, then `=`, then the literal).
 
+## The `Some` option constructor
+
+`Some(e)` constructs the present value of an `Option<T>` whose payload is `e`:
+the value FR-149 compares as "present" and the one `value(...)` returns the
+payload of. It is a general expression, admitted in every expression position of
+a complete-V1 unit (a function body, a state clause, a temporal or protocol
+expression and a refinement row alike), because the option type is a general
+value type and its absent value `absent`/`none` is already general; a present
+value restricted to refinement rows would leave every other `Option<T>` result,
+argument and field writable only as absent.
+
+At a position with no expected option type, `Some(e)` is typed `Option<E>` for
+`e` of type `E`; at a position whose expected type is `Option<T>`, it has type
+`Option<T>` and `e` is checked against `T`. In full, its type follows the same
+expected-type rule as `absent` ("The `absent` Option literal" above), with the
+payload checked against the element type:
+
+- At a position whose unique expected type is `Option<T>` (the positions listed
+  for `absent`, including the other operand of `=` or `!=` and the abstract field
+  type of a refinement row), `Some(e)` has exactly that type and `e` is checked
+  against the expected type `T`. A literal payload therefore takes `T`: an
+  integer literal adopts an `Int[..]` element type, so `Some(3)` at an
+  `Option<Int[0, 9]>` position is admitted and `Some(30)` is
+  `refused { code: ill_typed, cause: type-mismatch }` at the literal `30`, as a
+  literal outside its expected type is anywhere (FR-140); a collection literal,
+  `absent` or a nested `Some` takes `T` the same way; and a `+`, `-` or `*`
+  payload is typed `T` with the range obligation that a declared `Int[lo,hi]`
+  result position gives it (FR-149). Any other payload must have type `T`: no
+  implicit widening applies, so `Some(b)` for `b: Int[0, 3]` at an
+  `Option<Int[0, 9]>` position is `type-mismatch` at `b`, and the explicit
+  spelling is `Some(convert<Int[0, 9]>(b))`.
+- At a position whose expected type is not an option, `Some(e)` is
+  `refused { code: ill_typed, cause: type-mismatch }` at `Some(e)`.
+- At a position with no unique expected type (an unannotated `let`, the operand
+  of `present` or `value`, or `=` between two operands neither of which has a
+  type of its own), `Some(e)` has type `Option<E>` for the type `E` that `e` has
+  on its own, an integer literal being `Integer`; so `let x = Some(3) in x` has
+  type `Option<Integer>`. Unlike `absent`, such a `Some(e)` is never ambiguous,
+  because its payload names its type.
+
+`Some` is the constructor's spelling, case-sensitive; `some` is an ordinary
+identifier. Evaluation completes `e`, then charges one `composite.result-retain`
+with `value_occurrences = occ(result)` and `result_units += occ(result)`, `occ`
+of a present option being one plus `occ` of its payload; a stopped `e`
+propagates and no option exists. The checked package records `Some(e)` as one
+`value`/`option_value` node over the payload (FR-322), never as an application.
+
+## Tuple position read
+
+`p[n]`, where `p` has a tuple type `P` of arity `k` and `n` is a `uint`
+literal, reads the value at zero-based position `n` of `p`: its type is the
+declared type of position `n`, and it names the position identity
+(declaration key of `P`, `n`) of "Declarations and identity" above. It is the
+grammar's `postfix` alternative `'[', expr, ']'`, the same form that indexes a
+sequence or a map (FR-144 "Indexing"); for a tuple operand the checker requires
+the static position the heterogeneous position types need. A literal `n >= k`,
+and an index that is not a `uint` literal (a parameter, a `let` name, an
+arithmetic expression, a negated literal), is
+`refused { code: ill_typed, cause: operator-ineligible }` at the index. A read
+of a tuple position carries no obligation, because every value of `P` holds all
+`k` positions. Reads compose: `nest[0][1]` reads position 1 of the tuple at
+position 0 of `nest`.
+
+`p.0` is not a position read: `.` is followed by a member name, an identifier,
+so `p.0` is `refused { code: invalid_syntax, cause: unexpected-token }` at `0`.
+Positions are read with brackets rather than `.n` because brackets already mean
+"select by position" in the grammar, and `p.0.1` would collide with the decimal
+spelling of a quantity magnitude such as `0.1 s`.
+
+Evaluation completes `p` and then retains the selected value, charging exactly
+what a record field projection `r.f` charges. The checked package records the
+read as one `filament.op.tuple.project` application whose member is
+`{kind: "position", declaration: P, position: n}` (FR-322), located at the read.
+
 ## Recursion rule
 
 The declaration containment graph has one edge from declaration `D` to each
@@ -323,6 +397,8 @@ and equality.
 | FR-143-AC-18 | `absent` takes its `Option<T>` from the unique expected type of its position and denotes the `none` of that type: the write `self.v = absent` for `v: Option<Clock>` and for `v: Option<Integer>`, the argument for an `Option<Integer>` parameter, a function result typed `Option<Integer>`, an `if` branch whose other branch is an `Option<Integer>` operand, the record field `v: absent` for `v: Option<Integer>`, and either operand of `=` against an `Option<Integer>` operand are admitted; `(lookup<M::A>(p, r) absent empty) = absent` is true for a key `p` does not hold and false for one it holds; `x = y` of two `Option<Integer>`-typed operands (parameters or fields, not literals) that both hold no value is true, and `x = absent` is true exactly when `x` holds none; the literal against the literal, `absent = absent`, has no expected type and is refused (FR-143-AC-19). | Test (TC-188) |
 | FR-143-AC-19 | An `absent` with no unique expected type (both operands of `=`, `let x = absent in x`, `present(absent)`, `value(absent)`) is `refused { code: ill_typed, cause: ambiguous-literal }` before any charge, and one whose expected type is not an option (an `Integer` field or parameter, a `Reference<T>`, a `Set<Integer>`) is `refused { code: ill_typed, cause: type-mismatch }`; neither is read as the `none` of a guessed type. | Test (TC-188) |
 | FR-143-AC-20 | A `?` field takes no `absent` literal: `P { a: 1, b: absent }` for `b: Integer?` is `refused { code: ill_typed, cause: type-mismatch }` while omitting `b` still constructs the absent slot, and `null` for an `Option<Integer>` parameter stays `ill_typed`. `lookup<M::A>(p, r) absent undefined`, `absent empty` and `absent refused` parse as before, the `absent` after the `)` introducing the mode, and `lookup<M::A>(p, r) absent absent` is not a mode and is `refused { code: invalid_syntax, cause: unexpected-token }`. | Test (TC-188) |
+| FR-143-AC-21 | `Some(3)` as the body of a function with result `Option<Int[0, 9]>`, as an argument for an `Option<Int[0, 9]>` parameter and as the operand of `=` against an `Option<Int[0, 9]>` parameter is admitted with type `Option<Int[0, 9]>`, and `value(Some(3))` under its presence fact is `3`; `Some(30)` at each of those positions is `ill_typed`/`type-mismatch` at `30`; `Some(b)` for `b: Int[0, 9]` is admitted and for `b: Int[0, 3]` is `type-mismatch` at `b`; `Some(3)` at an `Integer` result is `type-mismatch` at `Some(3)`; `let x = Some(3) in x` has type `Option<Integer>`; `Some(1)` in a state clause outside any refinement is the option constructor, not a call; and every admitted `Some(e)` is one `value`/`option_value` node. | Test (TC-1323) |
+| FR-143-AC-22 | For `tuple Pair(Boolean, Integer);` and `p: Pair`, `p[0]` is typed `Boolean` and `p[1]` `Integer`, each one `filament.op.tuple.project` with member `{kind: "position", declaration: Pair, position: n}`; for `tuple Nest(Pair, Integer);` `q[0][1]` is typed `Integer`; `p[2]` and `p[i]` for a parameter `i: Int[0, 1]` are `ill_typed`/`operator-ineligible` at the index; and `p.0` is `invalid_syntax`/`unexpected-token` at `0`. | Test (TC-1322) |
 
 ## Dependencies
 

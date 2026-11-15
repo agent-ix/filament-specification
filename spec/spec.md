@@ -676,6 +676,14 @@ relationships:
     type: contains
   - target: ix://agent-ix/filament-specification/FR-339
     type: contains
+  - target: ix://agent-ix/filament-specification/FR-500
+    type: contains
+  - target: ix://agent-ix/filament-specification/FR-501
+    type: contains
+  - target: ix://agent-ix/filament-specification/FR-502
+    type: contains
+  - target: ix://agent-ix/filament-specification/FR-503
+    type: contains
   - target: ix://agent-ix/filament-specification/FR-340
     type: contains
   - target: ix://agent-ix/filament-specification/FR-341
@@ -775,6 +783,10 @@ relationships:
   - target: ix://agent-ix/filament-specification/FR-420
     type: contains
   - target: ix://agent-ix/filament-specification/FR-421
+    type: contains
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: contains
+  - target: ix://agent-ix/filament-specification/FR-641
     type: contains
   - target: ix://agent-ix/filament-specification/FR-375
     type: contains
@@ -999,6 +1011,10 @@ The requirement artifacts are indexed below.
 | [ADR-006](decisions/ADR-006-protocol-bounded-control-profile.md) | ADR | Decided: one protocol profile; a repeat needs only a progress edge, with an optional maximum and optional invariant and variant |
 | [Complete-V1 subsystem index](subsystems/index.md) | Architecture index | Ten subsystems and I01–I21 interface ownership |
 | [FR-339](functional/source-package/FR-339-define-complete-native-grammar.md) | FR | Normative complete native V1 lexical and syntactic contract |
+| [FR-500](functional/source-package/FR-500-select-the-edition-and-profiles-of-a-source-unit.md) | FR | One edition `1-draft`; zero or more profiles; optional `using` on functions and predicates |
+| [FR-501](functional/source-package/FR-501-settle-ambiguous-and-contradictory-grammar-forms.md) | FR | Aggregate threshold, indexed read, annotated `let`, `Some`, `Decimal` mode, optional `clock`, operation names, non-empty lists |
+| [FR-502](functional/source-package/FR-502-recognize-population-bounds-clock-references-and-delivery-intervals.md) | FR | Population bound, quantified clock bound, delivery interval, qualified `requires temporal`, `ref(e)`, `Text(...)` |
+| [FR-503](functional/source-package/FR-503-publish-the-grammar-as-a-comparable-production-inventory.md) | FR | The grammar's `ebnf` blocks are a closed production inventory an implementation compares with |
 | [FR-322](objects/interfaces/FR-322-checked-package-artifact.md) | FR (value_object) | Checked-package V2 boundary, including model-owned record value type fields |
 | [FR-340](objects/interfaces/FR-340-checked-package-frame-location.md) | FR | Checked-package `state`/`frame` body: relationship and (declaring node, field name) entries |
 | [FR-341](objects/interfaces/FR-341-checked-package-state-clause-body.md) | FR | Checked-package `state`/`state_clause` body: `filament.op.state.clause` application and state node body roots |
@@ -1028,6 +1044,8 @@ The requirement artifacts are indexed below.
 | [FR-419](functional/analysis/FR-419-analyze-task-set-schedulability.md) | FR | Analyze task-set schedulability |
 | [FR-420](functional/analysis/FR-420-sample-stochastic-timed-models.md) | FR | Interpret and sample stochastic timed models |
 | [FR-421](functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md) | FR | Check probabilistic timed claims exactly through digital clocks |
+| [FR-640](objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md) | FR | Carry probabilistic model declarations in the checked package |
+| [FR-641](functional/analysis/FR-641-require-the-probability-analysis-items.md) | FR | Require the probability analysis items and their evidence |
 | [FR-440](objects/interfaces/FR-440-checked-package-union-and-case-nodes.md) | FR | Checked-package union, union-value and case nodes, explicit union-value application selection, and the `filament.op.control.case` catalog entry |
 | [FR-441](objects/interfaces/FR-441-union-member-key.md) | FR | Union member key: the (declaration node id, member) pair |
 | [FR-478](functional/type-model/FR-478-convert-text-to-a-number.md) | FR | Text and String to a number: one locale-free grammar per integer, decimal, rational, IEEE and quantity target |

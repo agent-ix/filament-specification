@@ -46,3 +46,19 @@ branch without reading diagnostic text.
   the language repository and asserts it in its acceptance criteria.
 - The exit-code corpus named in `V1-A06` covers all six codes on both the API
   and the CLI surface.
+- The request-surface commands use the same codes and add none: the build
+  inventory (`version`) exits `0`; a malformed provider-configuration
+  document, extension definition entry or set, `handoff` member or
+  Markdown operand is invalid input and exits `20` before any stage runs,
+  never `30`, because the fault is in what the caller named, not in the
+  tool; a provider-configuration plugin that fails after it starts settles
+  its items as tool failure (`30`) or incomplete (`22`) as FR-305 states;
+  `check --markdown` exits with the most severe of its per-fence items.
+- No verb exits silently. A verb the CLI accepts but whose operation the
+  build does not route is unsupported: it exits `21` with an outcome document
+  carrying code `unsupported_operation` and cause `operation-not-routed`
+  naming the verb (FR-522). `analyze` refusals use the existing codes: a
+  malformed `native-analyze/1` request, a refused source, a refused subject
+  binding and missing source bytes exit `20`, a cancellation or deadline
+  before any item exits `22`, and a request with items exits with the most
+  severe item code (FR-520).

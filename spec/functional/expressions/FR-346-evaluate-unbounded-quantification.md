@@ -21,9 +21,12 @@ relationships:
 
 ## Description
 
-When `forall` or `exists` quantifies over a collection whose type declares no
-FR-144 bound, the evaluator SHALL negotiate discharge with a registered
-quantifier-capable backend rather than visiting occurrences.
+When a claim's `forall` or `exists` quantifies over a collection whose type
+declares no FR-144 bound, the claim SHALL be settled by negotiating
+discharge with a registered quantifier-capable backend rather than by
+visiting occurrences. Evaluating the quantifier on one supplied concrete
+value of that type visits the value's occurrences and decides that value
+only; it never settles the claim.
 
 ## Inputs
 
@@ -42,8 +45,8 @@ FR-145 decides `forall`/`exists` over a bounded collection by visiting each
 retained occurrence in FR-144 canonical order and charging its schedule; that
 path is unchanged by this requirement. A collection type with no declared
 bound carries no promise that a finite occurrence set exists at evaluation
-time, so the reference evaluator does not visit occurrences to decide the
-quantifier. Instead the claim is lowered as a target-neutral IR obligation per
+time, so the reference evaluator does not visit occurrences to settle a claim
+over that domain. Instead the claim is lowered as a target-neutral IR obligation per
 AD-010 and negotiated per item with a registered quantifier-capable backend
 (an SMT-style solver or an equivalent registered provider; Kani is one
 possible registrant, never the only one). A provider that establishes the
@@ -54,16 +57,27 @@ by exhaustive enumeration over an unbounded domain. A claim no registered
 quantifier-capable backend can discharge settles `unsupported` with a warning
 naming the required capability.
 
+This rule governs the settlement of a claim over the declared domain. It does
+not govern evaluating the quantifier on one concrete value. A concrete value
+of an unbounded collection type is finite. When a run evaluates a function or
+clause on a supplied value (an argument, a field of an observed object), the
+evaluator SHALL decide the quantifier by visiting that value's retained occurrences in
+FR-144 canonical order with FR-145's charges, exactly as for a bounded
+collection. The result is a test of that value: it is reported as the
+evaluation's value and is never promoted to `proved` or `refuted` for the
+claim, whose settlement still comes only from negotiation.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-346-AC-1 | `forall`/`exists` over a bounded collection type continues to be decided by FR-145 occurrence-visiting and its charge schedule, unaffected by this requirement. | Test (TC-249) |
-| FR-346-AC-2 | `forall`/`exists` over an unbounded collection type is lowered as a target-neutral IR obligation and negotiated with a registered quantifier-capable backend rather than decided by visiting occurrences. | Test (TC-249) |
+| FR-346-AC-2 | A claim whose `forall`/`exists` ranges over an unbounded collection type is lowered as a target-neutral IR obligation and negotiated with a registered quantifier-capable backend rather than decided by visiting occurrences. | Test (TC-249) |
 | FR-346-AC-3 | A provider that discharges the obligation over the declared unbounded domain returns proved, refuted with a witness or counterexample, or inconclusive, and never substitutes a finite sample for the unbounded domain. | Test (TC-249) |
 | FR-346-AC-4 | A claim no registered quantifier-capable backend can discharge settles `unsupported` with a warning naming the required capability. | Test (TC-249) |
 | FR-346-AC-5 | In a locked qualification run with a registered quantifier-capable SMT backend, the corpus settles at least one `forall`/`exists` case `proved` through that backend. | Test (TC-249, TC-266) |
 | FR-346-AC-6 | In that same locked run, the corpus settles at least one `forall`/`exists` case `refuted` through that backend; the AC-4 `unsupported`-with-warning path is unchanged in a locked run with no such backend registered. | Test (TC-249, TC-266) |
+| FR-346-AC-7 | Evaluating `forall(x in s : x < 500)` with `s` a supplied concrete value of the unbounded type `Set<Int[0, 9999]>` holding `0` to `999` returns `false` after visiting occurrences in canonical order up to the first counterexample, and holding `0` to `99` returns `true` after one visit per occurrence; `exists(x in s : x = 7)` on the second value returns `true`. Neither evaluation settles the claim over the declared domain, which with no quantifier-capable backend registered still settles `unsupported` with a warning naming the capability. | Test (TC-1402) |
 
 ## Dependencies
 

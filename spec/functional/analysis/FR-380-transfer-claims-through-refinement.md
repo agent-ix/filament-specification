@@ -30,8 +30,9 @@ relationships:
 When a claim over a concrete model subject is requested by transfer from a
 proved abstract claim and a proved refinement, the verification planner SHALL
 settle it from those two premises, without exploring the concrete subject,
-exactly when the clause is stuttering-invariant, the subjects match and the
-refinement's abstract fairness implies the claim's fairness.
+exactly when the clause is stuttering-invariant, or counts positions over a
+step-for-step refinement, the subjects match and the refinement's abstract
+fairness implies the claim's fairness.
 
 ## Inputs
 
@@ -74,6 +75,23 @@ clause, do not transfer. Previous, and strong previous
 before, which a concrete step mapped to `stutter` changes. A clause outside
 the fragment is checked on the concrete subject directly as its own item.
 
+**Step-for-step refinements.** Previous (`once[1,1]`) and the interval
+operators count positions, so they transfer exactly when concrete and abstract
+positions correspond one to one. A refinement is **step-for-step** when its
+step map ([FR-375](FR-375-declare-model-refinement.md)) maps every concrete
+operation to an abstract-operation step, none to `stutter` or `any`, and its
+concrete subject is not `time dense`, whose delays are abstract stutters
+([FR-377](FR-377-decide-model-refinement.md)). Over such a refinement every
+concrete step is matched by exactly one abstract step, so the mapped concrete
+behaviour is an abstract behaviour position by position, the terminal stutter
+step of each included. A clause built from the fragment's operators together
+with previous and interval operators, nested in any order, then transfers under
+the subject-match, fairness-implication and premise-form rules below. The
+planner decides step-for-step from the refinement declaration's step map
+alone, never by exploring the concrete subject. Over any other refinement a
+position-counting clause does not transfer, because a concrete step mapped to
+`stutter` inserts a position that the abstract behaviour lacks.
+
 **Subject match.** The refinement premise's abstract subject equals the
 abstract claim premise's subject: the same checked package, the same initial
 states, and universes equal to the concrete subject's universes of the
@@ -104,7 +122,7 @@ does not cover the stutter tails the refinement admits.
 | Premises and checks | FR-360 label | FR-243 basis | Cause |
 | --- | --- | --- | --- |
 | Both premises `proved`; fragment, subject match, fairness implication and premise form all hold | `proved` | `decisive-witness` | none; the witness is the pair of premise records |
-| A clause outside the fragment | `inconclusive` | `unsettled` | `transfer-not-preserving`, naming the interval or previous operator |
+| A clause outside the fragment, over a refinement that is not step-for-step | `inconclusive` | `unsettled` | `transfer-not-preserving`, naming the interval or previous operator |
 | Fairness implication fails | `inconclusive` | `unsettled` | `transfer-not-preserving`, naming the `F_P` constraint `F_A` does not imply |
 | A liveness clause with an abstract premise over maximal behaviours | `inconclusive` | `unsettled` | `transfer-not-preserving`, naming the missing stutter closure |
 | A premise not `proved` | `inconclusive` | `unsettled` | `premise-unproved`, naming the premise and its result |
@@ -137,6 +155,7 @@ composition over component interface contracts.
 | FR-380-AC-6 | A refinement premise whose abstract subject differs from the abstract claim's subject in package, initial states or universes is refused `invalid_runtime_input`/`invalid-value`, naming the mismatching member. | Test (TC-317) |
 | FR-380-AC-7 | A proved transferred safety claim over `C` serves as the abstract premise for a transfer to a subject refining `C`; a transferred liveness claim over `C` does not, and a stutter-closure premise over `C` does. | Test (TC-317) |
 | FR-380-AC-8 | `always eventually holds(c.value = 2)`, proved over the abstract counter's stutter closure under `fair weak each Spec::Counter::inc`, transfers through the compare-and-set refinement to the concrete counter under `F_C`. | Test (TC-317) |
+| FR-380-AC-9 | Over a step-for-step refinement, whose step map sends every concrete operation to one abstract operation with no `stutter` or `any` arm, a proved abstract `always (holds(c.value = 2) implies once[1,1] holds(c.value = 1))` and a proved abstract `always (holds(c.value = 1) implies eventually[0,2] holds(c.value = 2))` each transfer `proved`, basis `decisive-witness`, with no exploration of the concrete subject; the same clauses over the compare-and-set refinement, which maps a concrete step to `stutter`, settle `inconclusive`, cause `transfer-not-preserving`, naming `once[1,1]` and `eventually[0,2]`; a refinement with an `any` arm or a `time dense` concrete subject is not step-for-step. | Test (TC-1042) |
 
 ## Dependencies
 

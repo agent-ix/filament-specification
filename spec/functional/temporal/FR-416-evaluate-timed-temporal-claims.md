@@ -21,6 +21,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-363
     type: references
+  - target: ix://agent-ix/filament-specification/FR-541
+    type: references
 ---
 
 # FR-416: Evaluate timed temporal claims under the timed profile
@@ -89,7 +91,9 @@ TT-2 admits punctual intervals (`[a, a]`). TT-1, TT-3 and TT-4 admit every
 formula with no punctual interval; such a claim with a punctual interval
 settles `unsupported`, `punctual-interval{locus}`, over a timed subject. Over a
 single timed trace every admitted formula evaluates, punctual intervals
-included.
+included. [FR-541](FR-541-evaluate-timed-claims-over-a-recorded-timed-trace.md)
+states how a claim settles over one recorded timed trace, a finite prefix or a
+timed lasso.
 
 ### Verdicts
 

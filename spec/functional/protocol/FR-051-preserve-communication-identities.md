@@ -70,6 +70,18 @@ is retained as a distinct duplicate-business-effect outcome. Relabeling a
 delivery as an effect, or binding an effect to the wrong attempt, is instead a
 binding refusal.
 
+A `related by r (a, b)` annotation on a protocol event node is an explicit
+business relationship and a premise of the step it annotates: the step exists
+only in a state and binder valuation in which the pair of end values is an
+instance of the model relationship `r`, identified by its declaration key, and
+every annotation of the node holds; annotations are conjoined and their order
+is immaterial. A node none of whose candidates satisfies its annotations has no
+step and waits. When an observed event is bound to a node, it binds only when
+every annotation holds over its observed values; an observed event that binds
+to no enabled step refuses as `invalid_runtime_input`/`invalid-value`, naming
+the node and the first failing annotation in source order. Equal scalar
+identifiers never satisfy an annotation.
+
 A receipt is an observation/provenance record about a delivery, not another
 name for the delivery. Multiple receipt records may replay one delivery key;
 they do not mint another delivery or effect. The declared tuples have a
@@ -89,6 +101,7 @@ channel or retry relations, never from key order, timestamps or arrival order.
 | FR-051-AC-6 | Re-observing one complete effect key is replay and creates no new effect, while a second exact effect identity for the same node and establishing attempt remains a distinct duplicate-business-effect outcome; a delivery merely relabeled as an effect refuses binding. | Test (TC-051) |
 | FR-051-AC-7 | Receipt identity and delivery identity remain different kinds, and sorting delivery keys establishes neither FIFO order nor a causal edge. | Test (TC-051) |
 | FR-051-AC-8 | Reusing a delivery, attempt or effect key with a different send, node, role, operation or establishing-attempt relationship refuses as an identity contradiction rather than minting another subject. | Test (TC-051) |
+| FR-051-AC-9 | An event node annotated `related by settles (paid, input)` over order `o1` has steps binding only the payment that settles `o1`; an annotation no payment satisfies leaves the node with no step and its thread waiting; reordering two annotations gives the same steps; and binding an observed event whose payment settles another order refuses `invalid_runtime_input`/`invalid-value`, naming the node and the annotation. | Test (TC-1522) |
 
 ## Dependencies
 

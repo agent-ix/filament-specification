@@ -97,7 +97,7 @@ while every `k` from `i` through `j-1` satisfies `p`. Release is the dual
 `p R q = not(not p U not q)`. Past operators use the finite prefix through `i`:
 `H`, `O` and `S` are respectively historically, once and since, and triggered
 is the dual `p T q = not(not p S not q)`. Previous, `Y p`, is the interval
-operator `once[1,1] p`, false at position zero. `p S q` means that some `j <= i` satisfies `q` while every `k` from `j+1`
+operator `once[1,1] p`; at position zero it reads its operand at the pre-origin position of FR-092, so it is false for an atomic operand. `p S q` means that some `j <= i` satisfies `q` while every `k` from `j+1`
 through `i` satisfies `p`. Until, release, since and triggered are
 non-strict: `q` at `i` itself satisfies `p U q` and `p S q`. So inserting a
 position that repeats the state at an adjacent position changes the truth

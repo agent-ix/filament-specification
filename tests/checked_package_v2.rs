@@ -13602,7 +13602,7 @@ fn shapes_field_type(document: &Value, object: &str, field: &str) -> Value {
 fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str, String)> {
     let natives = [
         "Boolean", "Integer", "Text", "String", "UUID", "Timestamp", "Bytes", "JsonObject",
-        "Float32", "Float64", "Duration", "Rational", "Decimal",
+        "Float32", "Float64", "Duration", "Rational", "Decimal", "Clock",
     ];
     // An FR-154 alias is read through to its target (chains included) before
     // the payload and position tests.
@@ -13640,7 +13640,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
                 })
         }
     };
-    // FR-322 "Admitted payload and position types": the four declared types
+    // FR-322 "Admitted payload and position types": the declared types
     // with no step 4 row are refused at intake (FR-322-AC-181, -182).
     // A package value type is refused when its native is `Decimal`, `Rational` without the flat
     // `numerator_min`, `numerator_max`, `denominator_min` and `denominator_max` members (the
@@ -13680,7 +13680,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
         for (slot, position) in positions.iter().enumerate() {
             let supported = position["typeRef"]
                 .as_str()
-                .is_some_and(|reference| reference != "ix://filament/native/Clock" && !unmapped(reference));
+                .is_some_and(|reference| !unmapped(reference));
             if position["ordinal"] != slot || !supported {
                 return Some(("invalid_model_binding", "malformed-declaration", format!("{at}/positions/{slot}")));
             }
@@ -13694,7 +13694,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
     for (index, variant) in document["variant_types"].as_array().into_iter().flatten().enumerate() {
         for (slot, case) in variant["cases"].as_array().expect("cases").iter().enumerate() {
             if let Some(payload) = case["payloadType"].as_str()
-                && (payload == "ix://filament/native/Clock" || unmapped(payload) || !resolves(payload))
+                && (unmapped(payload) || !resolves(payload))
             {
                 return Some((
                     "unsupported_construct",
@@ -24110,4 +24110,109 @@ fn every_positive_fixture_names_and_binds_each_claim_occurrence_of_each_temporal
         assert_eq!(decide_temporal_clause_carriers(&package), Ok(()), "{name}");
     }
     assert!(with_clauses >= 6, "the published clause fixtures all carry rows: {with_clauses}");
+}
+
+const TIMED_CLOCK_ROW_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/timed-clock-no-row-vectors.json");
+
+/// FR-322-AC-450: a timed clause over a timed-model subject has no
+/// `temporal_bindings` row and the clock name `model-time`; a timed clause
+/// over a trace subject has exactly one closed `timed {unit}` row naming its
+/// clock role. Each vector's row meets the closed `TemporalBinding` schema
+/// when its configuration is schema-valid, and a small reader over the stated
+/// rules decides it.
+#[trace("TC-1164", "FR-322-AC-450")]
+#[test]
+fn tc_1164_timed_rows_exist_only_for_trace_subjects() {
+    let vectors: Value =
+        serde_json::from_str(TIMED_CLOCK_ROW_VECTORS).expect("timed clock row vectors JSON");
+    let schema = parsed_fixture(SCHEMA);
+    let configuration = schema_for_def(&schema, "ClockConfiguration");
+    assert!(
+        configuration.is_valid(&json!({"kind": "timed", "unit": "ms"})),
+        "the timed alternative is a ClockConfiguration"
+    );
+    assert!(
+        !configuration.is_valid(&json!({"kind": "timed"})),
+        "unit is required"
+    );
+    assert!(
+        !configuration.is_valid(&json!({"kind": "timed", "unit": ""})),
+        "unit is non-empty"
+    );
+    assert!(
+        !configuration.is_valid(&json!({"kind": "timed", "unit": "ms", "epoch": "0"})),
+        "the timed alternative is closed"
+    );
+    let mut decided = 0;
+    for case in vectors["cases"].as_array().expect("cases") {
+        let id = case["id"].as_str().expect("id");
+        if case["expected"] == "unchanged" {
+            continue;
+        }
+        let subject = case["subject"].as_str().expect("subject");
+        let row = &case["row"];
+        if !row.is_null() {
+            assert!(
+                configuration.is_valid(&row["clock"]),
+                "{id}: a schema-valid configuration"
+            );
+        }
+        let has_source = case["timed_model_source"].as_bool().unwrap_or(true);
+        let outcome: Option<&str> = match (subject, row.is_null()) {
+            ("model", true) if has_source => None,
+            ("model", true) => Some("/semantic_graph/nodes/{clause-index}/body"),
+            ("model", false) => Some("/temporal_bindings/0"),
+            ("trace", true) => Some("/semantic_graph/nodes/{clause-index}/body"),
+            ("trace", false) => {
+                let role = row["clock_name"].as_str().expect("clock name");
+                let model_name = matches!(role, "model-time" | "model-steps");
+                if row["clock"]["kind"] == "timed"
+                    && !model_name
+                    && row["clock_name"] == case["clock_name"]
+                {
+                    None
+                } else {
+                    Some("/temporal_bindings/0")
+                }
+            }
+            (other, _) => panic!("{id}: unknown subject {other}"),
+        };
+        if case["expected"] == "admitted" {
+            assert_eq!(outcome, None, "{id}");
+            if subject == "model" {
+                assert_eq!(
+                    case["clock_name"], "model-time",
+                    "{id}: a timed model's clock is model-time"
+                );
+            }
+        } else {
+            assert_eq!(case["expected"]["code"], "invalid_package", "{id}");
+            assert_eq!(case["expected"]["cause"], "timed-node-reference", "{id}");
+            assert_eq!(outcome, case["expected"]["pointer"].as_str(), "{id}");
+        }
+        decided += 1;
+    }
+    assert_eq!(decided, 8);
+}
+
+#[trace("TC-1326", "FR-322-AC-451")]
+#[test]
+#[ignore = "QSL-2256: the quantity scaling identities land in the schemas with the catalog entries"]
+fn tc_1326_schema_enumerates_quantity_scaling_after_pow() {
+    let schema = parsed_fixture(SCHEMA);
+    let identities: Vec<&str> = schema["$defs"]["OperationIdentity"]["enum"]
+        .as_array()
+        .expect("operation identities array")
+        .iter()
+        .map(|identity| identity.as_str().expect("an identity"))
+        .collect();
+    let pow = identities
+        .iter()
+        .position(|identity| *identity == "filament.op.quantity.pow")
+        .expect("quantity.pow is enumerated");
+    assert_eq!(
+        identities.get(pow + 1..pow + 3),
+        Some(["filament.op.quantity.scale", "filament.op.quantity.scale_div"].as_slice())
+    );
 }

@@ -87,6 +87,41 @@ end closed or open, with `a < b` when an end is open, and a finite upper bound
 intervals, and FR-416 gives it its meaning. It is selected by a `model-time`
 clock binding over a timed subject (FR-252).
 
+### Clock names
+
+A native clause names its clock with a string, `clock "<name>"`. The name
+never changes what one interval tick counts: the selected profile fixes that
+(table above), and for a clock-configured profile the selected clock
+configuration fixes the unit, period and epoch. The name is the key by which
+the clause is bound to that configuration.
+
+- Over a model subject the name is one of exactly two binding names:
+  `model-steps`, where one tick is one step of a behaviour, and `model-time`,
+  where one tick is one unit of the model's time source and the timed profile
+  is selected (FR-252, FR-416). An unwritten clock binds `model-time` over a
+  timed model and `model-steps` over any other model. The frontend shall refuse
+  any other name over a model subject with `unsupported_construct` at the clock
+  name, before evaluation, naming the two admitted names.
+- Over a trace subject the name is a clock role: any non-empty text the author
+  chooses. Under the event-position, fixed-sample and timestamped-event
+  profiles the caller binds each role to exactly one clock configuration of the
+  kind the profile determines: an event-position sequence authority, a
+  fixed-sample epoch, period and unit, or a timestamp unit. Under the
+  infinite-trace profile the role names the trace's own authoritative position
+  sequence and takes no configuration. Under the timed profile over a timed
+  trace the role is bound to the trace's time unit by the caller's clock
+  selection.
+- A role's spelling carries no unit, so the frontend shall refuse, with
+  `ill_typed` at the clock name, a role name over a trace subject that spells a
+  time unit: a unit of the time dimension that the unit declares or imports, or
+  one of `ps`, `ns`, `us`, `µs`, `ms`, `s`, `min`, `h` and `d`. The refusal
+  names the selected profile and what one tick counts under it. Without it,
+  `clock "ms"` with `eventually[0,3]` under a position-counting profile reads
+  as three milliseconds and counts three positions. The two model binding
+  names `model-steps` and `model-time` are refused the same way over a trace
+  subject: a trace subject has no model to bind, and the caller cannot
+  configure a clock under either name.
+
 The fixed-sample profile shall retain epoch, period and unit identity.
 
 The fixed-sample profile shall classify an absent runtime sample under a valid
@@ -119,6 +154,8 @@ definition identity; old profile bytes and results remain historical subjects.
 | FR-090-AC-8 | Over a model subject, a clause under the event-position false-extension or infinite-trace profile binds its clock role to the subject's step sequence with one tick per step, and a clause under the fixed-sample or timestamped-event profile settles `unsupported`. | Test (TC-290) |
 | FR-090-AC-9 | Selecting `filament.temporal.timed/v1` reads intervals as exact rational time bounds with open or closed ends between time-stamped positions; the same numeric interval under the timed profile and under a step-counting profile retains two distinct meanings. | Test (TC-368) |
 | FR-090-AC-10 | A refinement governed by `filament.temporal.infinite-trace/v1` admits `mod` and `Reference` comparison in its rows under the layers the profile requires, whatever the unit's other declarations select, and a Boolean field row `ready = protocol Fill` naming a protocol declared in the unit refuses `unsupported_construct`/`expression-form` at the `protocol` token naming `filament.protocol.complete/v1`, the layer that admits the form and that the rows' layer set lacks; a plain temporal clause under the profile, outside any refinement, does not newly require `filament.value.complete/v1` and is admitted in a unit that selects no value layer. | Test (TC-310) |
+| FR-090-AC-11 | Over a model subject under the infinite-trace profile, `clock "model-steps"` and an unwritten clock both bind one tick per step, and `clock "ms"`, `clock "wall"` and `clock "steps"` each refuse `unsupported_construct` at the clock name, naming `model-steps` and `model-time`, before evaluation. | Test (TC-1040) |
+| FR-090-AC-12 | Over a trace subject, `clock "events"` under the infinite-trace and event-position profiles and `clock "sample-clock"` under the fixed-sample profile are admitted and `eventually[0,3]` counts three positions or samples; `clock "ms"`, `clock "s"`, a role spelled as a time unit the unit declares, `clock "model-steps"` and `clock "model-time"` each refuse `ill_typed` at the clock name under every trace profile, naming the profile and what one tick counts. | Test (TC-1040) |
 
 ## Dependencies
 
