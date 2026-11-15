@@ -26,8 +26,9 @@ relationships:
 ## Description
 
 Sound infinite-trace analysis differential and typed-boundary controls for
-`always`, `eventually`, `until`, `release` and the past duals `previous`,
-`historically`, `once` and `since`, selected under
+`always`, `eventually`, `until`, `release` and the past duals
+`historically`, `once` and `since`, with strong previous written as the derived
+form `once[1,1]`, selected under
 `filament.temporal.infinite-trace/v1`. Verifies the FR-161 result vocabulary maps
 exactly onto FR-360/FR-241/FR-242/FR-243, that infinite-trace requests never
 reach a TL target, and that a missing liveness backend settles `unsupported`
@@ -35,8 +36,10 @@ rather than holding.
 
 ## Test Procedure
 
-For each of `always`, `eventually`, `until`, `release`, `previous`,
-`historically`, `once` and `since`, author the interval-less form admitted only
+For each of `always`, `eventually`, `until`, `release`, `historically`,
+`once` and `since`, author the interval-less form, and for strong previous the
+fixed interval form `once[1,1]` (FR-092 "Derived forms"; it has no
+interval-less form) admitted only
 under the selected `filament.temporal.infinite-trace/v1` profile
 ([FR-090](../functional/temporal/FR-090-select-temporal-profile-and-clock.md),
 [AD-012](../assurance/AD-012-unbounded-temporal-operator-grammar.md)). Exercise

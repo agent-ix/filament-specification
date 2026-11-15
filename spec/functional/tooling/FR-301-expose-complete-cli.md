@@ -7,6 +7,14 @@ relationships:
     type: implements
   - target: ix://agent-ix/filament-specification/FR-300
     type: references
+  - target: ix://agent-ix/filament-specification/FR-560
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-561
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-562
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-563
+    type: references
   - target: ix://agent-ix/filament-spec-language/FR-010
     type: references
 ---
@@ -33,7 +41,11 @@ exit status.
 Commands never infer a wider profile or fallback target. Machine output is
 separate from human diagnostics. Exit statuses distinguish success, logical
 violation, undefined evaluation, invalid/refused input, unsupported capability,
-incomplete execution, inconclusive results and tool failure. Version output reports the app version.
+incomplete execution, inconclusive results and tool failure. Version output reports the app version. No verb exits
+without its outcome: an accepted verb the build does not route is refused
+`unsupported` with cause `operation-not-routed` naming the verb (FR-522), and
+`analyze` reads `native-analyze/1` requests and writes its result as FR-520
+states.
 
 ## Command and exit contract
 
@@ -76,6 +88,31 @@ one shared catalog of the ten categories and keeps no second mapping from an
 outcome (a finite-window or other trace outcome included) to a label or an exit,
 so two outcomes of one category exit alike whichever path produced them.
 
+## Request surface
+
+The CLI reaches these request-surface features through named commands, all
+in the default build:
+
+- `version` also reports the build inventory ([FR-560](FR-560-discover-the-build-inventory-through-version.md)).
+- `analyze`, `prove`, `monitor`, `replay` and `generate` take
+  `--provider-config <file>`, the process providers to start
+  ([FR-561](FR-561-configure-process-providers-through-a-provider-configuration-document.md)).
+- `compile` and `run` requests carry extension definitions in their
+  `extensions` member, and `parse` and `check` take `--extensions <file>`
+  ([FR-562](FR-562-name-extension-definitions-to-a-command.md)).
+- `check --markdown` checks every native fence of a Markdown specification,
+  and `run` runs one of its clauses through `program.extraction`
+  ([FR-563](FR-563-check-rules-written-in-a-markdown-specification.md)).
+- A `compile` request carrying a `handoff` member also writes the
+  checked-package handoff directory, and `inspect --handoff <directory>`
+  reads one back and checks it against its selection sidecar
+  (FSL FR-665).
+- `parse` reports the source labels, path, byte count and S1 usage of the
+  unit it parsed, and every refusal record carries a `locus` (FSL FR-663).
+
+Each of these refuses a malformed input document before any stage runs,
+exit `20`.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -83,6 +120,8 @@ so two outcomes of one category exit alike whichever path produced them.
 | FR-301-AC-1 | Every lifecycle command round-trips its typed API request/result in machine-output mode. | Test (TC-221) |
 | FR-301-AC-2 | Each outcome category produces its assigned stable exit status without parsing message text; a claim whose evaluation is undefined exits `10` as a violation with cause `UndefinedEvaluation`, a value run whose value is undefined exits `10` with the label `undefined`, a pending clause exits `0` with the category label `pending`, an indeterminate clause exits `11` with the category label `indeterminate`, a finite-window `Pending`, `Indeterminate`, success, violation and incomplete outcome carry the label and exit `pending`/`0`, `indeterminate`/`11`, `success`/`0`, `violation`/`10` and `incomplete`/`22`, the label and exit of a category are the same on the single-report path and in the multi-item ranking, a multi-item run with item codes {10, 11} exits `10`, {11, 22} exits `22` and {0, 11} exits `11`, and `version` reports the application version. | Test (TC-221) |
 | FR-301-AC-3 | Unknown options/profiles/providers refuse before execution and identify the command argument locus. | Test (TC-221) |
+| FR-301-AC-4 | A verb the build accepts but does not route exits `21` with an outcome document naming the verb under `unsupported_operation`/`operation-not-routed` (FR-522), and no verb exits with empty machine output while its stream is open. | Test (TC-1082) |
+| FR-301-AC-5 | `version --format json` writes the build inventory document; `check --markdown` over a document of two native fences writes one item per fence; `compile` with a `handoff` member writes the handoff directory and `inspect --handoff` over it exits `0`; `--provider-config` naming a document with no `providers` member, and `--extensions` naming a set document with an unknown entry member, each exit `20` before any stage runs. | Test (TC-1244) |
 
 ## Dependencies
 

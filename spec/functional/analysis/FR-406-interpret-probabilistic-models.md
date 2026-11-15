@@ -64,14 +64,21 @@ for `(a, r)`:
   post_states}`.
 
 The support graph of this process is FR-181's state graph: every random
-parameter ranges over its support and every enabled action has positive
-probability under every workload.
+parameter ranges over its support. Under a workload the support graph is the
+subgraph of FR-181's state graph that keeps, at each state, the transitions of
+the operations the workload can choose there (see "Under a workload"); every
+state with an enabled action keeps at least one of them.
 
 ### Under a workload
 
-Under a workload `W`, at state `s` with enabled operations `O(s)`, each
-operation `o` in `O(s)` is chosen with probability `w(o) / Σ w(O(s))`, then
-each of its enabled scheduled identities `E_o(s)` with probability
+Under a workload `W`, at state `s` with enabled operations `O(s)`, let `P(s)`
+be the operations of `O(s)` whose weight is positive. When `P(s)` is not
+empty, each operation `o` in `P(s)` is chosen with probability
+`w(o) / Σ w(P(s))` and an operation of weight 0 is not chosen; when `P(s)` is
+empty and `O(s)` is not, each operation of `O(s)` is chosen with probability
+`1 / |O(s)|`. A weight of 0 thus never blocks a state the model can leave, and
+the workload stays a scheduler of the model. The chosen operation is followed
+by each of its enabled scheduled identities `E_o(s)` with probability
 `1 / |E_o(s)|`, then the random arguments are drawn. `W` is a memoryless
 randomized scheduler and the subject under `W` is a discrete-time Markov
 chain. Under a workload, a drawn vector with several post-states settles
@@ -135,11 +142,12 @@ fairness set.
 
 ### Almost-sure fairness under a workload
 
-Every enabled transition has positive probability under a workload, so a
-behaviour reaches a bottom strongly connected component with probability 1
+Every transition of an operation the workload can choose has positive
+probability under it, so a behaviour reaches a bottom strongly connected component with probability 1
 and takes every transition of it infinitely often. Every fairness constraint
-of FR-161, weak or strong, therefore holds with probability 1 under every
-workload, and a claim under a workload carries no fairness set.
+of FR-161, weak or strong, whose operations the workload can choose at every
+state where they are enabled therefore holds with probability 1 under it; a
+constraint over an operation of weight 0 need not hold. A claim under a workload carries no fairness set.
 
 ### Every-behaviour claims over the same subject
 
@@ -157,7 +165,8 @@ scheduler.
 | FR-406-AC-3 | A claim holds only when its bound holds for every initial state and every `over` binding, each under its own measure. | Test (TC-351) |
 | FR-406-AC-4 | `under every scheduler` compares the minimum for a lower bound and the maximum for an upper bound, and its value on the `Deliver` vector of TC-352 is the stated minimum and maximum. | Test (TC-352) |
 | FR-406-AC-5 | A claim `under every scheduler` with a fairness set compares the infimum or supremum over the schedulers fair for that set; on the `Coin` vector (TC-352, TC-361) the minimum termination probability is 0 with no fairness set and the fair infimum is 1 with `fair strong Proc::flip` or `fair weak Proc::flip`; the fairness set enters the obligation identity. | Test (TC-352) |
-| FR-406-AC-6 | Every FR-161 fairness constraint holds with probability 1 under a workload, and a claim FR-161 proves holds on every behaviour of positive probability. | Test (TC-351) |
+| FR-406-AC-6 | Every FR-161 fairness constraint over operations of positive weight holds with probability 1 under a workload, and a claim FR-161 proves holds on every behaviour of positive probability, under a workload that gives some operations weight 0 as well. | Test (TC-351) |
+| FR-406-AC-7 | On `Service` under a workload with `Server::reset` at weight 0 and weight 1 on `Server::request` and `Server::attempt`, `Server::reset` has probability 0 at every state where another operation is enabled, and at a state where `Server::reset` is the only enabled operation it is chosen with probability 1; under a workload of weight 0 on every operation every step probability equals the one under weight 1 on every operation; the step probabilities at every non-terminal state sum to 1. | Test (TC-1561) |
 
 ## Dependencies
 

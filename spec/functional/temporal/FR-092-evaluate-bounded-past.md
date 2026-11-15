@@ -76,11 +76,64 @@ The v1 profile shall define strong previous as `once[1,1]`.
 If a later profile admits weak previous, then that profile shall define its
 boundary separately from strong previous.
 
+### Derived forms
+
+Previous, next and weak until are derived forms, not keywords of the temporal
+grammar. Strong previous is written `once[1,1] p`; next is written
+`eventually[1,1] p`; `p` weak-until `q` is written `(p until[a,b] q) or
+always[a,b] p` with an interval and, where the infinite-trace profile admits
+unbounded operators, `(p until q) or always p`. The parser shall refuse the
+words `previous`, `next` and `weak` written in a temporal operator position as
+a syntax error located at the word, whose message names the derived form. One
+spelling per operator keeps a formula's meaning the same in every tool that
+reads it, and the derived forms already carry the exact meanings above.
+
+### Positions before the origin
+
+Where history is complete back to an authoritative origin (the false-extension
+profiles, the timestamped finite-window profile with an `execution-origin`
+boundary, and the infinite-trace profile, whose position 0 is the origin), a
+past operator with a closed interval `[a,b]` whose offset reaches a position
+before the origin shall read that position as part of a pre-origin extension
+of the trace. At every pre-origin position each atomic predicate is false and
+each Boolean constant keeps its value, and Boolean and past operators evaluate
+there from those values, recursively. A pre-origin offset is never skipped and
+never narrows the interval:
+
+- `once[a,b] p` with atomic `p` finds no witness before the origin, so
+  `once[1,1] p` is false at position 0;
+- `once[1,1] not p` is true at position 0, because `not p` holds at the
+  pre-origin position;
+- `historically[0,2] p` with atomic `p` is false at positions 0 and 1 whatever
+  `p` is at the positions that exist, and `historically[0,2] true` is true;
+- `p since[a,b] q` finds no witness for an atomic `q` before the origin, and
+  `p triggered[a,b] q` is its dual under the same reading.
+
+The unbounded `once`, `historically`, `since` and `triggered` operators of the
+infinite-trace profile, and the lower-bounded `[a,*]` past operators, range
+over the positions from 0 through `i - a` only, as FR-161 and FR-367 state; a
+window with no upper bound would otherwise consist almost entirely of
+pre-origin positions. A closed interval has a fixed width at every position,
+so its pre-origin reading mirrors the false extension that the bounded
+profiles apply after closure.
+
+This reading binds every evaluator and backend of these profiles, so a formula
+has one truth value whichever of them settles it. An evaluator that skips
+pre-origin offsets of a closed interval, clipping the window at the origin,
+does not conform: the TL ecosystem's infinite-trace evaluator reads closed
+past intervals this way to conform, which on a trace where `p0` holds at every
+position changes `once[1,1] not p0` at position 0 from false to true and
+`historically[0,2] p0` at position 1 from true to false. Its origin-history
+evaluator already reads them this way. A `history-cutoff` boundary is not an
+origin and keeps the missing-history rule above.
+
 Where a bounded temporal profile is selected, the evaluator shall refuse an unbounded past interval. Where the infinite-trace profile is selected, the evaluator shall admit the unbounded historically, once, since and triggered operators with the meaning [FR-161](FR-161-analyze-infinite-trace-properties.md) states. Where the infinite-trace profile is selected, the evaluator shall admit the interval operators above with their past offset meaning over the infinite trace, whose position 0 is the authoritative origin ([FR-367](FR-367-evaluate-interval-operators-under-infinite-trace.md)). Implicit history reconstruction is refused under every profile. The refusal and the authoritative-origin meaning above bind the evaluators of those profiles; the tick monitor of filament-spec-language FR-251 is a separate evaluator whose unbounded past operators have the history-present meaning with a `HistoryCutoff` lower boundary (an unknown prefix, filament-spec-language FR-251 "Unbounded past operators"), which refines the authoritative-origin result: wherever the monitor's verdict is definite it equals the infinite-trace verdict.
 
 Strong previous is `once[1,1]` under the infinite-trace profile as under every
 other profile: true at position `i > 0` exactly when its operand holds at
-`i - 1`, and false at position 0. It has no unbounded form. It counts
+`i - 1`. At position 0 it reads its operand at the pre-origin position
+("Positions before the origin"), so it is false for an atomic operand and true
+for `not p`. It has no unbounded form. It counts
 positions, so a formula that contains it is not stutter-invariant.
 
 ## Acceptance Criteria
@@ -95,6 +148,8 @@ positions, so a formula that contains it is not stutter-invariant.
 | FR-092-AC-6 | Exactly the FR-293 boundary kinds are admitted; restoration may prove cutoff coverage but never converts a cutoff into an execution origin. | Test (TC-112, TC-118) |
 | FR-092-AC-7 | Where the infinite-trace profile is selected, the unbounded past operators evaluate under their FR-161 infinite-trace meaning, `once[1,1]` is false at position zero, and history remains explicitly bound. | Test (TC-200) |
 | FR-092-AC-8 | Where the infinite-trace profile is selected, `once[a,b]`, `historically[a,b]`, `since[a,b]` and `triggered[a,b]` evaluate with their past offset meaning, reading atomic predicates before position 0 as false, and inserting one repeated state changes the truth of a formula containing `once[1,1]`. | Test (TC-298) |
+| FR-092-AC-9 | Under the event-position false-extension, infinite-trace and timestamped finite-window (`execution-origin`) profiles, on a trace where atomic `p` holds at every position: `once[1,1] p` at position 0 is false, `once[1,1] not p` at position 0 is true, `historically[0,2] p` at position 1 is false, `historically[0,2] true` at position 1 is true, and `true since[1,1] not p` at position 0 is true; under the infinite-trace profile the unbounded `historically p` at position 1 is true and `once[2,*] not p` at position 1 is false. A `history-cutoff` boundary gives missing history for the closed-interval cases instead. | Test (TC-1041) |
+| FR-092-AC-10 | `previous holds(p)`, `next holds(p)` and `holds(p) weak until holds(q)` each refuse as a syntax error at the word `previous`, `next` or `weak`, with a message naming `once[1,1]`, `eventually[1,1]` and `(p until q) or always p` respectively; `once[1,1]` evaluates as strong previous, `eventually[1,1] p` holds at `i` exactly when `p` holds at `i + 1`, and `(p until[a,b] q) or always[a,b] p` holds exactly when `q` holds at some offset `d` in `[a,b]` with `p` at every offset in `[a,d)`, or `p` holds at every offset in `[a,b]`. | Test (TC-1041) |
 
 ## Dependencies
 

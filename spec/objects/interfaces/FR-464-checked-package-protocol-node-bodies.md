@@ -3,6 +3,8 @@ id: FR-464
 title: "Checked-package protocol node family: operation, keys, clause body, binders and reader order"
 type: FR
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-610
+    type: references
   - target: ix://agent-ix/filament-specification/FR-322
     type: specifies
   - target: ix://agent-ix/filament-specification/FR-465
@@ -70,10 +72,14 @@ FR-466, with the first refusal in the order below.
   model that the source clause is declared over, which is the object type of
   its `over` input. That model is owned by a *selected declaration*: a
   declaration of a model package named by a `model_root` node, whose
-  declaration node id is that package's node id for it (FR-322). A
-  source-local declaration (a node with a source `owner`, such as
-  `Config::ConfigVersion` of the published fixtures) is declared by no selected
-  package and is never a valid target. The producer sets the edge from the
+  declaration node id is that package's node id for it (FR-322), or a
+  *source-declared object type*: a `model`/`object_type` node carrying a
+  `declaration` and the `SourceOwner` of the unit that declares it (FR-610,
+  FR-322 "Source-declared object types"), joined through that `SourceOwner`
+  to a `lock.sources` entry instead of through a selected model row. Any
+  other source-local declaration (a node with a source `owner` that is not
+  a `model`/`object_type` node, such as the record `Config::ConfigVersion`
+  of the published fixtures) is never a valid target. The producer sets the edge from the
   clause's `over` object type; the edge is then authoritative for
   clause-to-model ownership, and a consumer SHALL NOT infer ownership from, or
   compare the edge with, the `over` parameter's type. It enters the node's
@@ -666,7 +672,11 @@ exactly one earlier or later stage, in this order of precedence:
    does not declare that node as an object type, is a genuinely unselected
    target. It refuses `missing_declaration`/`missing-selection` at the
    target's own `node_id` (FR-322 owner join), whether or not any clause names
-   it, so a clause never reaches the typed check with such a target. In the
+   it, so a clause never reaches the typed check with such a target. A
+   source-declared `model`/`object_type` target joins through its
+   `SourceOwner` instead: one that joins no `lock.sources` entry refuses
+   `missing_declaration`/`missing-selection` at its own `node_id` in the same
+   stage. In the
    same stage a clause whose `dependencies` lack its `owner_model` target
    refuses `invalid_semantic_graph` at the clause's `/dependencies`
    (FR-322-AC-96).
@@ -674,11 +684,12 @@ exactly one earlier or later stage, in this order of precedence:
    `/semantic_graph/nodes/{i}/owner_model`, retaining the clause `node_id`,
    the target key and the target's form: a local target that names no node of
    the graph refuses `missing_declaration`/`missing-name`; a target that is
-   not the `model`/`object_type` node of a selected declaration refuses
+   neither the `model`/`object_type` node of a selected declaration nor a
+   source-declared `model`/`object_type` node refuses
    `invalid_model_binding`/`malformed-declaration`. The second case holds for a
    non-model node, a non-model declared node with a source `owner` (a
-   model-tagged node with a `SourceOwner` is `malformed_wire` already,
-   FR-322-AC-51), and a model-tagged node of a selected declaration of any
+   model-tagged node with a `SourceOwner` and no `declaration` is
+   `malformed_wire` already, FR-322-AC-51), and a model-tagged node of a selected declaration of any
    other form (`state_machine`, `process`, `record_value_type`, `event_type`,
    a relation node) or the selected package's `model_root` node (not a
    declaration, but a model node). The check does not compare the target with the `over`
@@ -758,6 +769,7 @@ alternate cycle encoding.
 
 ## Dependencies
 
+- Consumer facts ([FR-661](ix://agent-ix/filament-specification/FR-661)): `CF-PR-02` (the derived causal relation).
 - [FR-322](FR-322-checked-package-artifact.md) owns the `semantic_graph`, the
   body grammar, the application-node dependency rule, the operation catalog and the
   reader's refusal order this artifact adds the protocol step to.

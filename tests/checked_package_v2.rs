@@ -13602,7 +13602,7 @@ fn shapes_field_type(document: &Value, object: &str, field: &str) -> Value {
 fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str, String)> {
     let natives = [
         "Boolean", "Integer", "Text", "String", "UUID", "Timestamp", "Bytes", "JsonObject",
-        "Float32", "Float64", "Duration", "Rational", "Decimal",
+        "Float32", "Float64", "Duration", "Rational", "Decimal", "Clock",
     ];
     // An FR-154 alias is read through to its target (chains included) before
     // the payload and position tests.
@@ -13640,7 +13640,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
                 })
         }
     };
-    // FR-322 "Admitted payload and position types": the four declared types
+    // FR-322 "Admitted payload and position types": the declared types
     // with no step 4 row are refused at intake (FR-322-AC-181, -182).
     // A package value type is refused when its native is `Decimal`, `Rational` without the flat
     // `numerator_min`, `numerator_max`, `denominator_min` and `denominator_max` members (the
@@ -13680,7 +13680,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
         for (slot, position) in positions.iter().enumerate() {
             let supported = position["typeRef"]
                 .as_str()
-                .is_some_and(|reference| reference != "ix://filament/native/Clock" && !unmapped(reference));
+                .is_some_and(|reference| !unmapped(reference));
             if position["ordinal"] != slot || !supported {
                 return Some(("invalid_model_binding", "malformed-declaration", format!("{at}/positions/{slot}")));
             }
@@ -13694,7 +13694,7 @@ fn shapes_intake_refusal(document: &Value) -> Option<(&'static str, &'static str
     for (index, variant) in document["variant_types"].as_array().into_iter().flatten().enumerate() {
         for (slot, case) in variant["cases"].as_array().expect("cases").iter().enumerate() {
             if let Some(payload) = case["payloadType"].as_str()
-                && (payload == "ix://filament/native/Clock" || unmapped(payload) || !resolves(payload))
+                && (unmapped(payload) || !resolves(payload))
             {
                 return Some((
                     "unsupported_construct",

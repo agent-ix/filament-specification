@@ -37,15 +37,23 @@ A typed value, or `map` undetermined at that state
 
 ## Surface syntax
 
-Inside a refinement declaration, and only there, the `primary` production of
+Inside a refinement declaration, and in a state-clause body, the `primary` production of
 the [complete-V1 grammar](../../../proposals/filament-v1/shared-grammar.md)
 admits a population name and the productions `count`, `sum`, `exists`, `all`,
 `only` and `seq`, with the `binder` production and the `..` token that `seq`
 uses. The grammar owns the spellings; this requirement owns what they mean.
 A `model-name` in `primary` position names a concrete population. A
 `binder` with no `where` clause selects every object of the population.
-A state-clause body outside a refinement declaration that uses one of these
-forms refuses `unsupported_construct`/`expression-form`.
+A state-clause body outside a refinement declaration admits the same six
+forms over a population the clause's observation binds, with the same
+meaning. There the universe size `n` is replaced by the population's
+authored maximum when the package declares one, and a form whose bound
+depends on `n` is unbounded otherwise. A clause is evaluated over one
+observation that binds each population it names, so nothing confines the
+forms to refinement rows; `seq` reads no population at all. Any other
+expression position (a function body, a record-value invariant) has no
+population in scope and refuses a population name
+`missing_declaration`/`missing-name`.
 
 ## Behavior
 
@@ -98,11 +106,12 @@ sub-expression makes `map` undetermined at that state (FR-377).
 | FR-376-AC-1 | A concrete population name denotes the set of its objects in the current state, typed `Set<Reference<T>>[0, n]` with `n` the universe size, and the six forms have exactly the types and values of the table. | Test (TC-311) |
 | FR-376-AC-2 | `seq(i in lo .. hi: e)` yields `e` for each integer from `lo` to `hi` in ascending order, the empty sequence when `hi < lo`, and declared maximum length `max(0, hi_max - lo_min + 1)`. | Test (TC-311) |
 | FR-376-AC-3 | `only` over exactly one matching object yields its body; over no matching object, or over two or more, the enclosing mapping row is undefined at that state. | Test (TC-311, TC-316) |
-| FR-376-AC-4 | A non-Boolean `where` condition or a non-integer `seq` bound refuses `ill_typed`/`type-mismatch`, a form outside a refinement declaration refuses `unsupported_construct`/`expression-form`, and a population name that is not a concrete population refuses `missing_declaration`/`missing-name`. | Test (TC-311) |
+| FR-376-AC-4 | A non-Boolean `where` condition or a non-integer `seq` bound refuses `ill_typed`/`type-mismatch`, a population form in a function body refuses `missing_declaration`/`missing-name`, and a population name that is not a concrete population refuses `missing_declaration`/`missing-name`. | Test (TC-311) |
 | FR-376-AC-5 | Under the ring-buffer mapping `items = seq(i in 0 .. self.size - 1: only(s in R::slots where s.ring = self and convert<Integer>(s.index) = (self.head + i) mod 2: s.value))`, the state with `head = 1`, `size = 2`, `s1.value = 1`, `s0.value = 0` maps to `items = [1, 0]`, and renaming the slot keys leaves every mapped value unchanged; the comparison is written with `convert<Integer>(s.index)` because `mod` yields an `Integer` and an `Integer` against an `Int[..]` under `=` is `ill_typed`/`type-mismatch` ([FR-149](../type-model/FR-149-apply-complete-equality-matrix.md)). | Test (TC-311, TC-316) |
 | FR-376-AC-6 | `sum(x in P where c: e)` over a universe of `n` objects with `e` bounded by `[lo, hi]` has the bound `[min(0, n·lo), max(0, n·hi)]`: a summand in `[1, 2]` over two objects has the bound `[0, 4]`, not `[2, 4]`, a row of it into `Int[0, 4]` is admitted and into `Int[2, 4]` refuses `ill_typed`/`type-mismatch`, and an empty `S` sums to `0`. | Test (TC-311) |
 | FR-376-AC-7 | An `only` whose matching set is empty and one whose matching set holds two objects each give an undefined evaluation with the reason `only-not-one` and a payload naming the population binding, the `only` locus and the enclosing row; a counterexample's cause carries that reason. | Test (TC-311) |
-| FR-376-AC-8 | The shared grammar parses `count(x in P)`, `count(x in P where c)`, `sum(x in P where c: e)`, `exists(x in P)`, `all(x in P where c)`, `only(x in P where c: e)` and `seq(i in lo .. hi: e)` inside a refinement row, and scans `0..1` and `0 .. 1` as the same three tokens. Outside a refinement declaration a bare population name and the `count`, `sum`, `exists` and `all` population forms refuse `unsupported_construct`/`expression-form`, `exists(x in P: e)` is the state-clause quantifier, and `only(x in P where c: e)` and `seq(i in lo .. hi: e)` are syntax errors, `invalid_syntax`/`unexpected-token` at the `in` token, because `only` and `seq` are ordinary identifiers there. Inside a refinement row `only(`, `seq(` and `Some(` always read as the forms, so a pure function of one of those names cannot be called from a row. | Test (TC-311) |
+| FR-376-AC-8 | The shared grammar parses `count(x in P)`, `count(x in P where c)`, `sum(x in P where c: e)`, `exists(x in P)`, `all(x in P where c)`, `only(x in P where c: e)` and `seq(i in lo .. hi: e)` inside a refinement row, and scans `0..1` and `0 .. 1` as the same three tokens. In a state-clause body outside a refinement declaration the same seven spellings parse as the forms, `exists(x in P: e)` is the state-clause quantifier, and `only(` and `seq(` followed by `ident in` read as the forms, so a pure function of one of those names cannot be called with such an argument there; in a function body `only` and `seq` are ordinary identifiers. Inside a refinement row `only(`, `seq(` and `Some(` always read as the forms, so a pure function of one of those names cannot be called from a row. | Test (TC-311) |
+| FR-376-AC-9 | In a state-clause invariant over a model whose population `P` has authored maximum 3, `count(x in P where x.v = 2)` has bound `[0, 3]`, `exists(x in P where x.v = 2)` and `all(x in P)` are `Boolean`, `only(x in P where x.v = 2: x.v)` yields the one matching object's `v` and is undefined with `only-not-one` for none or two, and `seq(i in 0 .. 2: i)` yields `[0, 1, 2]`; none refuses `unsupported_construct`, and each evaluates over the clause's observation exactly as in a refinement row. | Test (TC-1401) |
 
 ## Dependencies
 

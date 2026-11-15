@@ -31,18 +31,18 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 
 | Field | Derivation note |
 |---|---|
-| target_family | string tag, exactly one of `ocl`, `sysml-kerml`, `fretish` |
+| target_family | string tag, exactly one of `ocl`, `sysml-kerml`, `fretish`, `tla`, `lean` |
 | target_standard_refs | type not stated in source; see Field sources |
-| mapping_profile_id | string identity, one of three `filament.output.*/v1` names; absence refuses dispatch (Absence) |
+| mapping_profile_id | string identity, one of five `filament.output.*/v1` names; absence refuses dispatch (Absence) |
 | required_capabilities | type not stated in source; see Field sources |
 | observer_selection | type not stated in source; see Field sources |
 
 
 | Property | Description |
 | --- | --- |
-| `target_family` | Exactly one of `ocl`, `sysml-kerml` or `fretish`. |
+| `target_family` | Exactly one of `ocl`, `sysml-kerml`, `fretish`, `tla` or `lean`. |
 | `target_standard_refs` | Ordered exact normative/tool references required by the selected family. |
-| `mapping_profile_id` | One of `filament.output.ocl24/v1`, `filament.output.sysml2-kerml1/v1` or `filament.output.fretish31/v1`. |
+| `mapping_profile_id` | One of `filament.output.ocl24/v1`, `filament.output.sysml2-kerml1/v1`, `filament.output.fretish31/v1`, `filament.output.tla2/v1` (family `tla`) or `filament.output.lean4/v1` (family `lean`, FR-651). |
 | `required_capabilities` | Closed requested subset of the selected mapping profile. |
 | `observer_selection` | Optional, independent structural observer/tool selection; never part of semantic support. |
 
@@ -70,6 +70,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | FR-297-AC-2 | A missing, unknown or cross-family profile member refuses without target output. | Test (TC-154) |
 | FR-297-AC-3 | Changing a target standard reference, the mapping profile name or version, or a requested capability changes profile equality; no digest member exists to be compared. | Test (TC-150) |
 | FR-297-AC-4 | Adding or changing a structural observer selection does not change the semantic mapping profile or support claim. | Test (TC-155) |
+| FR-297-AC-5 | Family `tla` with `filament.output.tla2/v1` and family `lean` with `filament.output.lean4/v1` each select their FR-651 mapper; `tla` with `filament.output.lean4/v1` refuses as cross-family without target output. | Test (TC-1604) |
 
 ## Dependencies
 

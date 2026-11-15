@@ -100,7 +100,15 @@ admitted by the frontend and settles `unsupported`,
 An interval-less operator under a profile other than the infinite-trace
 profile never reaches this check: the temporal frontend refuses it first with
 `unsupported_construct` ([FR-048](../foundation/FR-048-bind-native-temporal-syntax.md),
-FR-048-AC-9). The one exception to `unbounded-event` for the infinite-trace profile is the
+FR-048-AC-9), and so is a lower-bounded interval `[a,*]` under such a profile
+(FR-048-AC-10). The bounded, event-position, fixed-sample and timed profiles
+included, the operators a profile admits are decided once, by the temporal
+frontend, for every formula wherever it stands, a temporal clause or a
+probabilistic event alike; one spelling gets one refusal under one profile.
+`unbounded-event` is the claim check's own refusal, for a formula whose every
+operator its profile admits and which still has no finite window: under the
+infinite-trace profile, an event that is not one of the reachability forms,
+or that has an interval `[a,*]`. The one exception to `unbounded-event` for the infinite-trace profile is the
 reachability forms of the forms table: under the infinite-trace profile an
 event whose root is one `eventually`, `until` or `always` with no interval is
 read as that form, and every other event under that profile, such as
@@ -214,6 +222,7 @@ request settings and are outside the obligation identity.
 | FR-407-AC-13 | A `quantile 0.95 of (fraction holds(v.up) over [0, 10]) <= rational(1, 2)` claim refuses `invalid_probabilistic_model`/`quantile-over-fraction`. | Test (TC-353) |
 | FR-407-AC-14 | `NoFault` with `indifference 0.002` (`θ + ι = 1.001`) refuses `invalid_probabilistic_model`/`invalid-confidence` naming `indifference`, and with `alpha 1` it refuses `invalid-confidence` naming `alpha`. | Test (TC-353) |
 | FR-407-AC-15 | `LongRun` with its scheduler clause written `under Steady fair weak Server::tick` refuses `invalid_syntax`/`unexpected-token` at `fair`, and with it written `under every scheduler fair weak Server::tick` it is admitted with the fairness set in its obligation identity. | Test (TC-353) |
+| FR-407-AC-16 | Under a bounded profile, `probability >= 0.99 [always holds(n.healthy)]` and `probability >= 0.99 [eventually[2, *] holds(n.healthy)]` each refuse `unsupported_construct` at the operator or interval span with the owning claim and selected profile, exactly as the same formula in a temporal clause under that profile refuses, and neither refuses `unbounded-event`; under the timed profile `eventually holds(P)` with no interval refuses `unsupported_construct` and `eventually[0 ms, 4 ms] holds(P)` is admitted; under the infinite-trace profile `[eventually[2, *] holds(P)]` refuses `invalid_probabilistic_model`/`unbounded-event`. | Test (TC-1562) |
 
 ## Dependencies
 

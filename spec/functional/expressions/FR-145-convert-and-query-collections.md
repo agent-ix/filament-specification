@@ -235,6 +235,45 @@ first unavailable charge returns incomplete, and no partial collection or
 accumulator is exposed. Because every per-element evaluation is preceded by a
 named charge, an unbounded source can never evaluate unmetered.
 
+## Unavailable occurrences
+
+A sequence source can hold unavailable occurrences (FR-144 "Unavailable
+occurrences"). Every form visits a sequence in occurrence order, and meeting
+an unavailable occurrence is decided where the visit reaches it, so the
+outcome is a function of the occurrence positions and never of an engine's
+search order:
+
+- **Short-circuiting queries.** `contains`, `forall` and `exists` stop at the
+  decisive occurrence: the first member equal to `v`, the first false
+  predicate, the first true predicate. When the decisive occurrence comes
+  before every unavailable occurrence, the query completes with its value and
+  visits no later occurrence, so later unavailable data does not affect it.
+  When the visit meets an unavailable occurrence before any decisive one, the
+  query returns incomplete there, whatever the later occurrences hold: the
+  unavailable value could have been decisive, and a later decisive occurrence
+  never stands for it.
+- **Whole-source forms.** `map`/`collect`, `filter`, `flatten`, `flatMap`,
+  `count`, `sum`, `fold`, `reduce` and `convert` read every occurrence, so the
+  first unavailable occurrence they meet returns incomplete with no partial
+  collection, count, total or accumulator.
+- **`removeOne(c, v)`** runs the `contains(c, v)` scan: an equal member before
+  every unavailable occurrence removes it and the result keeps every later
+  occurrence, unavailable ones included, in place; an unavailable occurrence
+  met first returns incomplete.
+- **`dropFirst` and `size`** read no element value. `dropFirst` keeps the
+  surviving occurrences, unavailable ones included, at their shifted
+  positions, and `size` counts unavailable occurrences as occurrences.
+
+The incomplete outcome is the clause evaluator's `incomplete` disposition with
+code `unavailable_observation` and cause `missing-required-valuation`
+(FR-272), located by the FR-207 runtime value path of the source collection
+followed by an `index` step holding the unavailable occurrence's zero-based
+position. For accounting, a form whose per-occurrence charge is a visit
+charges the visit of the unavailable occurrence and stops; `contains` and the
+`removeOne` scan charge no `collection.member-walk` for it, because its
+occurrence count is unknown, and stop; no form charges a retain after an
+incomplete outcome.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -251,6 +290,9 @@ named charge, an unbounded source can never evaluate unmetered.
 | FR-145-AC-10 | `dropFirst(c)` over a `Sequence` or `OrderedSet` returns the same kind without its first occurrence in order, is the empty collection for an empty `c`, and has the static bound `[max(a-1,0),max(b-1,0)]`; over a `Set` or a `Bag` it refuses `ill_typed`/`operator-ineligible`; and it charges the formation of the survivors only. | Test (TC-190) |
 | FR-145-AC-11 | `removeOne(c, v)` over each collection kind drops exactly one occurrence equal to `v` under the FR-144 membership relation (the first in occurrence order for a sequence, the member for a set or ordered set, one multiplicity for a bag), returns `c` unchanged when no member equals `v`, has the static bound `[max(a-1,0),b]`, refuses a `v` of another type with `ill_typed`/`type-mismatch`, and charges the `contains` scan then the formation of the result. | Test (TC-190) |
 | FR-145-AC-12 | With `type Pos = Int[1,5];`, direct kernel evaluation of `sum<Pos>(x in q: x)` over an empty `q` of `Sequence<Int[1,5]>[0,2]` is a located undefined outcome at the `sum` with no charge and no value, because `0` is not a member of `Pos`; linking it over `q: Sequence<Int[1,5]>[0,1]` refuses `undefined_expression`/`unproved-range` at the `sum`, the source not proved nonempty, and over `q: Sequence<Int[1,5]>[1,1]` is admitted. | Test (TC-190) |
+| FR-145-AC-13 | Over `q: Sequence<Int[0, 9]>` with `u` an unavailable occurrence: on `[1, 1, u]`, `contains(q, 1)` is a completed `true`, `exists(x in q: x = 1)` a completed `true` and `forall(x in q: x = 2)` a completed `false`, each stopping before `u`; on `[u, 1]`, `contains(q, 1)`, `exists(x in q: x = 1)` and `forall(x in q: x = 2)` are each incomplete at `u`; on `[1, u]`, `forall(x in q: x = 1)` is incomplete at `u`. | Test (TC-1483) |
+| FR-145-AC-14 | On `[u, 1]` and on `[1, u]`, `filter(x in q: x > 0)`, `map(x in q: x + 0)`, `count<N>(x in q: x > 0)` and `sum<N>(x in q: x)` are each incomplete at `u` with no partial collection, count or total; `removeOne(q, 1)` on `[1, u]` is `[u]` and on `[u, 1]` incomplete; `dropFirst(q)` on `[u, 1]` is `[1]` and on `[1, u]` is `[u]`; `size(q)` on `[1, u]` is 2. | Test (TC-1483) |
+| FR-145-AC-15 | Each incomplete outcome of AC-13 and AC-14 carries code `unavailable_observation`, cause `missing-required-valuation`, and the runtime value path of `q` followed by the `index` step of `u`'s position (0 on `[u, 1]`, 1 on `[1, u]`); a visiting form charges the visit of `u` and no retain, and `contains` charges no `collection.member-walk` for `u`. | Test (TC-1483) |
 
 ## Dependencies
 

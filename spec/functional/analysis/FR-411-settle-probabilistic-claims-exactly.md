@@ -3,6 +3,8 @@ id: FR-411
 title: "Settle probabilistic claims with exact evidence"
 type: FR
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: references
   - target: ix://agent-ix/filament-specification/US-011
     type: implements
   - target: ix://agent-ix/filament-specification/FR-406
@@ -175,6 +177,18 @@ component value reached, a reachability problem of the previous section. A
 component in which every cycle has total weight 0 under `R` has no defined
 fraction and settles `unsupported`, `zero-weight-component{component}`.
 
+### Package intake
+
+The provider reads the model's random parameters, workloads, rewards and
+delays from the checked package's probabilistic-model nodes
+([FR-640](../../objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)).
+The frontend has already refused a reward that can be negative (FR-405); a
+provider given a package whose producer it did not run evaluates every reward
+on every argument vector of its operation's finite domains before it builds
+the product, and refuses the first negative value as the frontend would,
+`invalid_probabilistic_model`/`negative-reward` naming the operation, the
+reward and the argument vector, before any product state is built.
+
 ### Arithmetic
 
 Every number on the verdict path is an exact rational held as a pair of
@@ -272,6 +286,7 @@ and are not read.
 | FR-411-AC-14 | A quantile claim whose activation probability is 0 settles `proved` in both forms, under a workload and over every scheduler. | Test (TC-360) |
 | FR-411-AC-15 | A caller cancellation of an exact run stops it with `incomplete`, `cancelled{source}` with `source` `requested`, not `limit-reached`, and records no value. | Test (TC-365) |
 | FR-411-AC-16 | A request whose `ExactProbLimits.max_witness_paths` is 0 validates against the backend-provider schema; a `<= θ` claim refuted on a fully explored model under it settles the verdict it settles under the default and carries no path set, and a `max_witness_paths` of -1 fails the schema. | Test (TC-365) |
+| FR-411-AC-17 | Given a package from another producer whose `reward` node evaluates to `n - 3` with `n: Int[0, 5]`, the exact provider refuses `invalid_probabilistic_model`/`negative-reward` naming the operation, the reward and `n = 0` before it builds any product state; the same package with the reward `n` is read and settled. | Test (TC-1561) |
 
 ## Dependencies
 

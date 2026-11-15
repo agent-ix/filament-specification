@@ -1,9 +1,12 @@
 # Shared native grammar
 
 This document defines the composed `ix:native` / `1-draft` edition grammar and
-the complete-V1 facet additions. Historical `ix:native` / `0-draft` sources keep
-their exact rules and bytes. Selecting the complete facet bundle is explicit;
-it never relabels a historical package or makes an unselected construct valid.
+the complete-V1 facet additions. `1-draft` is the only edition: a header naming
+any other edition string, the retired `0-draft` included, refuses
+`unknown_edition`/`unsupported-selection` at the edition string literal
+([FR-500](../../spec/functional/source-package/FR-500-select-the-edition-and-profiles-of-a-source-unit.md)).
+Selecting the complete facet bundle is explicit; it never makes an unselected
+construct valid.
 
 This grammar defines one composed entry point for common expressions, state,
 temporal and protocol/choreography declarations. Temporal meaning comes from
@@ -31,8 +34,8 @@ including CRLF and multibyte text. A decoded string offset is not a source span.
 
 Use maximal token matching: `::`, `!=`, `<=` and `>=` are indivisible; a keyword
 prefix inside a longer identifier is not a keyword. Keywords are selected by
-edition. Adding a keyword in `1-draft` cannot steal an identifier admitted by
-`0-draft`. One recognizer can retain raw word spelling and let the selected
+edition. Adding a keyword in a later edition cannot steal an identifier admitted
+by `1-draft`. One recognizer can retain raw word spelling and let the selected
 edition classify it; no second handwritten token scanner is required.
 
 `ident` excludes that edition's reserved words in native declaration/binder
@@ -71,7 +74,7 @@ does not admit (`invalid_syntax`/`unexpected-token`). Common reserved words for 
 `attempt`, `contracts`, `effect`, `event`, `related`, `check` and `finish`.
 This candidate inventory is edition-owned, not an extensible runtime registry.
 
-The balanced reserved forms of the `0-draft` state-core profile
+The balanced reserved forms of the retired state-core profile
 (`proposals/state-core/profile.md`) are not reserved by `1-draft`: a spelling
 that neither the common inventory above nor the complete-V1 inventory below
 lists is an ordinary `ident` in every `1-draft` position. In particular the
@@ -82,9 +85,7 @@ binder, a record, enum, tuple, union or type-alias name, a field, an enum or
 union member, and a profile, import or model selection alias) and in every
 reference to such a name, exactly as `helperz` is. A recognizer SHALL NOT
 classify them as unsupported constructs under `1-draft`. Lowercase `tuple`
-stays a complete-V1 reserved word, so `Tuple` and `tuple` differ. Under
-`0-draft`, `helper`, `rec` and `cast` keep the `unsupported_construct`
-classification the state-core profile gives them.
+stays a complete-V1 reserved word, so `Tuple` and `tuple` differ.
 
 The complete-V1 facets additionally reserve `import`, `dimension`, `unit`,
 `ordered`, `enum`, `record`, `tuple`, `union`, `type`, `function`, `pure`, `decreases`,
@@ -99,7 +100,7 @@ The complete-V1 facets additionally reserve `import`, `dimension`, `unit`,
 `continue`, `cancel`, `invariant`, `variant`, `relation`, `hyper`, `trace`,
 `bounded`, `hybrid`, `mode`, `flow`, `transition`, `reset`, `synthesis`,
 `grammar`, `satisfies`, `verify`, `claim`, `method`, `domain`, `depends`,
-`bound`, `lookup`, `absent`, `body`, `abstraction`, `terminal`, `scheduling`,
+`bound`, `ref`, `lookup`, `absent`, `body`, `abstraction`, `terminal`, `scheduling`,
 `adversarial`, `memory`, `fence`, `fork`, `node` and `stutter`. In a
 `protocol-step-source`, `join` and `activate` keep their common reservation
 and name a step kind. The words `sc`, `tso`, `ra`, `relaxed`, `acquire`,
@@ -121,7 +122,7 @@ repetition and `[…]` optionality. `ident`, `member-name`, `string` and `uint`
 follow the lexical contract. `EOF` requires the entire unit to be consumed.
 
 ```ebnf
-composed-unit = header, profile, { profile }, { model },
+composed-unit = header, { profile }, { model },
                declaration, { declaration }, EOF ;
 header       = 'language', string, 'edition', string, ';' ;
 profile      = 'profile', ident, '=', string, ';' ;
@@ -131,7 +132,7 @@ type-name    = model-name ;
 operation-name = type-name, '::', member-name ;
 parameter-type = 'Boolean' | type-name ;
 declaration  = predicate | state-clause | temporal-clause | protocol-clause ;
-predicate    = 'predicate', ident, 'using', ident,
+predicate    = 'predicate', ident, [ 'using', ident ],
                '(', [ parameter, { ',', parameter } ], ')',
                ':', 'Boolean', block ;
 parameter    = ident, ':', parameter-type ;
@@ -211,7 +212,7 @@ channel      = 'channel', ident, 'from', ident, 'to', ident,
                'overflow', overflow-policy, ';' ;
 ordering     = 'unordered'
              | 'fifo', 'by', '(', parameter, ')', block ;
-protocol-requirement = 'requires', 'temporal', ident, ';' ;
+protocol-requirement = 'requires', 'temporal', ident, { '::', ident }, ';' ;
 node-ref     = ident, { '::', ident } ;
 attempt-type = type-name ;
 compensation = 'compensate', ident, 'for', node-ref,
@@ -272,10 +273,19 @@ comparison grammar applies inside their argument expressions.
 Domain types named from an imported domain package give model-owned parameter
 domains. The complete-V1 additions below also admit native `record`, `enum` and
 `tuple` declarations for value types that are not domain objects. A native
-declaration cannot declare a domain object.
+`object` declaration declares a source-owned object type: an identified type
+with fields, identity fields, supertypes, populations and operations, owned by
+the source unit that declares it rather than by a domain package
+([FR-610](../../spec/functional/type-model/FR-610-declare-object-types-in-native-source.md)).
+It is the one native declaration that declares a domain object.
 
-`using` selects a declared profile alias for every native declaration;
-there is no backend-derived default. A profile's string names its definition
+`using` selects a declared profile alias for a native declaration; there is no
+backend-derived default. A unit may declare no `profile`, and a `function` or
+`predicate` may omit `using`: such a unit or declaration selects no layer and
+is admitted under the admitted-form set of `filament.value.complete/v1`, the
+one fixed default
+[FR-500](../../spec/functional/source-package/FR-500-select-the-edition-and-profiles-of-a-source-unit.md)
+states. Every other declaration keeps `using` required. A profile's string names its definition
 identity, which the explicit compiler inventory resolves. A grammar parse does
 not prove that identity. A `profile` declaration may name any
 [header-selectable layer](definitions/README.md#header-selectable-layers), and
@@ -320,7 +330,7 @@ admitted construct receives `unimplemented_capability` and cannot reinterpret
 it.
 
 ```ebnf
-complete-unit = header, profile, { profile }, { import-decl }, { model },
+complete-unit = header, { profile }, { import-decl }, { model },
                 declaration, { declaration }, EOF ;
 import-decl   = 'import', string, [ 'as', ident ], ';' ;
 
@@ -330,19 +340,44 @@ declaration   = dimension-decl | dimension-equivalence | unit-decl | enum-decl |
               | relation-clause | hyper-clause | state-graph-clause
               | hybrid-decl | synthesis-decl | verification-plan
               | operation-body | abstraction-decl | terminal-decl
-              | guarantee-decl | composition-decl ;
+              | guarantee-decl | composition-decl | object-decl
+              | population-bound ;
+population-bound = 'bound', ident, 'on', population-name, '[', uint, ']' ;
+
+type-name     = model-name | ident ;
+operation-name = type-name, '::', member-name ;
+population-name = model-name | ident ;
+
+object-decl       = [ 'abstract' ], 'object', ident,
+                    [ 'extends', type-name, { ',', type-name } ],
+                    [ 'identity', '(', ident, { ',', ident }, ')' ],
+                    '{', { object-member }, '}' ;
+object-member     = field | population-member | operation-member ;
+population-member = [ 'symmetric' ], 'population', ident, ';' ;
+operation-member  = 'operation', ident,
+                    '(', [ parameter, { ',', parameter } ], ')',
+                    [ ':', type-ref ],
+                    [ 'redefines', ident, '::', member-name ],
+                    { frame-clause }, ';' ;
+frame-clause      = 'modifies', field-target, { ',', field-target }
+                  | 'creates', ident, { ',', ident }
+                  | 'deletes', delete-target, { ',', delete-target } ;
+field-target      = 'self', '.', ident | ident, [ '.', ident ] ;
+delete-target     = 'self' | ident ;
 
 type-ref      = 'Boolean' | 'Integer' | qualified-name
               | 'Int', '[', signed-int, ',', signed-int, ']'
               | 'Rational', '[', signed-int, ',', signed-int, ';',
                             uint, ',', uint, ']'
               | 'Decimal', '[', signed-int, ',', signed-int, ';',
-                           uint, ',', uint, [ ';', rounding-mode ], ']'
+                           uint, ',', uint, ';', rounding-mode, ']'
               | ('Float32' | 'Float64'), [ '[', rounding-mode, ']' ]
               | 'Text', '[', uint, ',', uint, ';', text-profile, ']'
               | 'Option', '<', type-ref, '>'
               | ('Sequence' | 'Set' | 'Bag' | 'OrderedSet'),
                 '<', type-ref, '>', [ '[', uint, ',', uint, ']' ]
+              | 'Map', '<', type-ref, ',', type-ref, '>',
+                [ '[', uint, ',', uint, ']' ]
               | 'Reference', '<', qualified-name, '>'
               | 'Quantity', '<', quantity-unit, [ ',', type-ref ], '>'
               | 'Population', '<', qualified-name, '>', [ '[', uint, ']' ] ;
@@ -373,13 +408,13 @@ union-decl    = 'union', ident, '{', union-member, { ',', union-member },
 union-member  = ident, [ '(', type-ref, { ',', type-ref }, ')' ] ;
 alias-decl    = 'type', ident, '=', type-ref, ';' ;
 
-function      = 'function', ident, 'using', ident,
+function      = 'function', ident, [ 'using', ident ],
                 '(', [ parameter, { ',', parameter } ], ')', ':', type-ref,
                 'pure', [ 'decreases', '(', expr, ')' ], block ;
 parameter-type = type-ref ;
 parameter     = ident, ':', type-ref ;
 
-expr          = 'let', ident, '=', expr, 'in', expr
+expr          = 'let', ident, [ ':', type-ref ], '=', expr, 'in', expr
               | 'if', expr, 'then', expr, 'else', expr
               | 'case', expr, '{', case-arm, { case-arm }, '}'
               | implication ;
@@ -391,7 +426,8 @@ primary       = 'true' | 'false' | 'null' | 'none' | 'absent' | 'self' | 'result
               | record-value | float-value
               | qualified-name, [ '(', [ expr, { ',', expr } ], ')' ]
               | '(', expr, ')'
-              | ('present' | 'value' | 'deref' | 'pre'), '(', expr, ')'
+              | ('present' | 'value' | 'deref' | 'ref' | 'pre'), '(', expr, ')'
+              | 'Text', '(', [ expr, { ',', expr } ], ')'
               | 'convert', '<', type-ref, '>', '(', expr, ')'
               | 'allInstances', '<', type-ref, '>', '(', expr, ')'
               | collection-call
@@ -440,6 +476,40 @@ collection-call = ('map' | 'collect' | 'filter' | 'flatMap'),
                   [ ',', 'identity', ':', expr ], ')' ;
 ```
 
+`object-decl` declares a source-owned object type (FR-610). `abstract` gives
+the type no direct instances; `extends` lists its direct supertypes in source
+order; `identity` lists its identity fields, own or inherited, and without it
+the type's identity fields are its first identified supertype's. A `field`
+member is written exactly as a `record-decl` field and admits every
+`type-ref` a record field admits, with the same checks (FR-610 "Member
+types"). A `population-member` declares a closed population whose member type
+is the declaring type; `symmetric` marks it symmetric (FR-150). An
+`operation-member` declares an operation with its ordered parameters, its
+optional result, the inherited operation it `redefines` and its frame:
+`modifies self.f` is a receiver-scoped field entry, `modifies f` an
+every-object entry of the declaring type's field `f`, `modifies T.f` an entry
+of field `f` of the source object type `T`, `creates T` and `deletes T`
+type-wide entries, `deletes self` the receiver deletion and `deletes p` the
+deletion of the `Reference` parameter `p`. A frame names only source object
+types, their fields and the operation's own parameters. An operation with no
+`frame-clause` writes nothing. The words `extends`, `symmetric`,
+`redefines`, `modifies`, `creates` and `deletes` are reserved in a
+complete-V1 unit and refuse `invalid_syntax`/`unexpected-token` where written
+as an identifier; `object`, `operation`, `population` and `abstract` stay
+contextual words.
+
+The complete-V1 `type-name`, `operation-name` and `population-name` replace
+the bounded `type-name = model-name`: a two-segment name resolves only to a
+model declaration of a selected domain package and a one-segment name only to
+a source declaration of the unit, and neither falls back to the other. Every
+position that takes a type name, operation name or population name (a state
+clause `on`, an `operation-body` target, a protocol `over`, `role` and
+`attempt ... on`, a population binder or bound, `Reference<T>`,
+`Population<T>[N]`, `allInstances` and `lookup`) takes the one-segment source
+form with no other change. The one exception is `role w on M`: a one-segment
+`M` that is a model alias of the unit names that alias's whole model, and no
+source object type may share a model alias's name.
+
 A `dimension-equivalence` declares the two dimension nodes its names resolve to equivalent
 and states the ratio between their canonical roots (FR-142 "Dimension equivalence"): the
 first name resolves in the dimension namespace and the second likewise, each a bare name of
@@ -457,7 +527,10 @@ float constructors are disjoint forms; no empty spelling aliases
 another kind. Decimal source is exact coefficient/scale syntax. In
 `Decimal[lo, hi; smin, smax; mode]` the signed pair is the inclusive membership
 coefficient bound and the unsigned pair is the inclusive membership scale bound;
-FR-140 owns their well-formedness and value-only membership. IEEE source is
+FR-140 owns their well-formedness and value-only membership. The `; mode` part
+is required in source: `Decimal[lo, hi; smin, smax]` is
+`invalid_syntax`/`unexpected-token` at its closing `]`, and that mode-less
+spelling exists only as FR-140's domain notation. IEEE source is
 bit-level so signed zero and NaN payload identity survive parsing. Human decimal
 float conversion is an explicit `convert<Float32[m]>(t)` or
 `convert<Float64[m]>(t)` of a text under the target's rounding mode (FR-478),
@@ -468,6 +541,14 @@ an object type and the string is the key's object identity as UTF-8 bytes
 (`M::Server#"s1"`). `#` is a punctuation token of this production alone. Its
 typing, lowering and resolution are
 [FR-480](../../spec/functional/type-model/FR-480-check-and-resolve-reference-literals.md)'s.
+
+The `postfix` alternative `'[', expr, ']'` is one selection form with three
+meanings fixed by the operand's type: the zero-based index of a `Sequence` or
+`OrderedSet` and the key lookup of a `Map` (FR-144 "Indexing"), and, with a `uint`
+literal, the position read of a tuple (FR-143 "Tuple position read"); a tuple
+position is never read as `p.0`. `Map<K, V>[a, b]` is the source map type of
+FR-144 "Map values". `Map` is matched as a type constructor only in `type-ref`
+and stays an identifier elsewhere.
 
 The complete-V1 `power` production is the integer power of a quantity
 (FR-142, lowered to `filament.op.quantity.pow` by FR-322 "Quantity integer
@@ -488,6 +569,21 @@ domain-package population (inside a state clause, as the operand of
 `allInstances` or `lookup`; FR-153) or other declared value and a qualified call as a tuple constructor, union member
 constructor or pure function; the parser does not duplicate those token
 strings into `enum-value`, `tuple-value`, `union-value` and call alternatives.
+An unqualified call spelled `Some` is the present-option constructor in every
+expression position, not only in a refinement row: `Some(e)` has type
+`Option<E>` for `e` of type `E`, `e` is checked at `P` where the position
+expects `Option<P>`, a function declared `Some` is not callable by that name,
+and another argument count refuses `ill_typed`/`type-mismatch` at the call
+([FR-501](../../spec/functional/source-package/FR-501-settle-ambiguous-and-contradictory-grammar-forms.md)
+item 4).
+
+`Text` is a reserved type word, so the `Text(...)` constructor has its own
+`primary` alternative rather than passing through the qualified call; its
+typing is FR-141's and FR-502's. `ref(e)` is the `Reference<Clock>` value
+naming the clock place `e` denotes (FR-415, FR-502). In `let x: T = e in b`
+the annotation declares `x` with type `T` and is the expected type of `e`,
+as a declared parameter type is for an argument; an unannotated `let` types
+`x` by `e` (FR-501 item 3).
 
 `union-decl` declares a closed set of named members, each with an optional
 ordered payload shape; a member with no parenthesized payload is nullary. A
@@ -514,6 +610,11 @@ library: `filament::value::ieee::sqrt(x)`,
 `filament::value::ieee::bitIdentical(a,b)`. User declarations cannot replace or
 shadow those selected definition identities.
 
+A `population-bound` `bound L on M::p [N]` states the authored finite maximum
+`N` of the population `p` of model `M` for every clause of the package; the
+maximum is part of the population's meaning, never a resource limit, and
+FR-502 owns its checks. It ends at its `]` with no `;`.
+
 `Population<T>[N]` spells an explicit population binding's type, where `T`
 is a qualified name resolving to a model `object` type and `N` is its declared
 maximum. The maximum is optional: `Population<T>` declares no maximum, not a
@@ -525,7 +626,7 @@ object kind; FR-153 owns that semantic check and the query result types.
 positions; contextual `member-name` positions still admit it. Lowercase
 `population` remains the distinct contextual abstraction-binding keyword and
 an identifier elsewhere, never an alias for the uppercase type constructor.
-Neither spelling creates a population or supplies an ambient binding. A state clause names a domain-package population by the qualified name `M::P` as the operand of `allInstances` or `lookup` (FR-153); that name selects a declaration and takes its binding from the clause's observation.
+Neither spelling creates a population or supplies an ambient binding. A state clause names a domain-package population by the qualified name `M::P` as the operand of `allInstances` or `lookup` (FR-153); that name selects a declaration and takes its binding from the clause's observation. A population declared by a native `object` declaration is named by its one-segment name `p` in the same positions (`population-name`), and its binding comes from the observation the same way (FR-610).
 
 `absent` as a `primary` is the Option literal of FR-143 ("The `absent` Option
 literal"), the same value and typing rule as `none`; the `absent` after the
@@ -556,7 +657,7 @@ or refused by the package's layer selection, not by this gate.
 ```ebnf
 interval      = '[', uint, ',', ( uint | '*' ), ']' ;
 temporal-clause = 'temporal', ident, 'using', ident,
-                  'over', '(', parameter, ')', 'clock', string,
+                  'over', '(', parameter, ')', [ 'clock', string ],
                   activation, '{', { fairness }, { capture },
                   temporal-expr, '}' ;
 fairness      = 'fair', [ 'weak' | 'strong' ], [ 'whole' | 'each' ],
@@ -591,7 +692,8 @@ channel       = 'channel', ident, 'from', ident, 'to', ident,
                 'capacity', capacity,
                 'overflow', overflow-policy, ';' ;
 delivery-policy = 'unknown' | 'at-most-once' | 'at-least-once'
-                | 'exactly-once-premise' ;
+                | 'exactly-once-premise' | delivery-interval ;
+delivery-interval = '[', uint, ',', uint, ']' ;
 capacity      = uint | 'symbolic', '(', ident, ')' ;
 overflow-policy = 'reject' | 'block' | 'loss', loss-selector ;
 loss-selector = 'head' | 'tail' | 'new' ;
@@ -702,7 +804,8 @@ hybrid-mode   = 'mode', ident, 'invariant', block,
 equation      = qualified-name, "'", '=', expr, ';' ;
 synthesis-decl = 'synthesis', ident, 'using', ident,
                  'grammar', qualified-name, 'domain', qualified-name,
-                 'satisfies', block, ';' ;
+                 [ synthesis-objective ], 'satisfies', block, ';' ;
+synthesis-objective = ( 'minimize' | 'maximize' ), expr ;
 
 verification-plan = 'verify', ident, 'using', ident, '{',
                     verification-step, { verification-step }, '}' ;
@@ -713,6 +816,15 @@ verification-step = 'check', ident, 'claim', qualified-name,
                     [ 'bound', uint ], ';' ;
 attempt-type  = type-ref ;
 ```
+
+`minimize` and `maximize` are matched as keyword spellings only as the first
+word of a `synthesis-objective`, after a `synthesis-decl`'s `domain` name, and
+remain identifiers elsewhere. A `synthesis-decl`'s meaning, its finite-domain
+rule and its objective are fixed by
+[FR-194](../../spec/functional/analysis/FR-194-synthesize-bounded-candidates.md)
+"Source form", and a `verification-plan`'s by
+[FR-192](../../spec/functional/analysis/FR-192-execute-linked-verification-plans.md)
+"Source form".
 
 `initial` is matched as a keyword spelling only as the first word of a
 `hybrid-initial`, the optional first member of a `hybrid-decl` body, and
@@ -751,6 +863,16 @@ model's intended terminal states
 ([FR-366](../../spec/functional/temporal/FR-366-check-deadlock-freedom.md)).
 `exactly-once-premise` is an authored
 environment premise, never a transport guarantee inferred by the runtime.
+A `delivery-interval` `[lo, hi]` is the per-send delivery count (the number of
+deliveries one send produces, not elapsed time) whose channel-node text FR-465
+"Delivery count interval" owns; `lo > hi` refuses `ill_typed`/`type-mismatch`
+at the interval (FR-502). The name after `requires temporal` may be written
+qualified; it resolves once in the unit's own declaration scope and binds a
+temporal clause of the same unit, so a name resolving only through an import
+refuses `missing_declaration`/`missing-name` at the name and one resolving to
+another kind of declaration refuses `ill_typed`/`operator-ineligible` (FR-502).
+A `join` list names every branch exactly once and is never empty: `join all []`
+is `invalid_syntax`/`unexpected-token` at the `]`.
 `quorum(n)` requires `1 <= n <= branch-count`. A named join predicate is a
 total pure function over the explicitly captured branch dispositions. Dynamic
 role lifetime and channel capacity remain checked semantic expressions; a
@@ -800,17 +922,23 @@ differ from the existing forms by what follows: `count` and `sum` read the
 population form when no `<` follows the word (the typed aggregates are
 `count<T>(` and `sum<T>(`), and `exists(binder)` reads the population form
 when `where` or `)` follows the binder's `model-name`, while `:` reads the
-state-clause quantifier over a collection expression. `only`, `seq` and `Some`
-are matched as keyword spellings only in these productions and remain
-identifiers elsewhere; inside a refinement row `only(`, `seq(` and `Some(`
-always read as the forms and so hide a pure function of the same name. `where`
+state-clause quantifier over a collection expression. `only` and `seq` are
+matched as keyword spellings only in these productions and remain identifiers
+elsewhere; inside a refinement row `only(`, `seq(` and `Some(` always read as
+the forms and so hide a pure function of the same name, and in a state-clause
+body `only(` and `seq(` followed by `ident in` read as the forms and hide a
+pure function of the same name there. `Some(e)` is the same
+present-option constructor outside a refinement row (see the qualified
+reference/call production above); the refinement alternative records only that
+a row admits it. `where`
 is matched as a keyword in `binder`, as it already is in the temporal
 `aggregate-term`, and is an identifier in other positions. `FR-376` owns the typing and value of the six
 population forms and the `..` bounds; `FR-375` owns `Some` and the rows it
-appears in. A state-clause body outside a refinement declaration that uses
-a population name or the `count`, `sum`, `exists` or `all` population form refuses
-`unsupported_construct`/`expression-form`; `only` and `seq` spelled as forms there
-are syntax errors (`invalid_syntax`/`unexpected-token`) at their `in` token.
+appears in. A state-clause body outside a refinement declaration (a population position)
+admits a population name as a domain and all six population forms, with
+FR-376's typing and value; a clause body may read a population as a
+refinement row does, because a state clause is evaluated over one
+observation that binds every population it names.
 
 ### Abstraction relation declaration
 
@@ -919,7 +1047,16 @@ rules only.
   `holds(...)` leaf admits `indexed-read` wherever it admits `postfix`. `@`
   is a single punctuation token that binds tighter than every operator and
   looser than member navigation, so `v.l @ a = v.l @ b` is
-  `(v.l @ a) = (v.l @ b)`. `indexed-read` is admitted nowhere else.
+  `(v.l @ a) = (v.l @ b)`. The `expr` of every temporal clause's `holds(...)`
+  leaf and `on each ... when` guard is recognized with this same grammar, so an
+  `indexed-read`, a `step-label` or `stutter` parses there too; outside the
+  body of a `hyper` clause over `behaviours` the first such form refuses
+  `unsupported_construct`/`expression-form` at the form, naming `hyper`
+  clauses as the place the form is admitted (FR-501 item 2). In every other
+  position (a function body, a state clause, a refinement row) `@` stays
+  `invalid_syntax`/`unexpected-token` at the `@`. An `align skip` list
+  names at least one operation; `align skip {}` is
+  `invalid_syntax`/`unexpected-token` at the `}`.
 - An `align-skip` entry and a model-operation execution binding each name an
   operation as `qualified-name`, whose first segment is a model alias the
   clause binds.
@@ -956,7 +1093,7 @@ rules only.
 | `hyper NI using inf over behaviours forall trace a of V fair weak V::Vault::step; forall trace b of V { always holds(true) }` | Quantifier `a` with one weak `whole` constraint; quantifier `b` with the empty fairness set. |
 | `hyper H using inf over t in Q bounded 4 forall trace a of V { true }` | Parses; the `of` on a finite trace domain refuses at semantic admission (FR-395). |
 | `temporal` clause with no `over` parameter, such as `temporal T using inf clock "c" on origin { always holds(true) }` | Syntax error `invalid_syntax`/`unexpected-token` at the `clock` token, which stands where `over` is required: a `temporal-clause` always names one `over` parameter. |
-| `always holds(v.l @ a)` in a `temporal` clause | Syntax error: `indexed-read` is admitted only in a hyper body over `behaviours`. |
+| `always holds(v.l @ a)` in a `temporal` clause | Parses; refused `unsupported_construct`/`expression-form` at `v.l @ a`, because `indexed-read` is admitted only in a hyper body over `behaviours`. |
 | `possible Win using v over (g: G::Game) { g.phase = G::Phase::Won }` | One `possible` state-graph clause with one `over` parameter. |
 | `always possible Rec using v from (not x.lost) { x.ok }` | One `always possible` clause with no `over` parameter and one `from` predicate. |
 | `unique path One using v over (j: M::Job) from (not j.a) to (j.done);` | One `unique path` clause with its two predicates. |
@@ -1030,7 +1167,7 @@ fraction       = 'fraction', 'holds', '(', expr, ')',
 weighting      = 'weighted', 'by', ( ident | 'delay' ) ;
 horizon        = uint | quantity-literal ;
 
-aggregate-atom = aggregate-term, ( '<' | '<=' | '=' | '>=' | '>' ), expr ;
+aggregate-atom = aggregate-term, ( '<' | '<=' | '=' | '>=' | '>' ), sum ;
 aggregate-term = ( 'count' | 'sum' | 'min' | 'max'
                  | 'fraction', 'holds', '(', expr, ')'
                  | 'quantile', exact-value ),
@@ -1043,8 +1180,11 @@ time-decl      = 'time', ident, ( 'dense'
                                 | 'tick', qualified-name, 'period', quantity-literal ),
                  'unit', qualified-name, ';' ;
 time-invariant = 'time', 'invariant', ident, 'when', block,
-                 '{', clock-bound, { 'and', clock-bound }, '}' ;
+                 '{', ( clock-bound | quantified-clock-bound ),
+                 { 'and', ( clock-bound | quantified-clock-bound ) }, '}' ;
 clock-bound    = postfix, ( '<' | '<=' ), quantity-literal ;
+quantified-clock-bound = ( 'forall' | 'exists' ), '(', ident, 'in', expr, ':',
+                         clock-bound, ')' ;
 urgent-decl    = 'urgent', ident, ( 'when', block | qualified-name ), ';' ;
 type-ref       =/ 'Clock' ;
 timed-interval = ( '[' | '(' ), quantity-literal, ',', quantity-literal, ( ']' | ')' ) ;
@@ -1094,8 +1234,24 @@ is `invalid_syntax`/`unexpected-token` at `fair`. A dimensionless threshold
 after a `measure`'s `bound-op` is an `expr`, so it is written
 `rational(n, d)` or `decimal(n, s)`, as in
 `fraction holds(v.up) over [0, 10000] >= rational(999, 1000)`.
-A `temporal-clause` with no `clock` member binds the profile's default clock
-([FR-252](../../spec/objects/temporal/FR-252-temporal-clock-binding.md)).
+A `temporal-clause`, in the composed and the complete-V1 form alike, may omit
+its `clock` member; it then binds the default clock
+([FR-252](../../spec/objects/temporal/FR-252-temporal-clock-binding.md)):
+`model-time` over a timed model, `model-steps` over an untimed one, and over a
+trace subject the binding the observation interface supplies. Writing the
+default explicitly gives the same binding and obligation identity.
+The threshold of an `aggregate-atom` is a `sum`, the operand a `comparison`
+takes, so a following `and`, `or` or `implies` joins the atom to the next
+temporal operand: `count where holds(p) over past[0,1] >= 1 and holds(q)` is a
+temporal conjunction, and `... >= s.k and s.ok` is
+`invalid_syntax`/`unexpected-token` at the `s` after `and`, never the Boolean
+threshold `(s.k and s.ok)`. A threshold needing a lower-precedence operator is
+parenthesized.
+A `time-invariant` conjunct is a `clock-bound` or a `quantified-clock-bound`:
+`forall(e in c: b)` is the conjunction of `b` over the live elements `e` binds
+and `exists` their disjunction, read as
+[FR-415](../../spec/functional/temporal/FR-415-declare-clocks-and-timed-models.md)
+reads a quantifier over a clock collection.
 A `window` takes `uint` positions under the event-position false-extension
 profile and time quantities under the timestamped-event finite-window profile
 ([FR-414](../../spec/functional/temporal/FR-414-evaluate-window-aggregates.md)).
@@ -1233,8 +1389,7 @@ admitted formula
 ([FR-367](../../spec/functional/temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)).
 A package that does not select `filament.temporal.infinite-trace/v1` receives
 `unsupported_construct` for an operator written without an interval. Selecting the profile
-admits them without reinterpreting the bracketed form or any historical
-`0-draft` bytes, per the edition rule in
+admits them without reinterpreting the bracketed form, per the edition rule in
 [AD-003](../../spec/assurance/AD-003-native-filament-language-charter.md).
 [AD-012](../../spec/assurance/AD-012-unbounded-temporal-operator-grammar.md)
 accepts this edition; [FR-048](../../spec/functional/foundation/FR-048-bind-native-temporal-syntax.md)
@@ -1404,10 +1559,13 @@ recognized at product precedence. When a declaration selects
 `filament.value.complete/v1`, integer `div` and `rem` are admitted only with exactly
 one checked integer-division definition, and `mod` has the independent
 Euclidean meaning specified by [FR-147](../../spec/functional/expressions/FR-147-evaluate-integer-division-domains.md).
+A unit selects that definition with a header `profile` whose identity names
+it, for example `profile d = "filament.value.integer-division.floor/v1";`
+([FR-570](../../spec/functional/expressions/FR-570-select-the-integer-division-law-from-a-unit-header.md));
+such a profile selects no layer and its alias governs no declaration.
 Without that facet, each integer operator receives a located profile refusal,
 including when its expression is unreachable. Recognition alone never supplies
-a missing definition or changes a selected law. Historical `0-draft` arithmetic
-retains its original meaning.
+a missing definition or changes a selected law.
 
 ## Protocol expressions and bindings
 

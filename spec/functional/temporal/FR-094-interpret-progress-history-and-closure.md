@@ -27,6 +27,14 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-289
     type: references
+  - target: ix://agent-ix/filament-specification/FR-268
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-294
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-160
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-114
+    type: references
 ---
 ## Description
 
@@ -105,6 +113,60 @@ contract. The evaluator shall supersede or invalidate affected results without
 rewriting their historical bytes. The v1 evaluator shall not infer watermark
 authority or automatically repair settled history.
 
+The progress an evaluator retains for a binding SHALL be carried from one
+evaluation request to the next, and from one observation to the next of an
+incremental assessment (FR-114), only as an explicit progress ledger that the
+caller supplies and the evaluator returns; two requests carrying the same ledger
+bytes apply the monotonic rule above exactly as one long-lived evaluator would,
+and a request without a ledger asserts no retained progress.
+
+### Late-data cutoff
+
+A late-data cutoff decides which observations that arrive after progress has
+moved past their event instant still enter an evaluation. It is distinct from
+the history cutoff: a history cutoff bounds how far back retained history
+reaches and makes earlier positions missing history; a late-data cutoff bounds
+how late an observation may arrive and never makes history missing. Neither
+substitutes for the other, and each keeps its own key (FR-268).
+
+A selected late-data cutoff is on the clause's clock and carries a rule
+identity and version. Two v1 rules exist:
+
+| Rule | Parameter | An observation with event instant `t` admitted at arrival watermark `A` is `late` when |
+| --- | --- | --- |
+| `filament.temporal.late-data.allowed-lateness/v1` | allowed lateness `d >= 0` in the clock's unit | `A > t + d` |
+| `filament.temporal.late-data.fixed-instant/v1` | cutoff instant `C` | `t <= C` and `A > C` |
+
+The event instant `t` of an observation with an uncertainty interval is its
+interval's upper end (FR-160), so uncertainty never makes an observation late
+earlier than its latest possible instant. The arrival watermark `A` is the
+progress watermark of the same binding at the moment the observation is
+admitted; an observation supplied in a recorded trace carries its arrival
+watermark explicitly, and one that carries none is admitted at the watermark
+that precedes it in arrival order. Every other observation is `on-time`
+(FR-294).
+
+- Under a selected late-data cutoff a window with deadline `D` is established
+  only when the watermark also covers `D + d` under the allowed-lateness rule,
+  or `max(D, C)` under the fixed-instant rule, so no `on-time` observation can
+  arrive after the window it belongs to has settled.
+- The evaluator shall admit an `on-time` observation into every evaluation
+  whose window it falls in, in event-time order, even when it arrives out of
+  arrival order.
+- The evaluator shall exclude a `late` observation from every evaluation. It
+  shall retain the observation with its classification, its identity and the
+  result identities whose windows it falls in, and report the late
+  observations beside each such result.
+- A late observation shall not rewrite, restamp or restart a settled result.
+  When it contradicts a completeness assertion it raises the FR-295
+  contradiction that FR-094-AC-5 states. A recomputation that admits it is a
+  revisioned repair (FR-160) whose new result links the prior result and names
+  the late observation.
+- With no late-data cutoff selected, no observation is classified late:
+  an observation that arrives after its window is established is a
+  completeness contradiction when the window was asserted complete, and is
+  otherwise admitted by revisioned repair only.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -120,6 +182,8 @@ authority or automatically repair settled history.
 | FR-094-AC-9 | A resource ceiling stopping one obligation leaves an independently settled sibling result unchanged, while the stopped obligation emits no Boolean fallback. | Test (TC-116) |
 | FR-094-AC-10 | A half-open observation end/watermark equal to an inclusive deadline cannot settle it; an FR-289 carrier with exact same-clock coverage strictly beyond the endpoint admits the endpoint and filters later carrier members. | Test (TC-115) |
 | FR-094-AC-11 | A progress watermark `W` covers an instant stamped `W` and does not cover one stamped `W + 1` (`FWV-45` to `FWV-47`, `proposals/finite-window/finite-window-vectors.json`). | Test (TC-980) |
+| FR-094-AC-12 | Under `filament.temporal.late-data.allowed-lateness/v1` with `d` 2, over a window with deadline 5: the window is not established at watermark 6 and is established at watermark 7; an observation stamped 4 admitted at arrival watermark 6 is `on-time` and enters the evaluation; one stamped 3 admitted at arrival watermark 6 is `late`, is excluded from the result, is reported beside it with its identity, and leaves the result's bytes and identity unchanged. Under `filament.temporal.late-data.fixed-instant/v1` with `C` 5, the observation stamped 3 admitted at watermark 6 is `late` and one stamped 6 is `on-time`. An observation with interval `[2, 4]` under allowed lateness 2 admitted at watermark 6 is `on-time`. | Test (TC-1043) |
+| FR-094-AC-13 | A late-data cutoff and a history cutoff selected together keep separate keys: changing either changes only its own key and the result identity; a late observation never makes history missing, a history cutoff never classifies an observation `late`, and a revisioned repair that admits a late observation produces a new result linked to the prior result and naming the observation. With no late-data cutoff selected, the same late arrival into a window asserted complete is a completeness contradiction and is not classified `late`. | Test (TC-1043) |
 
 ## Dependencies
 

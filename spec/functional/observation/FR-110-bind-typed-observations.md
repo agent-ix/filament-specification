@@ -45,6 +45,7 @@ externally observed.
 
 ## Dependencies
 
+- Consumer facts ([FR-661](ix://agent-ix/filament-specification/FR-661)): `CF-OB-01` (the subject kinds and relationship declarations taken from the checked package's domain declarations).
 - [Shared foundation](../../../proposals/filament-v1/shared-foundation.md).
 - [Observation binding contract](../../../proposals/filament-v1/observation-contract.md).
 - [AD-006](../../assurance/AD-006-model-graph-state-contracts.md): observed subjects are typed by the spec-declared domain declarations of the checked package; A owns source/package/profile identity.

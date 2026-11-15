@@ -251,6 +251,40 @@ quantity magnitude has no bound. The operand of an affine unit refuses
 `ill_typed` at type checking before any charge, as every other arithmetic on an
 affine unit does. The operation lowers to `filament.op.quantity.negate` (FR-322).
 
+**Quantity scaling.** `q * n`, `n * q` and `q / n`, where `q` is a non-affine
+quantity of type `Quantity<u>` (a declared unit or a compound unit) and `n` is
+an exact number (an `Integer`, `Int[..]`, `Rational[..]` or `Decimal[..]`
+operand, or an integer, `rational(..)` or `decimal(..)` literal), scale `q` by
+`n`. The result has type `Quantity<u>`, in the same unit `u` and not a
+root-unit conversion of it, and its value is the exact rational product or
+quotient of `q`'s value and `n`: `3 ms * 2` and `2 * 3 ms` are `6 ms`,
+`3 ms / 2` is `3/2 ms`, and `decimal(15, 1) * 2 m` is `3 m`. Scaling is
+distinct from quantity multiplication, whose operands are both quantities and
+whose result is a compound unit over root units: a number has no unit, so
+scaling keeps the author's unit, and a `Quantity<ms>` scaled by a number is
+still a `Quantity<ms>` value for a `Quantity<ms>` position. `q * n` carries no
+obligation, because a quantity magnitude has no bound. `q / n` carries the
+FR-146 nonzero obligation on `n` (an interval excluding zero, or a nonzero fact
+on a stable path), and without it is
+`refused { code: undefined_expression, cause: unproved-nonzero }` at the
+division; only direct kernel evaluation meets a zero `n`, as the undefined
+outcome after the operands and before the arithmetic charge.
+
+A `Float32` or `Float64` factor is `refused { code: ill_typed, cause: type-mismatch }`
+at the factor, because exact and IEEE values never mix (FR-148); a carried
+quantity operand is refused as every carried-quantity arithmetic is (below),
+and an affine operand as every affine arithmetic is. `n / q` is not scaling: its
+unit would be the reciprocal of `u`, which a number cannot supply, so it is
+`refused { code: ill_typed, cause: type-mismatch }` at the division, and the
+quotient is written as a quantity division whose numerator is a quantity.
+Scaling reads one unit identity and traverses no edge, as negation does: it
+charges one `unit.identity-read`, one `unit.rational-arithmetic` computed in
+`u` and `unit.result-retain`, after both operands complete left to right. It
+lowers to `filament.op.quantity.scale` (`q * n` and `n * q`, arguments in
+source order) or `filament.op.quantity.scale_div` (`q / n`, arguments quantity
+then factor), each with `result_type` the quantity operand's unit type node and
+no law, mode, member or leaves, entries of the FR-322 operation catalog.
+
 **Carried quantity.** `Quantity<u, C>` is the type of the quantities whose
 unit is `u` and whose magnitude is a value of the numeric carrier `C`, which is
 exactly one of `Int[lo, hi]`, `Decimal[lo, hi; smin, smax; mode]` and
@@ -747,6 +781,8 @@ the element of `Option` and of the collection types, and the target of
 | FR-142-AC-38 | A carried sum over `Rational[-3, 7; 1, 12]` keeps reduced exact magnitudes: `1/4 m` and `1/3 m` are `7/12 m`, `1/2 m` and `1/2 m` are `1 m`, `1/4 m` and `1/5 m` (`9/20 m`) and `6 m` and `2 m` are each a located undefined outcome, never rounded and never `rational_out_of_domain`, and the empty sum is `0 m` (TC-187 U50). | Test (TC-187) |
 | FR-142-AC-39 | Over TC-187's `kg`, `m` and `s` roots, `Quantity<kg*m^2*s^-2>` is accepted in parameter, result and conversion-target positions and names the checked compound with canonical root terms `kg:1`, `m:2`, `s:-2`. `Quantity<s^-2*kg*m*m>` has the same normalized compound identity. Bare `Quantity<kg>` remains declared, while `Quantity<kg^1>` and `Quantity<kg*m^0>` have the same one-term compound identity, distinct from declared `kg`; `Quantity<m*m^-1>` is the empty compound. The first U25 conversion can therefore be written `convert<Quantity<kg*m^2*s^-2>>(q)` for `q: Quantity<N_m>` and its result explicitly converted to `Quantity<J>`, retaining U25's exact values, identities and charges without a synthetic declared target unit. | Test |
 | FR-142-AC-40 | `Quantity<>`, `Quantity<kg*>`, `Quantity<kg**m>`, `Quantity<m^>`, `Quantity<m^n>` and `Quantity<m^1.5>` refuse `invalid_syntax` at the malformed unit expression. `Quantity<kg*ghost^2>` and `Quantity<ghost^0>` refuse `missing_declaration`/`missing-name` at `ghost`; a dimension-only factor refuses that same unit lookup. Existing integer and frontend ceilings produce their existing typed refusal or limit result, never a truncated exponent or partial authoritative compound. Existing bare named-unit and named-unit carrier forms retain their meanings. | Test |
+| FR-142-AC-41 | With the unit `ms` (target `s`, scale `1/1000`), `d * 2`, `2 * d` and `d * k` for `d: Quantity<ms>` and `k: Int[0, 9]` are admitted with type `Quantity<ms>` as the body of a function whose result is `Quantity<ms>`; at `d = 3 ms` and `k = 4` they are `6 ms`, `6 ms` and `12 ms`, `d * rational(1, 2)` is `3/2 ms` and `d * decimal(15, 1)` is `9/2 ms`; `d / 2` is `3/2 ms` with no obligation and `d / k` under the guard `k > 0` is `3/4 ms`; each charges one `unit.identity-read`, one `unit.rational-arithmetic` and `unit.result-retain`, and lowers to `filament.op.quantity.scale` (or `scale_div` for `/`) with `result_type` the node of `ms`. | Test (TC-1324) |
+| FR-142-AC-42 | `d / k` without a nonzero fact and `d / 0` are `undefined_expression`/`unproved-nonzero` at the division; `d * f` for `f: Float64` is `ill_typed`/`type-mismatch` at `f`; `2 / d` is `ill_typed`/`type-mismatch` at the division; a carried `Quantity<m, Int[-5, 5]>` times `2` is `ill_typed`/`type-mismatch`; an affine unit's quantity times `2` is `ill_typed`; and `d * 2` at a `Quantity<s>` result is `ill_typed`/`type-mismatch`, because scaling keeps `ms`. | Test (TC-1324) |
 
 ## Dependencies
 

@@ -1,0 +1,146 @@
+{
+  "inventory": "filament.consumer-facts/v1",
+  "consumers": [
+    {
+      "consumer": "ir",
+      "role": "Reads checked packages strictly, links dependency packages and lowers claims to Contract IR obligations.",
+      "facts": [
+        {
+          "id": "CF-IR-01",
+          "fact": "The checked-package document type the producer writes and the reader admits.",
+          "requirement": "ix://agent-ix/filament-specification/FR-322"
+        },
+        {
+          "id": "CF-IR-02",
+          "fact": "The structural import view of an admitted dependency package.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-480"
+        },
+        {
+          "id": "CF-IR-03",
+          "fact": "The schedulability claim roots of a checked package, each with its claim occurrence.",
+          "requirement": "ix://agent-ix/filament-specification/FR-419"
+        },
+        {
+          "id": "CF-IR-04",
+          "fact": "The obligation identity of a schedulability claim occurrence.",
+          "requirement": "ix://agent-ix/filament-specification/FR-419"
+        }
+      ]
+    },
+    {
+      "consumer": "protocol",
+      "role": "Links a finite protocol from a checked protocol clause and analyzes it.",
+      "facts": [
+        {
+          "id": "CF-PR-01",
+          "fact": "The protocol view of a clause: its roles, channels, queues, controls, compensations, run and finish nodes.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-519"
+        },
+        {
+          "id": "CF-PR-02",
+          "fact": "The causal relation derived from the clause's protocol nodes.",
+          "requirement": "ix://agent-ix/filament-specification/FR-464"
+        },
+        {
+          "id": "CF-PR-03",
+          "fact": "A channel's endpoints: its sending role, receiving role and message type.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-519"
+        },
+        {
+          "id": "CF-PR-04",
+          "fact": "A role's internality, internal or external to the assessed protocol.",
+          "requirement": "ix://agent-ix/filament-specification/FR-217"
+        },
+        {
+          "id": "CF-PR-05",
+          "fact": "The anchor of an await: the control or compensation template it follows.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-519"
+        },
+        {
+          "id": "CF-PR-06",
+          "fact": "The visibility of a choice: its owner and visible expressions.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-519"
+        },
+        {
+          "id": "CF-PR-07",
+          "fact": "The attempts maximum of a compensation.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-519"
+        }
+      ]
+    },
+    {
+      "consumer": "code-generation",
+      "role": "Replays checked functions, operations and clauses and generates code from them.",
+      "facts": [
+        {
+          "id": "CF-CG-01",
+          "fact": "The call site of a function, operation or clause of a compiled package.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-121"
+        },
+        {
+          "id": "CF-CG-02",
+          "fact": "The call site of an imported function: its declaring package and its function occurrence, from the same dependency lock.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-121"
+        },
+        {
+          "id": "CF-CG-03",
+          "fact": "The obligation identity of a function or operation site.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-121"
+        },
+        {
+          "id": "CF-CG-04",
+          "fact": "The closed-form schedulability verdict, settled after recomputing its evidence.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-248"
+        }
+      ]
+    },
+    {
+      "consumer": "runtime",
+      "role": "Runs a tick-based monitor plan on a target.",
+      "facts": [
+        {
+          "id": "CF-RT-01",
+          "fact": "The monitor plan root for a selected unit.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-251"
+        },
+        {
+          "id": "CF-RT-02",
+          "fact": "The authenticated progress view and authority selections admitted from a request or event input.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-251"
+        }
+      ]
+    },
+    {
+      "consumer": "driver",
+      "role": "Drives lifecycle requests and settles their run results.",
+      "facts": [
+        {
+          "id": "CF-DR-01",
+          "fact": "The bounded strict reader of native-run-result/2 bytes.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-535"
+        },
+        {
+          "id": "CF-DR-02",
+          "fact": "The writer of a clause run result as native-run-result/2 bytes.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-535"
+        },
+        {
+          "id": "CF-DR-03",
+          "fact": "The typed run result, a clause record or a command error.",
+          "requirement": "ix://agent-ix/filament-spec-language/FR-535"
+        }
+      ]
+    },
+    {
+      "consumer": "observation",
+      "role": "Binds typed observations to the subjects a checked package declares.",
+      "facts": [
+        {
+          "id": "CF-OB-01",
+          "fact": "The subject kinds and relationship declarations taken from the checked package's domain declarations.",
+          "requirement": "ix://agent-ix/filament-specification/FR-110"
+        }
+      ]
+    }
+  ]
+}

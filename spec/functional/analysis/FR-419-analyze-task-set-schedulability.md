@@ -373,6 +373,7 @@ establish completeness for the fixed-work class.
 
 ## Dependencies
 
+- Consumer facts ([FR-661](ix://agent-ix/filament-specification/FR-661)): `CF-IR-03` (the schedulability claim roots) and `CF-IR-04` (the obligation identity of a schedulability claim occurrence).
 - [FR-142](../type-model/FR-142-evaluate-quantities-and-units.md) supplies
   exact time quantities.
 - [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) carries the

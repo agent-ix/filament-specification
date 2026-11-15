@@ -44,6 +44,14 @@ delivery state; separately observed domain events establish business effect and
 re-enter evaluation as new evidence. No evaluator or analyzer invokes an
 adapter directly.
 
+This is the observe-or-recommend boundary, and it needs no construct of its
+own: running a model (evaluation, simulation, exploration, analysis and replay)
+applies a protocol `attempt`, `effect` or `commit` only to the model state the
+run holds, and every result it returns (a verdict, a counterexample, a
+simulated behaviour, an enabled step) is a recommendation. The language
+implementation that runs models SHALL perform no external business side
+effect, start no process, open no network connection and hold no adapter.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -53,6 +61,7 @@ adapter directly.
 | FR-182-AC-3 | Missing/mismatched authority, reused key with different inputs or receipt/effect substitution refuses. | Test (TC-211) |
 | FR-182-AC-4 | Crash-and-retry after pending-request persistence reconciles the same request without issuing a distinct effect identity. | Test (TC-211) |
 | FR-182-AC-5 | Only an attributed domain observation can establish the business effect; recommendation, decision and transport receipt cannot. | Test (TC-211) |
+| FR-182-AC-6 | Exploring and simulating a protocol whose `attempt` applies an operation that writes a model field changes only the returned model states; the run issues no adapter request, starts no process and opens no connection, and the language implementation's evaluation and analysis components have no dependency on an adapter, process or network facility. | Test (TC-1523) and Inspection |
 
 ## Dependencies
 

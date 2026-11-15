@@ -66,6 +66,7 @@ When a protocol declares a role, the protocol linker SHALL apply the same identi
 
 ## Dependencies
 
+- Consumer facts ([FR-661](ix://agent-ix/filament-specification/FR-661)): `CF-PR-04` (a role's internality, read by the protocol consumer).
 - [FR-050](../../functional/protocol/FR-050-bind-protocol-instances.md) establishes the
   internal/external distinction, the shared identity rules and the observability
   limit.

@@ -21,6 +21,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-460
     type: references
+  - target: ix://agent-ix/filament-specification/FR-151
+    type: references
 ---
 
 # FR-146: Check total pure functions and recursion
@@ -273,21 +275,80 @@ facts of the redefined parent member being refined, not the redefining type. The
    `=`, `!=`, `<`, `<=`, `>` or `>=`, intersects `x`'s interval on each outcome.
    `!=` removes `k` only when `k` is an endpoint of the interval, and `x != 0`
    also records a nonzero fact for `x`. A comparison of two non-literal
-   operands yields no fact.
+   operands yields no fact other than the difference fact of item 7.
 4. **Membership facts.** `contains(c, v)`, where `c` is a stable collection
-   path and `v` is a stable path, yields the membership fact `contains(c, v)`
+   or map path and `v` is a stable path, yields the membership fact `contains(c, v)`
    on its true outcome, and on that outcome intersects `size(c)`'s interval
    with `[1, +inf)`. Its false outcome yields no fact.
 5. **Propagation.** Facts flow into the `then` and `else` branches of `if`,
    the right operand of `and`, `or` and `implies` by the state-semantics rules,
    through `not` by exchanging outcomes, and through `let` aliases. At a join
    only facts valid on every alternative remain.
+6. **Precondition facts.** A postcondition `Q` of operation `m` on context
+   type `T` begins its definedness walk with the conjunction of the facts on
+   the true outcome of every precondition clause of the same operation
+   declaration on the same context declaration `T`, in any source order, when
+   `m` neither redefines another operation nor is redefined by one (FR-151).
+   Such an `m` has the effective precondition `eff(m) = own(m)`, and its
+   postcondition is required only where `eff(m)` held in the pre observation,
+   so each fact of `own(m)` holds wherever `Q` is evaluated against a
+   satisfied precondition. A member of a redefinition family has
+   `eff(m) = own(m) or eff(r)`, so its own precondition need not hold where
+   its postcondition is required, and no fact transfers into it. In the
+   conjunction, the interval facts of one key intersect and, for one ordered
+   pair, the difference bound with the smaller `c` (item 7) is kept; a
+   conjunction with an empty intersection, or a precondition whose true
+   outcome is unreachable, transfers nothing. Only a fact keyed on a stable
+   path rooted at `self` or at an operation parameter transfers, keyed in `Q`
+   on the same path under the `pre` observation (a precondition reads the pre
+   state, so a transferred fact matches a `pre(e)` read in `Q` and never a
+   post-state read). A fact keyed on a quantifier or comprehension binder of
+   the precondition does not transfer, and a `let` that aliases a stable path
+   keys its facts on the aliased path. No fact transfers into an invariant, a
+   state constraint, another precondition, a postcondition of another
+   operation or a postcondition naming the operation through a subtype or
+   supertype of `T`, and a domain package's kept `requires` clause gives none.
+   A transferred fact adds no node, obligation record or requirement record.
+7. **Difference facts.** An ordering `x op y`, `op` one of `<`, `<=`, `>` or
+   `>=`, where `x` and `y` are each an integer stable path and neither is an
+   integer literal, records one difference bound `u - v <= c` on each outcome:
+   the true outcome of `x <= y` records `x - y <= 0`, of `x < y` records
+   `x - y <= -1`, of `x >= y` records `y - x <= 0`, and of `x > y` records
+   `y - x <= -1`; a false outcome records the bound of the negated ordering.
+   Two bounds on one ordered pair on one path keep the smaller `c`, and a join
+   keeps only a bound present on every alternative, with the larger `c`. A
+   difference fact is used only by a binary `-` node whose operands, ignoring
+   parentheses, are the two paths of a recorded bound (below). `=` or `!=`
+   between two non-literal operands, an ordering with an operand that is an
+   arithmetic node, call, `size` or any other non-path form, and a transitive
+   chain (`a <= b` and `b <= c` say nothing of `c - a`) yield no fact, and a
+   bound refines no `+`, `*` or unary `-` node and no difference written
+   `-b + a`. Difference facts apply wherever this definedness check runs: in a
+   function body, in a state clause's own guards and in transferred
+   precondition facts.
 
 The interval of an integer expression is computed over mathematical integers:
 a literal is its point; a stable path is its refined interval; `+`, `-`, `*`
 and unary `-` are exact interval arithmetic on their operand intervals; and
 every other integer form, such as a call, division, `count`, `sum` or `fold`,
-has its declared result type's interval. No other reasoning is admitted.
+has its declared result type's interval. A binary `-` node `a - b` whose
+operands are the paths `u` and `v` of a recorded difference bound has the exact
+interval difference intersected with that bound: `u - v <= c` caps its upper
+end at `c`, and `v - u <= c` raises its lower end to `-c`. The refined interval
+is the node's wherever it stands, so an enclosing arithmetic node is computed
+from it. No other reasoning is admitted.
+
+These two fact forms are what lets a postcondition such as
+`self.balance = pre(self.balance) - amount`, over `balance: Int[0, 100]` and a
+parameter `amount: Int[0, 100]` under the precondition
+`amount <= self.balance`, check: the transferred bound
+`amount - self.balance <= 0` at the pre observation gives
+`pre(self.balance) - amount` the interval `[0, 100]`. They are closed so that
+every producer proves exactly the same obligations: an unproved range
+obligation is `refused { code: undefined_expression, cause: unproved-range }`
+at the arithmetic node, and evaluation outside the precondition, which no
+static fact covers, refuses at the node's checked narrowing as FR-149 states
+rather than clamping, wrapping or widening the value.
 
 A `Rational[..]` expression has a numerator interval `N` and a positive
 denominator interval `D`, both over mathematical integers, and never a value
@@ -370,7 +431,14 @@ a divisor that may be zero in FR-140, FR-142, FR-044 or FR-147
 carries the nonzero obligation (`unproved-nonzero`); `value(e)` without a proved
 `present(e)` (`unproved-presence`); `reduce` without a proved `size(c) >= 1`
 under FR-145 (`unproved-range`); an FR-149 range or rational narrowing whose
-converted value is not proved a member of its target type (`unproved-range`).
+converted value is not proved a member of its target type (`unproved-range`);
+an FR-144 index `c[i]` of a sequence, ordered set or map without a proved index
+obligation (`unproved-presence`). An index obligation holds when `c` is a stable
+path and `i` is an integer literal or a stable path whose interval, from its
+type and the interval facts on `i`, lies inside `[0, m - 1]`, where `m` is the
+minimum of `size(c)`'s interval (from the declared bound and the comparison
+facts on `size(c)`), or, for a map, when the membership fact `contains(c, i)`
+holds; a compound `c` or `i` must first be bound with `let`.
 Each obligation applies on a path
 that can execute, and an unproved one is
 `refused { code: undefined_expression, cause: ... }` at that operation when the
@@ -453,6 +521,9 @@ counter, and no call depth turns into an outcome (FR-460).
 | FR-146-AC-14 | A `case` whose scrutinee is an `Integer` and whose arms name unknown members is refused `ill_typed`/`type-mismatch` at the scrutinee only; a `case` with an ill-typed body in a resolved arm and a missing arm is refused `ill_typed`/`type-mismatch` at that body only; and a `case` whose `unknown-member` arm has an ill-typed body, or whose `arm-arity` arm's body uses an unbound identifier, is refused `undefined_expression`/`unproved-exhaustiveness` with that obligation only. | Test (TC-398) |
 | FR-146-AC-15 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes a removal filter of `s` (`x != e`, `e != x` or `not (x = e)` over an element type without a float leaf, `not filament::value::ieee::bitIdentical(x, e)` over a `Float32` or `Float64` element type, or `not contains(d, x)` under a further `contains(d, e)` fact, for a stable path `e`) under a `contains(s, e)` guard fact, or that filter inside a same-kind `convert`, and evaluates its declared result; passing `s` unchanged, a removal filter without the membership fact, a filter of any other predicate shape, or a removal of a non-stable `e` refuses `undefined_expression`/`unproved-decrease` with obligation `decrease`; `size` of a non-parameter operand, and one measure position holding a cardinality element in one function and an integer element in another of its component, refuse with obligation `measure-kind`; and a lexicographic tuple mixing cardinality and integer positions decreases by the earlier-equal rule. | Test (TC-191) |
 | FR-146-AC-16 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes `removeOne(s, e)` for a stable path `e` under a `contains(s, e)` guard fact, including over an element type with a float leaf, or passes `dropFirst(s)` for a `Sequence` or `OrderedSet` `s` under a fact that `size(s) >= 1` (a `size(s) > 0` comparison, a `contains(s, v)` fact or a declared minimum of at least `1`), or either inside a same-kind `convert`, and evaluates its declared result, so a duplicate-holding `Sequence` or `Bag` is walked one occurrence at a time; `removeOne(s, e)` without the membership fact, with a non-stable `e`, and `dropFirst(s)` without the size fact, refuse `undefined_expression`/`unproved-decrease` with obligation `decrease`. | Test (TC-191) |
+| FR-146-AC-17 | Over an object type `Account` with `balance: Int[0, 100]` and an operation `withdraw(amount: Int[0, 100])` that redefines nothing and is redefined by nothing, with the precondition `amount <= self.balance`, the postcondition `self.balance = pre(self.balance) - amount` checks, with `pre(self.balance) - amount` typed `Int[0, 100]`, whatever the clauses' source order; without the precondition it is `undefined_expression`/`unproved-range` at `pre(self.balance) - amount`; with the precondition on a subtype's `withdraw` that redefines `Account/withdraw`, or on another operation, it is refused the same way, and no precondition fact enters an invariant or another precondition. | Test (TC-1360) |
+| FR-146-AC-18 | The precondition bodies `amount < self.balance` (with the postcondition `self.balance = (pre(self.balance) - amount) - 1`), `self.balance >= amount` and `not (amount > self.balance)` each discharge the AC-17 postcondition; `amount = self.balance`, `amount + 0 <= self.balance`, `amount <= self.limit and self.limit <= self.balance`, and `amount <= self.balance or amount <= 5` each leave it `undefined_expression`/`unproved-range`; `self.balance + amount <= 100` does not discharge `pre(self.balance) + amount`; and in a function body `a <= b implies r = b - a` over `a`, `b`, `r` of `Int[0, 100]` checks. | Test (TC-1360) |
+| FR-146-AC-19 | The rational interval rule is exact for positive products: with `a` and `b` of type `Rational[1, 9; 1, 9]`, `a * b` and `a * a` have raw numerator `[1, 81]` over raw denominator `[1, 81]` and normalized numerator `[1, 81]` and denominator `[1, 81]`, so a function returning either into `Rational[1, 81; 1, 81]` checks, while one returning it into `Rational[1, 80; 1, 81]` or `Rational[1, 81; 1, 80]` is `undefined_expression`/`unproved-range`; `a + b` has raw numerator `[2, 162]` over `[1, 81]` and checks into `Rational[1, 162; 1, 81]` but not into `Rational[1, 161; 1, 81]`. No other range rule, and no widening of the required numerator or denominator, is needed or applied. | Test (TC-1403) |
 
 ## Dependencies
 

@@ -172,8 +172,10 @@ infer clock members from a spelling.
 
 A type is **clock-bearing** when it is `Clock`, an alias of a clock-bearing
 type, `Option` of one, a `Set`, `Bag`, `Sequence`, `OrderedSet` or `Map` whose
-element (for a map, value) type is clock-bearing, or a record with a field of
-a clock-bearing type. A member of a
+element (for a map, value) type is clock-bearing, a record with a field of
+a clock-bearing type, a tuple with a position of a clock-bearing type, or a
+union with a case whose payload is of a clock-bearing type (FR-322 "Clock
+positions and payloads"). A member of a
 clock-bearing type whose multiplicity is not `[1, 1]` is the collection of that
 type that FR-322 gives the multiplicity. A value of a clock-bearing type is not a
 data value: it denotes **clock places**, the clocks it contains, and a place
@@ -193,6 +195,16 @@ collection are live only while the collection holds the element (below).
   carries FR-146's presence obligation: a `value(p)` without `present(p)`
   established by the guard or by the time invariant's predicate refuses
   `undefined_expression`/`unproved-presence` at the read.
+- A place under a union case is **guarded** the same way: it is present
+  exactly while the union value on its path has that case as its active member.
+  `p.C` names the place under case `C` of a union path `p`, so
+  `present(self.p.Armed)` is true exactly while `self.p` is `Armed`, and
+  `value(self.p.Armed)` carries the same presence obligation. Selecting the case
+  in a postcondition write with a time constant as the clock payload
+  (`self.p = Phase::Armed(0 ms)`) resets the place and makes it present;
+  writing another case drops it. A union is data, so its active case gives the
+  presence and the place holds no presence bit. A place under a tuple position
+  is read as `p.i`, `i` the position, and is guarded only when its tuple is.
 - **Presence is derived.** `present(p)` of a guarded place `p` is a Boolean
   data predicate, never a clock read, whose value at a state is the presence of
   the place that `p` denotes: the instance named by the owner object, the
@@ -532,6 +544,7 @@ work limit was reached.
 | FR-415-AC-25 | The checked-package producer refuses `unsupported_construct`/`expression-form`, naming the construct, a guard `self.x >= 1 ms or self.versionNumber > 0` (a disjunct with no clock constraint), the whole-collection write `self.ts = sequence[Timer { x: 0 ms, n: 1 }]` and `self.ts = filter(e in self.ts: e.n > 1)`, the drop `self.v = absent`, the ordered element write `self.ts[i] = Timer { x: 0 ms, n: 1 }` (`CW-06`), and the selection reset `forall(e in self.ts: e.n > 1 implies e.x = 0 ms)`; it builds the guard whose every disjunct reads a clock, the constant write `self.v = 0 ms` and a reset whose condition reads only the presence of the binder's place. A presence requirement has no clause node. The cases are `GJ-01`..`GJ-03`, `CW-01`..`CW-06`, `SD-01` and `SD-02` of `timed-clause-node-vectors.json` (FR-322-AC-267). | Test (TC-367; CK-38) |
 | FR-415-AC-26 | A task-automaton search charges one unit immediately before each expanded product node, including its source and task successor enumeration; the default is `1,048,576` under `zone_check.max_task_product_work`, a request setting of `limits.max_task_product_work` changes that effective bound, and a zero value is refused. Reaching the bound settles incomplete with `limit-reached` naming `max_task_product_work`, the bound and `zone_check.max_task_product_work`, with `task_search` whose frontier marks `work-limit`; an unresolved continuous demand, budget-change or queue choice before the bound settles incomplete with `bounded-search-incomplete{reason: unresolved-dynamics}` and a replayable `task_search` frontier marked `unresolved-choice` with an open set that names demand, budget-change or queue, with no `limit` member. | Test (TC-431) |
 | FR-415-AC-27 | With `m` typed by a domain package map type whose `keys` is `Text`, whose `values` is `Timer` (`Timer { x: Clock; n: Int }`) and whose `bound` is `{lower: 0, upper: 2}` (`Map<Text, Timer>[0, 2]`), the place of `x` under the entry of key `"a"` is the instance `Call.m.["a"].x` of the one template `clock_place` whose slot step's selector is the `Text` type node, live exactly while `m` holds `"a"`; inserting the entry `"0"` (ascending before `"a"`) or removing another entry leaves `Call.m.["a"].x` naming the same clock with its value; `ref(self.m[k].x)` refuses `ill_typed`/`type-mismatch` at the `ref`; a snapshot `Reference<Clock>` naming that `clock_place` with slot `0` refuses `invalid_runtime_input`/`invalid-value`; the map type with `keys` `Timer`, `record Cfg { a: Boolean }` or an option value type over `Text` refuses `ill_typed`/`operator-ineligible` at its key type; and the clock dimension contributed by `m` is `2` per object. | Test (TC-367) |
+| FR-415-AC-28 | With tuple `Slot(Clock, Integer)` and `union Phase { Armed(Clock), Idle }` as fields `s` and `p`: `self.s.0 >= 2 ms` is a guard on the place `s.0`, which exists in every state; `present(self.p.Armed) and value(self.p.Armed) >= 1 ms` is a guard on the place `p.Armed`, false while `p` is `Idle`, and `value(self.p.Armed) >= 1 ms` alone refuses `undefined_expression`/`unproved-presence`; `self.p = Phase::Armed(0 ms)` resets `p.Armed` and makes it present, `self.p = Phase::Idle` drops it, and neither place holds a presence bit; `s1 = s2` over `Slot` and `p1 = p2` over `Phase` refuse `invalid_timed_model`/`clock-read-outside-constraint`. | Test (TC-1361) |
 
 ## Dependencies
 

@@ -139,8 +139,22 @@ requires declared direction `source-to-target`, `bidirectional` or
 typed multiplicity: `[0,1]` gives `Option<Reference<U>>`; `[1,1]` gives
 `Reference<U>`; any other finite `[l,u]` gives `Set<Reference<U>>[l,u]` when
 `unique` is true and `Bag<Reference<U>>[l,u]` otherwise, in canonical
-reference-key order. An `unbounded` upper bound or `ordered: true` is
-`unsupported_construct`/`expression-form`. At runtime, navigation
+reference-key order, when `ordered` is false, and `OrderedSet<Reference<U>>[l,u]`
+when `unique` is true and `Sequence<Reference<U>>[l,u]` otherwise, in the
+order of the instances' positions for that end, when `ordered` is true. An
+`unbounded` upper bound gives the same collection kind with no cardinality
+bound; its lower bound is decided at runtime as a finite end's is. The
+`ordered` flag of a single-valued end changes nothing. A destination end
+that declares no multiplicity gives no result type and is
+`ill_typed`/`operator-ineligible`: the model, not the language, leaves the
+navigation untyped, so it is a semantic refusal, not `unsupported_construct`.
+An instance of a relationship whose end is ordered carries, for that end, a
+position: a non-negative integer that ranks the instance among the instances
+sharing its opposite-end reference. A listed extent of such a relationship
+whose instance lacks the position, or in which two instances sharing one
+opposite-end reference share a position, is refused at admission
+`invalid_runtime_input`/`invalid-value`. Positions order navigation only;
+every other read of an extent stays in canonical reference-key order. At runtime, navigation
 reads the relationship instances (the links) of the relationship that the
 observation holds. A listed relationship extent is complete or incomplete; an
 unlisted extent says nothing about the relationship's links. When the extent is
@@ -164,11 +178,12 @@ outside the bound is `cardinality_out_of_bound`/`below-minimum` or
 `filament.op.model.reaches` application (FR-322-AC-57). The end is navigated as
 above, and checking admits a destination end of the receiver endpoint's own
 type `E` with any finite multiplicity, single-valued (`[0,1]`, `[1,1]`) or
-multi-valued (`Set` or `Bag` shaped, unique or not). An `unbounded` upper bound
-or `ordered: true` is `unsupported_construct`/`expression-form`, and a
-destination end of another type is `ill_typed`/`operator-ineligible`, each at
-`member.name`; direction is decided before multiplicity and multiplicity before
-type. The result is `Boolean` for every multiplicity.
+multi-valued, finite or `unbounded`, ordered or not, unique or not, and an end
+that declares no multiplicity. A reachability reads the extent, which is finite
+in every observation, and never counts or orders neighbours, so no destination
+multiplicity changes its meaning and none is refused. A destination end of
+another type is `ill_typed`/`operator-ineligible` at `member.name`; direction is
+decided before type. The result is `Boolean` for every multiplicity.
 
 Reachability is one or more links: an object does not reach itself without a
 cycle or a self-loop. The neighbours of an object are the targets of its links
@@ -212,7 +227,8 @@ complete population is `dangling_reference`, decided before that neighbour's
 | FR-152-AC-9 | A relationship end is navigable by the role of the end nearest the receiver: `r.name` names the source end's role from a source-typed receiver and the target end's role from a target-typed receiver, a far-end role finds no candidate and refuses `ill_typed`/`type-mismatch` at checking, and the destination end supplies the multiplicity and result type. | Test (TC-197) |
 | FR-152-AC-10 | Navigating a relationship whose extent is unlisted, and one whose extent is listed incomplete, each return `incomplete_population`/`incomplete-scope` after `model.navigate` and no later charge, while a complete extent with no links returns `none` or the empty collection of the destination end's type after the charges of the multiplicity, or `cardinality_out_of_bound`/`below-minimum` when the destination end's lower bound is above 0. | Test (TC-197) |
 | FR-152-AC-11 | `reaches(a, b, name)` over a relationship end admits a single-valued and a finite multi-valued destination end of the receiver endpoint's own type, and over a multi-valued end the frontier expands every neighbour in reference-key order, charging `graph.expand` per newly discovered object, `graph.edge` per link occurrence including repeats, and one `graph.result-retain`, with exact required counters completing and one fewer incomplete at the stated charge point. | Test (TC-197) |
-| FR-152-AC-12 | An `unbounded` or `ordered` destination end, a destination end of another type and a traversal against the declared direction each refuse with the cause and order stated above; a neighbour count outside the destination bound refuses nothing; an unlisted or incomplete extent gives `incomplete_population`/`incomplete-scope` after the start's `graph.expand`; a dangling neighbour refuses `dangling_reference` before its `graph.edge`; a dangling or undecidable start decides before any charge. | Test (TC-197) |
+| FR-152-AC-12 | A destination end of another type and a traversal against the declared direction each refuse with the cause and order stated above; a neighbour count outside the destination bound refuses nothing; an unlisted or incomplete extent gives `incomplete_population`/`incomplete-scope` after the start's `graph.expand`; a dangling neighbour refuses `dangling_reference` before its `graph.edge`; a dangling or undecidable start decides before any charge. | Test (TC-197) |
+| FR-152-AC-13 | Navigation over an unordered unique `{0,unbounded}` end returns `Set<Reference<U>>` with no cardinality bound and below its declared lower bound refuses `cardinality_out_of_bound`/`below-minimum`; over an ordered non-unique `{0,3}` end it returns `Sequence<Reference<U>>[0,3]` with targets in ascending position and over an ordered unique one `OrderedSet<Reference<U>>[0,3]`; an extent of an ordered end with an instance lacking a position, or two instances of one source sharing a position, refuses `invalid_runtime_input`/`invalid-value`; navigation over an end with no declared multiplicity refuses `ill_typed`/`operator-ineligible`; `reaches` over an unbounded, an ordered and a multiplicity-less end of the receiver's own type each checks and returns the Boolean the extent gives. No case refuses `unsupported_construct`. | Test (TC-1400) |
 
 ## Dependencies
 

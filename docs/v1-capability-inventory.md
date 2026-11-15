@@ -112,7 +112,7 @@ with a typed, located outcome.
 | V1-TEMP-002 | Evaluate bounded `always`. | Required | V1-020 |
 | V1-TEMP-003 | Evaluate bounded `until`. | Required | V1-020 |
 | V1-TEMP-004 | Evaluate bounded `release`. | Required | V1-020 |
-| V1-TEMP-005 | Evaluate bounded previous, historically, once, since and triggered operators. | Required | V1-021 |
+| V1-TEMP-005 | Evaluate bounded historically, once, since and triggered operators, with strong previous as the derived form `once[1,1]` and positions before the origin read by FR-092. | Required | V1-021 |
 | V1-TEMP-006 | Bind an explicit past-history origin and cutoff. | Required | V1-021, V1-025 |
 | V1-TEMP-007 | Evaluate over event-position clocks. | Required | V1-022 |
 | V1-TEMP-008 | Evaluate over fixed-period sampled clocks with epoch, period and unit. | Required | V1-022 |
@@ -121,9 +121,9 @@ with a typed, located outcome.
 | V1-TEMP-011 | Advance timeout progress during event silence from authoritative clock progress. | Required | V1-023 |
 | V1-TEMP-012 | Distinguish closed execution, valid open prefix and incomplete input. | Required | V1-024 |
 | V1-TEMP-013 | Report activation independently from verdict and settlement. | Required | V1-024, V1-041 |
-| V1-TEMP-014 | Apply an explicit late-data cutoff and retain supersession lineage. | Required | V1-025 |
+| V1-TEMP-014 | Apply an explicit late-data cutoff, distinct from the history cutoff, under an allowed-lateness or fixed-instant rule (FR-094), and retain supersession lineage. | Required | V1-025 |
 | V1-TEMP-015 | Bind an authoritative completeness claim to its exact population and window. | Required | V1-025, V1-050 |
-| V1-TEMP-016 | Represent bounded clock uncertainty intervals. | Required | V1-026 |
+| V1-TEMP-016 | Represent bounded clock uncertainty intervals: counter-tick covers, a bounded cover on point timestamps and per-observation interval stamps (FR-160). | Required | V1-026 |
 | V1-TEMP-017 | Repair out-of-order observations through explicit revisioned replay. | Required | V1-026 |
 | V1-TEMP-018 | Evaluate partial proposition valuations without coercing missing values to false. | Required | V1-026 |
 | V1-TEMP-019 | Lower native temporal syntax through a versioned TL correspondence. | Required | V1-028 |
@@ -145,16 +145,16 @@ with a typed, located outcome.
 | V1-PROT-004 | Declare typed messages and payloads. | Required | V1-030 |
 | V1-PROT-005 | Declare channels independently of participants. | Required | V1-030 |
 | V1-PROT-006 | Distinguish send, receipt, message, delivery and attempt identities. | Required | V1-030 |
-| V1-PROT-007 | Bind business correlation and related workflow identities explicitly. | Required | V1-030, V1-049 |
+| V1-PROT-007 | Bind business correlation and related workflow identities explicitly, with each `related by` annotation a premise of its event step and of observed-event binding (FR-051). | Required | V1-030, V1-049 |
 | V1-PROT-008 | Compose authored finite sequence. | Required | V1-031 |
 | V1-PROT-009 | Compose owned labeled choice. | Required | V1-031 |
 | V1-PROT-010 | Compose parallel branches and explicit join. | Required | V1-031 |
 | V1-PROT-011 | Compose bounded iteration. | Required | V1-031 |
 | V1-PROT-012 | Spawn roles dynamically under explicit finite population and lifetime bounds. | Required | V1-038 |
 | V1-PROT-013 | Model queues with explicit finite or symbolic resource bounds. | Required | V1-038 |
-| V1-PROT-014 | Model loop invariants and termination/resource obligations beyond literal bounded repeat. | Required | V1-038 |
+| V1-PROT-014 | Model loop invariants and termination/resource obligations beyond literal bounded repeat, discharged over the explored protocol subject as proved, refuted or inconclusive (FR-171). | Required | V1-038 |
 | V1-PROT-015 | Preserve authored causal edges independently of timestamp order. | Required | V1-032 |
-| V1-PROT-016 | Enforce choice visibility for each deciding and affected role. | Required | V1-032 |
+| V1-PROT-016 | Enforce choice visibility for each deciding and affected role; a decision reads the protocol input only through a capture, and a direct read refuses at the read (FR-053). | Required | V1-032 |
 | V1-PROT-017 | Declare delivery cardinality, ordering and duplication premises. | Required | V1-032 |
 | V1-PROT-018 | Attach per-instance state guards and temporal obligations. | Required | V1-033 |
 | V1-PROT-019 | Attach immutable captures and inclusive timeout branches. | Required | V1-033 |
@@ -169,7 +169,7 @@ with a typed, located outcome.
 | V1-PROT-028 | Analyze protocol realizability with explicit premises and counterexamples. | Required | V1-037 |
 | V1-PROT-029 | Analyze assume-guarantee composition. | Required | V1-037 |
 | V1-PROT-030 | Check implementation refinement against a selected protocol. | Required | V1-037 |
-| V1-PROT-031 | Observe or recommend workflow actions without executing external business side effects. | Integrity | V1-039 |
+| V1-PROT-031 | Observe or recommend workflow actions without executing external business side effects; model runs apply steps only to held model state and return recommendations (FR-182). | Integrity | V1-039 |
 
 ## 6. Runtime, analysis and workflows
 
@@ -195,6 +195,7 @@ with a typed, located outcome.
 | V1-RUN-018 | Analyze continuous and hybrid dynamics under an explicit numeric/time model. | Required | prose census |
 | V1-RUN-019 | Perform bounded synthesis while distinguishing candidates from proof. | Required | prose census |
 | V1-RUN-020 | Drive an external workflow through typed decisions while keeping effects in an authorized adapter. | Required | prose census; V1-039 boundary |
+| V1-RUN-021 | Plan and optimize operation sequences over a state model within policy, returning a replayed plan with an optimality, feasibility or infeasibility certificate. | Required | prose census; landing planning cards |
 
 ## 7. IR, proof backends and output mappings
 
@@ -224,6 +225,7 @@ with a typed, located outcome.
 | V1-BACK-022 | Refuse emission onto implementation code that references a model element with no bound abstraction relation, naming the element. | Integrity | V1-BACK-021; prose census |
 | V1-BACK-023 | Record a proved settlement's certification: `certified` when the core's Alethe checker verifies the cvc5 certificate for the core's own query, `uncertified` when the certificate is absent or unverifiable. | Required | V1-BACK-019; prose census |
 | V1-BACK-024 | Return the same verdict from the SMT encoding and the native runtime on a shared differential corpus. | Required | V1-BACK-019; prose census |
+| V1-BACK-025 | Emit TLA+ 2 and Lean 4 with per-obligation fidelity accounting. | Required | prose census; landing TLA+/Lean copy |
 
 ## 8. Evidence, qualification, tooling and ecosystem
 

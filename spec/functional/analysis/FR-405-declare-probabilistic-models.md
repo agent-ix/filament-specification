@@ -17,6 +17,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-415
     type: references
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: references
 ---
 
 # FR-405: Declare random parameters, workloads and rewards
@@ -81,7 +83,17 @@ at the read's locus), and a type other than integer or quantity refuses with
 argument vector in the operation's domains; the frontend checks this over the
 finite domains and refuses a negative value with
 `invalid_probabilistic_model`/`negative-reward`,
-naming the operation, the reward and the argument vector. Reward names
+naming the operation, the reward and the argument vector, the first negative
+value in canonical argument order (a random parameter ranging over its
+support). The check belongs to the frontend, not to a provider: the reward
+reads only the operation's parameters and constants, so its sign is decided
+by the declaration alone, and refusing it before the package is checked means
+every checked package, and every provider and certificate checker reading
+one, holds only non-negative rewards. A reward that reads a parameter whose
+type has no finite domain (an unbounded integer, bounded only by a subject's
+proof bounds) is checked by the same rule and refusal when the provider
+admits the subject with those bounds, the first point at which its domain is
+finite. Reward names
 are unique per operation: a second reward of one name on one operation refuses
 with `invalid_probabilistic_model`/`duplicate-reward` at the second
 declaration, naming the operation and the reward. One reward name declared on
@@ -91,11 +103,24 @@ under its arguments.
 ### Workloads
 
 A workload declaration names one model and gives every operation of that model
-exactly one positive exact rational weight. The frontend SHALL refuse a
+exactly one non-negative exact rational weight. The frontend SHALL refuse a
 workload that omits an operation (`invalid_probabilistic_model`/`incomplete-workload`),
 weights an operation twice (`invalid_probabilistic_model`/`duplicate-weight`), names an
 operation of another model (`invalid_probabilistic_model`/`unknown-operation`) or gives a
-weight that is not a positive exact rational (`invalid_probabilistic_model`/`invalid-weight`).
+negative weight (`invalid_probabilistic_model`/`invalid-weight`).
+
+A weight of 0 is admitted. It states that the workload does not choose that
+operation while an operation of positive weight is enabled; at a state where
+every enabled operation has weight 0, the workload chooses among them
+uniformly ([FR-406](FR-406-interpret-probabilistic-models.md)). A workload
+whose weights are all 0 is therefore admitted and chooses uniformly among the
+enabled operations at every state. The reason for this reading is that a
+workload is a scheduler of the model: it may prefer operations, but it never
+invents a deadlock the model does not have, so every behaviour of positive
+probability under a workload remains a behaviour of the model. Omitting an
+operation stays refused `incomplete-workload`, so that a misspelt or forgotten
+operation is never read as weight 0; a workload that means to exclude an
+operation writes its weight as 0.
 
 ### Delay distributions
 
@@ -111,6 +136,15 @@ declaration of one operation refuses with
 
 A **scheduled identity** is a transition identity without its random
 arguments: (operation, receiver, non-random argument vector).
+
+### Checked-package form
+
+An admitted random parameter, workload, reward and delay declaration is
+carried in the checked package as a probabilistic-model node
+([FR-640](../../objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)),
+so a package that declares them is emitted and read like any other checked
+package, and a provider reads them from the package instead of from the
+source.
 
 ### Identity
 
@@ -128,7 +162,9 @@ obligation that reads it.
 | FR-405-AC-2 | A precondition or guard that reads a random parameter refuses `invalid_probabilistic_model`/`random-read-in-precondition` at the read's locus. | Test (TC-350) |
 | FR-405-AC-3 | A distribution with a repeated value, a non-positive weight, or a value outside the parameter's type refuses `repeated-support-value`, `invalid-weight` or `value-outside-type` under `invalid_probabilistic_model` at the value's locus. | Test (TC-350) |
 | FR-405-AC-4 | A reward reading state, typed other than integer or quantity, or negative for some argument vector refuses with its typed cause; an admitted reward is carried by every transition of its operation. | Test (TC-350) |
-| FR-405-AC-5 | A workload that omits, duplicates or misnames an operation, or gives an invalid weight, refuses with its typed cause; a complete workload is admitted. | Test (TC-350) |
+| FR-405-AC-5 | A workload that omits, duplicates or misnames an operation, or gives a negative weight, refuses with its typed cause; a complete workload is admitted. | Test (TC-350) |
+| FR-405-AC-10 | `workload Steady on Service` with `Server::reset: 0` and weight 1 on the other two operations is admitted and records weight 0 for `Server::reset`; a workload with weight 0 on every operation is admitted; `Server::reset: rational(-1, 1)` refuses `invalid_probabilistic_model`/`invalid-weight` naming the workload and `Server::reset`; the workload with `Server::reset` omitted still refuses `incomplete-workload`. | Test (TC-1560) |
+| FR-405-AC-11 | `reward refund on Shop::buy = n - 3` with `n: Int[0, 5]` refuses `invalid_probabilistic_model`/`negative-reward` naming `Shop::buy`, `refund` and `n = 0` when the package is checked, so no checked package is produced and no provider is reached; `reward refund on Shop::buy = n` is admitted. | Test (TC-1560) |
 | FR-405-AC-6 | A `delay` declaration is admitted on an operation of a `time dense` model and refuses `invalid_probabilistic_model`/`delay-on-untimed-model` on an untimed or digital model; a second `delay` declaration of one operation refuses `invalid_model_binding`/`malformed-declaration`; an operation with no `delay` declaration has a nondeterministic delay. | Test (TC-350) |
 | FR-405-AC-7 | Changing one weight, support value or reward expression changes the identity of every obligation that reads it. | Test (TC-350) |
 | FR-405-AC-8 | A second `random` declaration of one operation parameter refuses `invalid_probabilistic_model`/`duplicate-distribution` at the second declaration's locus, naming the operation and the parameter. | Test (TC-350) |

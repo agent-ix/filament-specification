@@ -3924,11 +3924,25 @@
               "node_tag": {
                 "enum": [
                   "expression",
-                  "relation",
                   "state",
                   "temporal",
                   "correspondence"
                 ]
+              }
+            },
+            "required": [
+              "node_tag"
+            ]
+          },
+          {
+            "properties": {
+              "node_tag": {
+                "const": "relation"
+              },
+              "semantic_form": {
+                "not": {
+                  "const": "population"
+                }
               }
             },
             "required": [

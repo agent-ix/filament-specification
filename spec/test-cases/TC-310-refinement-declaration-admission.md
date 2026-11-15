@@ -338,9 +338,9 @@ abstract alias of the header, once, naming the selected profile, with no node
 (FR-375-AC-16). In mutation 20 `none` and `Some(self.value)` are admitted for
 the `?` field, `self.value` and `self.f` refuse `ill_typed`/`type-mismatch`,
 the `Option<Int[0, 2]>` field takes `none` as an explicit `none`, `none` as a
-call argument refuses `ill_typed`/`type-mismatch`, and `Some(1)` refuses
-`missing_declaration`/`missing-name` at `Some` with no function declared and is
-a call to it with one declared (FR-375-AC-17). In mutation 21 the ring-buffer rows and the
+call argument refuses `ill_typed`/`type-mismatch`, and `Some(1)` is the
+present `Option<Integer>` holding `1` with or without a declared function
+`Some` (FR-375-AC-17). In mutation 21 the ring-buffer rows and the
 `a div b` row are admitted; the lock selection holds the lock's `always` rows
 and the floor law for the first run and the Euclidean law for the second, so
 `definition_selections` differ exactly in that role, and the third run refuses
