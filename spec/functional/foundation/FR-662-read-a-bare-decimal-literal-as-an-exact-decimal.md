@@ -50,7 +50,9 @@ The constructor's typed value or its typed refusal, exactly as for
   (the longer match); any other `decimal-literal` in a `primary` position is
   the decimal primary.
 - The decimal primary takes its `Decimal[..]` type from its position as the
-  constructor does; a position that gives no type, or expects a type that is
+  constructor does, the other operand's static type when that operand is not a
+  literal included, so `self.level < 0.9` over a field `level: Decimal[..]`
+  checks ([FR-140](../type-model/FR-140-evaluate-exact-decimals.md)); a position that gives no type, or expects a type that is
   not a `Decimal[..]`, refuses exactly as the constructor refuses there.
 - Where a rule takes an exact rational literal (a dimensionless threshold of
   a probabilistic measure or expectation, [FR-407](../analysis/FR-407-state-probabilistic-claims.md)),
@@ -65,7 +67,7 @@ The constructor's typed value or its typed refusal, exactly as for
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-662-AC-1 | `0.9`, `5.0` and `0.90` as primaries parse with no diagnostic and denote `decimal(9, 1)`, `decimal(50, 1)` and `decimal(90, 2)`; `0.5 M::ms` is a quantity literal. | Test (TC-1648) |
-| FR-662-AC-2 | At a `Decimal[-1000, 1000; 0, 2; exact]` result `0.9` checks; compared with an `Integer` operand it refuses `ill_typed`/`type-mismatch`; bound by a `let` with no type it refuses `ill_typed`/`ambiguous-literal`; each outcome equals the outcome with `decimal(9, 1)` in its place. | Test (TC-1648) |
+| FR-662-AC-2 | At a `Decimal[-1000, 1000; 0, 2; exact]` result `0.9` checks; compared with an operand of that type (`l < 0.9`) it checks, typed by the operand; compared with another literal (`0.9 < decimal(1, 0)`) it refuses `ill_typed`/`ambiguous-literal` at `0.9`; compared with an `Integer` operand it refuses `ill_typed`/`type-mismatch`; bound by a `let` with no type it refuses `ill_typed`/`ambiguous-literal`; each outcome equals the outcome with `decimal(9, 1)` in its place. | Test (TC-1648) |
 | FR-662-AC-3 | An `expected accumulate R until holds(B) <= 0.5` claim over an integer reward has the threshold `1/2`, equal to the claim written with `decimal(5, 1)` and with `rational(1, 2)`. | Test (TC-1648) |
 | FR-662-AC-4 | `1e5` and `1.5E-3` as primaries refuse `invalid_syntax`/`invalid-token` located at the whole spelling. | Test (TC-1648) |
 
