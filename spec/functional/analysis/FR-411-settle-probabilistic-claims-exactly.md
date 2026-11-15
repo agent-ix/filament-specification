@@ -174,8 +174,13 @@ by Dinkelbach's parametric method, each round an exact mean-payoff policy
 iteration for the reward `R · ([P] − ρ)`, stopping at the `ρ` with optimal
 gain 0. The claim's value is the expected
 component value reached, a reachability problem of the previous section. A
-component in which every cycle has total weight 0 under `R` has no defined
-fraction and settles `unsupported`, `zero-weight-component{component}`.
+component in which every cycle has total weight 0 under `R` takes its
+unweighted fraction `π_C([P])`: the limit of `π_C((R + ε) · [P]) / π_C(R + ε)`
+as `ε → 0`, the one value continuous in the weights, constant on the
+component as every component value is, and certified by the component's
+unweighted gain–bias pair. A weighted long-run claim therefore always
+settles a verdict; the weights decide only how positive-weight components
+are read.
 
 ### Package intake
 
@@ -213,7 +218,7 @@ certificate the provider has first checked with the FR-412 checker.
 | Interval straddles the threshold at the budget | `incomplete`, execution `resource-incomplete` | `unavailable` | `precision-budget{lower, upper}` |
 | A run limit reached first | `incomplete`, execution `resource-incomplete` | `unavailable` | `limit-reached` naming the `ExactProbLimits` member, its value and the request setting that raises it |
 | Certificate rejected; witness replay disagrees | `inconclusive` | `unsettled` | `certificate-rejected{rule, at}` naming the failed check and its state; `replay-parity` |
-| `not-markov`, `zero-weight-component`, and the timed causes of [FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md) | `unsupported` | `unavailable` | that cause |
+| `not-markov`, and FR-421's `delay-distribution` for a continuous delay ([FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md)) | `unsupported` | `unavailable` | that cause |
 
 `reductions` lists the applied state-space reductions, empty when none
 applies. The proof basis states the least favourable (initial state, binding)
@@ -275,7 +280,7 @@ and are not read.
 | FR-411-AC-3 | On the `Deliver` vector (TC-361) the minimum is `24/25`, the maximum `99/100` and the workload value `391/400`; the claim at 0.97 over every scheduler settles `refuted` and at 0.95 settles `proved`, `exact-value{24/25}`. | Test (TC-361) |
 | FR-411-AC-4 | A value equal to its threshold settles `proved` for a non-strict bound through exact policy iteration or exact backward induction. | Test (TC-361, TC-374) |
 | FR-411-AC-5 | Unbounded reachability and expected reward to a target settle by the qualitative step, end-component collapse and interval iteration; a target reached with probability below 1 makes the expected reward exceed every finite threshold. | Test (TC-361) |
-| FR-411-AC-6 | On the `LongRun` vector (TC-362) the long-run value is `1800/1801`, settled `proved`; a zero-weight component settles `unsupported`, `zero-weight-component`. | Test (TC-362) |
+| FR-411-AC-6 | On the `LongRun` vector (TC-362) the long-run value is `1800/1801`, settled `proved`; a variant whose only reachable component has every weight 0 takes the unweighted value `1800/1801` and settles `proved`, with a certificate the checker accepts, never `zero-weight-component`. | Test (TC-362) |
 | FR-411-AC-7 | An interval that straddles the threshold at `max_precision_bits` settles `incomplete`, `precision-budget{lower, upper}`; another limit settles `incomplete`, `limit-reached` naming the member, its value and how to raise it. | Test (TC-365) |
 | FR-411-AC-8 | A lower certificate or path set found before a limit stops exploration settles a proof of `>= θ` or a refutation of `<= θ`. | Test (TC-365) |
 | FR-411-AC-9 | An exact result carries truth and an FR-243 basis and no `measured` value, and the claim's confidence parameters are not read. | Test (TC-360) |

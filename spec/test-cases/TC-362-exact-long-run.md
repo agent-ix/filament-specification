@@ -31,7 +31,7 @@ The models below are defined here in full; the citation names the FSL design rec
 | --- | --- | --- |
 | LR-01 | `LongRun` | `proved`, `exact-value{1800/1801}` with a `long-run` certificate: gain `1800/1801`, bias 0 at `up` and `−2000/1801` at `down` |
 | LR-02 | The checker on LR-01's certificate | Accepts after checking both multichain equations by exact equality |
-| LR-03 | A weighted long-run claim whose bottom component has every cycle of total weight 0 | `unsupported`, `zero-weight-component{component}` |
+| LR-03 | A weighted long-run claim whose bottom component has every cycle of total weight 0 | the component's unweighted fraction, settled as a verdict with its unweighted gain–bias certificate; never `zero-weight-component` |
 
 ## Expected Results
 
