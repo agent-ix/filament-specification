@@ -19,4 +19,4 @@ Over a loop with no maximum whose variant decreases each iteration, run the prot
 
 ## Expected Results
 
-Both obligations settle `proved` over the complete exploration; the unchanged variant settles termination `refuted` with a replayable counterexample ending at the back edge; the false invariant settles the invariant `refuted`; the limited run settles both `inconclusive` naming the limit; the Boolean variant refuses `ill_typed`/`type-mismatch` at the variant.
+Both obligations settle `proved` over the complete exploration; the unchanged variant settles termination `refuted` with a replayable counterexample ending at the back edge; the false invariant settles the invariant `refuted`; the limited run settles both `incomplete` naming the limit; the Boolean variant refuses `ill_typed`/`type-mismatch` at the variant.

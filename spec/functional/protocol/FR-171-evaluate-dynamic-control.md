@@ -56,7 +56,7 @@ integers) than at the decision that entered the iteration. An obligation is
 `proved` only when exploration expanded every reachable state with no limit,
 truncating method bound or cancellation; `refuted` with a replayable finite
 counterexample to the violating decision or back edge, including an undefined
-invariant or variant; and `inconclusive`, naming what stopped exploration,
+invariant or variant; and `incomplete`, naming what stopped exploration,
 otherwise. A proved result claims the invariant or termination for the
 explored subject and nothing beyond it. A loop with a maximum terminates by
 that maximum and has no termination obligation.
@@ -75,7 +75,7 @@ Population closure and a finite upper bound are separate premises.
 | FR-171-AC-3 | Spawn/lifetime/population closure creates and retires exact role instances; missing symbolic bounds return requires-bound for finite execution. | Test (TC-202) |
 | FR-171-AC-4 | Each join policy is tested at zero, below-threshold, threshold and post-threshold branch states. | Test (TC-202) |
 | FR-171-AC-5 | A retired dynamic role cannot act or be silently replaced by a new role with the same display name. | Test (TC-202) |
-| FR-171-AC-6 | A loop with no maximum whose variant decreases on every iteration settles its invariant and termination obligations `proved` over a complete exploration; a body that leaves the variant unchanged settles termination `refuted` with a counterexample ending at that back edge; a false invariant at a decision settles the invariant `refuted`; and exploration stopped by a state limit settles both `inconclusive`, naming the limit. A variant whose type has no well-founded order (not an integer or a tuple of integers) refuses `ill_typed`/`type-mismatch` at the variant. | Test (TC-1520) |
+| FR-171-AC-6 | A loop with no maximum whose variant decreases on every iteration settles its invariant and termination obligations `proved` over a complete exploration; a body that leaves the variant unchanged settles termination `refuted` with a counterexample ending at that back edge; a false invariant at a decision settles the invariant `refuted`; and exploration stopped by a state limit settles both `incomplete`, naming the limit. A variant whose type has no well-founded order (not an integer or a tuple of integers) refuses `ill_typed`/`type-mismatch` at the variant. | Test (TC-1520) |
 
 ## Dependencies
 

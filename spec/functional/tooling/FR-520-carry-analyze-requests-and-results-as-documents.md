@@ -47,29 +47,29 @@ members:
 
 | Member | Multiplicity | Meaning |
 | --- | --- | --- |
-| `program` | 0..1 | FSL FR-026's program source selection `{source: {file, authority, identity, document, formal_revision}}`. Required unless `package` is present. |
-| `package` | 0..1 | A selection `{file}` of an existing `filament.checked-package/v2` artifact; FSL FR-027's strict reader admits it and no source is compiled. |
-| `models` | 0..* | `semantic-ir/2.0.0` domain package selections, read as FSL FR-027 reads them for compile. |
-| `libraries` | 0..* | `{identity, source}` library selections with an optional `refinement_internals`, as FSL FR-027 reads them. |
-| `refinement_internals` | 0..1 | The program's own refinement internals, as FSL FR-027 reads the top-level member. |
-| `documents` | 0..* | `{file}` selections of supplied documents: initial-state snapshots (`filament.state.snapshot/v1`) and supplied finite protocol traces (FSL FR-636). Each is provisioned under the identity it declares for itself (FSL FR-106 document provision). |
-| `memory` | 0..* | FR-331's `request.memory` weak-memory selections (FSL FR-629). |
+| `program` | 0..1 | The program source selection `{source: {file, authority, identity, document, formal_revision}}`, the source selection the native run request uses (FR-323): `file` is resolved against the request document's directory, and `authority` and `identity` are the source labels the checked package records. Required unless `package` is present. |
+| `package` | 0..1 | A selection `{file}` of an existing `filament.checked-package/v2` artifact (FR-322), admitted by the checked-package reader with no source compiled, as the native run request selects one (FR-323). |
+| `models` | 0..* | `semantic-ir/2.0.0` domain package selections `{format, source}`, each `source` a source selection as for `program`, as the native run request carries them (FR-323). |
+| `libraries` | 0..* | `{identity, source, refinement_internals?}` library selections: `identity` is the library's package identity, `source` a source selection as for `program`, and `refinement_internals` that library's refinement internals (below), as the native run request's dependency entries carry them (FR-323 `DependencyEntry`). |
+| `refinement_internals` | 0..1 | The program's own refinement internals: one JSON value naming, for each refinement the program declares, the internal names its abstract side reads (FR-375), handed to compilation unchanged. Absent means the empty list. The same member on a `libraries` entry names that library's refinements only. |
+| `documents` | 0..* | `{file}` selections of supplied documents: initial-state snapshots (`filament.state.snapshot/v1`) and supplied finite protocol traces (`trace`, below). Each is provisioned under the `{authority, identity}` it declares for itself, and a second document under one identity refuses `invalid-request`. |
+| `memory` | 0..* | FR-331's `request.memory` weak-memory selections, one per weak `parallel` of the subject (FR-439). |
 | `subject` | 0..1 | The default model subject `{initial_states, universes, proof_bounds}` in FR-331's `temporal.subject` spelling; each reference names a provisioned document by `{authority, identity}`. |
 | `items` | 0..* | The analysis items below. |
-| `limits` | 0..1 | `{accounting, observation, normalization}`, each optional: `accounting` is any subset of the ten `filament.value.accounting/v1` counters (FSL FR-100's spelling and defaults); `observation` and `normalization` are the FSL FR-277 members of `ObservationLimits` and `ModelNormalizationLimits`, each with its published default. |
+| `limits` | 0..1 | `{accounting, observation, normalization}`, each optional: `accounting` is any subset of the ten `filament.value.accounting/v1` counters, each a JSON integer from 0 to 2^53 - 1, an omitted counter taking its published default (FR-461); `observation` and `normalization` are the observation and model-normalization limits FR-461 names, each with its published default. |
 | `deadline_ms` | 0..1 | The run's deadline in milliseconds, a JSON integer from 0 to 2^53 - 1 (9007199254740991), the largest integer every JSON reader holds exactly. Absent means no deadline. |
 
 An analysis item has these members:
 
 | Member | Multiplicity | Meaning |
 | --- | --- | --- |
-| `claim` | 0..1 | The declared qualified name of the checked declaration the item decides: a temporal or state clause, a state-graph claim, a hyper clause, a refinement declaration, a schedulability or response claim, a probabilistic claim, a protocol clause, or, for a derived item, the declaration the derived item anchors at (FSL FR-368 "Claim and anchor"). Absent only for a `simulation` item (FSL FR-634). |
-| `kind` | 0..1 | The FR-290 kind, or `simulation` for a simulation item (FSL FR-634). Absent means the one kind the claim's declaration family admits (FSL FR-507). |
+| `claim` | 0..1 | The declared qualified name of the checked declaration the item decides: a temporal or state clause, a state-graph claim, a hyper clause, a refinement declaration, a schedulability or response claim, a probabilistic claim, a protocol clause, or, for a derived item, the declaration the derived item anchors at (FR-368 "Claim and anchor of a derived or refinement item"). Absent only for a `simulation` item. |
+| `kind` | 0..1 | The FR-290 kind, or `simulation` for a simulation item (below). Absent means the one kind FR-290 admits for the claim's declaration family; absent on a family that admits several refuses the item `invalid-request` `absent-kind`. |
 | `backend` | 0..1 | A `BackendId` the caller names. |
-| `required` | 0..1 | Boolean, default `true`: whether complete aggregate success requires this item (FSL FR-507-AC-5). |
-| `temporal`, `probabilistic`, `hybrid`, `check`, `options`, `reductions`, `correspondence`, `premises`, `assessed_root` | 0..1 each | FR-331's members, with its spellings and its rule for which kinds carry each. `temporal.item_kind` is `formula` (the default), `deadlock-freedom`, `time-lock-freedom`, `race-freedom` or `refinement`, as FR-331 places it. `temporal.subject` is optional and defaults to the request's `subject`. `reductions` names a constraint by its declared name (FSL FR-623). |
-| `trace` | 0..1 | For a `finite-replay` item, the `{authority, identity}` of a provisioned trace document (FSL FR-636). |
-| `simulation` | 0..1 | For a `simulation` item, its settings (FSL FR-634). |
+| `required` | 0..1 | Boolean, default `true`: whether the result's `aggregate` counts this item, so that complete aggregate success needs it settled `proved` or `measured`. |
+| `temporal`, `probabilistic`, `hybrid`, `check`, `options`, `reductions`, `correspondence`, `premises`, `assessed_root` | 0..1 each | FR-331's members, with its spellings and its rule for which kinds carry each. `temporal.item_kind` is `formula` (the default), `deadlock-freedom`, `time-lock-freedom`, `race-freedom` or `refinement`, as FR-331 places it. `temporal.subject` is optional and defaults to the request's `subject`. `reductions` names a constraint by its declared name, which the reader writes as FR-382's node key. |
+| `trace` | 0..1 | For a `finite-replay` item only, the `{authority, identity}` of a provisioned document holding a finite protocol trace in the protocol counterexample's trace spelling (FR-433). The trace is replayed step by step through the protocol system and the clause is evaluated on it; a step that is stale or not enabled declines the item `invalid-input` naming the step's position. An item of another kind that carries `trace`, or a `trace` naming no provisioned document, refuses `invalid-request`. |
+| `simulation` | 0..1 | For a `simulation` item only: `{mode, seed, samples, max_steps, max_states, max_state_key_bytes}`. `mode` is `enumerate` or `sample`; `seed` (a 64-bit unsigned integer) and `samples` (a positive count) belong to `sample` only; each bound is a positive count with FR-181's published default. A simulation item settles no claim and is not negotiated; its result carries traces, coverage and the unexplored frontier in FR-181's exploration contract. |
 
 ## Behavior
 

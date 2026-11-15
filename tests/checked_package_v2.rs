@@ -24195,3 +24195,24 @@ fn tc_1164_timed_rows_exist_only_for_trace_subjects() {
     }
     assert_eq!(decided, 8);
 }
+
+#[trace("TC-1326", "FR-322-AC-451")]
+#[test]
+#[ignore = "QSL-2256: the quantity scaling identities land in the schemas with the catalog entries"]
+fn tc_1326_schema_enumerates_quantity_scaling_after_pow() {
+    let schema = parsed_fixture(SCHEMA);
+    let identities: Vec<&str> = schema["$defs"]["OperationIdentity"]["enum"]
+        .as_array()
+        .expect("operation identities array")
+        .iter()
+        .map(|identity| identity.as_str().expect("an identity"))
+        .collect();
+    let pow = identities
+        .iter()
+        .position(|identity| *identity == "filament.op.quantity.pow")
+        .expect("quantity.pow is enumerated");
+    assert_eq!(
+        identities.get(pow + 1..pow + 3),
+        Some(["filament.op.quantity.scale", "filament.op.quantity.scale_div"].as_slice())
+    );
+}

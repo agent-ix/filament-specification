@@ -50,7 +50,7 @@ One outcome document or diagnostic line, and an exit status.
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-522-AC-1 | Each verb a build accepts but does not route writes an outcome document with that operation, category `unsupported`, code `unsupported_operation`, cause `operation-not-routed` naming the verb, and exits `21`; text mode writes the named line and exits `21`. | Test (TC-1082) |
+| FR-522-AC-1 | Each verb a build accepts but does not route writes an outcome document with that operation, category `unsupported`, code `unsupported_operation`, cause `operation-not-routed` naming the verb, and exits `21`; text mode writes the named line and exits `21`. | Driver test (TC-1082): verb routing and text rendering exist only in the CLI binary, so the driver code ticket QSL-1995 adds the test in the driver repository. |
 | FR-522-AC-2 | No verb exits with a non-zero status and empty stdout in machine mode while its output stream is open. | Test (TC-1082) |
 
 ## Dependencies

@@ -22,6 +22,8 @@ Invokes each verb a build accepts without routing it. Planned.
 | NR-01 | Each unrouted verb in machine and text mode | Outcome document with that operation, `unsupported`, `unsupported_operation`/`operation-not-routed` naming the verb, exit `21`; the named text line | FR-522-AC-1, FR-301-AC-4 |
 | NR-02 | Every verb ending non-zero with an open stdout | Machine output is never empty | FR-522-AC-2, FR-301-AC-4 |
 
+Row NR-01 runs in the driver repository against the CLI binary.
+
 ## Expected Results
 
 No verb exits without a named outcome.
