@@ -279,11 +279,13 @@ unit would be the reciprocal of `u`, which a number cannot supply, so it is
 quotient is written as a quantity division whose numerator is a quantity.
 Scaling reads one unit identity and traverses no edge, as negation does: it
 charges one `unit.identity-read`, one `unit.rational-arithmetic` computed in
-`u` and `unit.result-retain`, after both operands complete left to right. It
-lowers to `filament.op.quantity.scale` (`q * n` and `n * q`, arguments in
-source order) or `filament.op.quantity.scale_div` (`q / n`, arguments quantity
-then factor), each with `result_type` the quantity operand's unit type node and
-no law, mode, member or leaves, entries of the FR-322 operation catalog.
+`u` and `unit.result-retain`, after both operands complete. It lowers to
+`filament.op.quantity.scale` (`q * n` and `n * q`) or
+`filament.op.quantity.scale_div` (`q / n`), each with the arguments quantity
+then factor whatever the source order, so `2 * d` and `d * 2` are one node, and
+each with `result_type` the quantity operand's unit type node and no law, mode,
+member or leaves (FR-322 "Quantity scaling"). The operands complete in argument
+order, quantity first, and the first stopped operand propagates.
 
 **Carried quantity.** `Quantity<u, C>` is the type of the quantities whose
 unit is `u` and whose magnitude is a value of the numeric carrier `C`, which is

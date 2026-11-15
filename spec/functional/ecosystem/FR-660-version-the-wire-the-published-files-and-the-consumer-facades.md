@@ -15,10 +15,11 @@ relationships:
 
 ## Description
 
-When a producer or consumer of the `filament.checked-package/v2` wire, of the
-standard's published files or of a producer's public facades builds, it SHALL
-build against released versions that it names through Cargo, so that a change
-in another repository reaches its build only when it moves its own pin.
+Each Filament repository that produces or consumes the
+`filament.checked-package/v2` wire, the standard's published files or a
+producer's public facades SHALL build against releases of the other
+repositories that it names through Cargo. A change in another repository then
+reaches its build only when it moves its own pin.
 
 ## Rationale
 
@@ -37,8 +38,8 @@ consumer facades, and a consumer's Cargo manifest and lockfile.
 
 ## Outputs
 
-A consumer build that resolves every cross-repository dependency to one released
-version, and readers that refuse wire documents of any other document type.
+The consumer's build resolves every cross-repository dependency to one released
+version, and its readers that refuse wire documents of any other document type.
 
 ## Behavior
 
@@ -137,7 +138,7 @@ refuses before it is linked.
 | FR-660-AC-2 | In a consumer of the standard's published files, `cargo metadata --locked` lists `filament-specification-qualification` from a git source with a `tag` or from a registry, every published vector the consumer runs is read through the pinned library, and no Makefile, build script, source or test of the consumer reads an environment variable or a filesystem path to locate the standard. | Test (TC-1641) |
 | FR-660-AC-3 | Every cross-repository Filament dependency in a committed manifest names a `tag` or a registry `version`; a manifest with a `branch` dependency on a Filament repository fails the consumer's pin check, naming the dependency, and no file outside `Cargo.toml` and `Cargo.lock` records an expected release version, hash or digest of another repository. | Test (TC-1642) |
 | FR-660-AC-4 | A reader built against a standard release refuses the release's positive fixture with `contract_version` replaced by `filament.checked-package/v3`, and by `filament.checked-package/v1`, as `unknown_contract_version`, with no cause, at `/contract_version`, and returns no package; a producer built against the same release writes exactly the release's document type. | Test (TC-1643) |
-| FR-660-AC-5 | A release whose changes include a changed expected result of an existing case, a removed or renamed published file, case or accessor, an extended or narrowed closed wire set, a changed or removed inventory fact, or a producer's move to a breaking standard release carries a breaking version, and its notes list each such change with the requirement, case or fact it changes; a release with only additions carries a compatible version. | Inspection (TC-1644) |
+| FR-660-AC-5 | A consumer's resolved standard dependency, as `cargo metadata --offline` reports it, comes from a git source with a `tag` or from a registry, and its package `version` is a semantic version `X.Y.Z` that equals the tag without its `v`, so Cargo's compatibility rules carry the release's bump promise; a resolved `branch` source fails, naming the dependency. | Test (TC-1644) |
 
 ## Dependencies
 

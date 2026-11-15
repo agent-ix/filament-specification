@@ -25,7 +25,7 @@ relationships:
 
 The standard SHALL publish an inventory that lists, for each consumer of a
 checked package, the facts that consumer reads from a producer, each tied to the
-requirement that defines it; and a producer that implements the standard SHALL
+requirement that defines it. Each producer that implements the standard SHALL
 bind every fact to a public accessor of one public module per consumer, checked
 by a contract test that fails on any fact without a resolving accessor.
 
@@ -97,8 +97,8 @@ check fails.
 ### Requirements that name a consumer fact
 
 A requirement, in this standard or in a producer, that defines a fact a consumer
-reads through a producer's public API SHALL name the fact's inventory id, and the
-change that adds the requirement SHALL add the inventory fact and the producer's
+reads through a producer's public API SHALL name the fact's inventory id. The
+change that adds such a requirement adds the inventory fact and the producer's
 binding in the same release. A requirement that names a consumer fact without an
 inventory id, or an inventory fact whose `requirement` does not define it, is a
 specification review finding.

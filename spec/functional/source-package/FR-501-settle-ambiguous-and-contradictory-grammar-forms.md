@@ -69,10 +69,11 @@ A lossless source tree with the productions below, or a located refusal.
    `let` types `x` by `e`. FR-143 and FR-149 already rely on the annotation as
    a declared-type position.
 4. **`Some(e)` everywhere.** `Some(e)` is the present-option constructor in
-   every expression position, not only in a refinement row. It has type
-   `Option<E>` for `e` of type `E`; at a position whose expected type is
-   `Option<P>`, `e` is checked with expected type `P`, and FR-143 owns how an
-   operand checks at an expected type. A call spelled `Some` always reads as
+   every expression position, not only in a refinement row. At a position with
+   no expected option type it has type `Option<E>` for `e` of type `E`;
+   otherwise, at a position whose expected type is `Option<P>`, it has that
+   type and the payload `e` is checked against the expected element type `P`
+   (FR-143, which owns how an operand checks at an expected type). A call spelled `Some` always reads as
    the constructor, so a function declared with that name cannot be called by
    it, and `Some` with other than one argument refuses
    `ill_typed`/`type-mismatch` at the call. `absent` and `none` already denote

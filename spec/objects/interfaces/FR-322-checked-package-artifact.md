@@ -3573,6 +3573,26 @@ type), and no law, mode, member, constraint or leaves. It takes no `rounding`
 mode, because negation is exact, and its operand is a non-affine unit's
 quantity.
 
+**Quantity scaling.** `filament.op.quantity.scale` and
+`filament.op.quantity.scale_div` are FR-142 "Quantity scaling", the product and
+the quotient of a quantity and an exact number. Each is an application of
+operator `binary` with exactly two arguments, in the order quantity, factor,
+whatever the source order (`2 * d` and `d * 2` are one node): argument 0 is a
+`quantity` typed by a `scalar_type`/`unit` node of a non-affine unit or by a
+`scalar_type`/`compound_unit` node, and argument 1 is of the `exact_numeric`
+group (`integer`, `rational` or `decimal`). The catalog entry of each is operator
+`binary`, operands `["quantity", "exact_numeric"]`, no rest, result `operand:0`
+(the quantity operand's own unit type), and no law, mode, member, constraint or
+leaves; it takes no `rounding` mode, because scaling is exact. A third or a
+missing argument, a factor of another family (a `float64`, a `quantity`), a
+quantity argument that is a carried quantity or of an affine unit, and a
+`result_type` other than argument 0's type each refuse
+`ill_typed`/`operator-ineligible` at the application; a `mode` value refuses
+`invalid_package`/`operation-mode-mismatch` and a `laws` entry
+`invalid_package`/`operation-law-mismatch`. The catalog and both V2 schemas'
+`OperationIdentity` enumerate the two identities together, directly after
+`filament.op.quantity.pow` (FR-322-AC-17).
+
 **Quantity integer power.** `filament.op.quantity.pow` is the integer power of
 FR-142 (source `e ^ n`, the shared grammar's complete-V1 `power` production):
 an application of operator `binary` with exactly two arguments, in the order
@@ -3727,6 +3747,7 @@ legacy `clock:` prefix or derives the name from the profile identity.
 | `event_position` | `sequence_authority`: non-empty name | `filament.temporal.event-position.false-extension/v1` |
 | `fixed_sample` | `epoch` and `period`: exact typed numbers; `period` is positive; `unit`: non-empty name | `filament.temporal.fixed-sample.false-extension/v1` |
 | `timestamped_event` | `timestamp_unit`: non-empty name | `filament.temporal.timestamped-event.finite-window/v1` |
+| `timed` | `unit`: non-empty name | `filament.temporal.timed/v1`, for a clause over a trace subject only (below) |
 
 The reader resolves `declaration`, reads the clause's `temporal_profile` law,
 and requires that law to equal the matching `lock.profile_selections` entry.
@@ -3747,20 +3768,29 @@ positive. The rational components are in lowest terms. `period` is a strictly
 positive exact number. The authority and unit values are non-empty strings
 compared byte-for-byte; no trimming, normalization or alias resolution occurs.
 
-`filament.temporal.timed/v1` is the no-row alternative: it does not select one of
-the three `ClockConfiguration` row kinds and never manufactures a
-`temporal_bindings` row. A timed clause's `clock_name` is `model-time`. For a
-checked timed-model subject, the checked package's `timed_model` root and its
-`time_source` provide the model time binding and exact time unit (FR-415); the
-reader joins that source to the clause's model subject. For a trace subject,
-the time-stamped positions and their admitted order are inputs to the selected
-temporal profile, not configuration copied into the checked package. The
-temporal profile reader admits that runtime binding. A timed clause without a
-matching timed-model source when it names a model subject refuses
-`invalid_package`/`timed-node-reference` at its clause body; supplying any
-`temporal_bindings` row for a timed clause refuses the same code and cause at
-that row. The other three profile kinds retain their existing row requirements
-unchanged.
+`filament.temporal.timed/v1` has two cases, decided by the clause's subject.
+
+- **Timed-model subject: no row.** A timed clause over a model subject takes
+  its time binding from the model and never has a `temporal_bindings` row; its
+  `clock_name` is `model-time`. The checked package's `timed_model` root and its
+  `time_source` provide the model time binding and exact time unit (FR-415); the
+  reader joins that source to the clause's model subject. Such a clause without a
+  matching timed-model source refuses `invalid_package`/`timed-node-reference` at
+  its clause body, and a `temporal_bindings` row for it refuses the same code and
+  cause at that row.
+- **Trace subject: one `timed` row.** A timed clause over a trace subject has
+  exactly one `temporal_bindings` row per occurrence whose `clock_name` is the
+  clause's clock role (FR-090 "Clock names") and whose `clock` is `{kind:
+  "timed", unit}`, the time unit the caller's clock selection binds the role to
+  ([FR-540](../../functional/temporal/FR-540-supply-clock-configurations-by-clock-role.md)).
+  The time-stamped positions and their admitted order remain inputs to the
+  temporal profile at run time ([FR-541](../../functional/temporal/FR-541-evaluate-timed-claims-over-a-recorded-timed-trace.md)),
+  not configuration in the package. A missing row, a `timed` row whose
+  `clock_name` is `model-time` or `model-steps`, and a `timed` row for a clause
+  over a model subject each refuse `invalid_package`/`timed-node-reference` at
+  the clause body or the row.
+
+The other three profile kinds retain their existing row requirements unchanged.
 
 A row for an absent or wrong-kind declaration, an `occurrence` that is not an
 occurrence of the stated role, a repeated key, a row out of order, a missing row
@@ -4970,6 +5000,8 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-395 | Node bytes are not identity, and a reader follows a node-held reference only through its holding node's row. A node appended with node `2`'s bytes and the row `[1]` (`NI-22`) has a structural key different from node `2`'s and passes the operand checks and the duplicate-`node_id` check; appended with the row `[0]` (`NI-23`) it has node `2`'s key and refuses `invalid_semantic_graph` at `/semantic_graph/nodes/4/node_id`. In the published fixture, the literal `type` that node `3` holds and node `2`'s own `node_id` have equal bytes and, each resolved through its own holding node's row, the same key, so the reference names node `2`. | Test (TC-233; NI-22, NI-23) |
 | FR-322-AC-396 | A field typed by the map type `M` of FR-154-AC-48 (`keys` `ix://filament/native/Text`, `values` `Timer`, `bound` `{lower: 0, upper: 2}`) with multiplicity `{1, 1}` has the member type `Map<Text, Timer>[0, 2]`, its row rendering `Map<Text, ix://acme/maps/Timer>` with minimum `0` and maximum `2`, and with `bound` `{lower: 0}` the maximum `unbounded` (`PM-01`, `PM-02`); the `ClockMap` place `clock` of the selected timed package carries kind `map` and bounds `0` and `unbounded` read from its `bound`, a `ClockMap` with `upper` `2` or `keys` `Integer` failing the join. | Test (TC-367, TC-234) |
 | FR-322-AC-397 | A package carries `operation_bodies` or omits it; when omitted the bodies are unavailable, not empty, and no other member changes. When present it has exactly one closed `{document, declaring, operation, body}` row per operation member of every admitted `object_type`, `process` and `state_machine` declaring node, keyed and sorted by `(document, declaring, operation)` as `operation_effects`, and is an empty array only when no selected document declares an operation member. `body` is `{"kind": "function", "node"}` naming a package `function` node exactly when the operation has a body, derived from the package graph alone (a `function` node whose `owner` is the operation member and whose `clause` binding is `body`; a domain document carries no `has_body`), and `{"kind": "no_body"}` otherwise; no row or `body` is omitted, null or defaulted, the `function` node is the operation's own body clause function (its `owner` node is the operation member and its clause kind is `body`), and each dispatch candidate in the family of its table's selected operation (its receiver `selection_key.original` conforms to the selected declaring type and its effective operation reaches the selected one through `Operation.redefines`) joins the row of the type that declares that effective operation, never a row by `selected_operation` alone, and a candidate outside the family is left to the dispatch join (OBD-01), and requires a `function` row whose node equals the candidate's `operation_body`, so two candidates of one table with different bodies are each admitted against their own row. The owner join of every owner-bearing node precedes `operation_effects`, which precedes this carrier, which precedes `checked_term_data` validation, so a clause function whose owner names no declared member refuses in the owner join. The positive vectors OBC-01 to OBC-07 are schema-valid and read back; the exact `malformed_wire`, `missing_declaration`, `ill_typed` and `invalid_package` refusals and loci for missing or extra members, a malformed `body`, an unselected, absent, ineligible or foreign declaring node, a field or inherited operation, a body that disagrees with the document, an absent, non-function, other-operation, precondition or other-package body node, a candidate mismatch, a candidate carrying another candidate's body or a `no_body` row for a joined candidate that carries a body, a repeated key, key order and missing coverage are in TC-987. FSL emits the carrier and the IR strict reader admits or refuses it; the IR does not mirror it. | Test (TC-987) |
+| FR-322-AC-450 | A timed clause over a trace subject with one `{kind: "timed", unit}` row naming its clock role is admitted, and the `timed` alternative is closed with a required non-empty `unit`; the same clause without a row, a `timed` row whose `clock_name` is `model-time`, and a `timestamped_event` row for it each refuse `invalid_package`/`timed-node-reference`; a timed clause over a timed-model subject has no row and the clock name `model-time`, and a `timed` or `event_position` row for it refuses at that row. | Test (TC-1164) |
+| FR-322-AC-451 | An `application` of `filament.op.quantity.scale` with arguments `[reference(Q), reference(N)]`, `Q` a `quantity` typed by the unit node of `ms` and `N` an `integer`, is admitted with result type the unit node of `ms`, no laws, `mode` `null` and no member, and so is `filament.op.quantity.scale_div` with a `decimal` or `rational` factor; a third argument, a `float64` or `quantity` factor, the arguments in the order factor then quantity, a carried-quantity argument 0 and a `result_type` other than the unit node of `ms` each refuse `ill_typed`/`operator-ineligible`, a `mode` value refuses `invalid_package`/`operation-mode-mismatch` and a `laws` entry refuses `invalid_package`/`operation-law-mismatch`; both V2 schemas enumerate `filament.op.quantity.scale` and `filament.op.quantity.scale_div` in `OperationIdentity` directly after `filament.op.quantity.pow`, and the catalog entry of `filament-verification-contracts` carries them. | Test (TC-1326) |
 
 ## Dependencies
 

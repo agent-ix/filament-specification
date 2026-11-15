@@ -188,6 +188,22 @@
             }
           },
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "unit"
+          ],
+          "properties": {
+            "kind": {
+              "const": "timed"
+            },
+            "unit": {
+              "$ref": "#/$defs/Nonempty"
+            }
+          },
+          "additionalProperties": false
         }
       ]
     },

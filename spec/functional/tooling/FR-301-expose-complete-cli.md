@@ -104,11 +104,21 @@ in the default build:
   and `run` runs one of its clauses through `program.extraction`
   ([FR-563](FR-563-check-rules-written-in-a-markdown-specification.md)).
 - A `compile` request carrying a `handoff` member also writes the
-  checked-package handoff directory, and `inspect --handoff <directory>`
-  reads one back and checks it against its selection sidecar
-  (FSL FR-665).
-- `parse` reports the source labels, path, byte count and S1 usage of the
-  unit it parsed, and every refusal record carries a `locus` (FSL FR-663).
+  checked-package handoff directory for the compiled unit: the package
+  bytes, the sources and domain package documents, the selection sidecar,
+  the identity and equality files and, when asked, the adverse mutation
+  corpus. The directory must not exist beforehand; an existing one is
+  refused by path and left untouched. `inspect --handoff <directory>` reads
+  the package back with the strict reader, using the evidence files beside
+  it, and checks it against the selection sidecar: it exits `0` when they
+  agree and `20` with the reader's or the sidecar's typed refusal
+  otherwise.
+- `parse` reports, for a parse that completes, the source's two labels as
+  the caller gave them, its path, its exact byte count and, for each S1
+  limit, the bound and the count reached; it reports no other identity of
+  the bytes. Every refusal record, a document diagnostic or an item's, carries
+  a `locus`: a source position, a JSON document position (pointer, object
+  and member), or `null` when the refusal has no position.
 
 Each of these refuses a malformed input document before any stage runs,
 exit `20`.
@@ -132,3 +142,6 @@ exit `20`.
 - Every requirement linked in frontmatter is a normative prerequisite.
   Implementation ordering may add enablement edges but cannot change these
   semantics or infer implementation availability from specification acceptance.
+- FSL FR-665 implements the handoff write and `inspect --handoff`, and FSL
+  FR-663 the parse report and refusal locus, against the behaviour stated
+  under "Request surface".

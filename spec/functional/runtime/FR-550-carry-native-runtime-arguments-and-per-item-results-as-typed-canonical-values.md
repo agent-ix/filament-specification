@@ -50,7 +50,7 @@ implementations compare their per-item results componentwise (FR-323
 
 ## Behavior
 
-- An argument value SHALL be the FR-181 typed canonical form of its
+- The runtime SHALL read each argument value as the FR-181 typed canonical form of its
   parameter's declared type: an integer as its exact decimal string at any
   magnitude, a Boolean, a float by its bits, a rational normalized, a
   decimal with its retained coefficient and scale, a text, a string, a UUID,
@@ -74,11 +74,11 @@ implementations compare their per-item results componentwise (FR-323
   whose element type contains a population, FR-144) refuses
   `unknown_required_feature`/`unsupported-feature` naming the parameter or
   the function, category unsupported. No other type refuses.
-- A completed value SHALL be written in the FR-181 typed canonical form of
+- The runtime SHALL write a completed value in the FR-181 typed canonical form of
   the function's declared result type; a reference with its own universe,
   most-specific type and object identity (FR-204); a population-typed result
   as the `set` of its members' references.
-- Each selected item SHALL be settled independently against the same
+- The runtime SHALL settle each selected item independently against the same
   checked package: a refused, undefined, incomplete or violated item is that
   item's disposition and SHALL NOT change, skip or reorder another item's.
   An evaluator invariant failure remains FR-323-AC-1's failed disposition of

@@ -243,8 +243,11 @@ value type and its absent value `absent`/`none` is already general; a present
 value restricted to refinement rows would leave every other `Option<T>` result,
 argument and field writable only as absent.
 
-Its type follows the same expected-type rule as `absent` ("The `absent` Option
-literal" above), with the payload checked against the element type:
+At a position with no expected option type, `Some(e)` is typed `Option<E>` for
+`e` of type `E`; at a position whose expected type is `Option<T>`, it has type
+`Option<T>` and `e` is checked against `T`. In full, its type follows the same
+expected-type rule as `absent` ("The `absent` Option literal" above), with the
+payload checked against the element type:
 
 - At a position whose unique expected type is `Option<T>` (the positions listed
   for `absent`, including the other operand of `=` or `!=` and the abstract field

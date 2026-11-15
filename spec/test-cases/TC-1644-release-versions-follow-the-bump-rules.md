@@ -1,23 +1,23 @@
 ---
 id: TC-1644
-title: "Release versions follow the bump rules"
+title: "The resolved standard dependency carries a version promise"
 type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-660
     type: verifies
 ---
 
-# TC-1644: Release versions follow the bump rules
+# TC-1644: The resolved standard dependency carries a version promise
 
 ## Description
 
-Inspect releases against the breaking and compatible classes. Scope: FR-660-AC-5.
+Verify, offline, that a consumer resolves the standard to a release whose version Cargo's semantic-version rules apply to. Scope: FR-660-AC-5.
 
 ## Test Procedure
 
-For each release, list its changes since the previous release and classify each as breaking or compatible under FR-660. Compare the release's version position and its notes.
+Run `cargo metadata --locked --offline --format-version 1` in a consumer and read the source and version of `filament-specification-qualification`. Repeat on a scratch consumer whose manifest names the standard with `branch = "main"`.
 
 ## Expected Results
 
-- A release with any breaking change carries a breaking version and its notes name each breaking change with the requirement, case or fact it changes.
-- A release with only additions carries a compatible version.
+- The consumer's source is a git source with `tag=vX.Y.Z`, or a registry, and the version is `X.Y.Z`, equal to the tag without its `v`.
+- The scratch consumer's `branch` source fails, naming the dependency.

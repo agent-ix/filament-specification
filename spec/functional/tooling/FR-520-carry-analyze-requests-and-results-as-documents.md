@@ -26,11 +26,11 @@ relationships:
 
 ## Description
 
-When a tool decides claims over every behaviour of a subject from a file, it
-SHALL read the request as a `native-analyze/1` document and write the result
-as one `filament-outcome/1` document with `operation` `analyze`, so that any
-conforming tool reads the same request and writes a result another tool can
-read.
+When a tool decides claims over every behaviour of a subject from a file, the
+tool SHALL read the request as a `native-analyze/1` document. The tool SHALL
+write the result as one `filament-outcome/1` document with `operation`
+`analyze`. Any conforming tool then reads the same request and writes a result
+another tool can read.
 
 ## Inputs
 
@@ -40,6 +40,37 @@ A `native-analyze/1` document `{"format": "native-analyze/1", "request": {...}}`
 
 One `filament-outcome/1` document and its exit status (FR-301).
 
+## Document members
+
+A `native-analyze/1` request document. Its `request` object has these
+members:
+
+| Member | Multiplicity | Meaning |
+| --- | --- | --- |
+| `program` | 0..1 | FSL FR-026's program source selection `{source: {file, authority, identity, document, formal_revision}}`. Required unless `package` is present. |
+| `package` | 0..1 | A selection `{file}` of an existing `filament.checked-package/v2` artifact; FSL FR-027's strict reader admits it and no source is compiled. |
+| `models` | 0..* | `semantic-ir/2.0.0` domain package selections, read as FSL FR-027 reads them for compile. |
+| `libraries` | 0..* | `{identity, source}` library selections with an optional `refinement_internals`, as FSL FR-027 reads them. |
+| `refinement_internals` | 0..1 | The program's own refinement internals, as FSL FR-027 reads the top-level member. |
+| `documents` | 0..* | `{file}` selections of supplied documents: initial-state snapshots (`filament.state.snapshot/v1`) and supplied finite protocol traces (FSL FR-636). Each is provisioned under the identity it declares for itself (FSL FR-106 document provision). |
+| `memory` | 0..* | FR-331's `request.memory` weak-memory selections (FSL FR-629). |
+| `subject` | 0..1 | The default model subject `{initial_states, universes, proof_bounds}` in FR-331's `temporal.subject` spelling; each reference names a provisioned document by `{authority, identity}`. |
+| `items` | 0..* | The analysis items below. |
+| `limits` | 0..1 | `{accounting, observation, normalization}`, each optional: `accounting` is any subset of the ten `filament.value.accounting/v1` counters (FSL FR-100's spelling and defaults); `observation` and `normalization` are the FSL FR-277 members of `ObservationLimits` and `ModelNormalizationLimits`, each with its published default. |
+| `deadline_ms` | 0..1 | The run's deadline in milliseconds, a JSON integer from 0 to 2^53 - 1 (9007199254740991), the largest integer every JSON reader holds exactly. Absent means no deadline. |
+
+An analysis item has these members:
+
+| Member | Multiplicity | Meaning |
+| --- | --- | --- |
+| `claim` | 0..1 | The declared qualified name of the checked declaration the item decides: a temporal or state clause, a state-graph claim, a hyper clause, a refinement declaration, a schedulability or response claim, a probabilistic claim, a protocol clause, or, for a derived item, the declaration the derived item anchors at (FSL FR-368 "Claim and anchor"). Absent only for a `simulation` item (FSL FR-634). |
+| `kind` | 0..1 | The FR-290 kind, or `simulation` for a simulation item (FSL FR-634). Absent means the one kind the claim's declaration family admits (FSL FR-507). |
+| `backend` | 0..1 | A `BackendId` the caller names. |
+| `required` | 0..1 | Boolean, default `true`: whether complete aggregate success requires this item (FSL FR-507-AC-5). |
+| `temporal`, `probabilistic`, `hybrid`, `check`, `options`, `reductions`, `correspondence`, `premises`, `assessed_root` | 0..1 each | FR-331's members, with its spellings and its rule for which kinds carry each. `temporal.item_kind` is `formula` (the default), `deadlock-freedom`, `time-lock-freedom`, `race-freedom` or `refinement`, as FR-331 places it. `temporal.subject` is optional and defaults to the request's `subject`. `reductions` names a constraint by its declared name (FSL FR-623). |
+| `trace` | 0..1 | For a `finite-replay` item, the `{authority, identity}` of a provisioned trace document (FSL FR-636). |
+| `simulation` | 0..1 | For a `simulation` item, its settings (FSL FR-634). |
+
 ## Behavior
 
 - **Request members.** The request carries the program or checked-package
@@ -47,7 +78,7 @@ One `filament-outcome/1` document and its exit status (FR-301).
   native run request's spelling; supplied `documents` (snapshots and finite
   protocol traces) provisioned under their own identities; `memory`
   selections, a default `subject`, `items`, shared `limits` and an optional
-  `deadline_ms`. FSL FR-620 states each member's spelling and defaults.
+  `deadline_ms`, spelled as the tables in "Document members" state.
 - **Items.** An item carries the request-item members of FR-331 (`kind`,
   `temporal` with `item_kind`, `probabilistic`, `hybrid`, `check`, `options`,
   `reductions`, `correspondence`, `premises`, `assessed_root`, `backend`) with

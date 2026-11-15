@@ -29,14 +29,18 @@ relationships:
 
 ## Description
 
-When a complete-V1 unit holds a native `object` declaration, the compiler
-SHALL admit it as an object type of that unit, with its fields, identity
-fields, supertypes, closed populations and operations with their frames. The
-compiler SHALL give a source-declared object type the meaning an object type
-of a selected domain package has (FR-150, FR-151, FR-153), owned by the source
-unit that declares it, and SHALL emit it in the checked package with the node
-forms a domain-package object type uses, so that a consumer reads it from the
-package and its identity rows alone.
+When a source unit declares an object type, the compiler SHALL admit that
+object type with its fields, identity fields, supertypes, closed populations
+and operations.
+
+The compiler SHALL give a source-declared object type the meaning an object
+type of a selected domain package has (FR-150, FR-151, FR-153), owned by the
+source unit that declares it.
+
+When the compiler emits a checked package, the compiler SHALL write each
+source-declared object type with the node forms a domain-package object type
+uses, so that a consumer reads it from the package and its identity rows
+alone.
 
 A unit can then state a model and the rules over it in one source, with no
 domain package document. The types it declares stay distinct from every
@@ -180,7 +184,7 @@ names.
 | FR-610-AC-2 | In one unit that selects a domain package declaring `Order` as `M`, `on Order` resolves to the source type and `on M::Order` to the model type, and neither resolves to the other; `role w on M` names the whole model; `object M` beside `model M` refuses `ambiguous_declaration`/`ambiguous-name` at both. | Test (TC-1440) |
 | FR-610-AC-3 | A source-declared `Order` is emitted as one self-typed `model`/`object_type` node with `declaration` `["Order"]`, the unit's `SourceOwner`, a body binding `total` then `note` (with its `optional` group) and one `declaration` occurrence; `Sub extends Order` binds the inherited `total` and `note`; `Shape` has `aggregate{[]}`. Adding a field to `Order` leaves its node id unchanged and renaming it changes the id. A `field` member `total` on `Order`'s node resolves to its binding with no domain document, and `ghost` refuses `missing_declaration`/`missing-name`. | Test (TC-1441) |
 | FR-610-AC-4 | The source `Order` node and a domain package's `M::Order` node have different node ids and owners. Each refuses: the source `Order` node with its owner replaced by a `ModelOwner` (`malformed_wire` at its `owner`); a `model`/`object_type` node with a `SourceOwner` and no `declaration` (`malformed_wire` at its `owner`); the source node with a `SourceOwner` joining no `lock.sources` entry (`missing_declaration`/`missing-selection` at its `node_id`). A `relation`/`population` node with a `declaration` and a `SourceOwner` passes the schema and a `relation`/`relationship` node with a `declaration` fails it. | Test (TC-1441) |
-| FR-610-AC-5 | For each of these member types, an `object` field, an operation parameter or result of that type checks exactly when a native `record` field of that type checks, and the member's binding names the type node the record field's binding names: a native `enum`, a native `record`, a `union` with a payload member, a `tuple`, a `type` alias, `Decimal[0, 100; 2, 2]`, `Rational[0, 9; 1, 4]`, `Float64`, `Quantity<m>` over a declared unit, `Option<Sequence<Integer>[0, 3]>` and `Sequence<Set<Integer>[0, 2]>[0, 2]`. | Test (TC-1442) |
+| FR-610-AC-5 | For each of these member types, an `object` field, an operation parameter or result of that type checks exactly when a native `record` field of that type checks, and the member's binding names the type node the record field's binding names: a native `enum`, a native `record`, a `union` with a payload member, a `tuple`, a `type` alias, `Decimal[0, 100; 2, 2; exact]`, `Rational[0, 9; 1, 4]`, `Float64`, `Quantity<m>` over a declared unit, `Option<Sequence<Integer>[0, 3]>` and `Sequence<Set<Integer>[0, 2]>[0, 2]`. | Test (TC-1442) |
 | FR-610-AC-6 | A field typed `Population<Order>[3]` is refused at the type with the same code and cause as a native record field typed `Population<Order>[3]`, and a field typed by a name that is a source function is refused `missing_declaration`/`missing-name` at the name, as for a record field. | Test (TC-1442) |
 | FR-610-AC-7 | A `protocol_clause` whose `owner_model` is a source-declared object type node and a static role whose `model` targets it are admitted, joined through the node's `SourceOwner`; the same targets with a `SourceOwner` that joins no `lock.sources` entry refuse `missing_declaration`/`missing-selection` at the target's `node_id`; a `owner_model` on a source-declared record node refuses `invalid_model_binding`/`malformed-declaration`. | Test (TC-1443) |
 | FR-610-AC-8 | A source-declared operation's effects row carries `document` the unit's source identity, `declaring` the source node, `provenance.origin` `source_declaration_operation_frame` and `provenance.member` `Order::bump`; its authored precondition clause function `Qs` carries `declaration` `["Order", "size", "precondition", "Qs"]` and the `SourceOwner`. The identity rows of `Order`, `Sub` and `Shape` read back with their `abstract`, `supertypes`, `identity_fields`, `members` and `populations`; a row of a foreign authority, a row naming a frame node and a missing `Order` row each refuse. | Test (TC-1443) |

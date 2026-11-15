@@ -33,15 +33,14 @@ FR-298 record per requested obligation, in one FR-299 generated package.
 
 ## Behavior
 
-### Target versions
+### Target languages
 
-- `filament.output.tla2/v1` SHALL emit TLA+ version 2 as the TLA+ Tools
-  distribution 1.8.0 parser (SANY) accepts it, using only the standard
+- `filament.output.tla2/v1` SHALL emit the TLA+2 language as the SANY
+  parser accepts it, using only the standard
   modules `Naturals`, `Integers`, `Sequences`, `FiniteSets` and `TLC`, and,
   for a fairness obligation, the TLA+ `WF_vars` and `SF_vars` operators.
-- `filament.output.lean4/v1` SHALL emit Lean 4 source for the Lean 4
-  toolchain version the profile's FR-297 `target_standard_refs` names,
-  using only the Lean core library; no Mathlib dependency is required.
+- `filament.output.lean4/v1` SHALL emit the Lean 4 language, using only
+  the Lean core library; no Mathlib dependency is required.
 
 ### What is exported
 
@@ -95,8 +94,8 @@ section and never changes a disposition or settles a claim.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-651-AC-1 | A counter state model with operation `inc` and a state clause `value <= 5` exports under `filament.output.tla2/v1` as a module with `VARIABLES`, `Init`, an `inc` action, `Next` and an invariant theorem, each region carrying its source identity and span, every obligation `preserved`; the module parses under SANY 1.8.0 as an observer. | Test (TC-1604) |
-| FR-651-AC-2 | The same package under `filament.output.lean4/v1` exports `structure State`, `Init`, `Step`, `Inv` and the theorem statement with no proof, every obligation `preserved`; the file elaborates under the named Lean 4 toolchain as an observer. | Test (TC-1604) |
+| FR-651-AC-1 | A counter state model with operation `inc` and a state clause `value <= 5` exports under `filament.output.tla2/v1` as a module with `VARIABLES`, `Init`, an `inc` action, `Next` and an invariant theorem, each region carrying its source identity and span, every obligation `preserved`; the module parses under the SANY parser as an observer. | Test (TC-1604) |
+| FR-651-AC-2 | The same package under `filament.output.lean4/v1` exports `structure State`, `Init`, `Step`, `Inv` and the theorem statement with no proof, every obligation `preserved`; the file elaborates under Lean 4 as an observer. | Test (TC-1604) |
 | FR-651-AC-3 | A timed clause exports `conditional` naming non-Zeno behaviours; a hybrid claim's flows export `unrepresented`; a probabilistic threshold 0.9 exports `unrepresented` and a probability-1 safety claim `conditional`; no record is `preserved` for these. | Test (TC-1604) |
 | FR-651-AC-4 | A request for an identity that is no obligation of the package refuses that member; an observer that rejects the text changes no disposition; exporting the same request twice gives byte-equal packages. | Test (TC-1604) |
 | FR-651-AC-5 | On the export conformance corpus of finite models, TLC's reachable state count and invariant verdict over the TLA+ export equal FSL's explicit-state exploration over the same model for every `preserved` model obligation. | Test (TC-1604) |
