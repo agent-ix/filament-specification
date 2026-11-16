@@ -71,10 +71,9 @@ refuses the request `invalid_runtime_input`/`invalid-value`, naming the
 entry.
 
 The **resolved model** of an outermost `parallel` is the request's selection
-when present, else its source default. A request that selects a weak model for
-a `parallel` whose join is not `all` without `outstanding` settles the item
-`unsupported`, cause `weak-access-shape` with shape `join-policy`
-([FR-439](FR-439-bound-replay-and-report-weak-memory-runs.md)).
+when present, else its source default. A weak model on a `parallel` whose
+join is not `all` is explored by the join rule of
+[FR-741](FR-741-step-every-weak-memory-access-shape.md).
 
 ### Scope and threads
 
@@ -132,7 +131,7 @@ point.
 | FR-434-AC-1 | The store-buffering protocol with source default `sc` is checked under `sc` with no `memory` member, and under `tso` and `ra` with a `memory` entry naming `SB::Both`; the three requests carry three different obligation identities. | Test (TC-388, TC-390) |
 | FR-434-AC-2 | A source default `tso` checked with no `memory` member and a source default `sc` checked with a `tso` selection carry the same obligation identity and the same verdict, while their checked packages carry different package identities. | Test (TC-388) |
 | FR-434-AC-3 | A selection naming a nested `parallel`, a non-`parallel` control or one `parallel` twice refuses the request `invalid_runtime_input`/`invalid-value` naming the entry; a selection on an outermost `parallel` applies to every `parallel` nested in it. | Test (TC-388) |
-| FR-434-AC-4 | A nested `parallel` declaring a default different from its outermost `parallel` refuses `invalid_model_binding`/`conflicting-binding` naming both; a weak default with an `any` join refuses `unsupported_construct`/`declaration-form` at the join; a `tso` selection on an `sc` `parallel` with an `any` join settles `unsupported`, cause `weak-access-shape`, shape `join-policy`. | Test (TC-388) |
+| FR-434-AC-4 | A nested `parallel` declaring a default different from its outermost `parallel` refuses `invalid_model_binding`/`conflicting-binding` naming both; a weak default with an `any` join checks, and a `tso` selection on an `sc` `parallel` with an `any` join explores by FR-741's join rule, with no `weak-access-shape` result. | Test (TC-388) |
 | FR-434-AC-5 | Under `sc` the protocol system's states, steps and verdicts equal those of the same protocol with no `memory` clause, and the `memory` member of every state key is empty. | Test (TC-388) |
 
 ## Dependencies

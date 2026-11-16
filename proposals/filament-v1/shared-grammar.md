@@ -206,7 +206,7 @@ protocol-clause = 'protocol', ident, 'using', ident,
                   'run', control, finish, '}' ;
 role         = 'role', ident, 'on', model-name, ';' ;
 relationship = 'relationship', ident, '=', model-name, ';' ;
-channel      = 'channel', ident, 'from', ident, 'to', ident,
+channel      = 'channel', ident, 'from', ident, 'to', ident, [ 'via', ident ],
                'carries', type-name, 'ordering', ordering,
                'delivery', delivery-policy,
                'capacity', capacity,
@@ -687,7 +687,7 @@ no separate binder production, and the `until` expression is written between
 the parentheses with no braces. The binder is readable only in that role's own `until` expression; a role name used as a value anywhere else refuses `missing_declaration`/`missing-name` at the name (FR-428).
 
 ```ebnf
-channel       = 'channel', ident, 'from', ident, 'to', ident,
+channel       = 'channel', ident, 'from', ident, 'to', ident, [ 'via', ident ],
                 'carries', type-ref, 'ordering', ordering,
                 'delivery', delivery-policy,
                 'capacity', capacity,

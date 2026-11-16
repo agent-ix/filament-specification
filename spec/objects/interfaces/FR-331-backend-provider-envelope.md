@@ -719,8 +719,7 @@ member that raises the budget, `max_store_buffer` or `max_messages`), FR-428
 `max_live_instances`, the member that raises it), FR-174 and FR-175
 (`premise-not-stated`, `replay-disagreed`, `unforced-refutation`,
 `strategy-replay-failed`, `cut-count` and `undecided-evaluation`, defined
-below) and AD-016's `kani_vacuous_proof`. FR-439 adds the unsupported cause
-`weak-access-shape{site, transition, shape}`.
+below) and AD-016's `kani_vacuous_proof`.
 
 A `local-projection` or `realizability` item (FR-174, FR-175) that completes
 its method and settles FR-360 `inconclusive` carries one of these closed

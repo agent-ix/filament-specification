@@ -35,9 +35,8 @@ resolved memory model of each `parallel`
 
 ## Outputs
 
-The access class of every instantiated attempt and every fence; or a located
-refusal; or `unsupported` with cause `weak-access-shape` from the pre-check,
-with shape `multi-location`, `join-policy` or `ordering-mismatch`.
+The access class of every instantiated attempt and every fence, with the
+ordering restrictions applied ([FR-741](FR-741-step-every-weak-memory-access-shape.md)); or a located refusal of an ordering.
 
 ## Behavior
 
@@ -66,10 +65,8 @@ An `event`, `effect`, `commit`, `send` or `receive` node inside a branch of a
 weak `parallel` whose constraint reads a model location (an event constraint
 may read `over`, [FR-464](../../objects/interfaces/FR-464-checked-package-protocol-node-bodies.md))
 is a **reader** of that location, and the location counts toward sharing as an
-attempt's read does. A reader has no access class or ordering. When a reader
-reads a location that is shared, the pre-check settles the item `unsupported`,
-cause `weak-access-shape`, with shape `multi-location` naming the reader and
-the shared locations. A `finish` and a node outside every weak `parallel` read
+attempt's read does. A reader has no access class or ordering. A reader's read of a shared
+location is a `relaxed` load in the reader's own step (FR-741). A `finish` and a node outside every weak `parallel` read
 the joined memory and are not readers; under `sc` a reader is admitted.
 
 A location encodes as `{"type":"location","object":<reference>,"field":"<name>"}`,
@@ -107,11 +104,9 @@ attempt that touches a location, shared or branch-local: an RMW with no ordering
 attempt that reads a field and also writes a register field are admitted at
 check time.
 
-Under a resolved weak model, the pre-check SHALL settle the item before any
-state is explored as `unsupported`, cause `weak-access-shape`, with shape
-`ordering-mismatch` naming the attempt as `site`, its instantiated class as
-`access` and the ordering it carries as `ordering`
-([FR-439](FR-439-bound-replay-and-report-weak-memory-runs.md)), for:
+Under a resolved weak model, the evaluator SHALL restrict the ordering to
+the instantiated kind and list the restriction in the run record
+(FR-741), for:
 
 - an instantiated load that carries `release` or `acq_rel`;
 - an instantiated store that carries `acquire` or `acq_rel`;
@@ -119,30 +114,19 @@ state is explored as `unsupported`, cause `weak-access-shape`, with shape
 - an instantiated local access, whose shared footprint is empty, that carries
   any ordering.
 
-The pre-check SHALL test an instantiated attempt for the `multi-location`
-shape (One location per access, below) first. An attempt with that shape has
-no class, so it SHALL settle `multi-location` and SHALL NOT be tested for an
-ordering mismatch. Under `sc`, an attempt whose instantiated class does not
+Each single-location access of a multi-location attempt takes the
+attempt's ordering restricted the same way. Under `sc`, an attempt whose instantiated class does not
 take its ordering SHALL be admitted, because orderings change no behaviour
 under `sc`.
 
-### One location per access
+### Multi-location accesses
 
 Under a weak model, an attempt instance whose shared footprint holds two or
-more locations, an any-object location or a population membership is not one
-access.
-
-- When the `parallel` declares a weak default and the receiver and parameters
-  decide the shape symbolically, the checker refuses
-  `unsupported_construct`/`declaration-form` at the attempt, naming the
-  locations.
-- Otherwise the pre-check, which reads the resolved model, finds it on
-  instantiation and settles the item `unsupported`, cause
-  `weak-access-shape`, with shape `multi-location` naming the site, the
-  transition identity and the locations
-  ([FR-439](FR-439-bound-replay-and-report-weak-memory-runs.md)).
-
-Under `sc` every attempt is admitted.
+more locations is a sequence of single-location accesses in program order,
+and a multi-location read-modify-write is a locked transaction (FR-741). An
+any-object location is instantiated to its object, and a population
+membership is one location. The checker refuses no access shape. Under `sc`
+every attempt is one step.
 
 ### Guards and checks
 
@@ -175,13 +159,13 @@ current-view message.
 | --- | --- | --- |
 | FR-435-AC-1 | In the store-buffering protocol, `Sx` and `Sy` classify as atomic stores, `Ly` and `Lx` as atomic loads, `(x, v)` and `(y, v)` as shared and `(c1, r)` and `(c2, r)` as branch-local. | Test (TC-389) |
 | FR-435-AC-2 | At check time, an ordering on an attempt that touches no location, shared or branch-local, `release` on an attempt that only reads and `acquire` on an attempt that only writes each refuse `ill_typed`/`operator-ineligible` naming the attempt and the ordering; an RMW with no ordering and a `release` attempt that reads a field and writes a branch-local register are admitted at check time; each class with each admitted ordering is admitted. | Test (TC-389) |
-| FR-435-AC-3 | An attempt writing two shared fields of its receiver under a weak default refuses `unsupported_construct`/`declaration-form` naming both locations; the same attempt under a `tso` selection settles `unsupported`, cause `weak-access-shape`, shape `multi-location`; under `sc` it is admitted. | Test (TC-389) |
+| FR-435-AC-3 | An attempt writing two shared fields of its receiver under a weak default checks with no refusal; under a `tso` selection it explores as FR-741's load steps and apply step, with no `weak-access-shape` result; under `sc` it is one step. | Test (TC-389) |
 | FR-435-AC-4 | A choice guard that reads a model field refuses `ill_typed`/`operator-ineligible` at the read, under `sc`, `tso` and `ra` alike; the same guard over the binder of a load attempt of that field is admitted. | Test (TC-389) |
 | FR-435-AC-5 | A load whose precondition requires the value 1 is enabled under `tso` only when its thread observation of the location is 1, and an RMW whose post-state leaves the location unchanged takes no write step. | Test (TC-389) |
 | FR-435-AC-6 | `fence F ordering relaxed;` is `refused { code: invalid_syntax, cause: unexpected-token }` at the `relaxed` token, because `fence-order` admits only `acquire`, `release`, `acq_rel` and `seq_cst`; an admitted fence is a step with members `thread`, `node` and `ordering`, uncounted for intervals. | Test (TC-389) |
-| FR-435-AC-7 | A branch holding an `event` whose constraint reads `x.v`, beside a branch whose attempt stores `x.v`, settles `unsupported` with cause `weak-access-shape` and shape `multi-location` naming the event and `(x, v)` under a `tso` selection, and is admitted under `sc`; an `event` reading a field of an object that no attempt accesses, and a `finish` reading `x.v` after the join, are admitted under `tso`. | Test (TC-389) |
+| FR-435-AC-7 | A branch holding an `event` whose constraint reads `x.v`, beside a branch whose attempt stores `x.v`, explores under a `tso` selection with the read a `relaxed` load in the event's step, one successor per visible value, and under `sc` reads memory; an `event` reading a field of an object that no attempt accesses, and a `finish` reading `x.v` after the join, explore under `tso`. | Test (TC-389) |
 | FR-435-AC-8 | Under `ra`, a store whose precondition requires `x.v = 0` is enabled only while its thread's current view points at a message of `x` with value 0, whatever the mo-last message holds; a load of `x` whose precondition requires `x.v = 1` is enabled for each message at or after the current view whose value is 1. | Test (TC-389) |
-| FR-435-AC-9 | Under a `tso` selection and under an `ra` selection, the pre-check settles each of these `unsupported`, cause `weak-access-shape`, before any state is explored, with the shape: an instantiated load with `release`, `{"type":"ordering-mismatch","access":"load","ordering":"release"}`; a load with `acq_rel`, `{"type":"ordering-mismatch","access":"load","ordering":"acq_rel"}`; a store with `acquire`, `{"type":"ordering-mismatch","access":"store","ordering":"acquire"}`; a store with `acq_rel`, `{"type":"ordering-mismatch","access":"store","ordering":"acq_rel"}`; an RMW with no ordering, `{"type":"ordering-mismatch","access":"rmw","ordering":null}`; an attempt with `release` that writes a branch-local register and touches no shared location, `{"type":"ordering-mismatch","access":"local","ordering":"release"}`. Under `sc` each is admitted. An attempt with `acquire` that reads a branch-local register and writes two shared fields settles `multi-location` naming both fields and is not tested for an ordering mismatch. | Test (TC-389) |
+| FR-435-AC-9 | Under a `tso` selection and under an `ra` selection, each of these explores with its ordering restricted and listed in `ordering-restrictions` as `{site, access, written, effective}`: a load with `release` (`relaxed`), a load with `acq_rel` (`acquire`), a store with `acquire` (`relaxed`), a store with `acq_rel` (`release`), an RMW with no ordering (`relaxed`), and an attempt with `release` that touches no shared location (access `local`, no memory effect). Under `sc` each is admitted unchanged. An attempt with `acquire` that writes two shared fields explores as FR-741's multi-location access, each sub-access taking the restricted ordering. | Test (TC-389) |
 
 ## Dependencies
 
