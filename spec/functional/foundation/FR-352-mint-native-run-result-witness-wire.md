@@ -83,7 +83,7 @@ infers the identifier from payload content.
 
 A clause-run record has exactly these top-level members: `format`
 (`native-run-result/2`), `disposition`, `usage` and `basis`, plus
-`witness` under the condition
+`limits` and `witness` under their conditions
 below, `extraction` when the run's unit is an extracted Markdown clause
 body, and `ledger` under the condition of "Progress ledger" below. Absent
 optional members are omitted, never `null`.
@@ -137,6 +137,23 @@ owns its fields and change variants; this requirement adds none.
 `document_bytes`, `objects` and `values`), unsigned
 `evaluation_admissions`, and `evaluation_consumed` (an array of closed
 objects each holding string `kind` and unsigned `consumed`).
+
+`limits` is a closed object recording every evaluation limit the run was
+bounded by, keyed by the limit's setting name ([FR-461](FR-461-name-the-limit-value-and-setting.md)),
+each value the effective bound as a canonical decimal string, with every
+default written explicitly: for a run over a model trace,
+`expansion.max_candidates`. It is present exactly when at least one
+request-settable limit bounds the run's evaluation, today a run over a
+`model` trace, and omitted otherwise, so documents of every other run are
+unchanged. Intake ceilings (the request and dependent
+byte limits) are not members: they bound reading the request, and a request
+that is read under them has one result whatever their values. `usage` says
+what the run consumed and `limits` the bounds it ran under; both are part
+of the document, so two runs differing only in a limit write unequal
+documents, and the run's result identity, which is the document's, differs.
+A missing `limits` on a run over a `model` trace, `limits` on any other
+run, an unknown setting name, or a value that is not a
+canonical positive decimal is refused by the reader.
 
 The two settlement members are:
 
@@ -395,6 +412,7 @@ back SHALL restore an equal record.
 | FR-352-AC-16 | Each of these temporal dispositions reads at stage `evaluate` with exactly its row's members, `category`, `truth` (absent), `basis` and `outcome`, and reads back equal: `{"kind": "pending-window", "position": 0, "deadline": 5}` (`pending`, `unsettled`); `{"kind": "pending-next-event", "position": 3}` (`pending`, `unsettled`); `indeterminate` at position 0 with each of the five `reason` kinds, the `missing-valuation` reason with `instance` `c1` and `also_held_by` `["c2"]` included (`indeterminate`, `unavailable`); `activation-incomplete` at position 1 with a state-clause `guard` location (`incomplete`, `unavailable`, no `outcome`); `{"kind": "progress-limit-reached", "limit": "node count", "value": 4, "setting": "progress.covered_positions"}` (`incomplete`, `unavailable`, no `outcome`); and a watermark `progress-contradicted` with `retained` `{"kind": "watermark", "watermark": 100}` and `asserted` `{"kind": "watermark", "watermark": 60}` (`refusal`, `unavailable`, outcome code `invalid_runtime_input`, cause `invalid-value`). | Test (TC-1485) |
 | FR-352-AC-17 | Independently, each refuses with a located wire diagnostic naming the member: a `temporal` whose `kind` is outside the sixteen (`pending-forever`, `held`); category `pending` on an `incomplete` row and category `indeterminate` on a `violated` row; category `inconclusive` on a `pending` row; a `pending-window` without `deadline`; an `indeterminate` `missing-valuation` reason with `instance` and without `also_held_by`; an `activation-incomplete` or `progress-limit-reached` row with an `outcome`; a `progress-limit-reached` row whose `setting` is not `progress.covered_positions`; and a `progress-contradicted` row whose outcome `fields` differ from its members. | Test (TC-1485) |
 | FR-352-AC-18 | A timestamped clause-run record with a `ledger` of one entry reads back equal and re-encodes to the same bytes; the same `ledger` on a record of a lasso run, an entry missing `covered`, two entries for one binding, and entries out of binding order each refuse with a located diagnostic naming the member. | Test (TC-1163) |
+| FR-352-AC-19 | A clause-run record over a `model` trace written with no `max_candidates` in the request carries `limits` `{"expansion.max_candidates": "1000000"}`, and one written with `max_candidates` 1 carries `{"expansion.max_candidates": "1"}`; the two records are unequal. A record over a `finite` trace carries no `limits`. The reader refuses a `model`-trace record without `limits`, a `finite`-trace record with `limits`, an unknown setting name, and the values `"0"`, `"01"` and `1` (a JSON number). | Test (TC-1701) |
 
 ## Dependencies
 
