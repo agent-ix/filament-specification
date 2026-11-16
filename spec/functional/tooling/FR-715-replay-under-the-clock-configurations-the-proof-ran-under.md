@@ -37,13 +37,13 @@ makes the replay's configuration the proof's by construction.
 
 ## Inputs
 
-A replay request file (FR-323 `NativeRuntimeEnvelope` with its `replay`
-member, encoded as FR-336 "Replay request file" maps it) and the files its
-byte provision names.
+A `native-replay/1` request file `{format, request}` whose `request`
+carries FR-336's replay request mapping ("Replay request file"), and the
+files its byte provision names.
 
 ## Outputs
 
-The replay result (FR-323 `results`), or a refusal envelope on stderr.
+The replay result (FR-323 `results` disposition), or a refusal envelope on stderr.
 
 ## Behavior
 
@@ -66,5 +66,5 @@ The replay result (FR-323 `results`), or a refusal envelope on stderr.
 
 ## Dependencies
 
-- FR-301 (the `replay` command), FR-323 (the replay request), FR-252 (clock
-  bindings in the package), FR-336 (the replay request file encoding).
+- FR-301 (the `replay` command), FR-323 (the replay result), FR-252 (clock
+  bindings in the package), FR-336 (the replay request mapping the `native-replay/1` request carries).
