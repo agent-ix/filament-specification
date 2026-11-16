@@ -36,3 +36,11 @@ pre-existing. No changed file reports an error.
 ## Verdict
 
 REQUEST CHANGES on FND-001.
+
+## Dispositions
+
+Round 2, verified at head 0e7b1ef35.
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | The FR-322 key paragraph, the reader order, repeat and coverage paragraph, AC-294 and AC-364 now key wrapper rows by (`declaration`, `occurrence`, `trace`). They order wrapper rows by quantifier position, refuse an out-of-order trace at `/temporal_bindings/{i}/trace`, require one row per trace, and admit rows `s` and `n` of one occurrence. |
