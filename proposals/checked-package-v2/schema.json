@@ -249,6 +249,9 @@
         },
         "clock_name": {
           "$ref": "#/$defs/Nonempty"
+        },
+        "trace": {
+          "$ref": "#/$defs/Nonempty"
         }
       },
       "additionalProperties": false
