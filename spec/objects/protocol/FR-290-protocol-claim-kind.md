@@ -444,7 +444,7 @@ receives the unknown-backend mark and it is a candidate for no item.
 
 An item's `candidates` value in the [FR-331](../interfaces/FR-331-backend-provider-envelope.md)
 request is valid when it equals the registry snapshot's candidate set for the
-item. A backend *matches* an item when it advertises the item's kind, its
+item, narrowed only as FR-776 permits. A backend *matches* an item when it advertises the item's kind, its
 evidence kind for a `probabilistic-satisfaction` item ("Evidence kinds"),
 and, for a `temporal-satisfaction` item, the item's dynamics: `hybrid` in
 its `dynamics` for an item carrying the hybrid-dynamics requirement and
@@ -457,7 +457,7 @@ its `dynamics` for an item carrying the hybrid-dynamics requirement and
 - When the request names an unregistered backend, the value is the
   unknown-backend mark carrying that identity.
 - When the request names none, the set is every registered backend that
-  matches the item.
+  matches the item, narrowed only as FR-776 permits.
 
 The `filament-spec-language` registry computes `candidates`
 ([filament-spec-language#185](https://github.com/agent-ix/filament-spec-language/issues/185)).
@@ -490,7 +490,8 @@ the candidate set is empty and the empty-candidate row below settles it.
 `negotiate_*` SHALL NOT select among several candidates. Registration order,
 display names and ambient state never change a candidate set, its order or a
 disposition. The caller resolves a multi-candidate item by
-naming one backend. Candidates match on kind, evidence kind and dynamics,
+naming one backend, or the producer narrows a tie between its own backends by
+a published claim-form rule while it computes the set (FR-776). Candidates match on kind, evidence kind and dynamics,
 and state-graph items additionally match on exact `state_graph_forms`
 membership. A bounded-only and an unbounded-only registrant of one kind are
 both candidates, and the mode is compared only at the single candidate's arm.
