@@ -1688,6 +1688,17 @@ its key and call identity; the body it runs is covered by the key of a plan
 root that calls it, through the root's call closure (FR-487), so the helper
 stays a declared node.
 
+### Function check mode
+
+Every `function` node carries the closed member `check_mode`, `linked` or
+`kernel`, which records whether the producer proved the body's definedness
+obligations at check (`linked`) or left them to evaluation (`kernel`). It is
+identity-bearing: it is part of the node's content and does not enter its
+`path`. A declared clause is always `linked`, so an `invariant` or
+`precondition` clause function carries `linked`. Replay recompiles each body
+under its recorded mode. [FR-770](FR-770-carry-each-function-node-s-check-mode.md)
+states the member, its reader refusals and its criteria.
+
 ### Derived request items
 
 The deadlock-freedom item

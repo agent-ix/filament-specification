@@ -117,7 +117,15 @@ Each requested item is one claim and requires exactly one kind. A clause's
 kind comes from the clause's own claim form; an expression nested in it, such
 as a function application or a `case` expression, adds no kind. A function
 declaration carries no clause; each scalar operation application in its body
-is a claim of its own, as the table below states. The third column names the
+is a claim of its own, as the table below states. "Carries no clause" means
+that a function declaration is not itself a claim form: declaring a function
+creates no item and requires no kind. A request may still name a function
+whose declared result is `Boolean` as its claim. That claim is the Boolean
+value clause the function's body is, at the body's `claim` or `declaration`
+occurrence, with the function's parameters as its variables and their
+declared domains as its extent. It takes the first row's kind,
+`value-validity`, as [FR-484](../../functional/ir-proof/FR-484-check-value-validity-items.md)
+"Forms" states. A function with any other result type names no claim. The third column names the
 declaration family of the claim ("Declaration-family applicability").
 
 | Claim form | Required kind | Declaration family |

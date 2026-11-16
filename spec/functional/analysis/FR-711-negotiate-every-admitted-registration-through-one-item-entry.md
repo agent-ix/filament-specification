@@ -64,9 +64,14 @@ One disposition: `supported` naming the candidate, `requires-bound`,
   the item carries the corresponding requirement. When every rule passes, its
   own disposition is `supported` naming the candidate.
 - A backend-specific arm SHALL run only after the generic arm passes, and may
-  settle only `supported`, `unsupported` with a warning or `invalid-request`
-  naming the form it cannot take; it never changes a disposition the generic
-  arm settled.
+  settle only `supported`, `requires-bound` (FR-771), `unsupported` with a
+  warning, or `invalid-request` naming the form it cannot take. It changes
+  only the generic arm's `supported`, never a `requires-bound`, `unsupported`
+  or `invalid-request` the generic arm settled, and it never turns any
+  disposition into `supported`. It may turn the generic `supported` into
+  `requires-bound` only as FR-771 states: when the backend's own form check
+  finds a value domain in the item's IR form that the backend can decide only
+  under a finite bound that the item does not carry.
 - The item entry SHALL take the item without any backend-specific form when
   the single candidate's arm does not read one. An item whose single candidate
   is a backend whose arm needs such a form, and which lacks it, settles
