@@ -55,6 +55,7 @@ admits a step row. The left sides read:
 | `cattempt` of one template | `step <C>::<protocol>::<template>`, or the operation's row when the template has none |
 | `event`, `send`, `receive`, `fork`, `join`, `timeout`, `finish` of one node | `step <C>::<protocol>::<node>` naming the step kind: `step fork <C>::<protocol>::<parallel>`, `step join …`, and the node itself for event, effect, commit, send, receive, await (the `timeout` step of an `await` node, FR-426) and finish nodes. An `effect` node and a `commit` node each take the `event` step kind (FR-426) and are one class each, spelled by their bare node path exactly as an `event` node is; they have no spelling of their own |
 | `cend` of one template | `step cend <C>::<protocol>::<template>` |
+| `cfail`, `ctimeout` or `cexpire` of one template | `step cfail <C>::<protocol>::<template>`, `step ctimeout …`, `step cexpire …` |
 | `duplicate` or `lose` on one channel | `step duplicate <C>::<protocol>::<channel>`, `step lose …` |
 | `spawn` or `retire` of one role | `step spawn <C>::<protocol>::<role>`, `step retire …` |
 | `fence` of one fence node | `step <C>::<protocol>::<node>` |
@@ -191,6 +192,7 @@ whitespace and no other characters, and is its own canonical spelling.
 | `attempt`, `effect`, `event`, `commit`, `send`, `receive`, `timeout` (of an `await` node), `finish` or `fence` of one node; `cattempt` of one template | `<A>::<protocol>::<node>`, or `<A>::<protocol>::<template>` |
 | `fork`, `join` of one `parallel` node | `fork <A>::<protocol>::<node>`, `join <A>::<protocol>::<node>` |
 | `cend` of one template | `cend <A>::<protocol>::<template>` |
+| `cfail`, `ctimeout` or `cexpire` of one template | `cfail <A>::<protocol>::<template>`, `ctimeout …`, `cexpire …` |
 | `duplicate`, `lose` on one channel | `duplicate <A>::<protocol>::<channel>`, `lose <A>::<protocol>::<channel>` |
 | `spawn`, `retire` of one role | `spawn <A>::<protocol>::<role>`, `retire <A>::<protocol>::<role>` |
 | `activate` of the clause's trigger | `activate <A>::<protocol>` |

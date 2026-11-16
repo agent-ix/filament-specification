@@ -5296,14 +5296,14 @@
       }
     },
     {
-      "name": "weak-access-shape-outcome",
+      "name": "ordering-restrictions-outcome",
       "stage": "outcome",
       "owners": {
-        "/results/0/cause": "FR-439",
-        "/results/1/cause": "FR-439",
-        "/results/2/cause": "FR-439",
-        "/results/3/cause": "FR-439",
-        "/results/4/cause": "FR-439"
+        "/results/0/ordering_restrictions": "FR-439",
+        "/results/1/ordering_restrictions": "FR-439",
+        "/results/2/ordering_restrictions": "FR-439",
+        "/results/3/ordering_restrictions": "FR-439",
+        "/results/4/ordering_restrictions": "FR-439"
       },
       "document": {
         "contract_version": "filament.backend-provider/v1",
@@ -5336,169 +5336,156 @@
             "request_index": 0,
             "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
-            "result": "unsupported",
-            "cause": {
-              "type": "weak-access-shape",
-              "site": {
-                "node": {
-                  "ordinal": 0,
-                  "package": "example",
-                  "path": [
-                    "Example",
-                    "Safety"
-                  ]
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "exhaustive"
+            },
+            "ordering_restrictions": [
+              {
+                "site": {
+                  "node": {
+                    "ordinal": 0,
+                    "package": "example",
+                    "path": [
+                      "Example",
+                      "Safety"
+                    ]
+                  },
+                  "occurrence": {
+                    "role": "declaration",
+                    "ordinal": 0
+                  }
                 },
-                "occurrence": {
-                  "role": "declaration",
-                  "ordinal": 0
-                }
-              },
-              "transition": {
-                "type": "transition",
-                "operation": "SB::Cell::store",
-                "receiver": null,
-                "arguments": []
-              },
-              "shape": {
-                "type": "join-policy"
+                "access": "load",
+                "written": "release",
+                "effective": "relaxed"
               }
-            }
+            ]
           },
           {
             "request_index": 1,
             "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
-            "result": "unsupported",
-            "cause": {
-              "type": "weak-access-shape",
-              "site": {
-                "node": {
-                  "ordinal": 0,
-                  "package": "example",
-                  "path": [
-                    "Example",
-                    "Safety"
-                  ]
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "exhaustive"
+            },
+            "ordering_restrictions": [
+              {
+                "site": {
+                  "node": {
+                    "ordinal": 0,
+                    "package": "example",
+                    "path": [
+                      "Example",
+                      "Safety"
+                    ]
+                  },
+                  "occurrence": {
+                    "role": "declaration",
+                    "ordinal": 0
+                  }
                 },
-                "occurrence": {
-                  "role": "declaration",
-                  "ordinal": 0
-                }
-              },
-              "transition": {
-                "type": "transition",
-                "operation": "SB::Cell::store",
-                "receiver": null,
-                "arguments": []
-              },
-              "shape": {
-                "type": "ordering-mismatch",
-                "access": "load",
-                "ordering": "release"
+                "access": "store",
+                "written": "acq_rel",
+                "effective": "release"
               }
-            }
+            ]
           },
           {
             "request_index": 2,
             "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
-            "result": "unsupported",
-            "cause": {
-              "type": "weak-access-shape",
-              "site": {
-                "node": {
-                  "ordinal": 0,
-                  "package": "example",
-                  "path": [
-                    "Example",
-                    "Safety"
-                  ]
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "exhaustive"
+            },
+            "ordering_restrictions": [
+              {
+                "site": {
+                  "node": {
+                    "ordinal": 0,
+                    "package": "example",
+                    "path": [
+                      "Example",
+                      "Safety"
+                    ]
+                  },
+                  "occurrence": {
+                    "role": "declaration",
+                    "ordinal": 0
+                  }
                 },
-                "occurrence": {
-                  "role": "declaration",
-                  "ordinal": 0
-                }
-              },
-              "transition": {
-                "type": "transition",
-                "operation": "SB::Cell::store",
-                "receiver": null,
-                "arguments": []
-              },
-              "shape": {
-                "type": "ordering-mismatch",
-                "access": "store",
-                "ordering": "acq_rel"
+                "access": "rmw",
+                "written": null,
+                "effective": "relaxed"
               }
-            }
+            ]
           },
           {
             "request_index": 3,
             "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
-            "result": "unsupported",
-            "cause": {
-              "type": "weak-access-shape",
-              "site": {
-                "node": {
-                  "ordinal": 0,
-                  "package": "example",
-                  "path": [
-                    "Example",
-                    "Safety"
-                  ]
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "exhaustive"
+            },
+            "ordering_restrictions": [
+              {
+                "site": {
+                  "node": {
+                    "ordinal": 0,
+                    "package": "example",
+                    "path": [
+                      "Example",
+                      "Safety"
+                    ]
+                  },
+                  "occurrence": {
+                    "role": "declaration",
+                    "ordinal": 0
+                  }
                 },
-                "occurrence": {
-                  "role": "declaration",
-                  "ordinal": 0
-                }
-              },
-              "transition": {
-                "type": "transition",
-                "operation": "SB::Cell::store",
-                "receiver": null,
-                "arguments": []
-              },
-              "shape": {
-                "type": "ordering-mismatch",
-                "access": "rmw",
-                "ordering": null
+                "access": "local",
+                "written": "release",
+                "effective": null
               }
-            }
+            ]
           },
           {
             "request_index": 4,
             "backend": "fsl-model-check",
             "kind": "temporal-satisfaction",
-            "result": "unsupported",
-            "cause": {
-              "type": "weak-access-shape",
-              "site": {
-                "node": {
-                  "ordinal": 0,
-                  "package": "example",
-                  "path": [
-                    "Example",
-                    "Safety"
-                  ]
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "exhaustive"
+            },
+            "ordering_restrictions": [
+              {
+                "site": {
+                  "node": {
+                    "ordinal": 0,
+                    "package": "example",
+                    "path": [
+                      "Example",
+                      "Safety"
+                    ]
+                  },
+                  "occurrence": {
+                    "role": "declaration",
+                    "ordinal": 0
+                  }
                 },
-                "occurrence": {
-                  "role": "declaration",
-                  "ordinal": 0
-                }
-              },
-              "transition": {
-                "type": "transition",
-                "operation": "SB::Cell::store",
-                "receiver": null,
-                "arguments": []
-              },
-              "shape": {
-                "type": "ordering-mismatch",
-                "access": "local",
-                "ordering": "release"
+                "access": "load",
+                "written": "acq_rel",
+                "effective": "acquire"
               }
-            }
+            ]
           }
         ],
         "counterexamples": [],
@@ -12308,48 +12295,48 @@
       ]
     },
     {
-      "name": "ordering-mismatch-unlisted-access",
-      "base": "weak-access-shape-outcome",
+      "name": "ordering-restriction-unlisted-access",
+      "base": "ordering-restrictions-outcome",
       "owner": "FR-439",
       "patch": [
         {
           "op": "replace",
-          "path": "/results/1/cause/shape/access",
+          "path": "/results/1/ordering_restrictions/0/access",
           "value": "atomic"
         }
       ]
     },
     {
-      "name": "ordering-mismatch-without-ordering",
-      "base": "weak-access-shape-outcome",
+      "name": "ordering-restriction-without-effective",
+      "base": "ordering-restrictions-outcome",
       "owner": "FR-439",
       "patch": [
         {
           "op": "remove",
-          "path": "/results/3/cause/shape/ordering"
+          "path": "/results/3/ordering_restrictions/0/effective"
         }
       ]
     },
     {
-      "name": "ordering-mismatch-extra-member",
-      "base": "weak-access-shape-outcome",
+      "name": "ordering-restriction-extra-member",
+      "base": "ordering-restrictions-outcome",
       "owner": "FR-439",
       "patch": [
         {
           "op": "add",
-          "path": "/results/4/cause/shape/locations",
+          "path": "/results/4/ordering_restrictions/0/locations",
           "value": []
         }
       ]
     },
     {
-      "name": "ordering-mismatch-unlisted-ordering",
-      "base": "weak-access-shape-outcome",
+      "name": "ordering-restriction-unlisted-ordering",
+      "base": "ordering-restrictions-outcome",
       "owner": "FR-439",
       "patch": [
         {
           "op": "replace",
-          "path": "/results/2/cause/shape/ordering",
+          "path": "/results/2/ordering_restrictions/0/written",
           "value": "consume"
         }
       ]

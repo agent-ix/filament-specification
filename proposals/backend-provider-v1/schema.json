@@ -1120,7 +1120,7 @@
       ]
     },
     "UnsupportedCause": {
-      "description": "FR-331 unsupported causes, FR-439 weak-access-shape.",
+      "description": "FR-331 unsupported causes.",
       "type": "object",
       "required": ["type"],
       "oneOf": [
@@ -1132,12 +1132,7 @@
         {"properties": {"type": {"const": "zero-weight-component"}, "component": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/State"}}}, "required": ["type", "component"], "additionalProperties": false},
         {"properties": {"type": {"const": "delay-distribution"}, "operation": {"$ref": "#/$defs/Nonempty"}}, "required": ["type", "operation"], "additionalProperties": false},
         {"properties": {"type": {"enum": ["strict-clock-constraint", "timed-form-shape", "punctual-interval"]}, "locus": {"$ref": "#/$defs/Locus"}}, "required": ["type", "locus"], "additionalProperties": false},
-        {"properties": {"type": {"const": "zero-delay-cycle"}, "states": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/State"}}}, "required": ["type", "states"], "additionalProperties": false},
-        {"properties": {"type": {"const": "weak-access-shape"}, "site": {"$ref": "#/$defs/Locus"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "shape": {"oneOf": [
-          {"type": "object", "required": ["type", "locations"], "properties": {"type": {"const": "multi-location"}, "locations": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/TypedValue"}}}, "additionalProperties": false},
-          {"type": "object", "required": ["type"], "properties": {"type": {"const": "join-policy"}}, "additionalProperties": false},
-          {"type": "object", "required": ["type", "access", "ordering"], "properties": {"type": {"const": "ordering-mismatch"}, "access": {"enum": ["load", "store", "rmw", "local"]}, "ordering": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}}, "additionalProperties": false}
-        ]}}, "required": ["type", "site", "transition", "shape"], "additionalProperties": false}
+        {"properties": {"type": {"const": "zero-delay-cycle"}, "states": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/State"}}}, "required": ["type", "states"], "additionalProperties": false}
       ]
     },
     "DeclinedCause": {"description": "FR-331 (defined): the typed refusal category of a declined Kani run (FSL ADR-013 O-16, QC-9; AD-016 kinds 3 to 5).", "type": "object", "required": ["type"], "properties": {"type": {"enum": ["refused", "invalid-input", "incomplete-input"]}}, "additionalProperties": false},
@@ -1425,7 +1420,8 @@
         "evidence": {"description": "FR-419 recomputable closed-form evidence (its owner's shape) under basis closed-form, or the FR-393 witness arm under cause well-definedness-unchecked; absent otherwise."},
         "task_search": {"description": "FR-331/FR-419: replayable stopped-search frontier; permitted only on an incomplete task-automaton result and never proof evidence.", "$ref": "#/$defs/TaskSearchEvidence"},
         "verdict": {"$ref": "#/$defs/StatisticalVerdict"},
-        "counterexample": {"description": "the zero-based position of the item's entry in counterexamples", "$ref": "#/$defs/Count"}
+        "counterexample": {"description": "the zero-based position of the item's entry in counterexamples", "$ref": "#/$defs/Count"},
+        "ordering_restrictions": {"description": "FR-439, FR-741: each ordering a weak memory model restricted to its instantiated access kind, in canonical transition-identity order.", "type": "array", "items": {"type": "object", "required": ["site", "access", "written", "effective"], "properties": {"site": {"$ref": "#/$defs/Locus"}, "access": {"enum": ["load", "store", "rmw", "local"]}, "written": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}, "effective": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}}, "additionalProperties": false}}
       },
       "allOf": [
         {"if": {"properties": {"result": {"const": "proved"}}}, "then": {"required": ["basis", "certification"], "properties": {"cause": false, "diagnostic": false, "verdict": false, "counterexample": false, "task_search": false}}, "else": {"properties": {"basis": false, "certification": false, "certificate": false, "cross_check": false}}},

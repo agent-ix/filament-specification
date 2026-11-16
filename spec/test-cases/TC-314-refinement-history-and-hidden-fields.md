@@ -54,9 +54,10 @@ FR-378-AC-2, FR-378-AC-7). Case 2 shows the created object at 0 and `begin`
 keeping every history value (FR-378-AC-1). Case 3 decides the safety half
 with the candidate set: after a `commit` step the set holds the abstract
 successors whose visible part matches; the item settles `proved`
-(FR-378-AC-4). Case 4 settles its safety half and its liveness half
-`unsupported`, `unsupported_projection`/`unsupported-requested-capability`,
-naming liveness through hidden abstract fields (FR-378-AC-6, FR-378-AC-7).
+(FR-378-AC-4). Case 4 settles its safety half and decides its liveness half over the
+candidate-set product: `proved` when some candidate run along every fair
+concrete behaviour satisfies `F_A`, else `refuted` with a replaying lasso and
+its candidate graph, never `unsupported` (FR-378-AC-6, FR-378-AC-7).
 Case 5 holds: after `toss` the candidate set holds both sides and `reveal`
 prunes it to the returned side; each functional mapping settles `refuted`
 with `AbstractStepRejected` at the `reveal` that returns the other side

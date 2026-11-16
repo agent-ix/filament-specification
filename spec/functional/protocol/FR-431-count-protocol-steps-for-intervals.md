@@ -58,9 +58,10 @@ counterexample rendering, not by atoms.
 
 ### Counted steps
 
-A step is **counted** when it is an `attempt`, a `cattempt`, an `event`, an
-`activate`, a `send` or a `receive`. A `fork`, `join`, `finish`, `timeout`,
-`cend`, `duplicate`, `lose`, `spawn`, `retire`, `fence` or memory step is
+A step is **counted** when it is an `attempt`, a `cattempt`, a `cfail`, a
+`ctimeout`, an `event`, an `activate`, a `send` or a `receive`: each of the
+three compensation attempt steps is one dispatched attempt. A `fork`, `join`,
+`finish`, `timeout`, `cend`, `cexpire`, `duplicate`, `lose`, `spawn`, `retire`, `fence` or memory step is
 **uncounted**. The terminal stutter step is counted, as over a model subject.
 
 The **distance** from position `i` to position `j >= i` is the number of

@@ -84,14 +84,18 @@ the candidate set at the loop enables a visible abstract step, and is not a
 divergence when some member enables none, because that member is an
 abstract state the loop may stay at. The check reads only the loop and its
 candidate set, so it is decided with hidden fields present and does not
-depend on `F_A`; only the liveness half under `F_A` is unsupported.
+depend on `F_A`.
 
 **Liveness with hidden fields.** A declaration with a hidden field and a
 non-empty `F_A` has its safety half decided as above, and its liveness half
-settles `unsupported` with cause
-`unsupported_projection`/`unsupported-requested-capability`, naming liveness
-through hidden abstract fields as the unsupported capability. With `F_A`
-empty there is no liveness half. A refinement whose hidden field is
+decided exactly: it holds when, for every concrete behaviour fair under
+`F_C`, some candidate run along it satisfies `F_A`. This is language
+inclusion between two finite Streett automata over the candidate-set
+product, which is decidable. A refutation is a concrete fair lasso with the
+finite candidate graph over it, which replay (FR-379) checks holds no
+`F_A`-fair run. A strong `F_A` constraint is read strongly: enabled at some
+loop state and taken by no loop edge. With `F_A` empty there is no liveness
+half. A refinement whose hidden field is
 determined by the concrete past is checked with a history row that maps it.
 
 **Product key.** The analyzer's product state key adds the history values,
@@ -107,8 +111,8 @@ abstract state keys, sorted ascending by their JCS bytes.
 | FR-378-AC-3 | A history update that evaluates undefined at a reachable state settles the refinement item `refuted`, cause `undefined-evaluation`, with an `Undefined` counterexample that replays; one whose value leaves the declared type settles `inconclusive`, cause `mapping-undetermined`; in both the step is not removed. | Test (TC-315) |
 | FR-378-AC-4 | For a hidden field, the candidate set starts at the abstract initial states matching the visible mapped state, is unchanged by a `stutter` step with an unchanged visible part, is replaced by the admitted successors matching the new visible part after an abstract-operation or `any` step, and a step that empties it fails `NoAbstractMatch`. | Test (TC-314) |
 | FR-378-AC-5 | The coin refinement, whose abstract `toss` fixes a hidden `side` that the concrete `reveal` later shows, holds as a safety refinement, while every functional mapping of `side` fails. | Test (TC-314) |
-| FR-378-AC-6 | A declaration with a hidden field and a non-empty `F_A` decides its safety half and settles its liveness half `unsupported` with `unsupported_projection`/`unsupported-requested-capability` naming liveness through hidden abstract fields; the same declaration with `F_A` empty settles only its safety half. | Test (TC-314) |
-| FR-378-AC-7 | The history-backed counter refinement, mapping abstract `total` from a history field counting commits, holds; removing that field row makes `total` hidden, and with an `ensure` row the liveness half settles `unsupported`. | Test (TC-314) |
+| FR-378-AC-6 | A declaration with a hidden field and a non-empty `F_A` decides its safety half and decides its liveness half: `proved` when some candidate run along every fair concrete behaviour satisfies `F_A`, and `refuted` with a concrete fair lasso and its candidate graph, which replays, when none does; it is never `unsupported`. The same declaration with `F_A` empty settles only its safety half. | Test (TC-314) |
+| FR-378-AC-7 | The history-backed counter refinement, mapping abstract `total` from a history field counting commits, holds; removing that field row makes `total` hidden, and with an `ensure` row the liveness half is still decided (AC-6), never `unsupported`. | Test (TC-314) |
 | FR-378-AC-8 | TC-318's divergence vector with a hidden abstract field `mode: Boolean`, free at the abstract initial states, where the specification's `ack` requires `not mode`: with `F_A` empty the `spin` loop at `ready` is not a divergence, because the candidate set holds the `mode = true` state, which enables no visible step; with `ack` enabled for either `mode` the loop refutes as a divergence with a lasso that replays; both verdicts are the same under `fair weak whole ack`, and neither settles `unsupported`. | Test (TC-314) |
 
 ## Dependencies

@@ -64,7 +64,7 @@ result.
 | `map`, a receiver, an argument or a history update undetermined at a reachable state | `inconclusive`, cause `mapping-undetermined` | `unsettled` |
 | An undecided contract conjunction of either subject during expansion or a step check | `inconclusive`, cause undecided successor | `unsettled` |
 | Replay recomputes a different failure kind or position | `inconclusive`, cause `replay-parity` | `unsettled` |
-| Liveness half with a hidden field (FR-378) | `unsupported` | `unavailable` |
+| Liveness half with a hidden field (FR-378) and no candidate run of some fair concrete lasso satisfying `F_A`, the lasso and its candidate graph replaying | `refuted` | `decisive-counterexample` |
 | A budget stopped the run before it completed its method | `failed`, execution `resource-incomplete` (FR-331 result `incomplete`), cause `limit-reached{limit, value, setting}` | `unavailable` |
 
 An explicit-state `proved` holds for the concrete subject's initial states
