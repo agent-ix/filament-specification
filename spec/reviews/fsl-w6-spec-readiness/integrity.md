@@ -33,3 +33,14 @@ Ticket: QSL-2296 (wave 6 batch; standard side of QSL-2296 item 1, QSL-2303 and Q
 ## Verdict
 
 PASS WITH TWO LOWS. Nothing was dropped or narrowed, and the FR-200 edit is format-only.
+
+## Dispositions
+
+Round 1, verified at 2dc736db326c597d43a37cd8d94bbf98b0533809. `quire validate --scope . 'spec/**/*.md'` exits 0.
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | FR-364-AC-16 now admits an undefined-evaluation envelope whose `where` carries `sample` "1" with `position` and `locus`. It refuses `document` in its place, both `sample` and `document`, and a `sample` that is not the index of the envelope's `position`. TC-1700 step 3 covers these. |
+| FND-002 | fixed | FR-352 now reads "It is present exactly for a run over a `model` trace, the one run whose evaluation a request-settable limit bounds, and omitted for every other run". "today" is gone. |
+
+Round 1 verdict: APPROVE.
