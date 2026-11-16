@@ -25,7 +25,7 @@ result with the expected result.
 | Vector | Input | Expected result | AC |
 | --- | --- | --- | --- |
 | CI-01 | TP-01's certificate with one value altered; with its identity changed | `certificate-rejected`, `inequality-fails` at the first failing state; `invalid_runtime_input`/`conflicting-identity` before the product is rebuilt | FR-751-AC-1 |
-| CI-02 | TP-01's certificate with `route: region`; with `scale: 2`; with a key whose cap of `x` is 3 | objective mismatch, `invalid_runtime_input`/`invalid-value` (twice); `malformed` at `values` | FR-751-AC-2 |
+| CI-02 | TP-01's certificate with `route: region`; with `scale: 2`; with a key whose cap of `x` is 2 instead of 3 | objective mismatch, `invalid_runtime_input`/`invalid-value` (twice); `malformed` at `values` | FR-751-AC-2 |
 | CI-03 | TP-01's certificate with one reachable state removed; with one unreachable key added | `malformed` at `values` (twice) | FR-751-AC-3 |
 | CI-04 | The certificates of FR-752-AC-1, FR-752-AC-3, FR-753-AC-1 and FR-753-AC-4, each also with one value altered, in a separate process | each accepted; each altered one rejected | FR-751-AC-4 |
 

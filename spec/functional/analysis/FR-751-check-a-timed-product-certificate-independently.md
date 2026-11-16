@@ -107,7 +107,7 @@ first state in canonical key order, is the result.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-751-AC-1 | FR-725-AC-1's certificate with one value altered is rejected `certificate-rejected`, rule `inequality-fails`, at the first failing state; with its identity changed it is refused `invalid_runtime_input`/`conflicting-identity` before the product is rebuilt. | Test (TC-1768) |
-| FR-751-AC-2 | The same certificate with `route` changed to `region`, or with `scale` changed to `2`, is refused as an objective mismatch, `invalid_runtime_input`/`invalid-value`; a key with the cap of `x` changed from 2 to 3 is rejected `malformed` at `values`. | Test (TC-1768) |
+| FR-751-AC-2 | The same certificate with `route` changed to `region`, or with `scale` changed to `2`, is refused as an objective mismatch, `invalid_runtime_input`/`invalid-value`; a key with the cap of `x` changed from 3 to 2 is rejected `malformed` at `values`. | Test (TC-1768) |
 | FR-751-AC-3 | A certificate that omits one reachable state is rejected `malformed` at `values`; one that adds a key the rebuilt product does not reach is rejected the same way. | Test (TC-1768) |
 | FR-751-AC-4 | The checker, run in a process that contains no part of the provider, accepts the certificates of FR-752-AC-1, FR-752-AC-3, FR-753-AC-1 and FR-753-AC-4 from their bytes and the package, and rejects each with one value altered. | Test (TC-1768) |
 
