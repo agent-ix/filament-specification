@@ -243,15 +243,14 @@ Every object artifact contained in this context SHALL declare, explicitly:
 
 ## Ubiquitous Language
 
-- **Authored** — written by a person in native Filament source, and therefore
-  carrying a source identity and span.
-- **Derived** — computed from other identified things under a named rule, and
-  changing whenever any input to that rule changes.
-- **Key** — the exact component tuple that decides equality.
-- **Key order** — the total order over keys used for collection comparison.
-- **Causal order** — the authored partial order over protocol nodes.
-- **Absence** — the explicit state of a component that was not supplied, held
-  distinct from every supplied value.
+| Term | Description |
+| --- | --- |
+| Authored | Written by a person in native Filament source, and therefore carrying a source identity and span. |
+| Derived | Computed from other identified things under a named rule, and changing whenever any input to that rule changes. |
+| Key | The exact component tuple that decides equality. |
+| Key order | The total order over keys used for collection comparison. |
+| Causal order | The authored partial order over protocol nodes. |
+| Absence | The explicit state of a component that was not supplied, held distinct from every supplied value. |
 
 ## Acceptance Criteria
 

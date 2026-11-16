@@ -100,8 +100,16 @@ A model-arm step is `{transition, post_state}`: `transition` is the step's
 or `{"type":"terminal-stutter"}` for the terminal stutter step; `post_state` is
 the state key of the step's post-state. An
 observed-arm step is `{document}`: the zero-based position in `request.provision` of the observed
-document at that position. The loop's entry is the position after the
-prefix's last step.
+document at that position. An observed trace whose positions are record
+samples of a declared record trace subject, not provisioned documents, has
+the observed-arm step `{sample}` instead: `sample` is the `U64String`
+zero-based index of the position in the request trace's own position list,
+prefix positions first and then loop positions. The index, not the sample's
+value, is the position's identity, because two equal samples at different
+positions are different positions of the trace, and replay reads the sample
+at that index from the same request. A sample step carries no other member;
+one counterexample's steps are all `document` steps or all `sample` steps.
+The loop's entry is the position after the prefix's last step.
 
 For a task-automaton deadline-miss counterexample, the prefix ends at the
 concrete missed-deadline product state of a named live job: its absolute
@@ -243,6 +251,7 @@ with these key names:
 | `position` | the trace position of the evaluation point |
 | `state_key` | model arm: the state key of the state there |
 | `document` | observed arm: the `U64String` position in `request.provision` of the observed document there |
+| `sample` | observed arm over record samples, in place of `document`: the `U64String` index of the sample position there in the request trace's position list |
 | `locus` | the source locus of the expression that has no value |
 | `transition` | for an undefined guard only: the FR-181 transition identity whose guard it is |
 | `predicate` | for a predicate of a state-graph claim only: `"P"`, `"Q"`, `"X"` or `"Y"`, the predicate that has no value ([FR-393](../../objects/interfaces/FR-393-state-graph-evidence.md)) |
@@ -317,7 +326,7 @@ The replayer SHALL, in this order:
    finite concrete miss prefix.
 4. If `queue_growth` is absent, for an ordinary lasso check that the loop's
    last step returns to the loop's entry (model arm: its post-state is the
-   entry state; observed arm: its document is the entry document), else refuse
+   entry state; observed arm: its document is the entry document; for sample steps, whose indices name the request's own lasso positions, the loop's indices are exactly the request trace's loop positions in order), else refuse
    `invalid_runtime_input`/`invalid-value`. For a task-automaton deadline-miss
    lasso, check instead that the final source-plus-scheduler control equals
    the loop entry modulo canonical live-slot alpha-renaming, the exact clock
@@ -383,6 +392,7 @@ counterexamples an engine returned.
 | FR-364-AC-10 | The wire schema admits an observed-arm formula counterexample (null `initial_state` and `over_binding`, two `document` steps) and an observed-arm undefined-evaluation envelope whose `where` carries `position`, `document` and `locus`; it refuses an observed-arm counterexample that names an initial state, carries an `over_binding`, carries a model-arm step in its `prefix` or in its `loop`, has `kind` `deadlock`, has `kind` `time-lock` with its `final_delay`, or has an envelope whose `where` carries `state_key` or `state_keys`; and it refuses a model-arm counterexample that has a null `initial_state`, carries a `document` step in its `prefix` or in its `loop`, or has an envelope whose `where` carries `document`. | Test (TC-431) |
 | FR-364-AC-14 | The backend-provider schema admits the typed RT-25 `queue_growth` wire vector and refuses omission of `iteration_shift`, zero `elapsed`, and a simultaneous nonempty `loop`; the vector test recomputes the two-unit cycle delay, work balance, positive backlog increment, and verifies `after(k)=before(k+1)` by affine queue-word expansion for the authored index range. These are wire/vector checks only; the task replay and queue-growth behavior above remain normative and require behavioral verification in the downstream FSL implementation. | Test |
 | FR-364-AC-15 | The optional `priority` member on every task-transition identity, `QueueGrowthJob` and `QueueGrowthTransition` is a faithful projection of the checked task declaration: it is absent for a task with no declared priority and equals the declared value otherwise. Replay refuses a missing, extra or forged value for every carrier. Replay recomputes fixed-priority order from checked declared values and EDF order from checked deadlines, then canonical task name, activation transition identity and occurrence; source declaration order and declared priority do not affect EDF ties, including symbolic queue-growth `ready_order`. | Test (TC-372 RT-31, RT-32) |
+| FR-364-AC-16 | An observed-arm counterexample over a record-sample lasso with prefix samples `level` 0, 0 and loop sample `level` 2 is admitted with `prefix` `[{"sample": "0"}, {"sample": "1"}]` and `loop` `[{"sample": "2"}]`, and replays against the request that supplied the samples. A step carrying both `sample` and `document`, a `sample` that is a JSON number, `"01"` or an index beyond the trace's positions, a counterexample mixing `sample` and `document` steps, and a loop whose sample indices are not the request's loop positions are each refused before replay. An undefined-evaluation envelope over the same trace whose `where` carries `sample` `"1"` (with `position` and `locus`) is admitted; its `where` carrying `document` instead, both `sample` and `document`, or a `sample` that is not the index of the envelope's `position` is refused before replay. | Test (TC-1700) |
 
 ## Dependencies
 
