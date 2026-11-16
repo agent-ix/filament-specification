@@ -233,7 +233,9 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   when there is one and absent otherwise (never `null` or `[]`). A clock name
   is a role of the whole compile request, so the entry for a clock name that
   the package's own declarations also use holds the same configuration as
-  their `temporal_bindings` rows. A library package records its own
+  their `temporal_bindings` rows, and the entry is written for it all the
+  same: a replay serves every library unit from this member alone and never
+  from the package's own rows (FR-323). A library package records its own
   declarations' rows in its own `temporal_bindings`, but a replay recompiles
   the closure from sources alone and reads only the proved package (FR-323),
   so this member is where the proved package keeps the configurations its
