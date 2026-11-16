@@ -3,6 +3,8 @@ id: FR-520
 title: "Carry an analyze request and its result as one document pair"
 type: FR
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-570
+    type: references
   - target: ix://agent-ix/filament-specification/US-010
     type: implements
   - target: ix://agent-ix/filament-specification/FR-300
@@ -50,8 +52,9 @@ members:
 | `program` | 0..1 | The program source selection `{source: {file, authority, identity, document, formal_revision}}`, the source selection the native run request uses (FR-323): `file` is resolved against the request document's directory, and `authority` and `identity` are the source labels the checked package records. Required unless `package` is present. |
 | `package` | 0..1 | A selection `{file}` of an existing `filament.checked-package/v2` artifact (FR-322), admitted by the checked-package reader with no source compiled, as the native run request selects one (FR-323). |
 | `models` | 0..* | `semantic-ir/2.0.0` domain package selections `{format, source}`, each `source` a source selection as for `program`, as the native run request carries them (FR-323). |
-| `libraries` | 0..* | `{identity, source, refinement_internals?}` library selections: `identity` is the library's package identity, `source` a source selection as for `program`, and `refinement_internals` that library's refinement internals (below), as the native run request's dependency entries carry them (FR-323 `DependencyEntry`). |
+| `libraries` | 0..* | `{identity, source, refinement_internals?, integer_division?}` library selections: `identity` is the library's package identity, `source` a source selection as for `program`, `refinement_internals` that library's refinement internals (below), and `integer_division` that library's integer-division law name (below), as the native run request's dependency entries carry them (FR-323 `DependencyEntry`). |
 | `refinement_internals` | 0..1 | The program's own refinement internals: one JSON value naming, for each refinement the program declares, the internal names its abstract side reads (FR-375), handed to compilation unchanged. Absent means the empty list. The same member on a `libraries` entry names that library's refinements only. |
+| `integer_division` | 0..1 | The program's integer-division law name, `euclidean`, `floor` or `truncating`, as the native run request carries it (FR-301, FR-570): it selects the law for every program unit's `div` and `rem`, composes with a header law as FR-570 states, and never reaches a library, which takes only its own `integer_division`. An unknown name refuses `unknown_profile` `unsupported-selection` before any source is read; a member beside `package` refuses `invalid-request`. |
 | `documents` | 0..* | `{file}` selections of supplied documents: initial-state snapshots (`filament.state.snapshot/v1`) and supplied finite protocol traces (`trace`, below). Each is provisioned under the `{authority, identity}` it declares for itself, and a second document under one identity refuses `invalid-request`. |
 | `memory` | 0..* | FR-331's `request.memory` weak-memory selections, one per weak `parallel` of the subject (FR-439). |
 | `subject` | 0..1 | The default model subject `{initial_states, universes, proof_bounds}` in FR-331's `temporal.subject` spelling; each reference names a provisioned document by `{authority, identity}`. |
@@ -122,6 +125,7 @@ An analysis item has these members:
 | FR-520-AC-2 | An item carrying `request_index`, `extent` or `candidates` refuses the whole request with `invalid-request`, exit `20`. | Test (TC-1080) |
 | FR-520-AC-3 | A refuted item carries an FR-331 counterexample entry and a replay target, and every category and record label in the result is registered by FR-352. | Test (TC-1080) |
 | FR-520-AC-4 | An item selecting partial-order reduction for a bounded MLTL claim settles `inconclusive` `reduction-not-preserving` while the request's other items settle as they do alone. | Test (TC-1080) |
+| FR-520-AC-5 | A `native-analyze/1` request whose program declares `a div 2` with no law header and carries `"integer_division": "floor"` compiles its program and settles its items; without the member it refuses the whole request `missing_declaration`/`missing-selection` at the `div` with no item settled; with `"integer_division": "ceiling"` it refuses `unknown_profile`/`unsupported-selection` before any source is read. | Test (TC-1654) |
 
 ## Dependencies
 

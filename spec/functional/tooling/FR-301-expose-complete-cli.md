@@ -100,7 +100,8 @@ in the default build:
 - `compile` and `run` requests carry extension definitions in their
   `extensions` member, and `parse` and `check` take `--extensions <file>`
   ([FR-562](FR-562-name-extension-definitions-to-a-command.md)).
-- `compile` and `run` requests carry the integer-division law in their
+- Every request that compiles a program (`compile`, `run`, `analyze`, `prove`
+  and `monitor` requests) carries the integer-division law in its
   `integer_division` member (top level for the program, and on each library
   entry for that library), and `check` takes `--integer-division <law>`, where
   `<law>` is `euclidean`, `floor` or `truncating`. There is no default law;
@@ -140,7 +141,7 @@ exit `20`.
 | FR-301-AC-3 | Unknown options/profiles/providers refuse before execution and identify the command argument locus. | Test (TC-221) |
 | FR-301-AC-4 | A verb the build accepts but does not route exits `21` with an outcome document naming the verb under `unsupported_operation`/`operation-not-routed` (FR-522), and no verb exits with empty machine output while its stream is open. | Driver test (TC-1082): only the CLI binary decides verb routing, so the driver code ticket QSL-1995 adds the test in the driver repository. |
 | FR-301-AC-5 | `version --format json` writes the build inventory document; `check --markdown` over a document of two native fences writes one item per fence; `compile` with a `handoff` member writes the handoff directory and `inspect --handoff` over it exits `0`; `--provider-config` naming a document with no `providers` member, and `--extensions` naming a set document with an unknown entry member, each exit `20` before any stage runs. | Test (TC-1244) |
-| FR-301-AC-6 | `check --integer-division floor` over a unit with `div` and no law header exits `0`; without the option it exits `20` with `missing_declaration`/`missing-selection`; `--integer-division ceiling` exits `20` with `unknown_profile`/`unsupported-selection` naming the option and the value before reading the source; a `run` request whose `integer_division` member is `floor` evaluates `-7 div 3` to `-3`; and `--integer-division` on `compile` or `run` refuses as an unknown option, exit `20`. | Test (TC-1651) |
+| FR-301-AC-6 | `check --integer-division floor` over a unit with `div` and no law header exits `0`; without the option it exits `20` with `missing_declaration`/`missing-selection`; `--integer-division ceiling` exits `20` with `unknown_profile`/`unsupported-selection` naming the option and the value before reading the source; a `run` request whose `integer_division` member is `floor` evaluates `-7 div 3` to `-3`; and `--integer-division` on `compile`, `run`, `analyze`, `prove` or `monitor` refuses as an unknown option, exit `20`. | Driver test (TC-1651): the CLI binary parses the option and renders the outcome, so the code ticket adds the test in the driver repository. |
 
 ## Dependencies
 
