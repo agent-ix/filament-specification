@@ -524,6 +524,22 @@
       },
       "additionalProperties": false
     },
+    "DependencyClockSelection": {
+      "type": "object",
+      "required": [
+        "clock_name",
+        "clock"
+      ],
+      "properties": {
+        "clock_name": {
+          "$ref": "#/$defs/Nonempty"
+        },
+        "clock": {
+          "$ref": "#/$defs/ClockConfiguration"
+        }
+      },
+      "additionalProperties": false
+    },
     "PackageLock": {
       "type": "object",
       "required": [
@@ -575,6 +591,13 @@
           "minItems": 1,
           "items": {
             "$ref": "#/$defs/RefinementInternal"
+          }
+        },
+        "dependency_clock_selections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/DependencyClockSelection"
           }
         }
       },

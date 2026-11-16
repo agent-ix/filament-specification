@@ -120,6 +120,7 @@ boundary.
 | lock | JsonObject | 1..1 |  |
 | lock_dependency_selections | JsonObject | 0..* |  |
 | lock_refinement_internals | JsonObject | 0..1 |  |
+| lock_dependency_clock_selections | JsonObject | 0..1 |  |
 | semantic_graph | JsonObject | 1..1 |  |
 | source_map | JsonObject | 1..1 |  |
 | refinement_step_rows | JsonObject | 0..1 |  |
@@ -142,6 +143,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | lock | source-document, edition, ordered profile, dependency and required-feature identities; entries are `{authority, identity}` |
 | lock_dependency_selections | lock member `/lock/dependency_selections`; one `{identity}` per directly imported library, strictly ascending UTF-8 byte order; multiplicity when none not stated in source; see Field sources |
 | lock_refinement_internals | lock member only; present only when some refinement list is non-empty, absent otherwise (absent is the empty list, never null or []) |
+| lock_dependency_clock_selections | lock member only; present only when a library unit of the closure takes a clock configuration from the compile request, absent otherwise (never null or []) |
 | semantic_graph | one `filament.checked-semantic-graph/v2` closed tagged-node union; tags scalar_type, composite_type, bounded_domain, value, expression, function, model, relation, state, temporal, protocol, claim, correspondence, extension, hybrid |
 | source_map | total semantic-occurrence to source-region mapping keyed (node_id, role, ordinal) |
 | refinement_step_rows | absent exactly when no relation/refinement node has a steps entry; else a nonempty array |
@@ -222,6 +224,32 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   decided by the recompile (FR-432).
   Its effect on meaning is already in the refinement nodes' `abstract_internal`
   (FR-375).
+- `dependency_clock_selections` — the clock configurations the compilation
+  served to the library units of its closure, a lock member only: an array of
+  closed `{clock_name, clock}` objects, `clock` in the `ClockConfiguration`
+  form of "Temporal clock bindings", one per clock name that a clock-bearing
+  declaration of any library unit in the package's derived closure (direct
+  or transitive) takes from the request rather than from a model, present only
+  when there is one and absent otherwise (never `null` or `[]`). A clock name
+  is a role of the whole compile request, so the entry for a clock name that
+  the package's own declarations also use holds the same configuration as
+  their `temporal_bindings` rows. A library package records its own
+  declarations' rows in its own `temporal_bindings`, but a replay recompiles
+  the closure from sources alone and reads only the proved package (FR-323),
+  so this member is where the proved package keeps the configurations its
+  libraries were compiled under; it makes the replay independent of any
+  configuration the replay request could supply. It is canonical: objects
+  ascend by `clock_name` in UTF-8 byte order with no repeated name. An object
+  not strictly after its predecessor refuses `invalid_package`/`invalid-value`
+  at its pointer and a repeated `clock_name` `invalid_package`/`conflicting-definition`
+  with both entries as loci; an entry whose `clock_name` is `model-steps` or
+  `model-time` refuses `invalid_package`/`invalid-value` at
+  `/lock/dependency_clock_selections/{i}/clock_name`; an entry whose
+  `clock_name` equals a `temporal_bindings` row's with a different `clock`
+  refuses `invalid_package`/`conflicting-definition` naming the entry and the
+  row. Whether each entry is used, and by a declaration of the matching kind,
+  is decided by the recompile (FR-323). The member enters the package bytes,
+  and so the package identity, as `refinement_internals` does.
 - `semantic_graph` — one `filament.checked-semantic-graph/v2` closed tagged-node
   union. Its current tags are `scalar_type`, `composite_type`,
   `bounded_domain`, `value`, `expression`, `function`, `model`, `relation`,
@@ -5002,6 +5030,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-397 | A package carries `operation_bodies` or omits it; when omitted the bodies are unavailable, not empty, and no other member changes. When present it has exactly one closed `{document, declaring, operation, body}` row per operation member of every admitted `object_type`, `process` and `state_machine` declaring node, keyed and sorted by `(document, declaring, operation)` as `operation_effects`, and is an empty array only when no selected document declares an operation member. `body` is `{"kind": "function", "node"}` naming a package `function` node exactly when the operation has a body, derived from the package graph alone (a `function` node whose `owner` is the operation member and whose `clause` binding is `body`; a domain document carries no `has_body`), and `{"kind": "no_body"}` otherwise; no row or `body` is omitted, null or defaulted, the `function` node is the operation's own body clause function (its `owner` node is the operation member and its clause kind is `body`), and each dispatch candidate in the family of its table's selected operation (its receiver `selection_key.original` conforms to the selected declaring type and its effective operation reaches the selected one through `Operation.redefines`) joins the row of the type that declares that effective operation, never a row by `selected_operation` alone, and a candidate outside the family is left to the dispatch join (OBD-01), and requires a `function` row whose node equals the candidate's `operation_body`, so two candidates of one table with different bodies are each admitted against their own row. The owner join of every owner-bearing node precedes `operation_effects`, which precedes this carrier, which precedes `checked_term_data` validation, so a clause function whose owner names no declared member refuses in the owner join. The positive vectors OBC-01 to OBC-07 are schema-valid and read back; the exact `malformed_wire`, `missing_declaration`, `ill_typed` and `invalid_package` refusals and loci for missing or extra members, a malformed `body`, an unselected, absent, ineligible or foreign declaring node, a field or inherited operation, a body that disagrees with the document, an absent, non-function, other-operation, precondition or other-package body node, a candidate mismatch, a candidate carrying another candidate's body or a `no_body` row for a joined candidate that carries a body, a repeated key, key order and missing coverage are in TC-987. FSL emits the carrier and the IR strict reader admits or refuses it; the IR does not mirror it. | Test (TC-987) |
 | FR-322-AC-450 | A timed clause over a trace subject with one `{kind: "timed", unit}` row naming its clock role is admitted, and the `timed` alternative is closed with a required non-empty `unit`; the same clause without a row, a `timed` row whose `clock_name` is `model-time`, and a `timestamped_event` row for it each refuse `invalid_package`/`timed-node-reference`; a timed clause over a timed-model subject has no row and the clock name `model-time`, and a `timed` or `event_position` row for it refuses at that row. | Test (TC-1164) |
 | FR-322-AC-451 | An `application` of `filament.op.quantity.scale` with arguments `[reference(Q), reference(N)]`, `Q` a `quantity` typed by the unit node of `ms` and `N` an `integer`, is admitted with result type the unit node of `ms`, no laws, `mode` `null` and no member, and so is `filament.op.quantity.scale_div` with a `decimal` or `rational` factor; a third argument, a `float64` or `quantity` factor, the arguments in the order factor then quantity, a carried-quantity argument 0 and a `result_type` other than the unit node of `ms` each refuse `ill_typed`/`operator-ineligible`, a `mode` value refuses `invalid_package`/`operation-mode-mismatch` and a `laws` entry refuses `invalid_package`/`operation-law-mismatch`; both V2 schemas enumerate `filament.op.quantity.scale` and `filament.op.quantity.scale_div` in `OperationIdentity` directly after `filament.op.quantity.pow`, and the catalog entry of `filament-verification-contracts` carries them. | Test (TC-1326) |
+| FR-322-AC-452 | A package whose library unit declares a timestamped-event clause on clock `lib-ms`, compiled with the request configuration `{"kind": "timestamped_event", "timestamp_unit": "ms"}` for `lib-ms`, carries `lock.dependency_clock_selections` `[{"clock_name": "lib-ms", "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"}}]`, and a package whose closure takes no clock from the request omits the member. The reader refuses `[]` and an entry with a third key at the schema; two entries out of `clock_name` order `invalid_package`/`invalid-value` at the later entry; a repeated `clock_name` `invalid_package`/`conflicting-definition` with both entries as loci; a `clock_name` of `model-steps` `invalid_package`/`invalid-value` at that entry's `clock_name`; and an entry for a clock name the package's own `temporal_bindings` row also names, with a different configuration, `invalid_package`/`conflicting-definition` naming the entry and the row. Two compilations differing only in the `lib-ms` configuration give structurally unequal packages. | Test (TC-1661) |
 
 ## Dependencies
 

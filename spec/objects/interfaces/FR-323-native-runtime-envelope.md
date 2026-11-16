@@ -93,7 +93,21 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   then recompiles the proved package from `package.lock.sources` and uses the
   result. The replay compares no recompiled package with any supplied or
   recorded package; a replay reads the proved package document only for its
-  `name`, lock `sources` and lock `refinement_internals`. It refuses with the first of these, each rule
+  `name`, lock `sources`, lock `refinement_internals`, `temporal_bindings` rows
+  and lock `dependency_clock_selections` (FR-322). The recompile of every unit,
+  the proved package's and each dependency's, takes its clock configurations
+  from one selection keyed by clock name, built from the proved package's
+  `temporal_bindings` rows (each row's `clock_name` and `clock`) and its
+  `dependency_clock_selections` entries; a request carries no clock
+  configuration, so a replay recompiles every library under exactly the
+  configuration the proof ran under. A library declaration whose clock name
+  the selection does not hold refuses in the recompile with the compile
+  request's `missing-clock-selection` cause naming the clock, located at
+  `/package/lock/dependency_clock_selections`; a `dependency_clock_selections`
+  entry that no recompiled library declaration reads refuses
+  `unused-clock-selection` at that entry, and one whose kind is not the kind
+  the reading declaration's profile needs refuses `clock-kind-mismatch` at
+  that entry's `clock/kind`; none yields a result. It refuses with the first of these, each rule
   applied over all entries, in entry order, before the next rule, and
   yields no result:
   1. before any recompile, entries not in strictly ascending UTF-8 byte
@@ -596,6 +610,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-35 | **RETIRED (source-byte integrity removed).** Withdrawn with no replacement: a `sources` entry is `{authority, identity}` and no entry's bytes are digested. | Test (TC-277), retired |
 | FR-323-AC-36 | A `function` replay request for a unit `q` that imports the library `test/units`, with `replay` `{"function": "big", "function_owner": "test/units", ...}` and `test/units` as its one `dependencies` entry, executes `big` of `test/units` against that library's recompiled package, joining the arguments by that package's parameter node ids; with the unit also declaring a function `big`, the owner-carrying request still executes the library's `big`, and the same request without `function_owner` executes the unit's. The corpus schema's `$defs.ReplayTargetMembers` admits `function_owner` only in the `function` arm, as a non-empty string, and the request round-trips with its owner. | Test (TC-1484) |
 | FR-323-AC-37 | A request carrying `function_owner` beside `frame_operation` or `state_clause` refuses `invalid_runtime_input`/`unknown-member` at `/replay/function_owner` at decode, before the byte-provision rule and any recompile, and fails the corpus schema; a `function_owner` of `test/absent`, which the unit does not import, or of a library present in `dependencies` only as the import of another dependency, refuses `missing_import`/`missing-selection` at `/replay/function_owner`; an owner-carrying request for a name `test/units` does not declare refuses `missing_declaration`/`missing-name`; one for a function whose signature names a record type of `test/units` refuses `ill_typed`/`operator-ineligible`; each refuses before any argument join or call, with no charge and no result. | Test (TC-1484) |
+| FR-323-AC-38 | A replay request for a proved package that imports a library whose timestamped-event clause is on clock `lib-ms`, a clock no declaration of the proved package uses, and whose lock carries `dependency_clock_selections` for `lib-ms`, recompiles the library under that configuration and replays to the result the proved run gave, with no clock member in the request. The same request whose package has the member removed refuses `missing-clock-selection` naming `lib-ms` at `/package/lock/dependency_clock_selections`; one whose member adds an entry `spare` no library declaration reads refuses `unused-clock-selection` at that entry; one whose `lib-ms` entry is a `fixed_sample` configuration refuses `clock-kind-mismatch` at that entry's `clock/kind`. None yields a result. | Test (TC-1662) |
 
 ## Dependencies
 

@@ -15,6 +15,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-149
     type: references
+  - target: ix://agent-ix/filament-specification/FR-461
+    type: references
 ---
 
 # FR-147: Evaluate mathematical and bounded integer division
@@ -129,6 +131,19 @@ not exempt because it needs no law.
   otherwise the check refuses `undefined_expression`/`unproved-range`. The
   result is typed this way so that a remainder that is in fact bounded can
   flow into a bounded consumer without a guard.
+- **Exact interval, bounded search.** The result type is the exact smallest
+  interval; a checker SHALL NOT widen it to the divisor bound above because
+  the exact interval is costlier to find (`Int[0, 2] mod Int[5, 6]` has type
+  `Int[0, 2]`, not `Int[0, 5]`). The lower endpoint of a remainder over a
+  singleton dividend `n` has no known closed form: whether some divisor in
+  `[2, k]` leaves remainder 0 is whether `n` has a factor no larger than `k`,
+  the decision form of integer factorization, for which no algorithm
+  polynomial in the bit length of `n` is known. A checker therefore computes
+  the interval by a search whose work is charged to its checking work limit,
+  and when that limit is reached it reports the stage limit naming the limit,
+  its value and the setting that raises it (FR-461), at the operator, and
+  admits nothing; it never substitutes a wider type. Every work limit under
+  which a program is admitted therefore gives it the same result types.
 
 ## Acceptance Criteria
 
@@ -147,6 +162,7 @@ not exempt because it needs no law.
 | FR-147-AC-11 | In the shared grammar, `div`, `rem` and `mod` parse at product precedence in both a complete-value declaration and a declaration without `filament.value.complete/v1`; semantic admission accepts each well-typed complete-value form under its selected law, but returns a located `unsupported_construct` for each occurrence without that facet, including in an unreachable branch. `/` never becomes integer division; only under complete value may a rational `/` with an expected rational result type promote integer operands exactly under FR-149. | Test |
 | FR-147-AC-12 | For `a: Int[0, 100]` and `b: Int[1, 12]`, `a mod b` has result type `Int[0, 11]` and is admitted into an `Int[0, 11]` consumer, and is refused `unproved-range` into `Int[0, 10]`; with `a` of the unbounded integer type `a mod b` still has type `Int[0, 11]`. For `a: Int[-100, 100]` and `b: Int[1, 12]`, `a rem b` has type `Int[0, 11]` under the Euclidean and floor laws and `Int[-11, 11]` under the truncating law, and `a div b` over `a: Int[0, 100]` has type `Int[0, 100]`. | Test (TC-1281) |
 | FR-147-AC-13 | Under every law, `a div b`, `a rem b` and `a mod b` with `b: Int[0, 12]` and no exact nonzero guard are each refused `undefined_expression`/`unproved-nonzero` at the operator before any range obligation; with `b: Int[1, 12]` or under the guard `b != 0` the nonzero obligation is discharged. | Test (TC-1281) |
+| FR-147-AC-14 | `a mod b` with `a: Int[0, 2]` and `b: Int[5, 6]` has type `Int[0, 2]`; with `a: Int[91, 91]` and `b: Int[2, 12]` it has type `Int[0, 7]`; with `a: Int[97, 97]` and `b: Int[2, 12]` it has type `Int[1, 9]`; with `a: Int[-7, -7]` and `b: Int[3, 5]` it has type `Int[1, 3]`. Each is admitted into a consumer of exactly that interval and refused `unproved-range` into the interval with either endpoint narrowed by one. Checked under a work limit below the cost of its search, a remainder over a prime singleton dividend near 10^9 and a divisor range of width near 10^9 is reported as a stage limit naming the work limit and its setting, at the operator, and is never admitted under a wider type nor refused `unproved-range`. | Test (TC-1660) |
 
 ## Dependencies
 
