@@ -79,13 +79,13 @@ A clause naming a workload of another model refuses with
 An **event** is a Boolean function of a behaviour that a finite prefix
 decides. It is one of:
 
-- a formula under a bounded profile with activation `on origin`, whose truth
-  depends on the positions up to its horizon `h` (FR-091, FR-092); interval
+- a formula under a bounded profile, whose truth depends on the positions
+  from its activating position up to its horizon `h` after it ("Activation") (FR-091, FR-092); interval
   operators nest in any order;
 - under the timed profile, a bounded-window formula
-  ([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md)) with
-  activation `on origin`, decided by the positions whose time stamp is at most
-  its time horizon;
+  ([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md)), decided by
+  the positions whose time stamp is at most its time horizon after the
+  activating position;
 - a comparison `M <= c` or `M >= c` of a bounded measure `M` with a threshold
   `c` of `M`'s type.
 
@@ -95,8 +95,8 @@ timed profile, refuses with
 `invalid_probabilistic_model`/`unbounded-event`, and the diagnostic states
 that a probabilistic event needs a finite window. A bounded-window formula
 under the timed profile is an admitted event; a strict timed interval is
-admitted by the frontend and settles `unsupported`,
-`strict-clock-constraint` ([FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md)).
+admitted by the frontend and decided exactly over the region abstraction
+([FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md)).
 An interval-less operator under a profile other than the infinite-trace
 profile never reaches this check: the temporal frontend refuses it first with
 `unsupported_construct` ([FR-048](../foundation/FR-048-bind-native-temporal-syntax.md),
@@ -194,6 +194,28 @@ Statistical evidence requires them
 reads none of them ([FR-411](FR-411-settle-probabilistic-claims-exactly.md)). A
 claim that states none is checked with exact evidence only.
 
+### Activation
+
+A probabilistic claim's activation is `on origin` or `on each (x: T)`,
+optionally with `when (g)`. `on origin` reads the claim's event or measure
+from position 0 of every run. `on each (x: T) when (g)` makes one instance of
+the claim per object of `T`'s population in the subject's universes, in
+product with the `over` parameter's instances, and reads each instance from
+its run's first activating position, the first position at which `g` holds
+for that object (every position, with no `when`). Each instance is
+conditioned on activation: a probability form reads
+`Pr(event from the activating position | the run activates)`, an
+expectation form reads the conditional expectation, and a long-run form,
+whose limit does not depend on where it starts, reads the same conditional
+value. A run that never activates is not counted. An instance whose
+activation has probability 0 holds vacuously, as a quantile claim does.
+The claim holds when every instance holds; a population with no object gives
+no instance, which settles `inconclusive` with `no-instance` (FR-331). `T`
+must be an object type some population of the model admits, and `g` a
+Boolean state expression; the frontend refuses any other `T` with
+`invalid_probabilistic_model`/`over-not-object-type` and a non-Boolean `g`
+with `ill_typed`/`type-mismatch`.
+
 ### Obligation identity
 
 The obligation identity of a probabilistic claim includes its subject, form,
@@ -223,6 +245,7 @@ request settings and are outside the obligation identity.
 | FR-407-AC-14 | `NoFault` with `indifference 0.002` (`θ + ι = 1.001`) refuses `invalid_probabilistic_model`/`invalid-confidence` naming `indifference`, and with `alpha 1` it refuses `invalid-confidence` naming `alpha`. | Test (TC-353) |
 | FR-407-AC-15 | `LongRun` with its scheduler clause written `under Steady fair weak Server::tick` refuses `invalid_syntax`/`unexpected-token` at `fair`, and with it written `under every scheduler fair weak Server::tick` it is admitted with the fairness set in its obligation identity. | Test (TC-353) |
 | FR-407-AC-16 | Under a bounded profile, `probability >= 0.99 [always holds(n.healthy)]` and `probability >= 0.99 [eventually[2, *] holds(n.healthy)]` each refuse `unsupported_construct` at the operator or interval span with the owning claim and selected profile, exactly as the same formula in a temporal clause under that profile refuses, and neither refuses `unbounded-event`; under the timed profile `eventually holds(P)` with no interval refuses `unsupported_construct` and `eventually[0 ms, 4 ms] holds(P)` is admitted; under the infinite-trace profile `[eventually[2, *] holds(P)]` refuses `invalid_probabilistic_model`/`unbounded-event`. | Test (TC-1562) |
+| FR-407-AC-17 | On a vector with two objects of `T`, where `g` first holds for the first at position 1 and never for the second, `on each (x: T) when (g)` gives one activated instance, read from position 1 and conditioned on activation, and one instance that never activates and holds vacuously; the same claim over a population with no object settles `inconclusive`, `no-instance`; `on each (k: Integer)` refuses `over-not-object-type`. | Test (TC-1650) |
 
 ## Dependencies
 

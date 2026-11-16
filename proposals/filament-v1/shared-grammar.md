@@ -51,8 +51,9 @@ An unsigned integer spelling is `0` or `[1-9][0-9]*`. A minus is a separate unar
 token. `..` is one two-character punctuation token, scanned by longest match, and
 only the refinement `seq` form uses it (FR-376); `.` stays member selection, so
 `0 .. 1`, `0..1` and `a.b` scan as `uint` `..` `uint` and `ident` `.` `member-name`. Leading zeros and malformed exponent/string forms are syntax errors.
-Decimal/exponent number forms may be recognized for an unsupported numeric-form
-diagnostic; recognition does not admit floating point. Numeric value/range
+A decimal literal is an exact decimal value (`decimal-literal` below). Exponent
+number forms may be recognized for an unsupported numeric-form diagnostic.
+Neither admits floating point. Numeric value/range
 checking follows syntax and the selected scalar domain.
 
 `digest` and `version` are not reserved words: a `digest` or `version` after a
@@ -422,7 +423,7 @@ case-arm      = qualified-name, [ '(', ident, { ',', ident }, ')' ],
                 ':', expr, ';' ;
 
 primary       = 'true' | 'false' | 'null' | 'none' | 'absent' | 'self' | 'result'
-              | uint | string | exact-number | collection-value
+              | uint | string | exact-number | decimal-literal | collection-value
               | record-value | float-value
               | qualified-name, [ '(', [ expr, { ',', expr } ], ')' ]
               | '(', expr, ')'
@@ -1218,8 +1219,15 @@ token.
 
 A `decimal-literal` is one token spelled `[0-9]+ '.' [0-9]+`, with no exponent. In an
 `exact-value` position it denotes the exact rational it spells, so `0.95` is
-`19/20` and `0.0005` is `1/2000`; it is never a floating-point value, and in
-every other position it keeps the unsupported numeric-form diagnostic.
+`19/20` and `0.0005` is `1/2000`; it is never a floating-point value. As a
+`primary` it denotes exactly the decimal constructor `decimal(c, s)` that
+spells the same number, `c` its digits without the point and `s` the count of
+digits after the point, so `0.9` is `decimal(9, 1)` and `0.90` is
+`decimal(90, 2)`, and it is typed, limited and evaluated as that constructor
+([FR-662](../../spec/functional/foundation/FR-662-read-a-bare-decimal-literal-as-an-exact-decimal.md)).
+A `decimal-literal` followed by a qualified name is a `quantity-literal`. An
+exponent spelling (`1e5`, `1.5E-3`) keeps the unsupported numeric-form
+diagnostic, `invalid_syntax`/`invalid-token` at the whole spelling.
 
 A `probabilistic-clause` with no `over` parameter has one binding, the empty
 one; with `over (p: T)` it holds for every binding of `p`
@@ -1232,7 +1240,7 @@ A `scheduler-clause` of the form `under ident` takes no `fairness-item`:
 fairness items follow only `under every scheduler`, so `under W fair weak Op`
 is `invalid_syntax`/`unexpected-token` at `fair`. A dimensionless threshold
 after a `measure`'s `bound-op` is an `expr`, so it is written
-`rational(n, d)` or `decimal(n, s)`, as in
+`rational(n, d)`, `decimal(n, s)` or a decimal literal, as in
 `fraction holds(v.up) over [0, 10000] >= rational(999, 1000)`.
 A `temporal-clause`, in the composed and the complete-V1 form alike, may omit
 its `clock` member; it then binds the default clock

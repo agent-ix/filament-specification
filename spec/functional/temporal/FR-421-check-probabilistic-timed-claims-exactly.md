@@ -32,9 +32,10 @@ a probabilistic timed automaton.
 When the exact provider settles such an item through digital clocks, it SHALL
 settle only a verdict that holds on the dense model.
 
-When such an item's subject or claim lies outside the digital-clock reading,
-the exact provider SHALL settle the item `unsupported` with the named cause of
-the rule it breaks.
+When such an item's subject has a continuous delay distribution, whose
+probabilities exact evidence cannot state, the exact provider SHALL settle the
+item `unsupported` with `delay-distribution{operation}`; every other subject and
+claim of this class SHALL settle an exact verdict.
 
 ## Inputs
 
@@ -45,9 +46,9 @@ clause ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)).
 ## Outputs
 
 An [FR-411](../analysis/FR-411-settle-probabilistic-claims-exactly.md) exact
-verdict over the digital process, or `unsupported` with `strict-clock-constraint`,
-`delay-distribution`, `not-stochastic`, `zero-delay-cycle`, `timed-form-shape`
-or `punctual-interval`.
+verdict over the digital process, or over the region process when a
+constraint is strict; or, for a continuous delay distribution only,
+`unsupported` with `delay-distribution{operation}`.
 
 ## Behavior
 
@@ -58,9 +59,11 @@ node of the checked package ([FR-640](../../objects/interfaces/FR-640-carry-prob
 and the items it settles are the timed rows of FR-641.
 
 `under every scheduler`, with or without a fairness set, chooses every delay
-and every scheduled identity, and random arguments are drawn by FR-406; a
-model whose operations declare a `delay` declaration settles `unsupported`,
-`delay-distribution{operation}`, on this form.
+no distribution gives and every scheduled identity, and random arguments are
+drawn by FR-406. A `discrete` delay distribution applies under every
+scheduler as it does under a workload: the race draws given delays with their
+probabilities, so the subject is a Markov decision process decided by its
+minimum and maximum.
 
 `under W` resolves the scheduled identity and, through FR-420's race, every
 delay a `discrete` distribution gives: each race outcome at a digital timed
@@ -71,16 +74,23 @@ identity's delay is so given, the subject under `W` is a Markov chain over
 digital timed states. The delay of an operation with no `delay` declaration stays
 the scheduler's choice, and the provider decides the claim over every
 resolution of those delays, the bound read on their minimum or maximum. A
-`uniform`, `uniform[a, b]` or `exponential` distribution has no exact digital
-reading and settles `unsupported`, `delay-distribution{operation}`; such claims
-are checked with statistical evidence. A digital timed state with no racing
-identity and a bounded delay settles `unsupported`, `not-stochastic`.
+`uniform`, `uniform[a, b]` or `exponential` distribution makes the subject a
+continuous-time process whose probabilities are in general not rational; it
+has no exact reading and settles `unsupported`, `delay-distribution{operation}`,
+and such claims are checked with statistical evidence (FR-420). A digital
+timed state with no racing identity and a bounded delay is a time-lock, decided
+below.
 
-### Closed condition
+### Closed and strict conditions
 
-Every atomic clock constraint in a guard, every time invariant and every timed
-interval of the claim is non-strict; a strict one settles `unsupported`,
-`strict-clock-constraint{locus}`.
+When every atomic clock constraint in a guard, every time invariant and every
+timed interval of the claim is non-strict, the provider reads the subject
+through digital clocks. When one is strict, it reads the subject through
+clock regions instead: each clock keeps its integer part, capped as below,
+whether its fractional part is zero, and the order of the clocks' fractional
+parts. The region process gives the exact minimum and maximum of every
+admitted form on the dense semantics, which digital clocks do not once a
+constraint is strict, so a strict constraint keeps an exact verdict.
 
 ### Digital clocks
 
@@ -97,37 +107,38 @@ and every delay a witness takes is a valid dense delay.
 
 ### Admitted forms
 
+Every bounded-window formula FR-407 admits under the timed profile is decided.
 Unbounded reachability and until over state predicates; deadline events
 `eventually[0, D] holds(P)` and `holds(A) until[0, D] holds(B)` with `D`
 closed, by one extra digital clock that no step resets, capped at `D + 1`; and
 `expected elapsed until holds(B)`, each delay move carrying one unit of time
-as its reward. Any other timed form settles `unsupported`,
-`timed-form-shape{locus}` at the unsupported form's exact formula node and
-member. The explicitly admitted deadline intervals are closed `[0,D]`,
-including the punctual boundary `[0,0]`. A punctual interval in any other form
-settles `unsupported`, `punctual-interval{locus}` at the exact interval operator
-and interval member, consistent with FR-416's typed cause.
+as its reward. `always[0, D] holds(P)` is the complement of
+`eventually[0, D] holds(not P)`, a minimum read as one minus the other's
+maximum. Every other bounded-window formula, a punctual interval included, is
+decided over the product with the claim's monitor, which keeps one deadline
+clock per interval operator occurrence, capped at its upper bound plus one.
 
-For an elapsed-time claim, `timed-form-shape{locus}` identifies the unsupported
-elapsed operator or formula member under that claim. For a punctual-interval
-claim, `punctual-interval{locus}` identifies the exact interval operator and
-bound member under that claim. Before reporting either cause, the provider SHALL
-resolve the probabilistic claim's exact `{declaration NodeRef, occurrence}`
-through `checked_term_data.probabilistic_claims`; the locus is a member of that
-resolved declaration's body and occurrence, not a lookup by display text. If two
-claims have equal display names or source spans, the provider preserves their
-distinct declaration identities and reports against the selected identity. A
-missing, foreign, wrong-kind or mismatched claim identity is an FR-322
-checked-package refusal before FR-421 evaluation, not an FR-421 unsupported
-result.
+The provider SHALL resolve the probabilistic claim's exact
+`{declaration NodeRef, occurrence}` through
+`checked_term_data.probabilistic_claims` and report its verdict against that
+identity. If two claims have equal display names or source spans, the provider
+preserves their distinct declaration identities and reports against the
+selected identity. A missing, foreign, wrong-kind or mismatched claim identity
+is an FR-322 checked-package refusal before FR-421 evaluation.
 
 ### Time divergence
 
-Every infinite digital path diverges exactly when no reachable cycle consists
-of discrete moves alone, which the provider checks by a strongly connected
-component decomposition of the discrete-move subgraph. A reachable zero-delay
-cycle settles `unsupported`, `zero-delay-cycle{states}`. Time-locks are reported
-by the time-lock-freedom item ([FR-417](FR-417-settle-time-lock-freedom.md)).
+A behaviour of a timed subject lets time diverge, so no scheduler stays
+forever in a cycle of discrete moves alone. The provider finds such cycles by
+a strongly connected component decomposition of the discrete-move subgraph
+and decides the item over the process with every end component that holds no
+delay move made transient: its states take the value of their best exit for
+the objective. An end component with no exit, and a state from which time
+cannot advance and no discrete move is enabled, is a time-lock: the run ends
+there with time frozen, so a deadline not yet met is never met, and the
+verdict is exact. The time-lock-freedom item
+([FR-417](FR-417-settle-time-lock-freedom.md)) reports time-locks as a
+property of their own.
 
 ### Evidence
 
@@ -148,10 +159,10 @@ with the scaled constants and is bounded only by the request's `max_states`.
 | FR-421-AC-1 | On the `Retx` vector, `Deadline` at 0.99 over every scheduler settles `proved`, `exact-value{99/100}` at equality, with maximum `9999/10000`. | Test (TC-374) |
 | FR-421-AC-2 | `Deadline` at 0.995 settles `refuted` by a one-path set of probability `1/100` with losses at 2 ms and 4 ms, and replay checks that the next `send` needs time past 4 ms. | Test (TC-374) |
 | FR-421-AC-3 | `MeanTime` settles `proved`, `exact-value{20/9 ms}` for the maximum expected time, with minimum `10/9 ms`. | Test (TC-374) |
-| FR-421-AC-4 | A strict guard settles `unsupported`, `strict-clock-constraint`; a `uniform` or `exponential` delay under a workload, or any `delay` declaration under every scheduler, settles `delay-distribution`; a zero-delay cycle settles `zero-delay-cycle`; an unadmitted timed form settles `timed-form-shape`. | Test (TC-374) |
+| FR-421-AC-4 | A strict guard is decided over clock regions and settles an exact verdict; a `discrete` delay under every scheduler is applied and the item settles an exact verdict; a zero-delay cycle is decided with its delay-free end component made transient; `always[0 ms, 4 ms] holds(P)` is decided as a complement; a time-locked state ends its run; only a `uniform` or `exponential` delay with exact evidence settles `unsupported`, `delay-distribution{operation}`. | Test (TC-374) |
 | FR-421-AC-5 | Under a workload whose every racing delay is `discrete`, the timed subject is a Markov chain and the exact value of the all-`discrete` `RareLate` variant is `1/20`. | Test (TC-374) |
 | FR-421-AC-6 | Under a workload, an operation with no `delay` declaration has its delay chosen by the scheduler, and the bound compares the minimum or maximum over those choices: on the all-`discrete` `RareLate` variant with `reply`'s delay free, the maximum is `1/2` and the minimum 0, and `probability <= 0.01` settles `refuted` with a witness scheduler that takes `reply`'s delay 3 ms. | Test (TC-374) |
-| FR-421-AC-7 | For two probabilistic claims with equal display names and source spans but distinct declaration identities, an unsupported elapsed form settles `unsupported`, `timed-form-shape{locus}` at the unsupported formula/member of the selected declaration, and a non-admitted punctual interval settles `unsupported`, `punctual-interval{locus}` at that declaration's exact interval operator/member. The selected declaration and its `claim` occurrence are resolved through FR-322-AC-297; the result retains the selected NodeRef and occurrence. | Test (TC-374) |
+| FR-421-AC-7 | For two probabilistic claims with equal display names and source spans but distinct declaration identities, a punctual-interval form and an elapsed form of the selected declaration each settle an exact verdict reported against that declaration's identity, never `unsupported`. The selected declaration and its `claim` occurrence are resolved through FR-322-AC-297; the result retains the selected NodeRef and occurrence. | Test (TC-374) |
 
 ## Dependencies
 
