@@ -72,7 +72,7 @@ true; at a `repeat` with a maximum, enter the body when the guard is true and th
 counter is below the maximum, enter `exhausted` when the guard is true at the
 maximum, leave when the guard is false, and advance the counter on each
 re-entry, the counter being 0 on each entry from outside the `repeat`; at a `repeat` with no maximum, enter the body when the guard is true
-and leave when it is false; at a
+and leave when it is false; a post-test `repeat` (FR-729) enters its body on entry from outside without reading the guard and reads the guard at the body's exit instead; at a
 `check`, continue when its value is true and rest there when it is false; at
 the end of a branch body, set the disposition `completed` and rest at end; at
 the end of `run`, rest at `finish`.
