@@ -9,6 +9,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-001
     type: references
+  - target: ix://agent-ix/filament-specification/FR-301
+    type: references
 ---
 
 # FR-570: Select the integer-division law from a unit header
@@ -35,10 +37,15 @@ by the selected law, or a located refusal.
 Euclidean laws ([FR-147](FR-147-evaluate-integer-division-domains.md)), so the
 law is part of what a unit says and part of its package identity. The unit
 states it in its header, the one place every consumer of the unit reads. A
-command flag or request member would let two compiles of the same text mean
-different things; an operator keyword would let one unit mix laws; and a
-default law would choose a meaning the author never stated. FR-147 rules out
-the last two.
+caller that compiles the unit may supply the law instead, as the lock
+selection's integer-division alternative role, a command option or a request
+member ([FR-301](../tooling/FR-301-expose-complete-cli.md)). A supplied law
+fills the package selection's `integer_division_profile` slot, so two compiles
+of one text under two supplied laws give two packages with different
+identities, never one identity with two meanings, and a supplied law that
+disagrees with the header is refused, so it never overrides what the author
+wrote. An operator keyword would let one unit mix laws, and a default law would
+choose a meaning the author never stated; FR-147 rules out both.
 
 - When a header `profile` declaration's identity is
   `filament.value.integer-division.euclidean/v1`,
@@ -68,6 +75,12 @@ the last two.
   present and name different laws, then the frontend shall refuse with
   `invalid_package`, cause `conflicting-definition`, at the header's
   identity literal.
+- The command line and request files supply the alternative role by law name:
+  `euclidean`, `floor` or `truncating` select the definitions above. When a
+  command or request supplies a law, the frontend shall apply the rules of the
+  supplied role above to it, with the same refusals. A request's program law
+  never reaches a library, which takes its own header law or its own supplied
+  law.
 - A law header in a unit with no `div` or `rem` is admitted. The package
   selection holds no integer-division role, because the `integer_div_rem`
   trigger is absent, so the unit's package identity equals that of the same
@@ -85,6 +98,7 @@ the last two.
 | FR-570-AC-3 | Two law headers naming floor and truncating refuse `invalid_package`/`conflicting-definition` at the second identity literal; two naming floor select floor once; a floor header with a supplied truncating alternative role refuses the same way at the header's identity literal. | Test (TC-1280) |
 | FR-570-AC-4 | A declaration `using` a law header's alias refuses `unknown_profile`/`wrong-selection-role` at the alias. | Test (TC-1280) |
 | FR-570-AC-5 | A unit with a floor law header and no `div` or `rem` is admitted with no integer-division role in its package selection, and its package identity equals that of the same unit without the header; an importing unit selecting floor and a library selecting truncating evaluate their own `-7 div 3` to `-3` and `-2`. | Test (TC-1280) |
+| FR-570-AC-6 | A complete-value unit with `a div b` and no law header, compiled with a supplied `floor` law name from a command option or request member, admits the operator and evaluates `-7 div 3` to `-3`; with a `floor` header and a supplied `truncating` it refuses `invalid_package`/`conflicting-definition` at the header's identity literal; a supplied name `ceiling` refuses `unknown_profile`/`unsupported-selection` before any source is read; and a library with `div`, no header and no law of its own refuses `missing_declaration`/`missing-selection` though the importing request supplies one. | Test (TC-1652) |
 
 ## Dependencies
 
