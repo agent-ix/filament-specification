@@ -3387,9 +3387,15 @@ leaf at any depth is a `model`/`event_type` node. IEEE values have no `eq`
 or `ne` identity (`filament.op.ieee.numeric_equal`, `total_order` and
 `bit_identical` are three distinct identities), and a `function`, `population`, `object` or
 `aggregate` term is not a value type. A requirement that a key, a comparison
-or a map position needs a type "over which `=` is admitted" (the FIFO key of
-[FR-465](FR-465-checked-package-protocol-declaration-bodies.md)) means
-exactly an equality-stable type.
+or a map position needs a type "over which `=` is admitted" means exactly an
+equality-stable type. A `bounded_domain` node is of its base type's family,
+so a bounded integer, decimal, rational, text or collection is
+equality-stable exactly when its base type is. The FIFO key of
+[FR-465](FR-465-checked-package-protocol-declaration-bodies.md) needs more:
+a *FIFO-key-stable* type ([FR-726](FR-726-admit-bounded-message-types-and-fifo-key-stable-keys-on-a-channel.md)),
+an equality-stable type with no `float32` or `float64` leaf at any depth,
+because a key groups messages by equality and IEEE `numeric_equal` is not
+reflexive on NaN.
 
 **Scalar literal values.** The `value` of a `string`, `uuid`, `timestamp` or
 `quantity` literal has one spelling, the canonical
