@@ -13,7 +13,7 @@ relationships:
 
 Check the `repeat` `test` member, its scope and refusals, and the post-test moves.
 
-Scope: FR-729-AC-1, FR-729-AC-2, FR-729-AC-3, FR-729-AC-4.
+Scope: FR-729-AC-1, FR-729-AC-2, FR-729-AC-3, FR-729-AC-4, FR-729-AC-5.
 
 ## Test Procedure
 
@@ -21,10 +21,12 @@ Scope: FR-729-AC-1, FR-729-AC-2, FR-729-AC-3, FR-729-AC-4.
 2. Step the admitted `repeat` through `loaded` false then true, and under `maximum` 2 through two false results.
 3. Compare a pre-test `repeat`'s node with its pre-change bytes, and with the post-test form of the same body and guard.
 4. Read a post-test `repeat` whose `invariant` and `variant` read the body binder, and one whose `visible` reads a binder bound on one `choice` branch only.
+5. Read and step pre-test `repeat`s with guard `true` whose `visible` lists `loaded`, and whose `invariant` and `variant` read `loaded`.
 
 ## Expected Results
 
-- Step 1: admitted for no maximum, 3 and 1; `invalid_package`/`invalid-value` for 0; `malformed_wire` for `pre`; `missing-name` without `test`.
+- Step 1: admitted for no maximum, 3 and 1; `invalid_package`/`invalid-value` for 0; `malformed_wire` for `pre`; `missing-name` at the guard's read without `test`.
 - Step 2: the first `attempt(Load)` is enabled with no guard read; false re-enters, true leaves; two false under `maximum` 2 enter `exhausted`.
 - Step 3: the bytes are equal; the two forms have different node ids.
 - Step 4: the first is admitted; the second refuses `missing-name` as an out-of-scope read.
+- Step 5: both are admitted; at entry there is no fact for `loaded` and no proof slot is evaluated; after the first iteration both read that iteration's value.
