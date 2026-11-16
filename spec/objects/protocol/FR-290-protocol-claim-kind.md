@@ -490,7 +490,8 @@ the candidate set is empty and the empty-candidate row below settles it.
 `negotiate_*` SHALL NOT select among several candidates. Registration order,
 display names and ambient state never change a candidate set, its order or a
 disposition. The caller resolves a multi-candidate item by
-naming one backend. Candidates match on kind, evidence kind and dynamics,
+naming one backend, or the producer narrows a tie between its own backends by
+a published claim-form rule while it computes the set (FR-776). Candidates match on kind, evidence kind and dynamics,
 and state-graph items additionally match on exact `state_graph_forms`
 membership. A bounded-only and an unbounded-only registrant of one kind are
 both candidates, and the mode is compared only at the single candidate's arm.
