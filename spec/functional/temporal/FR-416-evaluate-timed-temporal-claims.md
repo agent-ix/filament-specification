@@ -142,9 +142,9 @@ replay reproduces the undefined value there.
 
 ### Clock binding
 
-A claim over a timed model binds `model-time` unless it writes
-`clock "model-steps"`; a claim over an untimed model binds `model-steps`
-(FR-252). A `model-time` binding selects the timed profile. A `model-time`
+A claim that writes no `clock` member binds the default of its selected
+profile (FR-252, FR-765): `model-time` under `filament.temporal.timed/v1` and
+`model-steps` under every other profile, whether or not the model is timed. A `model-time` binding selects the timed profile. A `model-time`
 binding over an untimed model refuses with
 `invalid_timed_model`/`model-time-on-untimed-model`. Writing the default
 binding changes nothing: the binding, not its spelling, enters the obligation
@@ -159,7 +159,7 @@ identity.
 | FR-416-AC-3 | A TT-1, TT-3 or TT-4 claim with a punctual interval settles `unsupported`, `punctual-interval`; a TT-2 claim with one is decided, and a single timed trace evaluates it. | Test (TC-369) |
 | FR-416-AC-4 | Equal time stamps keep step order; inserting a stutter step at an equal time stamp leaves every timed formula's value unchanged. | Test (TC-369) |
 | FR-416-AC-5 | A proof settles only with an accepted zone certificate (`zone-certified`) or by digitization of an all-closed subject (`exhaustive`). | Test (TC-369, TC-371) |
-| FR-416-AC-6 | A claim over a timed model with no `clock` member binds `model-time`; `clock "model-steps"` binds steps; `model-time` over an untimed model refuses `invalid_timed_model`/`model-time-on-untimed-model`; writing the default leaves the obligation identity unchanged. | Test (TC-368) |
+| FR-416-AC-6 | A claim with no `clock` member binds `model-time` under the timed profile and `model-steps` under the event-position false-extension profile, over the same timed model, and under the timed profile over an untimed model refuses `invalid_timed_model`/`model-time-on-untimed-model`; `clock "model-steps"` binds steps; `model-time` over an untimed model refuses `invalid_timed_model`/`model-time-on-untimed-model`; writing the default leaves the obligation identity unchanged. | Test (TC-368) |
 | FR-416-AC-7 | Every timed counterexample has exact rational delays chosen canonically and replays with no provider present; an unconcretizable lasso settles `inconclusive`, `lasso-not-concretized`. | Test (TC-369) |
 | FR-416-AC-8 | A timed claim that evaluates undefined at a position of an admitted behaviour settles `refuted`, cause `undefined-evaluation` naming the position, time stamp, discrete state key, clock valuation, expression locus and catalogued reason, with a finite prefix of exact rational delays ending there that replays to the same undefined value. | Test (TC-369) |
 | FR-416-AC-9 | A `Blink` model (`time dense`; object `b` with `fired: Bool` and clock `x`; `tick` with guard `x >= 1` and reset `x`; `fire` with guard `x > 0 and x < 1` and postcondition `self.fired = true`; time invariant `when true { x <= 1 }`; initial `fired = false`, `x = 0`), in which `tick` fires exactly at `x = 1`, and `eventually holds(b.fired)` under infinite-trace: under `fair { weak Blink::fire }` it settles `refuted` with a lasso of `tick` steps of loop delay 1; under `fair { strong Blink::fire }` it settles `proved` with an accepted zone certificate, because `fire` is enabled at instants inside every delay of that lasso, though at no position of it. | Test (TC-963) |
