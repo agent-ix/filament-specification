@@ -29,18 +29,13 @@ message occurrences.
 
 ## Outputs
 
-Checked channel/queue transitions, incomplete premise result, typed unsupported
-result or located refusal.
+Checked channel/queue transitions, incomplete premise result or located refusal.
 
 ## Behavior
 
 FIFO ordering applies only within the declared role/workflow/channel/message key.
 Duplication, loss and delivery guarantees default to unknown, never reliable.
-Capacity may be concrete or symbolic. A symbolic capacity whose bound is
-discharged steps as that concrete bound; a symbolic capacity whose bound is not
-discharged is carried, and a run that steps its queue settles typed
-`unsupported` naming the queue and its symbolic capacity, with no queue
-transition and no assumed bound. Overflow behavior
+Capacity may be concrete or symbolic with a discharged bound. Overflow behavior
 is reject, block or declared loss (with its head, tail or new selector) and remains visible to conformance.
 
 ## Queue transition system
@@ -83,7 +78,7 @@ message identity. Unknown premises support none of those conclusions.
 | --- | --- | --- |
 | FR-170-AC-1 | Messages are ordered only inside the exact declared FIFO key and independent keys may interleave. | Test (TC-201) |
 | FR-170-AC-2 | Missing duplication/delivery premises yield incomplete/refused analysis rather than an exactly-once assumption. | Test (TC-201) |
-| FR-170-AC-3 | A concrete capacity, and a symbolic capacity with a discharged bound, under each overflow policy produce the declared queue transition; stepping a queue whose symbolic capacity has no discharged bound settles typed `unsupported` naming the queue and its symbolic capacity, with no transition and no assumed bound. | Test (TC-201) |
+| FR-170-AC-3 | Concrete/symbolic capacity and each overflow policy produce the declared queue transition or requires-bound outcome. | Test (TC-201) |
 | FR-170-AC-4 | Send, deliver, duplicate and lose preserve occurrence identity and modify only the selected FIFO-key queue. | Test (TC-201) |
 | FR-170-AC-5 | Exactly-once is established only from explicit no-loss, no-duplication, progress and stable-identity premises. | Test (TC-201) |
 | FR-170-AC-6 | Each send binds its binder to the payload and gives its step a `send_record` `{channel, payload, outcome, displaced}` with `channel` in the qualified name: on an empty queue `accepted` with `displaced` none; at capacity `reject` gives `rejected` and `loss new` gives `lost`, each leaving the queue unchanged; `loss head` gives `accepted` with `displaced` the oldest queue entry and `loss tail` `accepted` with `displaced` the newest queue entry, each appending the arriving message. | Test (TC-378) |

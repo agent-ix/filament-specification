@@ -64,8 +64,8 @@ FR-660, read through `published_file`). It is a closed JSON object:
 - `facts`: a non-empty array of closed objects `{id, fact, requirement}`. `id` is
   `CF-<code>-<nn>`, where `<code>` is `IR`, `PR`, `CG`, `RT`, `DR` or `OB` for
   the six consumers in order and `<nn>` is a two-digit ordinal that starts at
-  `01`, increases by one within the consumer and is never reused. `fact` is one
-  sentence naming the fact the consumer reads. `requirement` is the `ix://` URI
+  `01` and increases within the consumer; the id of a removed fact is retired
+  and never reused. `fact` is one sentence naming the fact the consumer reads. `requirement` is the `ix://` URI
   of the requirement that defines the fact, in this standard or in a producer
   repository that implements it.
 
@@ -105,7 +105,7 @@ specification review finding.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-661-AC-1 | The published inventory is admitted by its closed shape: `inventory` is `filament.consumer-facts/v1`, the consumers are exactly `ir`, `protocol`, `code-generation`, `runtime`, `driver` and `observation` in that order, every id has its consumer's code and consecutive ordinals from `01`, no id repeats, and every `requirement` names an existing requirement artifact; an inventory with an extra member, a missing consumer, a consumer out of order, a repeated id or a requirement that names no artifact is refused, naming the defect. | Test (TC-1645) |
+| FR-661-AC-1 | The published inventory is admitted by its closed shape: `inventory` is `filament.consumer-facts/v1`, the consumers are exactly `ir`, `protocol`, `code-generation`, `runtime`, `driver` and `observation` in that order, every id has its consumer's code and strictly increasing ordinals from `01`, no id repeats, and every `requirement` names an existing requirement artifact; an inventory with an extra member, a missing consumer, a consumer out of order, a repeated id or a requirement that names no artifact is refused, naming the defect. | Test (TC-1645) |
 | FR-661-AC-2 | The inventory lists at least: for `ir`, the document type, the import view of an admitted dependency package, the schedulability claim roots and the obligation identity of a schedulability claim; for `protocol`, the protocol view, the causal relation, channel endpoints (sender, receiver, message type), the await anchor, choice visibility and the compensation attempts maximum; for `code-generation`, the call site of a function, operation or clause, the imported-function site with its declaring package and function occurrence, the obligation identity of a site, and the closed-form verdict check; for `runtime`, the monitor plan root and the progress view admitted from a request or event input; for `driver`, the bounded run-result reader, the clause run-result writer and the typed run result; for `observation`, the subject kinds and relationship declarations taken from the checked package's domain declarations. | Test (TC-1645) |
 | FR-661-AC-3 | A producer's contract check over its pinned inventory and its binding document passes and lists every fact with its resolved public path when every fact is bound and resolves; it fails, naming the fact and the path, when a bound accessor is not public or does not exist; it fails, naming the fact, when an inventory fact has no binding; and it fails, naming the binding, when a binding names an id the inventory does not hold. | Test (TC-1646) |
 | FR-661-AC-4 | Every requirement that defines a fact a consumer reads through a producer's public API names that fact's inventory id, and every inventory fact's `requirement` defines that fact. | Inspection (TC-1647) |

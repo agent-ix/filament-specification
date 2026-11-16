@@ -47,17 +47,17 @@
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         },
         {
-          "id": "CF-PR-04",
+          "id": "CF-PR-05",
           "fact": "The anchor of an await: the control or compensation template it follows.",
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         },
         {
-          "id": "CF-PR-05",
+          "id": "CF-PR-06",
           "fact": "The visibility of a choice: its owner and visible expressions.",
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         },
         {
-          "id": "CF-PR-06",
+          "id": "CF-PR-07",
           "fact": "The attempts maximum of a compensation.",
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         }
