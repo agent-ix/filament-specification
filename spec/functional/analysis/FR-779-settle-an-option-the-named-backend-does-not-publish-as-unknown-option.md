@@ -48,8 +48,11 @@ The item's disposition, or no change.
 
 - An item whose named backend the registry does not hold SHALL settle
   `unknown-backend` and its options SHALL NOT be checked.
-- The check SHALL run before candidates are computed; an item it settles is
-  not negotiated, sent to a provider or run.
+- The check SHALL run after FR-290's kind admission (`absent-kind`,
+  `unknown-kind`) and its `inapplicable-kind` rule, and before candidates are
+  computed, so each item has exactly one outcome: an item those rules settle
+  is not checked for options, and an item the check settles is not
+  negotiated, sent to a provider or run.
 - The refusal settles only its own item; the request's other items and their
   request indices are unchanged.
 - An item whose every option the backend publishes carries them to the
