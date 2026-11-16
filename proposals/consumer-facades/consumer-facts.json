@@ -48,21 +48,16 @@
         },
         {
           "id": "CF-PR-04",
-          "fact": "A role's internality, internal or external to the assessed protocol.",
-          "requirement": "ix://agent-ix/filament-specification/FR-217"
-        },
-        {
-          "id": "CF-PR-05",
           "fact": "The anchor of an await: the control or compensation template it follows.",
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         },
         {
-          "id": "CF-PR-06",
+          "id": "CF-PR-05",
           "fact": "The visibility of a choice: its owner and visible expressions.",
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         },
         {
-          "id": "CF-PR-07",
+          "id": "CF-PR-06",
           "fact": "The attempts maximum of a compensation.",
           "requirement": "ix://agent-ix/filament-spec-language/FR-519"
         }
