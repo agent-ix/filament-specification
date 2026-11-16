@@ -32,6 +32,11 @@ true on no live slot, `exists` false), and the clock constraints beside it
 apply whatever the collection holds. Keeping the quantifier in the predicate
 preserves the source meaning of `self.x >= 1 ms and forall(e in self.q: present(e))`.
 
+The quantifier ranges over the slot domain of the collection, the live
+slots written by their selectors. Its first operand is the
+`filament.op.option.slots` application that FR-772 defines, together with
+that node's identity and the reader rule that admits it.
+
 A part or invariant none of whose constraints or bounds has a slot term
 carries no `binders` binding. An `urgency` has no `binders` binding in any
 case.

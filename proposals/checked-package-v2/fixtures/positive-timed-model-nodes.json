@@ -406,6 +406,7 @@
           },
           "term": "application"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Example",
@@ -1139,6 +1140,7 @@
           "members": [],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Example",
@@ -2129,6 +2131,7 @@
           ],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "dependencies": [],
         "node_id": {
           "ordinal": 0,

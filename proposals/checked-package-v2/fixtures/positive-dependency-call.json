@@ -243,6 +243,7 @@
           },
           "term": "application"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "App",

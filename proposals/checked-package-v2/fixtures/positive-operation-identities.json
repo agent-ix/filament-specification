@@ -1483,6 +1483,7 @@
           "members": [],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Example",

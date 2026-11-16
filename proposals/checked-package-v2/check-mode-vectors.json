@@ -1,0 +1,45 @@
+{
+  "rule": "FR-770: every function node carries the closed, identity-bearing check_mode, linked or kernel; it is required on a function node and forbidden on every other node; an invariant or precondition clause function carries linked",
+  "base": "fixtures/positive-all-families.json",
+  "cases": [
+    {
+      "id": "CM-01",
+      "note": "the base package carries linked on every function node",
+      "set": [],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "admitted"
+    },
+    {
+      "id": "CM-02",
+      "note": "a declared function and a declared helper checked under Kernel",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/5/check_mode", "value": "kernel"},
+        {"pointer": "/semantic_graph/nodes/12/check_mode", "value": "kernel"}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "admitted"
+    },
+    {
+      "id": "CM-03",
+      "note": "a function node without check_mode",
+      "set": [],
+      "remove": ["/semantic_graph/nodes/5/check_mode"],
+      "schema": "invalid",
+      "outcome": "refused:malformed_wire",
+      "locus": "/semantic_graph/nodes/5/check_mode"
+    },
+    {
+      "id": "CM-04",
+      "note": "check_mode on a node that is not a function node",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/0/check_mode", "value": "linked"}
+      ],
+      "remove": [],
+      "schema": "invalid",
+      "outcome": "refused:malformed_wire",
+      "locus": "/semantic_graph/nodes/0/check_mode"
+    }
+  ]
+}

@@ -343,6 +343,7 @@
           ],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Lib",
@@ -525,6 +526,7 @@
           ],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Lib",
@@ -766,6 +768,7 @@
           ],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Lib",
@@ -1035,6 +1038,7 @@
           ],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Lib",
@@ -1317,6 +1321,7 @@
           ],
           "term": "aggregate"
         },
+        "check_mode": "linked",
         "declaration": {
           "qualified_name": [
             "Lib",

@@ -23,6 +23,30 @@
       "pointer": "/semantic_graph/nodes/29/body/operation/member/interval/lower",
       "replacement": "-1",
       "outcome": "refused:invalid_package"
+    },
+    {
+      "id": "check-mode-unknown-value",
+      "pointer": "/semantic_graph/nodes/5/check_mode",
+      "replacement": "strict",
+      "outcome": "refused:malformed_wire"
+    },
+    {
+      "id": "check-mode-empty",
+      "pointer": "/semantic_graph/nodes/5/check_mode",
+      "replacement": "",
+      "outcome": "refused:malformed_wire"
+    },
+    {
+      "id": "check-mode-not-a-string",
+      "pointer": "/semantic_graph/nodes/5/check_mode",
+      "replacement": true,
+      "outcome": "refused:malformed_wire"
+    },
+    {
+      "id": "check-mode-null",
+      "pointer": "/semantic_graph/nodes/12/check_mode",
+      "replacement": null,
+      "outcome": "refused:malformed_wire"
     }
   ],
   "body_grammar_mutations": [

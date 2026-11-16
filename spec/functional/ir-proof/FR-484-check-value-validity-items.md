@@ -45,6 +45,8 @@ The claim's node and occurrence select exactly one form:
 
 A claim whose node is a range narrowing, a function declaration, an `if`, a `let`, a Boolean connective or any application that FR-290 does not list is not a form, and the arm settles it `declined` `invalid-input` (FR-483).
 
+A request that names a function with a `Boolean` result as its claim does not name the declaration node. The producer resolves the name to the function's body root, a Boolean `expression` node at its `claim` or `declaration` occurrence, so the claim is the `clause` (or `case-clause`) form above. Its variables are the function's parameters, and its extent is classified from their declared domains, so an unbounded `Integer` parameter makes the item `unbounded`. This is consistent with FR-290's rule that a function declaration carries no clause: the declaration adds no item of its own, and only a request that names it selects the value clause its body already is. A request that names a function with any other result type names no form.
+
 ### Variables and domains
 
 The `variables` of a check input are the free `value`/`parameter` nodes the goal reads, in binder-level order: for a `clause` or `case-clause`, the parameters of the clause's declaration; for a `scalar-operation`, the parameters of the function whose body holds the occurrence. Each domain is the parameter's declared type with its inclusive bounds ([FR-196](FR-196-generate-kani-contracts.md) "Kani mapping contract"), restricted by the item's bounds as FR-483 states. A parameter of union type ranges over every member and, for each member, every value of its payload types.

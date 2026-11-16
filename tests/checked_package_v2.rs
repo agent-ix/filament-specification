@@ -85,6 +85,8 @@ const POSITIVE_RECURSIVE_RECORDS: &str =
 const MODEL_MEMBER_TYPE_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/model-member-type-vectors.json");
 const ADVERSE: &str = include_str!("../proposals/checked-package-v2/fixtures/adverse.json");
+const CHECK_MODE_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/check-mode-vectors.json");
 const DEPENDENCY_CALL_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/dependency-call-vectors.json");
 const POSITIVE_DEPENDENCY_LIBRARY: &str =
@@ -24215,4 +24217,52 @@ fn tc_1326_schema_enumerates_quantity_scaling_after_pow() {
         identities.get(pow + 1..pow + 3),
         Some(["filament.op.quantity.scale", "filament.op.quantity.scale_div"].as_slice())
     );
+}
+
+/// FR-770-AC-1, FR-770-AC-2: `check_mode` is required on every function
+/// node and forbidden on every other node; `linked` and `kernel` are the
+/// only values (`check-mode-vectors.json`, `adverse.json`).
+#[trace("TC-1860", "FR-770-AC-1", "FR-770-AC-2")]
+#[test]
+fn tc_1860_a_function_node_carries_its_check_mode() {
+    let schema = jsonschema::validator_for(&parsed_fixture(SCHEMA)).expect("V2 schema is valid");
+    let vectors = parsed_fixture(CHECK_MODE_VECTORS);
+    assert_eq!(vectors["base"], "fixtures/positive-all-families.json");
+    let base = parsed_fixture(POSITIVE_ALL_FAMILIES);
+    for node in base["semantic_graph"]["nodes"]
+        .as_array()
+        .expect("nodes")
+        .iter()
+        .filter(|node| node["node_tag"] == "function")
+    {
+        assert_eq!(node["check_mode"], "linked", "{node}");
+    }
+    for case in vectors["cases"].as_array().expect("cases") {
+        let id = case["id"].as_str().expect("case id");
+        let mut candidate = base.clone();
+        for set in case["set"].as_array().expect("set") {
+            let pointer = set["pointer"].as_str().expect("pointer");
+            let (parent, member) = pointer.rsplit_once('/').expect("a member pointer");
+            candidate
+                .pointer_mut(parent)
+                .and_then(Value::as_object_mut)
+                .unwrap_or_else(|| panic!("{id}: {parent} is an object"))
+                .insert(member.to_owned(), set["value"].clone());
+        }
+        for pointer in case["remove"].as_array().expect("remove") {
+            let pointer = pointer.as_str().expect("pointer");
+            let (parent, member) = pointer.rsplit_once('/').expect("a member pointer");
+            candidate
+                .pointer_mut(parent)
+                .and_then(Value::as_object_mut)
+                .unwrap_or_else(|| panic!("{id}: {parent} is an object"))
+                .remove(member)
+                .unwrap_or_else(|| panic!("{id}: {pointer} exists"));
+        }
+        assert_eq!(
+            schema.is_valid(&candidate),
+            case["schema"] == "valid",
+            "{id}: schema verdict"
+        );
+    }
 }

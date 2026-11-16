@@ -27,7 +27,7 @@ of any size.
 ## Inputs
 
 `--provider-config <file>` on a verb that routes items to providers
-(`analyze`, `prove`, `monitor`, `replay`, `generate`), naming one document:
+(`analyze`, `prove`, `monitor`, `run`, `replay`, `generate`), naming one document. `run` routes the claim items of its run request to providers like the other verbs, so it takes the same document:
 
 ```json
 {"format": "filament.provider-config/v1",
