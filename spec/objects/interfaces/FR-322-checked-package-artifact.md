@@ -4753,7 +4753,10 @@ delay distributions as nodes with `node_tag: "probabilistic"` and the semantic
 forms `random_parameter`, `workload`, `reward` and `delay_distribution`.
 [FR-640](FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)
 owns their bodies, emission, reader checks and typed read; the closed schema
-admits exactly those bodies.
+admits exactly those bodies. A probability certificate over these
+declarations, including the timed-product certificate of FR-725, is never a
+checked-package node: it travels in the FR-331 terminal record, and its checker
+rebuilds the product from these nodes (FR-751).
 
 ### Tick-monitor plan nodes
 

@@ -148,8 +148,9 @@ witness scheduler chooses each free delay, in units, per drawn vector of the
 given delays (FR-413). A timed path of a path set carries each step's delay and
 replays by FR-181 timed replay; at its last timed state no admissible discrete
 step precedes the event's time horizon, which replay checks from the guards
-and time invariants. A certificate names digital product states, and the
-checker re-enumerates the digital process. The digital process's size grows
+and time invariants. A certificate is an FR-725 timed-product certificate, keyed by digital or
+region product states, and the checker rebuilds the digital or region process
+itself (FR-751, FR-752, FR-753). The digital process's size grows
 with the scaled constants and is bounded only by the request's `max_states`.
 
 ## Acceptance Criteria
