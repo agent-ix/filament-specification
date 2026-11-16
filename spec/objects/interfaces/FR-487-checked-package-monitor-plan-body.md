@@ -117,6 +117,19 @@ whose rules below do not hold, with the first refusal in the reader order below.
     timed root's `invalid-time-quantity`) that names one tick's unit; the unit's
     exact `root_scale` is the tick scale, so no scale is repeated and the width
     is `counter_width_bits`;
+    for a plan over a clause whose profile counts positions (event-position,
+    fixed-sample or infinite-trace over a trace subject, or a `model-steps`
+    clause, FSL FR-251 "Non-timed clauses"), `tick_unit` is instead a
+    **position-counter unit**: the `scalar_type`/`unit` node whose path is
+    `["scalar_type", "unit", N]`, `N` one of `event`, `sample`, `position`
+    and `step`, whose `dimension_node_id` is the base dimension node of path
+    `["scalar_type", "dimension", "Position"]`, whose `root_scale` is 1 and
+    whose body is empty. The plan-root writer writes both nodes when the plan
+    names one, with the plan's package as `node_id.package` and a
+    `generated` occurrence at the clause, as it writes a model-owned clock
+    unit. `Position` is no time dimension, so no quantity converts to it: a
+    position-counter plan's tick intervals are the clause's integer bounds
+    unchanged (scale 1);
   - `uncertainty` — a `rational` literal in the canonical spelling of FR-322-AC-114, at least 0, in ticks: the `u` of the
     widened cover `[k - u, k + 1 + u)` (FR-160 "Counter-tick intervals and
     endpoints");
@@ -276,7 +289,9 @@ run in this order and the first failing check is its defect:
    and for an extra binding the index after the seventeenth.
 2. **References.** Each reference resolves to a node of the form stated above
    (`tick_unit`: a `scalar_type`/`unit` node whose dimension is the base `Time`
-   dimension) and each entry is a `function`/`pure_function` node with no
+   dimension for a timed clause, or the position-counter unit above for a
+   clause whose profile counts positions; either kind on the other clause is a
+   wrong reference) and each entry is a `function`/`pure_function` node with no
    `declaration`,
    else `invalid_semantic_graph` at the binding.
 3. **Signatures.** Each entry's parameters and `semantic_type` equal the
@@ -326,6 +341,7 @@ a body.
 | FR-487-AC-12 | An atom with no admitted projection yields `Incomplete(LimitReached{limit: atom_projection, value: <atom identity>, setting: monitor.atom_projection})` with replayable evidence, not a refusal and not a dropped atom, and an atom with an admitted projection does not; the `limit` kinds of `LimitReached` are exactly `event_buffer`, `activation` and `atom_projection`, each with its own `setting`, and the `Outcome` union and its payload record shapes are unchanged (`MP-78` to `MP-80`). | Test (TC-978) |
 | FR-487-AC-13 | The plan root's key covers the call closure as a producer rule: two plans that differ only in the body of a declared helper function called by an entry, an atom or the activation guard (the helper keeps its declaration path and so its own `node_id`, and the entries keep theirs) have different root keys, a helper called only through another helper's body is covered the same way, equal helper bodies give an equal root key, and a helper is never inlined into an entry to be keyed. The reader recomputes no identifier and refuses nothing for it, so this repository has no reader-visible vector; the verifier is the producer's test, filament-spec-language FR-251-AC-38 (TC-1081), which this criterion cites as its owner. | Inspection |
 | FR-487-AC-14 | The `buffer_<n>` of an unbounded past operator additionally holds one summary cell that is not counted in the capacity, and `State` keeps exactly its fields; the reader imposes no rule on the element type of a buffer (filament-spec-language FR-251, "Unbounded past operators"). | Inspection |
+| FR-487-AC-15 | A plan root over an event-position `model-steps` clause whose `tick_unit` references the `step` position-counter unit (path `["scalar_type", "unit", "step"]`, dimension `["scalar_type", "dimension", "Position"]`, `root_scale` 1, empty body) is admitted, both nodes written once with a `generated` occurrence, and its tick interval for `eventually[0, 3]` is `[0, 3]`; the same root naming a `Time` unit, and a timed clause's root naming the `step` unit, each refuse `invalid_semantic_graph` at the `tick_unit` binding. | Test (TC-1723) |
 
 ## Published artifacts
 
