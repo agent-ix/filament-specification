@@ -139,6 +139,12 @@ object, `{"type": <tag>, ...}`:
   the sequence's own order.
 - `OrderedSet<T>` — `{"type":"ordered-set","elements":[<encoded-value>, ...]}`,
   in the ordered set's own order, admitting no duplicate encoded element.
+- `Map<K, V>` and `Map<K, V>[a, b]` — `{"type":"map","entries":[{"key":<encoded>,"value":<encoded>}, ...]}`,
+  one entry per map entry, sorted ascending unsigned-lexicographically by the
+  JCS UTF-8 bytes of each key's canonical encoding, admitting no two entries
+  whose keys are equal under FR-144's key equality. This is the form a state
+  key's maps already use, so a map value inside a state and a state key's own
+  maps encode alike, and a map has one encoding whatever its insertion order.
 - record — `{"type":"record","name":"<qualified-name>","fields":[{"name":"<field>","value":<encoded>|null}, ...]}`,
   one entry per declared field in declaration order, `null` for an absent
   `?` field.
@@ -458,6 +464,7 @@ so every timed refutation has a counterexample with exact rational delays.
 | FR-181-AC-28 | A timed state is terminal exactly when no discrete step is enabled at it or after any admissible delay, a delay of 0 included. | Test (TC-370) |
 | FR-181-AC-29 | A bounded-delay terminal state is a time-lock reported by the time-lock-freedom item and not by the deadlock-freedom item. | Test (TC-370) |
 | FR-181-AC-30 | A state whose canonical state key is longer than `max_state_key_bytes` stops expansion of that state and settles the exploration `incomplete` with cause `state-key-limit-exceeded`, naming the limit and its value; a state whose key is exactly `max_state_key_bytes` long is expanded; no truncated or hashed key appears in a trace or frontier. | Test (TC-210) |
+| FR-181-AC-31 | A `Map<String, Int[0, 9]>` value with the entries `b` to `2` and `a` to `1`, inserted in either order, encodes as `{"entries":[{"key":{"type":"string","value":"a"},"value":{"type":"integer","value":"1"}},{"key":{"type":"string","value":"b"},"value":{"type":"integer","value":"2"}}],"type":"map"}`, and two states whose map member holds those entries inserted in two orders have equal state keys; a supplied map form with two entries whose keys are both `a` is outside the form. | Test (TC-1720) |
 
 ## Dependencies
 
