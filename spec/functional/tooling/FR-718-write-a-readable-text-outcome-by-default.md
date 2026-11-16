@@ -15,11 +15,12 @@ relationships:
 
 ## Description
 
-When a user invokes a CLI verb that writes an outcome without naming an
+When a user invokes `parse`, `check`, `compile` or `run` without naming an
 output format, the FSL CLI SHALL write the text form of the same outcome it
 writes in machine mode, so the first command a reader types prints a result.
 Text is a display of the machine outcome, built from it alone; the machine
-outcome stays the authoritative form. The output format changes the bytes
+outcome stays the authoritative form. `analyze` and `monitor` keep the text forms their own
+requirements give them. The output format changes the bytes
 written and never the exit status.
 
 ## Inputs
@@ -37,7 +38,7 @@ and FR-301's exit status of the outcome's category in both modes.
 The text outcome names the operation, the outcome category, the exit
 status, the last stage reached when one is known, every diagnostic's code,
 cause and source position, every item's result, category and cause, and the
-evaluation result. No verb refuses the text format as unsupported. An
+evaluation result. None of these verbs refuses the text format as unsupported. An
 output format other than `json` or `text` is refused before any input is
 read, exit `20`, naming the option and the value. A missing or malformed
 input is reported with the same code in both modes.
