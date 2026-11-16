@@ -4508,9 +4508,9 @@ have two kinds, selected by their first binding `kind` (a `text` literal):
 | --- | --- | --- |
 | `clock_constraint` | `place` | `kind`, `place`, `owner`, `slots`, `comparison`, `bound` |
 | `clock_constraint` | `parameter` | `kind`, `operation`, `parameter`, `comparison`, `bound` |
-| `clock_reset` | `place` | `kind`, `operation`, `place`, `owner`, `slots`, `binders`, `condition`, `value` |
-| `clock_reset` | `parameter` | `kind`, `operation`, `parameter`, `value` |
-| `clock_guard` | none | `operation`, `parts` |
+| `clock_reset` | `place` | `kind`, `operation`, `place`, `owner`, `slots`, `binders`, `condition`, `value`, then an optional `point_anchor` |
+| `clock_reset` | `parameter` | `kind`, `operation`, `parameter`, `value`, then an optional `point_anchor` |
+| `clock_guard` | none | `operation`, `parts`, then an optional `point_anchor` |
 | `time_invariant` | none | `predicate`, `bounds` |
 
 `comparison` is a `text` literal, one of `lt`, `le`, `eq`, `ge`, `gt` (one
@@ -4519,7 +4519,13 @@ writes `=`, admitted in a guard because a guard may test equality, and excluded 
 node, nonnegative and in lowest terms. `operation` is a `reference` to a
 `state`/`operation_anchor` node of the root's model with no execution point
 (FR-342-AC-11), the one node that stands for the operation in every clause
-that names it. `place` is a `reference` to a `clock_place` template; `owner`
+that names it. `point_anchor`, present exactly when the guard or reset comes
+from a source clause bound to an execution point, is a `reference` to the
+point-qualified `state`/`operation_anchor` node of the same context and
+operation, `pre{operation}` for a guard and `post{operation}` for a reset
+(FR-342 "Point-bound timed clauses"); it is the only optional field of the
+clause forms, it is part of the body and the node identity, and the V2
+schema admits each of the three layouts with and without it. `place` is a `reference` to a `clock_place` template; `owner`
 and `slots` are the owner term and the slot terms of the place identity
 exactly as `present(p)` carries them (Presence, above), so a constraint or a
 reset of an element place names its element by terms, not by a position stored
@@ -5082,6 +5088,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-451 | An `application` of `filament.op.quantity.scale` with arguments `[reference(Q), reference(N)]`, `Q` a `quantity` typed by the unit node of `ms` and `N` an `integer`, is admitted with result type the unit node of `ms`, no laws, `mode` `null` and no member, and so is `filament.op.quantity.scale_div` with a `decimal` or `rational` factor; a third argument, a `float64` or `quantity` factor, the arguments in the order factor then quantity, a carried-quantity argument 0 and a `result_type` other than the unit node of `ms` each refuse `ill_typed`/`operator-ineligible`, a `mode` value refuses `invalid_package`/`operation-mode-mismatch` and a `laws` entry refuses `invalid_package`/`operation-law-mismatch`; both V2 schemas enumerate `filament.op.quantity.scale` and `filament.op.quantity.scale_div` in `OperationIdentity` directly after `filament.op.quantity.pow`, and the catalog entry of `filament-verification-contracts` carries them. | Test (TC-1326) |
 | FR-322-AC-452 | A package whose library unit declares a timestamped-event clause on clock `lib-ms`, compiled with the request configuration `{"kind": "timestamped_event", "timestamp_unit": "ms"}` for `lib-ms`, carries `lock.dependency_clock_selections` `[{"clock_name": "lib-ms", "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"}}]`, and a package whose closure takes no clock from the request omits the member. The reader refuses `[]` and an entry with a third key at the schema; two entries out of `clock_name` order `invalid_package`/`invalid-value` at the later entry; a repeated `clock_name` `invalid_package`/`conflicting-definition` with both entries as loci; a `clock_name` of `model-steps` `invalid_package`/`invalid-value` at that entry's `clock_name`; and an entry for a clock name the package's own `temporal_bindings` row also names, with a different configuration, `invalid_package`/`conflicting-definition` naming the entry and the row. Two compilations differing only in the `lib-ms` configuration give structurally unequal packages. | Test (TC-1661) |
 | FR-322-AC-453 | A hyper clause whose two trace variables `s` and `n` range over two model aliases selecting packages `example/device-saving` and `example/device-normal`, under event-position, has two rows for its one body-wrapper occurrence, in quantifier order, with `trace` `s` and `n` and `clock` `{"kind": "event_position", "sequence_authority": A}` where `A` is each model's declaration identity text, both with `clock_name` `model-steps`; a hyper clause with two traces of one model has two rows with equal configurations. Removing the `n` row refuses `invalid_package`/`timed-node-reference` at the wrapper's node body; a row whose `trace` is `x` refuses at `/temporal_bindings/1/trace`; a third row repeating `s` refuses `conflicting-definition` at that row; a `trace` member on a single-trace clause's row refuses at its `trace`. | Test (TC-1680) |
+| FR-322-AC-454 | The clause forms `clock_guard`, `clock_reset` of kind `place` and `clock_reset` of kind `parameter` are admitted with and without a final `point_anchor` binding naming the point-qualified anchor of their operation (`pre` for the guard, `post` for the reset), and the two spellings of one guard have different node ids; a `point_anchor` before another binding, on a `clock_constraint`, a `time_invariant` or an `urgency`, or naming a node that is not that anchor, refuses `invalid_package`/`timed-node-reference` at the binding (FR-342-AC-13); the published V2 schema admits exactly these layouts. | Test (TC-1722) |
 
 ## Dependencies
 

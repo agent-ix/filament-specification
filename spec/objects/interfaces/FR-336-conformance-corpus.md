@@ -124,7 +124,11 @@ wire encoding (FSL FR-100).
 ### Replay request file
 
 A `replay-request` file is a closed JSON adapter document matching
-`$defs.ReplayRequest`. It is corpus-owned, not a product wire. Its top-level
+`$defs.ReplayRequest`. It is corpus-owned, not a product wire. The product
+`native-replay/1` request file of the `replay` command (FR-715) carries the
+same member mapping as its `request` member, so one encoding of the replay
+request serves both; the corpus file itself stays corpus-owned, and its
+schema is not a product schema. Its top-level
 members map one-to-one to the corresponding `ReplayRequestWire` fields in the
 consuming requirement. Member values use FR-323 `NativeRuntimeEnvelope`
 shapes for replay source, target and result; all other nested typed values use

@@ -62,7 +62,11 @@ below.
   ([FR-322](FR-322-checked-package-artifact.md) "Clause nodes") names the
   no-point anchor of its operation through its `operation` binding: the
   reference is a dependency, not an occurrence, so it adds none, and a
-  point-qualified anchor is not a timed clause's operation.
+  point-qualified anchor is not a timed clause's operation. A `clock_guard`
+  or `clock_reset` whose source clause is bound to an execution point also
+  names that point's anchor through its optional final `point_anchor`
+  binding ("Point-bound timed clauses" below); that reference is a
+  dependency too and adds no occurrence.
   The frame (FR-340) stays the only record of what the operation may modify: a
   `clock_reset` of kind `place` requires its first field in it (`CL-11`), and a
   frame that names a clock field imposes no write, because an unreset clock
@@ -142,6 +146,36 @@ name equals the `operation` binding; it must equal the point carried by each
 clause that references the anchor. A malformed or inapplicable point refuses
 `invalid_model_binding`/`malformed-declaration` at the anchor.
 
+## Point-bound timed clauses
+
+A clock-reading precondition or postcondition can be a state clause bound to
+an execution point (FR-341) as well as a timed clause. The timed clause keeps
+naming its operation by the no-point anchor, which stands for the operation
+in every clause, and SHALL name the point-qualified anchor of the same
+(`context`, `operation`) through a final `point_anchor` binding (FR-322
+"Clause nodes"), so a consumer that evaluates the state clause at its point
+finds the clock guard or reset of that point without matching names:
+
+- a `clock_guard` names the anchor whose point is `pre{operation}`, and a
+  `clock_reset` (either kind) the anchor whose point is `post{operation}`,
+  because a guard constrains the clocks when the operation starts and a reset
+  takes effect when it ends;
+- the guard or reset of an operation is point-bound when any source clause it
+  holds is bound to that point, and then holds every clause of the operation,
+  because each operation has exactly one `pre` and one `post` point and one
+  guard;
+- `point_anchor` is part of the body, so a point-bound guard and a point-free
+  guard of one operation are distinct nodes, and a model holds at most one of
+  them for each operation.
+
+The reader SHALL check `point_anchor` in the timed-model step, after the
+`operation` join (FR-342-AC-11): its target is a declared dependency that is
+a `state`/`operation_anchor` node with an execution point, whose `context`
+and `operation` equal those of the `operation` target and whose point is
+`pre{operation}` for a guard and `post{operation}` for a reset; any other
+target refuses `invalid_package`/`timed-node-reference` at the binding's
+target.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -156,8 +190,9 @@ clause that references the anchor. A malformed or inapplicable point refuses
 | FR-342-AC-8 | A `state`/`operation_anchor` node whose `context` is a `model`/`state_machine` node is admitted on the same terms: `(Gate, "toggle")` resolves to the machine's own operation and the frame and anchor `semantic_type` are the state-machine node. Two anchors of one process or state-machine `context` whose operations have equal frames reference one `state`/`frame` node, and a frame never joins the anchors of two different declaring types. | Test (TC-233, TC-280) |
 | FR-342-AC-9 | A `context` that is a `model`/`record_value_type`, `model`/`event_type`, `model`/`persistence_interface` or `model`/`systems_interface` node refuses `invalid_model_binding`/`malformed-declaration` at the `context` target, and a process-owned or state-machine-owned anchor with a missing operation name refuses `missing_declaration`/`missing-name`, an ambiguous one `ambiguous_declaration`/`ambiguous-name`, and one owned by a domain package identity the lock does not select `missing_declaration`/`missing-selection`. | Test (TC-233, TC-280) |
 | FR-342-AC-10 | An operation anchor admits an optional closed execution point after `frame`; `pre{operation: "go"}` and `post{operation: "go"}` are distinct identities for the same context and operation, while a protocol-only anchor may omit the point. An unknown variant, extra or missing member, initialization/handler point, mismatched operation name, duplicate context/operation/point tuple, or clause whose point differs from its anchor is refused at the first applicable reader step. FR-322 pins the closed point values; TC-233 verifies the anchor identity contribution and joins. | Test (TC-233) |
-| FR-342-AC-11 | A timed clause of the forms `clock_guard`, `clock_reset` and `clock_constraint` (kind `parameter`) names its operation by the `operation_anchor` of the root's model with no execution point; the `urgency` node of kind `operation` is not covered by this criterion, because it names its operation by model plus name, and whether it moves to the anchor reference is left open here. The three forms carry it as their `operation` binding, and the reference adds no `anchor` occurrence, so an anchor that only timed clauses name keeps its one occurrence at the operation's declaration. An `operation` binding that is not an `operation_anchor` node (a frame, `CL-02`) or that is an anchor with an execution point (`CL-03`) refuses `invalid_package`/`timed-node-reference` at the binding's target, and so does a valid `operation_anchor` of another model (`CL-25`: the anchor of `Gadget.ping`, whose `context`, `semantic_type` and frame all name `Gadget`, so every join of the state step above holds and the timed-model join is the first defect). The state step runs before the timed-model step (FR-322-AC-121), so a rebinding that does not complete the join is a state defect and never reaches the timed join: the anchor of `CL-54` names another model through `context` and `semantic_type` but keeps the frame of the first, and refuses `invalid_model_binding`/`malformed-declaration` at the anchor (step 3, FR-342-AC-8). The V2 schema admits the optional closed `execution_point` binding on an operation anchor; CL-03 is schema-valid and its timed-model rejection is asserted by the strict-reader rule. | Test (TC-367; CK-33; CL-02, CL-03, CL-25, CL-54) |
+| FR-342-AC-11 | A timed clause of the forms `clock_guard`, `clock_reset` and `clock_constraint` (kind `parameter`) names its operation by the `operation_anchor` of the root's model with no execution point; a point-bound `clock_guard` or `clock_reset` names the point-qualified anchor only through its `point_anchor` binding (FR-342-AC-13), never through `operation`; the `urgency` node of kind `operation` is not covered by this criterion, because it names its operation by model plus name, and whether it moves to the anchor reference is left open here. The three forms carry it as their `operation` binding, and the reference adds no `anchor` occurrence, so an anchor that only timed clauses name keeps its one occurrence at the operation's declaration. An `operation` binding that is not an `operation_anchor` node (a frame, `CL-02`) or that is an anchor with an execution point (`CL-03`) refuses `invalid_package`/`timed-node-reference` at the binding's target, and so does a valid `operation_anchor` of another model (`CL-25`: the anchor of `Gadget.ping`, whose `context`, `semantic_type` and frame all name `Gadget`, so every join of the state step above holds and the timed-model join is the first defect). The state step runs before the timed-model step (FR-322-AC-121), so a rebinding that does not complete the join is a state defect and never reaches the timed join: the anchor of `CL-54` names another model through `context` and `semantic_type` but keeps the frame of the first, and refuses `invalid_model_binding`/`malformed-declaration` at the anchor (step 3, FR-342-AC-8). The V2 schema admits the optional closed `execution_point` binding on an operation anchor; CL-03 is schema-valid and its timed-model rejection is asserted by the strict-reader rule. | Test (TC-367; CK-33; CL-02, CL-03, CL-25, CL-54) |
 | FR-342-AC-12 | The published V2 schema's `OperationAnchorBody` admits exactly two body shapes: the three bindings `context`, `operation`, `frame`, and those three followed by `execution_point` whose value is FR-322's closed `ExecutionPoint`. A clause-bound anchor carrying `pre{operation: "size"}` or `post{operation: "size"}` validates against the schema; so does one carrying an `initialization` or `handler` point, which the reader then refuses `invalid_model_binding`/`malformed-declaration` at the anchor, because applicability is a reader join and not a schema rule. A fourth binding with another name, a fifth binding, an `execution_point` before `frame`, and a point with an unknown `kind` or an extra member each fail the schema. | Test (TC-1480) |
+| FR-342-AC-13 | A `clock_guard` of `reply` whose final `point_anchor` binding names the anchor of `(Call, "reply", pre{operation: "reply"})` and a `clock_reset` of `reply` whose `point_anchor` names the anchor of `(Call, "reply", post{operation: "reply"})` are admitted, each with `operation` the no-point anchor and no added `anchor` occurrence; a guard and a reset without `point_anchor` keep their published layout and are admitted. A `point_anchor` naming the no-point anchor, a `post` anchor for a guard, a `pre` anchor for a reset, the `pre` anchor of another operation, or a frame each refuse `invalid_package`/`timed-node-reference` at the binding's target; a point-bound guard and a point-free guard of one operation in one model refuse `invalid_package`/`timed-node-reference` at the second in ascending node-id order. | Test (TC-1721) |
 
 ## Dependencies
 
