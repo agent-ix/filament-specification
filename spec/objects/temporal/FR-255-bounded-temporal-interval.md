@@ -30,7 +30,7 @@ the bounds are integers. Under `filament.temporal.timed/v1` the bounds are exact
 rational time quantities `0 <= a <= b` in the binding's unit, converted
 exactly (FR-142), each end closed or open, written `[a, b]`, `(a, b]`,
 `[a, b)` or `(a, b)`; an interval with an open end has `a < b`, and the upper
-bound is finite; an interval that breaks either rule refuses with
+bound is finite or, on an interval whose upper end is `*` (`[q, *]`, `(q, *)`), absent (FR-766); an interval that breaks either rule refuses with
 `invalid_timed_model`/`invalid-interval`. A closed interval with `a = b` is **punctual**. An offset
 `τ_j − τ_i` lies in the interval when it is above `a` (or equal to it at a
 closed lower end) and below `b` (or equal to it at a closed upper end).
@@ -45,7 +45,7 @@ states the same bound form for the past direction.
 | Field | Type | Multiplicity | Constraints |
 |---|---|---|---|
 | lower_bound_a | String | 1..1 |  |
-| upper_bound_b | String | 1..1 |  |
+| upper_bound_b | String | 0..1 |  |
 | lower_end_openness | String | 1..1 |  |
 | upper_end_openness | String | 1..1 |  |
 | selected_profile_identity | TemporalSemanticProfile | 1..1 |  |
@@ -58,7 +58,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | Field | Derivation note |
 |---|---|
 | lower_bound_a | type not stated in source; see Field sources |
-| upper_bound_b | type not stated in source; see Field sources |
+| upper_bound_b | type not stated in source; see Field sources; absent on a timed interval whose upper end is `*` (FR-766) |
 | lower_end_openness | string tag `closed` or `open` (Timed profile) |
 | upper_end_openness | string tag `closed` or `open` (Timed profile) |
 | clock_binding | exactly one clock binding; a Key component (FR-255 Key) |
@@ -67,7 +67,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | Property | Source | Note |
 | --- | --- | --- |
 | Lower bound `a` | FR-091 Behavior, FR-092 Inputs | Integer, `0 <= a`; under the timed profile an exact rational time quantity. |
-| Upper bound `b` | FR-091 Behavior, FR-092 Inputs | Integer, `a <= b`; under the timed profile an exact rational time quantity, finite. |
+| Upper bound `b` | FR-091 Behavior, FR-092 Inputs | Integer, `a <= b`; under the timed profile an exact rational time quantity, finite, or absent (`*`) on an interval `[q, *]` ([FR-766](../../functional/temporal/FR-766-admit-a-lower-bounded-timed-interval-with-no-upper-bound.md)). |
 | Lower end openness | Timed profile | `closed` under every other profile; `closed` or `open` under the timed profile. |
 | Upper end openness | Timed profile | As the lower end. |
 | Selected profile identity | FR-090, FR-091-AC-2 | One tick's meaning is fixed by the profile ([FR-250](FR-250-temporal-semantic-profile.md)), so the same numeric pair under two profiles is not the same interval. |
@@ -115,7 +115,10 @@ profile shall quantify admitted past instants by inclusive clock distance."
   reconstruction "under every profile". Under the infinite-trace profile an
   interval operator carries this object with the infinite-trace profile
   identity in its key, and an unbounded operator carries none
-  ([FR-367](../../functional/temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)).
+  ([FR-367](../../functional/temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)). Under
+  the timed profile an operator written `[q, *]` carries this object with no
+  upper bound and the timed profile identity in its key
+  ([FR-766](../../functional/temporal/FR-766-admit-a-lower-bounded-timed-interval-with-no-upper-bound.md)).
 
 ## Emptiness is not falsity by default
 

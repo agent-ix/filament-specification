@@ -98,8 +98,9 @@ the clause is bound to that configuration.
 - Over a model subject the name is one of exactly two binding names:
   `model-steps`, where one tick is one step of a behaviour, and `model-time`,
   where one tick is one unit of the model's time source and the timed profile
-  is selected (FR-252, FR-416). An unwritten clock binds `model-time` over a
-  timed model and `model-steps` over any other model. The frontend shall refuse
+  is selected (FR-252, FR-416). An unwritten clock binds the default of the
+  selected profile (FR-765): `model-time` under `filament.temporal.timed/v1`
+  and `model-steps` under every other profile. The frontend shall refuse
   any other name over a model subject with `unsupported_construct` at the clock
   name, before evaluation, naming the two admitted names.
 - Over a trace subject the name is a clock role: any non-empty text the author

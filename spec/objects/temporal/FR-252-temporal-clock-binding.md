@@ -37,8 +37,11 @@ A temporal claim over a model subject has exactly one of two bindings:
   to it. Both give non-decreasing exact rational time stamps in unit `u`, with
   step order as the admitted order.
 
-**Default.** A claim over a timed model binds `model-time` unless it writes
-`clock "model-steps"`; a claim over an untimed model binds `model-steps`.
+**Default.** A claim that writes no `clock` member binds the default its
+selected profile gives ([FR-765](../../functional/temporal/FR-765-default-the-clock-binding-of-a-model-claim-by-its-profile.md)):
+`model-time` under `filament.temporal.timed/v1`, and `model-steps` under every
+other profile. A written `clock "model-steps"` or `clock "model-time"` binds
+what it names.
 Writing the default changes nothing: the binding enters the obligation
 identity, not its spelling. A `model-time` binding over an untimed model
 refuses with `invalid_timed_model`/`model-time-on-untimed-model`.
@@ -149,7 +152,7 @@ is therefore a precondition of applying a progress assertion
 | FR-252-AC-3 | The declared key order over binding components is never cited as an admitted order for an order-sensitive operator. | Analysis |
 | FR-252-AC-4 | A binding under the event-position profile carries no epoch, period or elapsed-time component. | Inspection |
 | FR-252-AC-5 | A binding whose clock identity differs compares unequal regardless of equal unit and epoch. | Analysis |
-| FR-252-AC-6 | A claim over a timed model with no `clock` member binds `model-time`, `clock "model-steps"` binds steps, a claim over an untimed model binds `model-steps`, and writing the default leaves the binding and obligation identity unchanged. | Test (TC-368) |
+| FR-252-AC-6 | Under the timed profile a claim over a timed model with no `clock` member binds `model-time`; under the event-position profile `clock "model-steps"` binds steps and a claim over an untimed model with no `clock` member binds `model-steps`; and writing the default leaves the binding and obligation identity unchanged. | Test (TC-368) |
 | FR-252-AC-7 | Changing the time source kind, unit or period of a `model-time` binding yields an unequal binding; a `model-time` binding over an untimed model refuses `invalid_timed_model`/`model-time-on-untimed-model`. | Test (TC-368) |
 
 ## Dependencies
