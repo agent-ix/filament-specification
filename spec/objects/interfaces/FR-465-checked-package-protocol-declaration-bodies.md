@@ -212,15 +212,17 @@ The reader checks, for one channel, in this order:
    locus is the target.
 2. **Message type.** `carries` is a declared dependency (a node of the graph absent from `dependencies` is refused `invalid_semantic_graph` at the graph stage, FR-464 "Reader order"), else
    `missing_declaration`/`missing-name` for a target that names no node, and a `scalar_type` node, a
-   `composite_type` node, or a `model` node of form `record_value_type`,
+   `composite_type` node, a `bounded_domain` node (a bounded scalar or a
+   bounded collection, FR-726), or a `model` node of form `record_value_type`,
    `tuple_value_type`, `event_type` or `variant_type`, else `invalid_model_binding`/
    `malformed-declaration`.
 3. **Ordering.** For `fifo`, `binder` and `key` are present, else the
    layout is violated (`malformed_wire`); `binder` is a declared `value`/`parameter`
    dependency whose `semantic_type` is the `carries` target, else
    `ill_typed`/`type-mismatch` at the channel node, retaining `expected` and
-   `actual`. The type of `key` is equality-stable (FR-322 "Equality-stable
-   types"), else `ill_typed`/`operator-ineligible` at the key, retaining the
+   `actual`. The type of `key` is FIFO-key-stable (FR-726: an FR-322
+   equality-stable type whose equality is an equivalence, so no IEEE float
+   at any depth), else `ill_typed`/`operator-ineligible` at the key, retaining the
    operator `=` and the type. `key` is a slot that bars model state at the
    `channel-key` stage (FR-464 step 6): it reads the message binder and
    constants, so a read of a capture is `missing_declaration`/`missing-name`
