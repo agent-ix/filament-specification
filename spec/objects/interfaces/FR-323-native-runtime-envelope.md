@@ -93,7 +93,8 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   then recompiles the proved package from `package.lock.sources` and uses the
   result. The replay compares no recompiled package with any supplied or
   recorded package; a replay reads the proved package document only for its
-  `name`, lock `sources` and lock `refinement_internals`. It refuses with the first of these, each rule
+  `name`, lock `sources`, lock `refinement_internals`, `temporal_bindings` rows
+  and lock `dependency_clock_selections` (FR-322). It refuses with the first of these, each rule
   applied over all entries, in entry order, before the next rule, and
   yields no result:
   1. before any recompile, entries not in strictly ascending UTF-8 byte
@@ -107,8 +108,27 @@ Type and Multiplicity above were derived from the retained text below. Where tha
      `missing_import`/`missing-selection`; each import binds to the entry
      named by its selecting package's own direct lock, including locks of
      recompiled dependencies;
+     the recompile of a library declaration whose clock name has no
+     `dependency_clock_selections` entry refuses `missing-clock-selection`,
+     and one whose entry's kind is not the kind its profile needs refuses
+     `clock-kind-mismatch` (below);
   3. an entry that no import in the recompiled dependency tree reaches refuses
-     `invalid_package`/`invalid-value` at `/dependencies`.
+     `invalid_package`/`invalid-value` at `/dependencies`;
+  4. after every recompile, a `dependency_clock_selections` entry that no
+     recompiled library declaration reads refuses `unused-clock-selection`
+     at `/package/lock/dependency_clock_selections/{i}`.
+  The recompile of the proved package takes its clock configurations from
+  its `temporal_bindings` rows (each row's `clock_name` and `clock`), and the
+  recompile of every dependency takes them from the proved package's
+  `dependency_clock_selections` entries alone, never from a program row of the
+  same clock name; a request carries no clock configuration, so a replay
+  recompiles every unit under exactly the configuration the proof ran under,
+  and a package that omits an entry its producer had to write fails its replay
+  instead of borrowing a program row. Rule 2's `missing-clock-selection`
+  names the clock and the library whose declaration reads it and is located at
+  `/package/lock/dependency_clock_selections`; its `clock-kind-mismatch` is
+  located at the entry's `clock/kind`. Clock usage is known only once every
+  unit is recompiled, so the unused-entry refusal is rule 4.
   An edit that removes or retypes an export the proved package uses
   makes the recompile itself refuse at rule 2 (`missing_declaration` or
   `ill_typed`).
@@ -596,6 +616,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-35 | **RETIRED (source-byte integrity removed).** Withdrawn with no replacement: a `sources` entry is `{authority, identity}` and no entry's bytes are digested. | Test (TC-277), retired |
 | FR-323-AC-36 | A `function` replay request for a unit `q` that imports the library `test/units`, with `replay` `{"function": "big", "function_owner": "test/units", ...}` and `test/units` as its one `dependencies` entry, executes `big` of `test/units` against that library's recompiled package, joining the arguments by that package's parameter node ids; with the unit also declaring a function `big`, the owner-carrying request still executes the library's `big`, and the same request without `function_owner` executes the unit's. The corpus schema's `$defs.ReplayTargetMembers` admits `function_owner` only in the `function` arm, as a non-empty string, and the request round-trips with its owner. | Test (TC-1484) |
 | FR-323-AC-37 | A request carrying `function_owner` beside `frame_operation` or `state_clause` refuses `invalid_runtime_input`/`unknown-member` at `/replay/function_owner` at decode, before the byte-provision rule and any recompile, and fails the corpus schema; a `function_owner` of `test/absent`, which the unit does not import, or of a library present in `dependencies` only as the import of another dependency, refuses `missing_import`/`missing-selection` at `/replay/function_owner`; an owner-carrying request for a name `test/units` does not declare refuses `missing_declaration`/`missing-name`; one for a function whose signature names a record type of `test/units` refuses `ill_typed`/`operator-ineligible`; each refuses before any argument join or call, with no charge and no result. | Test (TC-1484) |
+| FR-323-AC-38 | A replay request for a proved package that imports a library whose timestamped-event clause is on clock `lib-ms`, a clock no declaration of the proved package uses, and whose lock carries `dependency_clock_selections` for `lib-ms`, recompiles the library under that configuration and replays to the result the proved run gave, with no clock member in the request. The same request whose package has the member removed refuses `missing-clock-selection` naming `lib-ms` and the library at `/package/lock/dependency_clock_selections`, and so does that request when the proved package's own clause is also on `lib-ms` and its `temporal_bindings` row for `lib-ms` remains (a library is never served from a program row); one whose member adds an entry `spare` no library declaration reads refuses `unused-clock-selection` at that entry; one whose `lib-ms` entry is a `fixed_sample` configuration refuses `clock-kind-mismatch` at that entry's `clock/kind`. None yields a result. | Test (TC-1662) |
 
 ## Dependencies
 
