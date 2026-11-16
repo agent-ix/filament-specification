@@ -113,6 +113,18 @@ exact magnitudes, its `N` being the summand's own carried type. Under direct
 kernel evaluation, a non-member seed or prefix is a located undefined outcome
 at that summand or addition; it makes no later charge and exposes no total.
 
+`count<N>(x in c: p)` over a source whose size is proved at most `m` has the
+count interval `[0, m]`, or `[0, +inf)` when `c`'s size has no proved upper
+bound; a guard on `size(c)` in scope narrows `m` as it does for `sum`. The lower
+bound is `0` whatever `p` is. If a linked `count` interval is not inside `N`'s
+domain, then the checker shall refuse the `count`
+`refused { code: undefined_expression, cause: unproved-range }`, as it refuses
+an unproved `sum` prefix, so a linked program never meets a count outside its
+type at run. Under direct kernel evaluation the final count is retained into
+`N`, and a count outside `N`'s domain is FR-044's
+`refused { code: integer_out_of_domain, cause: outside-domain }` at the `count`:
+unlike a `sum`, a `count` has no running total in `N`, only its final value.
+
 The static result type is derived from source `K<T>[a,b]`, as follows. `map`
 and `collect` over a sequence or bag return `[a,b]`, and over a set or ordered
 set return `[min(a,1),b]`. `filter` returns `[0,b]`. `dropFirst` over a sequence or
@@ -293,6 +305,7 @@ incomplete outcome.
 | FR-145-AC-13 | Over `q: Sequence<Int[0, 9]>` with `u` an unavailable occurrence: on `[1, 1, u]`, `contains(q, 1)` is a completed `true`, `exists(x in q: x = 1)` a completed `true` and `forall(x in q: x = 2)` a completed `false`, each stopping before `u`; on `[u, 1]`, `contains(q, 1)`, `exists(x in q: x = 1)` and `forall(x in q: x = 2)` are each incomplete at `u`; on `[1, u]`, `forall(x in q: x = 1)` is incomplete at `u`. | Test (TC-1483) |
 | FR-145-AC-14 | On `[u, 1]` and on `[1, u]`, `filter(x in q: x > 0)`, `map(x in q: x + 0)`, `count<N>(x in q: x > 0)` and `sum<N>(x in q: x)` are each incomplete at `u` with no partial collection, count or total; `removeOne(q, 1)` on `[1, u]` is `[u]` and on `[u, 1]` incomplete; `dropFirst(q)` on `[u, 1]` is `[1]` and on `[1, u]` is `[u]`; `size(q)` on `[1, u]` is 2. | Test (TC-1483) |
 | FR-145-AC-15 | Each incomplete outcome of AC-13 and AC-14 carries code `unavailable_observation`, cause `missing-required-valuation`, and the runtime value path of `q` followed by the `index` step of `u`'s position (0 on `[u, 1]`, 1 on `[1, u]`); a visiting form charges the visit of `u` and no retain, and `contains` charges no `collection.member-walk` for `u`. | Test (TC-1483) |
+| FR-145-AC-16 | Linked, for `q` of `Sequence<Integer>[0, 5]`, `Bag<Integer>[0, 5]` and `Set<Integer>[0, 5]`: `count<Int[0, 3]>(x in q: x > 0)` is `refused { code: undefined_expression, cause: unproved-range }`; into `Int[0, 5]` and into `Integer` it is admitted; under `if size(q) <= 3` it is admitted and under `if size(q) <= 4` refused the same way; `count<Int[1, 3]>(x in q: true)` over `Sequence<Integer>[0, 3]` is refused the same way. Under direct kernel evaluation, `count<Int[0, 3]>(x in q: x)` over five `true` occurrences of `Sequence<Boolean>[0, 5]` is `refused { code: integer_out_of_domain, cause: outside-domain }` at the `count`. | Test (TC-1653) |
 
 ## Dependencies
 
