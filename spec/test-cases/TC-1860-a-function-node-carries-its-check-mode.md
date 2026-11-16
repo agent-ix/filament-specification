@@ -29,4 +29,4 @@ the member removed, set to `"strict"`, `""` and `true`, placed on an
 - The first two packages are admitted and unequal; the diamond refuses `invalid_package`/`conflicting-definition`.
 - The missing, malformed and misplaced members refuse `malformed_wire`; `kernel` on the clause functions refuses `invalid_package`/`invalid-value`.
 
-Test: filament-spec-language `fsl-analyze/tests/it/check_mode_record.rs`, traced `FSpec-TC-1860`.
+Test: `tests/checked_package_v2.rs` `tc_1860_a_function_node_carries_its_check_mode` (schema and vectors); filament-spec-language `fsl-analyze/tests/it/check_mode_record.rs`, traced `FSpec-TC-1860` (producer).

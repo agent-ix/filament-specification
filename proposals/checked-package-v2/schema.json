@@ -5565,9 +5565,39 @@
         "owner_model": {
           "$ref": "#/$defs/NodeRef"
         },
+        "check_mode": {
+          "enum": [
+            "linked",
+            "kernel"
+          ]
+        },
         "body": {}
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "node_tag": {
+                "const": "function"
+              }
+            },
+            "required": [
+              "node_tag"
+            ]
+          },
+          "then": {
+            "required": [
+              "check_mode"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "check_mode"
+              ]
+            }
+          }
+        },
         {
           "$ref": "#/$defs/DeclarationTagRules"
         },

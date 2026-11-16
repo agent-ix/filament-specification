@@ -1979,38 +1979,6 @@
     {
       "name": "MW-11",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Order/size"
-          ],
-          "ordinal": 0
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Order/size"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2032,36 +2000,19 @@
               }
             }
           ]
-        }
-      },
-      "expected": {
-        "passes": "owner-join"
-      }
-    },
-    {
-      "name": "MW-12",
-      "node": {
+        },
+        "check_mode": "linked",
+        "dependencies": [],
         "node_id": {
           "package": "acme/orders",
           "path": [
             "function",
             "pure_function",
-            "ix://acme/orders/Order"
+            "ix://acme/orders/Order/size"
           ],
           "ordinal": 0
         },
-        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
         "occurrences": [
           {
             "role": "generated",
@@ -2071,8 +2022,26 @@
         "owner": {
           "kind": "model",
           "identity": "acme/orders",
-          "node": "ix://acme/orders/Order"
+          "node": "ix://acme/orders/Order/size"
         },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
+        }
+      },
+      "expected": {
+        "passes": "owner-join"
+      }
+    },
+    {
+      "name": "MW-12",
+      "node": {
         "body": {
           "term": "aggregate",
           "members": [
@@ -2094,36 +2063,19 @@
               }
             }
           ]
-        }
-      },
-      "expected": {
-        "passes": "owner-join"
-      }
-    },
-    {
-      "name": "MW-13",
-      "node": {
+        },
+        "check_mode": "linked",
+        "dependencies": [],
         "node_id": {
           "package": "acme/orders",
           "path": [
             "function",
             "pure_function",
-            "ix://acme/orders/Order/missing"
+            "ix://acme/orders/Order"
           ],
           "ordinal": 0
         },
-        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
         "occurrences": [
           {
             "role": "generated",
@@ -2133,8 +2085,26 @@
         "owner": {
           "kind": "model",
           "identity": "acme/orders",
-          "node": "ix://acme/orders/Order/missing"
+          "node": "ix://acme/orders/Order"
         },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
+        }
+      },
+      "expected": {
+        "passes": "owner-join"
+      }
+    },
+    {
+      "name": "MW-13",
+      "node": {
         "body": {
           "term": "aggregate",
           "members": [
@@ -2156,6 +2126,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Order/missing"
+          ],
+          "ordinal": 0
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Order/missing"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2168,38 +2171,6 @@
     {
       "name": "MW-14",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Order/total"
-          ],
-          "ordinal": 0
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Order/total"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2221,6 +2192,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Order/total"
+          ],
+          "ordinal": 0
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Order/total"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2233,38 +2237,6 @@
     {
       "name": "MW-16",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Order"
-          ],
-          "ordinal": 1
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Order"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2286,6 +2258,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Order"
+          ],
+          "ordinal": 1
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Order"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2298,38 +2303,6 @@
     {
       "name": "MW-17",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Order/size"
-          ],
-          "ordinal": 1
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Order/size"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2351,15 +2324,9 @@
               }
             }
           ]
-        }
-      },
-      "expected": {
-        "passes": "owner-join"
-      }
-    },
-    {
-      "name": "MW-18",
-      "node": {
+        },
+        "check_mode": "linked",
+        "dependencies": [],
         "node_id": {
           "package": "acme/orders",
           "path": [
@@ -2367,20 +2334,9 @@
             "pure_function",
             "ix://acme/orders/Order/size"
           ],
-          "ordinal": 2
+          "ordinal": 1
         },
-        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
         "occurrences": [
           {
             "role": "generated",
@@ -2392,6 +2348,24 @@
           "identity": "acme/orders",
           "node": "ix://acme/orders/Order/size"
         },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
+        }
+      },
+      "expected": {
+        "passes": "owner-join"
+      }
+    },
+    {
+      "name": "MW-18",
+      "node": {
         "body": {
           "term": "aggregate",
           "members": [
@@ -2413,6 +2387,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Order/size"
+          ],
+          "ordinal": 2
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Order/size"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2425,38 +2432,6 @@
     {
       "name": "MW-19",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Order/size"
-          ],
-          "ordinal": 3
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Order/size"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2478,6 +2453,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Order/size"
+          ],
+          "ordinal": 3
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Order/size"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2490,38 +2498,6 @@
     {
       "name": "MW-20",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Order/size"
-          ],
-          "ordinal": 4
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Order/size"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2560,6 +2536,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Order/size"
+          ],
+          "ordinal": 4
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Order/size"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2572,6 +2581,12 @@
     {
       "name": "MW-21",
       "node": {
+        "body": {
+          "term": "aggregate",
+          "members": []
+        },
+        "check_mode": "linked",
+        "dependencies": [],
         "node_id": {
           "package": "acme/orders",
           "path": [
@@ -2581,18 +2596,7 @@
           ],
           "ordinal": 5
         },
-        "schema_version": "filament.checked-semantic-graph/v2",
         "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
         "occurrences": [
           {
             "role": "generated",
@@ -2604,9 +2608,15 @@
           "identity": "acme/orders",
           "node": "ix://acme/orders/Order/size"
         },
-        "body": {
-          "term": "aggregate",
-          "members": []
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
@@ -2619,38 +2629,6 @@
     {
       "name": "MW-22",
       "node": {
-        "node_id": {
-          "package": "acme/orders",
-          "path": [
-            "function",
-            "pure_function",
-            "ix://acme/orders/Flow"
-          ],
-          "ordinal": 0
-        },
-        "schema_version": "filament.checked-semantic-graph/v2",
-        "node_tag": "function",
-        "semantic_form": "pure_function",
-        "semantic_type": {
-          "package": "example",
-          "path": [
-            "unresolved",
-            "0"
-          ],
-          "ordinal": 0
-        },
-        "dependencies": [],
-        "occurrences": [
-          {
-            "role": "generated",
-            "ordinal": 0
-          }
-        ],
-        "owner": {
-          "kind": "model",
-          "identity": "acme/orders",
-          "node": "ix://acme/orders/Flow"
-        },
         "body": {
           "term": "aggregate",
           "members": [
@@ -2672,6 +2650,39 @@
               }
             }
           ]
+        },
+        "check_mode": "linked",
+        "dependencies": [],
+        "node_id": {
+          "package": "acme/orders",
+          "path": [
+            "function",
+            "pure_function",
+            "ix://acme/orders/Flow"
+          ],
+          "ordinal": 0
+        },
+        "node_tag": "function",
+        "occurrences": [
+          {
+            "role": "generated",
+            "ordinal": 0
+          }
+        ],
+        "owner": {
+          "kind": "model",
+          "identity": "acme/orders",
+          "node": "ix://acme/orders/Flow"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "pure_function",
+        "semantic_type": {
+          "package": "example",
+          "path": [
+            "unresolved",
+            "0"
+          ],
+          "ordinal": 0
         }
       },
       "expected": {
