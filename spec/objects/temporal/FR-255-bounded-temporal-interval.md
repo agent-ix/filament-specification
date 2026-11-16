@@ -67,7 +67,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | Property | Source | Note |
 | --- | --- | --- |
 | Lower bound `a` | FR-091 Behavior, FR-092 Inputs | Integer, `0 <= a`; under the timed profile an exact rational time quantity. |
-| Upper bound `b` | FR-091 Behavior, FR-092 Inputs | Integer, `a <= b`; under the timed profile an exact rational time quantity, finite. |
+| Upper bound `b` | FR-091 Behavior, FR-092 Inputs | Integer, `a <= b`; under the timed profile an exact rational time quantity, finite, or absent (`*`) on an interval `[q, *]` ([FR-766](../../functional/temporal/FR-766-admit-a-lower-bounded-timed-interval-with-no-upper-bound.md)). |
 | Lower end openness | Timed profile | `closed` under every other profile; `closed` or `open` under the timed profile. |
 | Upper end openness | Timed profile | As the lower end. |
 | Selected profile identity | FR-090, FR-091-AC-2 | One tick's meaning is fixed by the profile ([FR-250](FR-250-temporal-semantic-profile.md)), so the same numeric pair under two profiles is not the same interval. |
@@ -115,7 +115,10 @@ profile shall quantify admitted past instants by inclusive clock distance."
   reconstruction "under every profile". Under the infinite-trace profile an
   interval operator carries this object with the infinite-trace profile
   identity in its key, and an unbounded operator carries none
-  ([FR-367](../../functional/temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)).
+  ([FR-367](../../functional/temporal/FR-367-evaluate-interval-operators-under-infinite-trace.md)). Under
+  the timed profile an operator written `[q, *]` carries this object with no
+  upper bound and the timed profile identity in its key
+  ([FR-766](../../functional/temporal/FR-766-admit-a-lower-bounded-timed-interval-with-no-upper-bound.md)).
 
 ## Emptiness is not falsity by default
 
