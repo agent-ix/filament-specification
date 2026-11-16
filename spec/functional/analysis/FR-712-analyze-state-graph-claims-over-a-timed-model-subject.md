@@ -81,14 +81,22 @@ timed form.
   path form with each step's delay before it, and replay with no provider
   present. A `unique path` refutation carries the two step sequences, or the
   cycle and the node it returns to.
-- **Proof basis.** A proof settles with basis `zone-certified` and an FR-418
-  certificate covering the reachable zones and, for `always possible`, the
-  `E(P)` zones, or with basis `exhaustive` by digitization of an all-closed
-  subject (FR-416).
-- **Routing.** A backend matches a state-graph item over a timed subject only
-  when it advertises the form in `state_graph_forms` and also matches the
-  subject's timed items under FR-290's matching rules, so a backend that
-  decides only untimed graphs is never a candidate.
+- **Proof basis and certificate.** A zone proof settles with basis
+  `zone-certified` and an FR-418 certificate covering the reachable zones.
+  For `always possible` the certificate also carries a `state_graph` part
+  `{form, ef_nodes}`: `ef_nodes` lists, in ascending order, the positions in
+  `nodes` of the zones of `E(P)`, and the checker accepts it only after
+  re-deriving one predecessor pass that adds no zone and finding every
+  reachable `Q` node among them. A proof by digitization of an all-closed
+  subject settles with basis `exhaustive` (FR-416).
+- **Routing.** A timed state-graph item is routed by its `options.method`,
+  as a timed temporal item is (FR-416): without `method`, or with `zones`,
+  only a backend that decides the subject on zones and lists the form in
+  `state_graph_forms` matches it; with `digital-clocks`, only a backend
+  that publishes that method and lists the form matches it, and decides the
+  closed subject's integer-clock reading. A backend that decides only
+  untimed graphs, and offers neither method, never matches. One item reaches
+  one backend.
 
 ## Acceptance Criteria
 
@@ -96,10 +104,10 @@ The vector is TC-369's `Rpc` model with `T = 4 ms`.
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-712-AC-1 | `possible` of `phase = 2` holds with a witness of `send` then `reply` whose delay before `reply` is an exact rational in `[1, 3]` and replays; `possible` of `phase = 3` does not hold, because every run takes `reply` by `x = 3` and `timeout` needs `x >= 4` while `phase` is 1. | Test (TC-1742) |
-| FR-712-AC-2 | `always possible` of `phase = 0` holds; with `reset` removed it is refuted by a path ending at `phase` 2, and the proof of the first carries the `E(P)` zones in its certificate. | Test (TC-1742) |
-| FR-712-AC-3 | `unique path` from `phase = 0` to `phase = 2` is refuted with the cycle through `reset`; without `reset` it holds, the runs with different delays before `reply` counting as one path. | Test (TC-1742) |
-| FR-712-AC-4 | A backend that advertises the three forms but matches no timed item is not a candidate for these items, and an item naming it settles `unsupported` `unsupported-requested-capability`. | Test (TC-1742) |
+| FR-712-AC-1 | `possible` of `phase = Replied` holds with a witness of `send` then `reply` whose delay before `reply` is an exact rational in `[1, 3]` and replays; `possible` of `phase = TimedOut` does not hold, because every run takes `reply` by `x = 3` and `timeout` needs `x >= 4` while `phase` is `Waiting`. | Test (TC-1742) |
+| FR-712-AC-2 | `always possible` of `phase = Idle` holds, and its proof's certificate carries the `state_graph` part with the `E(P)` zones in `ef_nodes`; with `reset` removed it is refuted by a path ending at `phase` `Replied`. | Test (TC-1742) |
+| FR-712-AC-3 | `unique path` from `phase = Idle` to `phase = Replied` is refuted with the cycle through `reset`; without `reset` it holds, the runs with different delays before `reply` counting as one path. | Test (TC-1742) |
+| FR-712-AC-4 | A backend that lists the three forms but offers neither timed method is not a candidate for these items, and an item naming it settles `unsupported` `unsupported-requested-capability`; with `options.method` `digital-clocks`, AC-1's items settle the same verdicts on the backend that publishes that method, the proof with basis `exhaustive` (FR-416). | Test (TC-1742) |
 
 ## Dependencies
 

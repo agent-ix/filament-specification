@@ -18,14 +18,14 @@ Scope: FR-712-AC-1 to FR-712-AC-4.
 
 ## Test Procedure
 
-1. Check `possible` of `phase = 2` and of `phase = 3` at `T = 4 ms`.
-2. Check `always possible` of `phase = 0`, then over the model without `reset`.
-3. Check `unique path` from `phase = 0` to `phase = 2` with and without `reset`.
-4. Name a backend advertising the forms that matches no timed item.
+1. Check `possible` of `phase = Replied` and of `phase = TimedOut` at `T = 4 ms`.
+2. Check `always possible` of `phase = Idle`, then over the model without `reset`.
+3. Check `unique path` from `phase = Idle` to `phase = Replied` with and without `reset`.
+4. Name a backend listing the forms that offers neither timed method; repeat step 1 with `options.method` `digital-clocks`.
 
 ## Expected Results
 
 - Step 1: holds with a replayed `send`, `reply` witness and a delay in `[1, 3]`; then does not hold.
-- Step 2: holds with `E(P)` zones in the certificate; then refuted ending at `phase` 2.
+- Step 2: holds with the `state_graph` part's `ef_nodes` in the certificate; then refuted ending at `phase` `Replied`.
 - Step 3: refuted by the `reset` cycle; holds without `reset`.
-- Step 4: `unsupported` `unsupported-requested-capability`.
+- Step 4: `unsupported` `unsupported-requested-capability`; with `digital-clocks`, the same verdicts with basis `exhaustive`.
