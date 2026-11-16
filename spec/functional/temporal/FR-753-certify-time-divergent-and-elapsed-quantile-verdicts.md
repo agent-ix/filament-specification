@@ -62,7 +62,7 @@ FR-751's result.
   converges. The checker SHALL apply the Alur–Dill progress condition: an end
   component is progressive when, for every clock of the key (the deadline and
   elapsed clocks included), an action of the component resets it, a delay
-  move of the component takes it across an integer boundary, or it is above
+  move of the component takes it across an integer boundary, or it is at
   its cap at a state of the component. The checker SHALL treat every maximal
   end component that is not progressive exactly as a zero-time component
   above: one value, checked against its exits. A progressive end component
@@ -89,9 +89,8 @@ FR-751's result.
   by FR-412 as an `upper` certificate of the maximum of
   `E[[activated] · ([M < c] − q)]`: below 0 it holds; at 0 the checker
   searches the actions that are tight under the certificate from the initial
-  state; when it reaches an activated state, every inequality holds but the
-  strict side of the claim is missed, so it rejects `threshold-missed` at the
-  initial state.
+  state and rejects `inequality-fails` at the first activated state it
+  reaches.
 - The checker SHALL derive activation, completion, censoring and the reward
   of every terminal state itself.
 
@@ -103,7 +102,7 @@ FR-751's result.
 | FR-753-AC-2 | For AC-1's claim, a certificate that values every undecided state at 0, the value of a scheduler that toggles forever at time 0, is rejected `certificate-rejected`, rule `inequality-fails`, at a state of a toggle component. | Test (TC-1820) |
 | FR-753-AC-3 | `expected elapsed until holds(m.delivered) >= 1 ms` over `Retx` and every scheduler settles `proved` on the minimum `10/9 ms`; an `exact` certificate that values the retry cycle, which holds delay moves, as though it took no time, giving the initial state `1 ms`, is rejected `certificate-rejected`, rule `inequality-fails`. | Test (TC-1820) |
 | FR-753-AC-4 | Over `Retx` and every scheduler, with `M` = `elapsed from holds(not m.delivered) until holds(m.delivered) within 4 ms`: `quantile 0.5 of M <= 2 ms` settles `proved` (minimum of the transform `2/5`) with an accepted `exact` certificate; `quantile 0.5 of M <= 1 ms` settles `refuted` (minimum `−1/2`), and a certificate stating `1/2` at the initial state is rejected `inequality-fails`. | Test (TC-1820) |
-| FR-753-AC-5 | Over the same model, `quantile 0.5 of M >= 1 ms` settles `proved` with an accepted `upper` certificate on the `region` route whose initial value is `−1/2`; `quantile 0.9 of M >= 2 ms` settles `refuted`, and an `upper` certificate with initial value `0`, whose inequalities all hold, is rejected `threshold-missed` at the initial state, because its tight actions reach an activated state. | Test (TC-1820) |
+| FR-753-AC-5 | Over the same model, `quantile 0.5 of M >= 1 ms` settles `proved` with an accepted `upper` certificate on the `region` route whose initial value is `−1/2`; `quantile 0.9 of M >= 2 ms` settles `refuted`, and an `upper` certificate with initial value `0` is rejected `inequality-fails` at the initial state, the first activated state its tight actions reach. | Test (TC-1820) |
 | FR-753-AC-6 | `Retx` under a workload with `delay Msg::send ~ discrete { 5 ms: 1 }`, whose window excludes its only delay, is time-locked at its initial state: `probability <= 0.999 [eventually[0 ms, 4 ms] holds(m.delivered)]` settles `proved`, `exact-value{0}`, with an accepted certificate, and a certificate valuing that state at 1 is rejected `inequality-fails`. | Test (TC-1820) |
 | FR-753-AC-7 | TC-374's `Retx` with a second clock `y` and an operation `again`, guarded `not m.delivered and y < 1 ms` and resetting `y`, which makes the subject strict and selects the `region` route: `Deadline` at 0.99 over every scheduler settles `proved`, `exact-value{99/100}`, with an accepted `region` certificate. The loop "reset `y`, delay into `0 < frac(y) < frac(x)`, reset `y`" returns to the same regions while `x` crosses no integer, so it is not progressive; an `exact` certificate that values every undecided state at 0, the value of a scheduler that loops there forever, is rejected `certificate-rejected`, rule `inequality-fails`, at a state of that component. | Test (TC-1820) |
 
