@@ -23,8 +23,10 @@ Scope: FR-364-AC-16.
 
 1. Read and replay the counterexample `{"trace": "observed", "kind": "formula", "prefix": [{"sample": "0"}, {"sample": "1"}], "loop": [{"sample": "2"}], ...}` of `always holds(r.level < 2)` against the request whose lasso holds prefix samples `level` 0, 0 and loop sample `level` 2.
 2. Read the same counterexample with one step `{"sample": "0", "document": "0"}`, with a `sample` of `0` (a JSON number), of `"01"` and of `"3"`, with the first prefix step replaced by `{"document": "0"}`, and with `loop` `[{"sample": "1"}]`.
+3. Read an undefined-evaluation envelope over the same trace whose `where` is `{"position": "1", "sample": "1", "locus": ...}`, then with `sample` replaced by `document`, with both `sample` and `document`, and with `sample` `"0"`.
 
 ## Expected Results
 
 - Step 1: the counterexample is admitted and replay reproduces the violation at position 2.
 - Step 2: each variant is refused before replay; the mixed-step variant as a mix of steps, the others as `malformed_wire` or `invalid_runtime_input`/`invalid-value` at the step.
+- Step 3: the first is admitted; each variant is refused before replay.

@@ -142,10 +142,9 @@ objects each holding string `kind` and unsigned `consumed`).
 bounded by, keyed by the limit's setting name ([FR-461](FR-461-name-the-limit-value-and-setting.md)),
 each value the effective bound as a canonical decimal string, with every
 default written explicitly: for a run over a model trace,
-`expansion.max_candidates`. It is present exactly when at least one
-request-settable limit bounds the run's evaluation, today a run over a
-`model` trace, and omitted otherwise, so documents of every other run are
-unchanged. Intake ceilings (the request and dependent
+`expansion.max_candidates`. It is present exactly for a run over a
+`model` trace, the one run whose evaluation a request-settable limit bounds,
+and omitted for every other run, whose documents are unchanged. Intake ceilings (the request and dependent
 byte limits) are not members: they bound reading the request, and a request
 that is read under them has one result whatever their values. `usage` says
 what the run consumed and `limits` the bounds it ran under; both are part
