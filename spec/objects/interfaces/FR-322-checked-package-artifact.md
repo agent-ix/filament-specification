@@ -3822,6 +3822,40 @@ compared byte-for-byte; no trimming, normalization or alias resolution occurs.
 
 The other three profile kinds retain their existing row requirements unchanged.
 
+**Hyper clause rows: one per quantified trace.** A hyper clause relates
+several traces, and under event-position each trace's positions are the steps
+of its own model, so each trace has its own sequence authority. The body
+wrapper of a `claim`/`hyperproperty` node (FR-402) therefore has one row per
+quantified trace for each of its `claim` occurrences, not one row per
+occurrence. Each such row carries the extra member `trace`, the trace
+variable's name exactly as the `variable` member of its quantifier Group
+holds it, and `clock` is the configuration derived for that trace: from the
+model subject the variable's alias selects, by the rule the producer applies
+to a single-trace clause over that model (the event-position
+`sequence_authority` is that model's declaration identity text). Every row of
+the wrapper carries the wrapper's `clock_name`. The key of a wrapper row is
+(`declaration`, `occurrence`, `trace`); wrapper rows ascend by `declaration`,
+then `occurrence`, then the trace's position in the body's `quantifiers`
+order. A row of any other declaration carries no `trace` member. The rows of
+one wrapper occurrence may hold equal configurations (two traces of one
+model, or a fixed-sample clause whose derived configuration does not depend
+on the model), and they are written all the same, so a consumer reads each
+trace's clock by its key and never by inference from another trace. A hyper
+clause over a finite domain (FR-191) has no quantifier alias, and its rows
+take the one configuration the clause's clock serves, one per trace.
+
+The reader SHALL require, for every `claim` occurrence of a body wrapper,
+exactly one row per quantifier Group, keyed by its variable. A wrapper row
+with no `trace` member, a `trace` naming no variable of the body, a repeated
+(`declaration`, `occurrence`, `trace`) key and a missing trace row refuse
+`invalid_package`/`timed-node-reference`: at `/temporal_bindings/{i}/trace`
+for an absent or unknown trace and a `trace` on a row that is not a wrapper's,
+at the later row `/temporal_bindings/{i}` with
+`invalid_package`/`conflicting-definition` for a repeated key, and at the
+wrapper's `/semantic_graph/nodes/{N}/body` for a missing trace row. A replay
+recompile serves each trace from its own row, so a relation between traces of
+two models replays under exactly the configurations it was proved under.
+
 A row for an absent or wrong-kind declaration, an `occurrence` that is not an
 occurrence of the stated role, a repeated key, a row out of order, a missing row
 for a clock-configured temporal declaration, a mismatching clock name, or a kind
@@ -5033,6 +5067,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-450 | A timed clause over a trace subject with one `{kind: "timed", unit}` row naming its clock role is admitted, and the `timed` alternative is closed with a required non-empty `unit`; the same clause without a row, a `timed` row whose `clock_name` is `model-time`, and a `timestamped_event` row for it each refuse `invalid_package`/`timed-node-reference`; a timed clause over a timed-model subject has no row and the clock name `model-time`, and a `timed` or `event_position` row for it refuses at that row. | Test (TC-1164) |
 | FR-322-AC-451 | An `application` of `filament.op.quantity.scale` with arguments `[reference(Q), reference(N)]`, `Q` a `quantity` typed by the unit node of `ms` and `N` an `integer`, is admitted with result type the unit node of `ms`, no laws, `mode` `null` and no member, and so is `filament.op.quantity.scale_div` with a `decimal` or `rational` factor; a third argument, a `float64` or `quantity` factor, the arguments in the order factor then quantity, a carried-quantity argument 0 and a `result_type` other than the unit node of `ms` each refuse `ill_typed`/`operator-ineligible`, a `mode` value refuses `invalid_package`/`operation-mode-mismatch` and a `laws` entry refuses `invalid_package`/`operation-law-mismatch`; both V2 schemas enumerate `filament.op.quantity.scale` and `filament.op.quantity.scale_div` in `OperationIdentity` directly after `filament.op.quantity.pow`, and the catalog entry of `filament-verification-contracts` carries them. | Test (TC-1326) |
 | FR-322-AC-452 | A package whose library unit declares a timestamped-event clause on clock `lib-ms`, compiled with the request configuration `{"kind": "timestamped_event", "timestamp_unit": "ms"}` for `lib-ms`, carries `lock.dependency_clock_selections` `[{"clock_name": "lib-ms", "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"}}]`, and a package whose closure takes no clock from the request omits the member. The reader refuses `[]` and an entry with a third key at the schema; two entries out of `clock_name` order `invalid_package`/`invalid-value` at the later entry; a repeated `clock_name` `invalid_package`/`conflicting-definition` with both entries as loci; a `clock_name` of `model-steps` `invalid_package`/`invalid-value` at that entry's `clock_name`; and an entry for a clock name the package's own `temporal_bindings` row also names, with a different configuration, `invalid_package`/`conflicting-definition` naming the entry and the row. Two compilations differing only in the `lib-ms` configuration give structurally unequal packages. | Test (TC-1661) |
+| FR-322-AC-453 | A hyper clause whose two trace variables `s` and `n` range over two model aliases selecting packages `example/device-saving` and `example/device-normal`, under event-position, has two rows for its one body-wrapper occurrence, in quantifier order, with `trace` `s` and `n` and `clock` `{"kind": "event_position", "sequence_authority": A}` where `A` is each model's declaration identity text, both with `clock_name` `model-steps`; a hyper clause with two traces of one model has two rows with equal configurations. Removing the `n` row refuses `invalid_package`/`timed-node-reference` at the wrapper's node body; a row whose `trace` is `x` refuses at `/temporal_bindings/1/trace`; a third row repeating `s` refuses `conflicting-definition` at that row; a `trace` member on a single-trace clause's row refuses at its `trace`. | Test (TC-1680) |
 
 ## Dependencies
 
