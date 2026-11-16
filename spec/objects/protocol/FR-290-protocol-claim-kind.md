@@ -444,7 +444,7 @@ receives the unknown-backend mark and it is a candidate for no item.
 
 An item's `candidates` value in the [FR-331](../interfaces/FR-331-backend-provider-envelope.md)
 request is valid when it equals the registry snapshot's candidate set for the
-item. A backend *matches* an item when it advertises the item's kind, its
+item, narrowed only as FR-776 permits. A backend *matches* an item when it advertises the item's kind, its
 evidence kind for a `probabilistic-satisfaction` item ("Evidence kinds"),
 and, for a `temporal-satisfaction` item, the item's dynamics: `hybrid` in
 its `dynamics` for an item carrying the hybrid-dynamics requirement and
@@ -457,7 +457,7 @@ its `dynamics` for an item carrying the hybrid-dynamics requirement and
 - When the request names an unregistered backend, the value is the
   unknown-backend mark carrying that identity.
 - When the request names none, the set is every registered backend that
-  matches the item.
+  matches the item, narrowed only as FR-776 permits.
 
 The `filament-spec-language` registry computes `candidates`
 ([filament-spec-language#185](https://github.com/agent-ix/filament-spec-language/issues/185)).
