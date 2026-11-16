@@ -75,20 +75,16 @@ accounting record of an item over a subject with a weak `parallel` states, in
 its method, the value of `max_store_buffer` (under `tso`) or `max_messages`
 (under `ra`) used and whether the run reached it.
 
-An item whose subject has an access the pre-check finds not to be one access
-settles `unsupported`, cause `weak-access-shape`, carrying `site`,
-`transition` and `shape`; so does an item in which a reader
-([FR-435](FR-435-classify-memory-accesses-and-orderings.md)) reads a shared
-location, with shape `multi-location` naming the reader as the site and the
-shared locations it reads; so does an item with an instantiated attempt
-whose class does not take its ordering (FR-435 Admitted orderings), with
-shape `ordering-mismatch`. The `shape` is one of
-`{"type":"multi-location","locations":[<location>, ...]}`,
-`{"type":"join-policy"}` and
-`{"type":"ordering-mismatch","access":<access>,"ordering":<ordering>}`, where
-`access` is one of `load`, `store`, `rmw` and `local`, and `ordering` is one
-of `relaxed`, `acquire`, `release`, `acq_rel` and `seq_cst`, or `null` when
-the attempt carries none.
+No item settles `unsupported` for an access shape: every shape has the
+meaning [FR-741](FR-741-step-every-weak-memory-access-shape.md) gives it.
+Each FR-331 result entry of an item over a weak subject may carry
+`ordering_restrictions`, an array of
+`{"site":<the attempt's locus>,"access":<access>,"written":<ordering>,"effective":<ordering>}`,
+where `access` is one of `load`, `store`, `rmw` and `local`, `written` is one
+of `relaxed`, `acquire`, `release`, `acq_rel` and `seq_cst` or `null` when
+the attempt carries none, and `effective` is the ordering FR-741 restricts it
+to, or `null` for a local access, ordered by the attempt's canonical
+transition identity.
 An item whose resolved model no candidate advertises settles `unsupported`,
 `unsupported_projection`/`unsupported-requested-capability`. A candidate
 advertises the memory models it decides, by the names `sc`, `tso` and `ra`,
@@ -156,12 +152,12 @@ race` ([FR-438](FR-438-report-data-races.md)).
 | FR-439-AC-3 | Two requests that differ only in a memory budget carry the same obligation identity; a bound-limited state is never terminal or a deadlock. | Test (TC-393) |
 | FR-439-AC-4 | When a state constraint and the memory budget both cut states, the cause is `constraint-reached`; when the memory budget and the instance budget both cut states, the cause is `memory-bound-reached`. | Test (TC-393) |
 | FR-439-AC-5 | The `tso` store-buffering counterexample carries both buffers at every position, `memory_models` naming `SB::Both` as `tso` and `memory_budgets`, and replays; naming an absent message depth refuses `invalid_runtime_input`/`invalid-value`. | Test (TC-394) |
-| FR-439-AC-6 | An item over a `tso` subject routed to a candidate that advertises only `sc` settles `unsupported`, `unsupported-requested-capability`; an item with a two-location access under a selected weak model settles `unsupported`, cause `weak-access-shape`, with its site, transition and shape. | Test (TC-389, TC-394) |
+| FR-439-AC-6 | An item over a `tso` subject routed to a candidate that advertises only `sc` settles `unsupported`, `unsupported-requested-capability`; an item with a two-location access under a selected weak model explores by FR-741 and settles a verdict, never `weak-access-shape`. | Test (TC-389, TC-394) |
 | FR-439-AC-7 | A `flush` position carries the `memory` anchor and does not advance interval distance. | Test (TC-394) |
 | FR-439-AC-8 | A claim whose atom reads `lookup<T>(p, r) absent undefined` at an absent key at a reachable state, in a run that also reaches bound-limited states, settles `refuted`, cause `undefined-evaluation`, not `inconclusive` with `memory-bound-reached`, and its counterexample carries the memory component and replays. | Test (TC-393) |
 | FR-439-AC-9 | An item over the load-buffering litmus (TC-391 LT-06) resolved to `ra` has the terminal record `warnings` hold two `memory.load-buffering-shape{load, store}` warnings, one per branch's distinct (load, store) shape, with the result, counterexample and obligation identity equal to the settlement without it; the same item resolved to `sc` or `tso` carries none; a candidate whose descriptor has no `memory_models` receives `SB` (TC-390) resolved to `sc` and not `SB` resolved to `tso` or `ra`. | Test (TC-393) |
 | FR-439-AC-10 | The `ra` counterexample of TC-390 SB-05's protocol (every store and load `seq_cst`) to the claim `always holds(not (c1.r = 1 and c2.r = 1))` replays. | Test (TC-394) |
-| FR-439-AC-11 | A `weak-access-shape` cause with shape `{"type":"ordering-mismatch","access":"rmw","ordering":null}`, one with `{"type":"ordering-mismatch","access":"load","ordering":"release"}` and one with `{"type":"ordering-mismatch","access":"local","ordering":"release"}` are admitted; a shape whose `access` is outside `load`, `store`, `rmw` and `local`, whose `ordering` member is missing, or that carries an extra member is refused. | Test (TC-389, TC-431) |
+| FR-439-AC-11 | An `ordering_restrictions` entry with `access` `rmw`, `written` `null` and `effective` `relaxed`, one with `access` `load`, `written` `release` and `effective` `relaxed`, and one with `access` `local`, `written` `release` and `effective` `null` are admitted; an entry whose `access` is outside `load`, `store`, `rmw` and `local`, whose `effective` member is missing, or that carries an extra member is refused. | Test (TC-389, TC-431) |
 
 ## Dependencies
 

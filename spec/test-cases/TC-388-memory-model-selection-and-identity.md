@@ -12,7 +12,7 @@ relationships:
 ## Description
 
 Check the `memory` clause's source default, the request's `memory` member,
-nesting rules, the weak join-policy rule, the resolved model in the
+nesting rules, the weak join rule (FR-741), the resolved model in the
 obligation identity, and that `sc` is the interleaving meaning.
 
 ## Test Procedure
@@ -32,8 +32,8 @@ refusal, its resolved models, its obligation identity and its verdict.
 | MS-05 | a nested `parallel Inner memory ra` inside `parallel Outer memory tso` | refuses `invalid_model_binding`/`conflicting-binding` naming `Outer` and `Inner` |
 | MS-06 | `parallel Outer memory tso` with nested `parallel Inner` and no clause, request selecting `ra` for `Outer` | both resolve to `ra` |
 | MS-07 | a request entry naming `SB::Both::left` (a branch, not a `parallel`), one naming a nested `parallel`, and one naming `SB::Both` twice | each refuses the request `invalid_runtime_input`/`invalid-value` naming the entry |
-| MS-08 | `parallel Both memory tso { … } join any [left, right];` | refuses `unsupported_construct`/`declaration-form` at the join |
-| MS-09 | `parallel Both { … } join any [left, right];` with source default `sc`, request selecting `tso` | settles `unsupported`, cause `weak-access-shape`, shape `join-policy` |
+| MS-08 | `parallel Both memory tso { … } join any [left, right];` | checks; explores by FSpec FR-741's join rule, merging the completed branches |
+| MS-09 | `parallel Both { … } join any [left, right];` with source default `sc`, request selecting `tso` | explores by FR-741's join rule; a cancelled branch's buffered store flushes after the join; no `weak-access-shape` result |
 | MS-10 | two sequential `parallel` controls, the first `memory tso` and the second `memory sc` | each governs its own branches; after the first `join all` memory holds one value per location and no buffer exists |
 
 ## Expected Results

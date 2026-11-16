@@ -31,7 +31,6 @@ item's `assessed_root`
 
 ## Outputs
 
-Role-local graphs plus soundness record, counterexample, inconclusive result or
 typed refusal. A result is written as an
 [FR-352](../foundation/FR-352-mint-native-run-result-witness-wire.md)
 protocol-analysis record, settled with the
@@ -86,7 +85,7 @@ FR-249 identify only the projected E02 result around it, not the artifact.
 | --- | --- | --- |
 | FR-174-AC-1 | A projectable graph yields local graphs whose composed traces are included in the admitted global traces. | Test (TC-205) |
 | FR-174-AC-2 | A hidden choice or incompatible local merge yields a source-correspondent counterexample. | Test (TC-205) |
-| FR-174-AC-3 | Unsupported dynamic/queue constructs or exhausted bounds return non-conclusive/unsupported without a substitute graph. | Test (TC-205) |
+| FR-174-AC-3 | An exhausted bound, or a limit the request or the selected system sets, returns a non-conclusive or unsupported result without a substitute graph; no construct of a checked protocol, dynamic and queue constructs included, is answered non-conclusive for want of a projection rule (FR-735). | Test (TC-205) |
 | FR-174-AC-4 | Every global communication projects to exactly one matching send/receive pair with preserved occurrence correspondence. | Test (TC-205) |
 | FR-174-AC-5 | A local branch merge is accepted only under compatible next actions or explicit distinguishing evidence. | Test (TC-205) |
 | FR-174-AC-6 | Changing the FR-288 definition key, the selected role, the projection profile, the channel, choice or visibility premises or the bounds yields a different derived-artifact identity, while changing only display name, path, span or producing run does not; the artifact carries its key members; an absent key member is refused `invalid_runtime_input`/`missing-member` naming the member; and no digest of the artifact stands in for a member. | Test (TC-205) |

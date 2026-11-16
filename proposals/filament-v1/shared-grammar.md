@@ -105,7 +105,7 @@ The complete-V1 facets additionally reserve `import`, `dimension`, `unit`,
 `adversarial`, `memory`, `fence`, `fork`, `node` and `stutter`. In a
 `protocol-step-source`, `join` and `activate` keep their common reservation
 and name a step kind. The words `sc`, `tso`, `ra`, `relaxed`, `acquire`,
-`acq_rel`, `seq_cst`, `cend`, `duplicate`, `lose`, `spawn` and `retire` are
+`acq_rel`, `seq_cst`, `cend`, `cfail`, `ctimeout`, `cexpire`, `duplicate`, `lose`, `spawn` and `retire` are
 matched as keyword spellings only in the `memory-clause`, `memory-order`,
 `fence-order` and `protocol-step-source` positions and remain identifiers
 elsewhere; `release` keeps its common reservation, and `ordering` is reused
@@ -206,7 +206,7 @@ protocol-clause = 'protocol', ident, 'using', ident,
                   'run', control, finish, '}' ;
 role         = 'role', ident, 'on', model-name, ';' ;
 relationship = 'relationship', ident, '=', model-name, ';' ;
-channel      = 'channel', ident, 'from', ident, 'to', ident,
+channel      = 'channel', ident, 'from', ident, 'to', ident, [ 'via', ident ],
                'carries', type-name, 'ordering', ordering,
                'delivery', delivery-policy,
                'capacity', capacity,
@@ -687,7 +687,7 @@ no separate binder production, and the `until` expression is written between
 the parentheses with no braces. The binder is readable only in that role's own `until` expression; a role name used as a value anywhere else refuses `missing_declaration`/`missing-name` at the name (FR-428).
 
 ```ebnf
-channel       = 'channel', ident, 'from', ident, 'to', ident,
+channel       = 'channel', ident, 'from', ident, 'to', ident, [ 'via', ident ],
                 'carries', type-ref, 'ordering', ordering,
                 'delivery', delivery-policy,
                 'capacity', capacity,
@@ -738,7 +738,8 @@ memory-order  = 'relaxed' | 'acquire' | 'release' | 'acq_rel' | 'seq_cst' ;
 fence-order   = 'acquire' | 'release' | 'acq_rel' | 'seq_cst' ;
 protocol-step-row    = 'step', protocol-step-source, '->',
                        protocol-step-target, ';' ;
-protocol-step-source = [ 'fork' | 'join' | 'cend' | 'duplicate' | 'lose'
+protocol-step-source = [ 'fork' | 'join' | 'cend' | 'cfail' | 'ctimeout' | 'cexpire'
+                         | 'duplicate' | 'lose'
                          | 'spawn' | 'retire' | 'activate' ], qualified-name
                      | 'memory', ident ;
 protocol-step-target = step-target

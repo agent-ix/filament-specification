@@ -153,7 +153,7 @@ A role has no internality member: neither the source nor this body spells
 
 ## Channel
 
-A `protocol`/`channel` node (operator `channel`) has five arguments, in this
+A `protocol`/`channel` node (operator `channel`) has five arguments and an optional sixth, in this
 order:
 
 | # | Binding | Value |
@@ -163,6 +163,7 @@ order:
 | 3 | `carries` | a reference to the message type node |
 | 4 | `ordering` | a Group: `kind`, a text `unordered` or `fifo`; for `fifo`, `binder`, a reference to the `value`/`parameter` node of the message, and `key`, a term: the FIFO key expression |
 | 5 | `delivery` | a text: one of the four policy words `unknown`, `at-most-once`, `at-least-once` or `exactly-once-premise`, or a delivery count interval `[lo,hi]` |
+| 6 | `connection` | optional: a reference to the model relationship node of the systems Connection the channel travels over, present exactly when the source writes `via` ([FR-738](FR-738-carry-a-protocol-channel-over-a-systems-connection.md)) |
 
 - **semantic_type** — the Boolean node.
 - **dependencies** — the two roles, the message type node, and for `fifo`
