@@ -56,7 +56,9 @@ synthesis Tariff using p grammar M::Tariff domain M::SmallTariff
 - `grammar G` SHALL resolve to a type declaration (record, enum, union,
   tuple or alias, recursive or not), whose values are the candidate terms, or
   to a state model object type, which selects plan synthesis
-  ([FR-650](FR-650-plan-and-optimize-over-a-state-model.md)). A name that
+  ([FR-650](FR-650-plan-and-optimize-over-a-state-model.md)), or to a
+  `hybrid` declaration, which selects hybrid plan synthesis
+  ([FR-819](FR-819-plan-over-hybrid-models.md)). A name that
   resolves to neither refuses `missing_declaration`/`missing-name`.
 - `domain D` SHALL resolve to a type declaration whose every value converts
   to a `G` value (`D` may be `G` itself). `D`'s value set is the search space.

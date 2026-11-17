@@ -49,7 +49,7 @@ FR-298 record per requested obligation, in one FR-299 generated package.
 | State model object type and population | `VARIABLES` with a type invariant over finite sets of keys and record values | a `structure State` and its well-typedness predicate |
 | Initial-state snapshot or initial constraint | `Init` | `def Init : State → Prop` |
 | Operation with precondition and postcondition | one action per operation, `Next` their disjunction with existential argument choice | `def Step : State → State → Prop` as the disjunction of operation relations |
-| State clause and invariant | a state predicate and `THEOREM Spec => []Inv` | `def Inv : State → Prop` and `theorem inv_holds : ∀ s, Reachable s → Inv s` stated without proof |
+| State clause and invariant | a state predicate and `THEOREM Spec => []Inv` | `def Inv : State → Prop` and the obligation proposition `def Ob_Inv : Prop := ∀ s, Reachable s → Inv s` |
 | Temporal clause, future operators with no interval | the LTL formula over `Spec`, fairness as `WF`/`SF` | a predicate over `Nat → State` behaviours |
 | Temporal clause with intervals under a step-counting profile | the formula with an auxiliary step counter | a predicate over indexed behaviours |
 | Dense-time clock, timed model | an explicit real-time encoding with a `now` variable | a predicate over timed behaviours |
@@ -60,8 +60,8 @@ FR-298 record per requested obligation, in one FR-299 generated package.
 - Every exported definition SHALL carry, as a comment, the source
   declaration's identity and span, so each text region maps back to its
   source obligation.
-- Lean theorem statements are exported as statements; the mapper writes no
-  proof and no `sorry`-free claim. A proof a user writes against the export
+- Lean obligations are exported as propositions (`def Ob_<clause> : Prop`,
+  FR-813); the file holds no `theorem`, no proof and no `sorry`. A proof a user writes against the export
   is external evidence and enters Filament only as `trusted` evidence.
 
 ### Fidelity
@@ -87,15 +87,20 @@ Each requested obligation SHALL receive exactly one FR-269 disposition:
 
 The mapper SHALL NOT classify an obligation as `preserved` because an external
 tool accepted the text. An external parser or checker (SANY, TLC, Apalache,
-Lean) is an observer: its result is recorded in the package's observer
-section and never changes a disposition or settles a claim.
+Lean) run as an observer is recorded in the package's observer section;
+it never changes a disposition and never settles a claim. A target result a
+caller submits as evidence (a TLC or Apalache run, a TLAPS proof, a Lean
+proof of an exported proposition) is a separate intake, FR-815's: it settles
+an obligation only as `trusted` evidence, never `certified`, only for a
+`preserved` or `conditional` record, and a target counterexample counts only
+after native replay.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-651-AC-1 | A counter state model with operation `inc` and a state clause `value <= 5` exports under `filament.output.tla2/v1` as a module with `VARIABLES`, `Init`, an `inc` action, `Next` and an invariant theorem, each region carrying its source identity and span, every obligation `preserved`; the module parses under the SANY parser as an observer. | Test (TC-1604) |
-| FR-651-AC-2 | The same package under `filament.output.lean4/v1` exports `structure State`, `Init`, `Step`, `Inv` and the theorem statement with no proof, every obligation `preserved`; the file elaborates under Lean 4 as an observer. | Test (TC-1604) |
+| FR-651-AC-2 | The same package under `filament.output.lean4/v1` exports `structure State`, `Init`, `Step`, `Inv` and the obligation proposition `Ob_Inv` with no `theorem` and no proof, every obligation `preserved`; the file elaborates under Lean 4 as an observer. | Test (TC-1604) |
 | FR-651-AC-3 | A timed clause exports `conditional` naming non-Zeno behaviours; a hybrid claim's flows export `unrepresented`; a probabilistic threshold 0.9 exports `unrepresented` and a probability-1 safety claim `conditional`; no record is `preserved` for these. | Test (TC-1604) |
 | FR-651-AC-4 | A request for an identity that is no obligation of the package refuses that member; an observer that rejects the text changes no disposition; exporting the same request twice gives byte-equal packages. | Test (TC-1604) |
 | FR-651-AC-5 | On the export conformance corpus of finite models, TLC's reachable state count and invariant verdict over the TLA+ export equal FSL's explicit-state exploration over the same model for every `preserved` model obligation. | Test (TC-1604) |
@@ -104,3 +109,9 @@ section and never changes a disposition or settles a claim.
 
 - [Common output-mapping contract](../../../proposals/filament-v1/output-mappings/common.md).
 - [FR-120](FR-120-select-output-mapping-profile.md), [FR-121](FR-121-account-for-every-output-obligation.md), FR-297, FR-298, FR-299 and FR-269.
+- [FR-811](FR-811-classify-every-construct-an-export-reads.md) to
+  [FR-818](FR-818-qualify-exports-against-golden-text-and-target-oracles.md)
+  specify construct coverage and the fidelity floor, the value, state,
+  temporal and protocol encodings, canonical text and naming, what a target
+  result certifies, target syntax versioning, the request, outcome and CLI
+  verb, and qualification.

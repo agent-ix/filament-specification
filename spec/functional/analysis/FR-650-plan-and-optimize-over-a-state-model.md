@@ -56,8 +56,9 @@ each with its plan, certificate and provenance as below.
 - A plan is *admissible* when every invocation is enabled (its precondition
   holds) where it is applied, every state clause and invariant of the model
   holds at every state of the plan, every policy clause the request names (a
-  temporal safety clause over the model) holds on the plan's finite trace
-  under its profile, and the goal holds.
+  temporal clause over the model) holds on the plan's behaviour (its states
+  followed by the terminal stutter of the final state) under its profile,
+  and the goal holds ([FR-803](FR-803-hold-plans-to-policy-clauses.md)).
 - The objective SHALL be the `minimize` or `maximize` expression; a
   declaration with none minimizes `length`. A sum of per-step costs is
   written as a collection query over `steps`; the final-state value as an
@@ -102,9 +103,9 @@ each with its plan, certificate and provenance as below.
 - A policy identity that names no temporal clause over `G`'s model refuses
   `missing_declaration`/`missing-name` naming it.
 - A policy clause that is not a safety clause (one whose violation is not
-  shown by a finite trace) refuses `unsupported_construct`/`expression-form`
-  naming the clause and its first non-safety operator; it is checked as an
-  ordinary temporal claim instead.
+  shown by a finite trace) is not refused: it prunes no prefix and is
+  evaluated on each completed plan's behaviour (FR-803). The complete
+  refusal set is FR-806's.
 - A request whose bound initial snapshot does not admit for `G`'s model
   refuses with the snapshot's own admission cause.
 
@@ -113,9 +114,9 @@ each with its plan, certificate and provenance as below.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-650-AC-1 | Over a model with operations `inc` and `double` on a counter in `Int[0, 20]` from `value = 1`, `synthesis Reach using p grammar M::Counter domain Upto5 satisfies { Reach.final.value = 8 };` with `type Upto5 = Int[0, 5];` returns `optimal` with objective 3 (`length`) and the plan `inc, double, double`, the first of the two 3-step plans in canonical order since `inc` is declared before `double`, and a `potential` certificate the core accepts, certification `certified`. | Test (TC-1603) |
-| FR-650-AC-2 | With `minimize Reach.steps.sum(s => if s.operation = M::Op::double then 5 else 1)` the same request returns `optimal` with the plan of seven `inc` steps and objective 7, beating `double, double, double` at 15. | Test (TC-1603) |
+| FR-650-AC-2 | With `minimize Reach.steps.sum(s => if s.operation = M::Op::double then 5 else 1)` the same request returns `optimal` with the plan `inc, inc, inc, double` (values 1, 2, 3, 4, 8) and objective 8, beating `inc, double, double` at 11 and `double, double, double` at 15; seven `inc` steps at 7 exceed the length bound `Upto5`. | Test (TC-1603) |
 | FR-650-AC-3 | With `satisfies { Reach.final.value = 21 }`, outside the counter's domain, the result is `infeasible` with an accepted closure certificate; with `domain` `Int[0, 2]` and goal value 8 it is `infeasible`. | Test (TC-1603) |
-| FR-650-AC-4 | A policy clause `always holds(c.value != 4)` excludes every plan through value 4, and the returned plan replays with the policy holding at every state; a policy naming no clause refuses `missing_declaration`/`missing-name`; a policy `eventually holds(c.value = 3)` refuses `unsupported_construct`/`expression-form`. | Test (TC-1603) |
+| FR-650-AC-4 | A policy clause `always holds(c.value != 4)` excludes every plan through value 4, and the returned plan replays with the policy holding at every state; a policy naming no clause refuses `missing_declaration`/`missing-name`; a policy `eventually holds(c.value = 3)` is evaluated on each completed plan and gives `optimal` `inc, inc, inc, double` (FR-803-AC-2). | Test (TC-1603) |
 | FR-650-AC-5 | A tampered `potential` certificate with one successor missing is rejected naming the closure rule and that entry, and the result is `feasible`, not `optimal`; a search stopped by its work limit is `incomplete` naming the limit, carrying its best plan as `feasible`. | Test (TC-1603) |
 | FR-650-AC-6 | A plan the planner reports that fails native replay is never reported: a fault-injected planner returning a plan with a disabled invocation gives a method failure naming that step. | Test (TC-1603) |
 
@@ -125,3 +126,8 @@ each with its plan, certificate and provenance as below.
   source form, the finite-domain rule and the objective.
 - FR-181 owns native execution of operation invocations.
 - FR-331 owns certification values.
+- [FR-800](FR-800-define-the-plan-and-goal-model.md) to
+  [FR-810](FR-810-plan-and-optimize-the-six-reference-cases.md) specify the
+  plan model, the bounded search and its limits, exact costs, policies, the
+  plan order, the request and outcome documents, refusals, the checked
+  package nodes read, timed and probabilistic plans and the reference cases.
