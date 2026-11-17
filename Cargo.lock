@@ -183,7 +183,7 @@ dependencies = [
 [[package]]
 name = "filament-verification-contracts"
 version = "0.1.0"
-source = "git+https://github.com/agent-ix/filament-verification-contracts?branch=main#d8e2d441ae9bd561760b56d747ab6b409c6987d9"
+source = "git+https://github.com/agent-ix/filament-verification-contracts?branch=main#5fd0206c0349547be489c9d2577130c38e27cff3"
 dependencies = [
  "chrono",
  "jsonschema",

@@ -24229,9 +24229,122 @@ fn tc_1164_timed_rows_exist_only_for_trace_subjects() {
     assert_eq!(decided, 8);
 }
 
+/// FR-322-AC-451 (TC-1326): `quantity.scale` and `quantity.scale_div` over a
+/// `Ms` quantity and an exact factor are admitted with the quantity's own type;
+/// a third argument, a `float64` or `quantity` factor, the factor first, another
+/// `result_type`, a `mode` value and a `laws` entry each refuse by their step.
 #[trace("TC-1326", "FR-322-AC-451")]
 #[test]
-#[ignore = "QSL-2256: the quantity scaling identities land in the schemas with the catalog entries"]
+fn tc_1326_quantity_scaling_reads_quantity_then_exact_factor() {
+    let catalog = parsed_fixture(OPERATION_CATALOG);
+    for identity in ["filament.op.quantity.scale", "filament.op.quantity.scale_div"] {
+        let entry = catalog["operations"]
+            .as_array()
+            .expect("catalog operations")
+            .iter()
+            .find(|entry| entry["identity"] == identity)
+            .unwrap_or_else(|| panic!("{identity} is catalogued"));
+        assert_eq!(entry["operator"], "binary", "{identity}");
+        assert_eq!(entry["operands"], json!(["quantity", "exact_numeric"]), "{identity}");
+        assert_eq!(entry["result"], "operand:0", "{identity}");
+        assert_eq!(entry["laws"], json!([]), "{identity}");
+        assert_eq!(entry["mode"], Value::Null, "{identity}");
+        assert_eq!(entry["member"], Value::Null, "{identity}");
+    }
+    let mut package = scalar_equality_package(&catalog);
+    let nodes = package["semantic_graph"]["nodes"].as_array_mut().expect("nodes array");
+    nodes.extend([
+        walk_scalar("Decimal", "decimal"),
+        walk_scalar("Rational", "rational"),
+        walk_scalar("Ms", "unit"),
+    ]);
+    for (name, ty) in [
+        ("q1", "Ms"),
+        ("q2", "Ms"),
+        ("n1", "Integer"),
+        ("d1", "Decimal"),
+        ("r1", "Rational"),
+        ("f1", "F64"),
+    ] {
+        nodes.push(json!({
+            "node_id": walk_id(name),
+            "node_tag": "value",
+            "semantic_form": "parameter",
+            "semantic_type": walk_id(ty),
+            "body": {"term": "aggregate", "members": []}
+        }));
+    }
+    package["lock"]["definition_selections"]
+        .as_array_mut()
+        .expect("definition selections")
+        .push(walk_catalog_law(&catalog, "ieee_profile"));
+    let oracle = OperationOracle::for_package(&catalog, &package);
+    let application = |identity: &str, laws: Value, mode: Value, result: &str, arguments: &[&str]| {
+        json!({
+            "term": "application",
+            "operator": "binary",
+            "operation": {"identity": identity, "laws": laws, "mode": mode, "member": null, "leaves": []},
+            "result_type": walk_id(result),
+            "arguments": arguments.iter().map(|name| walk_ref(name)).collect::<Vec<_>>()
+        })
+    };
+    for (identity, factor) in [
+        ("filament.op.quantity.scale", "n1"),
+        ("filament.op.quantity.scale", "d1"),
+        ("filament.op.quantity.scale_div", "d1"),
+        ("filament.op.quantity.scale_div", "r1"),
+    ] {
+        let admitted = oracle
+            .classify(&application(identity, json!([]), Value::Null, "Ms", &["q1", factor]))
+            .unwrap_or_else(|refusal| panic!("{identity} over q1 and {factor} is admitted: {refusal:?}"));
+        assert_eq!(admitted.family, "quantity", "{identity} over {factor}");
+        assert_eq!(admitted.ty, Some(walk_id("Ms")), "{identity} keeps the quantity's unit type");
+    }
+    for identity in ["filament.op.quantity.scale", "filament.op.quantity.scale_div"] {
+        for (arguments, result, why) in [
+            (&["q1", "n1", "n1"][..], "Ms", "a third argument"),
+            (&["q1", "f1"][..], "Ms", "a float64 factor"),
+            (&["q1", "q2"][..], "Ms", "a quantity factor"),
+            (&["n1", "q1"][..], "Ms", "the factor first"),
+            (&["q1", "n1"][..], "Integer", "a result_type other than the quantity's"),
+        ] {
+            assert_eq!(
+                oracle.classify(&application(identity, json!([]), Value::Null, result, arguments)).err(),
+                Some(OperationRefusal::OperatorIneligible),
+                "{identity}: {why} refuses ill_typed/operator-ineligible"
+            );
+        }
+        assert_eq!(
+            oracle
+                .classify(&application(
+                    identity,
+                    json!([]),
+                    json!({"kind": "rounding", "value": "exact"}),
+                    "Ms",
+                    &["q1", "n1"],
+                ))
+                .err(),
+            Some(OperationRefusal::ModeMismatch),
+            "{identity}: a mode value refuses invalid_package/operation-mode-mismatch"
+        );
+        assert_eq!(
+            oracle
+                .classify(&application(
+                    identity,
+                    json!([{"role": "ieee_profile", "definition": walk_catalog_law(&catalog, "ieee_profile")}]),
+                    Value::Null,
+                    "Ms",
+                    &["q1", "n1"],
+                ))
+                .err(),
+            Some(OperationRefusal::LawMismatch),
+            "{identity}: a laws entry refuses invalid_package/operation-law-mismatch"
+        );
+    }
+}
+
+#[trace("TC-1326", "FR-322-AC-451")]
+#[test]
 fn tc_1326_schema_enumerates_quantity_scaling_after_pow() {
     let schema = parsed_fixture(SCHEMA);
     let identities: Vec<&str> = schema["$defs"]["OperationIdentity"]["enum"]

@@ -243,8 +243,16 @@ an index obligation that FR-146 does not prove is
 index that is provably outside every possible size, such as `s[5]` over a
 `Sequence<T>[0,3]`, is unproved in the same way. Indexing never returns a default,
 never wraps and never clamps. Only direct kernel evaluation, which runs no
-linking proof, meets an index with no element, and it returns the located
-undefined outcome with no value. The element type was chosen over `Option<T>`
+linking proof, meets an index with no element: a sequence or ordered-set index
+below 0 or at or past `size(c)`, or a map key with no entry. There the index
+application SHALL be `undefined` with the undefined reason `no-element`
+([native diagnostics](../../../proposals/filament-v1/definitions/native-diagnostics.md)
+"Undefined reasons"), located at the `filament.op.collection.index`
+application, after both operands complete and before the `collection.element`
+charge, with no value. The reason is one for all three cases, because each is
+the same unmet obligation, an element that does not exist; the located
+application and its operands already say which collection and which index. A
+proved read never meets it. The element type was chosen over `Option<T>`
 because the obligation keeps a proved read free of `present`/`value`
 ceremony, and because the clock-place selection of FR-415 already reads an
 element place by this form and could not read it through an option.
@@ -502,6 +510,7 @@ incomplete at the first unavailable occurrence met, with the cause of FR-145
 | FR-144-AC-31 | Over `s: Sequence<Integer>[0, 3]` holding `7, 8, 7` and `o: OrderedSet<Integer>[0, 3]` holding `7, 8`, `s[0]` under the guard `size(s) >= 1` is `7` typed `Integer`, `s[i]` under `0 <= i and i < size(s)` with `i = 2` is `7`, and `o[1]` under `size(o) >= 2` is `8`; `r.xs[0]` over a record field `xs: Sequence<Integer>[1, 2]` is admitted with no guard (declared minimum 1); each charges one `collection.element` and one `collection.result-retain` after both operands, and is recorded as one `filament.op.collection.index` application with arguments `[ref(c), ref(i)]` and the element type's node as `result_type`. | Test (TC-1320) |
 | FR-144-AC-32 | With no fact, `s[0]`, `s[i]` and `s[5]` over `s: Sequence<Integer>[0, 3]` are each `refused { code: undefined_expression, cause: unproved-presence }` at the index; `t[0]` over `t: Set<Integer>[0, 3]` or `Bag<Integer>[0, 3]`, and `n[0]` over `n: Integer` or a record, are `ill_typed`/`operator-ineligible` at the indexing expression; `s[true]` is `ill_typed`/`type-mismatch` at `true`; `s[0..1]` is `invalid_syntax`; and no evaluation returns `Option<T>`, a default or a wrapped index. | Test (TC-1320) |
 | FR-144-AC-33 | A parameter `m: Map<Text[0, 8; nfc], Int[0, 9]>[0, 4]` and a record field of type `Map<Int[0, 3], Boolean>` are admitted; `m[k]` under `contains(m, k)` is typed `Int[0, 9]` and is the value at `k`, `m[k]` without that fact is `undefined_expression`/`unproved-presence` at `k`, `size(m)` is the entry count and `contains(m, k)` tests keys only; `Map<Cfg, Integer>` over `record Cfg { a: Boolean; }`, `Map<Option<Integer>, Integer>` and `Map<Rational, Integer>` are `ill_typed`/`operator-ineligible` at the key type; `Map<Integer, Integer>[0, 2]` and `Map<Integer, Integer>` are different types; a `Set<Map<Integer, Boolean>>` orders its members by the `Map<K, V>` canonical-key row. | Test (TC-1321) |
+| FR-144-AC-34 | Under direct kernel evaluation with no linking proof, over `s: Sequence<Integer>[0, 3]` holding `7, 8, 7`, `o: OrderedSet<Integer>[0, 3]` holding `7, 8` and `m: Map<Int[0, 3], Boolean>` holding the single key `1`, each of `s[-1]`, `s[3]`, `o[2]` and `m[0]` is `undefined` with the reason `no-element`, located at its `filament.op.collection.index` application, after both operands complete, with no `collection.element` or `collection.result-retain` charge and no value; none is refused, incomplete, a default, a wrapped or a clamped element, and `s[2]`, `o[1]` and `m[1]` complete `7`, `8` and the value at key `1`. | Test (TC-1927) |
 
 ## Dependencies
 
