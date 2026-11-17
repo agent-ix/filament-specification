@@ -34,6 +34,7 @@ Pointer of the first offending member.
 | `local_order` | per role, the array of observation indices in the order that role performed or observed them |
 | `correlations` | an array of `{send, receive}` pairs of observation indices, each pairing a receive with the send of the message it received |
 | `closure` | an FR-247 complete-global-conformance closure record, with its state and premise identities |
+| `identity` | optional: the recording's own document identity `{authority, identity}`, the spelling a state snapshot uses; an analyze request may state it instead (FR-821). It is not part of any closure-premise identity |
 
 An observation is a closed object:
 
