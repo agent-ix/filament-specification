@@ -68,7 +68,9 @@ first defect's member by its RFC 6901 pointer.
 - `package` — the identity of the checked package that carries the
   declaration; `item` — `role` `guarantee` (an FR-490 node) or
   `composition` (an FR-491 node with rule `assume-guarantee`), and the
-  declaration node's id.
+  declaration node's id. A third role, `transfer`, carries an FR-380
+  transfer item; FR-820 states its item members, slots, admission,
+  settlement and record, which replace this requirement's for that role.
 - `slots` — exactly the declaration's derived premise slots, in derived
   order (FR-490 "Derived items", FR-491 "Derived item and slots"). Each is
   `{role, identity, result?, record?}`: `role` the slot's closed role;
