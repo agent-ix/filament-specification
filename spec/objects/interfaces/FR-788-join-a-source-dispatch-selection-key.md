@@ -47,6 +47,11 @@ owner's identity would name no declaration of the package.
   refuses the candidate as a model candidate outside the family is refused.
 - Candidate order, uniqueness of keys and the selected-operation witness are
   FR-322-AC-290's.
+- Wherever a checked package renders the type of a source-declared object
+  type or native record as text (a clock place's `resolved_path`
+  `declaring_type` and `member_type`, FR-789), the rendering SHALL be the
+  `node` of its source declaration key, `ix://I/<type>`, as a domain
+  package's type renders as its IR node identity.
 
 ## Acceptance Criteria
 
