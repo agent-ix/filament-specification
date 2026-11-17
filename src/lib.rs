@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Agent-IX
 
-//! Authored definition documents, exposed by reference.
+//! Published standard files and authored qualification vectors, exposed by reference.
 //!
 //! Consumers read QSpec's package-selection vectors and
 //! the native diagnostics catalog through these constants instead of holding copies. The crate carries the
@@ -101,11 +101,13 @@ include!(concat!(env!("OUT_DIR"), "/vectors.rs"));
 
 include!(concat!(env!("OUT_DIR"), "/published_files.rs"));
 
-/// Returns the exact bytes of one published file under `proposals/`.
+/// Returns the exact bytes of one published file under `proposals/` or
+/// `spec/test-cases/`.
 ///
 /// `path` is repository-relative, for example
-/// `proposals/checked-package-v2/schema.json`. Paths outside `proposals/` and
-/// paths that name no published file return `None`.
+/// `proposals/checked-package-v2/schema.json` or
+/// `spec/test-cases/TC-210-finite-simulation-reproducibility.md`. Paths outside
+/// those trees and paths that name no published file return `None`.
 pub fn published_file(path: &str) -> Option<&'static [u8]> {
     PUBLISHED_FILES
         .iter()
