@@ -89,9 +89,9 @@ fn generate_published_files(root: &Path) {
         }
     }
 
-    let proposals = root.join("proposals");
     let mut paths = Vec::new();
-    visit(&proposals, root, &mut paths);
+    visit(&root.join("proposals"), root, &mut paths);
+    visit(&root.join("spec/test-cases"), root, &mut paths);
     paths.sort();
 
     let mut out = String::from("pub(crate) static PUBLISHED_FILES: &[(&str, &[u8])] = &[\n");
