@@ -29,6 +29,7 @@ fn published_file_returns_every_proposal_byte_and_lists_paths_in_order() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let mut expected = Vec::new();
     files_under(&root.join("proposals"), &root, &mut expected);
+    files_under(&root.join("spec/test-cases"), &root, &mut expected);
     expected.sort_by(|left, right| left.0.cmp(&right.0));
 
     for (path, bytes) in &expected {
@@ -47,4 +48,18 @@ fn published_file_returns_every_proposal_byte_and_lists_paths_in_order() {
         .collect();
     fixture_files.sort();
     assert_eq!(listed, fixture_files);
+
+    let tc210 = "spec/test-cases/TC-210-finite-simulation-reproducibility.md";
+    let tc210_bytes = std::fs::read(root.join(tc210)).expect("read TC-210");
+    assert_eq!(published_file(tc210), Some(tc210_bytes.as_slice()));
+    let listed: Vec<_> = published_files("spec/test-cases/")
+        .map(|(path, _)| path.to_owned())
+        .collect();
+    let mut case_files: Vec<_> = expected
+        .iter()
+        .filter(|(path, _)| path.starts_with("spec/test-cases/"))
+        .map(|(path, _)| path.clone())
+        .collect();
+    case_files.sort();
+    assert_eq!(listed, case_files);
 }

@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify that the standard's package version matches its release tag and that the library exposes every published file by path. Scope: FR-660-AC-1.
+Verify that the standard's package version matches its release tag and that the library exposes every published file by path. Scope: FR-660-AC-1, FR-660-AC-6.
 
 ## Test Procedure
 
@@ -22,4 +22,5 @@ Read the package `version` from `Cargo.toml` and the release tag of the commit. 
 - The version equals the tag without its `v`.
 - Every file's bytes are returned exactly.
 - Both other paths return `None`.
+- The TC-210 file's bytes are returned exactly, and the `spec/test-cases/` listing holds exactly that directory's files, in path order.
 - The listing holds exactly the fixture directory's files, in path order.

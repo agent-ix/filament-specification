@@ -61,11 +61,14 @@ version, and its readers that refuse wire documents of any other document type.
    never reads it with another meaning.
 2. **The standard's published files.** The standard is the Cargo package
    `filament-specification-qualification` (library `filament_specification`).
-   Its published files are every file under `proposals/`: the wire schemas,
-   fixtures, vector files, catalogs and the consumer-fact inventory (FR-661).
+   Its published files are every file under `proposals/` (the wire schemas,
+   fixtures, vector files, catalogs and the consumer-fact inventory (FR-661))
+   and every file under `spec/test-cases/` (the test cases that a consumer reads
+   by path, such as `spec/test-cases/TC-210-finite-simulation-reproducibility.md`).
    The library SHALL expose each published file's exact bytes by its
    repository-relative path through `published_file(path)`, which returns
-   `None` for any other path, and `published_files(prefix)`, which lists the
+   `None` for any path outside those two trees, with the same exact-bytes rule
+   for both, and `published_files(prefix)`, which lists the
    published files under a directory prefix in path order. A release of the
    standard is a git tag `vX.Y.Z` whose package `version` is `X.Y.Z`.
 3. **A producer's consumer facades.** A producer repository that publishes the
@@ -134,11 +137,12 @@ refuses before it is linked.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-660-AC-1 | The standard's package `version` equals the release tag without its `v`; `published_file` returns the exact bytes of every file under `proposals/` by its repository-relative path, and `None` for a path outside `proposals/` and for a path under it that names no file; `published_files("proposals/checked-package-v2/fixtures/")` lists exactly the files of that directory in path order. | Test (TC-1640) |
+| FR-660-AC-1 | The standard's package `version` equals the release tag without its `v`; `published_file` returns the exact bytes of every file under `proposals/` by its repository-relative path, and `None` for a path outside `proposals/` and `spec/test-cases/` and for a path under them that names no file; `published_files("proposals/checked-package-v2/fixtures/")` lists exactly the files of that directory in path order. | Test (TC-1640) |
 | FR-660-AC-2 | In a consumer of the standard's published files, `cargo metadata --locked` lists `filament-specification-qualification` from a git source with a `tag` or from a registry, every published vector the consumer runs is read through the pinned library, and no Makefile, build script, source or test of the consumer reads an environment variable or a filesystem path to locate the standard. | Test (TC-1641) |
 | FR-660-AC-3 | Every cross-repository Filament dependency in a committed manifest names a `tag` or a registry `version`; a manifest with a `branch` dependency on a Filament repository fails the consumer's pin check, naming the dependency, and no file outside `Cargo.toml` and `Cargo.lock` records an expected release version, hash or digest of another repository. | Test (TC-1642) |
 | FR-660-AC-4 | A reader built against a standard release refuses the release's positive fixture with `contract_version` replaced by `filament.checked-package/v3`, and by `filament.checked-package/v1`, as `unknown_contract_version`, with no cause, at `/contract_version`, and returns no package; a producer built against the same release writes exactly the release's document type. | Test (TC-1643) |
 | FR-660-AC-5 | A consumer's resolved standard dependency, as `cargo metadata --offline` reports it, comes from a git source with a `tag` or from a registry, and its package `version` is a semantic version `X.Y.Z` that equals the tag without its `v`, so Cargo's compatibility rules carry the release's bump promise; a resolved `branch` source fails, naming the dependency. | Test (TC-1644) |
+| FR-660-AC-6 | `published_file("spec/test-cases/TC-210-finite-simulation-reproducibility.md")` returns that file's exact bytes, and `published_files("spec/test-cases/")` lists the files of that directory in path order. | Test (TC-1640) |
 
 ## Dependencies
 
