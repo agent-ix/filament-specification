@@ -24301,24 +24301,51 @@ fn tc_1860_a_function_node_carries_its_check_mode() {
 const REFERENCE_LITERAL_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/reference-literal-vectors.json");
 
-/// FR-480 "Lowering": a `reference` literal's value is the non-empty
-/// lowercase hexadecimal of its key's identity bytes, in every term
-/// definition that admits the literal; other value kinds keep their shape.
-#[trace("TC-965", "FR-480-AC-3")]
+/// FR-480 "Lowering" reader check: a `reference` literal's value must be the
+/// non-empty lowercase hexadecimal of its key's identity bytes, or the
+/// reader refuses `invalid_package`/`invalid-value` at `value`.
+fn read_reference_literal(term: &Value) -> Result<(), (String, String, String)> {
+    let hex = term["value"].as_str().is_some_and(|value| {
+        !value.is_empty()
+            && value.len() % 2 == 0
+            && value.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+    });
+    if hex {
+        Ok(())
+    } else {
+        Err((
+            "invalid_package".to_owned(),
+            "invalid-value".to_owned(),
+            "/value".to_owned(),
+        ))
+    }
+}
+
+/// FR-480 "Lowering" and FR-322-AC-101: every reference literal vector passes
+/// the schema of each term definition that admits it; the reader admits the
+/// hexadecimal value and refuses every other value at `value`.
+#[trace("TC-965", "FR-480-AC-3", "FR-322-AC-101")]
 #[test]
 fn a_reference_literal_value_is_the_hexadecimal_of_its_identity_bytes() {
     let vectors = parsed_fixture(REFERENCE_LITERAL_VECTORS);
     let schema = parsed_fixture(SCHEMA);
+    let positive = vectors["positive"].as_array().unwrap();
+    let refusals = vectors["reader_refusals"].as_array().unwrap();
     for definition in ["LeafTerm", "SemanticTerm"] {
         let validator = schema_for_def(&schema, definition);
-        for case in vectors["positive"].as_array().unwrap() {
+        for case in positive.iter().chain(refusals) {
             assert!(validator.is_valid(&case["term"]), "{definition} {}", case["id"]);
         }
-        for case in vectors["schema_invalid"].as_array().unwrap() {
-            assert!(!validator.is_valid(&case["term"]), "{definition} {}", case["id"]);
-        }
-        let mut text = vectors["schema_invalid"][0]["term"].clone();
-        text["value_kind"] = json!("text");
-        assert!(validator.is_valid(&text), "{definition}: a text literal \"s1\" keeps its shape");
+    }
+    for case in positive {
+        assert_eq!(read_reference_literal(&case["term"]), Ok(()), "{}", case["id"]);
+    }
+    for case in refusals {
+        let expected = (
+            case["expected_code"].as_str().unwrap().to_owned(),
+            case["expected_cause"].as_str().unwrap().to_owned(),
+            case["locus"].as_str().unwrap().to_owned(),
+        );
+        assert_eq!(read_reference_literal(&case["term"]), Err(expected), "{}", case["id"]);
     }
 }
