@@ -23,8 +23,8 @@ When a `synthesis` declaration's `grammar` names a `hybrid` declaration,
 the planner SHALL search schedules of dwell times and discrete transitions,
 SHALL report a plan only after a sound FR-193 enclosure of its whole
 execution shows that every rule and the goal hold, SHALL report `infeasible`
-only when an enclosure closure proves that no admissible plan exists within
-the bound, and SHALL otherwise report `incomplete` naming the limit that
+only when an FR-193 enclosure proof of `always not goal` over the
+schedule space shows that no admissible plan exists within the bound, and SHALL otherwise report `incomplete` naming the limit that
 stopped it. A hybrid plan is never `optimal`.
 
 ## Inputs
@@ -57,47 +57,73 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
   execution is every trajectory those admit from the initial set, under
   every value of a nondeterministic parameter the model declares.
 
+### From a schedule to an FR-193 item
+
+- For a candidate schedule `(d_1, t_1), …, (d_n, t_n)` the planner SHALL
+  build the *scheduled model*: the hybrid declaration plus a dwell clock `τ`
+  (rate 1, reset to 0 by every transition), an elapsed clock `e` (rate 1)
+  and a step counter `k` (initially 0, incremented by every transition). In
+  the mode current before step `i`, the scheduled transition `t_i` gets the
+  extra guard `k = i - 1 and τ = d_i`, the mode gets the extra invariant
+  `k = i - 1 implies τ <= d_i`, and every other transition is removed. The
+  last transition `t_n` enters a frozen copy of its target mode whose flows
+  are all 0 (`e` included), so the state after the last step stays the
+  plan's final state, which is FR-803's terminal stutter.
+- Every policy safety clause SHALL become an absorbing flag `bad`, set at
+  the first instant that breaks it. Mode invariants stay invariants: a
+  dwell they forbid leaves the schedule unable to complete.
+- The candidate SHALL be checked as one FR-193 hybrid item over the
+  scheduled model, of kind `temporal-satisfaction` with the
+  `hybrid-dynamics` requirement, horizon `H = d_1 + … + d_n` and jump bound
+  `n`, for the clause `always holds(not bad and ((k = i - 1 and τ = d_i)
+  implies guard(t_i)) and (k = n implies goal)) and eventually[0, H]
+  holds(k = n)`, conjoined with every non-safety policy clause, the goal's
+  reads of `length`, `elapsed` and `final` read as `k`, `e` and the current
+  state. The `eventually` conjunct requires every trajectory to complete the
+  schedule, so a schedule that a mode invariant blocks is never validated.
+
 ### Feasible plans
 
-- The planner SHALL propose candidate plans whose dwells are multiples of
-  the request's `dwell_grid`, a positive exact rational required for a
-  hybrid plan, each dwell bounded by the time horizon the mode invariants
-  and the declaration give, enumerated in FR-804's plan order.
-- Each candidate SHALL be validated as an FR-193 bounded-reachability item
-  over its fixed schedule, on the negotiated hybrid provider: the candidate
-  is *validated* only when a method the FR-193 method table makes sound for
-  disjointness (`flowpipe-outward-rounded`, or `inductive-enclosure`)
-  returns an enclosure of the whole execution in which every mode
-  invariant, every policy clause and the guard of each scheduled transition
-  hold on the whole enclosure, and the goal holds on the whole final
-  enclosure. A point estimate, a simulation or an `unclassified` method
-  validates nothing.
-- The first validated candidate SHALL be reported `feasible`, with the
-  provider's enclosure and its certification: `certified` when the provider
-  returned an FR-652 certificate the core accepted, otherwise the provider's
-  FR-331 certification. `bound` is `null`; no optimality is claimed, because
-  the dwell grid does not cover the continuum of schedules.
+- The planner SHALL propose candidate schedules whose dwells are multiples
+  of the request's `dwell_grid`, a positive exact rational required for a
+  hybrid plan, each dwell bounded by the horizon the mode invariants and the
+  declaration give, enumerated in FR-804's plan order.
+- A candidate is *validated* only when its item settles `proved` under a
+  method the FR-193 method table makes sound (`flowpipe-outward-rounded`
+  or `inductive-enclosure`). A point estimate, a simulation or an
+  `unclassified` method validates nothing.
+- The first validated candidate SHALL be reported `feasible`, with its
+  item's certification: `certified` when the core accepted the provider's
+  FR-652 certificate, otherwise the provider's FR-331 certification.
+  `bound` is `null`; no optimality is claimed, because the dwell grid does
+  not cover the continuum of schedules.
 
 ### Infeasible plans
 
-- The planner SHALL report `infeasible` only when it holds an enclosure
-  closure: an outward-rounded enclosure of every trajectory from the initial
-  set under every transition and every dwell (not only grid dwells), up to
-  `max D` transitions and within the horizon, closed under each mode's flow
-  and each reset, whose final-state part is disjoint from the goal or in
-  which every path breaks a rule. The closure SHALL be an FR-652 certificate
-  the core checks; `infeasible` carries it with certification `certified`.
-- A closure the core rejects SHALL demote the result to `incomplete`,
-  recording the rejected rule and entry.
+- The planner SHALL report `infeasible` only from an FR-193 proof of
+  `always not goal` over the whole schedule space: the *schedule-space
+  model* is the hybrid declaration with `e`, `k` and `bad` as above, every
+  transition kept with any dwell, and transitions disabled once
+  `k = max D`. Its item has the clause
+  `always holds(not (k in D and not bad and goal))`, horizon the
+  declaration's time horizon and jump bound `max D`.
+- That item SHALL be proved by an `inductive-enclosure` or
+  `flowpipe-outward-rounded` method whose FR-652 certificate the core
+  accepts; `infeasible` carries the certificate with certification
+  `certified`. Non-safety policies are left out of this item; dropping a
+  constraint can only enlarge the set of admissible plans, so a proof that
+  none reaches the goal stays sound. A rejected certificate, or a proof without one, leaves the
+  result `incomplete`, recording the rejected rule and entry when there is
+  one.
 
 ### Incomplete and unsupported
 
-- When neither a validated candidate nor an accepted closure exists, the
+- When neither a validated candidate nor a certified infeasibility proof exists, the
   result SHALL be `incomplete`, with cause `limit-reached` naming the limit
   that stopped the search: a `plan_search` limit (FR-801), the provider's
   `hybrid.max_solver_steps`, or `hybrid.max_solver_time` as `timed-out`
   (FR-193 "Solver budgets"); a candidate set exhausted on the grid with no
-  closure is `incomplete` with cause `grid-exhausted{dwell_grid}`, naming the
+  infeasibility proof is `incomplete` with cause `grid-exhausted{dwell_grid}`, naming the
   request member whose refinement may find a plan; `dwell_grid` is a search
   setting, not an FR-461 limit.
 - With no hybrid candidate the request SHALL settle `unsupported`,
@@ -111,7 +137,7 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-819-AC-1 | Over a tank with mode `Fill` (`h' = 1`, invariant `h <= 10`, transition to `Drain` when `h >= 8`) and `Drain` (`h' = -2`, invariant `h >= 0`) from `h = 0` in `Fill`, the goal `Reach.final.mode = Drain` with `dwell_grid` 1 returns `feasible` with the one step of dwell 8 into `Drain`, `elapsed` 8, `bound` `null`, validated by a `flowpipe-outward-rounded` enclosure. | Test (TC-1966) |
-| FR-819-AC-2 | The goal `Reach.final.h >= 12` returns `infeasible` with an accepted enclosure-closure certificate bounding `h` within `[0, 10]`, certification `certified`; a closure with one reset image removed is rejected and the result is `incomplete`. | Test (TC-1966) |
+| FR-819-AC-2 | The goal `Reach.final.h >= 12` returns `infeasible` from an `inductive-enclosure` proof of `always not goal` over the schedule space, whose FR-652 certificate bounds `h` within `[0, 10]` and is accepted, certification `certified`; the certificate with one reset image removed is rejected and the result is `incomplete`. | Test (TC-1966) |
 | FR-819-AC-3 | With `hybrid.max_solver_steps` 1 the result is `incomplete` with `limit-reached` naming `hybrid.max_solver_steps`; with no hybrid provider registered it is `unsupported` naming `hybrid-dynamics`. | Test (TC-1966) |
 | FR-819-AC-4 | A provider that answers with an `unclassified` method validates no candidate, and the result is never `feasible` on its word; a request without `dwell_grid` refuses at `/dwell_grid`. | Test (TC-1966) |
 | FR-819-AC-5 | No hybrid plan result is `optimal`, and a policy `always holds(h <= 9)` keeps the AC-1 plan, which the enclosure shows never exceeds 8. | Test (TC-1966) |

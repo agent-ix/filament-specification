@@ -61,7 +61,7 @@ FR-298 record per requested obligation, in one FR-299 generated package.
   declaration's identity and span, so each text region maps back to its
   source obligation.
 - Lean obligations are exported as propositions (`def Ob_<clause> : Prop`,
-  FR-813); the file holds no `theorem`, no proof and no `sorry` A proof a user writes against the export
+  FR-813); the file holds no `theorem`, no proof and no `sorry`. A proof a user writes against the export
   is external evidence and enters Filament only as `trusted` evidence.
 
 ### Fidelity
@@ -87,8 +87,13 @@ Each requested obligation SHALL receive exactly one FR-269 disposition:
 
 The mapper SHALL NOT classify an obligation as `preserved` because an external
 tool accepted the text. An external parser or checker (SANY, TLC, Apalache,
-Lean) is an observer: its result is recorded in the package's observer
-section and never changes a disposition or settles a claim.
+Lean) run as an observer is recorded in the package's observer section;
+it never changes a disposition and never settles a claim. A target result a
+caller submits as evidence (a TLC or Apalache run, a TLAPS proof, a Lean
+proof of an exported proposition) is a separate intake, FR-815's: it settles
+an obligation only as `trusted` evidence, never `certified`, only for a
+`preserved` or `conditional` record, and a target counterexample counts only
+after native replay.
 
 ## Acceptance Criteria
 

@@ -93,7 +93,9 @@ refusal naming the first defect by its RFC 6901 pointer.
 }
 ```
 
-- `status` is FR-650's `optimal`, `feasible`, `infeasible` or `incomplete`.
+- `status` is FR-650's `optimal`, `feasible`, `infeasible` or `incomplete`,
+  or `unsupported` when no engine can decide the plan (a hybrid plan with no
+  hybrid candidate, FR-819).
 - `objective.value` and every argument and state value are written in the
   native runtime's run value form (FR-323); an exact rational or decimal is
   never written as a JSON float.
@@ -111,9 +113,11 @@ refusal naming the first defect by its RFC 6901 pointer.
 - `explored` carries the FR-801 counts and the FR-802 exclusion counts.
 - `limits` lists every limit in force by setting name, with defaults filled.
 - `cause` is present on `incomplete` (FR-801's `limit-reached` or
-  `cancelled`) and `null` otherwise.
-- `plan` is `null` on `infeasible` and on an `incomplete` result that found
-  no admissible plan.
+  `cancelled`, or FR-819's `grid-exhausted{dwell_grid}` or `timed-out`) and
+  on `unsupported` (FR-193's `unsupported_projection`/
+  `unsupported-requested-capability`), and `null` otherwise.
+- `plan` is `null` on `infeasible`, on `unsupported` and on an `incomplete`
+  result that found no admissible plan.
 
 ### Categories and exits
 
@@ -123,6 +127,7 @@ refusal naming the first defect by its RFC 6901 pointer.
 | `feasible` | success | `0` |
 | `infeasible` | violation | `10` |
 | `incomplete` | incomplete | `22` |
+| `unsupported` | unsupported | `21` |
 | refusal (FR-806) | refusal | `20` |
 | method failure (FR-650 replay failure) | internal-failure | `30` |
 

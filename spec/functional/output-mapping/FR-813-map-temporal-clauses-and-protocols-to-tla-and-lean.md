@@ -42,16 +42,26 @@ The temporal, fairness, protocol and theorem regions.
   step-counting profile) SHALL be emitted as its clause monitor composed with
   the specification: the monitor's states become auxiliary variables `m_<clause>`
   updated in every `Next` disjunct, past operators become history variables,
-  and the clause becomes the acceptance condition over the monitor
-  (`[]~reject` for a safety monitor, `[]<>accept` for a Büchi monitor). The
-  monitor is the one FSL derives from the clause, so the encoding is exact;
-  auxiliary variables add no behaviour to the original variables.
+  and the clause becomes the acceptance condition over the monitor. The
+  monitor SHALL be deterministic wherever the clause has a deterministic
+  safety, Büchi or co-Büchi monitor, with acceptance `[]~reject`,
+  `[]<>accept` or `<>[]accept` respectively; a deterministic monitor reads
+  each behaviour along exactly one run, so the encoding is exact and the
+  record `preserved`. Auxiliary variables add no behaviour to the original
+  variables.
+- A clause that has no deterministic Büchi or co-Büchi monitor SHALL be
+  emitted with a nondeterministic Büchi monitor, whose acceptance holds when
+  some run accepts; TLC and TLAPS read the composed specification over
+  every run of the monitor variable, so the record SHALL be `conditional`
+  with the condition `nondeterministic-monitor{clause, node}` named in the
+  outcome, and never `preserved`. The Lean encoding of the same clause is
+  the direct definition below and stays `preserved`.
 - Step-sensitive meaning (intervals counted in steps) SHALL be carried by
   the monitor, whose bounded step counters change only in operation
   actions and stay unchanged by stuttering, so TLA+'s finite stuttering
   does not shift a step count; no unbounded counter is added, so a finite
   model stays finite.
-- The obligation's statement SHALL be `THEOREM T_<clause> == Spec =>
+- The obligation's statement SHALL be `THEOREM Th_<clause> == Spec =>
   <formula>`, written without a proof.
 
 ### Temporal clauses in Lean 4
@@ -98,6 +108,7 @@ in time units uses the dense-time encoding and is `conditional` (FR-651).
 | FR-813-AC-3 | `always[0, 3] holds(c.ok)` under a step-counting profile exports a monitor whose step counter is bounded by 3 in `TypeOK`, and an exported behaviour with two inserted stuttering steps keeps the same verdict. | Test (TC-1972) |
 | FR-813-AC-4 | Weak fairness on `deliver` exports `WF_vars(op_deliver)`; a two-role protocol with one `fifo` channel of capacity 2 exports channel and role variables and send and receive actions, `preserved`. | Test (TC-1972) |
 | FR-813-AC-5 | The Lean file of AC-1 and AC-2 contains no `theorem`, no proof term and no `sorry`. | Test (TC-1972) |
+| FR-813-AC-6 | A clause with a deterministic co-Büchi monitor (`eventually always holds(c.ok)`) exports to TLA+ with a deterministic monitor and `<>[]accept`, `preserved`; a clause with no deterministic Büchi or co-Büchi monitor exports to TLA+ `conditional` with `nondeterministic-monitor` naming the clause, and to Lean `preserved`. | Test (TC-1972) |
 
 ## Dependencies
 

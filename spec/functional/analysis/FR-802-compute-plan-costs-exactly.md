@@ -70,7 +70,7 @@ part of the definition.
 
 ### Classification
 
-- An objective is a *per-step sum* when it is `length`, `elapsed`, or an
+- An objective is a *per-step sum* when it is `length`, `elapsed` under tick time (FR-808), or an
   expression `Reach.steps.sum(s => c)` (optionally plus a constant) whose
   term `c` reads only the step record `s`, and the objective's type is an
   exact type. Its value is the sum of the per-step costs.
@@ -79,6 +79,9 @@ part of the definition.
   step it applies and finds no negative cost. A negative step cost found
   during the search reclassifies the objective as general for that run, and
   the result records `objective.negative_step` with the first such step.
+- `elapsed` under dense time SHALL be general: its delays range over the
+  region abstraction, not a finite step set, so it takes a `closure`
+  certificate over the region graph (FR-808).
 - Every other objective, including every floating-point objective and every
   objective over `final`, is *general*.
 - A `potential` certificate (FR-650) SHALL be used only for a non-negative

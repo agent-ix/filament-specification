@@ -60,9 +60,15 @@ states for the search node (FR-801).
   explored.
 - Any other clause (an unbounded `eventually`, an unbounded `until`, a
   `release` whose obligation never closes on a finite prefix) SHALL be
-  evaluated on the completed plan's behaviour, which is a lasso and so
-  decides the clause; such a clause prunes nothing, and a plan that does not
-  keep it is not admissible.
+  compiled to a deterministic automaton over the plan's positions (a
+  deterministic parity automaton, which every such clause has), whose state
+  is part of the search node like a safety monitor's (FR-801). It prunes
+  nothing; at a completed plan the clause is decided from the automaton
+  state reached and the final state, by reading the terminal stutter (the
+  final state repeated forever) from that automaton state, which is a lasso
+  and so decides it. A plan that does not keep it is not admissible. Because
+  the automaton state is in the node, two prefixes that share a node have
+  the same verdict on every completion, and merging stays sound.
 - A bounded `eventually[0, k]` whose deadline lies after the plan's last
   step is decided on the terminal stutter: it holds only if its operand
   holds at some position up to `k`, including the stutter positions.

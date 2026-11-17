@@ -52,7 +52,7 @@ either represented by an output region (FR-812, FR-813) or named by a cause.
 | state models, populations, operations, frames, state clauses, invariants | `preserved` (FR-812) | `preserved` (FR-812) |
 | scalar, record, tuple, union, enum, option, collection and map values; exact integer, rational, decimal and quantity arithmetic; division laws; binary floating point; text | `preserved` (FR-812) | `preserved` (FR-812) |
 | Unicode normalization and case-mapping operations on text | `unrepresented` | `unrepresented` |
-| future and past temporal operators, intervals under a step-counting profile, fairness, terminal stutter | `preserved` (FR-813) | `preserved` (FR-813) |
+| future and past temporal operators, intervals under a step-counting profile, fairness, terminal stutter | `preserved` (FR-813), or `conditional` for a clause that needs a nondeterministic monitor | `preserved` (FR-813) |
 | clauses over supplied traces (observation, finite window) | `preserved` as a predicate over a finite trace (FR-813) | `preserved` (FR-813) |
 | protocols with untimed channels | `preserved` (FR-813) | `preserved` (FR-813) |
 | dense time, timed channels | `conditional` (FR-651) | `conditional` (FR-651) |

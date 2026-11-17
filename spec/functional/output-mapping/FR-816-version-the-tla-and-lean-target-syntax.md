@@ -29,19 +29,44 @@ The fixed target revision and syntax subset the mapper emits.
 ## Behavior
 
 - `filament.output.tla2/v1` SHALL have `target_standard_refs` `["TLA+
-  Version 2", "Specifying Systems (2002)"]` and emit only: module headers,
-  `EXTENDS` of `Naturals`, `Integers`, `Sequences`, `FiniteSets` and `TLC`,
-  `CONSTANTS`, `VARIABLES`, operator definitions including `RECURSIVE`,
-  `LET`/`IN`, `IF`/`THEN`/`ELSE`, `CASE`, records, tuples, functions, set
-  constructors, quantifiers over sets, `[]`, `<>`, `WF_`, `SF_`, `UNCHANGED`,
-  `THEOREM` without proof, and line comments.
+  Version 2", "Specifying Systems (2002)"]` and emit exactly these
+  constructs, which are every construct FR-812 to FR-814 use:
+  - structure: the module header `---- MODULE <name> ----` and closing
+    `====`, `EXTENDS` of `Naturals`, `Integers`, `Sequences`, `FiniteSets`
+    and `TLC`, `CONSTANTS`, `VARIABLES`, operator definitions `==` with
+    parameters, `RECURSIVE`, `THEOREM` without proof, and `\*` line comments;
+  - logic: `TRUE`, `FALSE`, `BOOLEAN`, `/\`, `\/`, `~`, `=>`, `<=>`, `=`,
+    `/=`, `\in`, `\notin`, `\A x \in S :`, `\E x \in S :`, `LET`/`IN`,
+    `IF`/`THEN`/`ELSE`, `CASE`/`[]`/`OTHER`;
+  - arithmetic: integer literals, `Int`, `Nat`, `+`, binary and unary `-`,
+    `*`, `<`, `<=`, `>`, `>=`, `..`, and `\div` and `%` only with a positive
+    divisor inside the `D_` helpers;
+  - data: `{…}`, `{x \in S : p}`, `{e : x \in S}`, `\cup`, `\cap`, `\`,
+    `\subseteq`, `Cardinality`, `[x \in S |-> e]`, `f[x]`, `DOMAIN`,
+    `[f EXCEPT ![k] = v]`, `@`, records `[a |-> e]` and `r.a`, tuples and
+    sequences `<<…>>`, `Len`, `Append`, `Head`, `Tail`, `SubSeq`, `\o`,
+    `Seq`, and string literals for enum members and variant tags;
+  - actions and time: priming `'`, `UNCHANGED`, `[][Next]_vars`, `[]`,
+    `<>`, `WF_vars(A)` and `SF_vars(A)`.
 - `filament.output.lean4/v1` SHALL have `target_standard_refs` `["Lean 4
-  core, release v4.0.0 or later"]` and emit only: `namespace`, `structure`,
-  `inductive` with `deriving DecidableEq`, `def`, `abbrev`, `match`,
-  `if`/`then`/`else`, `fun`, `forall`/`exists`, the core types `Bool`,
-  `Nat`, `Int`, `List`, `Option` and `Prod`, `Nat` division and remainder,
-  and line comments. Generated helpers use only these, so their meaning is
-  the same in every Lean 4 release.
+  core, release v4.0.0 or later"]` and emit exactly these constructs, all
+  in ASCII (FR-814):
+  - structure: `namespace`/`end`, `structure … where`, `inductive … where`
+    with `|` constructors and `deriving DecidableEq`, `def`, `abbrev`, and
+    `--` line comments;
+  - logic: `Prop`, `True`, `False`, `/\`, `\/`, `Not`, `->`, `<->`, `=`,
+    `Ne`, `forall x, p`, `exists x, p`, `decide`, `match … with`,
+    `if`/`then`/`else`, `fun x =>`;
+  - arithmetic: `Nat` and `Int` literals, `+`, `-`, `*`, `<`, `<=`, `>`,
+    `>=`, `Int.ofNat`, `Int.natAbs`, and `Nat` `/` and `%` inside the
+    generated helpers;
+  - data: `Bool`, `true`, `false`, `Nat`, `Int`, `List` with `[]`, `::`,
+    `List.length`, `List.map`, `List.foldl` and `List.get?`, `Option` with
+    `some` and `none`, `Prod A B` with `(a, b)`, `.1` and `.2`, structure
+    field access, and function types `Nat -> State`.
+  Generated helpers use only these, so their meaning is the same in every
+  Lean 4 release. Mathematical notation in FR-812 and FR-813 (`∀`, `∧`,
+  `×`, `≤`) is written in these ASCII forms.
 - Changing the target revision, adding an emitted construct, changing a
   mapping rule of FR-812 to FR-814, or changing a disposition rule of FR-651
   SHALL require a new profile identity (`/v2`); the `v1` mapper keeps

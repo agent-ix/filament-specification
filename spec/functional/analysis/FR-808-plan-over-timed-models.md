@@ -58,8 +58,11 @@ quantity of `u`.
 - A reported plan SHALL carry concrete delays. Each delay is the least
   rational in its region-successor interval when that interval is closed
   below; when it is open below (a strict guard `x > c`), it is the midpoint
-  between the open bound and the interval's next boundary. Replay (FR-650)
-  re-applies these exact delays.
+  between the open bound `c` and the next point of the scaled region grid,
+  `c + 1/N`, where `N` is the model's exact common denominator (FR-418), so
+  the delay is `c + 1/(2N)`. The grid point is defined for every region,
+  including an unbounded one such as `(2, ∞)`. Replay (FR-650) re-applies
+  these exact delays.
 
 ### Minima that are not attained
 
@@ -87,7 +90,7 @@ time-lock).
 | --- | --- | --- |
 | FR-808-AC-1 | Under `time M tick tick period 10 unit min`, a plan of three `tick` steps and two other steps has `elapsed` exactly `30 min`, and each step's `delay` is 0. | Test (TC-1958) |
 | FR-808-AC-2 | Under dense time with clock `x` and operation `go` guarded `x >= 2`, `minimize Reach.elapsed` with goal `Reach.final.done` returns `optimal` with one step of delay `2` and `elapsed` `2`, and an accepted `closure` certificate. | Test (TC-1958) |
-| FR-808-AC-3 | With the guard `x > 2` the result is `feasible`, `bound` `{side: lower, value: 2, attained: false}`, and the plan's delay is `5/2`, the midpoint of `(2, 3)`; it is never `optimal`. | Test (TC-1958) |
+| FR-808-AC-3 | With the guard `x > 2` the result is `feasible`, `bound` `{side: lower, value: 2, attained: false}`, and the plan's delay is `5/2`, the midpoint between 2 and the next grid point 3 (`N` = 1), whether the region is `(2, 3)` or unbounded `(2, ∞)`; it is never `optimal`. | Test (TC-1958) |
 | FR-808-AC-4 | A time invariant `x <= 1` in a state where `go` requires `x >= 2` makes the goal `infeasible`; a final state whose time invariant forbids the terminal stutter is not admissible. | Test (TC-1958) |
 | FR-808-AC-5 | Two runs of AC-3 give byte-identical outcome documents, with the delay written as the exact rational `5/2`. | Test (TC-1958) |
 

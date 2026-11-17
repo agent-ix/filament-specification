@@ -81,7 +81,8 @@ engines share no limit.
 ### Search nodes and completeness
 
 - A *search node* SHALL be the tuple of the FR-181 canonical state key, the
-  state of every policy monitor (FR-803), the step count so far and, for
+  state of every named policy clause's monitor or automaton, safety or not
+  (FR-803), the step count so far and, for
   each per-step sum or count over `steps` that the goal or the objective
   reads, its accumulated exact value. Two prefixes with equal nodes have
   equal sets of admissible completions and equal objective contributions,

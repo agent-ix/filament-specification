@@ -26,7 +26,7 @@ a target counterexample counts only after native replay.
 ## Inputs
 
 An FR-299 package; a target result (a TLC or Apalache run, a TLAPS proof, a
-Lean proof of an `Ob_` proposition) recorded as an observation of it.
+Lean proof of an `Ob_` proposition) that a caller submits as evidence against the package; an observer run (FR-651) is not this intake and settles nothing.
 
 ## Outputs
 
@@ -49,7 +49,7 @@ mapper's own correctness, which is part of the trust base.
 
 | Target result | Disposition | Meaning in FSL |
 | --- | --- | --- |
-| TLAPS proof of `T_<clause>`, or a Lean term of type `Ob_<clause>` checked by the Lean kernel | `preserved` | `proved`, basis `decisive-witness`, certification `trusted`, extent `unbounded`; the trust base names the mapper, its version and the target tool and version |
+| TLAPS proof of `Th_<clause>`, or a Lean term of type `Ob_<clause>` checked by the Lean kernel | `preserved` | `proved`, basis `decisive-witness`, certification `trusted`, extent `unbounded`; the trust base names the mapper, its version and the target tool and version |
 | complete TLC or Apalache run over the whole finite state space, no state constraint, invariant or property holding | `preserved` | `proved`, certification `trusted`, extent `unbounded` for a finite model |
 | run bounded by a depth, a state constraint or a `CONSTANT` restriction | `preserved` | `proved` with extent `bounded`, the bound recorded; never `unbounded` |
 | any of the above | `conditional` | the same, with every retained condition listed as an assumption of the entry |

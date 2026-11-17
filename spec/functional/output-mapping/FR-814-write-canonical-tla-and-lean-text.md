@@ -33,13 +33,19 @@ The target bytes and the package's name map.
 
 - Every generated name SHALL be a kind prefix followed by the mangled FSL
   name: `v_` variables, `T_` types, `op_` operations, `f_` functions, `c_`
-  clauses and invariants, `Ob_` and `T_` obligation statements, `e_` enum
-  members, `m_` monitor variables, `Q_`, `F_` and `D_` generated helpers.
+  clauses and invariants, `holds_` Lean clause semantics (FR-813), `Ob_`
+  Lean obligation propositions, `Th_` TLA+ obligation theorems, `e_` enum
+  members, `m_` monitor variables, `M_` modules, and `Q_`, `F_` and `D_`
+  generated helpers. Each prefix is a distinct word of ASCII letters
+  followed by one `_`; where one word is a proper prefix of another (`T`
+  and `Th`), the two names differ at the character after the shorter word
+  (`_` against a letter), so names of different kinds never coincide, and
+  with the injective mangling below the whole naming is injective.
   No TLA+ or Lean keyword, and no name of a module or namespace the output
-  uses, begins with one of these prefixes followed by `_`, so no generated
-  name collides with one.
+  uses, begins with one of these prefixes, so no generated name collides
+  with one.
 - The structural names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`,
-  `Spec`, `TypeOK`, `vars` and `Reachable` SHALL be written unprefixed,
+  `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F` SHALL be written unprefixed,
   once each; no mangled name equals one, because every mangled name carries
   a prefix.
 - *Mangling* SHALL keep ASCII letters and digits, write `_` as `__`, write
