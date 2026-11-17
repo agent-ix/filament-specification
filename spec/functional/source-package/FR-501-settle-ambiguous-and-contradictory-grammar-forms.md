@@ -44,7 +44,7 @@ A lossless source tree with the productions below, or a located refusal.
    holds(q)` is the temporal conjunction of the atom and `holds(q)`. A
    threshold is a number, and letting it be a full expression silently read
    `>= s.k and s.ok` as the Boolean threshold `(s.k and s.ok)`. A threshold
-   that needs a lower-precedence operator is written in parentheses.
+   that needs a lower-precedence operator is written in parentheses. FR-784 states the same delimitation for `or` and `implies`, where an atom may stand, and how a parenthesized threshold is typed.
 2. **Indexed read admitted only in a hyper body.** The `expr` of a
    `holds(...)` leaf and of an `on each ... when` guard is recognized with the
    same expression grammar in every temporal clause, `indexed-read`
