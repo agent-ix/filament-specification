@@ -60,7 +60,8 @@ and it never overwrites one. Its value is:
 The five rows partition the instances: exactly one row holds for each
 instance. `pending` takes precedence, so an instance with a successful, a
 failed and a pending registration is `pending` until the pending one settles,
-and only then `partially-recovered` or `recovered`.
+and only then `partially-recovered`: a registration that has failed keeps it
+from `recovered`.
 
 The summary is derived only from the registrations' aggregate facts, never
 from an attempt label, arrival order or a label of another subject (FR-236).
