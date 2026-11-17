@@ -321,7 +321,10 @@
       ],
       "properties": {
         "origin": {
-          "const": "model_document_operation_frame"
+          "enum": [
+            "model_document_operation_frame",
+            "source_declaration_operation_frame"
+          ]
         },
         "member": {
           "$ref": "#/$defs/Nonempty"

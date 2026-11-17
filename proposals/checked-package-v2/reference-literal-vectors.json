@@ -1,0 +1,130 @@
+{
+  "note": "FR-480 Lowering: a reference literal M::T#\"k\" is a literal term of value_kind reference whose type is the composite_type/reference node over T's model declaration node and whose value is the lowercase hexadecimal of the key's identity bytes, two digits per byte. The schema admits any string or integer value; the reader refuses a value that is not that hexadecimal with invalid_package/invalid-value at value (FR-322-AC-101), and checks that the type node is a reference type (FR-480-AC-3).",
+  "positive": [
+    {
+      "id": "RL-01-s1",
+      "description": "M::Server#\"s1\": identity bytes 73 31",
+      "term": {
+        "term": "literal",
+        "type": {
+          "package": "example",
+          "path": [
+            "composite_type",
+            "reference",
+            "Server"
+          ],
+          "ordinal": 0
+        },
+        "value_kind": "reference",
+        "value": "7331"
+      }
+    }
+  ],
+  "reader_refusals": [
+    {
+      "id": "RL-R1-key-not-hex",
+      "description": "the key written as its source spelling instead of its identity bytes",
+      "term": {
+        "term": "literal",
+        "type": {
+          "package": "example",
+          "path": [
+            "composite_type",
+            "reference",
+            "Server"
+          ],
+          "ordinal": 0
+        },
+        "value_kind": "reference",
+        "value": "s1"
+      },
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/value"
+    },
+    {
+      "id": "RL-R2-uppercase-hex",
+      "description": "hexadecimal digits in upper case",
+      "term": {
+        "term": "literal",
+        "type": {
+          "package": "example",
+          "path": [
+            "composite_type",
+            "reference",
+            "Server"
+          ],
+          "ordinal": 0
+        },
+        "value_kind": "reference",
+        "value": "7A31"
+      },
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/value"
+    },
+    {
+      "id": "RL-R3-empty-key",
+      "description": "an empty identity, which no object has",
+      "term": {
+        "term": "literal",
+        "type": {
+          "package": "example",
+          "path": [
+            "composite_type",
+            "reference",
+            "Server"
+          ],
+          "ordinal": 0
+        },
+        "value_kind": "reference",
+        "value": ""
+      },
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/value"
+    },
+    {
+      "id": "RL-R4-odd-digits",
+      "description": "an odd number of hexadecimal digits, which spells no byte sequence",
+      "term": {
+        "term": "literal",
+        "type": {
+          "package": "example",
+          "path": [
+            "composite_type",
+            "reference",
+            "Server"
+          ],
+          "ordinal": 0
+        },
+        "value_kind": "reference",
+        "value": "733"
+      },
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/value"
+    },
+    {
+      "id": "RL-R5-integer-value",
+      "description": "the value as a JSON integer",
+      "term": {
+        "term": "literal",
+        "type": {
+          "package": "example",
+          "path": [
+            "composite_type",
+            "reference",
+            "Server"
+          ],
+          "ordinal": 0
+        },
+        "value_kind": "reference",
+        "value": 7331
+      },
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/value"
+    }
+  ]
+}

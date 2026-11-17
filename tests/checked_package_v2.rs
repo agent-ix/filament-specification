@@ -22407,9 +22407,24 @@ fn read_operation_effects(
     documents: &[Value],
     rows: &[Value],
 ) -> Result<(), OperationEffectRefusal> {
+    // FR-322 "Source declarations" item 6: a source document is the declaring
+    // unit's `SourceOwner`, not a selection of the lock; its declared nodes are
+    // keyed `{package, [<type name>], ordinal}`.
+    let is_source = |document: &Value| document["source"] == json!(true);
     let selections: Vec<&str> = documents
         .iter()
+        .filter(|document| !is_source(document))
         .map(|document| document["identity"].as_str().unwrap())
+        .collect();
+    let sources: Vec<&str> = documents
+        .iter()
+        .filter(|document| is_source(document))
+        .flat_map(|document| {
+            [
+                document["identity"].as_str().unwrap(),
+                document["package"].as_str().unwrap(),
+            ]
+        })
         .collect();
     // node key -> (document, form, type name, document type)
     let mut declared: BTreeMap<(String, Vec<String>, u64), (&Value, String, String, Option<&Value>)> =
@@ -22419,8 +22434,13 @@ fn read_operation_effects(
         for ty in document["types"].as_array().unwrap() {
             let form = ty["form"].as_str().unwrap();
             let name = ty["name"].as_str().unwrap();
+            let node = if is_source(document) {
+                json!({"package": document["package"], "path": [name], "ordinal": 0})
+            } else {
+                effect_node(identity, form, name)
+            };
             declared.insert(
-                effect_node_order(&effect_node(identity, form, name)),
+                effect_node_order(&node),
                 (document, form.to_owned(), name.to_owned(), Some(ty)),
             );
         }
@@ -22436,11 +22456,11 @@ fn read_operation_effects(
     for (index, row) in rows.iter().enumerate() {
         let at = |suffix: &str| format!("/operation_effects/{index}{suffix}");
         let document_id = row["document"].as_str().unwrap();
-        if !selections.contains(&document_id) {
+        if !selections.contains(&document_id) && !sources.contains(&document_id) {
             return Err(refuse("missing_declaration", Some("missing-selection"), at("/document")));
         }
         let declaring = effect_node_order(&row["declaring"]);
-        if !selections.contains(&declaring.0.as_str()) {
+        if !selections.contains(&declaring.0.as_str()) && !sources.contains(&declaring.0.as_str()) {
             return Err(refuse("invalid_package", Some("invalid-value"), at("/declaring")));
         }
         let Some((document, form, type_name, ty)) = declared.get(&declaring) else {
@@ -22463,7 +22483,17 @@ fn read_operation_effects(
         let Some(declared_operation) = declared_operation else {
             return Err(refuse("ill_typed", Some("operator-ineligible"), at("/operation")));
         };
-        let member = format!("ix://{document_id}/{type_name}/{operation}");
+        let (origin, member) = if is_source(document) {
+            ("source_declaration_operation_frame", format!("{type_name}::{operation}"))
+        } else {
+            (
+                "model_document_operation_frame",
+                format!("ix://{document_id}/{type_name}/{operation}"),
+            )
+        };
+        if row["provenance"]["origin"] != origin {
+            return Err(refuse("invalid_package", Some("invalid-value"), at("/provenance/origin")));
+        }
         if row["provenance"]["member"] != member {
             return Err(refuse("invalid_package", Some("invalid-value"), at("/provenance/member")));
         }
@@ -22614,6 +22644,7 @@ fn operation_effect_carrier_vectors_match_the_closed_member_schema_and_reader() 
             "OEC-05-empty-effect",
             "OEC-06-multiple-members",
             "OEC-07-same-member-identity",
+            "OEC-08-source-declaration",
         ]
     );
     let carried = |case: &Value| -> Vec<&'static str> {
@@ -22685,7 +22716,7 @@ fn operation_effect_carrier_vectors_match_the_closed_member_schema_and_reader() 
     }
 
     let reader_refusals = vectors["reader_refusals"].as_array().expect("reader refusals");
-    assert_eq!(reader_refusals.len(), 26);
+    assert_eq!(reader_refusals.len(), 28);
     for case in reader_refusals {
         let id = case["id"].as_str().unwrap();
         assert_eq!(case["schema"], "valid", "{id}");
@@ -24264,5 +24295,57 @@ fn tc_1860_a_function_node_carries_its_check_mode() {
             case["schema"] == "valid",
             "{id}: schema verdict"
         );
+    }
+}
+
+const REFERENCE_LITERAL_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/reference-literal-vectors.json");
+
+/// FR-480 "Lowering" reader check: a `reference` literal's value must be the
+/// non-empty lowercase hexadecimal of its key's identity bytes, or the
+/// reader refuses `invalid_package`/`invalid-value` at `value`.
+fn read_reference_literal(term: &Value) -> Result<(), (String, String, String)> {
+    let hex = term["value"].as_str().is_some_and(|value| {
+        !value.is_empty()
+            && value.len() % 2 == 0
+            && value.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+    });
+    if hex {
+        Ok(())
+    } else {
+        Err((
+            "invalid_package".to_owned(),
+            "invalid-value".to_owned(),
+            "/value".to_owned(),
+        ))
+    }
+}
+
+/// FR-480 "Lowering" and FR-322-AC-101: every reference literal vector passes
+/// the schema of each term definition that admits it; the reader admits the
+/// hexadecimal value and refuses every other value at `value`.
+#[trace("TC-965", "FR-480-AC-3", "FR-322-AC-101")]
+#[test]
+fn a_reference_literal_value_is_the_hexadecimal_of_its_identity_bytes() {
+    let vectors = parsed_fixture(REFERENCE_LITERAL_VECTORS);
+    let schema = parsed_fixture(SCHEMA);
+    let positive = vectors["positive"].as_array().unwrap();
+    let refusals = vectors["reader_refusals"].as_array().unwrap();
+    for definition in ["LeafTerm", "SemanticTerm"] {
+        let validator = schema_for_def(&schema, definition);
+        for case in positive.iter().chain(refusals) {
+            assert!(validator.is_valid(&case["term"]), "{definition} {}", case["id"]);
+        }
+    }
+    for case in positive {
+        assert_eq!(read_reference_literal(&case["term"]), Ok(()), "{}", case["id"]);
+    }
+    for case in refusals {
+        let expected = (
+            case["expected_code"].as_str().unwrap().to_owned(),
+            case["expected_cause"].as_str().unwrap().to_owned(),
+            case["locus"].as_str().unwrap().to_owned(),
+        );
+        assert_eq!(read_reference_literal(&case["term"]), Err(expected), "{}", case["id"]);
     }
 }
