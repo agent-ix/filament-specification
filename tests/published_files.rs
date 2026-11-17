@@ -26,6 +26,14 @@ fn files_under(directory: &Path, root: &Path, files: &mut Vec<(String, Vec<u8>)>
 #[test]
 #[trace("TC-1640", "FR-660-AC-1")]
 fn published_file_returns_every_proposal_byte_and_lists_fixture_paths_in_order() {
+    let release_version = env!("CARGO_PKG_VERSION");
+    let release_tag = "v0.1.1";
+    assert_eq!(
+        release_version,
+        release_tag.strip_prefix('v').expect("release tag has v prefix"),
+        "Cargo package version must match the release tag"
+    );
+
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let mut expected = Vec::new();
     files_under(&root.join("proposals"), &root, &mut expected);
