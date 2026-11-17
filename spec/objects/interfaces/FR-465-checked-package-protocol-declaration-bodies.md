@@ -247,7 +247,8 @@ behaviour of one channel and has four arguments, in this order:
 - **semantic_type** — the Boolean node.
 - **dependencies** — the `channel` target.
 - **Meaning.** A `literal` capacity is a concrete bound. A `symbolic`
-  capacity names a bound that execution discharges before a finite run: the
+  capacity names a bound that the protocol subject's capacity binding
+  discharges before any expansion ([FR-785](../../functional/protocol/FR-785-bind-symbolic-channel-capacities.md)): the
   package carries the name and no value. At full capacity `reject` leaves
   the queue unchanged and records a rejected send, `block` leaves a pending
   send, and `loss` applies the loss selector: `head` drops the oldest queued message, `tail` the newest queued message and `new` the arriving message, the queue otherwise unchanged ([FR-170](../../functional/protocol/FR-170-evaluate-channel-queue-semantics.md)); the grammar spells the selector after `loss`.

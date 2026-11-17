@@ -37,6 +37,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-417
     type: references
+  - target: ix://agent-ix/filament-specification/FR-785
+    type: references
 ---
 
 # FR-425: Define protocol subjects and their state keys
@@ -52,7 +54,8 @@ with the member contents stated below.
 
 A checked package with one checked protocol clause; a binding of the clause's
 `over` parameter to a value of its declared type; a binding of each static
-role on a model type; the universe of each replicated role's population; the ordered list of
+role on a model type; a binding of each symbolic channel capacity name
+([FR-785](FR-785-bind-symbolic-channel-capacities.md)); the universe of each replicated role's population; the ordered list of
 initial model states, universes and substituted proof bounds of the model
 subject the clause's roles act on; and the memory model of each `parallel`
 ([FR-434](../memory/FR-434-select-memory-models-for-parallel.md)).
@@ -67,8 +70,10 @@ protocol state; or `requires-bound` for an unbounded root.
 ### Protocol subject
 
 A **protocol subject** is a model subject together with one checked protocol
-clause of its package, the `over` binding, the static role bindings and the
-universe of each replicated role's population. The protocol's steps
+clause of its package, the `over` binding, the static role bindings, the
+capacity binding of its symbolic channel capacities
+([FR-785](FR-785-bind-symbolic-channel-capacities.md)) and the universe of
+each replicated role's population. The protocol's steps
 ([FR-426](FR-426-apply-protocol-steps.md)) are the only steps of the subject:
 the model's operations run only as the protocol's attempts. The protocol
 clause, the bindings, the clause's `terminal` and `scheduling` members
@@ -114,9 +119,13 @@ has no instance in its initial state.
 Before any expansion, the analyzer SHALL classify every root of the subject:
 the model's populations, parameter and result domains under the request's
 universes; the record type of every binder an event, send, receive, finish,
-compensation-attempt or activation step ranges over; and each replicated
-role's population universe. An unbounded root returns the FR-181
-`requires-bound` disposition.
+compensation-attempt or activation step ranges over; each replicated
+role's population universe; and each symbolic channel capacity name, which
+is unbounded when the capacity binding has no entry for it (FR-785). An
+unbounded root returns the FR-181 `requires-bound` disposition. This
+classification is of the items this requirement builds a subject for; a
+realizability item over the clause does not run it and records an unbound
+capacity as a premise not stated (FR-785).
 
 ### Threads and paths
 

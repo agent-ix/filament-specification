@@ -21,6 +21,8 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-363
     type: references
+  - target: ix://agent-ix/filament-specification/FR-785
+    type: references
 ---
 
 # FR-433: Carry and replay protocol counterexamples
@@ -52,7 +54,7 @@ members:
 
 | Member | Value |
 | --- | --- |
-| `subject` | `{"type":"protocol-subject","protocol":"<qualified-name>","over":<encoded>,"roles":<map from role ident to binding>}` |
+| `subject` | `{"type":"protocol-subject","protocol":"<qualified-name>","over":<encoded>,"roles":<map from role ident to binding>}`, with `"capacities":<map from capacity name to "<decimal>">`, the capacity binding ([FR-785](FR-785-bind-symbolic-channel-capacities.md)), present exactly when the clause has a symbolic channel capacity |
 | `prefix`, `loop` steps | `{transition, post_state}` with, for a `send` step only, `send_record`; `transition` is the step's protocol transition identity ([FR-426](FR-426-apply-protocol-steps.md)) or the terminal-stutter identity, `post_state` the state key of its post-state, and `send_record` the step's send record in the form FR-426 gives |
 | `fairness` | the resolved fairness set over the protocol subject, each member with its target and origin ([FR-430](FR-430-apply-protocol-fairness.md)) |
 | `blocked` | for `kind: deadlock`, the last state's blocked-thread list ([FR-429](FR-429-report-protocol-deadlocks.md)); absent otherwise |

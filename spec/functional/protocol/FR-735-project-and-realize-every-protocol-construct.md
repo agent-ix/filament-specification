@@ -13,6 +13,8 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-428
     type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-785
+    type: references
 ---
 # FR-735: Project and decide realizability for every protocol construct
 
@@ -67,8 +69,11 @@ owner is the environment, every role takes the external side.
   of the body, started by the instance's activation, which every role of the
   instance observes. Observations of two instances are never equal.
 - **Symbolic capacity.** A projection does not depend on capacity. A
-  realizability result takes each named capacity's value as a channel
-  premise. When the value is absent, the result is inconclusive (FR-175-AC-3).
+  realizability result takes each named capacity's value from the protocol
+  subject's capacity binding as a channel premise, and holds at that value
+  only ([FR-785](FR-785-bind-symbolic-channel-capacities.md)). When the value
+  is absent, the result is inconclusive with cause `premise-not-stated`
+  (FR-175-AC-3), never `requires-bound` and never a default capacity.
 - **Realizability moves.** The environment chooses activations, spawns and
   retirements, the records and post-states of attempts, effects, events,
   commits and compensation attempts, when a join's policy fires, and
