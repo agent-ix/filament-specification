@@ -75,7 +75,7 @@ first false and `exists` at the first true; the empty cases are true and false.
 once each) and stops at the first equal member, matching the
 [state contract](../../../proposals/filament-v1/state-contract.md)'s
 first-equality stop; an empty `c` is false. `size`
-returns the FR-144 bound count, and `count<N>` and `sum<N>` keep the
+returns the FR-144 bound count (`size<N>(c)` returns the same count typed at the explicit domain `N`, FR-783), and `count<N>` and `sum<N>` keep the
 `state-contract` result-domain rules for every kind. `dropFirst(c)` and
 `removeOne(c, v)` are total: `dropFirst` of an empty collection is the empty
 collection, and `removeOne` of a `c` that holds no member equal to `v` is `c`.
