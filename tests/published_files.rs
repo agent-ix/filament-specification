@@ -24,7 +24,7 @@ fn files_under(directory: &Path, root: &Path, files: &mut Vec<(String, Vec<u8>)>
 }
 
 #[test]
-#[trace("TC-1640", "FR-660-AC-1")]
+#[trace("TC-1640", "FR-660-AC-1", "FR-660-AC-6")]
 fn published_file_returns_every_proposal_byte_and_lists_paths_in_order() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let mut expected = Vec::new();
