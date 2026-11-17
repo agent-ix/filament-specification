@@ -43,7 +43,7 @@ filament-specification-qualification = { git = "https://github.com/agent-ix/fila
 | `spec/` | The requirements and everything that hangs off them, as Markdown artifacts. See the chart below. |
 | `proposals/` | Draft grammar, profiles, JSON schemas and the vector and fixture files that specify them. One folder per proposal. |
 | `docs/` | [The atomic V1 capability inventory](docs/v1-capability-inventory.md), which is the binding statement of scope, and [the complete architecture](docs/v1-complete-architecture.md). |
-| `src/lib.rs` | A dependency-free Rust library that exposes authored documents as constants and the qualification vector rows as a typed table (`QUALIFICATION_VECTORS`), generated at build time from the authored test cases. |
+| `src/lib.rs` | A dependency-free Rust library that exposes proposal and test-case file bytes by path, authored documents as constants, and the qualification vector rows as a typed table (`QUALIFICATION_VECTORS`), generated at build time from the authored test cases. |
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/corpus-dark.svg">
@@ -109,7 +109,9 @@ use filament_specification::{
 ```
 
 Each constant holds exactly the bytes of the file under
-`proposals/filament-v1/definitions/`.
+`proposals/filament-v1/definitions/`. Use `published_file(path)` or
+`published_files(prefix)` for other files under `proposals/` and the authored
+test cases under `spec/test-cases/`.
 
 ## The Filament ecosystem
 
