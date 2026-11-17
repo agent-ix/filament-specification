@@ -39,8 +39,10 @@ FIFO ordering applies only within the declared role/workflow/channel/message key
 Duplication, loss and delivery guarantees default to unknown, never reliable.
 Capacity may be concrete, or symbolic and discharged only by the protocol
 subject's capacity binding ([FR-785](FR-785-bind-symbolic-channel-capacities.md)):
-a bound symbolic capacity steps as the literal capacity of its bound value, and
-an unbound one returns `requires-bound` before any expansion. Overflow behavior
+a bound symbolic capacity steps as the literal capacity of its bound value; an
+unbound one returns `requires-bound` before any expansion for an item whose
+subject FR-425 classifies, and settles a realizability item `inconclusive`,
+cause `premise-not-stated`. Overflow behavior
 is reject, block or declared loss (with its head, tail or new selector) and remains visible to conformance.
 
 ## Queue transition system

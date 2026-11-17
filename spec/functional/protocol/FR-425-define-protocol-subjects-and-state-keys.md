@@ -122,7 +122,10 @@ universes; the record type of every binder an event, send, receive, finish,
 compensation-attempt or activation step ranges over; each replicated
 role's population universe; and each symbolic channel capacity name, which
 is unbounded when the capacity binding has no entry for it (FR-785). An
-unbounded root returns the FR-181 `requires-bound` disposition.
+unbounded root returns the FR-181 `requires-bound` disposition. This
+classification is of the items this requirement builds a subject for; a
+realizability item over the clause does not run it and records an unbound
+capacity as a premise not stated (FR-785).
 
 ### Threads and paths
 
