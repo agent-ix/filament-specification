@@ -54,8 +54,14 @@ and it never overwrites one. Its value is:
 | `untriggered` | no registration of the instance activated |
 | `pending` | some activated registration's fact is `pending` |
 | `recovered` | every activated registration's fact is `successful` |
-| `partially-recovered` | at least one activated registration is `successful`, and at least one is `failed` or `timed-out` |
+| `partially-recovered` | at least one activated registration is `successful`, at least one is `failed` or `timed-out`, and none is `pending` |
 | `unrecovered` | at least one registration activated, none is `successful`, and none is `pending` |
+
+The five rows partition the instances: exactly one row holds for each
+instance. `pending` takes precedence, so an instance with a successful, a
+failed and a pending registration is `pending` until the pending one settles,
+and only then `partially-recovered`: a registration that has failed keeps it
+from `recovered`.
 
 The summary is derived only from the registrations' aggregate facts, never
 from an attempt label, arrival order or a label of another subject (FR-236).
@@ -66,7 +72,7 @@ from an attempt label, arrival order or a label of another subject (FR-236).
 | --- | --- | --- |
 | FR-736-AC-1 | Over TC-380's `Pay` with `attempts 2`, exploration reaches an attempt with each of `failed`, `timed-out` and `successful`, and a successful retry whose predecessor keeps `failed`; no registration exceeds two attempts. | Test (TC-1782) |
 | FR-736-AC-2 | Exploration reaches registrations whose aggregate facts are `pending`, `successful`, `failed` and `timed-out`, and one that closes with no fact. | Test (TC-1782) |
-| FR-736-AC-3 | A protocol with two templates reaches instance summaries `partially-recovered`, `recovered`, `unrecovered` and `untriggered`, and `pending` in a state with a running thread. No summary value is admitted as an attempt or aggregate label. | Test (TC-1783) |
+| FR-736-AC-3 | A protocol with two templates reaches instance summaries `partially-recovered`, `recovered`, `unrecovered` and `untriggered`, and `pending` in a state with a running thread, including a state where one registration is `successful`, one `failed` and one `pending`, which is `pending` and not `partially-recovered`. No summary value is admitted as an attempt or aggregate label. | Test (TC-1783) |
 
 ## Dependencies
 

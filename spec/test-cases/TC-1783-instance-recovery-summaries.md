@@ -21,4 +21,5 @@ Scope: FR-736-AC-3.
 
 ## Expected Results
 
-- Step 1: `partially-recovered`, `recovered`, `unrecovered`, `untriggered` and `pending` are reached, and no summary value is admitted as an attempt or aggregate label.
+- Step 1: `partially-recovered`, `recovered`, `unrecovered`, `untriggered` and `pending` are reached; a state with a successful, a failed and a
+  pending registration is `pending`, not `partially-recovered`; and no summary value is admitted as an attempt or aggregate label.

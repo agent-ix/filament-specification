@@ -198,7 +198,24 @@
         ],
         "ordinal": 0
       },
-      "clock": "model-steps"
+      "clock": "model-steps",
+      "operator": "await"
+    },
+    {
+      "key": "sd",
+      "graph_index": 14,
+      "form": "control",
+      "operator": "send",
+      "node_id": {
+        "package": "example",
+        "path": [
+          "protocol",
+          "control",
+          "sd"
+        ],
+        "ordinal": 0
+      },
+      "clock": null
     }
   ],
   "compensation_cases": [
@@ -414,11 +431,11 @@
     },
     {
       "id": "CB-07",
-      "note": "a row names an await control, neither a clause nor a compensation",
+      "note": "a row names a send control, neither a clause, a compensation nor an await",
       "lock_temporal_profile": "event_position",
       "declarations": [
         "k1",
-        "aw"
+        "sd"
       ],
       "rows": [
         {
@@ -431,7 +448,7 @@
           }
         },
         {
-          "declaration": "aw",
+          "declaration": "sd",
           "occurrence": 0,
           "clock_name": "model-steps",
           "clock": {

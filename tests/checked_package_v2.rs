@@ -24505,3 +24505,95 @@ fn tc_1921_schema_enumerates_the_population_form_operations() {
     let member = schema["$defs"]["OperationMember"].to_string();
     assert!(member.contains("\"history\""), "the history member kind is enumerated");
 }
+
+/// FR-322-AC-305 (TC-1925): an `await` control node keys its own
+/// `temporal_bindings` row under the compensation-row rules: `AW-01` and
+/// `AW-02` are admitted, and `AW-03` to `AW-06` are `CB-03` to `CB-06`
+/// applied to an await row, at the same loci.
+#[trace("TC-1925", "TC-233", "FR-322-AC-305")]
+#[test]
+#[ignore = "QSL-2225: the await clock-binding vectors are not published and the reader refuses an await row"]
+fn tc_1925_an_await_window_carries_its_own_clock_binding_row() {
+    let vectors: Value = serde_json::from_str(TEMPORAL_CLOCK_BINDING_VECTORS)
+        .expect("clock binding vectors JSON");
+    let schema = parsed_fixture(SCHEMA);
+    let binding_validator = schema_for_def(&schema, "TemporalBinding");
+    let declarations = vectors["compensation_declarations"].as_array().unwrap();
+    let find = |key: &str| {
+        declarations
+            .iter()
+            .find(|declaration| declaration["key"] == key)
+            .unwrap_or_else(|| panic!("declaration {key} resolves"))
+    };
+    assert_eq!(find("aw")["operator"], "await");
+    let expected = [
+        ("AW-01", "admitted", None, None),
+        ("AW-02", "admitted", None, None),
+        ("AW-03", "refused", Some("timed-node-reference"), Some("/semantic_graph/nodes/13/body")),
+        ("AW-04", "refused", Some("conflicting-definition"), Some("/temporal_bindings/1")),
+        ("AW-05", "refused", Some("timed-node-reference"), Some("/temporal_bindings/1/clock_name")),
+        ("AW-06", "refused", Some("timed-node-reference"), Some("/temporal_bindings/1/clock/kind")),
+    ];
+    let cases = vectors["await_cases"].as_array().expect("await_cases are published");
+    assert_eq!(cases.len(), expected.len());
+    for (id, outcome, cause, locus) in expected {
+        let case = source_vector_case(&vectors, id);
+        assert_eq!(case["expected"], outcome, "{id}");
+        assert!(
+            case["declarations"].as_array().unwrap().iter().any(|key| key == "aw"),
+            "{id}: the case holds the await"
+        );
+        for row in case["rows"].as_array().unwrap() {
+            let mut wire = row.clone();
+            wire["declaration"] = find(row["declaration"].as_str().unwrap())["node_id"].clone();
+            assert!(binding_validator.is_valid(&wire), "{id}: closed TemporalBinding row");
+            if row["declaration"] == "aw" {
+                assert_eq!(row["occurrence"], 0, "{id}: the await's declaration occurrence");
+            }
+        }
+        if let (Some(cause), Some(locus)) = (cause, locus) {
+            assert_eq!(case["code"], "invalid_package", "{id}");
+            assert_eq!(case["cause"], cause, "{id}");
+            assert_eq!(case["locus"], locus, "{id}");
+        }
+    }
+    let cb07 = source_vector_case(&vectors, "CB-07");
+    assert_eq!(find(cb07["rows"][1]["declaration"].as_str().unwrap())["operator"], "send");
+}
+
+/// FR-322 `equality_decisions` (TC-1926): the `float` schedule is selected
+/// exactly for a top-level pair of one float type; a float pair under `plan`,
+/// and `float` over a composite, over two different float types or over a
+/// non-float pair, refuse `invalid_package`/`invalid-value` at `schedule`.
+#[trace("TC-1926", "FR-322-AC-288")]
+#[test]
+#[ignore = "QSL-2173: the float equality schedule is not in the schema or the published vectors yet"]
+fn tc_1926_a_top_level_float_pair_selects_the_float_schedule() {
+    let schema = parsed_fixture(SCHEMA);
+    let schedules = schema["$defs"]["EqualityDecision"]["properties"]["schedule"]["enum"]
+        .as_array()
+        .expect("schedule enumeration");
+    assert!(schedules.iter().any(|schedule| schedule == "float"));
+    let vectors = parsed_fixture(CHECKED_TERM_DATA_VECTORS);
+    for id in ["EQ-11-float32", "EQ-12-float64"] {
+        let case = source_vector_case(&vectors, id);
+        assert_eq!(case["schedule"], "float", "{id}");
+        assert_eq!(case["units"], json!([]), "{id}");
+        assert_eq!(case["enum_members"], json!([]), "{id}");
+        assert_eq!(case["left"]["conversion_target"], Value::Null, "{id}");
+        assert_eq!(case["right"]["conversion_target"], Value::Null, "{id}");
+        assert_eq!(case["left"]["source_type"], case["right"]["source_type"], "{id}");
+    }
+    let at = "/checked_term_data/equality_decisions/0/schedule";
+    assert_source_refusals(
+        &vectors,
+        &[
+            ("EQ-R8-float-pair-under-plan", "invalid_package", "invalid-value", at),
+            ("EQ-R9-float-over-composite", "invalid_package", "invalid-value", at),
+            ("EQ-R10-float-over-two-float-types", "invalid_package", "invalid-value", at),
+            ("EQ-R11-float-over-non-float", "invalid_package", "invalid-value", at),
+        ],
+    );
+    let plan = source_vector_case(&vectors, "EQ-04-plan");
+    assert_eq!(plan["schedule"], "plan", "a float leaf of a composite stays plan");
+}
