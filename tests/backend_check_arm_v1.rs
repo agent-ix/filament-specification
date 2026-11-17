@@ -840,3 +840,27 @@ fn descriptors_for_these_kinds_must_publish_a_positive_max_cases() {
         }
     }
 }
+
+/// FR-144-AC-34 (TC-1927): an index read with an unmet index obligation is
+/// undefined with the catalogued reason `no-element` at its
+/// `filament.op.collection.index` application. The published value-validity
+/// vectors carry one such refutation for a sequence index past the size and
+/// one for a map key with no entry, each replayed by the native evaluation.
+#[trace("TC-1927", "FR-144-AC-34")]
+#[test]
+#[ignore = "QSL-2171: an unmet index obligation is undefined no-element; no published vector refutes with it yet"]
+fn tc_1927_an_unmet_index_obligation_refutes_with_no_element() {
+    let refutations: Vec<Value> = cases()
+        .into_iter()
+        .filter(|case| {
+            case["outcome"]["results"].as_array().into_iter().flatten().any(|result| {
+                result["cause"]["type"] == "undefined-evaluation" && result["cause"]["cause"] == "no-element"
+            })
+        })
+        .collect();
+    assert!(refutations.len() >= 2, "a sequence and a map no-element refutation are published");
+    for case in &refutations {
+        assert_eq!(case["arm"]["result"], "refuted", "{}", case["id"]);
+        assert_eq!(replayed(case, &case["outcome"]), Some(true), "{} replays", case["id"]);
+    }
+}

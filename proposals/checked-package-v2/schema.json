@@ -4499,6 +4499,8 @@
         "filament.op.quantity.mul",
         "filament.op.quantity.div",
         "filament.op.quantity.pow",
+        "filament.op.quantity.scale",
+        "filament.op.quantity.scale_div",
         "filament.op.quantity.eq",
         "filament.op.quantity.ne",
         "filament.op.quantity.lt",
