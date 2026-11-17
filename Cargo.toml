@@ -1,6 +1,6 @@
 [package]
 name = "filament-specification-qualification"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.98"
 license = "AGPL-3.0-or-later"
@@ -14,12 +14,12 @@ name = "filament_specification"
 path = "src/lib.rs"
 
 [dev-dependencies]
-filament-verification-contracts = { git = "https://github.com/agent-ix/filament-verification-contracts", branch = "main" }
+filament-verification-contracts = { git = "https://github.com/agent-ix/filament-verification-contracts", tag = "v0.1.0" }
 jsonschema = { version = "=0.55.0", default-features = false }
 serde_json = "=1.0.151"
 num-bigint = "=0.4.8"
 num-integer = "=0.1.47"
-ix-trace-rs = { git = "https://github.com/agent-ix/ix-trace-rs", branch = "main" }
+ix-trace-rs = { git = "https://github.com/agent-ix/ix-trace-rs", tag = "v0.1.2" }
 
 [lints.rust]
 unsafe_code = "forbid"
