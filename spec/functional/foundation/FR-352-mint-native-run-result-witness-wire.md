@@ -198,11 +198,19 @@ omits it. `ledger` is a closed object `{"format": "filament.progress-ledger/1",
 `package`, `clause`, `occurrence`, `clock`, `profile`), `watermark`,
 `completeness` (`{"complete": {"through": N}}` or `"incomplete"`), `scope` and
 `execution` (`"closed"` or `"open"`) and `covered` (an array of closed
-`{identity, stamp}` objects in identity-then-stamp order), entries in ascending
-binding order with no binding repeated. The strict reader SHALL restore it
-without loss and SHALL refuse a `ledger` on a record whose trace carries no
-progress, an unknown, missing, duplicate or `null` member, an out-of-order
-entry and a repeated binding, naming the member. The same bytes are the ledger
+`{identity, stamp, fingerprint?}` objects in identity-then-stamp order), entries
+in ascending binding order with no binding repeated. A covered entry's
+`fingerprint` is the content fingerprint of a record-sample position: the
+SHA-256 digest of the sample's canonical RFC 8785 bytes, written `sha256:`
+followed by 64 lowercase hexadecimal digits. It is required on a record-sample
+entry, whose `identity` is the sample's index, and absent on every other entry.
+It is integrity data, not identity: it takes no part in entry order, citation
+or keys, and the ledger carries no sample text or value. The strict reader
+SHALL restore it without loss and SHALL refuse a `ledger` on a record whose
+trace carries no progress, an unknown, missing, duplicate or `null` member, an
+out-of-order entry, a repeated binding, a record-sample covered entry without
+`fingerprint`, a `fingerprint` on any other covered entry, and a `fingerprint`
+not of the `sha256:` form, naming the member. The same bytes are the ledger
 a later run request supplies, so a monitor that runs in batches carries its
 progress through files.
 
@@ -412,6 +420,7 @@ back SHALL restore an equal record.
 | FR-352-AC-17 | Independently, each refuses with a located wire diagnostic naming the member: a `temporal` whose `kind` is outside the sixteen (`pending-forever`, `held`); category `pending` on an `incomplete` row and category `indeterminate` on a `violated` row; category `inconclusive` on a `pending` row; a `pending-window` without `deadline`; an `indeterminate` `missing-valuation` reason with `instance` and without `also_held_by`; an `activation-incomplete` or `progress-limit-reached` row with an `outcome`; a `progress-limit-reached` row whose `setting` is not `progress.covered_positions`; and a `progress-contradicted` row whose outcome `fields` differ from its members. | Test (TC-1485) |
 | FR-352-AC-18 | A timestamped clause-run record with a `ledger` of one entry reads back equal and re-encodes to the same bytes; the same `ledger` on a record of a lasso run, an entry missing `covered`, two entries for one binding, and entries out of binding order each refuse with a located diagnostic naming the member. | Test (TC-1163) |
 | FR-352-AC-19 | A clause-run record over a `model` trace written with no `max_candidates` in the request carries `limits` `{"expansion.max_candidates": "1000000"}`, and one written with `max_candidates` 1 carries `{"expansion.max_candidates": "1"}`; the two records are unequal. A record over a `finite` trace carries no `limits`. The reader refuses a `model`-trace record without `limits`, a `finite`-trace record with `limits`, an unknown setting name, and the values `"0"`, `"01"` and `1` (a JSON number). | Test (TC-1701) |
+| FR-352-AC-20 | A clause-run record over a `progressed` record-sample trace carries a `ledger` whose covered entries are each `{identity, stamp, fingerprint}`, `identity` the sample's index and `fingerprint` `sha256:` plus 64 lowercase hexadecimal digits, with no sample text or value; a snapshot-position covered entry carries no `fingerprint`. The reader restores both without loss and refuses a record-sample entry without `fingerprint`, a snapshot-position entry with one, a `fingerprint` with uppercase digits or 63 digits, and a covered entry with any other extra member. | Test (TC-1910) |
 
 ## Dependencies
 
