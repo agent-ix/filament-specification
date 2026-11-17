@@ -24349,3 +24349,159 @@ fn a_reference_literal_value_is_the_hexadecimal_of_its_identity_bytes() {
         assert_eq!(read_reference_literal(&case["term"]), Err(expected), "{}", case["id"]);
     }
 }
+
+/// The case with `id` anywhere in `vectors`, by its `id` member.
+fn source_vector_case<'a>(vectors: &'a Value, id: &str) -> &'a Value {
+    fn find<'a>(value: &'a Value, id: &str) -> Option<&'a Value> {
+        match value {
+            Value::Object(map) if map.get("id").and_then(Value::as_str) == Some(id) => Some(value),
+            Value::Object(map) => map.values().find_map(|child| find(child, id)),
+            Value::Array(items) => items.iter().find_map(|child| find(child, id)),
+            _ => None,
+        }
+    }
+    find(vectors, id).unwrap_or_else(|| panic!("vector case {id} is published"))
+}
+
+/// Each refusal case `id` publishes exactly `code` and `cause`, at a locus
+/// ending in `locus`.
+fn assert_source_refusals(vectors: &Value, cases: &[(&str, &str, &str, &str)]) {
+    for (id, code, cause, locus) in cases {
+        let case = source_vector_case(vectors, id);
+        assert_eq!(case["expected_code"], *code, "{id}");
+        assert_eq!(case["expected_cause"], *cause, "{id}");
+        let published = case["locus"].as_str().unwrap_or_default();
+        assert!(published.ends_with(locus), "{id}: {published}");
+    }
+}
+
+/// FR-788 (TC-1915, TC-1916): a source dispatch candidate's selection key is
+/// the FR-150 `EffectiveId` over its source declaration key, and every other
+/// spelling refuses at the key.
+#[trace("TC-1915", "TC-1916", "FR-788-AC-1", "FR-788-AC-2")]
+#[test]
+#[ignore = "QSL-2347: the source selection-key vectors and their reader join are not published yet"]
+fn a_source_selection_key_is_the_effective_id_over_the_source_declaration_key() {
+    let vectors = parsed_fixture(CHECKED_TERM_DATA_VECTORS);
+    let case = source_vector_case(&vectors, "DT-S1-source-selection-keys");
+    let keys: Vec<Value> = case["checked_term_data"]["dispatch_tables"][0]["candidates"]
+        .as_array()
+        .expect("candidates")
+        .iter()
+        .map(|candidate| candidate["selection_key"].clone())
+        .collect();
+    let owner = "src/orders-unit";
+    assert_eq!(
+        keys,
+        ["Order", "Sub"]
+            .map(|name| json!({"owner_effective_type": null, "original": {
+                "package": owner, "node": format!("ix://{owner}/{name}")}}))
+            .to_vec()
+    );
+    let at = "/checked_term_data/dispatch_tables/0/candidates/0/selection_key";
+    assert_source_refusals(
+        &vectors,
+        &[
+            ("DT-SR1-bare-type-name", "invalid_package", "invalid-value", at),
+            ("DT-SR2-checked-package-name", "invalid_package", "invalid-value", at),
+            ("DT-SR3-unknown-owner", "invalid_package", "invalid-value", at),
+            ("DT-SR4-unknown-type", "invalid_package", "invalid-value", at),
+            ("DT-SR5-owner-effective-type", "invalid_package", "invalid-value", at),
+        ],
+    );
+}
+
+/// FR-789 (TC-1917, TC-1918): a source timed model's clock-place rows join
+/// the source identity rows and native record bindings of the root's owner.
+#[trace("TC-1917", "TC-1918", "FR-789-AC-1", "FR-789-AC-2")]
+#[test]
+#[ignore = "QSL-2347: the source timed-model vectors and their clock-place join are not published yet"]
+fn a_source_timed_model_joins_its_clock_places_through_source_rows() {
+    let vectors = parsed_fixture(TIMED_MODEL_NODE_VECTORS);
+    let case = source_vector_case(&vectors, "TM-S1-source-root");
+    let rows: Vec<Value> = case["clock_places"]
+        .as_array()
+        .expect("the published places")
+        .iter()
+        .map(|place| place["resolved_path"].clone())
+        .collect();
+    let i = "src/timed-unit";
+    let clock = "ix://filament/native/Clock";
+    assert_eq!(
+        rows,
+        [
+            json!([[format!("ix://{i}/O"), format!("ix://{i}/O/d"), clock]]),
+            json!([
+                [format!("ix://{i}/O"), format!("ix://{i}/O/w"), format!("ix://{i}/W")],
+                [format!("ix://{i}/W"), format!("ix://{i}/W/c"), clock]
+            ]),
+        ]
+    );
+    assert_source_refusals(
+        &vectors,
+        &[
+            ("TM-SR1-undeclared-member", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/0"),
+            ("TM-SR2-foreign-owner", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/0"),
+            ("TM-SR3-member-type", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/0"),
+            ("TM-SR4-selected-model-row", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/1"),
+        ],
+    );
+}
+
+/// FR-790 (TC-1919, TC-1920): `operation_bodies` carries a row per source
+/// operation, joined through the `SourceOwner` and the body `declaration`.
+#[trace("TC-1919", "TC-1920", "FR-790-AC-1", "FR-790-AC-2")]
+#[test]
+#[ignore = "QSL-2347: the source operation-body vectors and their reader join are not published yet"]
+fn source_operations_carry_operation_body_rows_joined_through_the_source_owner() {
+    let vectors: Value =
+        serde_json::from_str(OPERATION_BODY_VECTORS).expect("operation body vectors JSON");
+    let case = source_vector_case(&vectors, "OBC-08-source-declaration");
+    let rows = case["rows"].as_array().expect("rows");
+    assert_eq!(rows.len(), 3);
+    assert!(rows.iter().all(|row| row["document"] == "src/orders-unit"));
+    let kinds: Vec<(&str, &str)> = rows
+        .iter()
+        .map(|row| {
+            (
+                row["operation"].as_str().unwrap(),
+                row["body"]["kind"].as_str().unwrap(),
+            )
+        })
+        .collect();
+    assert_eq!(kinds, [("bump", "no_body"), ("size", "function"), ("size", "function")]);
+    assert_source_refusals(
+        &vectors,
+        &[
+            ("OBR-S1-no-body-for-authored-body", "invalid_package", "invalid-value", "/operation_bodies/1/body"),
+            ("OBR-S2-body-for-bodiless", "invalid_package", "invalid-value", "/operation_bodies/0/body"),
+            ("OBR-S3-precondition-as-body", "invalid_package", "invalid-value", "/operation_bodies/1/body/node"),
+            ("OBR-S4-missing-subtype-row", "invalid_package", "invalid-value", "/operation_bodies"),
+            ("OBR-S5-unknown-document", "missing_declaration", "missing-selection", "/operation_bodies/1/document"),
+        ],
+    );
+}
+
+/// FR-322-AC-455 (TC-1921): the population forms' three catalog identities
+/// are enumerated together in the schema, beside the `history` member kind.
+#[trace("TC-1921", "FR-322-AC-455")]
+#[test]
+#[ignore = "QSL-2179: collection.only, collection.seq and refinement.history land in the schemas with the catalog entries"]
+fn tc_1921_schema_enumerates_the_population_form_operations() {
+    let schema = parsed_fixture(SCHEMA);
+    let identities: Vec<&str> = schema["$defs"]["OperationIdentity"]["enum"]
+        .as_array()
+        .expect("operation identities array")
+        .iter()
+        .map(|identity| identity.as_str().expect("an identity"))
+        .collect();
+    for identity in [
+        "filament.op.collection.only",
+        "filament.op.collection.seq",
+        "filament.op.refinement.history",
+    ] {
+        assert!(identities.contains(&identity), "{identity} is enumerated");
+    }
+    let member = schema["$defs"]["OperationMember"].to_string();
+    assert!(member.contains("\"history\""), "the history member kind is enumerated");
+}

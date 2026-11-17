@@ -148,6 +148,29 @@ the unit, a model alias, a profile alias or an import alias SHALL be refused
 In the package, FR-322 "Source-declared object types" refuses a node that
 mixes the two owner forms.
 
+### Declaration keys
+
+A source-declared object type, a native record of the same unit and each
+of their members have an FR-150 original declaration key, as a
+domain-package declaration does. FR-150 keys a declaration by its package
+identity and its IR node identity, and a domain package spells the IR node
+identity of a type `T` as `ix://{package}/{T}` and of its member `m` as
+`ix://{package}/{T}/{m}`. A source declaration has no domain package; the
+string that owns it in the checked package is the `identity` `I` of its
+unit's `SourceOwner`, which a source `operation_effects` row already carries
+as its `document` (FR-322 "Source-declared object types" item 6). The
+**source declaration key** of `T` is therefore `{package: I, node:
+"ix://I/T"}` and of its member `m` `{package: I, node: "ix://I/T/m"}`, and
+its FR-150 `EffectiveId` has `owner_effective_type` `null` for a type and the
+owning type's `EffectiveId` for a member. The key is derived from the
+node's `SourceOwner` and qualified name, so it is never a second identity and
+never equals a domain-package key, whose `package` is a ModelSelection
+identity; two units of one package have two owners and so two keys for one
+source name. A producer SHALL write exactly this key wherever the package
+names a source declaration by key (a dispatch candidate's `selection_key`, a
+clock place's `resolved_path` row), and a reader SHALL refuse any other
+spelling, including the bare qualified name (FR-788).
+
 ### Package form
 
 The checked package carries a source-declared object type, its populations,
