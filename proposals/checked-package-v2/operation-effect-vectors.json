@@ -766,6 +766,100 @@
           }
         }
       ]
+    },
+    {
+      "id": "OEC-08-source-declaration",
+      "description": "a source-declared object type (FR-610) beside a model type: its row holds the declaring unit's SourceOwner identity as document, the source-declared node as declaring, origin source_declaration_operation_frame and member <type>::<operation>",
+      "documents": [
+        {
+          "identity": "acme/orders",
+          "relationships": [],
+          "types": [
+            {
+              "name": "Order",
+              "form": "object_type",
+              "fields": [
+                "total"
+              ],
+              "operations": [
+                {
+                  "name": "noop",
+                  "params": [],
+                  "frame": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "identity": "src/counter-unit",
+          "source": true,
+          "package": "acme/unit",
+          "relationships": [],
+          "types": [
+            {
+              "name": "Counter",
+              "form": "object_type",
+              "fields": [
+                "n"
+              ],
+              "operations": [
+                {
+                  "name": "bump",
+                  "params": [],
+                  "frame": {}
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "document": "acme/orders",
+          "declaring": {
+            "package": "acme/orders",
+            "path": [
+              "model",
+              "object_type",
+              "ix://acme/orders/Order"
+            ],
+            "ordinal": 0
+          },
+          "operation": "noop",
+          "effect": {
+            "modifies": [],
+            "creates": [],
+            "deletes": [],
+            "deletes_scoped": []
+          },
+          "provenance": {
+            "origin": "model_document_operation_frame",
+            "member": "ix://acme/orders/Order/noop"
+          }
+        },
+        {
+          "document": "src/counter-unit",
+          "declaring": {
+            "package": "acme/unit",
+            "path": [
+              "Counter"
+            ],
+            "ordinal": 0
+          },
+          "operation": "bump",
+          "effect": {
+            "modifies": [],
+            "creates": [],
+            "deletes": [],
+            "deletes_scoped": []
+          },
+          "provenance": {
+            "origin": "source_declaration_operation_frame",
+            "member": "Counter::bump"
+          }
+        }
+      ]
     }
   ],
   "schema_refusals": [
@@ -924,7 +1018,7 @@
     },
     {
       "id": "OES-11-unknown-provenance-origin",
-      "description": "provenance origin that is not the model document's operation frame",
+      "description": "provenance origin that is neither the model document's operation frame nor the source declaration's",
       "base": "OEC-07-same-member-identity",
       "patch": [
         {
@@ -1797,6 +1891,38 @@
       "expected_code": "invalid_package",
       "expected_cause": "invalid-value",
       "locus": "/operation_effects"
+    },
+    {
+      "id": "OER-27-source-row-model-origin",
+      "description": "a source-declared node's row claiming the model document origin",
+      "base": "OEC-08-source-declaration",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/operation_effects/1/provenance/origin",
+          "value": "model_document_operation_frame"
+        }
+      ],
+      "schema": "valid",
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/operation_effects/1/provenance/origin"
+    },
+    {
+      "id": "OER-28-model-row-source-origin",
+      "description": "a model-declared node's row claiming the source declaration origin",
+      "base": "OEC-08-source-declaration",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/operation_effects/0/provenance/origin",
+          "value": "source_declaration_operation_frame"
+        }
+      ],
+      "schema": "valid",
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/operation_effects/0/provenance/origin"
     }
   ]
 }

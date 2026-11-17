@@ -4124,9 +4124,16 @@ context), so it has no row, and as a declaring node of a row it refuses
 (field entries with their `receiver` or `every-object` scope, and relationship
 entries), `creates`, type-wide `deletes` and the `deletes_scoped` receiver and
 parameter entries are each carried as the selected document's frame states
-them. `provenance.origin` is exactly `model_document_operation_frame`, and
-`provenance.member` is the IR node identity of the operation member in
-`document`, `<declaring owner node>/<operation>`. Identity is the key and the
+them. `provenance.origin` is one of two values. For a model-declared declaring
+node it is `model_document_operation_frame`, and `provenance.member` is the IR
+node identity of the operation member in `document`, `<declaring owner
+node>/<operation>`. For a source-declared declaring node it is
+`source_declaration_operation_frame`, `document` holds the declaring node's
+`SourceOwner` identity, and `provenance.member` is the source identity
+`<type>::<operation>` (item 6 of the source-declaration rules above). A
+reader refuses any other `origin`, and a row whose `origin` disagrees with
+its declaring node's ownership (a model origin on a source-declared node or
+the reverse) refuses `invalid_package`/`invalid-value` at `provenance.origin`. Identity is the key and the
 provenance only: a reader never infers either from a path, a display name or
 the position of a frame node, and the same `operation` name under another
 declaring node or another document is another row.

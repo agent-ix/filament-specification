@@ -321,7 +321,10 @@
       ],
       "properties": {
         "origin": {
-          "const": "model_document_operation_frame"
+          "enum": [
+            "model_document_operation_frame",
+            "source_declaration_operation_frame"
+          ]
         },
         "member": {
           "$ref": "#/$defs/Nonempty"
@@ -5186,6 +5189,28 @@
               ]
             }
           },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value_kind": {
+                    "const": "reference"
+                  }
+                },
+                "required": [
+                  "value_kind"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "pattern": "^([0-9a-f]{2})+$"
+                  }
+                }
+              }
+            }
+          ],
           "additionalProperties": false
         },
         {
@@ -5381,6 +5406,28 @@
               ]
             }
           },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value_kind": {
+                    "const": "reference"
+                  }
+                },
+                "required": [
+                  "value_kind"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "pattern": "^([0-9a-f]{2})+$"
+                  }
+                }
+              }
+            }
+          ],
           "additionalProperties": false
         },
         {
@@ -10114,6 +10161,28 @@
               ]
             }
           },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value_kind": {
+                    "const": "reference"
+                  }
+                },
+                "required": [
+                  "value_kind"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "pattern": "^([0-9a-f]{2})+$"
+                  }
+                }
+              }
+            }
+          ],
           "additionalProperties": false
         },
         {

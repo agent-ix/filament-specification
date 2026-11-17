@@ -87,7 +87,7 @@ whose identity is the two bytes `s1`.
 The producer SHALL lower the literal to
 `{term: "literal", type: R, value_kind: "reference", value: h}`, where `R` is
 the `composite_type`/`reference` node over `T`'s model declaration node and
-`h` is the lowercase hexadecimal of the identity bytes, two digits per byte.
+`h` is the lowercase hexadecimal of the identity bytes, two digits per byte. The checked-package schema fixes that shape: a `reference` literal's `value` is a non-empty string of lowercase hexadecimal digit pairs, and any other value (the key's source spelling, upper-case digits, an odd digit count, an empty string or a JSON integer) fails the schema.
 The written alias and the source spelling of the string do not enter the
 term: two literals with the same type and the same identity bytes are one
 term.
