@@ -99,6 +99,28 @@ pub struct QualificationVector {
 
 include!(concat!(env!("OUT_DIR"), "/vectors.rs"));
 
+include!(concat!(env!("OUT_DIR"), "/published_files.rs"));
+
+/// Returns the exact bytes of one published file under `proposals/`.
+///
+/// `path` is repository-relative, for example
+/// `proposals/checked-package-v2/schema.json`. Paths outside `proposals/` and
+/// paths that name no published file return `None`.
+pub fn published_file(path: &str) -> Option<&'static [u8]> {
+    PUBLISHED_FILES
+        .iter()
+        .find_map(|(published_path, bytes)| (*published_path == path).then_some(*bytes))
+}
+
+/// Lists the published files whose repository-relative paths start with
+/// `prefix`, in lexicographic path order.
+pub fn published_files(prefix: &str) -> impl Iterator<Item = (&'static str, &'static [u8])> + '_ {
+    PUBLISHED_FILES
+        .iter()
+        .copied()
+        .filter(move |(path, _)| path.starts_with(prefix))
+}
+
 /// The authored vectors of one test case, in authored order.
 pub fn vectors_of(test_case: TestCase) -> impl Iterator<Item = &'static QualificationVector> {
     QUALIFICATION_VECTORS

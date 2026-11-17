@@ -66,6 +66,47 @@ fn main() {
     out.push_str("];\n");
     let dest = Path::new(&std::env::var("OUT_DIR").expect("OUT_DIR")).join("vectors.rs");
     std::fs::write(dest, out).expect("write vectors.rs");
+    generate_published_files(Path::new(&root));
+}
+
+fn generate_published_files(root: &Path) {
+    fn visit(directory: &Path, root: &Path, paths: &mut Vec<String>) {
+        println!("cargo:rerun-if-changed={}", directory.display());
+        for entry in std::fs::read_dir(directory).expect("read proposals directory") {
+            let path = entry.expect("proposals entry").path();
+            if path.is_dir() {
+                visit(&path, root, paths);
+            } else if path.is_file() {
+                println!("cargo:rerun-if-changed={}", path.display());
+                let relative = path
+                    .strip_prefix(root)
+                    .expect("proposal is under repository root")
+                    .to_str()
+                    .expect("published file path is UTF-8")
+                    .replace('\\', "/");
+                paths.push(relative);
+            }
+        }
+    }
+
+    let proposals = root.join("proposals");
+    let mut paths = Vec::new();
+    visit(&proposals, root, &mut paths);
+    paths.sort();
+
+    let mut out = String::from("pub(crate) static PUBLISHED_FILES: &[(&str, &[u8])] = &[\n");
+    for path in paths {
+        writeln!(
+            out,
+            "    ({path:?}, include_bytes!(concat!(env!(\"CARGO_MANIFEST_DIR\"), \"/\", {path:?}))),"
+        )
+        .expect("write published file entry");
+    }
+    out.push_str("];\n");
+
+    let destination =
+        Path::new(&std::env::var("OUT_DIR").expect("OUT_DIR")).join("published_files.rs");
+    std::fs::write(destination, out).expect("write published file table");
 }
 
 /// Splits a Markdown table row into trimmed cells, honouring code spans and
