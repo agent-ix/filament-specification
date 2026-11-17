@@ -49,7 +49,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 - `control_graph` — typed control nodes; the acyclic causal edges are derived from them, not carried.
 - `guards_obligations` — source-bound expressions, captures, anchors and origin keys.
 - `compensations` — registration, retry, commit and recovery definitions.
-- `bounds` — participant, queue, loop, attempt, population and analysis bounds: a replicated role's `max`, a queue's capacity, a `repeat`'s `maximum`, a template's `attempts.maximum` and the symbolic bounds a queue names. Analysis bounds are request members, not package content.
+- `bounds` — participant, queue, loop, attempt, population and analysis bounds: a replicated role's `max`, a queue's capacity, a `repeat`'s `maximum`, a template's `attempts.maximum` and the symbolic bounds a queue names. Analysis bounds and the values of symbolic capacities are request members, not package content: a symbolic capacity's value is the protocol subject's capacity binding ([FR-785](../../functional/protocol/FR-785-bind-symbolic-channel-capacities.md)).
 
 ## Carriage
 

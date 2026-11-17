@@ -13,6 +13,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-465
     type: references
+  - target: ix://agent-ix/filament-specification/FR-785
+    type: references
 ---
 
 # FR-170: Evaluate explicit channel and queue semantics
@@ -35,7 +37,10 @@ Checked channel/queue transitions, incomplete premise result or located refusal.
 
 FIFO ordering applies only within the declared role/workflow/channel/message key.
 Duplication, loss and delivery guarantees default to unknown, never reliable.
-Capacity may be concrete or symbolic with a discharged bound. Overflow behavior
+Capacity may be concrete, or symbolic and discharged only by the protocol
+subject's capacity binding ([FR-785](FR-785-bind-symbolic-channel-capacities.md)):
+a bound symbolic capacity steps as the literal capacity of its bound value, and
+an unbound one returns `requires-bound` before any expansion. Overflow behavior
 is reject, block or declared loss (with its head, tail or new selector) and remains visible to conformance.
 
 ## Queue transition system
