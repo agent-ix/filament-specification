@@ -5,6 +5,124 @@
       "feature": "filament.value.complete/v1"
     }
   ],
+  "claim_names": [
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "claim",
+          "verification_claim",
+          {
+            "node": 2
+          },
+          "filament.op.claim.clause",
+          "filament.temporal.event-position.false-extension/v1",
+          "always",
+          "claim",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 7,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 5
+      },
+      "name": "ReachThree",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "ReachThree"
+      ]
+    },
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "state",
+          "state_clause",
+          {
+            "node": 12
+          },
+          {
+            "node": 10
+          },
+          {
+            "node": 1
+          },
+          "filament.op.state.clause",
+          "state_clause",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 113,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 111
+      },
+      "name": "NotAboveThree",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "NotAboveThree"
+      ]
+    },
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "state",
+          "state_clause",
+          {
+            "node": 12
+          },
+          {
+            "node": 14
+          },
+          {
+            "node": 1
+          },
+          "filament.op.state.clause",
+          "state_clause",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 115,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 113
+      },
+      "name": "AtMostTwo",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "AtMostTwo"
+      ]
+    }
+  ],
   "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {

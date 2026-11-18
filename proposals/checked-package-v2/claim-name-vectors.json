@@ -5,72 +5,9 @@
       "op": "replace",
       "path": "/temporal_clause_names/0/name",
       "value": "Bounded"
-    },
-    {
-      "op": "add",
-      "path": "/claim_names",
-      "value": [
-        {
-          "declaration": "<node 5>",
-          "declaration_region": {
-            "end": 7,
-            "source": {
-              "authority": "agent-ix",
-              "identity": "example"
-            },
-            "start": 5
-          },
-          "name": "ReachThree",
-          "occurrence": {
-            "ordinal": 0,
-            "role": "claim"
-          },
-          "qualified_name": [
-            "ReachThree"
-          ]
-        },
-        {
-          "declaration": "<node 15>",
-          "declaration_region": {
-            "end": 113,
-            "source": {
-              "authority": "agent-ix",
-              "identity": "example"
-            },
-            "start": 111
-          },
-          "name": "NotAboveThree",
-          "occurrence": {
-            "ordinal": 0,
-            "role": "claim"
-          },
-          "qualified_name": [
-            "NotAboveThree"
-          ]
-        },
-        {
-          "declaration": "<node 16>",
-          "declaration_region": {
-            "end": 115,
-            "source": {
-              "authority": "agent-ix",
-              "identity": "example"
-            },
-            "start": 113
-          },
-          "name": "AtMostTwo",
-          "occurrence": {
-            "ordinal": 0,
-            "role": "claim"
-          },
-          "qualified_name": [
-            "AtMostTwo"
-          ]
-        }
-      ]
     }
   ],
-  "note": "QSL-2448. FR-322 \"Claim declaration names\", \"Clause declaration regions\" and \"One claim namespace\" (FR-322-AC-457..461, TC-2011, TC-2012, TC-2015). `base` holds three claim-bearing nodes (graph node 5, a claim/verification_claim, and nodes 15 and 16, two state/state_clause nodes, each with one `claim` occurrence) and the temporal clause node 3. The published base carries its temporal clause row's `declaration_region` but predates `claim_names`, so `base_patch` is applied first: it renames the temporal clause row `Bounded` (a rename changes no node, CN-P3) and adds one `claim_names` row per claim-bearing occurrence, sorted by NodeRef then occurrence (node 5's path starts `claim`, before `state`; node 15's first operand is graph node 12 then node 10, before node 16's node 12 then node 14). The patched base is the package of FR-322-AC-457: `NotAboveThree` and `ReachThree` are the AC's names, `AtMostTwo` names the base's second state clause and is a stand-in. Each case is then an RFC 6902 patch on the patched base. The token \"<node N>\" in a patch value stands for the NodeRef of graph node N in index form, as the base's own `temporal_clause_names` row writes it, and \"<clause>\" for node 3, the temporal clause. A `declaration_region` must share the source of the occurrence's `source_map` region and contain every byte of it; the base has no source text, so its regions are stand-in spans one byte wider than the name token. `schema` is judged against the FR-322 row text: `schema.json` does not yet declare `declaration_region` on `TemporalClauseNameRow` or `ClaimNameRow`, so every case here is schema-invalid against the published `schema.json` until it does. `expected` is admitted or the refusal code, optional cause and RFC 6901 locus; `ac` is the owning acceptance criteria.",
+  "note": "QSL-2448. FR-322 \"Claim declaration names\", \"Clause declaration regions\" and \"One claim namespace\" (FR-322-AC-457..461, TC-2011, TC-2012, TC-2015). `base` holds three claim-bearing nodes (graph node 5, a claim/verification_claim, and nodes 15 and 16, two state/state_clause nodes, each with one `claim` occurrence) and the temporal clause node 3. The published base carries its temporal clause row's `declaration_region` and one `claim_names` row per claim-bearing occurrence, sorted by NodeRef then occurrence (node 5's path starts `claim`, before `state`; node 15's first operand is graph node 12 then node 10, before node 16's node 12 then node 14). `base_patch` is applied first: it renames the temporal clause row `Bounded` (a rename changes no node, CN-P3). The patched base is the package of FR-322-AC-457: `NotAboveThree` and `ReachThree` are the AC's names, `AtMostTwo` names the base's second state clause and is a stand-in. Each case is then an RFC 6902 patch on the patched base. The token \"<node N>\" in a patch value stands for the NodeRef of graph node N in index form, as the base's own `temporal_clause_names` row writes it, and \"<clause>\" for node 3, the temporal clause. A `declaration_region` must share the source of the occurrence's `source_map` region and contain every byte of it; the base has no source text, so its regions are stand-in spans one byte wider than the name token. `schema` is judged against the published `schema.json`, which declares `claim_names` and `declaration_region` on `TemporalClauseNameRow` and `ClaimNameRow`; a positive carries `null` because it is admitted. `expected` is admitted or the refusal code, optional cause and RFC 6901 locus; `ac` is the owning acceptance criteria.",
   "positive": [
     {
       "ac": [
