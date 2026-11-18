@@ -12,4 +12,4 @@ invariant SocFloor using p on M::Battery at current { self.soc >= 0.20 }
 type Lengths = Int[0, 4];
 type Cost = Decimal[0, 100000; 0, 4; exact];
 temporal Ramp using inf over (b: M::Battery) clock "model-steps" on origin { always holds(abs(b.draw - b.previousDraw) <= 1) }
-synthesis Reach using p grammar M::Battery domain Lengths minimize sum<Cost>(s in Reach.steps : (if s.before.hour < 2 then 0.10 else 0.40) * s.after.draw) satisfies { Reach.final.hour = 4 };
+synthesis Reach using p grammar M::Battery domain Lengths minimize sum<Cost>(s in Reach.steps : (if s.before.hour < 2 then 0.10 else 0.40) * convert<Cost>(s.after.draw)) satisfies { Reach.final.hour = 4 };
