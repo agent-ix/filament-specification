@@ -290,7 +290,13 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   `protocol` node whose `semantic_form` is not `protocol_reference` carries the body
   [FR-464](FR-464-checked-package-protocol-node-bodies.md),
   [FR-465](FR-465-checked-package-protocol-declaration-bodies.md) and
-  [FR-466](FR-466-checked-package-protocol-control-bodies.md) specify. A
+  [FR-466](FR-466-checked-package-protocol-control-bodies.md) specify. An
+  observe-only boundary
+  ([FR-822](../../functional/protocol/FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md))
+  is a member of the `protocol`/`role` or `protocol`/`control` node that the
+  source marks `observe`: its last body argument `boundary`, the text
+  `observe-only` (FR-465, FR-466), part of that node's body and key; a node
+  the source does not mark carries no such member. A
   `protocol` node with `semantic_form: "protocol_reference"` is the sole
   protocol-reference carrier. Its body is exactly
   `{term: "reference", target: NodeRef}`: `target` is the local
@@ -5328,6 +5334,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-459 | The package of FR-322-AC-457 with its `ReachThree` `claim_names` row renamed `Bounded` (name and `qualified_name` `["Bounded"]`), beside a temporal clause whose `temporal_clause_names` row is named `Bounded`, refuses `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name` of that row, naming both rows; the same with the row's `qualified_name` `["Scope", "Bounded"]` refuses the same; with the claim row named `ReachThree` and the temporal row `Bounded` the package is admitted and the lookup resolves `Bounded` to the temporal row and `ReachThree` to the claim row. | Test (TC-2012) |
 | FR-322-AC-460 | The package of a unit declaring the temporal clause `Bounded` and the invariant state clause `NotAboveThree` carries, on the `Bounded` `temporal_clause_names` row and the `NotAboveThree` `claim_names` row, a `declaration_region` whose bytes are the whole declaration from its first keyword to its closing `}` and which contains the occurrence's name-token `source_map` region; the same unit, with `Bounded` declared last, with whitespace added right before `Bounded`'s closing `}` changes no `node_id` or node. | Test (TC-2015) |
 | FR-322-AC-461 | AC-460's package with the `Bounded` row's `declaration_region` removed refuses `malformed_wire` at that member; with it shrunk to one byte that does not contain the name token, or naming another source, refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/0/declaration_region`; the same edits on the `NotAboveThree` row refuse at `/claim_names/{i}/declaration_region`. | Test (TC-2015) |
+| FR-322-AC-462 | A package whose protocol declares `observe role Auditor on Orders::Order;` and `observe sequence Review { ... }` carries the `boundary` member `observe-only` as the last body argument of exactly the `Auditor` role node and the `Review` control node; removing the `observe` mark changes those two nodes' bodies and keys and no other node's; and a `boundary` member on any node that is not a `protocol`/`role` or `protocol`/`control` node refuses `malformed_wire`. | Test (TC-2018) |
 
 ## Dependencies
 

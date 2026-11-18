@@ -37,6 +37,8 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-366
     type: references
+  - target: ix://agent-ix/filament-specification/FR-822
+    type: references
 ---
 
 # FR-426: Apply protocol steps atomically with canonical transition identities
@@ -95,6 +97,7 @@ in [FR-427](FR-427-check-protocol-compensation.md) and
 | Kind | Owner | Enabled when | Effect |
 | --- | --- | --- | --- |
 | `attempt` | thread at attempt node `n` | for one FR-181 application of `n`'s operation (receiver and argument vector from the finite domains), the effective precondition over the contract clauses `n` selects is true over the thread's observation; some post-state within the frame satisfies the selected postconditions; the binder record (receiver, arguments, result) satisfies `n`'s constraint; the gate holds | the post-state delta is written through the memory model, in place under `sc`; the binder is bound. One step per (application, post-state, result) |
+| `recommend` | thread at recommend node `n` | for one FR-181 application of `n`'s operation (receiver and argument vector from the finite domains), the effective precondition over the contract clauses `n` selects is true over the thread's observation; the recommendation record satisfies `n`'s constraint; the gate holds | the binder is bound to the recommendation record ([FR-822](FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md)); no post-state is computed and the model state, queues and compensation registrations are unchanged. One step per application |
 | `event` | thread at an `effect`, domain `event` or `commit` node `n` | some record of `n`'s record type satisfies `n`'s constraint; for an `effect`, its attempt's binder is bound in the thread's binder environment (after the join of an `all`-joined `parallel` whose branch holds the attempt, the binder condition holds, because the join added the binder) | the binder is bound; the model state is unchanged. One step per satisfying record |
 | `send` | thread at send node `n` | some payload satisfies `n`'s constraint, or the thread's send at `n` is pending (below); the channel's capacity and overflow policy admit the send ([FR-170](FR-170-evaluate-channel-queue-semantics.md): under `block`, not while the queue is at capacity, except an interval send's `d = 0` step, which places nothing); the gate holds | per FR-170: append the entry, or under `reject` at capacity leave the queue unchanged, or under `loss` apply the loss selector (`head` removes the oldest queued entry and appends the arriving one, `tail` removes the newest and appends the arriving one, `new` drops the arriving one and leaves the queue unchanged); the binder is bound to the payload and the **send record** described below is recorded. On a delivery count interval channel, the step instead processes `d` entries as stated under "Interval sends" below |
 | `receive` | thread at receive node `n` | the queue holds a deliverable entry from the send node `n` names (`fifo`: the head of its key; `unordered`: any entry) whose payload satisfies `n`'s constraint; the gate holds | the entry is removed and the binder bound. One step per distinct deliverable entry |
@@ -236,12 +239,12 @@ members not listed for a kind being absent:
 
 | Member | Present for | Value |
 | --- | --- | --- |
-| `step` | every step | one of `attempt`, `event`, `send`, `receive`, `duplicate`, `lose`, `fork`, `join`, `timeout`, `finish`, `fence`, `cattempt`, `cfail`, `ctimeout`, `cend`, `cexpire`, `activate`, `spawn`, `retire`, `memory` ([FR-736](FR-736-explore-every-compensation-outcome-and-summarize-instance-recovery.md) adds `cfail`, `ctimeout` and `cexpire`) |
+| `step` | every step | one of `attempt`, `recommend`, `event`, `send`, `receive`, `duplicate`, `lose`, `fork`, `join`, `timeout`, `finish`, `fence`, `cattempt`, `cfail`, `ctimeout`, `cend`, `cexpire`, `activate`, `spawn`, `retire`, `memory` ([FR-736](FR-736-explore-every-compensation-outcome-and-summarize-instance-recovery.md) adds `cfail`, `ctimeout` and `cexpire`) |
 | `thread` | every thread-owned step | the owner's thread path (FR-425) |
-| `node` | `attempt`, `event`, `send`, `receive`, `fork`, `join`, `timeout`, `finish`, `fence` | the node's static declaration path |
-| `operation` | `attempt`, `cattempt` | the operation's qualified name |
-| `receiver` | `attempt`, `cattempt` | the receiver reference |
-| `arguments` | `attempt`, `cattempt` | the argument vector, in parameter order |
+| `node` | `attempt`, `recommend`, `event`, `send`, `receive`, `fork`, `join`, `timeout`, `finish`, `fence` | the node's static declaration path |
+| `operation` | `attempt`, `recommend`, `cattempt` | the operation's qualified name |
+| `receiver` | `attempt`, `recommend`, `cattempt` | the receiver reference |
+| `arguments` | `attempt`, `recommend`, `cattempt` | the argument vector, in parameter order |
 | `record` | `event`, `send`, `receive`, `finish`, `activate`, `cattempt`, `cfail`, `ctimeout`, `cend` | the bound record or payload; for `cattempt`, `cfail` and `ctimeout`, its attempt record ([FR-427](FR-427-check-protocol-compensation.md)); for `cend`, the recovery record bound to the recovery binder, present exactly when the recovery predicate reads that binder ([FR-730](FR-730-bind-the-recovery-view-at-the-end-of-a-compensation-thread.md)) |
 | `actor` | a step taken by an instance of a replicated role, `send` and `receive` it owns included | the acting instance's object reference |
 | `count` | `send` on a delivery count interval channel | the number of entries the step processes, a decimal text: the chosen `d`, or for a pending send its pending count |
@@ -253,6 +256,7 @@ members not listed for a kind being absent:
 | `ordering` | `fence`, and an access with an ordering | the ordering |
 | `memory_choice` | an access whose memory model chooses a message or slot | the choice its memory model names |
 | `memory_step` | `memory` | the identity its memory model gives |
+| `recommendation` | `recommend` | the recommendation record (FR-822) |
 
 Several successors with one identity are told apart by their post-state's
 state key. Successors are visited in ascending
@@ -283,6 +287,7 @@ JCS bytes of the identity, as FR-181 states for model transition identities.
 | FR-426-AC-19 | On a delivery count interval channel `[lo,hi]` a thread at a send has one `send` step per `d` from `lo` to `hi`, with `count` `d` in its identity, and no `duplicate` or `lose` step exists: on a `fifo` channel of capacity 2 under `block`, `[2,2]` queues two entries so two receives complete and a third waits `empty-queue`; `[0,1]` has a `d = 0` step queuing nothing (send record `entries` empty) and a `d = 1` step; `[1,3]` has `d = 1` and `d = 2` steps that queue and settle past the send and a `d = 3` step that appends two entries and leaves the send pending with 1, the thread then waiting `full-queue`; after a receive the pending send's one step, with `count` 1, appends the last entry and settles. | Test (TC-378) |
 | FR-426-AC-20 | On a `fifo` channel of capacity 1 under `block` with delivery `[0,3]` and its one place full, the `d = 0` step is enabled, queues nothing and settles past the send, while the `d >= 1` steps wait; a `[0,0]` channel of capacity 0 completes its send by the `d = 0` step; two sends pending with count 1 and payloads `m1` and `m2` reach states with different keys, and each pending send's last step binds its binder to its own payload. | Test (TC-378) |
 | FR-426-AC-21 | A send on a `[0,1000]` channel whose run's work limit admits fewer charges than its interval steps settles the exploration `incomplete` naming the work limit, its frontier holding the state whose expansion stopped, and no count, entry or state is dropped or merged; the steps are generated in ascending `d`, and the same subject under a work limit that fits completes with 1001 send steps from that state. | Test (TC-378) |
+| FR-426-AC-22 | A thread at `recommend Advise by R on M::Cell::bump contracts [BumpPre] as (r: Boolean) { true };`, with `BumpPre: self.v = 0`, has one `recommend` step per receiver whose `v` is 0 and none where `v` is 1; each step's identity has `step` `recommend`, `operation`, `receiver`, `arguments` and a `recommendation` member equal to the FR-822 record, and its successor has the same model state as its predecessor. | Test (TC-2017) |
 
 ## Dependencies
 

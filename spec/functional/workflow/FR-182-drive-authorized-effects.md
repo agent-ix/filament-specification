@@ -7,6 +7,8 @@ relationships:
     type: implements
   - target: ix://agent-ix/filament-specification/AD-008
     type: references
+  - target: ix://agent-ix/filament-specification/FR-822
+    type: references
 ---
 
 # FR-182: Drive authorized idempotent workflow effects
@@ -44,13 +46,19 @@ delivery state; separately observed domain events establish business effect and
 re-enter evaluation as new evidence. No evaluator or analyzer invokes an
 adapter directly.
 
-This is the observe-or-recommend boundary, and it needs no construct of its
-own: running a model (evaluation, simulation, exploration, analysis and replay)
+This is the observe-or-recommend boundary of every model run: running a model (evaluation, simulation, exploration, analysis and replay)
 applies a protocol `attempt`, `effect` or `commit` only to the model state the
 run holds, and every result it returns (a verdict, a counterexample, a
 simulated behaviour, an enabled step) is a recommendation. The language
 implementation that runs models SHALL perform no external business side
 effect, start no process, open no network connection and hold no adapter.
+
+The run-wide boundary composes with the source-level observe-only boundary of
+[FR-822](../protocol/FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md):
+a role or control written `observe` additionally leaves the model state the
+run holds unchanged, its `recommend` controls emit typed recommendation
+records naming the action they recommend, and a run that selects `boundary`
+`observe-only` treats every step of the protocols it runs as observe-only.
 
 ## Acceptance Criteria
 
@@ -62,6 +70,7 @@ effect, start no process, open no network connection and hold no adapter.
 | FR-182-AC-4 | Crash-and-retry after pending-request persistence reconciles the same request without issuing a distinct effect identity. | Test (TC-211) |
 | FR-182-AC-5 | Only an attributed domain observation can establish the business effect; recommendation, decision and transport receipt cannot. | Test (TC-211) |
 | FR-182-AC-6 | Exploring and simulating a protocol whose `attempt` applies an operation that writes a model field changes only the returned model states; the run issues no adapter request, starts no process and opens no connection, and the language implementation's evaluation and analysis components have no dependency on an adapter, process or network facility. | Test (TC-1523) and Inspection |
+| FR-182-AC-7 | Simulating a protocol whose observe-only role `Auditor` holds a `recommend` of an operation that writes a model field, under the default run mode, returns behaviours whose `recommend` steps carry recommendation records and keep the model state, while an `attempt` by another role of the same operation changes the returned model states; the run issues no adapter request for either; under `boundary` `observe-only` the same protocol refuses at the `attempt` before any step. | Test (TC-2019) |
 
 ## Dependencies
 

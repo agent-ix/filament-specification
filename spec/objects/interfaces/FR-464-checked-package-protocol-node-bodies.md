@@ -148,7 +148,7 @@ controls and the compensation.
 | `queue` | `queue` | none | FR-465 |
 | `finish` | `obligation` | `P` followed by `finish`, the finish node's name | FR-465 |
 | `terminal` | `obligation` | `P` followed by `terminal` | FR-465 |
-| `sequence`, `choice`, `parallel`, `repeat`, `await`, `check`, `send`, `receive`, `attempt`, `effect`, `event`, `commit`, `fence` | `control` | `P` followed by `run` and the control names from the root control down to this control | FR-466 |
+| `sequence`, `choice`, `parallel`, `repeat`, `await`, `check`, `send`, `receive`, `attempt`, `effect`, `event`, `commit`, `fence`, `recommend` | `control` | `P` followed by `run` and the control names from the root control down to this control | FR-466 |
 | `compensate` | `compensation` | `P` followed by `compensate`, the template's name | FR-466 |
 
 The profile also defines one operator for the `state`/`transition` node
