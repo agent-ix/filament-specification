@@ -556,6 +556,47 @@ baseline after IR-713. The unchanged QSL-503 full 10,000-level fixture, its
 29,998/29,999 occurrence and 39,996/39,997 evaluator controls remain with
 FSL TC-830/831/906, not replaced or qualified by this envelope proposal.
 
+## Replay result rows
+
+A replay's `results` document holds one row per replayed item: the FSL
+FR-072 replay result in its wire spelling. A row is a closed JSON object
+whose `arm` member names which of the five replay-result arms it is, and
+whose other members are exactly that arm's. Every arm is spelled, because a
+replay's outcome document carries its rows unchanged (FSL FR-286) and its
+text renders each row's `arm` and `settlement` (FSL FR-865): a row that could
+not be written would leave a replay that ran with no result to show. A
+writer SHALL write each arm's members and no other; a reader SHALL refuse a
+row with an unknown `arm`, a missing member or an extra member.
+
+Members every arm carries:
+
+- `arm`: `witness`, `input`, `observed-temporal`, `model-graph` or
+  `protocol-analysis`.
+- `settlement`: the arm's own settlement. `witness`, `observed-temporal`,
+  `model-graph` and `protocol-analysis` settle
+  `reproduced-with-evaluated-witness` or `inconclusive`, and `model-graph`
+  also `incomplete`; `input` settles `reproduced-without-witness` or
+  `inconclusive`, never `reproduced-with-evaluated-witness` (FSL FR-072).
+- `category`: the FSL ADR-013 O-16 category in its wire spelling.
+
+Arm members:
+
+| `arm` | Members beside `arm`, `settlement` and `category` |
+| --- | --- |
+| `witness` | `value` (the Boolean evaluated value, or `null` when the replay completed none); `charges` (the FR-336 `ScalarLimits` object); `resolved_regions` (ordered source regions); `record` (the FR-351 separating-witness record, or `null`); `disagreement` (present exactly when `settlement` is `inconclusive`: the typed cause, `kind` `verdicts`, `no-value`, `witness` or `hybrid-trace`, with its `proved` and `replayed` verdicts); `limit` (present exactly when an accounting limit stopped the replay: `{limit, consumed, next_charge, charge_point}`, counts as decimal strings); `supplied` (present exactly for a pre-call stop: the "Pre-call result context" object) |
+| `input` | the `witness` arm's members, with `record` always `null` |
+| `observed-temporal` | `position` (the packet's trace position, decimal ASCII with no leading zero); `outcome` (the typed temporal outcome, spelled as FR-352's `disposition.temporal` row of its kind, with that row's members beside `kind` except `counterexample`, which a replay row never carries because the packet it replays is the counterexample: `holds`, `violated`, `undefined`, `insufficient-data`, `pending`, `missing-fairness-premise`, `incomplete` or `window-limit-reached`); `undefined_locus` (the formula node id of the first atom observed undefined, or `null`); `parity` (present exactly when `settlement` is `inconclusive`: `{expected, expected_position, actual_locus}`, `expected` `{"kind": "formula"}` or `{"kind": "undefined-evaluation", "locus", "cause"}`); `charges`; `limit` (as for `witness`) |
+| `model-graph` | `evaluated_predicates` (ordered `{role, value}` objects, `role` `target`, `from` or `to`, `value` Boolean, in evidence evaluation order); `closure_nodes` (decimal string or `null`); `first_target` (the unpadded base64url state key of the first target state of a replayed trap closure, or `null`); `disagreement` (present exactly when `settlement` is `inconclusive`: the typed cause, as for `witness`); `limit` (present exactly when `settlement` is `incomplete`: `{limit, value, setting}`, FR-394's `limit-reached` members) |
+| `protocol-analysis` | `disagreement` (present exactly when `settlement` is `inconclusive`: `{"kind": "walk", "reason": R}`, `R` one of `unknown-choice`, `not-must-merge`, `step-not-successor`, `action-mismatch`, `wrong-branch`, `not-the-stated-divergence` and `cut`, with `port`, the FSpec FR-433 port reference, for `step-not-successor`) |
+
+- A `model-graph` row's `category` is `success`, `inconclusive` or
+  `incomplete` with its settlement; a `protocol-analysis` row's is `success`
+  for `reproduced-with-evaluated-witness` and `inconclusive` otherwise; an
+  `observed-temporal` row's is its `outcome`'s FR-352 category.
+- The `model-graph` and `protocol-analysis` arms carry no `charges`: their
+  replays run under the model-check limits a `limit` names, not the scalar
+  accounting meter.
+
 ## Outcome-to-verdict map
 
 QSpec fixes the replay outcome-to-verdict map once per FSL ADR-013 O-16
@@ -617,6 +658,10 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-36 | A `function` replay request for a unit `q` that imports the library `test/units`, with `replay` `{"function": "big", "function_owner": "test/units", ...}` and `test/units` as its one `dependencies` entry, executes `big` of `test/units` against that library's recompiled package, joining the arguments by that package's parameter node ids; with the unit also declaring a function `big`, the owner-carrying request still executes the library's `big`, and the same request without `function_owner` executes the unit's. The corpus schema's `$defs.ReplayTargetMembers` admits `function_owner` only in the `function` arm, as a non-empty string, and the request round-trips with its owner. | Test (TC-1484) |
 | FR-323-AC-37 | A request carrying `function_owner` beside `frame_operation` or `state_clause` refuses `invalid_runtime_input`/`unknown-member` at `/replay/function_owner` at decode, before the byte-provision rule and any recompile, and fails the corpus schema; a `function_owner` of `test/absent`, which the unit does not import, or of a library present in `dependencies` only as the import of another dependency, refuses `missing_import`/`missing-selection` at `/replay/function_owner`; an owner-carrying request for a name `test/units` does not declare refuses `missing_declaration`/`missing-name`; one for a function whose signature names a record type of `test/units` refuses `ill_typed`/`operator-ineligible`; each refuses before any argument join or call, with no charge and no result. | Test (TC-1484) |
 | FR-323-AC-38 | A replay request for a proved package that imports a library whose timestamped-event clause is on clock `lib-ms`, a clock no declaration of the proved package uses, and whose lock carries `dependency_clock_selections` for `lib-ms`, recompiles the library under that configuration and replays to the result the proved run gave, with no clock member in the request. The same request whose package has the member removed refuses `missing-clock-selection` naming `lib-ms` and the library at `/package/lock/dependency_clock_selections`, and so does that request when the proved package's own clause is also on `lib-ms` and its `temporal_bindings` row for `lib-ms` remains (a library is never served from a program row); one whose member adds an entry `spare` no library declaration reads refuses `unused-clock-selection` at that entry; one whose `lib-ms` entry is a `fixed_sample` configuration refuses `clock-kind-mismatch` at that entry's `clock/kind`. None yields a result. | Test (TC-1662) |
+| FR-323-AC-39 | The `results` row of an `input`-arm function replay that agrees is `{"arm": "input", "settlement": "reproduced-without-witness", "category": ..., "value": true, "charges": {...}, "resolved_regions": [...], "record": null}` with no `disagreement`, `limit` or `supplied`; a `witness`-arm row that disagrees carries `settlement` `inconclusive` and `disagreement` with `kind` `verdicts`; a reader refuses a row with `arm` `other`, a row missing `settlement` and a row with an extra member. | Test (TC-2010) |
+| FR-323-AC-40 | The row of an observed-temporal replay that reproduces a `violated` packet at position 2 is `arm` `observed-temporal`, `settlement` `reproduced-with-evaluated-witness`, `category` `violation`, `position` `"2"`, `outcome` `{"kind": "violated", "position": 2}` with no `counterexample` member, `undefined_locus` `null`, no `parity`; the same replay of a packet claiming position 1 settles `inconclusive` with `parity` `{"expected": {"kind": "formula"}, "expected_position": "1", ...}`. | Test (TC-2010) |
+| FR-323-AC-41 | The row of a state-graph evidence replay that reproduces a trap is `arm` `model-graph`, `settlement` `reproduced-with-evaluated-witness`, `category` `success`, with its `evaluated_predicates`, `closure_nodes` and `first_target`; a replay whose closure stops at `max_states` 1 is `settlement` `incomplete`, `category` `incomplete`, `limit` naming `max_states` with value `"1"`. | Test (TC-2010) |
+| FR-323-AC-42 | The row of a protocol-analysis counterexample replay that reproduces its divergence is `{"arm": "protocol-analysis", "settlement": "reproduced-with-evaluated-witness", "category": "success"}`; one whose walk leaves its case is `settlement` `inconclusive`, `category` `inconclusive`, `disagreement` `{"kind": "walk", "reason": "wrong-branch"}`. | Test (TC-2010) |
 
 ## Dependencies
 

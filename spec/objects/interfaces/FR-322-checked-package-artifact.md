@@ -126,6 +126,7 @@ boundary.
 | refinement_step_rows | JsonObject | 0..1 |  |
 | checked_term_data | JsonObject | 0..1 |  |
 | temporal_clause_names | JsonObject | 0..1 |  |
+| claim_names | JsonObject | 0..1 |  |
 | schedulability_claims | JsonObject | 0..1 |  |
 | operation_effects | JsonObject | 0..1 |  |
 | operation_bodies | JsonObject | 0..1 |  |
@@ -149,6 +150,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | refinement_step_rows | absent exactly when no relation/refinement node has a steps entry; else a nonempty array |
 | checked_term_data | optional closed carrier; absent means its four arrays are empty |
 | temporal_clause_names | absent exactly when the graph has no temporal/temporal_clause node; see Field sources |
+| claim_names | absent exactly when the graph has no state/state_clause, relation/refinement or claim node; see Field sources |
 | schedulability_claims | optional; when present a non-empty array of {declaration, occurrence} |
 | operation_effects | optional; absent means effects are unavailable, not empty |
 | operation_bodies | optional; absent means bodies are unavailable, not empty; present is one row per operation member and may be an empty array |
@@ -1322,6 +1324,15 @@ A frame body refusal, meaning-join or canonical-order
   `{declaration, occurrence, name}` row for each `claim` occurrence of each such
   node, as "Temporal clause names" below specifies. Its rows are outside every
   node identity.
+- `claim_names` — the declared name and alias-free qualified path of every
+  claim-bearing declaration that is not a temporal clause: each
+  `state`/`state_clause` node (an invariant, precondition or postcondition
+  state clause), each `relation`/`refinement` node and each `claim` node (a
+  state-graph, hyperproperty, probabilistic or other non-temporal claim). The
+  member is absent exactly when the graph has no such node; otherwise it is a
+  non-empty array of closed `{declaration, occurrence, name, qualified_name}`
+  rows, one per source declaration of each such node, as "Claim declaration
+  names" below specifies. Its rows are outside every node identity.
 - `schedulability_claims` — an optional, closed index of the authenticated
   task-set/schedulability claims carried by the graph. When absent, the graph
   has no `claim`/`schedulability` occurrence; when present it is a non-empty
@@ -4084,6 +4095,95 @@ key, order and coverage. The vector file is the machine-readable
 form consumed by the QSpec qualification test; the reader that decides it is
 filament-contract-ir's.
 
+### Claim declaration names
+
+A state clause, a refinement and a non-temporal claim are named by the
+source that declares them, and an analyze or replay request names the claim
+it asks about by that name. The graph does not carry the name for every such
+node: a `state`/`state_clause` node is an application node identified by its
+structure (FR-341), so two structurally equal clauses share one node, and a
+`claim` node's `declaration` member holds no alias-free path for a claim
+declared inside a nested scope. A consumer that holds only the package bytes,
+such as the analysis of a selected package, could therefore not resolve
+`{"claim": "NotAboveThree"}` to a node. `claim_names` carries the names, so
+the package alone resolves every claim a source request can name, and
+analysis over the package resolves the same claims as analysis over its
+source. Like `temporal_clause_names`, which keeps naming temporal clauses,
+the member is not a graph node, changes no `node_id`, no node and no
+`source_map` entry, and is no digest or hash input (FR-201): a package that
+holds no claim-bearing node is unchanged, and the member is added beside the
+existing rows.
+
+`claim_names` is absent when the graph has no `state`/`state_clause`,
+`relation`/`refinement` or `claim` node, and otherwise is a non-empty array
+with one row for every `declaration` or `claim` occurrence through which a
+source declaration introduces such a node. Each row is exactly:
+
+```json
+{
+  "declaration": {"package": "<package>", "path": ["<segment>"], "ordinal": 0},
+  "occurrence": {"role": "claim", "ordinal": 0},
+  "name": "<identifier>",
+  "qualified_name": ["<scope>", "<identifier>"]
+}
+```
+
+`declaration` is the local structural `NodeRef` of the claim-bearing node;
+`occurrence` is the `{role, ordinal}` key of one of that node's `declaration`
+or `claim` occurrences; `name` is the identifier the source writes at the
+declaration, one identifier of the `declaration.qualified_name` segment
+grammar, matched byte for byte; `qualified_name` is the declaration's
+package-local path from the package root, its segments the declaring scopes
+and its last segment `name`, written with no model or import alias, so two
+declarations in different scopes that share a `name` are told apart. The name
+and path are those the source writes; they are never derived from a source
+region, a `NodeRef` path, a requirement label or the clause body. Rows are
+unique by (`declaration`, `occurrence`) and sorted by structural `NodeRef` and
+then occurrence key, the order of `temporal_clause_names`. The package writer
+(S8) writes the member from the checked unit's declarations.
+
+The closed schema refuses a row with a missing or extra member as
+`malformed_wire` at the row, a `name` that is not an identifier, a
+`qualified_name` that is empty or holds a non-identifier segment, and an
+`occurrence` whose `role` is not `declaration` or `claim` or whose `ordinal`
+is not a non-negative integer, as `malformed_wire` at that member. The reader
+visits rows in array order and checks each in full before the next:
+
+1. A `declaration` that names no node of the graph, or a node that is not a
+   `state`/`state_clause`, `relation`/`refinement` or `claim` node, is
+   *dangling* and refuses `invalid_package`/`invalid-value` at
+   `/claim_names/{i}/declaration`.
+2. An `occurrence` that is not one of that node's `declaration` or `claim`
+   occurrences refuses `invalid_package`/`invalid-value` at
+   `/claim_names/{i}/occurrence`.
+3. A `qualified_name` whose last segment is not `name` refuses
+   `invalid_package`/`invalid-value` at `/claim_names/{i}/qualified_name`; a
+   `relation`/`refinement` row whose `name` differs from its node's
+   `body.name` (FR-322-AC-200) refuses the same code and cause at
+   `/claim_names/{i}/name`.
+4. A key that repeats an earlier row refuses
+   `invalid_package`/`conflicting-definition` at the later row; a row out of
+   canonical order refuses `invalid_package`/`invalid-value` at the later row.
+5. A `qualified_name` equal to an earlier row's is a *duplicate name* and
+   refuses `ambiguous_declaration`/`ambiguous-name` at
+   `/claim_names/{i}/qualified_name`, naming both rows: a name that resolves
+   to two claims would make the claim a request names depend on row order.
+
+After every row has passed, a claim-bearing node occurrence with no row, or
+a missing member in a graph that holds a claim-bearing node, refuses
+`invalid_package`/`invalid-value` at `/claim_names`. Each visited row
+consumes one validation visit from the caller's finite reader budget, as for
+`temporal_clause_names`.
+
+The reader exposes each admitted row by reference as the typed declared name
+and qualified path of its (`declaration`, `occurrence`) pair, and a lookup
+from a qualified path to that pair. A consumer resolves a request's claim
+name against `qualified_name` (a bare `name` matching the last segment of
+exactly one row, a qualified `a::Name` matching the whole path), byte for
+byte; a name no row carries is not a claim of the package, and a consumer
+reports it as its own `unknown-claim`. A consumer never resolves a claim name
+from source text, a source region or a `NodeRef` path.
+
 ### Schedulability claim carrier
 
 `schedulability_claims` is the typed checked-package index for the
@@ -5180,6 +5280,8 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-454 | The clause forms `clock_guard`, `clock_reset` of kind `place` and `clock_reset` of kind `parameter` are admitted with and without a final `point_anchor` binding naming the point-qualified anchor of their operation (`pre` for the guard, `post` for the reset), and the two spellings of one guard have different node ids; a `point_anchor` before another binding, on a `clock_constraint`, a `time_invariant` or an `urgency`, or naming a node that is not that anchor, refuses `invalid_package`/`timed-node-reference` at the binding (FR-342-AC-13); the published V2 schema admits exactly these layouts. | Test (TC-1722) |
 | FR-322-AC-455 | The operation catalog of `filament-verification-contracts` and both V2 schemas' `OperationIdentity` enumerate `filament.op.collection.only`, `filament.op.collection.seq` and `filament.op.refinement.history` together, with the `history` kind in `OperationMember`, each entry exactly as "Operation catalog" of the population forms states (`only`: operator `collection`, operands `collection_kind` and `binder`, result `member`, member `type_argument`, constraint `bound_is_member` on operand 1). The reader admits, in a clause function body and in a refinement row, `only(x in P where c: e)` lowered as `filament.op.collection.only` over the `filament.op.collection.filter` of the `all_instances` value with binder body `e`, `type_argument` and `result_type` the type node of `e`; a `result_type` or member other than the binder body's type, and a second operand that is not a binder, refuse `ill_typed`/`operator-ineligible` at `/semantic_graph/nodes/{n}`; and a reader that does not hold the entries refuses the identity `unknown-operation`. | Test (TC-1921) |
 | FR-322-AC-456 | For a package compiled from a unit with `schedulable CtlFp on Ctl under fixed_priority;`, `schedulable CtlEdf on Ctl under edf;` and `response R on Ctl.c <= 12 ms under fixed_priority;`, the request items written from its `schedulability_claims` rows are three `schedulability` items in row order, each keyed by its row's `{declaration, occurrence}`, extent `bounded`, with the policy `fixed_priority`, `edf` and `fixed_priority` read from each FR-482 body; a package with no `schedulability_claims` gives no such item. | Test (TC-2007) |
+| FR-322-AC-457 | The package of a unit declaring the invariant state clause `NotAboveThree`, and the state-graph claim `ReachThree` (`possible`) carries `claim_names` with one row each, `qualified_name` `["NotAboveThree"]` and `["ReachThree"]`, sorted by `NodeRef` then occurrence; two structurally equal state clauses `A` and `B` share one node and carry two rows with distinct occurrences; renaming `NotAboveThree` changes no `node_id` and no node; a unit with none of these nodes has no `claim_names` member. | Test (TC-2011) |
+| FR-322-AC-458 | A `claim_names` row whose `declaration` names no node, or a `temporal_clause` node, refuses `invalid_package`/`invalid-value` at `/claim_names/{i}/declaration`; an `occurrence` the node lacks refuses at `/claim_names/{i}/occurrence`; a `qualified_name` whose last segment is not `name` refuses at `/claim_names/{i}/qualified_name`; two rows with one `qualified_name` refuse `ambiguous_declaration`/`ambiguous-name` at the later row's `qualified_name`; a repeated key refuses `conflicting-definition`; a claim-bearing node with no row, or a package with such a node and no member, refuses `invalid-value` at `/claim_names`; a row with an extra member fails the schema `malformed_wire`. | Test (TC-2011) |
 
 ## Dependencies
 
