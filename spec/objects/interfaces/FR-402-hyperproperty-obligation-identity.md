@@ -100,9 +100,12 @@ carries a `behaviours`-domain body:
 The wrapper is not a single-trace temporal claim. A
 `temporal`/`temporal_clause` node that is the `body` target of a
 `claim`/`hyperproperty` node is a body wrapper: its `claim` occurrences and
-its `temporal_clause_names` and `temporal_bindings` rows (FR-322) are the
-hyper clause's, its `temporal_bindings` holding one row per quantified trace
-keyed by the trace variable (FR-322 "Hyper clause rows"), and a consumer that lists or resolves single-trace temporal
+its `temporal_clause_names` rows (FR-322) are the hyper clause's. It has no
+`temporal_bindings` row: the hyper clause's clock rows, one per quantified
+trace, are keyed by the `hyperproperty` node, whose identity holds the
+quantifier prefix the wrapper lacks (FR-322 "Hyper clause rows"), so
+hyperproperty nodes that differ only in their prefixes share one wrapper and
+keep their own rows. A consumer that lists or resolves single-trace temporal
 claims SHALL exclude it: a producer writes no
 [FR-368](../../functional/temporal/FR-368-negotiate-temporal-model-check-items.md)
 `formula` item whose `claim.node` is a body wrapper, since the wrapper is

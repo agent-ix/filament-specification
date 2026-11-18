@@ -13,6 +13,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-398
     type: references
+  - target: ix://agent-ix/filament-specification/FR-090
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-322
+    type: references
 ---
 
 # FR-191: Analyze relational and finite-trace-set hyperproperties
@@ -51,6 +55,16 @@ explicit aligned positions or correlated event identities. Alignment is a
 total relation for every value the formula reads; an absent or ambiguous match
 is incomplete. Declassification and environment assumptions restrict the
 population before quantification and are part of result identity.
+
+A clause over a declared population selects a finite-trace profile
+(event-position, fixed-sample or timestamped-event), and its body is read at
+each joint position of the aligned traces. Its traces are trace subjects, so
+it reads a clock role (FR-090 "Clock names"), and the role is the domain
+binder `t` of `t in Q bounded N`: the clause writes no `clock` member, and
+the binder is the one name it declares for its traces' positions. The role's
+spelling follows FR-090's trace-subject rules, and the caller binds it to one
+configuration of the profile's kind, which every trace of the clause reads
+(FR-322 "Hyper clause rows").
 
 ## Model subjects
 
