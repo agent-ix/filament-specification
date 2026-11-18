@@ -24,7 +24,7 @@ case limits and native runtime selection.
 
 ## Outputs
 
-Case results, minimal retained counterexample and complete generation/replay
+Case results, operation coverage, minimal retained counterexample and complete generation/replay
 provenance.
 
 ## Behavior
@@ -79,7 +79,7 @@ state model, `max_trace_length`.
 
 The method SHALL return one result record holding the clause identity, the
 generator profile, seed, every limit, the number of passing, failing and
-discarded cases, the partitions covered, and either no failure or one retained
+discarded cases, the partitions covered, the operation coverage ("Operation coverage") and either no failure or one retained
 counterexample.
 
 - A retained counterexample SHALL be a shrunk failing case that serializes as
@@ -91,6 +91,59 @@ counterexample.
 - Exhausting `max_cases` before any failure is a complete tested result, not
   an incomplete proof; a run stopped by a work or deadline limit before
   `max_cases` is `incomplete` with the FR-461 limit that stopped it.
+
+## Operation coverage
+
+For a clause over a state model, the result record SHALL hold one
+`operations` entry for each operation the subject's model declares, in the
+model's canonical declaration order, so that a reader can tell which
+operations the generated suite exercised. A value clause or a pure Boolean
+predicate has no test trace, and its record has no `operations` member.
+
+- **Covered.** An operation is *covered* when at least one evaluated case
+  (passing or failing, never a discarded one) applies an invocation of it,
+  with arguments in its parameter domains, at a state where it is enabled,
+  within `max_trace_length` invocations of the initial state. The entry is
+  `{operation, status: covered, first_case}`: `operation` is
+  `{identity, name}`, the operation's checked declaration identity and its
+  declared name (the name is for reading; entries are keyed by identity), and `first_case` is the index
+  of the first case that applies it. A refused or discarded attempt to
+  invoke an operation never covers it.
+- **Uncovered.** Every other operation is *uncovered*. The entry is
+  `{operation, status: uncovered, reason}`, and `reason` is exactly one of:
+
+  | `reason` | Meaning | How it is established |
+  | --- | --- | --- |
+  | `unreachable` | no state reachable from the initial-state domain, at any trace length, enables the operation | exploration of the model's reachable state set (FSL's model transition system) finished without reaching a state that enables it |
+  | `unreachable-within-bound` | no state reachable within `max_trace_length` invocations enables it; a longer trace may | exploration of every trace of at most `max_trace_length` invocations finished without such a state, and the reachable state set beyond the bound was not exhausted |
+  | `not-generated` | some state reachable within the bound enables it, but no evaluated case applied it before `max_cases` | the exploration reached an enabling state within the bound; the entry carries `enabled_at`, the shortest invocation prefix that reaches one, which native replay reproduces |
+  | `undetermined` | exploration stopped before it decided reachability within the bound | the entry names the FR-461 limit that stopped it and the value used |
+
+  `unreachable` and `unreachable-within-bound` are proved facts about the
+  model under the request's bound; `not-generated` is a fact about the
+  suite. A generator SHALL NOT report `unreachable` or
+  `unreachable-within-bound` from the absence of the operation in the
+  generated cases alone.
+- **Exploration.** The coverage exploration runs from the same
+  initial-state domain and parameter domains as generation, after the cases,
+  under the request's work and deadline limits, and is part of the
+  deterministic result: the same package, clause, profile, seed and limits
+  give byte-equal `operations` entries.
+- **Summary.** The record's `coverage` member is `{status, uncovered}`:
+  `status` is `complete` when every entry is `covered` and `partial`
+  otherwise, and `uncovered` maps each `reason` that occurs to its count of
+  entries. A model with no operation has an empty `operations` array and
+  `coverage` `{status: complete, uncovered: {}}`.
+- **Verdict and exit.** Coverage is evidence about the generated suite, not
+  about the clause, so it changes no verdict. A retained counterexample
+  still settles the clause `refuted`; a run with no failure is still
+  `tested` evidence with its case counts and settles no verdict, with
+  `coverage` `partial` when any operation is uncovered. An uncovered or
+  `undetermined` entry never turns a complete tested result into
+  `incomplete` and never settles the clause, and the method's outcome
+  category, and so its exit code, is the one FR-301 assigns to that
+  verdict or evidence. A verification plan that requires complete coverage
+  states it as a gate over `coverage` (FR-192).
 
 ## Shrinking guarantee
 
@@ -139,6 +192,9 @@ failing clause is rejected and never retained.
 | FR-190-AC-8 | A parameter typed `Integer` with no bound is generated by size-bounded enumeration up to the request's `max_value_bits`, and the bound appears in the provenance; a request without `max_value_bits` for such a parameter refuses naming the member. | Test (TC-1600) |
 | FR-190-AC-9 | A clause over an empty domain refuses `invalid_model_binding`/`malformed-declaration` before any case; `max_cases` 0, `max_trace_length` 0 and an unknown clause identity each refuse the request naming the member. | Test (TC-1600) |
 | FR-190-AC-10 | Two runs with the same package, clause, generator profile, seed and limits produce byte-equal result records, including the retained counterexample. | Test (TC-1600) |
+| FR-190-AC-11 | Over a state model with `inc` raising `value` in `Int[0, 5]` (enabled when `value < 5`), `reset` (enabled when `value = 5`) and `jam` (enabled when `value > 5`), a run with `max_trace_length` 8 reports `operations` in declaration order: `inc` and `reset` `covered` with the index of the first case applying each, and `jam` `uncovered`, reason `unreachable`, naming `jam`'s declaration identity; `coverage` is `{status: partial, uncovered: {unreachable: 1}}`. `jam` is never reported `covered`. | Test (TC-2004) |
+| FR-190-AC-12 | The same model with `max_trace_length` 3 reports `reset` `uncovered`, reason `unreachable-within-bound`, and never `unreachable`; with a work limit too small to finish the bounded exploration, the entry is `undetermined` naming that limit, and the run's case counts and verdict are those of the unlimited run. | Test (TC-2004) |
+| FR-190-AC-13 | A run whose suite passes with `jam` uncovered is `tested` evidence, settles no verdict and has the outcome category of a passing tested run; with a clause that fails, the same uncovered entry is reported beside the `refuted` counterexample. A value clause's record has no `operations` member, and two runs with equal inputs give byte-equal `operations` entries. | Test (TC-2004) |
 
 ## Dependencies
 
