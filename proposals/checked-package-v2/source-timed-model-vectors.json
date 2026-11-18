@@ -252,8 +252,8 @@
       "identity_rows": {
         "object_types": [
           {"source_identity": "O", "members": [
-            {"name": "n", "presence": "required", "type_node": {"package": "timed/unit", "path": ["scalar_type", "integer"], "ordinal": 0}, "member_type": null, "collections": []},
-            {"name": "d", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []}
+            {"name": "d", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []},
+            {"name": "n", "presence": "required", "type_node": {"package": "timed/unit", "path": ["scalar_type", "integer"], "ordinal": 0}, "member_type": null, "collections": []}
           ], "operations": [
             {"identity": "O::arm", "query": false, "clock_parameters": ["x"]},
             {"identity": "O::touch", "query": false, "clock_parameters": ["x"]}

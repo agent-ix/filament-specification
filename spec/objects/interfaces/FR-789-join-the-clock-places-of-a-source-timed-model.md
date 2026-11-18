@@ -65,7 +65,9 @@ member identity is a rendering followed by a member segment:
   is `ix://filament/native/Clock` once one `Option` wrapper is removed.
 - A collection renders as `Sequence<R>`, `Set<R>`, `Bag<R>` or
   `OrderedSet<R>` by its kind, and a map as `Map<K, R>` with `K` the bare name
-  of its scalar key type (`Text`), as a selected map renders. A rendering never
+  of a scalar key type (`Text`), as a selected map renders, and otherwise the
+  key type's own rendering, recursively by these same rules (`ix://I/E` for
+  a native enum key). A rendering never
   carries bounds: a collection's kind and bounds are the row's
   `collection_kind`, `minimum` and `maximum`.
 - The payload of a union case with one payload position renders as that
@@ -74,7 +76,7 @@ member identity is a rendering followed by a member segment:
 
 A `field(name)` row's member identity is `<declaring_type>/<name>`, a
 `tuple(i)` row's `<declaring_type>/p<i>`, a `union(case)` row's
-`<declaring_type>/<case>` and a `slot` row's `<C>[slot]` for `C` the previous row's `member_type`, the collection, whose element rendering is the slot row's `declaring_type`, as for a selected place.
+`<declaring_type>/<case>` and a `slot` row's `<C>[slot]` for `C` the previous row's `member_type`, the collection, whose element rendering, or for a map `C` itself, is the slot row's `declaring_type`, as for a selected place.
 
 ### What the strict read checks
 
@@ -90,7 +92,7 @@ fails one of these, and SHALL keep FR-322's path-step refusals at
 2. Row `0`'s `declaring_type` is the rendering of the root's `model` node,
    `ix://I/<root type>`; row `j > 0`'s is row `j - 1`'s `member_type`, or for
    a `slot` row the element rendering of that collection, as for a selected
-   place.
+   place; for a map, the map's own rendering.
 3. A `field`, `tuple` or `union` row's `declaring_type` is `ix://I/<T>` for a
    source-declared object type, native record, tuple or union node `T` of a
    `SourceOwner` with `identity` `I`, or, for a `tuple` row after a `union`
