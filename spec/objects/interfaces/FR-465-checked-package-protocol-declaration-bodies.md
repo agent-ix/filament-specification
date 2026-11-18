@@ -46,13 +46,15 @@ checks of the declarations.
 ## Role
 
 A `protocol`/`role` node (operator `role`) has two arguments, in this order,
-and a third that only a role on a model member carries:
+a third that only a role on a model member carries, and a last one that only
+an observe-only role carries:
 
 | # | Binding | Value |
 | --- | --- | --- |
 | 1 | `model` | the model the role is played against: a reference to a `model` node (a role on a model type), or a text, the `identity` of a `model_root` node (a role on a whole model) |
 | 2 | `replication` | a Group; empty for a static role |
 | 3 | `model_member` | optional, present exactly for a role on a Port of a systems model (`role p on M::port`): a Group of the two text bindings `package` and `node`, the identity of the selected Port declaration |
+| last | `boundary` | optional, present exactly for an observe-only role (`observe role ...`, [FR-822](../../functional/protocol/FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md)): the text `observe-only`, after `model_member` when both are present |
 
 `model_member` is the selected member's identity and not a reference to a
 node: a Port is not a semantic model node, and the role record carries it
@@ -147,6 +149,19 @@ The reader checks, for one role, in this order:
    a component, a field, a connection) or none refuses `invalid_model_binding`/
    `malformed-declaration` at the role node, retaining the `package` and
    `node` texts.
+
+6. **Boundary.** A `boundary` argument is the last argument and its text is
+   `observe-only`, else `malformed_wire`. A role that carries it is
+   observe-only: every control the role performs (an `attempt`, `event`,
+   `commit` or `recommend` whose `role` is this node, a `send` on a channel
+   whose `from` is this node and a `receive` on a channel whose `to` is this
+   node) and every `compensate` template whose role is this node is behind an
+   observe-only boundary, and the reader refuses an `attempt`, `effect`,
+   `send`, `commit`, an `event` with a `compensation` and a `compensate`
+   template behind it with `ill_typed`/`operator-ineligible` at that control
+   or template node, retaining `action` and `boundary` (this role node), as
+   FR-822 refuses it at source. A role without the argument has the layout and
+   bytes it has without observe-only boundaries.
 
 A role has no internality member: neither the source nor this body spells
 `internal` or `external`, so a role carries none.
@@ -367,6 +382,7 @@ runtime dimension of the control's key and are not a member of any node.
 | FR-465-AC-11 | Over the architecture fixture whose component `Sys` owns the Port `pump_out` and the Port `tank_in`, the role `Outlet` on `M::pump_out` carries the `model_member` Group `{package: P, node: N}` with `P` the package identity of `M` and `N` the declaration identity of `pump_out`, and its `model` reference targets `Sys`; the role `Inlet` on `M::tank_in` carries the same `package` and the `node` of `tank_in`, and the two roles have different node ids. The role `Operator` on the type `M::Sys` and a role on the whole model `M` carry no third argument, and a package with only such roles has the bytes it had before the argument existed. | Test (TC-947) |
 | FR-465-AC-12 | Of a role on a Port: a `model_member` whose `package` names a package other than the one the `model` target belongs to, one whose `node` names a declaration that is a part, a component or a connection, and one whose `node` names no declaration each refuse `invalid_model_binding`/`malformed-declaration` at the role node, retaining `package` and `node`; an empty `package` or `node` text, a `model_member` that holds a third binding, and a `model_member` Group that is empty each refuse `malformed_wire`; a `model_member` on a role whose `model` is the text of an existing `model_root` node refuses `invalid_model_binding`/`malformed-declaration`, and on a role whose `model` text names no `model_root` node it refuses `missing_declaration`/`missing-selection`, the selection check coming first. | Test (TC-947) |
 | FR-465-AC-13 | The text form of a whole-model role is mandatory for every conforming strict reader: over the package of a protocol with `role w on M` and `role v on M::Cell`, a reader admits both roles; a reader that admits only the reference form and refuses the text `model` with `malformed_wire` does not conform, and a producer emits the text form and never refuses the role to work around such a reader. | Test (TC-1525) |
+| FR-465-AC-14 | An observe-only role carries the last argument `boundary` `observe-only`, after `model_member` on a role on a Port, and a role not written `observe` carries none; a `boundary` text `observe` and a `boundary` before `replication` each refuse `malformed_wire`; with an `attempt` control whose `role` is the observe-only role added to the graph, the reader refuses `ill_typed`/`operator-ineligible` at the attempt node, retaining `action` `attempt` and `boundary` the role node. | Test (TC-2018) |
 
 ## Dependencies
 

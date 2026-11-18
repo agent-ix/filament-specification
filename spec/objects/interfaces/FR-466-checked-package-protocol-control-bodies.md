@@ -44,7 +44,7 @@ template as one `protocol` node whose body is the
 operator and argument layout below, and the reader SHALL refuse a node whose
 checks below do not hold, with the first refusal in the order each section
 lists. This requirement fixes the member set, order, binder scope and checks
-of the thirteen control operators and of `compensate`.
+of the fourteen control operators and of `compensate`.
 
 ## Control layouts
 
@@ -68,6 +68,15 @@ that reads binders, protocol captures and constants and never model state, `over
 | `event` | `role`: a reference to a role; `compensation`: optional reference to a `protocol`/`compensation` node; `binder`; `related`; `constraint` |
 | `commit` | `role`; `binder`; `constraint` |
 | `fence` | `ordering`: a text `acquire`, `release`, `acq_rel` or `seq_cst` |
+| `recommend` | `role`: a reference to a role; `operation`: a reference to a `state`/`operation_anchor` node; `contracts`: a set of `state`/`state_clause` nodes, may be empty; `binder`; `related`; `constraint` ([FR-822](../../functional/protocol/FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md)) |
+
+A control written `observe` carries one more argument after the last one its
+operator lists, `boundary`, the text `observe-only`
+([FR-822](../../functional/protocol/FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md)).
+A control not written so has no such argument, so its layout and bytes are
+the ones above. The argument records the mark the source writes; the region it
+covers (the control and every control below it) is derived by the reader and
+not written on the nested controls.
 
 The same bodies state what the source writes and nothing derived: a
 `parallel` with no `outstanding` and a `repeat` with no `maximum` carry the
@@ -136,6 +145,20 @@ bypass the operation's frame.
    `lower > upper` refuses `ill_typed`/`type-mismatch` at the interval,
    retaining `member` (`within`), `expected` (a closed interval with
    `lower <= upper`) and `actual` (the interval as written).
+
+7. **Boundary.** A `boundary` argument is the last argument and its text is
+   `observe-only`, else `malformed_wire`. Every control below a control that
+   carries it, at any depth, through `children`, `cases`, `branches`, `body`,
+   `exhausted`, `event`, `then` and `timeout`, and the control itself, is
+   behind an observe-only boundary, as is every control an observe-only role
+   performs (FR-465). An `attempt`, `effect`, `send` or `commit` control, or an
+   `event` control with a `compensation`, behind an observe-only boundary
+   refuses `ill_typed`/`operator-ineligible` at that control's node, retaining
+   `action` (`attempt`, `effect`, `send`, `commit` or `event-for`) and
+   `boundary` (the node of the innermost observe-only control above it, else
+   the observe-only role). A `recommend` binder is never a decision fact; a
+   `visible` entry or guard that reads one refuses as a read of a `send`
+   binder does.
 
 Binder scope, the model-state refusals and the decision facts are slot checks
 of the clause, run at FR-464 step 6 in the order FR-464 states; they are not
@@ -340,7 +363,7 @@ checks at FR-464 step 6):
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-466-AC-1 | Each of the thirteen control operators is admitted with exactly its layout; the arguments reordered, a missing or surplus binding, an unknown operator spelling and an enumerated value outside its set (`memory`, `outstanding`, `policy`, `ordering`, `kind`) refuse `malformed_wire` or refuse `operation-member-mismatch`. | Test (TC-948) |
+| FR-466-AC-1 | Each of the fourteen control operators is admitted with exactly its layout; the arguments reordered, a missing or surplus binding, an unknown operator spelling and an enumerated value outside its set (`memory`, `outstanding`, `policy`, `ordering`, `kind`) refuse `malformed_wire` or refuse `operation-member-mismatch`. | Test (TC-948) |
 | FR-466-AC-2 | A `sequence` holds its children in execution order and may hold none; reordering two children changes the sequence's body and leaves its node id unchanged; a child that is not a `control` node refuses `invalid_model_binding`/`malformed-declaration` at the target, a child that is a node absent from `dependencies` `invalid_semantic_graph` at the `sequence` node's `/dependencies` (graph stage, FR-322-AC-96), and a child that names no node `missing_declaration`/`missing-name`. | Test (TC-948) |
 | FR-466-AC-3 | A `choice` is admitted with an owning role, a `visible` set and at least two labelled cases sorted by label; one case, equal labels, cases out of label order, a guard that reads model state and a guard that reads `over` refuse (`malformed_wire`, `ambiguous_declaration`/`ambiguous-name`, `invalid_semantic_graph`, `ill_typed`/`operator-ineligible` at the read); a non-Boolean guard refuses `ill_typed`/`non-boolean-root`; the guards' exhaustiveness is not re-proved. | Test (TC-948) |
 | FR-466-AC-4 | A `parallel` is admitted for each join policy; `all` naming every branch, `any` and `predicate` naming at least one and `quorum` with `1 <= count <=` the joined branches; a join naming a missing branch label refuses `missing_declaration`/`missing-name` at the label, `all` omitting a branch and `quorum` outside its range `invalid_package`/`invalid-value`, and a repeated or out-of-order joined label `invalid_semantic_graph`; branches are sorted ascending by label, and a branch list out of that order is `invalid_semantic_graph`. | Test (TC-948) |
@@ -358,6 +381,7 @@ checks at FR-464 step 6):
 | FR-466-AC-16 | Refusal precedence in one `visible` entry or guard, which fixes FR-466-AC-14 and agrees with FR-464-AC-8 and FR-464-AC-12: a direct read of the protocol input `over` refuses `ill_typed`/`operator-ineligible` at the read, naming the slot, in a `choice` `visible` entry, a `choice` guard, a `repeat` `visible` entry and a `repeat` guard, and is never `wrong_snapshot`/`wrong-observation`; a field of the protocol activation binder, readable at the node, refuses `wrong_snapshot`/`wrong-observation` with `reason` `ineligible-kind`, while a bare read of that binder (or of any record binder) with no field projection refuses `ill_typed`/`operator-ineligible` at the read, naming the slot, in each of the four slots, and is never `wrong_snapshot` (a slot holding both a bare binder read and an in-scope ineligible field read refuses the bare read, `ill_typed`/`operator-ineligible`, whatever their order); a read of the finish binder, or of a binder a compensation template declares, from a `visible` entry or a guard refuses `missing_declaration`/`missing-name` (`read` `stage`, respectively `foreign`) and never `wrong_snapshot`, since neither is readable in a `run` slot; a slot that holds both a read of `over` and a binder read refuses the `over` read, and a slot that holds both an out-of-scope binder read and an in-scope ineligible one refuses the out-of-scope read. Reader evidence is owned by IR (IR-874, FR-038-AC-291/292); TC-948 DF6b and DF7d..DF7h are the published oracle. | Analysis |
 | FR-466-AC-17 | A pre-test `repeat` (no `test` member, FR-729) whose guard reads a field of a binder introduced in that `repeat`'s own body (an `attempt` or `event` binder `by` the owner, so eligible) refuses `missing_declaration`/`missing-name` as an out-of-scope read, for a `repeat` with no `maximum`, with `maximum` 3 and with `maximum` 0, never `wrong_snapshot`/`wrong-observation` and never `invalid_package`/`invalid-value`; the same `repeat` whose `visible` entry, and not its guard, reads that binder is admitted (a back-edge read, FR-729-AC-5); a guard reading a binder in scope at the `repeat`'s entry is admitted. | Test (TC-948) |
 | FR-466-AC-18 | A `visible` entry is an `expression` node: an entry targeting a `value`/`literal` node and one targeting a record binder's `value`/`parameter` node each refuse `invalid_model_binding`/`malformed-declaration` at the target; an `expression`/`reference` entry to a record binder refuses `ill_typed`/`operator-ineligible` at the read; a `choice` and a `repeat` behave alike; an application over constants only, and one over a capture only, is admitted as a composite entry and lists no fact a guard may read (a guard reading a fact no individual entry lists still refuses `wrong_snapshot`/`wrong-observation`, `reason` `unlisted`). | Test (TC-948) |
+| FR-466-AC-19 | A `recommend` control is admitted with a role, an operation anchor, `contracts` that are the pre- and postconditions of that anchor, a binder, `related` and a constraint, in that order; a `sequence` carrying the last argument `boundary` `observe-only` and holding a `check`, a `receive` and a `recommend` is admitted; the same `sequence` holding an `attempt`, a `send`, an `effect`, a `commit` or an `event` with a `compensation` each refuses `ill_typed`/`operator-ineligible` at that control's node with `boundary` the `sequence` node, a nested `choice` holding the `attempt` in a case refuses at the attempt node, and a `boundary` text other than `observe-only` refuses `malformed_wire`. | Test (TC-2018) |
 
 ## Dependencies
 

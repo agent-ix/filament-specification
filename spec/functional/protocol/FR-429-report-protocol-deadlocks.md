@@ -161,6 +161,7 @@ applies in this order for its rest point:
 - an `attempt`, `event`, `send` or `receive` node, or a compensation attempt,
   owned by a replicated role (`by r`): `no-role-instance` first;
 - an `attempt`: `precondition`, `no-post-state`, `constraint`;
+- a `recommend`: `no-role-instance`, `precondition`, `constraint`;
 - a compensation attempt (`cattempt`): `commit-closed`, `precondition`,
   `no-post-state`, `constraint`;
 - a `receive`: `constraint`, `head-blocked`, `displaced`, `empty-queue`;

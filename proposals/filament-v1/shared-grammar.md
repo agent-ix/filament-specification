@@ -207,7 +207,7 @@ protocol-clause = 'protocol', ident, 'using', ident,
                   { capture }, role, { role }, { relationship }, { channel },
                   { protocol-requirement | compensation },
                   'run', control, finish, '}' ;
-role         = 'role', ident, 'on', model-name, ';' ;
+role         = [ 'observe' ], 'role', ident, 'on', model-name, ';' ;
 relationship = 'relationship', ident, '=', model-name, ';' ;
 channel      = 'channel', ident, 'from', ident, 'to', ident, [ 'via', ident ],
                'carries', type-name, 'ordering', ordering,
@@ -228,7 +228,8 @@ compensation = 'compensate', ident, 'for', node-ref,
                'retry', '(', parameter, ',', parameter, ')', block, ';',
                'commit', (node-ref | 'never'), ';',
                'recover', '(', parameter, ')', block, ';', '}' ;
-control      = sequence | choice | parallel | repetition | await-control
+control      = [ 'observe' ], control-form ;
+control-form = sequence | choice | parallel | repetition | await-control
              | event-node | check | commit ;
 sequence     = 'sequence', ident, '{', { control }, '}' ;
 visibility   = 'visible', '(', [ expr, { ',', expr } ], ')' ;
@@ -698,8 +699,8 @@ temporal-relation = temporal-unary,
                     [ ('until' | 'release' | 'since' | 'triggered'),
                       interval, temporal-unary ] ;
 
-role          = 'role', ident, 'on', qualified-name, ';'
-              | 'role', ident, 'each', qualified-name,
+role          = [ 'observe' ], 'role', ident, 'on', qualified-name, ';'
+              | [ 'observe' ], 'role', ident, 'each', qualified-name,
                 'from', ident, 'max', uint,
                 'lifetime', role-lifetime, ';' ;
 role-lifetime = 'workflow' | 'scope' | 'until', '(', expr, ')' ;
@@ -744,7 +745,8 @@ protocol-clause = 'protocol', ident, 'using', ident,
                   'run', control, finish, '}' ;
 protocol-terminal   = 'terminal', ( 'when', block | 'any' ), ';' ;
 protocol-scheduling = 'scheduling', 'adversarial', ';' ;
-control       = sequence | choice | parallel | repetition | await-control
+control       = [ 'observe' ], control-form ;
+control-form  = sequence | choice | parallel | repetition | await-control
               | event-node | check | commit | fence ;
 fence         = 'fence', ident, 'ordering', fence-order, ';' ;
 event-node    = 'send', ident, 'via', ident,
@@ -758,6 +760,9 @@ event-node    = 'send', ident, 'via', ident,
               | 'effect', ident, 'of', node-ref,
                 'as', '(', parameter, ')', { related }, block, ';'
               | 'event', ident, 'by', ident, [ 'for', node-ref ],
+                'as', '(', parameter, ')', { related }, block, ';'
+              | 'recommend', ident, 'by', ident, 'on', operation-name,
+                'contracts', '[', [ ident, { ',', ident } ], ']',
                 'as', '(', parameter, ')', { related }, block, ';' ;
 memory-order  = 'relaxed' | 'acquire' | 'release' | 'acq_rel' | 'seq_cst' ;
 fence-order   = 'acquire' | 'release' | 'acq_rel' | 'seq_cst' ;
@@ -919,6 +924,19 @@ concrete side is a protocol subject (FR-432); it is admitted wherever that
 declaration admits a step row, and its first `qualified-name` names a
 concrete protocol node, template, channel, role or protocol. `step-target`
 and `step-argument` are the refinement declaration's productions (FR-375).
+
+`observe` is matched as a keyword spelling only as the first word of a `role`
+or a `control`, and `recommend` only as the first word of an `event-node`;
+both remain identifiers elsewhere. A role or control written `observe` is
+observe-only: every action it performs or holds is behind an observe-only
+boundary, where an `attempt`, `effect`, `send`, `commit`, an `event` with a
+`for` target and a compensation template of the role refuse and reads,
+captures and `recommend` are admitted. A `recommend` control recommends one
+application of its operation as a typed recommendation record and applies
+none. Both meanings, and the run-wide observe mode they compose with, are
+[FR-822](../../spec/functional/protocol/FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md)'s.
+The formatter prints `observe` followed by one space before the role or
+control keyword, on the same line.
 
 The refinement header selects its abstract subject with
 `abstract-subject = ident, [ '::', member-name ] ;` (FR-375): a lone `ident`
