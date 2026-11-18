@@ -1981,21 +1981,26 @@ display name:
 8. **Clock places.** A `timed_model` root whose `model` is a source-declared
    object type node is a **source timed model**. Each `resolved_path` row of
    its `clock_place` nodes joins through source rows, never through a
-   selected model declaration: a `field` row whose `declaring_type` is the
-   source declaration key `node` of a source-declared object type under the
-   root's `SourceOwner` joins that type's identity row, its `member_identity`
-   `<declaring_type>/<field>` naming an entry of the row's `members` with that
-   presence and its `member_type` that entry's rendered type; a row whose
-   `declaring_type` names a native record of the same `SourceOwner` joins the
-   field binding of that record's declared node. Every other row form is
-   unchanged (FR-789).
+   selected model declaration, in two stages (FR-789). The strict read
+   checks what the package alone shows: the source declaration key spelling
+   of every `declaring_type` and member identity, the row chain, a data
+   field's row against the field's binding in its declaring node's body, the
+   `slot` rows and the `Clock` terminal. The identity-row join, run after the
+   strict read over the producer's identity rows (FR-610 "Identity rows"),
+   checks what only a member list shows: a clock member's entry, presence,
+   rendered type and collection bounds in the identity row of its object
+   type or native record, and a `tuple` or `union` row against the identity
+   row of its native tuple or union. Each refusal of either stage is
+   `invalid_package`/`malformed-clock-place` at the row.
 9. **Operation bodies.** The `operation_bodies` carrier holds one row per
    operation member of every source-declared `object_type` node, with
    `document` the node's `SourceOwner` `identity`, as for `operation_effects`
    (item 6). The operation has a body exactly when the package holds a
    `function` node with that `SourceOwner` and the `declaration` `[<type>,
    <operation>, "body"]` of item 5, and the row's `body` names that node
-   (FR-790).
+   (FR-790). The strict read joins each dispatch candidate to its row; the
+   identity-row join checks the carrier's coverage against the `operations`
+   each source type's identity row lists (FR-610 "Identity rows").
 
 **Identity against a domain declaration.** A source-declared object type is
 identified by its `SourceOwner` and qualified name; a domain-package object
@@ -4550,8 +4555,9 @@ resolved member identity, declared member type, collection kind and bounds
 where applicable, and the terminal `Clock` marker. It is checked package data,
 not information recovered by reopening the selected model document. The
 reader joins every row to its path step and to the root model's selected
-declaration, or, for a source timed model, to the source rows of
-"Source-declared object types" item 8; absence, disagreement or an undeclared member is a malformed
+declaration, or, for a source timed model, to the package's source
+declarations at the strict read and to the identity rows at the
+identity-row join of "Source-declared object types" item 8; absence, disagreement or an undeclared member is a malformed
 clock place. Its nonempty path has ordered `field(name)`,
 `tuple(index)`, `union(case)` or `slot(collection, selector, minimum,
 maximum)` entries.

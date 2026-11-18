@@ -11,12 +11,12 @@ relationships:
 
 ## Description
 
-Verify that the clock places of a source timed model join through source rows. Scope: FR-789-AC-1.
+Verify that the clock places of a source timed model join through source rows. Scope: FR-789-AC-1. Vectors: `proposals/checked-package-v2/source-timed-model-vectors.json` case `TM-S1-source-root`, with the identity rows of `O` and `W`.
 
 ## Test Procedure
 
-1. Read the FR-789-AC-1 package.
+1. Read the FR-789-AC-1 package and join its identity rows.
 
 ## Expected Results
 
-- Step 1: the package is admitted with the places `d` and `w.c` and their rows.
+- Step 1: the strict read admits the package and the identity-row join joins the places `d` and `w.c` and their rows.

@@ -13,14 +13,16 @@ relationships:
 ## Description
 
 When a checked package carries `operation_bodies`, the carrier SHALL hold one
-row per operation member of every source-declared `object_type` node, with
+row per operation member (each entry of the type's identity-row
+`operations`, FR-610 "Identity rows") of every source-declared `object_type` node, with
 `document` the node's `SourceOwner` `identity`, `declaring` the node,
 `operation` the source operation name, and `body` a `function` naming the
 `function` node with that `SourceOwner` and the `declaration`
 `[<type>, <operation>, "body"]` exactly when the package holds one, and
 `no_body` otherwise; and a reader SHALL check those rows as it checks model
 rows, joining `document` and the body through the `SourceOwner` and the
-`declaration` rather than through a `ModelOwner` member identity.
+`declaration` rather than through a `ModelOwner` member identity, and SHALL
+check the carrier's coverage at the identity-row join.
 
 ## Rationale
 
@@ -44,8 +46,19 @@ model clause function's `ModelOwner` member stands.
   SHALL be that clause function (`invalid_package`/`invalid-value` at
   `body/node` for a precondition, another operation's body or another
   owner's function).
-- An operation that a source type only inherits has no row; coverage,
-  key order and the candidate join are FR-322-AC-397's.
+- An operation that a source type only inherits has no row; key order and
+  the candidate join are FR-322-AC-397's.
+- **Stages.** The strict read checks every row against the package: the
+  `document`, the `body` and each dispatch candidate's join to the row of the
+  type its body is declared under. Coverage, one row per operation member,
+  is checked at the identity-row join (FR-610 "Identity rows"), because only
+  the identity rows list a source type's operations: for each source-declared
+  object type, the rows whose `declaring` is its node SHALL be exactly one
+  per entry of its identity row's `operations`, `operation` the entry's
+  `<operation>` segment. A missing row refuses
+  `invalid_package`/`invalid-value` at `/operation_bodies`, and a row naming
+  an operation its type's row does not list refuses
+  `invalid_package`/`invalid-value` at `/operation_bodies/{k}/operation`.
 
 ## Acceptance Criteria
 
@@ -53,6 +66,7 @@ model clause function's `ModelOwner` member stands.
 | --- | --- | --- |
 | FR-790-AC-1 | A package with source-declared `Order` (operations `size` with body clause function `["Order", "size", "body"]`, and `bump` without) and `Sub extends Order` (`size` redefining it, body `["Sub", "size", "body"]`), with a dispatch table over `Order` whose candidates are `Order` and `Sub`, carries three rows, each `document` the `SourceOwner` `identity`, `Order.size` and `Sub.size` naming their own body functions and `Order.bump` `no_body`, and is admitted with each candidate joined to its own row. | Test (TC-1919) |
 | FR-790-AC-2 | Over the AC-1 package, each refuses: `Order.size`'s `body` `no_body` and `Order.bump`'s `body` a `function`, `invalid_package`/`invalid-value` at `body`; `Order.size`'s `body.node` naming its precondition clause function, `invalid_package`/`invalid-value` at `body/node`; `Sub.size`'s row removed, `invalid_package`/`invalid-value` at `/operation_bodies`; `Order.size`'s `document` `src/other-unit`, `missing_declaration`/`missing-selection` at `document`. | Test (TC-1920) |
+| FR-790-AC-3 | Over the AC-1 package with identity rows listing `Order`'s `operations` `size` then `bump` and `Sub`'s `size`, the identity-row join admits the carrier; `Order.bump`'s row removed (no dispatch candidate joins it, so the strict read admits the package) refuses `invalid_package`/`invalid-value` at `/operation_bodies`, and a fourth row `Order.ghost` `no_body` refuses `invalid_package`/`invalid-value` at `/operation_bodies/{k}/operation` of that row. | Test (TC-2026) |
 
 ## Dependencies
 

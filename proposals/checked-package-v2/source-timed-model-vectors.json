@@ -1,0 +1,299 @@
+{
+  "version": "filament.checked-source-timed-model-vectors/v1",
+  "description": "Source timed models (FR-789): the clock_place rows of each published place, the producer identity rows the identity-row join reads (FR-610 \"Identity rows\"), and each refusal with the stage that raises it. A resolved_path row is listed by its seven bindings in order; a node id is the wire NodeId of the checked package `timed/unit`.",
+  "package": "timed/unit",
+  "source_owner": {
+    "kind": "source",
+    "authority": "agent-ix",
+    "identity": "src/timed-unit"
+  },
+  "stages": {
+    "read": "the strict read of the package alone, with no identity row supplied",
+    "identity_row_join": "the identity-row join after the strict read admits the package"
+  },
+  "cases": [
+    {
+      "id": "TM-S1-source-root",
+      "criterion": "FR-789-AC-1",
+      "source": "record W { c: Clock; }\nobject O { w: W; d: Clock; }\ntime O dense unit ms;\n",
+      "outcome": "joined",
+      "nodes": {
+        "O": {
+          "node_id": {"package": "timed/unit", "path": ["O"], "ordinal": 0},
+          "node_tag": "model",
+          "semantic_form": "object_type",
+          "declaration": {"qualified_name": ["O"]},
+          "body_bindings": [{"name": "w", "type_node": {"package": "timed/unit", "path": ["W"], "ordinal": 0}, "optional": false}]
+        },
+        "W": {
+          "node_id": {"package": "timed/unit", "path": ["W"], "ordinal": 0},
+          "node_tag": "model",
+          "semantic_form": "record_value_type",
+          "declaration": {"qualified_name": ["W"]},
+          "body_bindings": []
+        }
+      },
+      "identity_rows": {
+        "object_types": [
+          {
+            "source_identity": "O",
+            "structural_node": {"package": "timed/unit", "path": ["O"], "ordinal": 0},
+            "members": [
+              {"name": "w", "presence": "required", "type_node": {"package": "timed/unit", "path": ["W"], "ordinal": 0}, "member_type": null, "collections": []},
+              {"name": "d", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []}
+            ],
+            "operations": []
+          }
+        ],
+        "records": [
+          {
+            "source_identity": "W",
+            "structural_node": {"package": "timed/unit", "path": ["W"], "ordinal": 0},
+            "members": [
+              {"name": "c", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []}
+            ]
+          }
+        ],
+        "tuples": [],
+        "unions": []
+      },
+      "clock_places": [
+        {
+          "place": "d",
+          "path": [{"kind": "field", "name": "d"}],
+          "resolved_path": [
+            {"path_step": 0, "declaring_type": "ix://src/timed-unit/O", "member_identity": "ix://src/timed-unit/O/d", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}
+          ]
+        },
+        {
+          "place": "w.c",
+          "path": [{"kind": "field", "name": "w"}, {"kind": "field", "name": "c"}],
+          "resolved_path": [
+            {"path_step": 0, "declaring_type": "ix://src/timed-unit/O", "member_identity": "ix://src/timed-unit/O/w", "member_type": "ix://src/timed-unit/W", "collection_kind": "none", "minimum": "", "maximum": ""},
+            {"path_step": 1, "declaring_type": "ix://src/timed-unit/W", "member_identity": "ix://src/timed-unit/W/c", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TM-SR1-undeclared-member",
+      "criterion": "FR-789-AC-2",
+      "base": "TM-S1-source-root",
+      "edit": {"place": "d", "row": 0, "binding": "member_identity", "value": "ix://src/timed-unit/O/e"},
+      "stage": "read",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{d}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SR2-foreign-owner",
+      "criterion": "FR-789-AC-2",
+      "base": "TM-S1-source-root",
+      "edit": {"place": "d", "row": 0, "binding": "declaring_type", "value": "ix://src/other-unit/O"},
+      "stage": "read",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{d}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SR3-member-type",
+      "criterion": "FR-789-AC-2",
+      "base": "TM-S1-source-root",
+      "edit": {"place": "d", "row": 0, "binding": "member_type", "value": "Integer"},
+      "stage": "read",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{d}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SR4-selected-model-row",
+      "criterion": "FR-789-AC-2",
+      "base": "TM-S1-source-root",
+      "edit": {"place": "w.c", "row": 1, "binding": "declaring_type", "value": "ix://acme/orders/Order"},
+      "stage": "read",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{w.c}/body/members/2/value/members/1"
+    },
+    {
+      "id": "TM-SR5-data-field-type",
+      "criterion": "FR-789-AC-2",
+      "base": "TM-S1-source-root",
+      "edit": {"place": "w.c", "row": 0, "binding": "member_type", "value": "ix://src/timed-unit/V"},
+      "stage": "read",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{w.c}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SJ1-coherent-undeclared-clock",
+      "criterion": "FR-789-AC-3",
+      "base": "TM-S1-source-root",
+      "edit": {"add_place": {"place": "e", "path": [{"kind": "field", "name": "e"}], "resolved_path": [{"path_step": 0, "declaring_type": "ix://src/timed-unit/O", "member_identity": "ix://src/timed-unit/O/e", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}]}},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{e}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SJ2-forged-presence",
+      "criterion": "FR-789-AC-3",
+      "base": "TM-S1-source-root",
+      "edit": {"place": "d", "row": 0, "binding": "member_type", "value": "Option<ix://filament/native/Clock>"},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{d}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SJ3-clock-entry-missing",
+      "criterion": "FR-789-AC-3",
+      "base": "TM-S1-source-root",
+      "edit": {"identity_row": "O", "remove_member": "d"},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{d}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-SJ4-record-clock-entry-missing",
+      "criterion": "FR-789-AC-3",
+      "base": "TM-S1-source-root",
+      "edit": {"identity_row": "W", "remove_member": "c"},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{w.c}/body/members/2/value/members/1"
+    },
+    {
+      "id": "TM-SJ5-clock-collection-bound",
+      "criterion": "FR-789-AC-3",
+      "source": "record W { c: Clock; }\nobject O { w: W; d: Clock; q: Sequence<Clock>[0, 3]; }\ntime O dense unit ms;\n",
+      "identity_member": {"type": "O", "entry": {"name": "q", "presence": "required", "type_node": null, "member_type": "Sequence<ix://filament/native/Clock>", "collections": [{"kind": "sequence", "minimum": "0", "maximum": "3"}]}},
+      "place": {
+        "place": "q",
+        "path": [{"kind": "field", "name": "q"}, {"kind": "slot", "collection": "sequence", "selector": "Integer", "minimum": 0, "maximum": 3}],
+        "resolved_path": [
+          {"path_step": 0, "declaring_type": "ix://src/timed-unit/O", "member_identity": "ix://src/timed-unit/O/q", "member_type": "Sequence<ix://filament/native/Clock>", "collection_kind": "sequence", "minimum": "0", "maximum": "3"},
+          {"path_step": 1, "declaring_type": "ix://filament/native/Clock", "member_identity": "Sequence<ix://filament/native/Clock>[slot]", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}
+        ]
+      },
+      "edit": {"place": "q", "row": 0, "binding": "maximum", "value": "4", "and_step": {"step": 1, "binding": "maximum", "value": 4}},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{q}/body/members/2/value/members/0"
+    },
+    {
+      "id": "TM-S2-tuple-and-union-steps",
+      "criterion": "FR-789-AC-4",
+      "source": "tuple P (Clock, Integer);\nunion U { armed(Clock), idle }\nobject O { p: P; u: U; }\ntime O dense unit ms;\n",
+      "outcome": "joined",
+      "identity_rows": {
+        "tuples": [
+          {"source_identity": "P", "positions": [
+            {"name": "0", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []},
+            {"name": "1", "presence": "required", "type_node": {"package": "timed/unit", "path": ["scalar_type", "integer"], "ordinal": 0}, "member_type": null, "collections": []}
+          ]}
+        ],
+        "unions": [
+          {"source_identity": "U", "members": [
+            {"name": "armed", "payload": [{"name": "0", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []}]},
+            {"name": "idle", "payload": []}
+          ]}
+        ]
+      },
+      "clock_places": [
+        {"place": "p.0", "path": [{"kind": "field", "name": "p"}, {"kind": "tuple", "index": 0}], "resolved_path": [
+          {"path_step": 0, "declaring_type": "ix://src/timed-unit/O", "member_identity": "ix://src/timed-unit/O/p", "member_type": "ix://src/timed-unit/P", "collection_kind": "none", "minimum": "", "maximum": ""},
+          {"path_step": 1, "declaring_type": "ix://src/timed-unit/P", "member_identity": "ix://src/timed-unit/P/p0", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}
+        ]},
+        {"place": "u.armed", "path": [{"kind": "field", "name": "u"}, {"kind": "union", "case": "armed"}], "resolved_path": [
+          {"path_step": 0, "declaring_type": "ix://src/timed-unit/O", "member_identity": "ix://src/timed-unit/O/u", "member_type": "ix://src/timed-unit/U", "collection_kind": "none", "minimum": "", "maximum": ""},
+          {"path_step": 1, "declaring_type": "ix://src/timed-unit/U", "member_identity": "ix://src/timed-unit/U/armed", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}
+        ]}
+      ]
+    },
+    {
+      "id": "TM-SJ6-data-tuple-position",
+      "criterion": "FR-789-AC-4",
+      "base": "TM-S2-tuple-and-union-steps",
+      "edit": {"replace_place": "p.0", "path_step": {"step": 1, "kind": "tuple", "index": 1}, "row": {"path_step": 1, "declaring_type": "ix://src/timed-unit/P", "member_identity": "ix://src/timed-unit/P/p1", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{p.1}/body/members/2/value/members/1"
+    },
+    {
+      "id": "TM-SJ7-nullary-union-case",
+      "criterion": "FR-789-AC-4",
+      "base": "TM-S2-tuple-and-union-steps",
+      "edit": {"replace_place": "u.armed", "path_step": {"step": 1, "kind": "union", "case": "idle"}, "row": {"path_step": 1, "declaring_type": "ix://src/timed-unit/U", "member_identity": "ix://src/timed-unit/U/idle", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{u.idle}/body/members/2/value/members/1"
+    },
+    {
+      "id": "TM-SJ8-absent-tuple-position",
+      "criterion": "FR-789-AC-4",
+      "base": "TM-S2-tuple-and-union-steps",
+      "edit": {"replace_place": "p.0", "path_step": {"step": 1, "kind": "tuple", "index": 2}, "row": {"path_step": 1, "declaring_type": "ix://src/timed-unit/P", "member_identity": "ix://src/timed-unit/P/p2", "member_type": "ix://filament/native/Clock", "collection_kind": "none", "minimum": "", "maximum": ""}},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "malformed-clock-place",
+      "locus": "/semantic_graph/nodes/{p.2}/body/members/2/value/members/1"
+    },
+    {
+      "id": "TM-S3-clock-parameters",
+      "criterion": "FR-789-AC-5",
+      "source": "object O { d: Clock; n: Integer; operation arm(x: Clock, k: Integer) modifies self.d; operation touch(x: Clock) modifies self.n; }\ntime O dense unit ms;\n",
+      "outcome": "joined",
+      "identity_rows": {
+        "object_types": [
+          {"source_identity": "O", "members": [
+            {"name": "d", "presence": "required", "type_node": null, "member_type": "ix://filament/native/Clock", "collections": []},
+            {"name": "n", "presence": "required", "type_node": {"package": "timed/unit", "path": ["scalar_type", "integer"], "ordinal": 0}, "member_type": null, "collections": []}
+          ], "operations": [
+            {"identity": "O::arm", "query": false, "clock_parameters": ["x"]},
+            {"identity": "O::touch", "query": false, "clock_parameters": ["x"]}
+          ]}
+        ]
+      },
+      "clauses": [
+        {"form": "clock_constraint", "kind": "parameter", "operation": "arm", "parameter": "x", "comparison": "le", "bound": "5/1"},
+        {"form": "clock_reset", "kind": "parameter", "operation": "arm", "parameter": "x", "value": "0/1"}
+      ]
+    },
+    {
+      "id": "TM-SR6-reset-frame-writes-no-clock",
+      "criterion": "FR-789-AC-5",
+      "base": "TM-S3-clock-parameters",
+      "edit": {"add_clause": {"form": "clock_reset", "kind": "parameter", "operation": "touch", "parameter": "x", "value": "0/1"}},
+      "stage": "read",
+      "expected_code": "invalid_package",
+      "expected_cause": "timed-node-reference",
+      "locus": "/semantic_graph/nodes/{touch reset}/body/members/1/value/target"
+    },
+    {
+      "id": "TM-SJ9-data-parameter",
+      "criterion": "FR-789-AC-5",
+      "base": "TM-S3-clock-parameters",
+      "edit": {"clause": 0, "binding": "parameter", "value": "k"},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "timed-node-reference",
+      "locus": "/semantic_graph/nodes/{arm constraint}/body/members/2"
+    },
+    {
+      "id": "TM-SJ10-unlisted-clock-parameter",
+      "criterion": "FR-789-AC-5",
+      "base": "TM-S3-clock-parameters",
+      "edit": {"identity_row": "O", "operation": "O::arm", "clock_parameters": []},
+      "stage": "identity_row_join",
+      "expected_code": "invalid_package",
+      "expected_cause": "timed-node-reference",
+      "locus": "/semantic_graph/nodes/{arm constraint}/body/members/2"
+    }
+  ]
+}
