@@ -235,7 +235,7 @@
     {
       "expected": {
         "code": "malformed_wire",
-        "locus": "/temporal_clause_names/0/declaration_region"
+        "locus": "/temporal_clause_names/0"
       },
       "id": "CN-S9-missing-declaration-region",
       "note": "FR-322-AC-461: a row without `declaration_region`",

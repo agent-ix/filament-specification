@@ -32,5 +32,5 @@ FR-322-AC-460 and FR-322-AC-461.
 - Step 1: each region's bytes are the whole declaration, keyword to closing
   `}`, and contain the name token's region.
 - Step 2: no `node_id` and no node changes.
-- Step 3: `malformed_wire` for the removed member; `invalid_package`/
+- Step 3: `malformed_wire` at the row for the removed member; `invalid_package`/
   `invalid-value` at the row's `declaration_region` for the other two.
