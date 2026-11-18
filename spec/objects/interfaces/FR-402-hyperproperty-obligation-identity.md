@@ -93,7 +93,14 @@ carries a `behaviours`-domain body:
 - its `fairness` argument is the empty aggregate: each variable's fairness
   is in its quantifier Group, never in the wrapper;
 - its `over` argument references one of the body's slot parameter nodes
-  ("Slot parameters"); a consumer reads the body's per-trace state from the
+  ("Slot parameters") or, exactly when the body reads no slot parameter
+  (it reads no object parameter's state in any trace, as a clause with no
+  object parameter never does), the `model`/`model_root` node of the
+  clause's first `subjects` binding. Such a clause has no parameter node to
+  range over, and the root of its first subject is the one node it always
+  has that the body's meaning does not depend on, so the root is the only
+  sound target and keeps the wrapper's identity a function of the clause.
+  The target is among the wrapper's `dependencies`; a consumer reads the body's per-trace state from the
   slot parameters, never from `over`; its clock and activation are the
   producer's fixed `model-steps` and `origin`, and its captures are empty.
 
@@ -210,7 +217,12 @@ order and the first failing check is its defect:
    `temporal`/`temporal_clause` node refuses `ill_typed`/
    `operator-ineligible` at the hyperproperty node, and a body wrapper whose
    `fairness` argument is not empty refuses `invalid_semantic_graph` at the
-   wrapper's `/semantic_graph/nodes/{w}/body/arguments/4`. For a finite
+   wrapper's `/semantic_graph/nodes/{w}/body/arguments/4`. A wrapper whose
+   `over` targets a `model`/`model_root` node refuses
+   `invalid_model_binding`/`malformed-declaration` at
+   `/semantic_graph/nodes/{w}/body/arguments/0` when its formula reads a
+   slot parameter or when the root is not the target of the node's first
+   `subjects` binding. For a finite
    domain, a `body` target that is not an `expression` node whose
    `semantic_type` is the `scalar_type`/`boolean` node refuses
    `ill_typed`/`non-boolean-root` at the target.
@@ -243,6 +255,7 @@ order and the first failing check is its defect:
 | FR-402-AC-8 | A `behaviours` clause's `body` references a body wrapper whose `formula` argument references the body's root formula node and whose `fairness` argument is empty; the request the producer writes for the clause holds no FR-368 `formula` item whose `claim.node` is the wrapper; a `body` referencing a `temporal`/`formula` node directly refuses `ill_typed`/`operator-ineligible` at the hyperproperty node; a wrapper with a non-empty `fairness` argument refuses `invalid_semantic_graph` at that argument; and a finite-domain `body` referencing an integer-typed `expression` node refuses `ill_typed`/`non-boolean-root` at the target. | Test (TC-346) |
 | FR-402-AC-9 | Every slot parameter name matches `[A-Za-z_][A-Za-z0-9_]*` and decodes to its tag and fields: `v @ a` is `slot_sv_sa`, `a.step.op` is `op_sa` and `a.step.Vault::step.i` is `arg_sa_sVault_sstep_si`; the slots for object parameter `a_b` in trace `c` and for `a` in trace `b_c` are `slot_sa__b_sc` and `slot_sa_sb__c`, which differ; a byte outside ASCII letters, digits and `_` is `_x` and two uppercase hexadecimal digits; and names built from every pair of distinct tags and field lists over a set including `_`, `s`, `x` and digit-leading names are pairwise distinct. | Test (TC-346) |
 | FR-402-AC-10 | A `behaviours` clause whose Groups 0 and 1 both bind `variable` `s` refuses `ambiguous_declaration`/`ambiguous-name` at `/semantic_graph/nodes/{n}/body/members/3/value/members/1/members/0`, naming `s`, before the Subjects step; a finite-domain clause with Groups `t` and `t` refuses the same at Group 1's `variable`; Groups `s` and `n` are admitted. | Test (TC-346) |
+| FR-402-AC-11 | `hyper Whole using inf over behaviours () forall trace a of V forall trace b of V { always holds(true) }` is emitted with a body wrapper whose `over` references the `model`/`model_root` node of `V`'s package, and the reader admits it at the temporal and hyperproperty steps. Each refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`: a `NonInterference` wrapper, whose body reads `v @ a`, with `over` edited to the root; a `Whole` wrapper whose `over` is the root of a package no `subjects` binding names; and a single-trace `temporal`/`temporal_clause` that is no body wrapper with `over` a `model_root` node. | Test (TC-2034) |
 
 ## Dependencies
 

@@ -192,8 +192,10 @@ fields first in `extends` order and then its own in source order),
 `populations` (one `{name, symmetric}` entry per population the type itself
 declares, in source order) and `operations` (one entry per operation the
 type itself declares, in source order: its source identity
-`<type>::<operation>`, whether it is a query, and `clock_parameters`, the
-names of its parameters whose declared type is `Clock` or an alias of it, in
+`<type>::<operation>`, whether it is a query, `parameters`, one member entry
+per parameter in declaration order (a data entry naming the parameter's type
+node, a clock entry for a parameter whose type has no node), and
+`clock_parameters`, the names of its parameters whose declared type is `Clock` or an alias of it, in
 declaration order; an operation the type only inherits has no entry, and a
 redefining operation has its own), keyed by (`source_authority`,
 `source_identity`). The producer SHALL also publish one identity row for each
@@ -212,6 +214,13 @@ rendering of FR-789 "Rendering", presence included, and the kind and bounds
 of each collection layer of its type, outermost first (empty for a member
 that is no collection). A clock entry carries no type node and a data entry
 no `member_type`, and no clock entry shares a name with a binding.
+
+The names of an operation entry's clock entries whose `member_type` is
+`ix://filament/native/Clock` SHALL be exactly its `clock_parameters`, and a
+consumer refuses a row whose entries disagree. A consumer reads a
+source-declared operation's parameter names and types from `parameters`
+wherever it reads a model operation's parameters from a domain document,
+as the probabilistic join of FR-640 does.
 
 A consumer SHALL read field types, identity fields, supertypes,
 abstractness, populations and operations of a source-declared type from
@@ -237,6 +246,7 @@ places of FR-789, the operation-body coverage of FR-790) run then.
 | FR-610-AC-6 | A field typed `Population<Order>[3]` is refused at the type with the same code and cause as a native record field typed `Population<Order>[3]`, and a field typed by a name that is a source function is refused `missing_declaration`/`missing-name` at the name, as for a record field. | Test (TC-1442) |
 | FR-610-AC-7 | A `protocol_clause` whose `owner_model` is a source-declared object type node and a static role whose `model` targets it are admitted, joined through the node's `SourceOwner`; the same targets with a `SourceOwner` that joins no `lock.sources` entry refuse `missing_declaration`/`missing-selection` at the target's `node_id`; a `owner_model` on a source-declared record node refuses `invalid_model_binding`/`malformed-declaration`. | Test (TC-1443) |
 | FR-610-AC-8 | A source-declared operation's effects row carries `document` the unit's source identity, `declaring` the source node, `provenance.origin` `source_declaration_operation_frame` and `provenance.member` `Order::bump`; its authored precondition clause function `Qs` carries `declaration` `["Order", "size", "precondition", "Qs"]` and the `SourceOwner`. The identity rows of `Order`, `Sub` and `Shape` read back with their `abstract`, `supertypes`, `identity_fields`, `members` and `populations`; a row of a foreign authority, a row naming a frame node and a missing `Order` row each refuse. | Test (TC-1443) |
+| FR-610-AC-9 | The identity row of `object O { d: Clock; operation arm(x: Clock, k: Int[1, 3]) modifies self.d; }` lists `O::arm` with `parameters` the clock entry `x` then the data entry `k` (the `Int[1, 3]` type node) and `clock_parameters` `["x"]`; a row whose `clock_parameters` is `[]` beside the clock entry `x`, and one whose `parameters` omit `k`, each refuse. | Test (TC-2033) |
 
 ## Dependencies
 

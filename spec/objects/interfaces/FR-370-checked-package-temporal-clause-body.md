@@ -58,7 +58,9 @@ not hold, with the first refusal in the reader order below.
   1. **over** — a `reference` to the `value`/`parameter` node of the clause's
      `over` parameter. It is always present: the grammar admits no temporal
      clause without an `over` parameter, so the wire has no absent or `null`
-     form for this argument;
+     form for this argument. The one other target is FR-402's: the body
+     wrapper of a hyper clause whose body reads no slot parameter references
+     the `model`/`model_root` node of the clause's first subject;
   2. **clock** — a `text` literal, the clause's clock role;
   3. **activation** — an `aggregate` of the bindings `kind`, a `text` literal
      `origin` or `each`; `trigger`, a `reference` to the trigger's
@@ -424,7 +426,9 @@ temporal application and of every reference to a `temporal`/`formula` or
 diagnostic `details` term, in entry order and then `details` order; then,
 for each `temporal`/`temporal_clause` node in ascending node-id
 order: the profile check ("Profile check"); then the `over`
-reference targets a declared `value`/`parameter` dependency, else
+reference targets a declared `value`/`parameter` dependency, or, for a body
+wrapper (FR-402 "Body wrapper") whose formula reads no slot parameter, a
+declared `model`/`model_root` dependency, else
 `missing_declaration`/`missing-name` or `invalid_model_binding`/
 `malformed-declaration`; then each fairness member, in fairness-argument
 order, by the three steps of "Fairness resolution"; then the profile fit
