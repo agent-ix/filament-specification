@@ -1,0 +1,149 @@
+{
+  "body_def": "#/$defs/RefinementBody",
+  "note": "QSL-2448. The authored name of a `relation`/`refinement` node (FR-322-AC-200, FR-375 \"Refinement identity\", TC-310). `body` is checked against `schema.json` `$defs/RefinementBody`; `body.name` is the refinement header's `ident` exactly as written, an Identifier, never qualified or aliased. The node's id is `{package, path: [\"relation\", \"refinement\", body.name], ordinal: 0}`, so the name is part of the node identity: two bodies that differ only in `name` are two nodes. `CasRefinesCounter` is TC-310's refinement; the `abstract` NodeRef is a stand-in and every row array is empty, which the schema admits. A `claim_names` row for a refinement node carries the same `name` as the node's `body.name` (FR-322 \"Claim declaration names\", step 3). `schema` is `valid` or `invalid` against `body_def`; `expected_node_id` is the node id the body gives in package `example`.",
+  "positive": [
+    {
+      "ac": [
+        "FR-322-AC-200"
+      ],
+      "body": {
+        "abstract": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Spec"
+          ]
+        },
+        "assume": [],
+        "ensure": [],
+        "histories": [],
+        "name": "CasRefinesCounter",
+        "objects": [],
+        "populations": [],
+        "profile": {
+          "authority": "agent-ix",
+          "identity": "filament.temporal.infinite-trace/v1"
+        },
+        "steps": [],
+        "term": "refinement"
+      },
+      "claim_name": "CasRefinesCounter",
+      "expected_node_id": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "relation",
+          "refinement",
+          "CasRefinesCounter"
+        ]
+      },
+      "id": "RB-P1-authored-name",
+      "note": "the authored name is body.name, the last path segment of the node id, and the claim_names row name",
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-200"
+      ],
+      "body": {
+        "abstract": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Spec"
+          ]
+        },
+        "assume": [],
+        "ensure": [],
+        "histories": [],
+        "name": "CasRefinesCounterAgain",
+        "objects": [],
+        "populations": [],
+        "profile": {
+          "authority": "agent-ix",
+          "identity": "filament.temporal.infinite-trace/v1"
+        },
+        "steps": [],
+        "term": "refinement"
+      },
+      "claim_name": "CasRefinesCounterAgain",
+      "expected_node_id": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "relation",
+          "refinement",
+          "CasRefinesCounterAgain"
+        ]
+      },
+      "id": "RB-P2-name-is-identity",
+      "note": "RB-P1 with only `name` changed: a second node with a second node id",
+      "schema": "valid"
+    }
+  ],
+  "schema_refusals": [
+    {
+      "ac": [
+        "FR-322-AC-200"
+      ],
+      "from": "RB-P1-authored-name",
+      "id": "RB-S1-missing-name",
+      "note": "a body without `name`",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/name"
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-200"
+      ],
+      "from": "RB-P1-authored-name",
+      "id": "RB-S2-empty-name",
+      "note": "`name` is the empty string, not an Identifier",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/name",
+          "value": ""
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-200"
+      ],
+      "from": "RB-P1-authored-name",
+      "id": "RB-S3-qualified-name",
+      "note": "`name` is a qualified path, never written for a refinement name",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/name",
+          "value": "Impl::CasRefinesCounter"
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-200"
+      ],
+      "from": "RB-P1-authored-name",
+      "id": "RB-S4-wrong-kind-name",
+      "note": "`name` is an integer",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/name",
+          "value": 7
+        }
+      ],
+      "schema": "invalid"
+    }
+  ]
+}

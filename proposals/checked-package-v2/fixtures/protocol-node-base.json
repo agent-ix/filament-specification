@@ -13579,6 +13579,14 @@
           }
         ]
       },
+      "declaration_region": {
+        "end": 59,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 57
+      },
       "name": "Clause0",
       "occurrence": 0
     }

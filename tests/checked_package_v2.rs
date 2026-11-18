@@ -23950,6 +23950,28 @@ fn decide_temporal_clause_carriers(package: &Value) -> Result<(), CarrierRefusal
             }
         }
     }
+    // FR-322-AC-460/461: each row's declaration region names the source of its occurrence's
+    // claim name-token region and contains it.
+    for (i, row) in names.iter().enumerate() {
+        let region = &row["declaration_region"];
+        let token = package["source_map"].as_array().unwrap().iter().find(|entry| {
+            entry["node_id"] == row["declaration"] && entry["role"] == "claim" && entry["ordinal"] == row["occurrence"]
+        });
+        let contains = token.is_some_and(|entry| {
+            entry["regions"].as_array().unwrap().iter().all(|r| {
+                r["source"] == region["source"]
+                    && region["start"].as_u64() <= r["start"].as_u64()
+                    && r["end"].as_u64() <= region["end"].as_u64()
+            })
+        });
+        if !contains {
+            return Err((
+                "invalid_package",
+                Some("invalid-value"),
+                format!("/temporal_clause_names/{i}/declaration_region"),
+            ));
+        }
+    }
     Ok(())
 }
 
@@ -24040,7 +24062,7 @@ fn replay_carrier_cases(
 
 /// FR-322-AC-342..AC-358 (TC-233): the clause-name carrier is closed, per claim occurrence and
 /// identity-free, and the vectors decide it.
-#[trace("TC-233", "TC-303", "FR-322-AC-342", "FR-322-AC-343", "FR-322-AC-344", "FR-322-AC-345", "FR-322-AC-346", "FR-322-AC-347", "FR-322-AC-348", "FR-322-AC-349", "FR-322-AC-350", "FR-322-AC-351", "FR-322-AC-352", "FR-322-AC-353", "FR-322-AC-354", "FR-322-AC-355", "FR-322-AC-356", "FR-322-AC-357", "FR-322-AC-358", "FR-370-AC-16")]
+#[trace("TC-233", "TC-303", "TC-2015", "FR-322-AC-460", "FR-322-AC-461", "FR-322-AC-342", "FR-322-AC-343", "FR-322-AC-344", "FR-322-AC-345", "FR-322-AC-346", "FR-322-AC-347", "FR-322-AC-348", "FR-322-AC-349", "FR-322-AC-350", "FR-322-AC-351", "FR-322-AC-352", "FR-322-AC-353", "FR-322-AC-354", "FR-322-AC-355", "FR-322-AC-356", "FR-322-AC-357", "FR-322-AC-358", "FR-370-AC-16")]
 #[test]
 fn temporal_clause_name_carrier_is_closed_per_occurrence_and_identity_free() {
     let vectors = parsed_fixture(TEMPORAL_CLAUSE_NAME_VECTORS);
@@ -24055,7 +24077,7 @@ fn temporal_clause_name_carrier_is_closed_per_occurrence_and_identity_free() {
     assert_eq!(row_schema["properties"]["name"]["$ref"], "#/$defs/Identifier");
     assert_eq!(
         row_schema["properties"].as_object().unwrap().keys().cloned().collect::<BTreeSet<_>>(),
-        ["declaration", "name", "occurrence"].iter().map(|s| s.to_string()).collect()
+        ["declaration", "declaration_region", "name", "occurrence"].iter().map(|s| s.to_string()).collect()
     );
     let base = parsed_fixture(include_str!(
         "../proposals/checked-package-v2/fixtures/positive-timed-clause-nodes.json"
@@ -24068,7 +24090,7 @@ fn temporal_clause_name_carrier_is_closed_per_occurrence_and_identity_free() {
 
     let mut seen = BTreeSet::new();
     let counts = replay_carrier_cases(&vectors, &schema, "TemporalClauseNameRow", "temporal_clause_names", &mut seen);
-    assert_eq!(counts, (3, 8, 12), "positives, schema refusals, reader and shape refusals");
+    assert_eq!(counts, (3, 9, 14), "positives, schema refusals, reader and shape refusals");
 
     for case in vectors["positive"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
