@@ -1219,7 +1219,8 @@
           }
         },
         "delta": {"$ref": "#/$defs/Rational"},
-        "loop": {"$ref": "#/$defs/Count"}
+        "loop": {"$ref": "#/$defs/Count"},
+        "end": {"$ref": "#/$defs/HybridTraceBefore"}
       },
       "additionalProperties": false
     },

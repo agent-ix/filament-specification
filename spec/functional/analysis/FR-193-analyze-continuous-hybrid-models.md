@@ -578,9 +578,17 @@ each jump to a source transition:
   `jumps[k - 1]`, so the trace denotes a lasso; `loop` SHALL name a state
   before the last one, and a `loop` naming the last state or beyond SHALL
   refuse with `invalid_result`/`invalid-value` at `/loop`.
+- A trace MAY carry `end`, the point at which its last dwell is cut, with
+  `time` and `enclosure` and no `mode`, its mode being the last state's, in
+  the shape of `before`. A violation can fall inside a dwell that no later
+  jump closes, for instance in a mode with no transition; `end` lets the
+  trace reach it without inventing a jump. A trace that carries both `end`
+  and `loop` SHALL refuse `invalid_result`/`invalid-value` at `/end`, since
+  a lasso has no last dwell to cut.
 - The trace's last state SHALL be the state at which the solver reports the
   possible violation; in a `loop` trace it is the state that returns to the
-  state `loop` names.
+  state `loop` names. When the trace carries `end`, the prefix the trace
+  denotes ends at `end` instead, after the last state's dwell.
 - The schema checks a trace's shape only. Its correspondence to the
   declaration is checked by the reader of the result entry: the host that
   requested the item and holds its hybrid model, whichever provider, in
@@ -631,6 +639,9 @@ reads. The checks, in trace order:
    `before`'s interval meets the reached state's.
 5. For a `loop` trace, the last state's mode is that of the state `loop`
    names and its enclosure meets that state's.
+6. For a trace with `end`: the last state's mode invariant holds over
+   `end.enclosure`, and `end.time.upper` is at least the last state's
+   `time.lower`.
 
 The outcome SHALL be `consistent`, or `inconsistent{at, check}` naming the
 pointer of the first failing check and its number. Static replay settles no
@@ -669,10 +680,12 @@ time whose sign on an interval is decidable:
    and it satisfies the target mode's invariant.
 4. For a `loop` trace, the last state's mode and point equal those of the
    state `loop` names and the loop's total dwell is positive, so the trace denotes one time-divergent
-   periodic behaviour.
+   periodic behaviour. For a trace with `end`, the last dwell, of length
+   `d = end.time - last.time >= 0`, reaches `end` as check 2 states for a
+   dwell to a `before`.
 5. The claim is false on the replayed behaviour: for a `loop` trace, on that
    periodic behaviour; otherwise on the finite prefix ending at the last
-   state, as a bad prefix, the claim false on every behaviour that extends
+   state, or at `end` when the trace carries it, as a bad prefix, the claim false on every behaviour that extends
    it, decided by the pointwise meaning with every position past the
    prefix's end unknown.
 
@@ -740,6 +753,7 @@ without a certificate is settled by this requirement alone.
 | FR-193-AC-20 | The method table settles each pair as stated: `delta-complete` with `unsat` and `flowpipe-outward-rounded` with a disjoint enclosure, each covering, settle `proved`, `bounded-solver` carrying that spelling; `inductive-enclosure` with a disjoint enclosure settles `proved`, `inductive-solver{method: inductive-enclosure}`; `flowpipe-unrounded` and `unclassified` with any outcome, `delta-complete` with a disjoint enclosure and `flowpipe-outward-rounded` with `unsat` each settle `inconclusive`, `solver-inconclusive`. The schema refuses a `bounded-solver` with `method` `dreal` or `inductive-enclosure` and an `inductive-solver` with `method` `delta-complete`; a reader refuses an `uncertified` `bounded-solver` proof with `method` `flowpipe-unrounded` `invalid_result`/`invalid-value` at `/basis/method`, and admits the same proof as a plugin's `trusted` entry. | Test (TC-373, TC-431) |
 | FR-193-AC-21 | Over `Braking`, whose one jump occurs at time `v0 / a`, anywhere in `[0, 20]`, and which takes no second jump: against `always [0, 10] holds(h.v < 30)`, a `delta-complete` `unsat` with `horizon` 10, `jumps` 1 and `exhaustive` `["time"]`, and one with `horizon` 21/2, settle `proved`, `bounded-solver`; one with `horizon` 1 settles `inconclusive`, `insufficient-horizon{horizon: 1, jumps: 1, exhaustive: ["time"]}`; one with `horizon` 10, `jumps` 0 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 0, exhaustive: []}`, and one with `horizon` 20, `jumps` 3 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `always [0, 10] eventually [0, 5] holds(h.v < 30)` a `horizon` 10 proof with `exhaustive` `["time"]` settles `insufficient-horizon`; under `clock "model-steps"`, against `eventually [0, 1] holds(h.v = 0)`, `jumps` 1 with `horizon` 20 and `exhaustive` `["jumps"]` settles `proved`, `jumps` 1 with `horizon` 10 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 1, exhaustive: []}`, and `jumps` 0 with `horizon` 100 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `once [0, 2] holds(h.v = 20)` under `model-steps` (horizon 0 positions) a proof with `jumps` 0 and `exhaustive` `[]` settles `proved`; against `always holds(h.v < 30)` and against FR-193-AC-15's `on each (q: Braking) when (q.v > 10)` claim, every `bounded-solver` proof settles `insufficient-horizon` and an `inductive-solver` proof settles `proved`; a plugin's `trusted` `bounded-solver` entry with `horizon` 1 against the first claim settles `insufficient-horizon` at the reader; an `insufficient-horizon` cause on an FR-468 refinement item is refused `invalid_result`/`invalid-value` at `/cause/type`. | Test (TC-373) |
 | FR-193-AC-22 | A point trace through a mode whose flow is not polynomial refutes only with an accepted FR-652 `validated-witness`, and is then recorded in `counterexamples`; without one it is replayed statically and stays `inconclusive`. | Test (TC-1605) |
+| FR-193-AC-23 | Over `Braking` without `t`, against `always [0, 10] holds(h.v > 5)`, the point trace starting at `(Moving, v = 20, a = 2, time 0)` with no jump and `end` `(time 8, v = 4, a = 2)` replays exactly and settles `refuted`, the bad prefix ending at `end`; the same trace with `end` `(time 8, v = 5, a = 2)` settles `not-reproduced` at check 2; a trace carrying both `end` and `loop` refuses `invalid_result`/`invalid-value` at `/end`. | Test (TC-373) |
 
 ## Dependencies
 
