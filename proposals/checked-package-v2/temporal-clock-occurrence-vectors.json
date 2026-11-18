@@ -42,6 +42,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -101,6 +109,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -212,6 +228,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -277,6 +301,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -351,6 +383,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -417,6 +457,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -569,6 +617,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "B",
             "occurrence": 1
           }
@@ -578,6 +634,14 @@
           "path": "/temporal_clause_names/2",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 14,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 12
+            },
             "name": "C",
             "occurrence": 2
           }
@@ -650,6 +714,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -711,6 +783,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }

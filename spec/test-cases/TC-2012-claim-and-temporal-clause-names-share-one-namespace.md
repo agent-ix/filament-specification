@@ -18,6 +18,7 @@ Verify that the strict package reader refuses a `claim_names` row whose `name` e
 1. Take FR-322-AC-457's package with a temporal clause named `Bounded`, rename the `ReachThree` `claim_names` row to `Bounded` (`qualified_name` `["Bounded"]`) and read it.
 2. Repeat with the row's `qualified_name` `["Scope", "Bounded"]`.
 3. Read the package with the claim row `ReachThree` and the temporal row `Bounded`, and look up both names.
+4. Replay `claim-name-vectors.json` cases `CL-P5`, `CL-R14` and `CL-R15`.
 
 ## Expected Results
 
