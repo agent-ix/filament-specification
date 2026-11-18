@@ -5,6 +5,35 @@
       "feature": "filament.value.complete/v1"
     }
   ],
+  "claim_names": [
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "Example",
+          "Safety"
+        ]
+      },
+      "declaration_region": {
+        "end": 12,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 10
+      },
+      "name": "Safety",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "declaration"
+      },
+      "qualified_name": [
+        "Example",
+        "Safety"
+      ]
+    }
+  ],
   "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {
