@@ -27,6 +27,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-737
     type: references
+  - target: ix://agent-ix/filament-specification/FR-520
+    type: references
 ---
 
 # FR-785: Bind symbolic channel capacities in a protocol subject
@@ -74,8 +76,10 @@ A request that replays a supplied finite trace over the protocol subject, or
 that assesses a recorded execution against it
 ([FR-059](FR-059-assess-finite-global-conformance.md), the
 [FR-737](../../objects/interfaces/FR-737-protocol-execution-recording.md) recording),
-supplies the binding the same way, with that subject's other bindings. The
-trace and the recording carry no capacity value. The recording's channel
+supplies the binding the same way, with that subject's other bindings: in a
+[FR-520](../tooling/FR-520-carry-analyze-requests-and-results-as-documents.md)
+analyze document it is the `subject` member `capacities`. The trace and the
+recording carry no capacity value. The recording's channel
 obligations read each symbolic capacity at its bound value, and a name with
 no binding is an unbounded root of that request, as above.
 
