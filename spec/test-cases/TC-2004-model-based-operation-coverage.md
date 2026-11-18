@@ -1,5 +1,5 @@
 ---
-id: TC-2002
+id: TC-2004
 title: "Model-based operation coverage"
 type: TC
 relationships:
@@ -7,7 +7,7 @@ relationships:
     type: verifies
 ---
 
-# TC-2002: Model-based operation coverage
+# TC-2004: Model-based operation coverage
 
 ## Description
 
