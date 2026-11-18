@@ -5,6 +5,90 @@
       "feature": "filament.value.complete/v1"
     }
   ],
+  "claim_names": [
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "state",
+          "state_clause",
+          {
+            "node": 20
+          },
+          {
+            "node": 47
+          },
+          "postcondition",
+          {
+            "node": 3
+          },
+          "filament.op.state.clause",
+          "state_clause",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 56,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 54
+      },
+      "name": "ChargeDone",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "ChargeDone"
+      ]
+    },
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "state",
+          "state_clause",
+          {
+            "node": 20
+          },
+          {
+            "node": 47
+          },
+          "precondition",
+          {
+            "node": 3
+          },
+          "filament.op.state.clause",
+          "state_clause",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 55,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 53
+      },
+      "name": "CanCharge",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "CanCharge"
+      ]
+    }
+  ],
   "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {

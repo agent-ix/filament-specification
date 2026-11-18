@@ -5,6 +5,94 @@
       "feature": "filament.value.complete/v1"
     }
   ],
+  "claim_names": [
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "state",
+          "state_clause",
+          {
+            "node": 5
+          },
+          {
+            "node": 6
+          },
+          {
+            "node": 11
+          },
+          {
+            "node": 9
+          },
+          "filament.op.state.clause",
+          "state_clause",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 26,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 24
+      },
+      "name": "CanSet",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "CanSet"
+      ]
+    },
+    {
+      "declaration": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "state",
+          "state_clause",
+          {
+            "node": 5
+          },
+          {
+            "node": 6
+          },
+          {
+            "node": 11
+          },
+          {
+            "node": 8
+          },
+          "filament.op.state.clause",
+          "state_clause",
+          {
+            "node": 0
+          }
+        ]
+      },
+      "declaration_region": {
+        "end": 28,
+        "source": {
+          "authority": "agent-ix",
+          "identity": "example"
+        },
+        "start": 26
+      },
+      "name": "SetOn",
+      "occurrence": {
+        "ordinal": 0,
+        "role": "claim"
+      },
+      "qualified_name": [
+        "SetOn"
+      ]
+    }
+  ],
   "contract_version": "filament.checked-package/v2",
   "diagnostics": {
     "catalog": {
