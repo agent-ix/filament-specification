@@ -21,8 +21,9 @@ progress rows, and refuses unregistered kinds and misplaced categories.
 | --- | --- | --- | --- |
 | TK-01 | One evaluate-stage document per kind of the sixteen rows | Each reads with exactly its row's members, `category`, `truth`, `basis` and `outcome`, and reads back equal | FR-352-AC-10 |
 | TK-02 | A `pending` document | Category `pending`, no `truth`, `basis` `unsettled` | FR-352-AC-11 |
-| TK-03 | `pending-window` (position 0, deadline 5); `pending-next-event` (position 3); `indeterminate` with each reason kind; `activation-incomplete` at position 1; `progress-limit-reached` (`node count`, 4, `progress.covered_positions`); watermark `progress-contradicted` (100 retained, 60 asserted) | Each reads with its row's category, basis and outcome and reads back equal | FR-352-AC-16 |
+| TK-03 | `pending-window` (position 0, deadline 5); `pending-next-event` (position 3); `indeterminate` with each reason kind; `activation-incomplete` at position 1; `progress-limit-reached` (`node count`, `"4"`, `progress.covered_positions`); watermark `progress-contradicted` (100 retained, 60 asserted) | Each reads with its row's category, basis and outcome and reads back equal | FR-352-AC-16 |
 | TK-04 | Independently: kind `pending-forever` and `held`; category `pending` on `incomplete`; `indeterminate` on `violated`; `inconclusive` on `pending`; `pending-window` without `deadline`; `missing-valuation` with `instance` and no `also_held_by`; an `outcome` on `activation-incomplete` and on `progress-limit-reached`; `setting` `progress.positions`; contradiction `fields` differing from members | Each refuses with a located wire diagnostic naming the member | FR-352-AC-17 |
+| TK-05 | `window-limit-reached` with `limit` `max_window_values`, `value` `"2"` and `setting` `monitor.max_window_values`; then independently `value` the number 2, `"02"` and `""`; `progress-limit-reached` with `value` `"4"`, then independently the number 4 and `"04"` | Each first form reads back equal with its string `value`; each other refuses with a located wire diagnostic naming `value` | FR-352-AC-22 |
 
 ## Expected Results
 

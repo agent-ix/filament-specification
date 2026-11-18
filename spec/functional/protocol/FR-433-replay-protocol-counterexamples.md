@@ -64,6 +64,26 @@ The rest points, binders, queues and memory component of each position are
 data a renderer recomputes; the post-state key already binds them. A
 missing, extra or mistyped member refuses before replay.
 
+### Port reference
+
+Each control node of a protocol's causal relation has two ports: `enter`,
+where control reaches the node, and `exit`, where control leaves it. A
+protocol-analysis replay walks the relation from port to port, and when a
+recorded step is not a successor of the port the walk stands at, it reports
+that port so a reader can find the node in the checked package without the
+walk. A *port reference* is the closed JSON object
+
+```json
+{"node": <CheckedNodeId>, "port": "enter"}
+```
+
+with `node` the control node's `CheckedNodeId` in its FR-322 JSON form and
+`port` exactly `enter` or `exit`. It carries no other member. A walk
+disagreement with reason `step-not-successor` carries the port reference as
+its `port` member (FR-323 "Replay result rows"); a disagreement with any
+other reason carries none. A reader SHALL refuse a port reference with a
+missing or extra member, or with a `port` other than `enter` or `exit`.
+
 ### Replay
 
 Replay SHALL recompile the package, re-admit the initial state, universes and
@@ -115,6 +135,7 @@ counterexamples for one item both replay.
 | FR-433-AC-6 | Every refutation vector of TC-376 to TC-386 replays to `reproduced-with-evaluated-witness`. | Test (TC-387) |
 | FR-433-AC-7 | The `undefined-evaluation` counterexample of an undefined recovery predicate replays to `reproduced-with-evaluated-witness` and the item `refuted`, cause `undefined-evaluation`; the same counterexample with its last step changed so that the predicate is defined at `trace_position` settles `inconclusive`, cause `replay-parity`. | Test (TC-387) |
 | FR-433-AC-8 | Each `send` step of a counterexample carries a `send_record`; a `send` step without a `send_record` and a non-`send` step with one refuse before replay as a missing or extra member. | Test (TC-387) |
+| FR-433-AC-9 | A protocol-analysis walk that stops at the `exit` port of checked node N because the next recorded step is not its successor reports the port reference `{"node": <N as its CheckedNodeId JSON>, "port": "exit"}`; a reader refuses a port reference with `port` `inside`, with `node` removed, and with an extra member. | Test (TC-2010) |
 
 ## Dependencies
 
