@@ -35,7 +35,7 @@ The target bytes and the package's name map.
   name: `v_` variables, `T_` types, `op_` operations, `f_` functions, `c_`
   clauses and invariants, `holds_` Lean clause semantics (FR-813), `Ob_`
   Lean obligation propositions, `Th_` TLA+ obligation theorems, `e_` enum
-  members, `m_` monitor variables, `M_` modules, and `Q_`, `F_` and `D_`
+  members, `b_` population bounds (language FR-1035), `m_` monitor variables, `M_` modules, and `Q_`, `F_` and `D_`
   generated helpers. Each prefix is a distinct word of ASCII letters
   followed by one `_`; where one word is a proper prefix of another (`T`
   and `Th`), the two names differ at the character after the shorter word
