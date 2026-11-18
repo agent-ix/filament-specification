@@ -145,6 +145,46 @@ fails settles `inconclusive`, `sufficient-test-failed`.
 `check_closed_form` recomputes the evidence in exact rationals before the
 verdict settles; a disagreement settles `inconclusive`, `replay-parity`.
 
+### Miss counterexample
+
+A closed-form miss is carried as FR-331's canonical counterexample of kind
+`schedulability-miss`, so a refuted schedulability item has a counterexample
+like every other refuted item, and a reader recomputes the miss from it and
+the checked task set:
+
+```json
+{"type": "schedulability-miss", "claim": "<qualified name>",
+ "analysis": "fixed-priority" | "edf" | "amc-rtb", "unit": "<time unit>",
+ "miss": <miss>}
+```
+
+`claim` is the declared qualified name of the `schedulable` or `response`
+claim; `analysis` is the analysis that found the miss, spelled as the
+`closed-form{analysis}` proof basis spells it; `unit` is the task set's
+checked time unit, in which every time value of `miss` is stated. Every
+value is an FR-181 rational `{"type": "rational", "numerator", "denominator"}`
+in lowest terms. `miss` is exactly one of:
+
+- `{"kind": "response", "task": "<task name>", "job": "<decimal>", "iterates": [<rational>, ...], "response": <rational>, "bound": <rational>}`
+  for a fixed-priority or AMC-rtb miss: the task, the job `q` of its level-`i`
+  busy period that misses, that job's recurrence iterates from
+  `(q + 1) · C_i + B_i` up to the first whose response time exceeds the
+  bound, that response time `R + J_i − q · T_i`, and the bound (`D_i` for a
+  `schedulable` claim, `d` for a `response` claim). Under `amc-rtb` it also
+  carries `"mode": "lo"`, since only a low-mode miss refutes.
+- `{"kind": "demand", "t": <rational>, "demand": <rational>}` for an EDF
+  demand miss: the point `t` and `dbf(t)`, with `dbf(t) > t`.
+- `{"kind": "utilization", "utilization": <rational>}` for an EDF set whose
+  utilization exceeds 1.
+
+The object is closed. A reader refuses a missing member
+`invalid_result`/`missing-member`, an unknown member `invalid_result`/`unknown-member`,
+and a `miss` of another `kind`, a `mode` outside `amc-rtb`, an empty `iterates`
+or a rational not in lowest terms `invalid_result`/`invalid-value`, each naming
+the member by its pointer. The counterexample is recorded only after `check_closed_form`
+recomputes it; it has no replay target, because the recomputation is its
+check.
+
 ### Task automata
 
 A timed model whose operations release tasks of a task set, each by a
@@ -370,6 +410,7 @@ establish completeness for the fixed-work class.
 | FR-419-AC-10 | Each of these parses and refuses at check time with `invalid_timed_model`/`invalid-task-set`, never `invalid_syntax`: `taskset Empty { }` (naming `Empty`); a task with `bcet -1 ms`; a task with `bcet 2 ms` and `wcet 1 ms`; a `hi` task with `bcet 4 ms`, `wcet 2 ms`, `wcet_hi 3 ms`; a task with `jitter -1 ms`; a task with `blocking -1 ms`; a `lo` task with `wcet_hi 2 ms`; a task with `blocking 1 ms` under `edf`; a task with `jitter 1 ms` under `edf`; a task with `deadline 5 ms` and `periodic 4 ms` under `amc` (each naming the task). A task set with `t1`'s `jitter -1 ms` and `t2`'s `blocking -1 ms`, under `edf`, reports `t1`'s and `t2`'s task-set defects in that order, then the claim's two `edf` defects in the same order. | Test |
 | FR-419-AC-11 | An EDF task may omit priority and its task-transition identity omits the member; EDF selects the earliest absolute deadline and resolves ties by canonical task name in Unicode scalar value order, source activation transition identity and occurrence. Source declaration order and fixed priority do not affect EDF tie order. A declared priority, if present, is carried and checked but does not change EDF order. A forged priority, a priority on a task that declares none, or an EDF ready order inconsistent with deadlines/ties is refused; fixed-priority task identities require and replay the checked declared priority. | Test (TC-372) |
 | FR-419-AC-12 | Replaying a fixed-work task-product certificate template across a periodic cycle instantiates successive absolute activation occurrences without renumbering any live job; after completion, reusing its finite rank/slot preserves the identities of all other live jobs and gives the new job the next exact prefix occurrence. Replayed deadline-miss evidence carries those exact occurrences and generations, and a template whose source transition, live-job rank or slot does not match the recomputed path is rejected. | Test (TC-371) |
+| FR-419-AC-13 | `Ctl` with the third WCET 6 under `fixed_priority` is refuted with the counterexample `{"type": "schedulability-miss", "claim": Q, "analysis": "fixed-priority", "unit": "ms", "miss": {"kind": "response", "task": "c", "job": "0", "iterates": [6, 10, 13], "response": 13, "bound": 12}}`, each number an FR-181 rational with denominator 1; under `edf` with `{"kind": "utilization", "utilization": 13/12}`. The reader refuses the first with `miss.kind` `late`, with `iterates` empty, with `mode` under `fixed-priority`, and with `utilization` written `26/24`, each `invalid_result`/`invalid-value`, and with an extra member `invalid_result`/`unknown-member`, each naming the member. | Test (TC-2006) |
 
 ## Dependencies
 

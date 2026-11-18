@@ -78,6 +78,33 @@ exceeds `max_state_key_bytes`, the simulator SHALL stop expanding that state, re
 unexplored frontier by position without its key, and report `incomplete` with
 cause `state-key-limit-exceeded`; it SHALL NOT truncate or hash the key.
 
+### Simulation bounds and their published defaults
+
+A simulation request's bounds are resource limits under FR-461: each has a
+setting name and a published default, an absent bound takes its default, a
+present one replaces it with no ceiling, and each is reported in the result
+with the value in force. The defaults are the simulator's own:
+
+| Bound | Setting | Published default | Meaning |
+| --- | --- | --- | --- |
+| `max_states` | `explore.states` | 10,000,000 | the most distinct states, by state-key equality, an enumeration discovers |
+| `max_steps` | `simulation.max_steps` | 16,777,216 (2^24) | the most transitions one trace takes, in enumeration depth and in each sampled walk |
+| `max_state_key_bytes` | `identity.input_bytes` | 16,777,216 (2^24) | the most octets one canonical state key encodes to |
+| `samples` | `simulation.samples` | 1 | the number of walks a `sample` run draws |
+
+`seed` is a method parameter, not a bound: a `sample` run without one uses
+seed 0 and records it, so a run is reproducible from its result alone.
+`seed` and `samples` are admitted only in `sample` mode. A bound of zero, a
+negative or non-integer value, a value above 2^64 - 1, a bound or method
+member outside its mode and an unknown member each refuse the request
+`invalid_runtime_input` (`invalid-value`, `unknown-member`) naming the member
+by its pointer, before any state is explored, as FR-461 states for every
+limit. A run `max_states`, `max_steps` or `samples` stops is `incomplete` with
+`limit-reached{limit, value, setting}` naming that bound, its frontier
+retained. A state whose canonical key exceeds `max_state_key_bytes` instead
+stops expansion of that state with cause `state-key-limit-exceeded`, as the
+exploration contract above states (FR-181-AC-30).
+
 ### Typed canonical form
 
 A decimal string is `0`, or an optional `-` followed by `[1-9][0-9]*`. A
@@ -465,6 +492,7 @@ so every timed refutation has a counterexample with exact rational delays.
 | FR-181-AC-29 | A bounded-delay terminal state is a time-lock reported by the time-lock-freedom item and not by the deadlock-freedom item. | Test (TC-370) |
 | FR-181-AC-30 | A state whose canonical state key is longer than `max_state_key_bytes` stops expansion of that state and settles the exploration `incomplete` with cause `state-key-limit-exceeded`, naming the limit and its value; a state whose key is exactly `max_state_key_bytes` long is expanded; no truncated or hashed key appears in a trace or frontier. | Test (TC-210) |
 | FR-181-AC-31 | A `Map<String, Int[0, 9]>` value with the entries `b` to `2` and `a` to `1`, inserted in either order, encodes as `{"entries":[{"key":{"type":"string","value":"a"},"value":{"type":"integer","value":"1"}},{"key":{"type":"string","value":"b"},"value":{"type":"integer","value":"2"}}],"type":"map"}`, and two states whose map member holds those entries inserted in two orders have equal state keys; a supplied map form with two entries whose keys are both `a` is outside the form. | Test (TC-1720) |
+| FR-181-AC-32 | A `sample` request with no bounds and no `seed` reports `max_states` 10,000,000, `max_steps` 16,777,216, `max_state_key_bytes` 16,777,216, `samples` 1 and `seed` 0, under the settings `explore.states`, `simulation.max_steps`, `identity.input_bytes` and `simulation.samples`; `max_states` 2 stops an enumeration `incomplete` `limit-reached` naming `explore.states` with value 2; `max_steps` 0 refuses `invalid_runtime_input`/`invalid-value` at its pointer, `samples` in `enumerate` mode and an unknown bound `bogus` refuse `invalid_runtime_input`/`unknown-member`, each before any state is explored. | Test (TC-2008) |
 
 ## Dependencies
 
