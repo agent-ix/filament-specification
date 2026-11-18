@@ -194,6 +194,12 @@ order and the first failing check is its defect:
    `invalid_package`/`invalid-value` at that binding's value. For a finite
    domain, a `subjects` member, an `alias` binding or a fairness reference
    refuses `invalid_semantic_graph` at that member.
+   Two Groups whose `variable` texts are equal (Groups `s` and `s`) refuse
+   `ambiguous_declaration`/`ambiguous-name` at the later Group's `variable`
+   binding, `B/members/3/value/members/{g}/members/0` with `g` that Group's
+   index, naming the variable. Each trace variable is therefore one Group, and
+   FR-322's one clock row per Group is keyed by a variable no other Group of
+   the node holds.
 2. **Subjects.** A `subjects` target that is not a `model`/`model_root`
    node refuses `invalid_model_binding`/`malformed-declaration` at the
    target. A quantifier Group's `alias` naming no `subjects` binding
@@ -236,6 +242,7 @@ order and the first failing check is its defect:
 | FR-402-AC-7 | Each quantifier fairness refusal is located at the reference `/semantic_graph/nodes/{n}/body/members/3/value/members/{g}/members/{m}`: a fairness node whose target is a `protocol_root` target refuses `invalid_model_binding`/`malformed-declaration`; one whose `operation` target names no effective operation refuses `missing_declaration`/`missing-name`; one whose declaring node belongs to another alias's package refuses `invalid_model_binding`/`malformed-declaration`; and a non-empty quantifier fairness set under a body wrapper whose profile is `filament.temporal.event-position.false-extension/v1` refuses `invalid_package`/`operation-member-mismatch`. A `quantifier` value `some` refuses `invalid_package`/`invalid-value` and a Group with `quantifier` before `variable` refuses `invalid_semantic_graph`. | Test (TC-346) |
 | FR-402-AC-8 | A `behaviours` clause's `body` references a body wrapper whose `formula` argument references the body's root formula node and whose `fairness` argument is empty; the request the producer writes for the clause holds no FR-368 `formula` item whose `claim.node` is the wrapper; a `body` referencing a `temporal`/`formula` node directly refuses `ill_typed`/`operator-ineligible` at the hyperproperty node; a wrapper with a non-empty `fairness` argument refuses `invalid_semantic_graph` at that argument; and a finite-domain `body` referencing an integer-typed `expression` node refuses `ill_typed`/`non-boolean-root` at the target. | Test (TC-346) |
 | FR-402-AC-9 | Every slot parameter name matches `[A-Za-z_][A-Za-z0-9_]*` and decodes to its tag and fields: `v @ a` is `slot_sv_sa`, `a.step.op` is `op_sa` and `a.step.Vault::step.i` is `arg_sa_sVault_sstep_si`; the slots for object parameter `a_b` in trace `c` and for `a` in trace `b_c` are `slot_sa__b_sc` and `slot_sa_sb__c`, which differ; a byte outside ASCII letters, digits and `_` is `_x` and two uppercase hexadecimal digits; and names built from every pair of distinct tags and field lists over a set including `_`, `s`, `x` and digit-leading names are pairwise distinct. | Test (TC-346) |
+| FR-402-AC-10 | A `behaviours` clause whose Groups 0 and 1 both bind `variable` `s` refuses `ambiguous_declaration`/`ambiguous-name` at `/semantic_graph/nodes/{n}/body/members/3/value/members/1/members/0`, naming `s`, before the Subjects step; a finite-domain clause with Groups `t` and `t` refuses the same at Group 1's `variable`; Groups `s` and `n` are admitted. | Test (TC-346) |
 
 ## Dependencies
 
