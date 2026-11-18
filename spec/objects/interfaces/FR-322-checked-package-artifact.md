@@ -3947,6 +3947,11 @@ own Groups in its own order. A body wrapper therefore has no
 the rows of the `hyperproperty` nodes that reference it, and a row whose
 `declaration` is a body wrapper refuses `invalid_package`/`timed-node-reference`
 at `/temporal_bindings/{i}/declaration`, as a wrong-kind declaration does.
+The rows never read the wrapper's `over` target: a wrapper whose body reads
+no slot parameter ranges over the `model`/`model_root` node of the clause's
+first subject (FR-402 "Body wrapper"), and its node keeps one row per
+quantifier Group under each `claim` occurrence, keyed and ordered exactly as
+above, whether or not the clause has an object parameter.
 
 - **Behaviours domain.** The node has rows when its wrapper's
   `temporal_profile` law selects one of the three clock-configured profiles,

@@ -17,6 +17,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-411
     type: references
+  - target: ix://agent-ix/filament-specification/FR-610
+    type: depends_on
 ---
 
 # FR-640: Carry probabilistic model declarations in the checked package
@@ -42,7 +44,13 @@ the derived-node path shape `[node_tag, semantic_form, operand]` of FR-322
 **operation reference** is the pair FR-322 uses for a model operation member
 in its operation carriers: `declaring`, a `reference` to the `model` node that
 declares the operation, and `operation`, a `literal` text term holding the
-operation's name. An **exact weight** is an FR-205 exact rational literal in
+operation's name. The declaring node is a `model`/`object_type`, `process` or
+`state_machine` node of a selected model, or a source-declared
+`model`/`object_type` node of the package (FR-322 "Source-declared object
+types", FR-610), whatever origin its type has; a workload's `model` is either
+kind of node too. A declaration on an operation of a source-declared type is
+emitted like one on a model-owned type's, because a source model is a model:
+its operations draw, weigh and wait as a selected model's do. An **exact weight** is an FR-205 exact rational literal in
 lowest terms. Each node has exactly one occurrence, with role `declaration`,
 whose source region is the declaration's label span.
 
@@ -104,9 +112,18 @@ order and after FR-322's owner join, and refuse the first failure with
 member:
 
 1. an operation reference whose `declaring` node is absent, foreign or not a
-   `model` node, or which names no operation of it: `invalid-value`;
+   `model` node of either origin, or which names no operation of it:
+   `invalid-value`. For a source-declared declaring node the strict read
+   checks only that the node is a source-declared `model`/`object_type`
+   node of the package; the identity-row join, run after the strict read
+   over the producer's identity rows (FR-610 "Identity rows"), resolves the
+   operation among the `operations` entries of that node's identity row,
+   and for a workload among those of the node and of its `supertypes`,
+   followed transitively, and refuses a name no entry carries at the same
+   member;
 2. a `random_parameter` whose `parameter` names no parameter of the
-   operation, whose support is empty, repeats a value, or holds a value
+   operation (for a source-declared operation, no entry of its identity
+   row's `parameters`, checked at the identity-row join), whose support is empty, repeats a value, or holds a value
    outside the parameter's type or a weight that is not greater than 0:
    `invalid-value`; two `random_parameter` nodes of one operation parameter:
    `conflicting-definition` at the later node;
@@ -120,7 +137,12 @@ member:
    `invalid-value`; two `reward` nodes of one name on one operation:
    `conflicting-definition` at the later node;
 5. a `delay_distribution` on an operation of a model that is not `time
-   dense`, an unknown `family`, parameters that do not match the family, or a
+   dense` (for a selected model, its `declaring` node is not the `model` of a
+   `timed_model` root whose source is `dense`; for a source-declared
+   `declaring` node, no `timed_model` root whose `model` is a
+   source-declared node of the same `SourceOwner` has a `dense` source,
+   since one source time member times every source object type of the unit,
+   FR-415), an unknown `family`, parameters that do not match the family, or a
    weight or rate not greater than 0: `invalid-value`; two
    `delay_distribution` nodes of one operation: `conflicting-definition` at
    the later node.
@@ -149,6 +171,7 @@ keyed by its node identity.
 | FR-640-AC-3 | Writing `Steady`'s weights in another order leaves the `workload` node byte-identical; changing one weight, one support value or one reward expression changes that node's identity and the identity of every claim that reads it. A workload with weight 0 on one operation is emitted and admitted. | Test (TC-1563) |
 | FR-640-AC-4 | Reader mutations each refuse `invalid_package` at the failing member: a support with a repeated value, a support weight 0, a workload missing an operation, a workload with a negative weight, workload members out of order, a reward whose function reads a state field, a reward typed `Boolean`, a delay on an untimed model and a `discrete` delay with weight 0 (`invalid-value`); a second `random_parameter` of one parameter, a second `workload` of one name, a second `reward` of one name on one operation and a second `delay_distribution` of one operation (`conflicting-definition` at the later node). A reader budget one visit short of the package's count returns `incomplete` at the first uncharged member. | Test (TC-1563) |
 | FR-640-AC-5 | A claim `under Steady` over `Service` resolves its scheduler to `Steady`'s `workload` node, and a provider run over the emitted package gives the same step probabilities as FSL FR-187-AC-1. | Test (TC-1563) |
+| FR-640-AC-6 | A package of a unit that declares `object O { d: Clock; operation step() modifies self.d; }`, `object Other { n: Integer; operation poke(k: Int[1, 3]) modifies self.n; }` and `time O dense unit ms;`, with `delay O::step ~ uniform;`, `delay Other::poke ~ discrete { 1 ms: 9, 3 ms: 1 };` and `random Other::poke(k) ~ { 1: 1, 3: 3 };`, is emitted with operation references whose `declaring` is the source node of `O` or `Other`; the strict read and the identity-row join admit it and the typed read gives the delays and the support with probabilities `1/4` and `3/4`. Each refuses `invalid_package`/`invalid-value` at the member: at the identity-row join, an `operation` `nudge` that no `operations` entry of `Other`'s row carries and a `parameter` `j` that no `parameters` entry of `Other::poke` carries; at the strict read, a `declaring` that is a source-declared `relation`/`population` node, and a delay on a source node of a unit whose source model has no `dense` time member. | Test (TC-2033) |
 
 ## Dependencies
 
