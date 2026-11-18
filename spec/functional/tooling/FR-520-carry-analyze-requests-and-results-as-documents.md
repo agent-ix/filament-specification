@@ -90,7 +90,8 @@ An analysis item has these members:
   carries `request_index`, `extent` or `candidates`, which the reading tool
   computes from the checked package and its registry. A `finite-replay` item
   names a supplied trace in `trace`; a `simulation` item carries its bounds in
-  `simulation` and settles no claim.
+  `simulation` and settles no claim; its result reports the invariant
+  violations its traces meet as findings (FR-181), never as a settlement.
 - **Reductions.** An item selects reductions in FR-382's `reductions` member,
   over what the unit declares (`symmetric` populations, `constraint`
   clauses); a selection the preservation table does not admit settles that

@@ -53,7 +53,8 @@ limit on the length in octets of one canonical state key.
 
 ## Outputs
 
-Typed execution traces/results with coverage and replay provenance, or
+Typed execution traces/results with coverage, replay provenance and the
+invariant findings on the reported traces, or
 requires-bound/incomplete/refused outcomes, or an `unsupported` result with its
 typed cause.
 
@@ -262,6 +263,20 @@ effective precondition is true, times every post-state within the
 operation's declared frame for which the operation's postcondition holds
 ([FR-013-AC-1](../foundation/FR-013-validate-operation-frames.md)). A successor that violates an invariant is recorded as a
 successor rather than pruned from exploration.
+
+A simulation result SHALL report every invariant violation it meets as a
+finding, not as a claim settlement. Each state on a reported trace is
+evaluated against the declared invariants, and each one that is false (or
+undecided) for an object of that state gives one finding naming the trace by
+its index (and, for a sampled trace, its seed), the zero-based position of
+the state on it, the invariant by its declared qualified name, the object in
+its typed canonical form and, for an undecided invariant, the typed cause.
+A finding does not change the run's outcome, stop the run or add a
+counterexample or verdict: simulation visits a chosen part of the
+behaviours, so it can show a violating run but cannot settle the invariant,
+which an analysis item that explores every behaviour does. The findings are
+part of the result, so equal requests give equal findings and a sampled
+violation is reproduced from its seed.
 
 Exhaustive mode performs deterministic breadth-first expansion of authored
 choices and enabled schedules, coalescing only equal complete state keys,
@@ -493,6 +508,7 @@ so every timed refutation has a counterexample with exact rational delays.
 | FR-181-AC-30 | A state whose canonical state key is longer than `max_state_key_bytes` stops expansion of that state and settles the exploration `incomplete` with cause `state-key-limit-exceeded`, naming the limit and its value; a state whose key is exactly `max_state_key_bytes` long is expanded; no truncated or hashed key appears in a trace or frontier. | Test (TC-210) |
 | FR-181-AC-31 | A `Map<String, Int[0, 9]>` value with the entries `b` to `2` and `a` to `1`, inserted in either order, encodes as `{"entries":[{"key":{"type":"string","value":"a"},"value":{"type":"integer","value":"1"}},{"key":{"type":"string","value":"b"},"value":{"type":"integer","value":"2"}}],"type":"map"}`, and two states whose map member holds those entries inserted in two orders have equal state keys; a supplied map form with two entries whose keys are both `a` is outside the form. | Test (TC-1720) |
 | FR-181-AC-32 | A `sample` request with no bounds and no `seed` reports `max_states` 10,000,000, `max_steps` 16,777,216, `max_state_key_bytes` 16,777,216, `samples` 1 and `seed` 0, under the settings `explore.states`, `simulation.max_steps`, `identity.input_bytes` and `simulation.samples`; `max_states` 2 stops an enumeration `incomplete` `limit-reached` naming `explore.states` with value 2; `max_steps` 0 refuses `invalid_runtime_input`/`invalid-value` at its pointer, `samples` in `enumerate` mode and an unknown bound `bogus` refuse `invalid_runtime_input`/`unknown-member`, each before any state is explored. | Test (TC-2008) |
+| FR-181-AC-33 | A simulation over a subject whose declared invariant is false at a state that a reported trace reaches reports one finding naming that trace, the state's position on it, the invariant and the object, and the result keeps the outcome, traces and coverage of the same simulation with the invariant removed, with no counterexample or verdict; repeating the sampled request with the same seed gives equal findings, and a subject whose invariant holds at every reached state reports no finding. | Test (TC-2013) |
 
 ## Dependencies
 
