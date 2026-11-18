@@ -1,0 +1,11 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+profile inf = "filament.temporal.infinite-trace/v1";
+model M = "example/plan-routing";
+function adjacent using p(x: M::Cell, y: M::Cell): Boolean pure { (x = M::Cell::c0 and y = M::Cell::c1) or (x = M::Cell::c1 and (y = M::Cell::c0 or y = M::Cell::c2)) or (x = M::Cell::c2 and (y = M::Cell::c1 or y = M::Cell::c3 or y = M::Cell::b2)) or (x = M::Cell::c3 and (y = M::Cell::c2 or y = M::Cell::c4)) or (x = M::Cell::c4 and y = M::Cell::c3) or (x = M::Cell::b2 and y = M::Cell::c2) }
+pre CanMove using p on M::Robot::move { adjacent(self.at, c) and forall(r in M::robots : r.at != c) }
+post Move using p on M::Robot::move { self.at = c }
+invariant NoSharedCell using p on M::Robot at current { forall(r in M::robots : r = self or r.at != self.at) }
+type Lengths = Int[0, 12];
+temporal Arrive using inf over (r: M::Robot) clock "model-steps" on origin { eventually[0, 12] holds(forall(x in M::robots : x.at = x.target)) }
+synthesis Reach using p grammar M::Robot domain Lengths satisfies { forall(x in Reach.final.robots : x.at = x.target) };

@@ -1,0 +1,11 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+profile t = "filament.temporal.complete/v1";
+model M = "example/plan-timed-go";
+dimension Time;
+unit s : Time = rational(1, 1);
+time M dense unit s;
+pre CanGo using p on M::Machine::go { self.x >= 2 s and not self.done }
+post Go using p on M::Machine::go { self.done }
+type Lengths = Int[0, 1];
+synthesis Reach using t grammar M::Machine domain Lengths minimize Reach.elapsed satisfies { Reach.final.done };

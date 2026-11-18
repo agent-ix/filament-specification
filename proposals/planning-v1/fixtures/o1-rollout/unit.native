@@ -1,0 +1,14 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+profile inf = "filament.temporal.infinite-trace/v1";
+model M = "example/plan-rollout";
+pre CanDrain using p on M::Server::drain { self.state = M::State::serving and self.version = M::Version::old }
+post Drain using p on M::Server::drain { self.state = M::State::drained }
+pre CanUpgrade using p on M::Server::upgrade { self.state = M::State::drained }
+post Upgrade using p on M::Server::upgrade { self.state = M::State::upgraded and self.version = M::Version::new }
+pre CanRejoin using p on M::Server::rejoin { self.state = M::State::upgraded }
+post Rejoin using p on M::Server::rejoin { self.state = M::State::serving }
+type Lengths = Int[0, 15];
+type Total = Int[0, 5];
+temporal KeepServing using inf over (s: M::Server) clock "model-steps" on origin { always holds(count<Total>(x in M::servers : x.state = M::State::serving) >= 3) }
+synthesis Reach using p grammar M::Server domain Lengths satisfies { forall(x in Reach.final.servers : x.state = M::State::serving and x.version = M::Version::new) };

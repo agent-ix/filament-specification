@@ -85,7 +85,8 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
 ### Feasible plans
 
 - The planner SHALL propose candidate schedules whose dwells are multiples
-  of the request's `dwell_grid`, a positive exact rational required for a
+  of the request's `dwell_grid`, a positive exact rational written in the
+  FR-181 typed `rational` or `decimal` form FR-805 states and required for a
   hybrid plan, each dwell bounded by the horizon the mode invariants and the
   declaration give, enumerated in FR-804's plan order.
 - A candidate is *validated* only when its item settles `proved` under a
@@ -130,13 +131,18 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
   `unsupported_projection`/`unsupported-requested-capability`, naming
   `temporal-satisfaction` and `hybrid-dynamics`, as FR-193 states.
 - A hybrid plan request with no `dwell_grid` refuses
-  `invalid_runtime_input`/`missing-member` at `/dwell_grid`.
+  `invalid_runtime_input`/`missing-member` at `/dwell_grid` (a pointer into
+  the plan request, prefixed by a host surface as FR-805 states).
+- With no hybrid candidate in the engine set the caller runs the plan
+  search with, the result is `unsupported`. The engine set is a library
+  parameter of the planner and of its host surface, never a request member
+  (FR-805): a request cannot select an engine the caller did not register.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-819-AC-1 | Over a tank with mode `Fill` (`h' = 1`, invariant `h <= 10`, transition to `Drain` when `h >= 8`) and `Drain` (`h' = -2`, invariant `h >= 0`) from `h = 0` in `Fill`, the goal `Reach.final.mode = Drain` with `dwell_grid` 1 returns `feasible` with the one step of dwell 8 into `Drain`, `elapsed` 8, `bound` `null`, validated by a `flowpipe-outward-rounded` enclosure. | Test (TC-1966) |
+| FR-819-AC-1 | Over a tank with mode `Fill` (`h' = 1`, invariant `h <= 10`, transition to `Drain` when `h >= 8`) and `Drain` (`h' = -2`, invariant `h >= 0`) from `h = 0` in `Fill`, the goal `Reach.final.mode = Drain` with `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "1"}` returns `feasible` with the one step of dwell 8 into `Drain`, `elapsed` 8, `bound` `null`, validated by a `flowpipe-outward-rounded` enclosure. | Test (TC-1966) |
 | FR-819-AC-2 | The goal `Reach.final.h >= 12` returns `infeasible` from an `inductive-enclosure` proof of `always not goal` over the schedule space, whose FR-652 certificate bounds `h` within `[0, 10]` and is accepted, certification `certified`; the certificate with one reset image removed is rejected and the result is `incomplete`. | Test (TC-1966) |
 | FR-819-AC-3 | With `hybrid.max_solver_steps` 1 the result is `incomplete` with `limit-reached` naming `hybrid.max_solver_steps`; with no hybrid provider registered it is `unsupported` naming `hybrid-dynamics`. | Test (TC-1966) |
 | FR-819-AC-4 | A provider that answers with an `unclassified` method validates no candidate, and the result is never `feasible` on its word; a request without `dwell_grid` refuses at `/dwell_grid`. | Test (TC-1966) |

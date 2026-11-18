@@ -1,0 +1,14 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+profile t = "filament.temporal.complete/v1";
+model M = "example/plan-timed-tick";
+dimension Time;
+unit s : Time = rational(1, 1);
+unit min : Time = rational(60, 1) * s;
+time M tick M::Line::tick period 10 min unit min;
+pre CanTick using p on M::Line::tick { self.ticks < 3 }
+post Tick using p on M::Line::tick { self.ticks = pre(self.ticks) + 1 }
+pre CanStep using p on M::Line::step { self.work < 2 }
+post Step using p on M::Line::step { self.work = pre(self.work) + 1 }
+type Lengths = Int[0, 5];
+synthesis Reach using t grammar M::Line domain Lengths satisfies { Reach.final.ticks = 3 and Reach.final.work = 2 };

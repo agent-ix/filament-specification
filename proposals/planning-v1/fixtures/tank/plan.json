@@ -1,0 +1,9 @@
+{
+  "declaration": "Reach",
+  "policy": [],
+  "dwell_grid": {
+    "type": "rational",
+    "numerator": "1",
+    "denominator": "1"
+  }
+}

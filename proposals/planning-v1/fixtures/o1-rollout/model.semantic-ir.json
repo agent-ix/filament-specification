@@ -1,0 +1,333 @@
+{
+  "contractVersion": "2.0.0",
+  "canonicalization": {
+    "algorithm": "rfc8785-v1"
+  },
+  "source": {
+    "identity": "ix://example/plan-rollout/spec",
+    "version": "1.0.0",
+    "dialect": "spec-bundle"
+  },
+  "package": {
+    "identity": "example/plan-rollout",
+    "version": "1.0.0",
+    "mappingVersions": [],
+    "profileVersions": []
+  },
+  "occurrences": [],
+  "extensions": [],
+  "constructs": [
+    {
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "object_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.object-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "population"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.population/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "variant"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "value",
+        "meaning": "filament.meaning.model.variant-type/v1",
+        "members": {
+          "variants": "required"
+        },
+        "shape": "enumeration"
+      }
+    }
+  ],
+  "types": [
+    {
+      "identity": "ix://example/plan-rollout/State",
+      "displayName": "ix://example/plan-rollout/State",
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "variant"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-rollout/State",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-rollout/State"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "variants": [
+        {
+          "identity": "ix://example/plan-rollout/variant/State-serving",
+          "name": "serving",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-rollout/variant/State-drained",
+          "name": "drained",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-rollout/variant/State-upgraded",
+          "name": "upgraded",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identity": "ix://example/plan-rollout/Version",
+      "displayName": "ix://example/plan-rollout/Version",
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "variant"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-rollout/Version",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-rollout/Version"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "variants": [
+        {
+          "identity": "ix://example/plan-rollout/variant/Version-old",
+          "name": "old",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-rollout/variant/Version-new",
+          "name": "new",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identity": "ix://example/plan-rollout/Server",
+      "displayName": "ix://example/plan-rollout/Server",
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "object_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-rollout/Server",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-rollout/Server"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "supertypes": [],
+      "relationships": [],
+      "fields": [
+        {
+          "identity": "ix://example/plan-rollout/Server/state",
+          "name": "state",
+          "typeRef": "ix://example/plan-rollout/State",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-rollout/Server/state",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-rollout/Server/state"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-rollout/Server/version",
+          "name": "version",
+          "typeRef": "ix://example/plan-rollout/Version",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-rollout/Server/version",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-rollout/Server/version"
+              ]
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "identity": "ix://example/plan-rollout/Server/drain",
+          "name": "drain",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-rollout/Server/state"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-rollout/Server/upgrade",
+          "name": "upgrade",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-rollout/Server/state",
+              "ix://example/plan-rollout/Server/version"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-rollout/Server/rejoin",
+          "name": "rejoin",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-rollout/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-rollout/Server/state"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        }
+      ]
+    }
+  ],
+  "populations": [
+    {
+      "identity": "ix://example/plan-rollout/servers",
+      "displayName": "ix://example/plan-rollout/servers",
+      "kind": {
+        "module": "example/plan-rollout",
+        "name": "population"
+      },
+      "members": [
+        "ix://example/plan-rollout/Server"
+      ],
+      "extent": "closed",
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-rollout/servers",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-rollout/servers"
+          ]
+        }
+      }
+    }
+  ]
+}

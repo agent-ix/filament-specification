@@ -1,0 +1,32 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-counter/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-counter"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-counter/counters",
+      "complete": true,
+      "objects": [
+        {
+          "key": "c",
+          "type": "ix://example/plan-counter/Counter",
+          "fields": {
+            "value": {
+              "integer": "1"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

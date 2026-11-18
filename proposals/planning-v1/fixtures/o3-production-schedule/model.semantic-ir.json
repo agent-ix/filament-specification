@@ -1,0 +1,621 @@
+{
+  "contractVersion": "2.0.0",
+  "canonicalization": {
+    "algorithm": "rfc8785-v1"
+  },
+  "source": {
+    "identity": "ix://example/plan-production/spec",
+    "version": "1.0.0",
+    "dialect": "spec-bundle"
+  },
+  "package": {
+    "identity": "example/plan-production",
+    "version": "1.0.0",
+    "mappingVersions": [],
+    "profileVersions": []
+  },
+  "occurrences": [],
+  "extensions": [],
+  "constructs": [
+    {
+      "kind": {
+        "module": "example/plan-production",
+        "name": "object_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.object-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-production",
+        "name": "population"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.population/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-production",
+        "name": "value_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.value-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-production",
+        "name": "variant"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "value",
+        "meaning": "filament.meaning.model.variant-type/v1",
+        "members": {
+          "variants": "required"
+        },
+        "shape": "enumeration"
+      }
+    }
+  ],
+  "types": [
+    {
+      "identity": "ix://example/plan-production/Tick",
+      "displayName": "ix://example/plan-production/Tick",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/Tick",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/Tick"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-production/Tick/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Tick/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Tick/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Tick/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "10"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Tick/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Tick/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-production/Remaining",
+      "displayName": "ix://example/plan-production/Remaining",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/Remaining",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/Remaining"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-production/Remaining/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Remaining/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Remaining/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Remaining/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "3"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Remaining/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Remaining/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-production/Job",
+      "displayName": "ix://example/plan-production/Job",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "variant"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/Job",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/Job"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "variants": [
+        {
+          "identity": "ix://example/plan-production/variant/Job-A",
+          "name": "A",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/variant/Job-B",
+          "name": "B",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identity": "ix://example/plan-production/Machine",
+      "displayName": "ix://example/plan-production/Machine",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "variant"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/Machine",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/Machine"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "variants": [
+        {
+          "identity": "ix://example/plan-production/variant/Machine-M1",
+          "name": "M1",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/variant/Machine-M2",
+          "name": "M2",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identity": "ix://example/plan-production/Assignment",
+      "displayName": "ix://example/plan-production/Assignment",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "variant"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/Assignment",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/Assignment"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "variants": [
+        {
+          "identity": "ix://example/plan-production/variant/Assignment-waiting",
+          "name": "waiting",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/variant/Assignment-M1",
+          "name": "M1",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/variant/Assignment-M2",
+          "name": "M2",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/variant/Assignment-finished",
+          "name": "finished",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identity": "ix://example/plan-production/Shop",
+      "displayName": "ix://example/plan-production/Shop",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "object_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/Shop",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/Shop"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "supertypes": [],
+      "relationships": [],
+      "fields": [
+        {
+          "identity": "ix://example/plan-production/Shop/now",
+          "name": "now",
+          "typeRef": "ix://example/plan-production/Tick",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Shop/now",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Shop/now"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Shop/aRemaining",
+          "name": "aRemaining",
+          "typeRef": "ix://example/plan-production/Remaining",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Shop/aRemaining",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Shop/aRemaining"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Shop/bRemaining",
+          "name": "bRemaining",
+          "typeRef": "ix://example/plan-production/Remaining",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Shop/bRemaining",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Shop/bRemaining"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Shop/aOn",
+          "name": "aOn",
+          "typeRef": "ix://example/plan-production/Assignment",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Shop/aOn",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Shop/aOn"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Shop/bOn",
+          "name": "bOn",
+          "typeRef": "ix://example/plan-production/Assignment",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-production/Shop/bOn",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-production/Shop/bOn"
+              ]
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "identity": "ix://example/plan-production/Shop/start",
+          "name": "start",
+          "params": [
+            {
+              "identity": "ix://example/plan-production/Shop/start/j",
+              "name": "j",
+              "typeRef": "ix://example/plan-production/Job",
+              "presence": "required",
+              "nullable": false,
+              "defaultKind": "none",
+              "multiplicity": {
+                "lower": 1,
+                "upper": 1,
+                "ordered": false,
+                "unique": true
+              },
+              "origin": {
+                "generated": {
+                  "generatorIdentity": "ix://example/plan-production/Shop/start/j",
+                  "generatorVersion": "1.0.0",
+                  "inputIdentities": [
+                    "ix://example/plan-production/Shop/start/j"
+                  ]
+                }
+              }
+            },
+            {
+              "identity": "ix://example/plan-production/Shop/start/m",
+              "name": "m",
+              "typeRef": "ix://example/plan-production/Machine",
+              "presence": "required",
+              "nullable": false,
+              "defaultKind": "none",
+              "multiplicity": {
+                "lower": 1,
+                "upper": 1,
+                "ordered": false,
+                "unique": true
+              },
+              "origin": {
+                "generated": {
+                  "generatorIdentity": "ix://example/plan-production/Shop/start/m",
+                  "generatorVersion": "1.0.0",
+                  "inputIdentities": [
+                    "ix://example/plan-production/Shop/start/m"
+                  ]
+                }
+              }
+            }
+          ],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-production/Shop/aOn",
+              "ix://example/plan-production/Shop/bOn"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-production/Shop/tick",
+          "name": "tick",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-production/Shop/now",
+              "ix://example/plan-production/Shop/aRemaining",
+              "ix://example/plan-production/Shop/bRemaining",
+              "ix://example/plan-production/Shop/aOn",
+              "ix://example/plan-production/Shop/bOn"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        }
+      ]
+    }
+  ],
+  "populations": [
+    {
+      "identity": "ix://example/plan-production/shops",
+      "displayName": "ix://example/plan-production/shops",
+      "kind": {
+        "module": "example/plan-production",
+        "name": "population"
+      },
+      "members": [
+        "ix://example/plan-production/Shop"
+      ],
+      "extent": "closed",
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-production/shops",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-production/shops"
+          ]
+        }
+      }
+    }
+  ]
+}

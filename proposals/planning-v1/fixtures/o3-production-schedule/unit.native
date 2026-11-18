@@ -1,0 +1,15 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+profile t = "filament.temporal.complete/v1";
+model M = "example/plan-production";
+dimension Time;
+unit s : Time = rational(1, 1);
+unit min : Time = rational(60, 1) * s;
+time M tick M::Shop::tick period 10 min unit min;
+pre CanStart using p on M::Shop::start { (j != M::Job::A or self.aOn = M::Assignment::waiting) and (j != M::Job::B or self.bOn = M::Assignment::waiting) and (m != M::Machine::M1 or (self.aOn != M::Assignment::M1 and self.bOn != M::Assignment::M1)) and (m != M::Machine::M2 or (self.aOn != M::Assignment::M2 and self.bOn != M::Assignment::M2)) }
+post Start using p on M::Shop::start { ((j = M::Job::A and m = M::Machine::M1) implies self.aOn = M::Assignment::M1) and ((j = M::Job::A and m = M::Machine::M2) implies self.aOn = M::Assignment::M2) and (j != M::Job::A implies self.aOn = pre(self.aOn)) and ((j = M::Job::B and m = M::Machine::M1) implies self.bOn = M::Assignment::M1) and ((j = M::Job::B and m = M::Machine::M2) implies self.bOn = M::Assignment::M2) and (j != M::Job::B implies self.bOn = pre(self.bOn)) }
+pre CanTick using p on M::Shop::tick { self.now < 10 }
+post Tick using p on M::Shop::tick { self.now = pre(self.now) + 1 and (((pre(self.aOn) = M::Assignment::M1 or pre(self.aOn) = M::Assignment::M2) and pre(self.aRemaining) > 0) implies self.aRemaining = pre(self.aRemaining) - 1) and ((pre(self.aOn) = M::Assignment::waiting or pre(self.aOn) = M::Assignment::finished) implies self.aRemaining = pre(self.aRemaining)) and (((pre(self.bOn) = M::Assignment::M1 or pre(self.bOn) = M::Assignment::M2) and pre(self.bRemaining) > 0) implies self.bRemaining = pre(self.bRemaining) - 1) and ((pre(self.bOn) = M::Assignment::waiting or pre(self.bOn) = M::Assignment::finished) implies self.bRemaining = pre(self.bRemaining)) and (self.aRemaining = 0 implies self.aOn = M::Assignment::finished) and (self.aRemaining != 0 implies self.aOn = pre(self.aOn)) and (self.bRemaining = 0 implies self.bOn = M::Assignment::finished) and (self.bRemaining != 0 implies self.bOn = pre(self.bOn)) }
+invariant NoWorkInMaintenance using p on M::Shop at current { not ((self.now = 2 or self.now = 3) and (self.aOn = M::Assignment::M2 or self.bOn = M::Assignment::M2)) }
+type Lengths = Int[0, 10];
+synthesis Reach using t grammar M::Shop domain Lengths minimize Reach.elapsed satisfies { Reach.final.aOn = M::Assignment::finished and Reach.final.bOn = M::Assignment::finished };

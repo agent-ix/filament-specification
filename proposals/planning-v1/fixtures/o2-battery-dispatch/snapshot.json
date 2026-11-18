@@ -1,0 +1,43 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-battery/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-battery"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-battery/batteries",
+      "complete": true,
+      "objects": [
+        {
+          "key": "battery",
+          "type": "ix://example/plan-battery/Battery",
+          "fields": {
+            "hour": {
+              "integer": "0"
+            },
+            "soc": {
+              "kind": "decimal",
+              "coefficient": "50",
+              "scale": "2"
+            },
+            "draw": {
+              "integer": "1"
+            },
+            "previousDraw": {
+              "integer": "1"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

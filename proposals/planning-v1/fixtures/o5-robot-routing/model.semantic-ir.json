@@ -1,0 +1,301 @@
+{
+  "contractVersion": "2.0.0",
+  "canonicalization": {
+    "algorithm": "rfc8785-v1"
+  },
+  "source": {
+    "identity": "ix://example/plan-routing/spec",
+    "version": "1.0.0",
+    "dialect": "spec-bundle"
+  },
+  "package": {
+    "identity": "example/plan-routing",
+    "version": "1.0.0",
+    "mappingVersions": [],
+    "profileVersions": []
+  },
+  "occurrences": [],
+  "extensions": [],
+  "constructs": [
+    {
+      "kind": {
+        "module": "example/plan-routing",
+        "name": "object_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.object-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-routing",
+        "name": "population"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.population/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-routing",
+        "name": "variant"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "value",
+        "meaning": "filament.meaning.model.variant-type/v1",
+        "members": {
+          "variants": "required"
+        },
+        "shape": "enumeration"
+      }
+    }
+  ],
+  "types": [
+    {
+      "identity": "ix://example/plan-routing/Cell",
+      "displayName": "ix://example/plan-routing/Cell",
+      "kind": {
+        "module": "example/plan-routing",
+        "name": "variant"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-routing/Cell",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-routing/Cell"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "variants": [
+        {
+          "identity": "ix://example/plan-routing/variant/Cell-c0",
+          "name": "c0",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-routing/variant/Cell-c1",
+          "name": "c1",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-routing/variant/Cell-c2",
+          "name": "c2",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-routing/variant/Cell-c3",
+          "name": "c3",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-routing/variant/Cell-c4",
+          "name": "c4",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-routing/variant/Cell-b2",
+          "name": "b2",
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "identity": "ix://example/plan-routing/Robot",
+      "displayName": "ix://example/plan-routing/Robot",
+      "kind": {
+        "module": "example/plan-routing",
+        "name": "object_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-routing/Robot",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-routing/Robot"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "supertypes": [],
+      "relationships": [],
+      "fields": [
+        {
+          "identity": "ix://example/plan-routing/Robot/at",
+          "name": "at",
+          "typeRef": "ix://example/plan-routing/Cell",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-routing/Robot/at",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-routing/Robot/at"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-routing/Robot/target",
+          "name": "target",
+          "typeRef": "ix://example/plan-routing/Cell",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-routing/Robot/target",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-routing/Robot/target"
+              ]
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "identity": "ix://example/plan-routing/Robot/move",
+          "name": "move",
+          "params": [
+            {
+              "identity": "ix://example/plan-routing/Robot/move/c",
+              "name": "c",
+              "typeRef": "ix://example/plan-routing/Cell",
+              "presence": "required",
+              "nullable": false,
+              "defaultKind": "none",
+              "multiplicity": {
+                "lower": 1,
+                "upper": 1,
+                "ordered": false,
+                "unique": true
+              },
+              "origin": {
+                "generated": {
+                  "generatorIdentity": "ix://example/plan-routing/Robot/move/c",
+                  "generatorVersion": "1.0.0",
+                  "inputIdentities": [
+                    "ix://example/plan-routing/Robot/move/c"
+                  ]
+                }
+              }
+            }
+          ],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-routing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-routing/Robot/at"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        }
+      ]
+    }
+  ],
+  "populations": [
+    {
+      "identity": "ix://example/plan-routing/robots",
+      "displayName": "ix://example/plan-routing/robots",
+      "kind": {
+        "module": "example/plan-routing",
+        "name": "population"
+      },
+      "members": [
+        "ix://example/plan-routing/Robot"
+      ],
+      "extent": "closed",
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-routing/robots",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-routing/robots"
+          ]
+        }
+      }
+    }
+  ]
+}

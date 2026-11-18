@@ -49,7 +49,9 @@ These are found when the package is checked (S3) and refuse the declaration:
 
 ### Request-time refusals
 
-These are found when the request is admitted and refuse the request:
+These are found when the request is admitted and refuse the request. Each
+locus is a pointer into the plan request; a host request surface prefixes
+it with the pointer of the member carrying the plan request (FR-805):
 
 | Defect | Code / cause | Locus |
 | --- | --- | --- |
@@ -58,7 +60,7 @@ These are found when the request is admitted and refuse the request:
 | a policy name names no `temporal` declaration | `missing_declaration`/`missing-name` | `/policy/<i>` |
 | a policy clause's `over` binding is not an object of `G`'s model | `ill_typed`/`type-mismatch` | `/policy/<i>` |
 | the initial snapshot does not admit for `G`'s model | the snapshot's own admission refusal | `/initial` and the snapshot's member |
-| an unknown limit or accounting name | FR-461-AC-4's refusal | the member's pointer |
+| an unknown member of `limits` or `accounting` | `invalid_runtime_input`/`unknown-member` (FR-805; FR-461-AC-4 governs only an unknown `--limit` setting name on the CLI) | `/limits/<member>` or `/accounting/<counter>` |
 
 ### Never a refusal
 

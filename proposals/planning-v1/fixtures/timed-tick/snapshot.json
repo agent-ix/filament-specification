@@ -1,0 +1,35 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-timed-tick/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-timed-tick"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-timed-tick/lines",
+      "complete": true,
+      "objects": [
+        {
+          "key": "line",
+          "type": "ix://example/plan-timed-tick/Line",
+          "fields": {
+            "ticks": {
+              "integer": "0"
+            },
+            "work": {
+              "integer": "0"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

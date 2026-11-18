@@ -1,0 +1,320 @@
+{
+  "contractVersion": "2.0.0",
+  "canonicalization": {
+    "algorithm": "rfc8785-v1"
+  },
+  "source": {
+    "identity": "ix://example/plan-timed-tick/spec",
+    "version": "1.0.0",
+    "dialect": "spec-bundle"
+  },
+  "package": {
+    "identity": "example/plan-timed-tick",
+    "version": "1.0.0",
+    "mappingVersions": [],
+    "profileVersions": []
+  },
+  "occurrences": [],
+  "extensions": [],
+  "constructs": [
+    {
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "object_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.object-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "population"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.population/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "value_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.value-type/v1"
+      }
+    }
+  ],
+  "types": [
+    {
+      "identity": "ix://example/plan-timed-tick/Ticks",
+      "displayName": "ix://example/plan-timed-tick/Ticks",
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-timed-tick/Ticks",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-timed-tick/Ticks"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-timed-tick/Ticks/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-timed-tick/Ticks/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-timed-tick/Ticks/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-timed-tick/Ticks/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "3"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-timed-tick/Ticks/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-timed-tick/Ticks/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-timed-tick/Work",
+      "displayName": "ix://example/plan-timed-tick/Work",
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-timed-tick/Work",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-timed-tick/Work"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-timed-tick/Work/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-timed-tick/Work/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-timed-tick/Work/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-timed-tick/Work/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "2"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-timed-tick/Work/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-timed-tick/Work/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-timed-tick/Line",
+      "displayName": "ix://example/plan-timed-tick/Line",
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "object_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-timed-tick/Line",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-timed-tick/Line"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "supertypes": [],
+      "relationships": [],
+      "fields": [
+        {
+          "identity": "ix://example/plan-timed-tick/Line/ticks",
+          "name": "ticks",
+          "typeRef": "ix://example/plan-timed-tick/Ticks",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-timed-tick/Line/ticks",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-timed-tick/Line/ticks"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-timed-tick/Line/work",
+          "name": "work",
+          "typeRef": "ix://example/plan-timed-tick/Work",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-timed-tick/Line/work",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-timed-tick/Line/work"
+              ]
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "identity": "ix://example/plan-timed-tick/Line/tick",
+          "name": "tick",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-timed-tick/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-timed-tick/Line/ticks"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-timed-tick/Line/step",
+          "name": "step",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-timed-tick/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-timed-tick/Line/work"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        }
+      ]
+    }
+  ],
+  "populations": [
+    {
+      "identity": "ix://example/plan-timed-tick/lines",
+      "displayName": "ix://example/plan-timed-tick/lines",
+      "kind": {
+        "module": "example/plan-timed-tick",
+        "name": "population"
+      },
+      "members": [
+        "ix://example/plan-timed-tick/Line"
+      ],
+      "extent": "closed",
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-timed-tick/lines",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-timed-tick/lines"
+          ]
+        }
+      }
+    }
+  ]
+}

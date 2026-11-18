@@ -1,0 +1,35 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-probabilistic-try/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-probabilistic-try"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-probabilistic-try/devices",
+      "complete": true,
+      "objects": [
+        {
+          "key": "device",
+          "type": "ix://example/plan-probabilistic-try/Device",
+          "fields": {
+            "done": {
+              "boolean": false
+            },
+            "broken": {
+              "boolean": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,459 @@
+{
+  "contractVersion": "2.0.0",
+  "canonicalization": {
+    "algorithm": "rfc8785-v1"
+  },
+  "source": {
+    "identity": "ix://example/plan-battery/spec",
+    "version": "1.0.0",
+    "dialect": "spec-bundle"
+  },
+  "package": {
+    "identity": "example/plan-battery",
+    "version": "1.0.0",
+    "mappingVersions": [],
+    "profileVersions": []
+  },
+  "occurrences": [],
+  "extensions": [],
+  "constructs": [
+    {
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "object_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.object-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "population"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.population/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "value_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.value-type/v1"
+      }
+    }
+  ],
+  "types": [
+    {
+      "identity": "ix://example/plan-battery/Hour",
+      "displayName": "ix://example/plan-battery/Hour",
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-battery/Hour",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-battery/Hour"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-battery/Hour/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Hour/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Hour/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Hour/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "4"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Hour/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Hour/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-battery/Draw",
+      "displayName": "ix://example/plan-battery/Draw",
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-battery/Draw",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-battery/Draw"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-battery/Draw/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Draw/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Draw/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Draw/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "2"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Draw/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Draw/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-battery/Soc",
+      "displayName": "ix://example/plan-battery/Soc",
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-battery/Soc",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-battery/Soc"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-battery/Soc/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://example/plan-battery/Soc",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Soc/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Soc/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Soc/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "1"
+          },
+          "appliesTo": "ix://example/plan-battery/Soc",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Soc/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Soc/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "decimal",
+      "decimal": {
+        "precision": 5,
+        "scale": 2
+      }
+    },
+    {
+      "identity": "ix://example/plan-battery/Battery",
+      "displayName": "ix://example/plan-battery/Battery",
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "object_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-battery/Battery",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-battery/Battery"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "supertypes": [],
+      "relationships": [],
+      "fields": [
+        {
+          "identity": "ix://example/plan-battery/Battery/hour",
+          "name": "hour",
+          "typeRef": "ix://example/plan-battery/Hour",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Battery/hour",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Battery/hour"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Battery/soc",
+          "name": "soc",
+          "typeRef": "ix://example/plan-battery/Soc",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Battery/soc",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Battery/soc"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Battery/draw",
+          "name": "draw",
+          "typeRef": "ix://example/plan-battery/Draw",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Battery/draw",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Battery/draw"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Battery/previousDraw",
+          "name": "previousDraw",
+          "typeRef": "ix://example/plan-battery/Draw",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-battery/Battery/previousDraw",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-battery/Battery/previousDraw"
+              ]
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "identity": "ix://example/plan-battery/Battery/charge",
+          "name": "charge",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-battery/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-battery/Battery/hour",
+              "ix://example/plan-battery/Battery/soc",
+              "ix://example/plan-battery/Battery/draw",
+              "ix://example/plan-battery/Battery/previousDraw"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Battery/idle",
+          "name": "idle",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-battery/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-battery/Battery/hour",
+              "ix://example/plan-battery/Battery/draw",
+              "ix://example/plan-battery/Battery/previousDraw"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-battery/Battery/discharge",
+          "name": "discharge",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-battery/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-battery/Battery/hour",
+              "ix://example/plan-battery/Battery/soc",
+              "ix://example/plan-battery/Battery/draw",
+              "ix://example/plan-battery/Battery/previousDraw"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        }
+      ]
+    }
+  ],
+  "populations": [
+    {
+      "identity": "ix://example/plan-battery/batteries",
+      "displayName": "ix://example/plan-battery/batteries",
+      "kind": {
+        "module": "example/plan-battery",
+        "name": "population"
+      },
+      "members": [
+        "ix://example/plan-battery/Battery"
+      ],
+      "extent": "closed",
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-battery/batteries",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-battery/batteries"
+          ]
+        }
+      }
+    }
+  ]
+}

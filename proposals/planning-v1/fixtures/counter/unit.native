@@ -1,0 +1,13 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+profile inf = "filament.temporal.infinite-trace/v1";
+model M = "example/plan-counter";
+pre CanInc using p on M::Counter::inc { self.value < 20 }
+post Inc using p on M::Counter::inc { self.value = pre(self.value) + 1 }
+pre CanDouble using p on M::Counter::double { self.value <= 10 }
+post Double using p on M::Counter::double { self.value = 2 * pre(self.value) }
+type Upto5 = Int[0, 5];
+type Cost = Integer;
+temporal NotFour using inf over (c: M::Counter) clock "model-steps" on origin { always holds(c.value != 4) }
+temporal SomeTime using inf over (c: M::Counter) clock "model-steps" on origin { eventually holds(c.value = 3) }
+synthesis Reach using p grammar M::Counter domain Upto5 satisfies { Reach.final.value = 8 };

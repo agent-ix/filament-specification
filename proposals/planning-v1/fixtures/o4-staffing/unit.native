@@ -1,0 +1,8 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+model M = "example/plan-staffing";
+pre CanMove using p on M::Crew::move { src != dst and (src != M::Station::process or self.process > 1) and (src != M::Station::pack or self.pack > 1) and (src != M::Station::ship or self.ship > 1) and (dst != M::Station::process or self.process < 8) and (dst != M::Station::pack or self.pack < 8) and (dst != M::Station::ship or self.ship < 8) }
+post Move using p on M::Crew::move { ((dst = M::Station::process and pre(self.process) < 8) implies self.process = pre(self.process) + 1) and ((src = M::Station::process and pre(self.process) > 0) implies self.process = pre(self.process) - 1) and ((dst != M::Station::process and src != M::Station::process) implies self.process = pre(self.process)) and ((dst = M::Station::pack and pre(self.pack) < 8) implies self.pack = pre(self.pack) + 1) and ((src = M::Station::pack and pre(self.pack) > 0) implies self.pack = pre(self.pack) - 1) and ((dst != M::Station::pack and src != M::Station::pack) implies self.pack = pre(self.pack)) and ((dst = M::Station::ship and pre(self.ship) < 8) implies self.ship = pre(self.ship) + 1) and ((src = M::Station::ship and pre(self.ship) > 0) implies self.ship = pre(self.ship) - 1) and ((dst != M::Station::ship and src != M::Station::ship) implies self.ship = pre(self.ship)) }
+invariant Staffed using p on M::Crew at current { self.process >= 1 and self.pack >= 1 and self.ship >= 1 and self.process + self.pack + self.ship = 8 }
+type Lengths = Int[0, 3];
+synthesis Reach using p grammar M::Crew domain Lengths maximize min(10 * Reach.final.process, 6 * Reach.final.pack, 10 * Reach.final.ship) satisfies { true };

@@ -1,0 +1,238 @@
+{
+  "contractVersion": "2.0.0",
+  "canonicalization": {
+    "algorithm": "rfc8785-v1"
+  },
+  "source": {
+    "identity": "ix://example/plan-counter/spec",
+    "version": "1.0.0",
+    "dialect": "spec-bundle"
+  },
+  "package": {
+    "identity": "example/plan-counter",
+    "version": "1.0.0",
+    "mappingVersions": [],
+    "profileVersions": []
+  },
+  "occurrences": [],
+  "extensions": [],
+  "constructs": [
+    {
+      "kind": {
+        "module": "example/plan-counter",
+        "name": "object_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.object-type/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-counter",
+        "name": "population"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.population/v1"
+      }
+    },
+    {
+      "kind": {
+        "module": "example/plan-counter",
+        "name": "value_type"
+      },
+      "moduleVersion": "1.0.0",
+      "construct": {
+        "identity": "none",
+        "shape": "record",
+        "members": {},
+        "meaning": "filament.meaning.model.value-type/v1"
+      }
+    }
+  ],
+  "types": [
+    {
+      "identity": "ix://example/plan-counter/Value",
+      "displayName": "ix://example/plan-counter/Value",
+      "kind": {
+        "module": "example/plan-counter",
+        "name": "value_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-counter/Value",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-counter/Value"
+          ]
+        }
+      },
+      "constraints": [
+        {
+          "identity": "ix://example/plan-counter/Value/constraints/min",
+          "keyword": "min",
+          "operands": {
+            "value": "0"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.min",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-counter/Value/constraints/min",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-counter/Value/constraints/min"
+              ]
+            }
+          }
+        },
+        {
+          "identity": "ix://example/plan-counter/Value/constraints/max",
+          "keyword": "max",
+          "operands": {
+            "value": "20"
+          },
+          "appliesTo": "ix://filament/native/Integer",
+          "diagnosticCode": "bound.max",
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-counter/Value/constraints/max",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-counter/Value/constraints/max"
+              ]
+            }
+          }
+        }
+      ],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "scalar": "integer"
+    },
+    {
+      "identity": "ix://example/plan-counter/Counter",
+      "displayName": "ix://example/plan-counter/Counter",
+      "kind": {
+        "module": "example/plan-counter",
+        "name": "object_type"
+      },
+      "roles": [],
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-counter/Counter",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-counter/Counter"
+          ]
+        }
+      },
+      "constraints": [],
+      "extensions": [],
+      "unknownPolicy": "reject",
+      "supertypes": [],
+      "relationships": [],
+      "fields": [
+        {
+          "identity": "ix://example/plan-counter/Counter/value",
+          "name": "value",
+          "typeRef": "ix://example/plan-counter/Value",
+          "presence": "required",
+          "nullable": false,
+          "defaultKind": "none",
+          "multiplicity": {
+            "lower": 1,
+            "upper": 1,
+            "ordered": false,
+            "unique": true
+          },
+          "origin": {
+            "generated": {
+              "generatorIdentity": "ix://example/plan-counter/Counter/value",
+              "generatorVersion": "1.0.0",
+              "inputIdentities": [
+                "ix://example/plan-counter/Counter/value"
+              ]
+            }
+          }
+        }
+      ],
+      "operations": [
+        {
+          "identity": "ix://example/plan-counter/Counter/inc",
+          "name": "inc",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-counter/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-counter/Counter/value"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        },
+        {
+          "identity": "ix://example/plan-counter/Counter/double",
+          "name": "double",
+          "params": [],
+          "pre": [],
+          "post": [],
+          "origin": {
+            "source": {
+              "sourceIdentity": "ix://example/plan-counter/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
+            }
+          },
+          "frame": {
+            "modifies": [
+              "ix://example/plan-counter/Counter/value"
+            ],
+            "creates": [],
+            "deletes": []
+          }
+        }
+      ]
+    }
+  ],
+  "populations": [
+    {
+      "identity": "ix://example/plan-counter/counters",
+      "displayName": "ix://example/plan-counter/counters",
+      "kind": {
+        "module": "example/plan-counter",
+        "name": "population"
+      },
+      "members": [
+        "ix://example/plan-counter/Counter"
+      ],
+      "extent": "closed",
+      "origin": {
+        "generated": {
+          "generatorIdentity": "ix://example/plan-counter/counters",
+          "generatorVersion": "1.0.0",
+          "inputIdentities": [
+            "ix://example/plan-counter/counters"
+          ]
+        }
+      }
+    }
+  ]
+}
