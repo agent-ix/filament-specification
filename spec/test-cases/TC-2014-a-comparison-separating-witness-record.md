@@ -3,6 +3,8 @@ id: TC-2014
 title: "A comparison separating witness record names the comparison, its operands and its path"
 type: TC
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-352
+    type: verifies
   - target: ix://agent-ix/filament-specification/FR-351
     type: verifies
 ---
@@ -12,7 +14,7 @@ relationships:
 ## Description
 
 Verify the comparison form of the separating witness record and its strict
-reader. Scope: FR-351-AC-9 and FR-351-AC-10.
+reader. Scope: FR-351-AC-9, FR-351-AC-10 and FR-352-AC-21.
 
 ## Test Procedure
 

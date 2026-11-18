@@ -4186,9 +4186,10 @@ interval of the whole source declaration that introduced that occurrence,
 under the same source-document identity as the occurrence's `source_map`
 region. The package writer (S8) writes it from the checked declaration's span.
 The region is provenance, like `refinement_step_rows`: it is not a
-node-identity input, changes no `node_id`, no node and no `source_map` entry,
-and is no digest or hash input (FR-201); two clauses that differ only in
-layout differ only in this member. The closed row schema refuses a row without
+node-identity input, changes no `node_id` and no node,
+and is no digest or hash input (FR-201). A layout change inside a declaration
+moves this region, and the `source_map` regions of the tokens after it, but no
+`node_id` and no node. The closed row schema refuses a row without
 `declaration_region`, or with one that is not a `SourceRegion`, as
 `malformed_wire` at that member. In each table's row visit, after the
 occurrence join and before the repeated-key check, the reader SHALL refuse
@@ -5325,7 +5326,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-457 | The package of a unit declaring the invariant state clause `NotAboveThree`, and the state-graph claim `ReachThree` (`possible`) carries `claim_names` with one row each, `qualified_name` `["NotAboveThree"]` and `["ReachThree"]`, sorted by `NodeRef` then occurrence; two structurally equal state clauses `A` and `B` share one node and carry two rows with distinct occurrences; renaming `NotAboveThree` changes no `node_id` and no node; a unit with none of these nodes has no `claim_names` member. | Test (TC-2011) |
 | FR-322-AC-458 | A `claim_names` row whose `declaration` names no node, or a `temporal_clause` node, refuses `invalid_package`/`invalid-value` at `/claim_names/{i}/declaration`; an `occurrence` the node lacks refuses at `/claim_names/{i}/occurrence`; a `qualified_name` whose last segment is not `name` refuses at `/claim_names/{i}/qualified_name`; two rows with one `qualified_name` refuse `ambiguous_declaration`/`ambiguous-name` at the later row's `qualified_name`; a repeated key refuses `conflicting-definition`; a claim-bearing node with no row, or a package with such a node and no member, refuses `invalid-value` at `/claim_names`; a row with an extra member fails the schema `malformed_wire`. | Test (TC-2011) |
 | FR-322-AC-459 | The package of FR-322-AC-457 with its `ReachThree` `claim_names` row renamed `Bounded` (name and `qualified_name` `["Bounded"]`), beside a temporal clause whose `temporal_clause_names` row is named `Bounded`, refuses `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name` of that row, naming both rows; the same with the row's `qualified_name` `["Scope", "Bounded"]` refuses the same; with the claim row named `ReachThree` and the temporal row `Bounded` the package is admitted and the lookup resolves `Bounded` to the temporal row and `ReachThree` to the claim row. | Test (TC-2012) |
-| FR-322-AC-460 | The package of a unit declaring the temporal clause `Bounded` and the invariant state clause `NotAboveThree` carries, on the `Bounded` `temporal_clause_names` row and the `NotAboveThree` `claim_names` row, a `declaration_region` whose bytes are the whole declaration from its first keyword to its closing `}` and which contains the occurrence's name-token `source_map` region; the same unit with whitespace added inside `Bounded`'s body differs only in that row's `declaration_region` and leaves every `node_id` and `source_map` entry unchanged. | Test (TC-2015) |
+| FR-322-AC-460 | The package of a unit declaring the temporal clause `Bounded` and the invariant state clause `NotAboveThree` carries, on the `Bounded` `temporal_clause_names` row and the `NotAboveThree` `claim_names` row, a `declaration_region` whose bytes are the whole declaration from its first keyword to its closing `}` and which contains the occurrence's name-token `source_map` region; the same unit, with `Bounded` declared last, with whitespace added right before `Bounded`'s closing `}` changes no `node_id` or node. | Test (TC-2015) |
 | FR-322-AC-461 | AC-460's package with the `Bounded` row's `declaration_region` removed refuses `malformed_wire` at that member; with it shrunk to one byte that does not contain the name token, or naming another source, refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/0/declaration_region`; the same edits on the `NotAboveThree` row refuse at `/claim_names/{i}/declaration_region`. | Test (TC-2015) |
 
 ## Dependencies
