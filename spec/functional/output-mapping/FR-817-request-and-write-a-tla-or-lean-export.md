@@ -94,10 +94,29 @@ The export request is the `export` member of a `native-run/1` request:
   order, each once; `minimum_fidelity` (optional, default `conditional`) is
   FR-811's floor; `observer` (optional) selects a structural observer
   (`sany`, `tlc`, `apalache`, `lean`) run on the assembled package.
+- `obligations` SHALL hold at least one name, because FR-120's obligation
+  set is nonempty. An absent member refuses `invalid_runtime_input`/
+  `missing-member`, and an empty array refuses `invalid-value`, at
+  `/request/export/obligations`, exit `20`. No value of the member means
+  "every obligation". A caller who wants every clause names each one, so
+  the record set is always the one the request states and nothing else can
+  supply an omitted selection (FR-120-AC-3).
+- Each name SHALL be the declared name of one obligation of the program:
+  an `invariant` state clause, or a `temporal`, state-graph, `hyper` or
+  `relation` clause, whatever its subject (a state model, a timed model, a
+  hybrid or a protocol). For example, `"SlowEnough"` names
+  `temporal SlowEnough ... over (h: Braking)`, and its record carries
+  FR-651's hybrid fidelity. A `pre`, `post` or `constraint` clause is read
+  into its operation (FR-812) or its search (FR-382) and is not an
+  obligation. A name that names no obligation of the program, one of those
+  clauses included, gets a `refused` record at its request position with
+  the cause `not-an-obligation{name}` (FR-651 "Fidelity", FR-651-AC-4).
 - `initial` (optional) names a `filament.state.snapshot/v1` document,
   resolved against the request file's directory, whose state the target's
   `Init` states (FR-812). Without it, `Init` states the model's declared
-  initial constraints.
+  initial constraints, as FR-812 defines them: a hybrid's `hybrid-initial`
+  entries, and for a state model, which declares none, its well-typedness
+  `TypeOK`.
 - `limits` (optional) holds export limits by their FR-461 setting names.
   The export limits SHALL be FR-461 limits with the stage name `export`:
   `export.output_bytes` (FR-461 Behavior 2, the bytes of the target text),
@@ -188,6 +207,19 @@ the export outcome document unchanged.
   refuses `invalid-request` naming `limits` and the setting, exit `20`.
 - Exits: `assembled` `0`; admission refusal `20`; `below-fidelity-floor`
   `21` (unsupported); `incomplete` `22`; a mapper failure `30`.
+- When several stops could apply, the export SHALL report the first one
+  in the order it works. First comes admission (exit `20`). Next comes
+  classification, which charges `export.nodes` and `export.work_units` for
+  each node it classifies. A denied charge there stops `incomplete` (exit
+  `22`), because the floor cannot be decided over a partial set of records.
+  Next is the fidelity floor over the complete records (exit `21`). Last is
+  writing the text, which charges `export.output_bytes` and
+  `export.work_units` for each region it writes (exit `22`). A request below
+  its floor therefore refuses `below-fidelity-floor` whatever its
+  `export.output_bytes`: a refused request writes no target bytes (FR-811),
+  so it has none to charge. The order also agrees with FR-301's severity
+  ordering, which ranks `21` above `22`, so a caller that ran two checks
+  separately would see the same code.
 
 `export --evidence <request>` SHALL read a `native-run/1` request carrying
 an `export_evidence` member and settle each named obligation as FR-815
@@ -207,6 +239,9 @@ naming both, exit `20`, before any stage runs.
 | FR-817-AC-5 | A request whose `target_family` is `tla` and whose profile is `filament.output.lean4/v1` refuses with no `target_text`, exit `20`. | Test (TC-1976) |
 | FR-817-AC-6 | The `package` member of the counter export holds exactly `source_package` (identity and version), `target_profile`, `generator` (identity and version) and `limits` with the three export settings at their defaults; two exports of the same request give equal `package` members, and an export under a different `export.nodes` gives a different one. | Test (TC-2020) |
 | FR-817-AC-7 | `export --evidence <request>` over an evidence request naming the counter export's `package` and `Bounded` writes an outcome document with operation `export` and one item for `Bounded`; `export --evidence <request> --output m.tla` refuses naming `--evidence` and `--output`, exit `20`, and writes no file. | Test (TC-2020) |
+| FR-817-AC-8 | The counter request with `obligations` `[]` refuses `invalid_runtime_input`/`invalid-value` at `/request/export/obligations`, exit `20`. Without the member, it refuses `missing-member` at the same pointer. Neither writes `target_text`. | Test (TC-2032) |
+| FR-817-AC-9 | `obligations` `["SlowEnough"]` over the `Braking` unit gives one record whose obligation is `SlowEnough`. `["CanInc", "Bounded", "Nope"]` over the counter gives three records in that order: `CanInc` and `Nope` are `refused` with `not-an-obligation{name}`, `Bounded` is `preserved`, and the request exits `21` under the default floor. | Test (TC-2032) |
+| FR-817-AC-10 | `SlowEnough` over `Braking` under the default floor with `limits` `{"export.output_bytes": 1}` refuses `below-fidelity-floor`, exit `21`. The counter's `Bounded` under the same limit stops `incomplete` naming `export.output_bytes`, exit `22`. `SlowEnough` with `{"export.nodes": 1}` stops `incomplete` naming `export.nodes`, exit `22`. | Test (TC-2032) |
 
 ## Dependencies
 

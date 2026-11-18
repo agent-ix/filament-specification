@@ -65,6 +65,26 @@ node, locus}`: `target` the family, `construct` the construct's
 source region. An obligation whose closure holds several such nodes lists
 one cause per node, in node order.
 
+### Decision: one refusal form, and only for what the target cannot state
+
+`target-unrepresentable` SHALL be the only cause by which a construct makes
+its obligation `unrepresented`, and a mapper SHALL write it only for a
+construct that the table above or FR-651 "Fidelity" marks `unrepresented`
+for the selected target. Every other construct of the closure SHALL be
+lowered by FR-812 or FR-813 to the disposition the table gives it. No
+disposition, cause or exit stands for a construct that the target can state
+but that the mapper does not lower: a mapper that meets such a construct
+stops the export as a mapper failure (FR-817, exit `30`), with no package
+and no target bytes.
+
+The fidelity floor exists to measure what the target can say about the
+source. A "not lowered" record would let an incomplete mapper assemble a
+package under `minimum_fidelity` `any` that reads as a faithful export, and
+two conforming mappers would then give different records for one request,
+which FR-125 forbids. A missing lowering is a defect of the mapper, so it
+fails loudly, while a construct the target truly cannot state is a property
+of the model and is reported as a record.
+
 ### The fidelity floor
 
 - The request member `minimum_fidelity` SHALL be `preserved`, `conditional`
@@ -88,6 +108,7 @@ one cause per node, in node order.
 | FR-811-AC-3 | Under `minimum_fidelity` `any` the same request assembles a package in which the failing record claims no region and the other record is `preserved`. | Test (TC-1970) |
 | FR-811-AC-4 | Under `minimum_fidelity` `preserved` a dense-time clause (`conditional`) fails the floor; under `conditional` it passes. | Test (TC-1970) |
 | FR-811-AC-5 | For every obligation of the export conformance corpus (FR-818), every node of its dependency closure is either covered by an output region of its record or named by one of its causes. | Test (TC-1970) |
+| FR-811-AC-6 | The counter's invariant `value <= 5` exports `preserved` under each profile with no cause; `SlowEnough` over the hybrid `Braking` exports `unrepresented` with one `target-unrepresentable` cause per flow-equation node of `Braking`, in node order, each with `target` the family, `construct` that node's `node_tag`/`semantic_form`, `node` its node id and `locus` its source region, and no record of either export carries any other cause for a construct of its closure. | Test (TC-2029) |
 
 ## Dependencies
 
