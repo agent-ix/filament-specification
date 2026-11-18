@@ -9238,6 +9238,42 @@
           }
         ]
       }
+    },
+    {
+      "name": "global-conformance-open-history-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause": "FR-059"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-protocol",
+            "kind": "global-conformance",
+            "result": "inconclusive",
+            "cause": {
+              "type": "open-history"
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
     }
   ],
   "adverse": [
@@ -13593,6 +13629,30 @@
           "value": [
             "successors"
           ]
+        }
+      ]
+    },
+    {
+      "name": "open-history-on-realizability",
+      "base": "global-conformance-open-history-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/kind",
+          "value": "realizability"
+        }
+      ]
+    },
+    {
+      "name": "open-history-with-payload",
+      "base": "global-conformance-open-history-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/0/cause/state",
+          "value": "open"
         }
       ]
     }

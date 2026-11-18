@@ -344,7 +344,7 @@ for these items with `invalid_result`/`unknown-cause`.
 | `proved` (proof basis) | `exact-value{value, reductions}`, `value-bounds{lower, upper, method, reductions}` with `method` `backward-induction{precision_bits}` or `interval-iteration{precision_bits, sweeps}`, `zone-certified`, `exhaustive`, `closed-form{analysis}` with `analysis` `fixed-priority`, `edf` or `amc-rtb`, `bounded-solver{method, horizon, jumps, exhaustive}` and `inductive-solver{method}`, each `method` from FR-193's closed method table ("Solver methods") |
 | `refuted` (cause) | `undefined-evaluation{where, cause}` |
 | `measured` (FR-409 cause) | `undefined-evaluation{where, cause}` for `rejected`; `indifference-region` and `undecided-successor` for `undecided` |
-| `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `no-evaluated-case` (FR-190): a completed model-based test run whose every generated case was discarded, so the suite evaluated no case; it carries no basis and no counterexample, the FR-190 record's `cases` gives the discard reasons, and it is not `kani_vacuous_proof`, which says no assignment of the declared types satisfies the premises, a fact about the model rather than about the suite. It is written only in an FR-190 record (and so in a plan step's disposition), and no provider entry carries it; `refuted-ignoring-constraints` (FSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample |
+| `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `no-evaluated-case` (FR-190): a completed model-based test run whose every generated case was discarded, so the suite evaluated no case; it carries no basis and no counterexample, the FR-190 record's `cases` gives the discard reasons, and it is not `kani_vacuous_proof`, which says no assignment of the declared types satisfies the premises, a fact about the model rather than about the suite. It is written only in an FR-190 record (and so in a plan step's disposition), and no provider entry carries it; `refuted-ignoring-constraints` (FSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample; `open-history` (FR-059), a `global-conformance` result over an open or incomplete history; `incomplete-closure-scope` (FR-059), a `global-conformance` result over a recording whose protocol has a fan-out node and whose activated replicated-role population the request does not state |
 | `incomplete` (cause) | `limit-reached{limit, value, setting}`, naming the limit, its value and the request setting that raises it, the one limit-stop cause of every engine; `timed-out`, the backend's own wall-clock limit, as a hybrid solver's `max_solver_time` or a provider's overrun of `deadline_ms` ("Hybrid solver budgets" below); `precision-budget{lower, upper}`; `cancelled{source}` for a cancelled run, `source` the cancellation cause, `requested` when the caller cancels and `deadline` when the caller's deadline ends the run |
 | `unsupported` (cause) | `missing-confidence`, `every-scheduler`, `exact-only-form`, `confidence-beyond-precision`, `not-markov{state, transition, post_states}`, `not-stochastic{state, identity}`, `time-locked-sample{state}`, `total-above-draw-range{total}`, `zero-weight-component{component}`, `delay-distribution{operation}`, `strict-clock-constraint{locus}`, `zero-delay-cycle{states}`, `timed-form-shape{locus}`, `punctual-interval{locus}`, `stopwatch-required` |
 
@@ -740,7 +740,9 @@ member that raises the budget, `max_store_buffer` or `max_messages`), FR-428
 `max_live_instances`, the member that raises it), FR-174 and FR-175
 (`premise-not-stated`, `replay-disagreed`, `unforced-refutation`,
 `strategy-replay-failed`, `cut-count` and `undecided-evaluation`, defined
-below) and AD-016's `kani_vacuous_proof`.
+below), FR-059 (`open-history` and `incomplete-closure-scope`, defined below)
+and AD-016's
+`kani_vacuous_proof`.
 
 A `local-projection` or `realizability` item (FR-174, FR-175) that completes
 its method and settles FR-360 `inconclusive` carries one of these closed
@@ -765,9 +767,27 @@ Each of the six causes below is a bare `type` with no payload member:
 | `cut-count` | The strategy table passed its replay walk, but some channel's delivery policy admits an open count range (`at-least-once`, `unknown`), so its delivery counts were cut at the channel's capacity (its literal, or its symbolic capacity's bound value, FR-785) and the `max_depth` horizon. A result that would otherwise be `proved` settles this cause instead. It does not test whether the result depended on the cut. A refutation under an open range still settles `refuted`. |
 | `undecided-evaluation` | The result depended on an evaluation the protocol evaluator left undecided. That is an undetermined clause or protocol expression, or a terminal predicate that is undefined or refused at a terminal state. It is not the `refuted` cause `undefined-evaluation{where, cause}`. |
 
+A `global-conformance` item ([FR-059](../../functional/protocol/FR-059-assess-finite-global-conformance.md))
+that violates no obligation and that no run limit stopped settles FR-360
+`inconclusive` with the cause `open-history` when some obligation is still
+pending or its complete-global-conformance closure record
+([FR-247](../protocol/FR-247-complete-global-conformance-closure-state.md)) is
+not `closed`, except in the `incomplete-closure-scope` case below. `open-history` is a bare `type` with no payload member and
+belongs to a `global-conformance` entry only: the closure state it reports is
+carried by the closure record, not by the cause.
+
+A `global-conformance` item over a recording whose protocol has a fan-out
+node and whose activated replicated-role population the request does not
+state, that violates no obligation and that no run limit stopped, settles
+FR-360 `inconclusive` with the cause `incomplete-closure-scope`, whatever its
+closure state. `incomplete-closure-scope` is a bare `type` with no payload
+member and belongs to a `global-conformance` entry only.
+
 The schema binds these causes to the item kind the result entry names: a
-realizability-only cause on another kind's entry, and any other inconclusive
-cause on a protocol-analysis entry, are refused before consumption. That
+realizability-only cause, `open-history` or `incomplete-closure-scope` on
+another kind's entry, and any
+other inconclusive cause on a protocol-analysis entry, are refused before
+consumption. That
 `depth` equals the key's `max_depth` is a reader obligation, because the
 entry does not carry the key.
 

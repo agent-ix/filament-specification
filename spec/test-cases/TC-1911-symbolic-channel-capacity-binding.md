@@ -13,7 +13,7 @@ relationships:
 
 Catches a symbolic capacity that is refused as unsupported, read from a
 default, truncated to a horizon, or claimed beyond its bound value. Scope:
-FR-785-AC-1, FR-785-AC-2, FR-785-AC-3, FR-785-AC-4, FR-785-AC-5, FR-785-AC-6.
+FR-785-AC-1, FR-785-AC-2, FR-785-AC-3, FR-785-AC-4, FR-785-AC-5, FR-785-AC-6, FR-785-AC-7.
 
 ## Test Procedure
 
@@ -30,6 +30,9 @@ FR-785-AC-1, FR-785-AC-2, FR-785-AC-3, FR-785-AC-4, FR-785-AC-5, FR-785-AC-6.
    `{"Bound": "2"}`, without `capacities`, and with `capacities` added over a
    clause that has a literal capacity.
 6. Settle a realizability item over the clause at `"2"`, at `"1"`, and with no
+   binding.
+7. Replay a supplied trace that sends `P` then `Q`, and assess a recording
+   that shows both sends queued, over the clause at `"1"` and with no
    binding.
 
 ## Expected Results
@@ -57,3 +60,6 @@ FR-785-AC-1, FR-785-AC-2, FR-785-AC-3, FR-785-AC-4, FR-785-AC-5, FR-785-AC-6.
   different witness identity at `"1"`; with no binding, a key holding the
   premise recorded as not stated, no `missing-member` refusal, and
   `inconclusive`, cause `premise-not-stated`.
+- Step 7: at `"1"` the trace declines at the second send and the recording's
+  channel obligation is violated; with no binding each returns
+  `requires-bound`, never `unsupported`.
