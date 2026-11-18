@@ -3805,11 +3805,14 @@ temporal declaration whose selected profile requires a clock configuration. A
 `protocol`/`compensation` node (operator `compensate`, FR-466), whose
 `within` window is a selected temporal declaration with its own clock name, or a
 `protocol`/`control` node of operator `await` (FR-466), whose `clock` and
-`within` window make it a clocked declaration of its own. It is a
+`within` window make it a clocked declaration of its own, or a
+`claim`/`hyperproperty` node (FR-402), whose traces each read their own
+clock ("Hyper clause rows" below). It is a
 top-level checked-package member, not a semantic-graph node. When no
-`temporal`/`temporal_clause` node selects one of the clock-configured profiles
-and no `compensation` or `await` node exists under a lock whose
-`temporal_profile` selects one, the member is absent; when present, it is a non-empty array. Absence never
+`temporal`/`temporal_clause` node selects one of the clock-configured profiles,
+no `compensation` or `await` node exists under a lock whose
+`temporal_profile` selects one, and no `claim`/`hyperproperty` node has a
+clock-configured profile, the member is absent; when present, it is a non-empty array. Absence never
 supplies a default clock or configuration for a temporal declaration that
 requires one.
 
@@ -3836,26 +3839,32 @@ repeated in the row:
 `declaration` is a structural `NodeRef` equal to the `node_id` of exactly one
 `temporal`/`temporal_clause` declaration node (FR-370), of exactly one
 `protocol`/`compensation` node (FR-466), or of exactly one `protocol`/`control`
-node of operator `await` (FR-466). A compensation window is keyed by the
+node of operator `await` (FR-466), or of exactly one `claim`/`hyperproperty`
+node (FR-402). A compensation window is keyed by the
 compensation node's own `node_id`, and an await's window by the await's own
-`node_id`; no `attempt` or other control node keys a row. It is not the referenced `temporal`/`formula` expression node,
+`node_id`; no `attempt` or other control node keys a row. A hyper clause's
+rows are keyed by its `hyperproperty` node, never by its body wrapper
+("Hyper clause rows" below). It is not the referenced `temporal`/`formula` expression node,
 the model root, or a `timed_model` node: those identities do not identify the
 temporal declaration's selected clock. `occurrence` is the ordinal of one
-occurrence of that node: a `claim` occurrence of a clause, the `declaration`
+occurrence of that node: a `claim` occurrence of a clause or of a
+`hyperproperty` node, the `declaration`
 occurrence of a compensation or of an await. The row is read by its exact key: (`declaration`, `occurrence`) for every
-row except a hyper clause body wrapper's, and (`declaration`, `occurrence`,
-`trace`) for a wrapper row ("Hyper clause rows" below). A reader never selects
+row except a `hyperproperty` node's, and (`declaration`, `occurrence`,
+`trace`) for a hyper row ("Hyper clause rows" below). A reader never selects
 a row by array position, clock name, formula contents, or path-name
 inference. Rows are in ascending order of structural `NodeRef`, then
-`occurrence`, then, for wrapper rows, the trace's position in the body's
+`occurrence`, then, for hyper rows, the trace's position in the node's
 `quantifiers` order, and each key occurs at most once.
 
 `clock_name` is the exact non-empty text value of the clause body's `clock`
 argument (the second argument of `filament.op.temporal.clause`, FR-370), or, for a
 compensation row, of the compensation node's `clock` text argument (the fifth
 argument of `compensate`, FR-466), or, for an await row, of the await's `clock`
-text argument (its second argument, FR-466); every row of one node carries the same
-`clock_name`. A reader uses this typed member directly; it never parses a
+text argument (its second argument, FR-466), or, for a hyper row, the clock
+name "Hyper clause rows" gives it; every row of one node carries the same
+`clock_name`, except that the rows of a finite-domain hyper clause agree per
+occurrence (below). A reader uses this typed member directly; it never parses a
 legacy `clock:` prefix or derives the name from the profile identity.
 
 `clock` is exactly one closed alternative, with no omitted or extra members:
@@ -3872,7 +3881,9 @@ and requires that law to equal the matching `lock.profile_selections` entry.
 A compensation node and an await have no `temporal_profile` law of their own
 (FR-464 "An `await` or a `compensate` reads a clock role"): the profile of each
 is the lock's `temporal_profile` selection, and no per-node law is read or
-required. The
+required. A `hyperproperty` node's profile is its body wrapper's law under a
+`behaviours` domain and the lock's `temporal_profile` selection under a
+finite domain ("Hyper clause rows" below). The
 selected definition determines exactly the `clock.kind` above. The profile's
 trust and identity are provided by that existing lock selection and the
 referenced law; `temporal_bindings` adds no revision, history, artifact
@@ -3912,38 +3923,76 @@ compared byte-for-byte; no trimming, normalization or alias resolution occurs.
 The other three profile kinds retain their existing row requirements unchanged.
 
 **Hyper clause rows: one per quantified trace.** A hyper clause relates
-several traces, and under event-position each trace's positions are the steps
-of its own model, so each trace has its own sequence authority. The body
-wrapper of a `claim`/`hyperproperty` node (FR-402) therefore has one row per
-quantified trace for each of its `claim` occurrences, not one row per
-occurrence. Each such row carries the extra member `trace`, the trace
-variable's name exactly as the `variable` member of its quantifier Group
-holds it, and `clock` is the configuration derived for that trace: from the
-model subject the variable's alias selects, by the rule the producer applies
-to a single-trace clause over that model (the event-position
-`sequence_authority` is that model's declaration identity text). Every row of
-the wrapper carries the wrapper's `clock_name`. The key of a wrapper row is
-(`declaration`, `occurrence`, `trace`); wrapper rows ascend by `declaration`,
-then `occurrence`, then the trace's position in the body's `quantifiers`
-order. A row of any other declaration carries no `trace` member. The rows of
-one wrapper occurrence may hold equal configurations (two traces of one
-model, or a fixed-sample clause whose derived configuration does not depend
-on the model), and they are written all the same, so a consumer reads each
-trace's clock by its key and never by inference from another trace. A hyper
-clause over a finite domain (FR-191) has no quantifier alias, and its rows
-take the one configuration the clause's clock serves, one per trace.
+several traces, and each trace's positions are its own: under a `behaviours`
+domain they are the steps of the model the trace's alias selects, and under a
+finite domain (FR-191) they are the states of one trace of the supplied
+population (FR-739), read in lockstep. Each trace therefore has its own clock
+row. The rows are keyed by the clause's `claim`/`hyperproperty` node
+(FR-402): for each `claim` occurrence of the node, one row per quantifier
+Group, carrying the extra member `trace`, the Group's `variable` text exactly.
+The key of a hyper row is (`declaration`, `occurrence`, `trace`); hyper rows
+ascend by `declaration`, then `occurrence`, then the Group's position in the
+node's `quantifiers` order. A row of any other declaration carries no `trace`
+member.
 
-The reader SHALL require, for every `claim` occurrence of a body wrapper,
-exactly one row per quantifier Group, keyed by its variable. A wrapper row
-with no `trace` member, a `trace` naming no variable of the body, a repeated
-(`declaration`, `occurrence`, `trace`) key and a missing trace row refuse
-`invalid_package`/`timed-node-reference`: at `/temporal_bindings/{i}/trace`
-for an absent or unknown trace and a `trace` on a row that is not a wrapper's,
-at the later row `/temporal_bindings/{i}` with
-`invalid_package`/`conflicting-definition` for a repeated key, and at the
-wrapper's `/semantic_graph/nodes/{N}/body` for a missing trace row. A replay
-recompile serves each trace from its own row, so a relation between traces of
-two models replays under exactly the configurations it was proved under.
+The `hyperproperty` node, not its body wrapper, keys the rows because its
+identity holds the quantifier prefix and the wrapper's does not. The wrapper
+holds the body's formula, a slot parameter, the fixed clock and activation,
+and empty captures and fairness (FR-402 "Body wrapper"), so two hyper clauses
+with equal bodies and different prefixes (reversed quantifiers, another alias
+for one variable, a variable only the `match` block reads) are two
+`hyperproperty` nodes that share one wrapper, and each node's rows follow its
+own Groups in its own order. A body wrapper therefore has no
+`temporal_bindings` row of its own: its `claim` occurrences are covered by
+the rows of the `hyperproperty` nodes that reference it, and a row whose
+`declaration` is a body wrapper refuses `invalid_package`/`timed-node-reference`
+at `/temporal_bindings/{i}/declaration`, as a wrong-kind declaration does.
+
+- **Behaviours domain.** The node has rows when its wrapper's
+  `temporal_profile` law selects one of the three clock-configured profiles,
+  and that law is the profile a row's `clock.kind` is checked against; under
+  any other profile the node has no rows. Every row of the node carries the
+  wrapper's clock text as its `clock_name` (`model-steps`), and its `clock` is
+  the configuration derived for that trace from the model subject the Group's
+  alias selects, by the rule the producer applies to a single-trace clause
+  over that model (the event-position `sequence_authority` is that model's
+  declaration identity text).
+- **Finite domain.** A finite-domain clause selects a finite-trace profile
+  (FR-191), each of which is clock-configured, so the node always has rows.
+  Its body is a Boolean expression and it has no wrapper, profile law or clock
+  argument (FR-402), so, as for a compensation or an await, its profile is the
+  lock's `temporal_profile` selection and a row's `clock.kind` is checked
+  against it. Its traces are trace subjects, so its clock name is a clock role
+  (FR-090 "Clock names"): the domain binder `t` of `t in Q bounded N`, the one
+  role every trace of the clause reads. Every row of one occurrence carries
+  that role as its `clock_name` and the one configuration the caller binds
+  the role to as its `clock`. The binder is not an argument of the node, so
+  two occurrences of one node may carry different roles, and the reader checks
+  the rows of one occurrence for agreement instead of against a node argument.
+
+The rows of one occurrence may hold equal configurations (two traces of one
+model, a finite-domain clause, or a fixed-sample clause whose derived
+configuration does not depend on the model) or distinct ones (traces of two
+models under event-position), and they are written all the same, so a
+consumer reads each trace's clock by its key and never by inference from
+another trace. Deriving a configuration from a model is the producer's rule:
+the reader compares no `clock` with a model, a subject or a population, and
+admits distinct configurations within one occurrence as it admits equal ones.
+
+The reader SHALL require, for every `claim` occurrence of a `hyperproperty`
+node that has rows, exactly one row per quantifier Group, keyed by its
+variable. It refuses `invalid_package`/`timed-node-reference` at
+`/temporal_bindings/{i}/trace` a hyper row with no `trace` member, a `trace`
+naming no Group variable of that node, and a `trace` on a row whose
+declaration is not a `hyperproperty` node; `invalid_package`/`conflicting-definition`
+at the later row `/temporal_bindings/{i}` a repeated (`declaration`,
+`occurrence`, `trace`) key; `invalid_package`/`timed-node-reference` at the
+node's `/semantic_graph/nodes/{N}/body` a missing trace row; and, for a
+finite-domain node, `invalid_package`/`timed-node-reference` at
+`/temporal_bindings/{i}/clock_name` a row whose `clock_name` differs from the
+first row of its occurrence. A replay recompile serves each trace from its own
+row, so a relation between traces of two models replays under exactly the
+configurations it was proved under.
 
 A row for an absent or wrong-kind declaration, an `occurrence` that is not an
 occurrence of the stated role, a repeated key, a row out of order, a missing row
@@ -3955,10 +4004,10 @@ next: first its declaration join, then its occurrence join, then whether its key
 repeats an earlier row, then whether it is in order. An absent or wrong-kind
 declaration refuses `invalid_package`/`timed-node-reference` at
 `/temporal_bindings/{i}/declaration`; an `occurrence` that is not a `claim`
-occurrence of a clause, or the `declaration` occurrence of a compensation or an
+occurrence of a clause or a `hyperproperty` node, or the `declaration` occurrence of a compensation or an
 await, refuses the same code and cause at `/temporal_bindings/{i}/occurrence`; a repeated
 key ((`declaration`, `occurrence`), or (`declaration`, `occurrence`, `trace`)
-for a wrapper row) refuses `invalid_package`/`conflicting-definition` at the
+for a hyper row) refuses `invalid_package`/`conflicting-definition` at the
 later row `/temporal_bindings/{i}`; a row that sorts before its predecessor
 refuses `invalid_package`/`timed-node-reference` at
 `/temporal_bindings/{i}/declaration` when its declaration sorts first, at
@@ -3966,23 +4015,24 @@ refuses `invalid_package`/`timed-node-reference` at
 `/temporal_bindings/{i}/trace` when both are equal and its trace comes
 earlier in the quantifier order.
 The reader then requires exactly one row for every
-clock-configured temporal declaration occurrence, and for a hyper clause body
-wrapper exactly one row per trace of each occurrence: every `claim` occurrence of
-every clock-configured `temporal_clause` (one row per quantifier Group for a
-wrapper), and the `declaration` occurrence of
+clock-configured temporal declaration occurrence, and for a `hyperproperty` node
+exactly one row per trace of each occurrence: every `claim` occurrence of
+every clock-configured `temporal_clause` that is not a body wrapper, every `claim`
+occurrence of every `hyperproperty` node that has rows (one row per quantifier
+Group), and the `declaration` occurrence of
 every `compensation` node and of every `await` control node when the lock's
 `temporal_profile` selection is one of the three clock-configured profiles (a
 compensation always carries its `within` window, and an await its `clock` and
 `within`, FR-466). A missing row refuses `invalid_package`/`timed-node-reference`
 at the first such node's own `/semantic_graph/nodes/{N}/body`, where `N` is its
 graph index and "first" is the lowest graph index among clauses,
-compensations and awaits. After coverage, the reader checks rows in array order. For each row
+`hyperproperty` nodes, compensations and awaits. After coverage, the reader checks rows in array order. For each row
 it compares `clock_name` before checking the configuration kind against the
 selected profile: a name mismatch refuses
 `invalid_package`/`timed-node-reference` at
 `/temporal_bindings/{i}/clock_name`; a profile/configuration kind mismatch
 refuses with the same code and cause at `/temporal_bindings/{i}/clock/kind`.
-Clause, compensation and await rows share one array in one ascending order and
+Clause, hyper, compensation and await rows share one array in one ascending order and
 these checks apply to a compensation row and to an await row unchanged: two
 compensations, or a compensation and an await, sharing a model, profile and
 clock name have two rows. The closed schema refuses a row without
@@ -5232,7 +5282,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-291 | Each protocol location row joins to one local expression/application node and one of its exact source occurrences; two terms sharing that application and occurrence have distinct `term_ordinal` values and preserve their different semantic locations. Each captured application/occurrence group has consecutive ordinals starting at zero. PL-01-root's lone ordinal-zero row admits; PL-R2's lone ordinal-one row witnesses the missing ordinal-zero mapping and refuses `invalid_package`/`invalid-value` at `/checked_term_data/protocol_locations`. A foreign or absent node, non-application, missing occurrence, duplicate per-term key, duplicate term ordinal or malformed origin refuses at the first mismatching row; no location is inferred from a source region, display name or selected dependency. | Test |
 | FR-322-AC-292 | `checked-term-data-vectors.json` publishes positive top-level text, enum, declared-quantity, compound-quantity and plan equality records, plus two equalities beneath one `and` parent, an equality beneath `or`, aggregate-member and binding-value forms. The parent forms reference each child equality application by its exact `NodeRef`; each equality record names that child node and has an empty `term_path`. The four TC-1070 Fixture E expressions at rows 8, 12, 15 and 17 remain four separate equality rows. Positive metadata demonstrates these parent-to-child references without adding a wire member. The vectors also include two protocol terms at one application occurrence, ordered and empty dispatch candidate sets, and probabilistic claim rows whose declaration identities differ despite equal display names and source spans. Every dispatch candidate repeats the table's typed selected-operation witness, joining it with the structural FR-150 `EffectiveId` key to its body and nullable precondition. Schema-invalid cases include a checked-package `NodeRef` used as an effective identity, an invented operation-path `NodeRef` (`DT-S5`), missing identity members, a missing equality `term_path`, missing probabilistic-claim occurrence and extra identity fields. Schema-valid reader mutations cover wrong operator/operand/type/occurrence, a non-empty equality path ending at a reference to a distinct non-equality application, foreign application and effective identity, mismatched effective identity, a non-member selected operation (`DT-R6`), a candidate witness differing from its table, duplicate equality application/occurrence key, protocol key and dispatch key, duplicate selection key, missing protocol-term mapping, absent precondition join, and absent/foreign/wrong-kind/mis-mapped probabilistic claim identities. Duplicate declaration-occurrence keys refuse at the later row. Reader-level mutations have the expected refusal code, cause and exact JSON pointer. Read work charges every sidecar row and each nested unit, enum and candidate entry before inspection. The vectors contain 23 sidecar rows, 3 unit facts, 2 enum facts and 2 dispatch candidates, with zero equality `term_path` segments, for an exact 30-unit boundary; admission succeeds at 30 units. A 29-unit limit refuses `resource_exhausted` at `/checked_term_data/probabilistic_claims/1`, the final charged row, with no partial data view. | Test (TC-233) |
 | FR-322-AC-293 | A `fairness` member carries a closed `target` union: model operation (`declaration` node id and `name`), protocol root, attempt node or compensation template (each an exact structural `node` id), parallel branch (`parallel` node id and `branch` label), or hybrid transition (`declaration` node id and `name`). `temporal-fairness-target-vectors.json` publishes one positive member per variant and malformed members with a missing/unknown discriminant, missing required identity, extra identity field and invalid node ordinal; each positive satisfies the V2 `OperationMember` schema and every malformed member fails it. Eleven schema-valid reader cases distinguish absent, foreign-package and wrong-kind parallel ids, a missing branch label, wrong-kind protocol-root, attempt and compensation targets, and root, attempt, parallel and compensation targets owned by another protocol clause in the same package; each records the required refusal code, cause and exact target or label JSON pointer from FR-370-AC-15. | Test (TC-303) |
-| FR-322-AC-294 | Each clock-configured `temporal`/`temporal_clause` (and each `protocol`/`compensation` node and `await` control node, FR-322-AC-305) has exactly one `temporal_bindings` row for each of its `claim` occurrences, keyed by its structural clause `NodeRef` and that occurrence's ordinal, except a hyper clause body wrapper, which has exactly one row per quantified trace of each `claim` occurrence, keyed also by `trace` and ordered by trace position (FR-322-AC-453); each row has the exact non-empty clause clock name and one closed `ClockConfiguration` whose kind and parameter set match the clause's selected `temporal_profile` law. The clause identity distinguishes declarations even when their model, profile and clock names agree; the multi-clause positive proves two distinct clause keys with the same model, selected profile and clock name, distinguished by their formula references, and ascending structural `NodeRef` row order. The three matching profile/configuration pairs (event-position, fixed-sample and timestamped-event) are complete checked-package positives; an unknown kind, a missing parameter or wrong-typed parameter is `malformed_wire`. A schema-valid row whose declaration `NodeRef` is absent or is neither a temporal clause, a compensation nor an await control refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/declaration`; a repeated (`declaration`, `occurrence`) key, or a repeated (`declaration`, `occurrence`, `trace`) key on wrapper rows, refuses `invalid_package`/`conflicting-definition` at its second row; two wrapper rows of one occurrence with distinct `trace` members are not a repeat. A missing row for a clock-configured clause, compensation or await control refuses with that code/cause at the first such node's `/semantic_graph/nodes/{N}/body`, where `N` is its graph index. These row-coverage checks follow aggregate order validation and precede per-node joins. After declaration resolution, rows are checked in ascending structural `NodeRef` order: clock-name mismatch refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/clock_name`, before a profile/configuration kind mismatch refuses with the same code and cause at `/temporal_bindings/{i}/clock/kind`. No profile identity is repeated in the row: the reader joins the clause law to `lock.profile_selections`. When no clock-configured temporal clause, compensation or await control exists, `temporal_bindings` is absent, so an await alone under a clock-configured lock has its row (`AW-02`); its absence never defaults a required clock configuration. Each row names the claim occurrence it binds, so structurally equal clauses that share one node have one row each (FR-322-AC-359..370). | Test (TC-134; TC-233) |
+| FR-322-AC-294 | Each clock-configured `temporal`/`temporal_clause` (and each `protocol`/`compensation` node and `await` control node, FR-322-AC-305) has exactly one `temporal_bindings` row for each of its `claim` occurrences, keyed by its structural clause `NodeRef` and that occurrence's ordinal, except a hyper clause body wrapper, which has no row of its own, and except a `claim`/`hyperproperty` node, which has exactly one row per quantified trace of each `claim` occurrence, keyed also by `trace` and ordered by trace position (FR-322-AC-453); each row has the exact non-empty clause clock name and one closed `ClockConfiguration` whose kind and parameter set match the clause's selected `temporal_profile` law. The clause identity distinguishes declarations even when their model, profile and clock names agree; the multi-clause positive proves two distinct clause keys with the same model, selected profile and clock name, distinguished by their formula references, and ascending structural `NodeRef` row order. The three matching profile/configuration pairs (event-position, fixed-sample and timestamped-event) are complete checked-package positives; an unknown kind, a missing parameter or wrong-typed parameter is `malformed_wire`. A schema-valid row whose declaration `NodeRef` is absent or is neither a temporal clause, a `hyperproperty` node, a compensation nor an await control, or is a body wrapper, refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/declaration`; a repeated (`declaration`, `occurrence`) key, or a repeated (`declaration`, `occurrence`, `trace`) key on hyper rows, refuses `invalid_package`/`conflicting-definition` at its second row; two hyper rows of one occurrence with distinct `trace` members are not a repeat. A missing row for a clock-configured clause, compensation, await control or `hyperproperty` node with rows refuses with that code/cause at the first such node's `/semantic_graph/nodes/{N}/body`, where `N` is its graph index. These row-coverage checks follow aggregate order validation and precede per-node joins. After declaration resolution, rows are checked in ascending structural `NodeRef` order: clock-name mismatch refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/clock_name`, before a profile/configuration kind mismatch refuses with the same code and cause at `/temporal_bindings/{i}/clock/kind`. No profile identity is repeated in the row: the reader joins the clause law to `lock.profile_selections`. When no clock-configured temporal clause, compensation, await control or `hyperproperty` node with rows exists, `temporal_bindings` is absent, so an await alone under a clock-configured lock has its row (`AW-02`); its absence never defaults a required clock configuration. Each row names the claim occurrence it binds, so structurally equal clauses that share one node have one row each (FR-322-AC-359..370). | Test (TC-134; TC-233) |
 | FR-322-AC-295 | A quantified guard part and a quantified invariant may carry `binders`, an aggregate of references to the quantified slot `parameter` nodes. Each binder resolves in the package, is a `parameter`, occurs in the place constraint slot terms in declared order, and appears at most once; a binder that is not a slot or a repeated/out-of-order binder refuses `invalid_package`/`timed-node-reference` at the first bad binder target (`CL-58`, `CL-60`, `CL-62`). The schema admits the positive guard and invariant carrier forms (`CL-57`, `CL-59`); `CL-62` reverses two individually valid binders of a nested sequence place and refuses at the second; the closed forms omit `binders` when unquantified. | Test (TC-367; CL-57..CL-60, CL-62) |
 | FR-322-AC-296 | Every nonempty dispatch candidate carries a required `selected_operation` witness equal to the parent table's `{declaring, operation}` witness, so the strict reader can key the handle mapping by `(selected_operation, selection_key)` without an operation-member `NodeRef`; a differing candidate witness refuses `invalid_package`/`invalid-value` at `/checked_term_data/dispatch_tables/{i}/candidates/{j}/selected_operation`. Positive `DT-01` has two candidates with distinct FR-150 keys and the same exact operation witness; a schema-valid candidate witness mutation is published with its refusal and locus. Empty `DT-02` remains valid with no candidate witnesses. | Test (TC-233) |
 | FR-322-AC-297 | Each probabilistic claim has exactly one `probabilistic_claims` row naming its exact local `claim`/`probabilistic_claim` declaration `NodeRef` and one declared `claim` occurrence. Rows sort by structural declaration identity then occurrence. A second row for one declaration refuses `invalid_package`/`conflicting-definition` even when it names a different valid occurrence (`PC-R4`); a repeated `(declaration, occurrence)` key refuses at the later row (`PC-R5`) with the same typed code/cause. Missing occurrence fails the closed schema; absent-local, foreign, wrong-kind and non-probabilistic declarations or an occurrence not owned by the named declaration refuse `invalid_package`/`invalid-value` at the first mismatching member (`PC-R1`..`PC-R3`, `PC-R6`). Reversing two otherwise valid rows refuses `invalid_package`/`invalid-semantic-graph` at the second row (`PC-R7`). PC-01 and PC-02 have equal display names and source spans but distinct declaration nodes and remain distinct; no name, span or declaration-order inference is permitted. | Test (TC-233) |
@@ -5302,7 +5352,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-361 | The clock configuration is per occurrence: one shared node with two `claim` occurrences carries two binding rows, which are admitted with different configurations (BO-P1) and with equal ones (BO-P2), and every published positive package has one row per claim occurrence of each clock-configured clause, each with `occurrence` 0 where the clause has one. | Test (TC-233) |
 | FR-322-AC-362 | A `claim` occurrence of a clock-configured clause with no binding row refuses `invalid_package`/`timed-node-reference` at the node's `/semantic_graph/nodes/{N}/body` (BO-R1). | Test (TC-233) |
 | FR-322-AC-363 | A binding row whose `occurrence` is not a `claim` occurrence of its clause refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/occurrence` (BO-R2). A clause carries `claim` occurrences only (FR-370), so an ordinal the node lacks is the way the join fails in a schema-valid package. | Test (TC-233) |
-| FR-322-AC-364 | A second binding row with one (`declaration`, `occurrence`) key refuses `invalid_package`/`conflicting-definition` at the later row, for a clause and for a compensation, and a second hyper wrapper row with one (`declaration`, `occurrence`, `trace`) key refuses the same, while wrapper rows `s` and `n` of one occurrence are admitted (BO-R3, CB-04, TCB-10). | Test (TC-233) |
+| FR-322-AC-364 | A second binding row with one (`declaration`, `occurrence`) key refuses `invalid_package`/`conflicting-definition` at the later row, for a clause and for a compensation, and a second hyper row with one (`declaration`, `occurrence`, `trace`) key refuses the same, while hyper rows `s` and `n` of one occurrence are admitted (BO-R3, CB-04, TCB-10). | Test (TC-233) |
 | FR-322-AC-365 | Binding rows out of (`NodeRef`, occurrence) order refuse `invalid_package`/`timed-node-reference` at the later row's `occurrence` when the declarations are equal (BO-R4). | Test (TC-233) |
 | FR-322-AC-366 | Within one binding row the repeated key is reported before the order: a row that repeats a key and descends refuses `conflicting-definition` (BO-R5). | Test (TC-233) |
 | FR-322-AC-367 | Binding rows are checked in full one at a time: a repeated key at row 1 is reported although row 2 has an absent declaration (BO-R6). | Test (TC-233) |
@@ -5331,7 +5381,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-450 | A timed clause over a trace subject with one `{kind: "timed", unit}` row naming its clock role is admitted, and the `timed` alternative is closed with a required non-empty `unit`; the same clause without a row, a `timed` row whose `clock_name` is `model-time`, and a `timestamped_event` row for it each refuse `invalid_package`/`timed-node-reference`; a timed clause over a timed-model subject has no row and the clock name `model-time`, and a `timed` or `event_position` row for it refuses at that row. | Test (TC-1164) |
 | FR-322-AC-451 | An `application` of `filament.op.quantity.scale` with arguments `[reference(Q), reference(N)]`, `Q` a `quantity` typed by the unit node of `ms` and `N` an `integer`, is admitted with result type the unit node of `ms`, no laws, `mode` `null` and no member, and so is `filament.op.quantity.scale_div` with a `decimal` or `rational` factor; a third argument, a `float64` or `quantity` factor, the arguments in the order factor then quantity, a carried-quantity argument 0 and a `result_type` other than the unit node of `ms` each refuse `ill_typed`/`operator-ineligible`, a `mode` value refuses `invalid_package`/`operation-mode-mismatch` and a `laws` entry refuses `invalid_package`/`operation-law-mismatch`; both V2 schemas enumerate `filament.op.quantity.scale` and `filament.op.quantity.scale_div` in `OperationIdentity` directly after `filament.op.quantity.pow`, and the catalog entry of `filament-verification-contracts` carries them. | Test (TC-1326) |
 | FR-322-AC-452 | A package whose library unit declares a timestamped-event clause on clock `lib-ms`, compiled with the request configuration `{"kind": "timestamped_event", "timestamp_unit": "ms"}` for `lib-ms`, carries `lock.dependency_clock_selections` `[{"clock_name": "lib-ms", "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"}}]`, and a package whose closure takes no clock from the request omits the member. The reader refuses `[]` and an entry with a third key at the schema; two entries out of `clock_name` order `invalid_package`/`invalid-value` at the later entry; a repeated `clock_name` `invalid_package`/`conflicting-definition` with both entries as loci; a `clock_name` of `model-steps` `invalid_package`/`invalid-value` at that entry's `clock_name`; and an entry for a clock name the package's own `temporal_bindings` row also names, with a different configuration, `invalid_package`/`conflicting-definition` naming the entry and the row. Two compilations differing only in the `lib-ms` configuration give structurally unequal packages. | Test (TC-1661) |
-| FR-322-AC-453 | A hyper clause whose two trace variables `s` and `n` range over two model aliases selecting packages `example/device-saving` and `example/device-normal`, under event-position, has two rows for its one body-wrapper occurrence, in quantifier order, with `trace` `s` and `n` and `clock` `{"kind": "event_position", "sequence_authority": A}` where `A` is each model's declaration identity text, both with `clock_name` `model-steps`; a hyper clause with two traces of one model has two rows with equal configurations. Removing the `n` row refuses `invalid_package`/`timed-node-reference` at the wrapper's node body; a row whose `trace` is `x` refuses at `/temporal_bindings/1/trace`; a third row repeating `s` refuses `conflicting-definition` at that row; a `trace` member on a single-trace clause's row refuses at its `trace`. | Test (TC-1680) |
+| FR-322-AC-453 | A hyper clause whose two trace variables `s` and `n` range over two model aliases selecting packages `example/device-saving` and `example/device-normal`, under event-position, is written with two rows keyed by its `claim`/`hyperproperty` node for its one `claim` occurrence, in quantifier order, with `trace` `s` and `n` and `clock` `{"kind": "event_position", "sequence_authority": A}` where `A` is each trace's model's declaration identity text, both with `clock_name` `model-steps`, and its body wrapper has no row; a hyper clause with two traces of one model has two rows with equal configurations. The reader compares no configuration with a model: over one model, rows `s` and `n` with two distinct `sequence_authority` texts are admitted as rows with equal texts are. Removing the `n` row refuses `invalid_package`/`timed-node-reference` at the `hyperproperty` node's body; a row whose `trace` is `x` refuses at `/temporal_bindings/1/trace`; a third row repeating `s` refuses `conflicting-definition` at that row; a `trace` member on a single-trace clause's row refuses at its `trace`; a row whose `declaration` is the body wrapper refuses at its `declaration`. | Test (TC-1680) |
 | FR-322-AC-454 | The clause forms `clock_guard`, `clock_reset` of kind `place` and `clock_reset` of kind `parameter` are admitted with and without a final `point_anchor` binding naming the point-qualified anchor of their operation (`pre` for the guard, `post` for the reset), and the two spellings of one guard have different node ids; a `point_anchor` before another binding, on a `clock_constraint`, a `time_invariant` or an `urgency`, or naming a node that is not that anchor, refuses `invalid_package`/`timed-node-reference` at the binding (FR-342-AC-13); the published V2 schema admits exactly these layouts. | Test (TC-1722) |
 | FR-322-AC-455 | The operation catalog of `filament-verification-contracts` and both V2 schemas' `OperationIdentity` enumerate `filament.op.collection.only`, `filament.op.collection.seq` and `filament.op.refinement.history` together, with the `history` kind in `OperationMember`, each entry exactly as "Operation catalog" of the population forms states (`only`: operator `collection`, operands `collection_kind` and `binder`, result `member`, member `type_argument`, constraint `bound_is_member` on operand 1). The reader admits, in a clause function body and in a refinement row, `only(x in P where c: e)` lowered as `filament.op.collection.only` over the `filament.op.collection.filter` of the `all_instances` value with binder body `e`, `type_argument` and `result_type` the type node of `e`; a `result_type` or member other than the binder body's type, and a second operand that is not a binder, refuse `ill_typed`/`operator-ineligible` at `/semantic_graph/nodes/{n}`; and a reader that does not hold the entries refuses the identity `unknown-operation`. | Test (TC-1921) |
 | FR-322-AC-456 | For a package compiled from a unit with `schedulable CtlFp on Ctl under fixed_priority;`, `schedulable CtlEdf on Ctl under edf;` and `response R on Ctl.c <= 12 ms under fixed_priority;`, the request items written from its `schedulability_claims` rows are three `schedulability` items in row order, each keyed by its row's `{declaration, occurrence}`, extent `bounded`, with the policy `fixed_priority`, `edf` and `fixed_priority` read from each FR-482 body; a package with no `schedulability_claims` gives no such item. | Test (TC-2007) |
@@ -5341,6 +5391,8 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-460 | The package of a unit declaring the temporal clause `Bounded` and the invariant state clause `NotAboveThree` carries, on the `Bounded` `temporal_clause_names` row and the `NotAboveThree` `claim_names` row, a `declaration_region` whose bytes are the whole declaration from its first keyword to its closing `}` and which contains the occurrence's name-token `source_map` region; the same unit, with `Bounded` declared last, with whitespace added right before `Bounded`'s closing `}` changes no `node_id` or node. | Test (TC-2015) |
 | FR-322-AC-461 | AC-460's package with the `Bounded` row's `declaration_region` removed refuses `malformed_wire` at the row (`/temporal_clause_names/0`), as the closed schema refuses any missing member; with it shrunk to one byte that does not contain the name token, or naming another source, refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/0/declaration_region`; the same edits on the `NotAboveThree` row refuse at `/claim_names/{i}/declaration_region`. | Test (TC-2015) |
 | FR-322-AC-462 | A package whose protocol declares `observe role Auditor on Orders::Order;` and `observe sequence Review { ... }` carries the `boundary` member `observe-only` as the last body argument of exactly the `Auditor` role node and the `Review` control node; removing the `observe` mark changes those two nodes' bodies and no other node's body, and leaves every `node_id` unchanged; and a `boundary` member on any node that is not a `protocol`/`role` or `protocol`/`control` node refuses `malformed_wire`. | Test (TC-2018) |
+| FR-322-AC-463 | Two hyper clauses with equal bodies, `Fwd` over `forall trace s of S forall trace n of N` and `Rev` over `forall trace n of N forall trace s of S`, are two `claim`/`hyperproperty` nodes that share one body wrapper; under event-position each node has its own two rows in its own quantifier order (`s` then `n` for `Fwd`, `n` then `s` for `Rev`), the wrapper has none, and the package is admitted. `Rev`'s rows written in `Fwd`'s order refuse `invalid_package`/`timed-node-reference` at the later row's `trace`. A clause with a third quantifier `forall trace m of N` that only its `match` block reads has three rows, and omitting the `m` row refuses `invalid_package`/`timed-node-reference` at that node's body. | Test (TC-2027) |
+| FR-322-AC-464 | `hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }`, under the lock's event-position selection and with role `t` bound to `{"kind": "event_position", "sequence_authority": "obs"}`, has two rows keyed by its `claim`/`hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t` and that configuration, and is admitted. Removing the `b` row refuses `invalid_package`/`timed-node-reference` at the node's body; a row whose `trace` is `c` refuses at that row's `trace`; a second row whose `clock_name` is `u` refuses at `/temporal_bindings/1/clock_name`; a `fixed_sample` row refuses at that row's `clock/kind`. | Test (TC-2028) |
 
 ## Dependencies
 
