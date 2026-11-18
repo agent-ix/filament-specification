@@ -59,6 +59,18 @@ object identity is the UTF-8 encoding of the string's Unicode scalar
 sequence, with no normalization. `M::Server#"s1"` names the `Server` object
 whose identity is the two bytes `s1`.
 
+The literal is written with no whitespace or comment between its three
+parts, and its key is a string only; an integer identity is written as its
+decimal text. Every `#` outside a string or comment is that one punctuation
+token, so it collides with no comment form (comments are `//`). The parser
+SHALL refuse each malformed spelling `invalid_syntax` before checking, with
+the cause and locus of the complete-V1 grammar's reference-literal table: a
+`#` after no primary-leading qualified name, or after whitespace, is
+`unexpected-token` at the `#`; a non-string token after `#`, or whitespace
+before the string, is `unexpected-token` at that token; the source ending
+after `#` is `unexpected-end`; a malformed string keeps the lexer's string
+cause. The formatter prints the literal as written.
+
 ### Static checking
 
 - The checker SHALL resolve the qualified name as a `type-ref` qualified name
@@ -133,6 +145,8 @@ term.
 | FR-480-AC-3 | `M::Server#"s1"` lowers to a `literal` term of `value_kind` `reference`, `type` the `composite_type`/`reference` node over `Server`, and `value` `7331`. Two occurrences of it, one written through a second alias of the same package, share the term. | Test (TC-965) |
 | FR-480-AC-4 | Over a subject whose `servers` universe in `Server`'s object universe is `[s1, s2, s3]`, whose initial state admits `s1` and `s2` as `Server` records and whose operation `spawn()` creates `s3` as a `Server`, `M::Server#"s1"` resolves to the FR-181 reference with that universe, `Server`'s type identity and identity `7331`, and `self = M::Server#"s1"` holds for `s1` only. `M::Server#"s9"`, whose key is in no universe, refuses `missing_declaration`/`missing-name` at the literal, naming `Server` and `7339`, before any state is explored. `M::Server#"s3"`, whose key is in the universe and admitted by no initial record, is created-object: it is undefined with reason `absent-key` at the initial state, and after an operation that creates `s3` as a `Server` it evaluates to `s3`'s reference. | Test (TC-965) |
 | FR-480-AC-5 | A choice guard that compares a `receive` record's reference field to `M::Server#"s1"` checks: the fixed literal is not a model-state read, while the same guard over the created-object `M::Server#"s3"` refuses `ill_typed`/`operator-ineligible` at the literal when the subject is bound. A guard that reads `deref(M::Server#"s1").load` refuses `ill_typed`/`operator-ineligible` at the dereference, as any model-state read there does. | Test (TC-965) |
+
+| FR-480-AC-6 | `M::Server #"s1"`, `(x)#"s1"`, `f(x)#"s1"` and `M::Server#"a"#"b"` each refuse `invalid_syntax`/`unexpected-token` at the `#` named in the grammar table (the first, the first, the first and the second); `M::Server# "s1"`, `M::Server#1` and `M::Server#)` refuse `invalid_syntax`/`unexpected-token` at `"s1"`, `1` and `)`; a unit ending in `M::Server#` refuses `invalid_syntax`/`unexpected-end`; `M::Server#"\q"` refuses `invalid_syntax`/`invalid-escape` at the string; `"a#b"` and `// a#b` stay a string and a comment; `M::Server#""` parses. | Test (TC-2002) |
 
 ## Dependencies
 
