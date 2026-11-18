@@ -34,7 +34,8 @@ number in the fixed, locale-free grammar of `T`'s kind and return that number
 as a value of `T`. An exact target receives the exact number. A decimal target
 rounds only under a rounding mode its type declares. An IEEE target rounds once
 under its type's rounding mode. Text that is not a number in the grammar is
-undefined. A number outside `T` is refused.
+undefined, with the undefined reason `malformed-number`. A number outside `T`
+is refused.
 
 ## Use case
 
@@ -63,7 +64,7 @@ One of these:
 
 - a completed value of `T`. For an IEEE target it is a bit pattern and its
   flag set. For a rounded decimal it carries a `DecimalLoss`;
-- an undefined outcome with no value;
+- an undefined outcome with the reason `malformed-number` and no value;
 - a refusal with no value (see "Value and outcomes");
 - `incomplete` at the first denied charge.
 
@@ -220,7 +221,11 @@ It SHALL then produce the result for `T`:
   exact magnitude is the reduced spelled value. `Quantity<u>` bounds no
   magnitude (FR-142), so a quantity is never refused for its size.
 - **Not a number.** A text that is not a number for `T`, the empty text
-  included, SHALL be undefined and produce no value. This follows FR-147,
+  included, SHALL be undefined with the undefined reason `malformed-number`
+  (native-diagnostics "Undefined reasons"), located at the `convert`
+  application, and produce no value. The reason is the same for every target
+  kind and every way the text fails its production, so a reader learns that
+  the text was not a number without the outcome exposing the text. This follows FR-147,
   where a zero divisor is undefined, and FR-148, where a NaN operand of an
   IEEE-to-rational conversion is undefined.
 
@@ -241,7 +246,7 @@ Under `filament.value.accounting/v1` the conversion SHALL charge, in this order:
    scalar of the normalized sequence. A `String` operand and the
    non-normalizing profiles charge neither.
 3. The grammar check, which charges nothing. A text that is not a number is
-   undefined here.
+   undefined here, with the reason `malformed-number`.
 4. The target step:
    - integer: the domain check, which charges nothing;
    - rational and quantity: reduction and the rational domain check, which
@@ -266,10 +271,10 @@ charges and any target-specific rounding charge. A denied named charge returns
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-478-AC-1 | Under `unicode-scalars`, `convert<Integer>` of `0`, `42`, `-7` and `170141183460469231731687303715884105728` gives `0`, `42`, `-7` and that exact integer. `convert<Int[0, 99]>` of `42` gives `42`, and of `100` and of `-1` refuses `integer_out_of_domain`/`outside-domain`. `convert<Decimal>` of `1.50` gives coefficient `150` and scale `2`, of `-0.5` coefficient `-5` and scale `1`, and of `3` coefficient `3` and scale `0`. | Test (TC-964) |
-| FR-478-AC-2 | Each of these texts is undefined with no value for `convert<Integer>` under `unicode-scalars`: the empty text, `+5`, `05`, `-0`, ` 5`, `5 `, `1,000`, `1e3`, `1.0`, `2/1`, `٣` (U+0663) and `５` (U+FF15). For `convert<Decimal>` the same holds for `.5`, `5.`, `-0.00`, `1.2.3`, `1,5`, `1e3` and `3/4`. Under `nfkc`, `５` normalizes to `5` and converts to `5`; under `nfc` it is undefined. | Test (TC-964) |
+| FR-478-AC-2 | Each of these texts is undefined, with the undefined reason `malformed-number` located at the `convert` application and no value, for `convert<Integer>` under `unicode-scalars`: the empty text, `+5`, `05`, `-0`, ` 5`, `5 `, `1,000`, `1e3`, `1.0`, `2/1`, `٣` (U+0663) and `５` (U+FF15). For `convert<Decimal>` the same holds for `.5`, `5.`, `-0.00`, `1.2.3`, `1,5`, `1e3` and `3/4`. Under `nfkc`, `５` normalizes to `5` and converts to `5`; under `nfc` it is undefined. | Test (TC-964) |
 | FR-478-AC-3 | The type checker admits `convert<T>` of a `Text[..]` operand, and of a `String` operand, to each of `Integer`, `Decimal[0, 1000; 0, 2; exact]`, `Rational[-9, 9; 1, 9]`, `Float32[nearest-even]`, `Float64` and `Quantity<ms>` (AC-10's units). Over `t: Text[0, 64; unicode-scalars]`, to `Boolean`, `Text[0, 8; nfc]`, an enum, `UUID` or a record it refuses `ill_typed`/`operator-ineligible`. Over `t: Text[0, 8; nfc]` the checked package records `filament.op.text.to_integer` for `Int[0, 99]` with mode `null`, `filament.op.text.to_decimal` for `Decimal[0, 1000; 0, 2; nearest-even]` with mode `rounding` `nearest-even`, `filament.op.text.to_rational` for `Rational[-9, 9; 1, 9]` with mode `null`, `filament.op.text.to_float64` for `Float64[toward-zero]` with laws `text_profile` and `ieee_profile` and mode `rounding` `toward-zero`, and `filament.op.text.to_quantity` for `Quantity<ms>` with mode `rounding` `exact`. Each has member `type_argument` naming the target, and each `filament.op.text.*` row carries the `text_profile` law. Over `s: String`, the same targets record the `filament.op.string.*` identity of the same name, with no `text_profile` law. | Test (TC-964) |
-| FR-478-AC-4 | `function n using v(t: Text[0, 8; unicode-scalars]): Int[0, 99] pure { convert<Int[0, 99]>(t) }` links with no body obligation. Called with `abc` it is undefined, and with `100` it is refused `integer_out_of_domain`, each at evaluation. | Test (TC-964) |
-| FR-478-AC-5 | With exact limits, `convert<Int[0, 99]>` of `42` succeeds after `text.input-bytes` and `text.decode-scalars`; denying `text.input-bytes` returns `incomplete` with no value. `abc` is undefined after operand and applicable normalization charges, with no value. `100` into `Int[0, 99]` is refused after those charges and before a result is returned. | Test (TC-964) |
+| FR-478-AC-4 | `function n using v(t: Text[0, 8; unicode-scalars]): Int[0, 99] pure { convert<Int[0, 99]>(t) }` links with no body obligation. Called with `abc` it is undefined with the reason `malformed-number`, and with `100` it is refused `integer_out_of_domain`, each at evaluation. | Test (TC-964) |
+| FR-478-AC-5 | With exact limits, `convert<Int[0, 99]>` of `42` succeeds after `text.input-bytes` and `text.decode-scalars`; denying `text.input-bytes` returns `incomplete` with no value. `abc` is undefined with the reason `malformed-number` after operand and applicable normalization charges, with no value. `100` into `Int[0, 99]` is refused after those charges and before a result is returned. | Test (TC-964) |
 | FR-478-AC-6 | Decimal rounding is the target's. `convert<Decimal[0, 1000; 0, 2; exact]>` of `1.555` refuses `inexact_decimal`/`nonzero-discarded-digit`, of `1.500` gives coefficient `150` and scale `2`, of `1.5` gives coefficient `15` and scale `1` (retained as spelled, not rescaled to scale 2), and of `10.01` refuses `decimal_out_of_domain`/`outside-domain`. `convert<Decimal[0, 1000; 0, 2; nearest-even]>` of `1.555` gives coefficient `156` and scale `2`, with `DecimalLoss` exact value `311/200` and mode `nearest-even`, and of `1.565` gives coefficient `156`, a tie to even. The `nearest-even` conversion of `1.555` charges `decimal.rounding` with `integer_bits` 11 and `decimal_digits` 4 after the operand and applicable normalization charges. The `exact` refusal charges no `decimal.rounding`. | Test (TC-964) |
 | FR-478-AC-7 | `convert<Rational[-9, 9; 1, 9]>` of `2/4` gives `1/2`, of `-3` gives `-3/1`, and of `0.25` gives `1/4`. Of `1/10` and of `10` it refuses `rational_out_of_domain`/`outside-domain`. `convert<Rational>` of `6/4` gives `3/2`. Each of `1/0`, `1/-2`, `-0/3`, `+1/2`, `1 / 2`, `01/2`, `1/02`, `1.5/2` and `1e1` is undefined. | Test (TC-964) |
 | FR-478-AC-8 | `convert<Float64[nearest-even]>` gives bits `0x3fb999999999999a` with flags `{inexact}` for `0.1`, and `0x3fd0000000000000` with no flag for `0.25` and for `2.5e-1`. It gives `0x8000000000000000` for `-0`, `0x7ff0000000000000` with `{overflow, inexact}` for `1e309`, and `0x0000000000000000` with `{underflow, inexact}` for `1e-400`. It gives `0x7ff0000000000000` for `inf`, `0xfff0000000000000` for `-inf` and `0x7ff8000000000000` for `nan`, each with no flag. `convert<Float64[toward-zero]>` gives `0x3fb9999999999999` for `0.1` and `0x7fefffffffffffff` with `{overflow, inexact}` for `1e309`. `convert<Float64[toward-positive]>` of `1e-400` gives `0x0000000000000001` with `{underflow, inexact}`. `convert<Float32[nearest-even]>` of `0.1` gives `0x3dcccccd` and `convert<Float32[toward-zero]>` gives `0x3dcccccc`, each with `{inexact}`. | Test (TC-964) |
