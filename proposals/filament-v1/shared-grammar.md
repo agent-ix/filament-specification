@@ -23,7 +23,10 @@ raw NUL, invalid UTF-8 and bare CR. Space, tab, LF and CRLF separate tokens;
 `//` comments run to the line ending or EOF. There are no block comments,
 indentation rules or automatic semicolons. Comments and whitespace do not alter
 meaning but remain part of source identity. A comment marker inside a quoted
-string is text. Skipped comments still consume source-byte budget.
+string is text. Skipped comments still consume source-byte budget. `#` is one
+single-character punctuation token wherever it stands outside a string or a
+comment; it starts no comment and joins no neighbouring character into a
+longer token, and a `#` inside a quoted string or a `//` comment is text.
 
 Identifiers are case-sensitive ASCII `[A-Za-z_][A-Za-z0-9_]*`. No Unicode
 normalization, case folding or name repair occurs. Quoted strings use JSON
@@ -542,6 +545,28 @@ an object type and the string is the key's object identity as UTF-8 bytes
 (`M::Server#"s1"`). `#` is a punctuation token of this production alone. Its
 typing, lowering and resolution are
 [FR-480](../../spec/functional/type-model/FR-480-check-and-resolve-reference-literals.md)'s.
+The parser takes the `reference-literal` alternative when the token after a
+`primary`'s qualified name is `#`; the literal is then a whole `primary`, so
+postfix selection and every operator apply to it as to any other primary. The
+literal is written solid: no whitespace and no comment stands between the
+qualified name and `#` or between `#` and the string, because the literal is
+one value spelling, as a `uint` or a `string` is, and a spaced `M::Server # "s1"`
+would read as an operator that FSL does not have. The key is a `string` and
+nothing else: an integer identity is written as its decimal text (`M::Job#"7"`),
+so one key spelling form covers every identity. Each malformed spelling is
+refused at S1 with `invalid_syntax`:
+
+| Spelling | Cause | Locus |
+| --- | --- | --- |
+| a `#` that does not follow the qualified name that begins a `primary`: `#"s1"`, `1#"s1"`, `(x)#"s1"`, `f(x)#"s1"`, `a.b#"s1"`, the second `#` of `M::Server#"a"#"b"` or of `M::Server##"s1"` | `unexpected-token` | that `#` |
+| whitespace or a comment between the qualified name and `#` (`M::Server #"s1"`) | `unexpected-token` | the `#` |
+| a token after `#` that is not a string (`M::Server#s1`, `M::Server#1`, `M::Server#)`), or whitespace or a comment between `#` and the string (`M::Server# "s1"`) | `unexpected-token` | the token after `#` |
+| the source ends after `#` | `unexpected-end` | the end of the source |
+| a malformed key string (`M::Server#"\q"`, an unterminated string) | the lexer's string cause (`invalid-escape`, `invalid-token`) | the string |
+
+An empty key `M::Server#""` and a qualified name that names no object type are
+syntactically well formed; FR-480 refuses them at checking. The formatter
+prints the literal as written, `#` touching both neighbours.
 
 The `postfix` alternative `'[', expr, ']'` is one selection form with three
 meanings fixed by the operand's type: the zero-based index of a `Sequence` or
