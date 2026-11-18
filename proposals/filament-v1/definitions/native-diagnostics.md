@@ -244,6 +244,7 @@ a refusal code or cause and does not make the outcome refused.
 | Reason | Required payload |
 | --- | --- |
 | `absent-key` | the population binding, the requested reference key and the `lookup` locus, for `lookup<T>(p, r) absent undefined` with no member of that key (FR-153) |
+| `malformed-number` | the `convert` application's locus and its `filament.op.text.*` or `filament.op.string.*` operation identity, for a text-to-number conversion whose operand is not a number in its target's production, the empty text included (FR-478 "Number grammar"); the reason is the same for every target kind and every way the text fails the grammar, and the payload carries no operand text, scalar position or partial value |
 | `no-element` | the `filament.op.collection.index` application's locus, for an index read `c[i]` evaluated with its index obligation unmet: a sequence or ordered-set index below 0 or at or past `size(c)`, or a map key with no entry (FR-144 "Indexing"); the reason is the same for all three, and the payload carries no index value or size |
 | `only-not-one` | the population binding, the `only` form's locus and the enclosing refinement row, for an `only(x in P where c: e)` whose matching set is empty or holds two or more objects (FR-376); the reason is the same for both, and the payload carries no match count |
 | `precondition-false` | the called effective operation, the selected method's effective identity, the receiver reference and the call locus, for a dispatched call whose selected effective precondition is false (FR-151) |
