@@ -319,7 +319,7 @@
       ],
       "expected": {
         "code": "malformed_wire",
-        "locus": "/temporal_clause_names/0/declaration_region"
+        "locus": "/temporal_clause_names/0"
       },
       "id": "CL-S4-temporal-region-removed",
       "note": "the Bounded temporal_clause_names row without `declaration_region`",
@@ -337,7 +337,7 @@
       ],
       "expected": {
         "code": "malformed_wire",
-        "locus": "/claim_names/1/declaration_region"
+        "locus": "/claim_names/1"
       },
       "id": "CL-S5-claim-region-removed",
       "note": "the NotAboveThree claim_names row without `declaration_region`",
