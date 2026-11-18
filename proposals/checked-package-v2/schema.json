@@ -56,6 +56,13 @@
         "$ref": "#/$defs/TemporalClauseNameRow"
       }
     },
+    "claim_names": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/ClaimNameRow"
+      }
+    },
     "schedulability_claims": {
       "type": "array",
       "minItems": 1,
@@ -206,6 +213,51 @@
           "additionalProperties": false
         }
       ]
+    },
+    "ClaimNameRow": {
+      "type": "object",
+      "required": [
+        "declaration",
+        "occurrence",
+        "name",
+        "qualified_name"
+      ],
+      "properties": {
+        "declaration": {
+          "$ref": "#/$defs/NodeRef"
+        },
+        "occurrence": {
+          "type": "object",
+          "required": [
+            "role",
+            "ordinal"
+          ],
+          "properties": {
+            "role": {
+              "enum": [
+                "declaration",
+                "claim"
+              ]
+            },
+            "ordinal": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "name": {
+          "$ref": "#/$defs/Identifier"
+        },
+        "qualified_name": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "TemporalClauseNameRow": {
       "type": "object",
