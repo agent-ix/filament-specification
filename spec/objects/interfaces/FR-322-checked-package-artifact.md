@@ -4171,7 +4171,23 @@ visits rows in array order and checks each in full before the next:
 
 After every row has passed, a claim-bearing node occurrence with no row, or
 a missing member in a graph that holds a claim-bearing node, refuses
-`invalid_package`/`invalid-value` at `/claim_names`. Each visited row
+`invalid_package`/`invalid-value` at `/claim_names`.
+
+**One claim namespace.** `claim_names` and `temporal_clause_names` are two
+tables of one namespace, not two namespaces. A request names its claim by
+name alone (`{"claim": "X"}`), with no table or kind, and the lookup below
+resolves it against the rows of both tables to exactly one row; a
+`temporal_clause_names` row carries no qualified path, so a temporal clause is
+reachable only by its bare `name`. A `claim_names` row whose `name` equals
+the `name` of a `temporal_clause_names` row would make that bare name resolve
+to two claims, or leave the temporal clause unreachable, so once both members
+have passed their own row checks the reader SHALL visit the `claim_names`
+rows in array order and refuse the first such row
+`ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name`, naming
+that row and the first `temporal_clause_names` row with the same `name`. A
+writer never writes such a pair: the source language refuses a temporal
+clause and a claim declaration that share a declared name before a package
+exists. Each visited row
 consumes one validation visit from the caller's finite reader budget, as for
 `temporal_clause_names`.
 
@@ -5282,6 +5298,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-456 | For a package compiled from a unit with `schedulable CtlFp on Ctl under fixed_priority;`, `schedulable CtlEdf on Ctl under edf;` and `response R on Ctl.c <= 12 ms under fixed_priority;`, the request items written from its `schedulability_claims` rows are three `schedulability` items in row order, each keyed by its row's `{declaration, occurrence}`, extent `bounded`, with the policy `fixed_priority`, `edf` and `fixed_priority` read from each FR-482 body; a package with no `schedulability_claims` gives no such item. | Test (TC-2007) |
 | FR-322-AC-457 | The package of a unit declaring the invariant state clause `NotAboveThree`, and the state-graph claim `ReachThree` (`possible`) carries `claim_names` with one row each, `qualified_name` `["NotAboveThree"]` and `["ReachThree"]`, sorted by `NodeRef` then occurrence; two structurally equal state clauses `A` and `B` share one node and carry two rows with distinct occurrences; renaming `NotAboveThree` changes no `node_id` and no node; a unit with none of these nodes has no `claim_names` member. | Test (TC-2011) |
 | FR-322-AC-458 | A `claim_names` row whose `declaration` names no node, or a `temporal_clause` node, refuses `invalid_package`/`invalid-value` at `/claim_names/{i}/declaration`; an `occurrence` the node lacks refuses at `/claim_names/{i}/occurrence`; a `qualified_name` whose last segment is not `name` refuses at `/claim_names/{i}/qualified_name`; two rows with one `qualified_name` refuse `ambiguous_declaration`/`ambiguous-name` at the later row's `qualified_name`; a repeated key refuses `conflicting-definition`; a claim-bearing node with no row, or a package with such a node and no member, refuses `invalid-value` at `/claim_names`; a row with an extra member fails the schema `malformed_wire`. | Test (TC-2011) |
+| FR-322-AC-459 | The package of FR-322-AC-457 with its `ReachThree` `claim_names` row renamed `Bounded` (name and `qualified_name` `["Bounded"]`), beside a temporal clause whose `temporal_clause_names` row is named `Bounded`, refuses `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name` of that row, naming both rows; the same with the row's `qualified_name` `["Scope", "Bounded"]` refuses the same; with the claim row named `ReachThree` and the temporal row `Bounded` the package is admitted and the lookup resolves `Bounded` to the temporal row and `ReachThree` to the claim row. | Test (TC-2012) |
 
 ## Dependencies
 

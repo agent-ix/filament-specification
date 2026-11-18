@@ -19,4 +19,4 @@ Select `filament.value.complete/v1`. Declare the map parameters and field of FR-
 
 ## Expected Results
 
-The admitted declarations and reads type and evaluate as FR-144-AC-33 states, an unguarded `m[k]` is `unproved-presence` at `k`, a non-scalar key type is `ill_typed`/`operator-ineligible` at the key type, the equalities give the Booleans FR-149-AC-28 lists independent of entry order, map types differing in bound or key type are `ill_typed`/`type-mismatch` under `=`, and an event-typed value type is `operator-ineligible`.
+The admitted declarations and reads type and evaluate as FR-144-AC-33 states, an unguarded `m[k]` is `unproved-presence` at `k`, a non-scalar key type, and a domain-package `Ratio` with no constraints (the unbounded `Rational`), is `ill_typed`/`operator-ineligible` at the key type while a bounded `Rational[..]` key is admitted, the equalities give the Booleans FR-149-AC-28 lists independent of entry order, map types differing in bound or key type are `ill_typed`/`type-mismatch` under `=`, and an event-typed value type is `operator-ineligible`.
