@@ -93,10 +93,13 @@ declaration's variables, or with `lower > upper`, is rejected at its pointer.
    conjunct `x = c`, `c` a constant, has a rate for `x` built only from
    variables whose rate is `0` in the source mode, the jump time of a
    behaviour from the dwell's first box is `(c - x0) / r`, and a jump step
-   MAY narrow its `time` to the interval value of that quotient over the
-   dwell's first box, offset by its `time`, when the quotient's divisor
-   interval excludes 0; the reader SHALL accept the narrowed `time` exactly
-   when it contains that interval value. When the source invariant has its
+   MAY narrow its `time` to the *narrowed jump time*: the interval value of
+   that quotient over the dwell's first box, offset by that box's `time`,
+   intersected with `[0, horizon]`, the proof's horizon, when the
+   quotient's divisor interval excludes 0. A jump after the horizon lies
+   outside the proof region, so the intersection drops no state the proof
+   must read. The reader SHALL accept a narrowed `time` exactly when it
+   contains the narrowed jump time. When the source invariant has its
    boundary at the guard (a *boundary invariant*, as `v >= 0` with the
    guard `v = 0`), a box never holds states on both sides of the guard: the
    source dwell's boxes stop at the guard by invariant contraction, and the
@@ -111,6 +114,32 @@ declaration's variables, or with `lower > upper`, is rejected at its pointer.
    definitely true over the box at which the jump is taken, and, at the
    decisive instant, the violated atom definitely false (or an expression
    definitely without value) over the enclosing box.
+
+### Rule names
+
+A rejection names the first failing rule by one of these spellings, and
+`at` is the RFC 6901 pointer of the box or step it failed at. The rules are
+checked in the order listed within each form.
+
+| Form | Rule | Spelling |
+| --- | --- | --- |
+| every form | a box keyed differently from the declaration's variables, or with `lower > upper` | `box-shape` |
+| `inductive-enclosure` | (a) initial containment | `a` |
+| `inductive-enclosure` | (b) faces | `b` |
+| `inductive-enclosure` | (c) transitions | `c` |
+| `inductive-enclosure` | (d) claim | `d` |
+| `flowpipe` | the first step's box contains every initial state | `initial` |
+| `flowpipe` | a step's a-priori box satisfies the Picard condition | `picard` |
+| `flowpipe` | the next step's box contains the step's successor | `successor` |
+| `flowpipe` | every transition whose guard can hold is followed by a jump step whose `box` and `time` contain what "Guards and boundary invariants" requires | `jump` |
+| `flowpipe` | the steps cover the proof's `horizon`, `jumps` and `exhaustive` | `coverage` |
+| `flowpipe` | the claim is definitely true over the steps | `claim` |
+| `validated-witness` | the start is a point satisfying an initial entry | `witness-start` |
+| `validated-witness` | each dwell's steps satisfy the Picard condition and enclose the solution | `witness-picard` |
+| `validated-witness` | each conditional takes one branch over each `B` | `witness-unique` |
+| `validated-witness` | each jump's guard is definitely true where it is taken | `witness-guard` |
+| `validated-witness` | the violated atom is definitely false, or definitely without value, at the decisive instant | `witness-violation` |
+| every form | the item's work limit stopped the check | `work-limit` |
 
 ### Settlement
 
@@ -139,7 +168,7 @@ declaration's variables, or with `lower > upper`, is rejected at its pointer.
 | FR-652-AC-2 | A `flowpipe` certificate whose step violates the Picard condition is rejected naming that step, and the `bounded-solver` proof stays `uncertified` with `certificate-rejected` recorded; a well-formed one covering horizon 10 settles `certified`. | Test (TC-1605) |
 | FR-652-AC-3 | In a mode with flow `v' = v * v / (1 + v * v)`, which is not polynomial, a point trace with an accepted `validated-witness` reaching `v > 30` against `always [0, 12] holds(h.v < 30)` settles `refuted`; without the witness, or with a witness whose last box straddles `v = 30`, it stays `inconclusive`. | Test (TC-1605) |
 | FR-652-AC-4 | A `flowpipe` certificate on an `inductive-solver` entry refuses `invalid_result`/`invalid-value` at `/certificate`; a box missing variable `a` is rejected at its pointer; a check stopped by the work limit is `rejected{rule: work-limit}`. | Test (TC-1605) |
-| FR-652-AC-5 | Over `Braking` without `t`, whose `Moving` invariant `v >= 0` is a boundary invariant of its guard `v = 0`, a `flowpipe` certificate whose `Moving` steps of `step` 1/16 are each contracted to `v >= 0` and whose one jump step is `Stopped: v [0, 0], a [1, 2]` with `time` `[0, 20]`, the value of `(0 - v0) / (-a)` over `v0 [0, 20], a [1, 2]`, cut to the horizon as `[0, 10]`, is accepted against `always [0, 10] holds(h.v < 30)` and settles `certified`; the same with jump-step `time` `[1, 10]` is rejected at that step, since it omits the jump at time 0 from `v0 = 0`; against `always [0, 10] holds(h.v > 5)` the claim is not definitely true over the first `Moving` step and the certificate is rejected naming the claim rule. | Test (TC-1605) |
+| FR-652-AC-5 | Over `Braking` without `t`, whose `Moving` invariant `v >= 0` is a boundary invariant of its guard `v = 0`, a `flowpipe` certificate whose `Moving` steps of `step` 1/16 are each contracted to `v >= 0` and whose one jump step is `Stopped: v [0, 0], a [1, 2]` with `time` `[0, 10]`, the narrowed jump time (the value `[0, 20]` of `(0 - v0) / (-a)` over `v0 [0, 20], a [1, 2]`, offset by time 0 and intersected with the horizon `[0, 10]`), is accepted against `always [0, 10] holds(h.v < 30)` and settles `certified`; the same with jump-step `time` `[1, 10]` is rejected with rule `jump` at that step, since it omits the jump at time 0 from `v0 = 0`; the same with `time` `[0, 20]` is accepted, since it contains the narrowed jump time; against `always [0, 10] holds(h.v > 5)` the claim is not definitely true over the first `Moving` step and the certificate is rejected with rule `claim`. | Test (TC-1605) |
 
 ## Dependencies
 
