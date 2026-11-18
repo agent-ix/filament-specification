@@ -3,8 +3,9 @@ profile p = "filament.model.complete/v1";
 model M = "example/plan-autoscaling";
 function load using p(h: Integer): Integer pure { if h = 0 then 2 else if h = 1 then 2 else if h = 2 then 5 else 3 }
 pre CanSet using p on M::Cluster::set { self.hour < 4 }
-post Set using p on M::Cluster::set { self.hour = pre(self.hour) + 1 and self.replicas = r }
-invariant Capacity using p on M::Cluster at current { self.hour = 0 or self.replicas >= load(self.hour - 1) * 1.2 }
+post SetReplicas using p on M::Cluster::set { self.hour = pre(self.hour) + 1 and self.replicas = r }
+invariant Capacity using p on M::Cluster at current { self.hour = 0 or 10 * self.replicas >= 12 * load(self.hour - 1) }
 invariant MinimumReplicas using p on M::Cluster at current { self.replicas >= 3 }
 type Lengths = Int[0, 4];
-synthesis Reach using p grammar M::Cluster domain Lengths minimize Reach.steps.sum(s => s.arguments.r * 0.05) satisfies { Reach.final.hour = 4 };
+type Cost = Decimal[0, 100000; 0, 4; exact];
+synthesis Reach using p grammar M::Cluster domain Lengths minimize sum<Cost>(s in Reach.steps : s.arguments.r * 0.05) satisfies { Reach.final.hour = 4 };

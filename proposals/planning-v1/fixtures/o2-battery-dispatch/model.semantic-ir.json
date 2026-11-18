@@ -198,9 +198,9 @@
           "identity": "ix://example/plan-battery/Soc/constraints/min",
           "keyword": "min",
           "operands": {
-            "value": "0.00"
+            "value": "0"
           },
-          "appliesTo": "ix://filament/native/Decimal",
+          "appliesTo": "ix://example/plan-battery/Soc",
           "diagnosticCode": "bound.min",
           "origin": {
             "generated": {
@@ -216,9 +216,9 @@
           "identity": "ix://example/plan-battery/Soc/constraints/max",
           "keyword": "max",
           "operands": {
-            "value": "1.00"
+            "value": "1"
           },
-          "appliesTo": "ix://filament/native/Decimal",
+          "appliesTo": "ix://example/plan-battery/Soc",
           "diagnosticCode": "bound.max",
           "origin": {
             "generated": {
@@ -233,7 +233,11 @@
       ],
       "extensions": [],
       "unknownPolicy": "reject",
-      "scalar": "decimal"
+      "scalar": "decimal",
+      "decimal": {
+        "precision": 5,
+        "scale": 2
+      }
     },
     {
       "identity": "ix://example/plan-battery/Battery",

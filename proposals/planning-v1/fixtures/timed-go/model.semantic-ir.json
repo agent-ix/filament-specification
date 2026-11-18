@@ -42,19 +42,6 @@
         "members": {},
         "meaning": "filament.meaning.model.population/v1"
       }
-    },
-    {
-      "kind": {
-        "module": "example/plan-timed-go",
-        "name": "value_type"
-      },
-      "moduleVersion": "1.0.0",
-      "construct": {
-        "identity": "none",
-        "shape": "record",
-        "members": {},
-        "meaning": "filament.meaning.model.value-type/v1"
-      }
     }
   ],
   "types": [

@@ -157,12 +157,11 @@
           "identity": "ix://example/plan-staffing/variant/Station-process",
           "name": "process",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-staffing/variant/Station-process",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-staffing/variant/Station-process"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-staffing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -170,12 +169,11 @@
           "identity": "ix://example/plan-staffing/variant/Station-pack",
           "name": "pack",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-staffing/variant/Station-pack",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-staffing/variant/Station-pack"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-staffing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -183,12 +181,11 @@
           "identity": "ix://example/plan-staffing/variant/Station-ship",
           "name": "ship",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-staffing/variant/Station-ship",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-staffing/variant/Station-ship"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-staffing/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         }
@@ -293,8 +290,8 @@
           "name": "move",
           "params": [
             {
-              "identity": "ix://example/plan-staffing/Crew/move/from",
-              "name": "from",
+              "identity": "ix://example/plan-staffing/Crew/move/src",
+              "name": "src",
               "typeRef": "ix://example/plan-staffing/Station",
               "presence": "required",
               "nullable": false,
@@ -307,17 +304,17 @@
               },
               "origin": {
                 "generated": {
-                  "generatorIdentity": "ix://example/plan-staffing/Crew/move/from",
+                  "generatorIdentity": "ix://example/plan-staffing/Crew/move/src",
                   "generatorVersion": "1.0.0",
                   "inputIdentities": [
-                    "ix://example/plan-staffing/Crew/move/from"
+                    "ix://example/plan-staffing/Crew/move/src"
                   ]
                 }
               }
             },
             {
-              "identity": "ix://example/plan-staffing/Crew/move/to",
-              "name": "to",
+              "identity": "ix://example/plan-staffing/Crew/move/dst",
+              "name": "dst",
               "typeRef": "ix://example/plan-staffing/Station",
               "presence": "required",
               "nullable": false,
@@ -330,10 +327,10 @@
               },
               "origin": {
                 "generated": {
-                  "generatorIdentity": "ix://example/plan-staffing/Crew/move/to",
+                  "generatorIdentity": "ix://example/plan-staffing/Crew/move/dst",
                   "generatorVersion": "1.0.0",
                   "inputIdentities": [
-                    "ix://example/plan-staffing/Crew/move/to"
+                    "ix://example/plan-staffing/Crew/move/dst"
                   ]
                 }
               }

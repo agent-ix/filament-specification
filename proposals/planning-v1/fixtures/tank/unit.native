@@ -1,7 +1,7 @@
 language "ix:native" edition "1-draft";
 profile p = "filament.temporal.infinite-trace/v1";
 hybrid Tank using p {
-  initial Fill { h = 0 }
+  initial { mode Fill when { h = 0 }; }
   mode Fill invariant { h <= 10 } flow { h' = 1; }
     transition to Drain when { h >= 8 } reset { h = h };
   mode Drain invariant { h >= 0 } flow { h' = -2; }

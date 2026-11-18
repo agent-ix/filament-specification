@@ -284,7 +284,7 @@
         {
           "identity": "ix://example/plan-autoscaling/Cluster/replicas",
           "name": "replicas",
-          "typeRef": "ix://example/plan-autoscaling/Replicas",
+          "typeRef": "ix://example/plan-autoscaling/Setting",
           "presence": "required",
           "nullable": false,
           "defaultKind": "none",

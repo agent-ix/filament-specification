@@ -2,7 +2,7 @@
   "declaration": "Reach",
   "policy": [],
   "dwell_grid": {
-    "kind": "rational",
+    "type": "rational",
     "numerator": "1",
     "denominator": "1"
   }

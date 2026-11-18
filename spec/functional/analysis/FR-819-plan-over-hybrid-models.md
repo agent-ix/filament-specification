@@ -86,7 +86,7 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
 
 - The planner SHALL propose candidate schedules whose dwells are multiples
   of the request's `dwell_grid`, a positive exact rational written in the
-  run value form FR-805 states (a Rational or Decimal object) and required for a
+  FR-181 typed `rational` or `decimal` form FR-805 states and required for a
   hybrid plan, each dwell bounded by the horizon the mode invariants and the
   declaration give, enumerated in FR-804's plan order.
 - A candidate is *validated* only when its item settles `proved` under a
@@ -142,7 +142,7 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-819-AC-1 | Over a tank with mode `Fill` (`h' = 1`, invariant `h <= 10`, transition to `Drain` when `h >= 8`) and `Drain` (`h' = -2`, invariant `h >= 0`) from `h = 0` in `Fill`, the goal `Reach.final.mode = Drain` with `dwell_grid` `{"kind": "rational", "numerator": "1", "denominator": "1"}` returns `feasible` with the one step of dwell 8 into `Drain`, `elapsed` 8, `bound` `null`, validated by a `flowpipe-outward-rounded` enclosure. | Test (TC-1966) |
+| FR-819-AC-1 | Over a tank with mode `Fill` (`h' = 1`, invariant `h <= 10`, transition to `Drain` when `h >= 8`) and `Drain` (`h' = -2`, invariant `h >= 0`) from `h = 0` in `Fill`, the goal `Reach.final.mode = Drain` with `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "1"}` returns `feasible` with the one step of dwell 8 into `Drain`, `elapsed` 8, `bound` `null`, validated by a `flowpipe-outward-rounded` enclosure. | Test (TC-1966) |
 | FR-819-AC-2 | The goal `Reach.final.h >= 12` returns `infeasible` from an `inductive-enclosure` proof of `always not goal` over the schedule space, whose FR-652 certificate bounds `h` within `[0, 10]` and is accepted, certification `certified`; the certificate with one reset image removed is rejected and the result is `incomplete`. | Test (TC-1966) |
 | FR-819-AC-3 | With `hybrid.max_solver_steps` 1 the result is `incomplete` with `limit-reached` naming `hybrid.max_solver_steps`; with no hybrid provider registered it is `unsupported` naming `hybrid-dynamics`. | Test (TC-1966) |
 | FR-819-AC-4 | A provider that answers with an `unclassified` method validates no candidate, and the result is never `feasible` on its word; a request without `dwell_grid` refuses at `/dwell_grid`. | Test (TC-1966) |

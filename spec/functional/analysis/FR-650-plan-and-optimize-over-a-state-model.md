@@ -148,7 +148,8 @@ counter `c` with `value = 1` in the initial snapshot, and two operations
 declared in this order: `inc` (precondition `value < 20`, effect `value =
 value + 1`) and `double` (precondition `value <= 10`, effect `value = 2 *
 value`), whose operation enum is `M::Op` with cases `inc` and `double`. The
-fixture's unit declares `type Upto5 = Int[0, 5];` and the temporal clauses
+fixture's unit declares `type Upto5 = Int[0, 5];`, `type Cost = Integer;` (the
+result type a typed `sum<Cost>` objective names) and the temporal clauses
 `NotFour` (`always holds(c.value != 4)`) and `SomeTime` (`eventually
 holds(c.value = 3)`) over `c: M::Counter`, and FR-650-AC-1's declaration
 `synthesis Reach using p grammar M::Counter domain Upto5 satisfies {
@@ -175,7 +176,7 @@ otherwise, a run over the counter has the goal `Reach.final.value = 8`,
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-650-AC-1 | Over a model with operations `inc` and `double` on a counter in `Int[0, 20]` from `value = 1`, `synthesis Reach using p grammar M::Counter domain Upto5 satisfies { Reach.final.value = 8 };` with `type Upto5 = Int[0, 5];` returns `optimal` with objective 3 (`length`) and the plan `inc, double, double`, the first of the two 3-step plans in canonical order since `inc` is declared before `double`, and a `potential` certificate the core accepts, certification `certified`. | Test (TC-1603) |
-| FR-650-AC-2 | With `minimize Reach.steps.sum(s => if s.operation = M::Op::double then 5 else 1)` the same request returns `optimal` with the plan `inc, inc, inc, double` (values 1, 2, 3, 4, 8) and objective 8, beating `inc, double, double` at 11 and `double, double, double` at 15; seven `inc` steps at 7 exceed the length bound `Upto5`. | Test (TC-1603) |
+| FR-650-AC-2 | With `minimize sum<Cost>(s in Reach.steps : if s.operation = M::Op::double then 5 else 1)` the same request returns `optimal` with the plan `inc, inc, inc, double` (values 1, 2, 3, 4, 8) and objective 8, beating `inc, double, double` at 11 and `double, double, double` at 15; seven `inc` steps at 7 exceed the length bound `Upto5`. | Test (TC-1603) |
 | FR-650-AC-3 | With `satisfies { Reach.final.value = 21 }`, outside the counter's domain, the result is `infeasible` with an accepted closure certificate; with `domain` `Int[0, 2]` and goal value 8 it is `infeasible`. | Test (TC-1603) |
 | FR-650-AC-4 | A policy clause `always holds(c.value != 4)` excludes every plan through value 4, and the returned plan replays with the policy holding at every state; a policy naming no clause refuses `missing_declaration`/`missing-name`; a policy `eventually holds(c.value = 3)` is evaluated on each completed plan and gives `optimal` `inc, inc, inc, double` (FR-803-AC-2). | Test (TC-1603) |
 | FR-650-AC-5 | Over the counter with goal value 8, the certificate tamper seam removing the successor reached by `double` from the entry of the initial node makes the core reject the `potential` certificate with `rule` `closure` and `entry` 0, and the result is `feasible` with the plan `inc, double, double`, certification `uncertified`, never `optimal`; a search stopped by its work limit after an admissible plan was found is `incomplete` naming the limit and carrying that best plan. | Test (TC-1603) |

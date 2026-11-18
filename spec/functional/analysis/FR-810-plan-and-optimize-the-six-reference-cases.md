@@ -52,9 +52,11 @@ one directory per case under `proposals/planning-v1/fixtures/`, named
 `o4-staffing`, `o5-robot-routing` and `o6-autoscaling`, each holding
 `unit.native` (the `synthesis` declaration, the policy clauses and the
 types), `model.semantic-ir.json`, `snapshot.json` (a
-`filament.state.snapshot/v1` initial state) and `plan.json` (the FR-805
-plan request members other than `package`, with `initial` naming
-`snapshot.json`). The same directory holds the fixtures the other planning
+`filament.state.snapshot/v1` initial state) and `plan.json` (the plan request in its host-surface form, FR-805: the
+plan request members without `format` and `package`, which a host
+envelope supplies, and with `initial` naming the sibling file
+`snapshot.json`; it is not a `filament.plan-request/v1` document on its
+own). The same directory holds the fixtures the other planning
 requirements name: `counter` (FR-650 "The counter fixture"), `timed-go`
 and `timed-tick` (FR-808), `probabilistic-try` (FR-809) and `tank`
 (FR-819); `tank` holds only `unit.native` and `plan.json`, because its hybrid
@@ -84,7 +86,7 @@ replays natively and every state satisfies the model rules and the policies.
 | FR-810-AC-4 | O4 returns `optimal` with objective 20, the plan `move(process, pack), move(ship, pack)` (staff 2, 4, 2), and an accepted `closure` certificate. | Test (TC-1963) |
 | FR-810-AC-5 | O5 returns `optimal` at length 10 with the plan `move(a, c1), move(a, c2), move(a, b2), move(b, c3), move(b, c2), move(b, c1), move(a, c2), move(a, c3), move(a, c4), move(b, c0)`, no state with both robots in one cell; with the policy bound tightened to `eventually[0, 9]` it returns `infeasible`. | Test (TC-1964) |
 | FR-810-AC-6 | O6 returns `optimal` with the plan `set(3), set(3), set(6), set(4)` and objective exactly `0.80`, the comparison `6 >= 5 × 1.2` holding exactly. | Test (TC-1965) |
-| FR-810-AC-7 | The standard's package publishes `unit.native`, `model.semantic-ir.json`, `snapshot.json` and `plan.json` under `proposals/planning-v1/fixtures/<case>/` for each of the six cases and for `counter`, `timed-go`, `timed-tick` and `probabilistic-try`, and `unit.native` and `plan.json` for `tank`; each `unit.native` checks at S3 against its `model.semantic-ir.json` (`tank`'s on its own), each `snapshot.json` admits for that model, and each `plan.json` is admitted by FR-805's reader. | Test (TC-2022) |
+| FR-810-AC-7 | The standard's package publishes `unit.native`, `model.semantic-ir.json`, `snapshot.json` and `plan.json` under `proposals/planning-v1/fixtures/<case>/` for each of the six cases and for `counter`, `timed-go`, `timed-tick` and `probabilistic-try`, and `unit.native` and `plan.json` for `tank`; each `unit.native` checks at S3 against its `model.semantic-ir.json` (`tank`'s on its own), each `snapshot.json` admits for that model, and each `plan.json` is admitted by FR-805's reader once wrapped: placed as the `synthesis` member of a host request whose package is the checked `unit.native` and whose `initial` resolves to the sibling `snapshot.json` (none for `tank`). | Test (TC-2022) |
 
 ## Dependencies
 

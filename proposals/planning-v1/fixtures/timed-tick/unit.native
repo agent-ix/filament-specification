@@ -5,7 +5,7 @@ model M = "example/plan-timed-tick";
 dimension Time;
 unit s : Time = rational(1, 1);
 unit min : Time = rational(60, 1) * s;
-time M tick M::Line::tick period 10 unit min;
+time M tick M::Line::tick period 10 min unit min;
 pre CanTick using p on M::Line::tick { self.ticks < 3 }
 post Tick using p on M::Line::tick { self.ticks = pre(self.ticks) + 1 }
 pre CanStep using p on M::Line::step { self.work < 2 }

@@ -216,12 +216,11 @@
           "identity": "ix://example/plan-production/variant/Job-A",
           "name": "A",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Job-A",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Job-A"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -229,12 +228,11 @@
           "identity": "ix://example/plan-production/variant/Job-B",
           "name": "B",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Job-B",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Job-B"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         }
@@ -265,12 +263,11 @@
           "identity": "ix://example/plan-production/variant/Machine-M1",
           "name": "M1",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Machine-M1",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Machine-M1"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -278,12 +275,11 @@
           "identity": "ix://example/plan-production/variant/Machine-M2",
           "name": "M2",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Machine-M2",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Machine-M2"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         }
@@ -314,12 +310,11 @@
           "identity": "ix://example/plan-production/variant/Assignment-waiting",
           "name": "waiting",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Assignment-waiting",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Assignment-waiting"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -327,12 +322,11 @@
           "identity": "ix://example/plan-production/variant/Assignment-M1",
           "name": "M1",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Assignment-M1",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Assignment-M1"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -340,12 +334,11 @@
           "identity": "ix://example/plan-production/variant/Assignment-M2",
           "name": "M2",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Assignment-M2",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Assignment-M2"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         },
@@ -353,12 +346,11 @@
           "identity": "ix://example/plan-production/variant/Assignment-finished",
           "name": "finished",
           "origin": {
-            "generated": {
-              "generatorIdentity": "ix://example/plan-production/variant/Assignment-finished",
-              "generatorVersion": "1.0.0",
-              "inputIdentities": [
-                "ix://example/plan-production/variant/Assignment-finished"
-              ]
+            "source": {
+              "sourceIdentity": "ix://example/plan-production/spec",
+              "path": "spec.fspec",
+              "startLine": 1,
+              "startColumn": 1
             }
           }
         }
@@ -388,8 +380,8 @@
       "relationships": [],
       "fields": [
         {
-          "identity": "ix://example/plan-production/Shop/tick",
-          "name": "tick",
+          "identity": "ix://example/plan-production/Shop/now",
+          "name": "now",
           "typeRef": "ix://example/plan-production/Tick",
           "presence": "required",
           "nullable": false,
@@ -402,10 +394,10 @@
           },
           "origin": {
             "generated": {
-              "generatorIdentity": "ix://example/plan-production/Shop/tick",
+              "generatorIdentity": "ix://example/plan-production/Shop/now",
               "generatorVersion": "1.0.0",
               "inputIdentities": [
-                "ix://example/plan-production/Shop/tick"
+                "ix://example/plan-production/Shop/now"
               ]
             }
           }
@@ -590,7 +582,7 @@
           },
           "frame": {
             "modifies": [
-              "ix://example/plan-production/Shop/tick",
+              "ix://example/plan-production/Shop/now",
               "ix://example/plan-production/Shop/aRemaining",
               "ix://example/plan-production/Shop/bRemaining",
               "ix://example/plan-production/Shop/aOn",
