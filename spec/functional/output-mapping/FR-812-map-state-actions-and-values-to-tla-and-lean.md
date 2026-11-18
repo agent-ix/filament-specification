@@ -43,6 +43,29 @@ The state, action and value regions of the TLA+ module or Lean file.
 | the step relation | `Next == \E p1 \in Dom1, … : op_a(…) \/ …`, one disjunct per operation in declaration order | `def Step (s s' : State) : Prop`, one disjunct per operation |
 | a behaviour | `Spec == Init /\ [][Next]_vars /\ WF_vars(Next) /\ fairness` | `structure Behaviour` over `Nat → State` with `Init (b 0)` and, at each `n`, `Step (b n) (b (n+1))` or `b (n+1) = b n` exactly when no step is enabled at `b n` |
 
+- A population's bound `n` SHALL be the authored maximum of a
+  `bound L on M::p [n]` declaration (FR-502), the one place source gives a
+  model population a maximum. A population that no `bound` names has no
+  maximum, because a domain-package population declaration (FR-153) and a
+  source `population` member (FR-610) declare none. The identity rows of
+  FR-610 list a type's populations by `{name, symmetric}` only and are not a
+  source of bounds. An unbounded population's variable carries no
+  `Cardinality` or `length` conjunct, and its meaning is still exact. The
+  mapper reads the bound from the checked package it exports. It never
+  reads it from a limit, a snapshot or a tool setting, because the bound is
+  part of the population's meaning (FR-502) and not a resource limit.
+- `Init` SHALL state the request's `initial` snapshot when one is named
+  (FR-817). Otherwise it states the model's declared initial constraints.
+  For a hybrid, these are its `hybrid-initial` entries, one disjunct per
+  entry, or the implicit `mode M when { true }` (shared grammar) when it
+  declares none. A state model of object populations declares no initial
+  constraint in source, so its `Init` is its well-typedness: `Init ==
+  TypeOK` (TLA+) and `def Init (s : State) : Prop := WF s` (Lean), and every
+  well-typed state within its population bounds is initial. A `constraint`
+  clause cuts a search (FR-382) and an invariant is an obligation, so
+  neither is read into `Init`. The export then states the model as declared
+  and adds nothing that the source does not say. A caller who wants the
+  behaviours from one start state names that state's snapshot.
 - `wf'` SHALL be the post-state well-typedness that native execution checks
   (FR-181); an operation whose post-state is not well-typed is not enabled
   in either target, as in FSL.
@@ -107,6 +130,8 @@ list equality is value equality.
 | FR-812-AC-3 | `(-7) div 2` under the floor law exports through the generated floor operator and evaluates to `-4` in both targets; under the truncating law, to `-3`. | Test (TC-1971) |
 | FR-812-AC-4 | The decimal `0.10 + 0.20` exports as the normalized rational `3/10`, and a `Float64` sum `0.1 + 0.2` exports through the generated rounding operator and compares unequal to the rational `3/10`, as in FSL. | Test (TC-1971) |
 | FR-812-AC-5 | A set `{3, 1, 2}` exports to Lean as `[1, 2, 3]`, and two sets built in different orders export to equal Lean lists; the text `"hé"` exports as the scalar sequence `<<104, 233>>`. | Test (TC-1971) |
+| FR-812-AC-6 | With `bound B on M::accounts [3]`, the TLA+ `TypeOK` holds the conjunct `Cardinality(DOMAIN v_Account) <= 3` and the Lean `WF` holds `v_Account.length <= 3`. Without the `bound`, neither conjunct appears. | Test (TC-2031) |
+| FR-812-AC-7 | Exported without `initial`, a state model writes `Init == TypeOK` and `def Init (s : State) : Prop := WF s`, and its `constraint` clause appears in neither. `Braking` with no `hybrid-initial` writes an `Init` whose one disjunct is the mode `Moving` with `TRUE`. With `initial` naming a snapshot, `Init` states that snapshot's state. | Test (TC-2031) |
 
 ## Dependencies
 

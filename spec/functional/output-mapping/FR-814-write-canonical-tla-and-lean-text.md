@@ -69,6 +69,23 @@ The target bytes and the package's name map.
   <source region>` (TLA+) or `-- fsl: <node id> <source region>` (Lean),
   the region written as FR-203's half-open byte region. A comment holds no
   path, timestamp, user name or tool version.
+- The comment SHALL be spelled exactly `<marker> fsl: <node id> <region>`,
+  with `<marker>` `\*` (TLA+) or `--` (Lean), one space between tokens and
+  nothing after the region. `<node id>` is the node's `node_id` as the
+  checked package writes it. `<region>` is
+  `<authority>/<identity>:<start>-<end>`: the region's source document by
+  its authority and identity, then `:`, then the zero-based start offset
+  and the exclusive end offset in bytes, as decimals with no sign or leading
+  zero, joined by `-`. Example:
+  `\* fsl: <node id> agent-ix/example/counter-unit:120-188`. This is the
+  same `<source>:<start>-<end>` form a diagnostic prints for a region it
+  cannot resolve to a line, so one reader parses both. The region is read
+  from the right: the last `:` ends the source and the one `-` after it
+  separates the offsets. A node with no source region writes `none` in place
+  of the region (FR-203 "Absence"), never `0-0`. A space or a character
+  outside printable ASCII in the authority or identity is written as
+  `\u{XXXX}`, so the node id and the region are each one token without
+  spaces.
 - Definitions SHALL be written in dependency order: a definition follows
   every definition it uses; definitions with no dependency between them
   follow the checked package's canonical node order. A recursive group is
@@ -86,6 +103,7 @@ The target bytes and the package's name map.
 | FR-814-AC-3 | Two exports of one request give byte-identical text that is ASCII only, ends with one LF, has no trailing whitespace, and has one `fsl:` comment per definition naming its node and region. | Test (TC-1973) |
 | FR-814-AC-4 | A function used by an invariant is written before it, and reordering two independent declarations in the source changes the text only by their node order. | Test (TC-1973) |
 | FR-814-AC-5 | A TLC error trace naming `v_Account` and `op_deposit` reads back through the name map to the FSL object type and operation nodes. | Test (TC-1973) |
+| FR-814-AC-6 | Every `fsl:` comment line of the counter's TLA+ and Lean exports matches `^(\\\*\|--) fsl: [^ ]+ ([^ ]+:(0\|[1-9][0-9]*)-(0\|[1-9][0-9]*)\|none)$`. The node id is a node of the package. The region's source is the unit's `<authority>/<identity>` and `start < end`, and that region's bytes are the definition's source declaration. A definition of a node with no source region writes `none`. | Test (TC-2030) |
 
 ## Dependencies
 
