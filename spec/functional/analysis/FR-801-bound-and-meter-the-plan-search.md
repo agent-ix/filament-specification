@@ -59,9 +59,45 @@ FR-461 Behavior 5 with the engine name `plan_search`:
 | `max_check_work` | `plan_search.max_check_work` | one per certificate entry the core checker reads and one per successor it re-derives |
 | `max_state_key_bytes` | `plan_search.max_state_key_bytes` | FR-181's state-key byte limit, per key |
 
-Each member has a published positive default. The settings are distinct
-from the verification planner's `planner.max_work` (FR-492): the two
-engines share no limit.
+Each member is an unsigned 64-bit count, and a request that leaves a member
+unset receives its published default:
+
+| Member | Type | Default |
+| --- | --- | --- |
+| `max_states` | unsigned 64-bit integer, at least 1 | 10000000 search nodes |
+| `max_work` | unsigned 64-bit integer, at least 1 | 100000000 work units |
+| `max_certificate_entries` | unsigned 64-bit integer, at least 1 | 16777216 entries |
+| `max_check_work` | unsigned 64-bit integer, at least 1 | 100000000 work units |
+| `max_state_key_bytes` | unsigned 64-bit integer, at least 1 | 1048576 bytes |
+
+The defaults follow the other engines' published defaults for the same
+kind of resource: `max_states` is the model checker's state default and
+`max_work` and `max_check_work` its transition default, since one search
+node or one checked entry costs about as much as one explored state or
+transition; `max_certificate_entries` is the certificate checkers' edge
+default, since a plan certificate is read by the same kind of checker; and
+`max_state_key_bytes` bounds one canonical state key at one mebibyte, far
+above any finite model's key and well below the certificate byte ceiling.
+The evaluation meter's defaults are the `accounting.<counter>` defaults of
+FR-461 Behavior 6, not members of this table.
+
+- **Overriding.** A caller sets a member through the limits type's setter in
+  the library, the plan request's `limits` member under the bare member
+  name (FR-805), or `--limit plan_search.<member>=<n>` on the CLI (FR-461
+  Behavior 3). A set member replaces its default for that request only; an
+  unset member keeps its default. The outcome's `limits` member lists all
+  five by setting name with the value in force, defaults filled (FR-805).
+- **Invalid values.** A value of 0, a negative value, a non-integer, or an
+  integer above 18446744073709551615 refuses the request
+  `invalid_runtime_input`/`invalid-value` at the member's pointer
+  (`/limits/<member>`) before any search; a value of the wrong JSON kind
+  refuses `invalid_runtime_input`/`wrong-value-kind` there; an unknown member
+  of `limits` refuses `invalid_runtime_input`/`unknown-member` there; and an
+  unknown setting name on the CLI refuses as FR-461-AC-4 states (FR-805,
+  FR-806).
+
+The settings are distinct from the verification planner's
+`planner.max_work` (FR-492): the two engines share no limit.
 
 - Every expression evaluation the search or the checker performs (the
   model's operations, clauses and invariants, the policy clauses, the goal
@@ -110,6 +146,7 @@ engines share no limit.
 | FR-801-AC-4 | Over a model where `inc, dec` returns to the start state, the search admits one node for the start state at each step count and reports `states` equal to the number of distinct nodes, not the number of plan prefixes. | Test (TC-1951) |
 | FR-801-AC-5 | A goal `Reach.steps[0].operation = M::Op::double` disables merging: `states` equals the number of admissible prefixes, and the result is still `optimal` with the plan whose first step is `double`. | Test (TC-1951) |
 | FR-801-AC-6 | `--limit planner.max_work=1` changes no plan search limit, and `--limit plan_search.max_work=1` stops the search `incomplete` naming `plan_search.max_work`. | Test (TC-1951) |
+| FR-801-AC-7 | FR-650-AC-1's request with no `limits` member writes an outcome whose `limits` is exactly `{plan_search.max_states: 10000000, plan_search.max_work: 100000000, plan_search.max_certificate_entries: 16777216, plan_search.max_check_work: 100000000, plan_search.max_state_key_bytes: 1048576}`; the same request with `limits` `{max_states: 500}` lists `plan_search.max_states` 500 and the four other defaults. `limits.max_work` 0, `-1`, `1.5` and 18446744073709551616 each refuse `invalid_runtime_input`/`invalid-value` at `/limits/max_work`, `"10"` refuses `wrong-value-kind` there, and `limits.max_steps` refuses `unknown-member` at `/limits/max_steps`, each exit `20` before any search. | Test (TC-2003) |
 
 ## Dependencies
 
