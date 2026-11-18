@@ -99,8 +99,11 @@ negative or non-integer value, a value above 2^64 - 1, a bound or method
 member outside its mode and an unknown member each refuse the request
 `invalid_runtime_input` (`invalid-value`, `unknown-member`) naming the member
 by its pointer, before any state is explored, as FR-461 states for every
-limit. A run a bound stops is `incomplete` with `limit-reached{limit, value,
-setting}` naming that bound, its frontier retained.
+limit. A run `max_states`, `max_steps` or `samples` stops is `incomplete` with
+`limit-reached{limit, value, setting}` naming that bound, its frontier
+retained. A state whose canonical key exceeds `max_state_key_bytes` instead
+stops expansion of that state with cause `state-key-limit-exceeded`, as the
+exploration contract above states (FR-181-AC-30).
 
 ### Typed canonical form
 

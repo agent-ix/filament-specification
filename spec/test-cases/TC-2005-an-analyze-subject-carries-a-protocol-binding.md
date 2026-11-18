@@ -24,7 +24,7 @@ that the binding is closed. Scope: FR-520-AC-6.
 
 ## Expected Results
 
-- Step 1: `temporal.subject.protocol` with the defaulted `over` and the
+- Step 1: `temporal.subject.protocol` with its `over` binding and the
   effective model.
 - Step 2: `invalid-request` naming the member.
 - Step 3: a model-subject item.
