@@ -86,7 +86,7 @@ The state, action and value regions of the TLA+ module or Lean file.
 | `Integer`, integer range | `Int`, range as a `TypeOK` conjunct | `Int`, range as a `WF` conjunct |
 | `Rational`, `Decimal`, decimal range | a record `[num \|-> n, den \|-> d]` with `d > 0` and `gcd(n, d) = 1`, through the generated operators `Q_add`, `Q_sub`, `Q_mul`, `Q_div`, `Q_lt`, `Q_le` | `structure Q` with `num : Int`, `den : Nat`, the same normal form and generated operations |
 | quantity with a unit | its exact rational value in the dimension's canonical unit, the unit kept in a comment | the same |
-| binary floating point | a tagged record (`finite` with sign, integer significand and exponent; `inf` with sign; `nan`) and generated operators that round an exact rational result by the package's rounding rule | an `inductive F` of the same tags and the same generated operators |
+| binary floating point | a tagged record (`finite` with sign, integer significand and exponent; `inf` with sign; `nan` with its exact bit pattern `bits`, below) and generated operators that round an exact rational result by the package's rounding rule | an `inductive F` of the same tags and the same generated operators |
 | `Text` | the sequence of its Unicode scalar values as integers, `<<104, 105>>` for `"hi"`, with the text in a comment | the sequence as `List Nat` of scalar values |
 | enum | the set of strings of its mangled member names (FR-814) | an `inductive` with one constructor per member, `deriving DecidableEq` |
 | record, tuple | a TLA+ record, a tuple | a `structure`, a `structure` with fields `_1`, `_2`, … |
@@ -100,6 +100,15 @@ The state, action and value regions of the TLA+ module or Lean file.
 
 The Lean set, bag and map encodings keep one canonical list per value, so
 list equality is value equality.
+
+A `nan` value SHALL carry `bits`, its exact IEEE 754-2019 bit pattern (sign,
+quiet bit and payload) as FR-181 writes it: 8 lowercase hexadecimal digits for
+`Float32` and 16 for `Float64`, big-endian, as a TLA+ string and a Lean
+`String`. The export is therefore lossless: two NaNs export equal exactly when
+their bits are equal, which is when FR-181 gives them equal state keys, so the
+exported state space neither merges states FSL keeps apart nor splits states FSL
+merges. The tag carries no other spelling of the NaN, and no generated operator
+reads a NaN through a target's own floating point.
 
 ### Arithmetic and undefinedness
 
@@ -132,6 +141,7 @@ list equality is value equality.
 | FR-812-AC-5 | A set `{3, 1, 2}` exports to Lean as `[1, 2, 3]`, and two sets built in different orders export to equal Lean lists; the text `"hé"` exports as the scalar sequence `<<104, 233>>`. | Test (TC-1971) |
 | FR-812-AC-6 | With `bound B on M::accounts [3]`, the TLA+ `TypeOK` holds the conjunct `Cardinality(DOMAIN v_Account) <= 3` and the Lean `WF` holds `v_Account.length <= 3`. Without the `bound`, neither conjunct appears. | Test (TC-2031) |
 | FR-812-AC-7 | Exported without `initial`, a state model writes `Init == TypeOK` and `def Init (s : State) : Prop := WF s`, and its `constraint` clause appears in neither. `Braking` with no `hybrid-initial` writes an `Init` whose one disjunct is the mode `Moving` with `TRUE`. With `initial` naming a snapshot, `Init` states that snapshot's state. | Test (TC-2031) |
+| FR-812-AC-8 | The `Float64` NaNs `7ff8000000000000`, `7ff8000000000001` and `fff8000000000000` and the `Float32` NaN `7fc00001` export to TLA+ as `[tag \|-> "nan", bits \|-> "7ff8000000000000"]`, `[tag \|-> "nan", bits \|-> "7ff8000000000001"]`, `[tag \|-> "nan", bits \|-> "fff8000000000000"]` and `[tag \|-> "nan", bits \|-> "7fc00001"]`, and to Lean as `F.nan` applied to the same strings; the first three are pairwise unequal in both targets, and two states differing only in a NaN payload export as two distinct states. | Test (TC-1971) |
 
 ## Dependencies
 
