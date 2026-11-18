@@ -1,0 +1,786 @@
+{
+  "base": "fixtures/positive-clause-operations.json",
+  "base_patch": [
+    {
+      "op": "replace",
+      "path": "/temporal_clause_names/0/name",
+      "value": "Bounded"
+    },
+    {
+      "op": "add",
+      "path": "/claim_names",
+      "value": [
+        {
+          "declaration": "<node 5>",
+          "declaration_region": {
+            "end": 7,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 5
+          },
+          "name": "ReachThree",
+          "occurrence": {
+            "ordinal": 0,
+            "role": "claim"
+          },
+          "qualified_name": [
+            "ReachThree"
+          ]
+        },
+        {
+          "declaration": "<node 15>",
+          "declaration_region": {
+            "end": 113,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 111
+          },
+          "name": "NotAboveThree",
+          "occurrence": {
+            "ordinal": 0,
+            "role": "claim"
+          },
+          "qualified_name": [
+            "NotAboveThree"
+          ]
+        },
+        {
+          "declaration": "<node 16>",
+          "declaration_region": {
+            "end": 115,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 113
+          },
+          "name": "AtMostTwo",
+          "occurrence": {
+            "ordinal": 0,
+            "role": "claim"
+          },
+          "qualified_name": [
+            "AtMostTwo"
+          ]
+        }
+      ]
+    }
+  ],
+  "note": "QSL-2448. FR-322 \"Claim declaration names\", \"Clause declaration regions\" and \"One claim namespace\" (FR-322-AC-457..461, TC-2011, TC-2012, TC-2015). `base` holds three claim-bearing nodes (graph node 5, a claim/verification_claim, and nodes 15 and 16, two state/state_clause nodes, each with one `claim` occurrence) and the temporal clause node 3. The published base carries its temporal clause row's `declaration_region` but predates `claim_names`, so `base_patch` is applied first: it renames the temporal clause row `Bounded` (a rename changes no node, CN-P3) and adds one `claim_names` row per claim-bearing occurrence, sorted by NodeRef then occurrence (node 5's path starts `claim`, before `state`; node 15's first operand is graph node 12 then node 10, before node 16's node 12 then node 14). The patched base is the package of FR-322-AC-457: `NotAboveThree` and `ReachThree` are the AC's names, `AtMostTwo` names the base's second state clause and is a stand-in. Each case is then an RFC 6902 patch on the patched base. The token \"<node N>\" in a patch value stands for the NodeRef of graph node N in index form, as the base's own `temporal_clause_names` row writes it, and \"<clause>\" for node 3, the temporal clause. A `declaration_region` must share the source of the occurrence's `source_map` region and contain every byte of it; the base has no source text, so its regions are stand-in spans one byte wider than the name token. `schema` is judged against the FR-322 row text: `schema.json` does not yet declare `declaration_region` on `TemporalClauseNameRow` or `ClaimNameRow`, so every case here is schema-invalid against the published `schema.json` until it does. `expected` is admitted or the refusal code, optional cause and RFC 6901 locus; `ac` is the owning acceptance criteria.",
+  "positive": [
+    {
+      "ac": [
+        "FR-322-AC-457",
+        "FR-322-AC-460"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P1-claim-rows",
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "AtMostTwo"
+      ],
+      "note": "one row per claim-bearing occurrence, sorted by NodeRef then occurrence; each row's declaration_region contains its name-token source_map region",
+      "patch": []
+    },
+    {
+      "ac": [
+        "FR-322-AC-457"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P2-shared-node-two-rows",
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "B",
+        "AtMostTwo"
+      ],
+      "note": "two structurally equal state clauses share node 15; each claim occurrence has its own row, with distinct occurrences and names",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/15/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/27",
+          "value": {
+            "node_id": "<node 15>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 121,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 120
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/2",
+          "value": {
+            "declaration": "<node 15>",
+            "declaration_region": {
+              "end": 121,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 119
+            },
+            "name": "B",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "B"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "ac": [
+        "FR-322-AC-457"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P3-rename-keeps-identity",
+      "identity_unchanged": true,
+      "names": [
+        "ReachThree",
+        "Renamed",
+        "AtMostTwo"
+      ],
+      "note": "renaming NotAboveThree changes no node and no node_id: the name is outside every node identity",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/1/name",
+          "value": "Renamed"
+        },
+        {
+          "op": "replace",
+          "path": "/claim_names/1/qualified_name",
+          "value": [
+            "Renamed"
+          ]
+        }
+      ]
+    },
+    {
+      "ac": [
+        "FR-322-AC-457"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P4-scoped-qualified-name",
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "AtMostTwo"
+      ],
+      "note": "a claim declared in scope `Scope`: qualified_name holds the declaring scope and ends in name",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/qualified_name",
+          "value": [
+            "Scope",
+            "ReachThree"
+          ]
+        }
+      ]
+    },
+    {
+      "ac": [
+        "FR-322-AC-459"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P5-one-namespace-lookup",
+      "lookups": {
+        "Bounded": "/temporal_clause_names/0",
+        "ReachThree": "/claim_names/0"
+      },
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "AtMostTwo"
+      ],
+      "note": "the claim row ReachThree beside the temporal row Bounded: admitted, and the lookup resolves each bare name to exactly one row",
+      "patch": []
+    },
+    {
+      "ac": [
+        "FR-322-AC-460"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P6-layout-moves-region-only",
+      "identity_unchanged": true,
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "AtMostTwo"
+      ],
+      "note": "whitespace added before the closing brace of Bounded's declaration moves its declaration_region end and no node_id or node",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/temporal_clause_names/0/declaration_region/end",
+          "value": 5
+        }
+      ]
+    }
+  ],
+  "schema_refusals": [
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/claim_names/0"
+      },
+      "id": "CL-S1-extra-member",
+      "note": "a claim_names row with a member the closed row does not declare",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/claim_names/0/origin",
+          "value": "x"
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/claim_names/0"
+      },
+      "id": "CL-S2-missing-qualified-name",
+      "note": "a claim_names row without `qualified_name`",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/claim_names/0/qualified_name"
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/claim_names/0/qualified_name"
+      },
+      "id": "CL-S3-empty-qualified-name",
+      "note": "`qualified_name` is the empty array",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/qualified_name",
+          "value": []
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/temporal_clause_names/0/declaration_region"
+      },
+      "id": "CL-S4-temporal-region-removed",
+      "note": "the Bounded temporal_clause_names row without `declaration_region`",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/temporal_clause_names/0/declaration_region"
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/claim_names/1/declaration_region"
+      },
+      "id": "CL-S5-claim-region-removed",
+      "note": "the NotAboveThree claim_names row without `declaration_region`",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/claim_names/1/declaration_region"
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/claim_names/1/declaration_region"
+      },
+      "id": "CL-S6-claim-region-not-source-region",
+      "note": "`declaration_region` is a string, not a SourceRegion",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/1/declaration_region",
+          "value": "111..113"
+        }
+      ],
+      "schema": "invalid"
+    }
+  ],
+  "semantic_refusals": [
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/0/declaration"
+      },
+      "id": "CL-R1-dangling-declaration",
+      "note": "a row naming a node the graph does not hold",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/declaration",
+          "value": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "claim",
+              "verification_claim",
+              "absent-declaration"
+            ]
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/0/declaration"
+      },
+      "id": "CL-R2-temporal-clause-declaration",
+      "note": "a row naming the temporal_clause node, which is named in temporal_clause_names, not here",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/declaration",
+          "value": "<clause>"
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/0/occurrence"
+      },
+      "id": "CL-R3-unowned-occurrence",
+      "note": "a row naming claim ordinal 5, which node 5 lacks",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/occurrence/ordinal",
+          "value": 5
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/0/qualified_name"
+      },
+      "id": "CL-R4-qualified-name-other-segment",
+      "note": "a qualified_name whose last segment is not the row's name",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/qualified_name",
+          "value": [
+            "Other"
+          ]
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "ambiguous-name",
+        "code": "ambiguous_declaration",
+        "locus": "/claim_names/2/qualified_name",
+        "names": [
+          "/claim_names/1",
+          "/claim_names/2"
+        ]
+      },
+      "id": "CL-R5-duplicate-qualified-name",
+      "note": "the shared node of CL-P2 with its second row also named NotAboveThree: two rows with one qualified_name",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/15/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/27",
+          "value": {
+            "node_id": "<node 15>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 121,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 120
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/2",
+          "value": {
+            "declaration": "<node 15>",
+            "declaration_region": {
+              "end": 121,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 119
+            },
+            "name": "NotAboveThree",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "NotAboveThree"
+            ]
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "conflicting-definition",
+        "code": "invalid_package",
+        "locus": "/claim_names/2"
+      },
+      "id": "CL-R6-repeated-key",
+      "note": "a second row for the key (node 15, claim 0)",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/claim_names/2",
+          "value": {
+            "declaration": "<node 15>",
+            "declaration_region": {
+              "end": 113,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 111
+            },
+            "name": "Again",
+            "occurrence": {
+              "ordinal": 0,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "Again"
+            ]
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names"
+      },
+      "id": "CL-R7-row-removed",
+      "note": "the AtMostTwo row removed: node 16's claim occurrence has no row",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/claim_names/2"
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-458"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names"
+      },
+      "id": "CL-R8-member-absent",
+      "note": "a package with claim-bearing nodes and no `claim_names`",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/claim_names"
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-457"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/1"
+      },
+      "id": "CL-R9-out-of-order",
+      "note": "the node 16 row moved first: the node 5 row at index 1 descends",
+      "patch": [
+        {
+          "from": "/claim_names/2",
+          "op": "move",
+          "path": "/claim_names/0"
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/temporal_clause_names/0/declaration_region"
+      },
+      "id": "CL-R10-temporal-region-shrunk",
+      "note": "the Bounded row's declaration_region shrunk to one byte that does not contain the name token [3, 4)",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/temporal_clause_names/0/declaration_region",
+          "value": {
+            "end": 3,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 2
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/temporal_clause_names/0/declaration_region"
+      },
+      "id": "CL-R11-temporal-region-other-source",
+      "note": "the Bounded row's declaration_region names another source document",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/temporal_clause_names/0/declaration_region/source/identity",
+          "value": "other"
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/1/declaration_region"
+      },
+      "id": "CL-R12-claim-region-shrunk",
+      "note": "the NotAboveThree row's declaration_region shrunk to one byte that does not contain the name token [112, 113)",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/1/declaration_region",
+          "value": {
+            "end": 112,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 111
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-461"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/1/declaration_region"
+      },
+      "id": "CL-R13-claim-region-other-source",
+      "note": "the NotAboveThree row's declaration_region names another source document",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/1/declaration_region/source/identity",
+          "value": "other"
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-459"
+      ],
+      "expected": {
+        "cause": "ambiguous-name",
+        "code": "ambiguous_declaration",
+        "locus": "/claim_names/0/name",
+        "names": [
+          "/claim_names/0",
+          "/temporal_clause_names/0"
+        ]
+      },
+      "id": "CL-R14-namespace-collision",
+      "note": "the ReachThree row renamed Bounded, the name of the temporal_clause_names row",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/name",
+          "value": "Bounded"
+        },
+        {
+          "op": "replace",
+          "path": "/claim_names/0/qualified_name",
+          "value": [
+            "Bounded"
+          ]
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-459"
+      ],
+      "expected": {
+        "cause": "ambiguous-name",
+        "code": "ambiguous_declaration",
+        "locus": "/claim_names/0/name",
+        "names": [
+          "/claim_names/0",
+          "/temporal_clause_names/0"
+        ]
+      },
+      "id": "CL-R15-namespace-collision-scoped",
+      "note": "the same with qualified_name [\"Scope\", \"Bounded\"]: the namespace compares the bare name",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/claim_names/0/name",
+          "value": "Bounded"
+        },
+        {
+          "op": "replace",
+          "path": "/claim_names/0/qualified_name",
+          "value": [
+            "Scope",
+            "Bounded"
+          ]
+        }
+      ],
+      "schema": "valid"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "base": "fixtures/positive-timed-clause-nodes.json",
   "clause_graph_index": 8,
-  "note": "IR-1278. A temporal_clause node carries no declaration: structurally equal clauses share one node, so the declared name is carried per claim occurrence in the temporal_clause_names row (FR-322 \"Temporal clause names\"). Each case is an RFC 6902 patch on `base`. The token \"<clause>\" in a patch value stands for the NodeRef of the base package's one temporal_clause node (graph index 8) and \"<node 9>\" for the NodeRef of graph node 9, a node that is not a temporal clause. A package with a second occurrence also carries that occurrence's temporal_bindings row (the binding is per occurrence). `schema` is `valid` or `invalid`; `expected` is admitted or the refusal code, optional cause and RFC 6901 locus. The row checks run per row in array order (declaration, occurrence, repeated key, order) and coverage last.",
+  "note": "IR-1278. A temporal_clause node carries no declaration: structurally equal clauses share one node, so the declared name is carried per claim occurrence in the temporal_clause_names row (FR-322 \"Temporal clause names\"). Each case is an RFC 6902 patch on `base`. The token \"<clause>\" in a patch value stands for the NodeRef of the base package's one temporal_clause node (graph index 8) and \"<node 9>\" for the NodeRef of graph node 9, a node that is not a temporal clause. A package with a second occurrence also carries that occurrence's temporal_bindings row (the binding is per occurrence). `schema` is `valid` or `invalid`; `expected` is admitted or the refusal code, optional cause and RFC 6901 locus. The row checks run per row in array order (declaration, occurrence, repeated key, order) and coverage last. Every row carries `declaration_region` (FR-322-AC-460), the source region of the whole declaration, which must name the source of the occurrence's claim `source_map` region and contain it; that check runs after coverage (FR-322-AC-461).",
   "positive": [
     {
       "bindings": 1,
@@ -59,6 +59,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -220,6 +228,21 @@
           "op": "replace",
           "path": "/temporal_clause_names/0/occurrence",
           "value": -1
+        }
+      ],
+      "schema": "invalid"
+    },
+    {
+      "expected": {
+        "code": "malformed_wire",
+        "locus": "/temporal_clause_names/0"
+      },
+      "id": "CN-S9-missing-declaration-region",
+      "note": "FR-322-AC-461: a row without `declaration_region`",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/temporal_clause_names/0/declaration_region"
         }
       ],
       "schema": "invalid"
@@ -394,6 +417,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -416,6 +447,14 @@
           "path": "/temporal_clause_names/2",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause2",
             "occurrence": 1
           }
@@ -464,6 +503,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -568,6 +615,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 10,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 8
+            },
             "name": "Again",
             "occurrence": 0
           }
@@ -577,6 +632,14 @@
           "path": "/temporal_clause_names/2",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 10,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 8
+            },
             "name": "Other",
             "occurrence": 0
           }
@@ -638,6 +701,14 @@
           "path": "/temporal_clause_names/1",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 12,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 10
+            },
             "name": "Clause1",
             "occurrence": 1
           }
@@ -660,6 +731,14 @@
           "path": "/temporal_clause_names/2",
           "value": {
             "declaration": "<clause>",
+            "declaration_region": {
+              "end": 10,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 8
+            },
             "name": "Again",
             "occurrence": 0
           }
@@ -762,15 +841,72 @@
           "value": [
             {
               "declaration": "<clause>",
+              "declaration_region": {
+                "end": 12,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 10
+              },
               "name": "B",
               "occurrence": 1
             },
             {
               "declaration": "<clause>",
+              "declaration_region": {
+                "end": 10,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 8
+              },
               "name": "A",
               "occurrence": 0
             }
           ]
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/temporal_clause_names/0/declaration_region"
+      },
+      "id": "CN-R12-region-misses-the-name",
+      "note": "FR-322-AC-461: a one-byte declaration region that does not contain the occurrence name token",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/temporal_clause_names/0/declaration_region",
+          "value": {
+            "end": 9,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 8
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/temporal_clause_names/0/declaration_region"
+      },
+      "id": "CN-R13-region-in-another-source",
+      "note": "FR-322-AC-461: a declaration region naming a source other than the name token's",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/temporal_clause_names/0/declaration_region/source/identity",
+          "value": "other"
         }
       ],
       "schema": "valid"

@@ -15,6 +15,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-563
     type: references
+  - target: ix://agent-ix/filament-specification/FR-817
+    type: references
   - target: ix://agent-ix/filament-spec-language/FR-010
     type: references
 ---
@@ -24,7 +26,7 @@ relationships:
 ## Description
 
 When a user invokes the FSL CLI, the command SHALL map parse, check, lower,
-execute, replay, monitor, inspect, format and version requests to the exact Rust
+execute, replay, monitor, export, inspect, format and version requests to the exact Rust
 lifecycle contracts.
 
 ## Inputs
@@ -122,6 +124,16 @@ in the default build:
   it, and checks it against the selection sidecar: it exits `0` when they
   agree and `20` with the reader's or the sidecar's typed refusal
   otherwise.
+- `export <request>` runs the TLA+ or Lean export of a `native-run/1`
+  request's `export` member and writes the outcome document with operation
+  `export`; `--output <file>` names the target file, which the language
+  implementation writes only for an assembled package and never over an
+  existing path, and `export --evidence <request>` takes in a target tool's
+  result over an assembled export as FR-815 states, both as
+  [FR-817](../output-mapping/FR-817-request-and-write-a-tla-or-lean-export.md)
+  states. `--output` and `--evidence` are accepted on `export` only (`--output`
+  also on `compile`); `--evidence` with `--output` refuses `invalid-request`
+  naming both, exit `20`.
 - `parse` reports, for a parse that completes, the source's two labels as
   the caller gave them, its path, its exact byte count and, for each S1
   limit, the bound and the count reached; it reports no other identity of
@@ -142,6 +154,7 @@ exit `20`.
 | FR-301-AC-4 | A verb the build accepts but does not route exits `21` with an outcome document naming the verb under `unsupported_operation`/`operation-not-routed` (FR-522), and no verb exits with empty machine output while its stream is open. | Driver test (TC-1082): only the CLI binary decides verb routing, so the driver code ticket QSL-1995 adds the test in the driver repository. |
 | FR-301-AC-5 | `version --format json` writes the build inventory document; `check --markdown` over a document of two native fences writes one item per fence; `compile` with a `handoff` member writes the handoff directory and `inspect --handoff` over it exits `0`; `--provider-config` naming a document with no `providers` member, and `--extensions` naming a set document with an unknown entry member, each exit `20` before any stage runs. | Test (TC-1244) |
 | FR-301-AC-6 | `check --integer-division floor` over a unit with `div` and no law header exits `0`; without the option it exits `20` with `missing_declaration`/`missing-selection`; `--integer-division ceiling` exits `20` with `unknown_profile`/`unsupported-selection` naming the option and the value before reading the source; a `run` request whose `integer_division` member is `floor` evaluates `-7 div 3` to `-3`; and `--integer-division` on `compile`, `run`, `analyze`, `prove` or `monitor` refuses as an unknown option, exit `20`. | Driver test (TC-1651): the CLI binary parses the option and renders the outcome, so the code ticket adds the test in the driver repository. |
+| FR-301-AC-7 | `export <request> --output m.tla` over the counter request exits `0`, writes the target file and writes an outcome document with operation `export`; `export <request> --evidence e.json --output m.tla` and `export --evidence e.json --output m.tla` each refuse `invalid-request` naming the options, exit `20`, with no file written; `--evidence` on `compile` and `--output` on `run` each refuse as an unknown option, exit `20`. | Driver test (TC-2021): the CLI binary parses the options and routes the verb, so the code ticket adds the test in the driver repository. |
 
 ## Dependencies
 

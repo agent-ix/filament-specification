@@ -220,11 +220,15 @@
         "declaration",
         "occurrence",
         "name",
-        "qualified_name"
+        "qualified_name",
+        "declaration_region"
       ],
       "properties": {
         "declaration": {
           "$ref": "#/$defs/NodeRef"
+        },
+        "declaration_region": {
+          "$ref": "#/$defs/SourceRegion"
         },
         "occurrence": {
           "type": "object",
@@ -264,11 +268,15 @@
       "required": [
         "declaration",
         "occurrence",
-        "name"
+        "name",
+        "declaration_region"
       ],
       "properties": {
         "declaration": {
           "$ref": "#/$defs/NodeRef"
+        },
+        "declaration_region": {
+          "$ref": "#/$defs/SourceRegion"
         },
         "occurrence": {
           "type": "integer",

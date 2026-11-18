@@ -24,6 +24,8 @@ FR-322-AC-460 and FR-322-AC-461.
    before `Bounded`'s closing `}`.
 3. Read the package of step 1 with a row's `declaration_region` removed,
    shrunk to a byte outside the name token, or naming another source.
+4. Replay `claim-name-vectors.json` cases `CL-P1`, `CL-P6`, `CL-S4` to
+   `CL-S6` and `CL-R10` to `CL-R13`.
 
 ## Expected Results
 

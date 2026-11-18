@@ -26,6 +26,8 @@ rows. Scope: FR-322-AC-457 and FR-322-AC-458.
    `declaration`, an occurrence the node lacks, a `qualified_name` ending in
    another segment, two rows with one `qualified_name`, a repeated key, a
    removed row, the member removed, and a row with an extra member.
+4. Replay `claim-name-vectors.json` cases `CL-P1` to `CL-P4` and `CL-S1` to
+   `CL-S3`, `CL-R1` to `CL-R9` over its patched base.
 
 ## Expected Results
 
