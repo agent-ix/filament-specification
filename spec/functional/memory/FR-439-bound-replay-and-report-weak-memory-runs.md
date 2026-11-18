@@ -46,7 +46,11 @@ reached; a counterexample carrying the memory component; or a replay outcome.
 Two request members of the model-check method bound the memory component:
 `max_store_buffer`, the entries per thread's buffer under `tso`, and
 `max_messages`, the live messages per location after garbage collection under
-`ra`. The caller sets each with no ceiling. A request that leaves one unset
+`ra` and, for a subject that holds protocol channels, also each channel's
+occupancy, counted per channel: a send offered to a channel already holding
+`max_messages` entries is cut before the channel's overflow policy applies.
+The RA count and a channel's count never add together, so the RA meaning is
+unchanged. The caller sets each with no ceiling. A request that leaves one unset
 receives the published default, **4**. They are run parameters, not part of
 the model, the subject or the obligation identity.
 

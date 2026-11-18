@@ -29,7 +29,7 @@ relationships:
 
 ## Description
 
-When a truth result settles on a `decisive-witness` or `decisive-counterexample` basis, the result producer SHALL retain exactly one separating witness record with the deciding quantifier, deciding element, index, value path and trace position below. A strict reader accepts a witness only as this exact record or as its absence.
+When a truth result settles on a `decisive-witness` or `decisive-counterexample` basis, the result producer SHALL retain exactly one separating witness record with the deciding quantifier, deciding comparison, operands, decision path, deciding element, index, value path and trace position below. A strict reader accepts a witness only as this exact record or as its absence.
 
 ## Properties
 
@@ -40,6 +40,9 @@ When a truth result settles on a `decisive-witness` or `decisive-counterexample`
 | index | Integer | 0..1 |  |
 | value_path | RuntimeValuePath | 1..1 |  |
 | trace_position | String | 1..1 |  |
+| deciding_comparison | JsonObject | 0..1 |  |
+| operands | String | 0..* |  |
+| decision_path | JsonObject | 0..* |  |
 
 ## Field sources
 
@@ -60,6 +63,9 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | index | The exact position of the deciding element within its enclosing bounded collection, where the family assigns a positional index (collection `forall`/`exists`, FR-041-AC-4). Absent for a family that assigns no positional index. |
 | value path | The exact [FR-207](../foundation/FR-207-runtime-value-path.md) runtime value path from the assessed subject's root to the deciding element's location, including into a nested record, collection or model reference. For a collection quantifier it ends at the quantifier's domain collection, and the index names the element. For a computed domain it names the stored source collection, and for a collection built inside the claim it is rooted at the building expression's occurrence key (FR-207 "Computed collections"). |
 | trace position | The exact position within the retained execution or observation trace at which the deciding element was produced or observed, where the family retains a trace (temporal, FR-094; protocol, FR-243). Absent for a family that retains no trace. |
+| deciding comparison | The occurrence key (`node_id`, `role`, `ordinal`, the FR-322 `source_map` key) of the authored comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) whose result decided a state clause, where the decision path ends at that comparison. Absent otherwise. Present exactly when `operands` and `decision_path` are present, and never together with a deciding quantifier. |
+| operands | The comparison's two operand values, exactly two, left then right, each an exact runtime value in the deciding element's encoding. Present exactly when the deciding comparison is. |
+| decision path | The occurrence keys of the claim nodes the decision walk visited, from the claim root to the deciding comparison, root first and the comparison's own key last; non-empty. Present exactly when the deciding comparison is. |
 
 ## Family neutrality
 
@@ -67,6 +73,7 @@ This one record shape backs every family's decisive settlement, and no family de
 
 - **Collection** — `forall`/`exists` stop at their specified decisive occurrence and retain its source binding (FR-041-AC-4); that quantifier, occurrence and binding are the deciding quantifier, deciding element, index and value path above.
 - **Temporal** — a decisive temporal witness or counterexample preserves the truth under every admitted continuation only with completed assessment execution, exact complete decision support and this record (FR-094, FR-061-AC-8).
+- **Comparison** — a state clause whose decision path ends at an authored comparison is decided by that comparison's operand values over the closed admitted observation, so the comparison separates the clause's truth from its negation as a stopped quantifier does. Its record names the comparison, its two operand values and the decision path to it; the deciding element is the comparison's Boolean result, the value path is rooted at the clause's subject binding with an empty `steps` array, and the deciding quantifier, index and trace position are absent. A comparison inside a quantifier body is never recorded: the walk ends at the quantifier.
 - **Protocol** — an open decision scope settles `satisfied` or `violated` because the selected profile proves the retained witness or counterexample preserves that truth under every admitted continuation (FR-243 `decisive-witness`, `decisive-counterexample`).
 
 ## Assessed subject's root
@@ -109,7 +116,9 @@ A separating witness accompanies only a `decisive-witness` or `decisive-countere
   own; it is compared componentwise over its key.
 - **Key** — the deciding quantifier where the family has one, the deciding
   element identity, the index where the family assigns one, the value path,
-  and the trace position where the family retains one.
+  the trace position where the family retains one, and the deciding
+  comparison, operands and decision path where the decision ends at a
+  comparison.
   Equality is componentwise over the key and nothing else. Display name, source
   path, span, message text, locale and rendering never participate.
 - **Key order** — **none is established.** No requirement states a total order
@@ -135,6 +144,8 @@ A separating witness accompanies only a `decisive-witness` or `decisive-countere
 | FR-351-AC-6 | No ordering over separating witness records is asserted by this artifact or inferred from presentation text. | Inspection |
 | FR-351-AC-7 | A collection `forall` refuted at its third element records the refuting quantifier's occurrence key, that element, index 2 and the value path to the stored collection; two otherwise-equal records naming different occurrences of one quantifier node compare unequal; a `filter` or `map` domain records the stored source collection and source index; and an element of a collection built inside the claim records a value path rooted at the building expression's occurrence key. | Test (TC-254) |
 | FR-351-AC-8 | A decisive protocol-analysis counterexample's record has a `value_path` whose `root.observation` and `root.subject` equal the request item's `assessed_root` exactly, an `object` root subject and an empty `steps` array; a request with `assessed_root`, its `observation` or its `subject` absent is refused `invalid_runtime_input`/`missing-member` naming the absent member; two requests that differ only in `assessed_root` yield the same FR-174 or FR-175 key and records that differ only in `value_path.root`. | Test (TC-254) |
+| FR-351-AC-9 | A state clause `present(self.parent) implies self.version = value(self.parent).version`, refuted over an observation where `self.version` is 600 and its parent's is 0, retains one record whose `deciding_comparison` is the `=`'s occurrence key, `operands` `[600, 0]`, `decision_path` the `implies`'s key then the `=`'s, `deciding_element` `false`, a `value_path` rooted at `self`'s binding with empty `steps`, and no `deciding_quantifier`, `index` or `trace_position`; two records equal except in one operand compare unequal. | Test (TC-2014) |
+| FR-351-AC-10 | A strict reader refuses a record carrying `deciding_comparison` without `operands` or without `decision_path`, `operands` holding one or three values, an empty `decision_path`, a `decision_path` whose last key is not the `deciding_comparison`, or `deciding_comparison` together with `deciding_quantifier`, and admits AC-9's record. | Test (TC-2014) |
 
 ## Dependencies
 

@@ -176,6 +176,9 @@ The two settlement members are:
   | `index` | the element's zero-based position as an unsigned integer; absent for a family that assigns no position |
   | `value_path` | the [FR-207](../../objects/foundation/FR-207-runtime-value-path.md) `runtime_value` wire form |
   | `trace_position` | the trace position, as a canonical decimal string (FR-351 types it `String`); absent for a family that retains no trace. A clause-run record's families retain none, and a protocol-analysis record always carries one |
+  | `deciding_comparison` | the deciding comparison's occurrence key, in `quantifier`'s shape; present exactly on a comparison record (FR-351 "Comparison"), never together with `quantifier` |
+  | `operands` | a JSON array of exactly two values, left then right, each in the canonical typed value encoding of `deciding_element`; present exactly when `deciding_comparison` is |
+  | `decision_path` | a non-empty JSON array of occurrence keys in `quantifier`'s shape, root first and the `deciding_comparison` last; present exactly when `deciding_comparison` is |
 
   An absent component is an absent member, never `null`, zero or an empty
   value. The document encodes as RFC 8785 JSON.
@@ -421,6 +424,7 @@ back SHALL restore an equal record.
 | FR-352-AC-18 | A timestamped clause-run record with a `ledger` of one entry reads back equal and re-encodes to the same bytes; the same `ledger` on a record of a lasso run, an entry missing `covered`, two entries for one binding, and entries out of binding order each refuse with a located diagnostic naming the member. | Test (TC-1163) |
 | FR-352-AC-19 | A clause-run record over a `model` trace written with no `max_candidates` in the request carries `limits` `{"expansion.max_candidates": "1000000"}`, and one written with `max_candidates` 1 carries `{"expansion.max_candidates": "1"}`; the two records are unequal. A record over a `finite` trace carries no `limits`. The reader refuses a `model`-trace record without `limits`, a `finite`-trace record with `limits`, an unknown setting name, and the values `"0"`, `"01"` and `1` (a JSON number). | Test (TC-1701) |
 | FR-352-AC-20 | A clause-run record over a `progressed` record-sample trace carries a `ledger` whose covered entries are each `{identity, stamp, fingerprint}`, `identity` the sample's index and `fingerprint` `sha256:` plus 64 lowercase hexadecimal digits, with no sample text or value; a snapshot-position covered entry carries no `fingerprint`. The reader restores both without loss and refuses a record-sample entry without `fingerprint`, a snapshot-position entry with one, a `fingerprint` with uppercase digits or 63 digits, and a covered entry with any other extra member. | Test (TC-1910) |
+| FR-352-AC-21 | A clause-run document whose `witness` is FR-351-AC-9's comparison record, with `deciding_comparison`, two `operands`, `decision_path`, `deciding_element` and `value_path` and no `quantifier`, `index` or `trace_position`, is accepted and restores that record; the same document with `operands` absent, with three operands, with an empty `decision_path`, or with `quantifier` added is refused naming that member. | Test (TC-2014) |
 
 ## Dependencies
 
