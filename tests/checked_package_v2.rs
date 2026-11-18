@@ -24546,39 +24546,166 @@ fn a_source_selection_key_is_the_effective_id_over_the_source_declaration_key() 
     );
 }
 
-/// FR-789 (TC-1917, TC-1918): a source timed model's clock-place rows join
-/// the source identity rows and native record bindings of the root's owner.
-#[trace("TC-1917", "TC-1918", "FR-789-AC-1", "FR-789-AC-2")]
-#[test]
-#[ignore = "QSL-2347: the source timed-model vectors and their clock-place join are not published yet"]
-fn a_source_timed_model_joins_its_clock_places_through_source_rows() {
-    let vectors = parsed_fixture(TIMED_MODEL_NODE_VECTORS);
-    let case = source_vector_case(&vectors, "TM-S1-source-root");
-    let rows: Vec<Value> = case["clock_places"]
+const SOURCE_TIMED_MODEL_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/source-timed-model-vectors.json");
+
+/// The `(declaring_type, member_identity, member_type)` of every
+/// `resolved_path` row of each published place of `case`, in place order.
+fn source_place_rows(case: &Value) -> Vec<Vec<[String; 3]>> {
+    case["clock_places"]
         .as_array()
         .expect("the published places")
         .iter()
-        .map(|place| place["resolved_path"].clone())
-        .collect();
+        .map(|place| {
+            place["resolved_path"]
+                .as_array()
+                .expect("the place's rows")
+                .iter()
+                .map(|row| {
+                    ["declaring_type", "member_identity", "member_type"]
+                        .map(|binding| row[binding].as_str().expect("a text binding").to_owned())
+                })
+                .collect()
+        })
+        .collect()
+}
+
+/// Each refusal case `id` is raised at `stage` with exactly `code` and
+/// `cause`, at a locus ending in `locus`.
+fn assert_staged_source_refusals(vectors: &Value, stage: &str, cases: &[(&str, &str, &str, &str)]) {
+    assert_source_refusals(vectors, cases);
+    for (id, ..) in cases {
+        assert_eq!(source_vector_case(vectors, id)["stage"], stage, "{id}");
+    }
+}
+
+/// FR-789 (TC-1917, TC-1918): a source timed model's clock-place rows join
+/// the package's source declarations at the strict read, and every row the
+/// package alone contradicts refuses there.
+#[trace("TC-1917", "TC-1918", "FR-789-AC-1", "FR-789-AC-2")]
+#[test]
+fn a_source_timed_model_joins_its_clock_places_through_source_rows() {
+    let vectors = parsed_fixture(SOURCE_TIMED_MODEL_VECTORS);
+    let case = source_vector_case(&vectors, "TM-S1-source-root");
+    assert_eq!(case["outcome"], "joined");
     let i = "src/timed-unit";
-    let clock = "ix://filament/native/Clock";
+    assert_eq!(vectors["source_owner"]["identity"], i);
+    let clock = "ix://filament/native/Clock".to_owned();
     assert_eq!(
-        rows,
+        source_place_rows(case),
         [
-            json!([[format!("ix://{i}/O"), format!("ix://{i}/O/d"), clock]]),
-            json!([
+            vec![[format!("ix://{i}/O"), format!("ix://{i}/O/d"), clock.clone()]],
+            vec![
                 [format!("ix://{i}/O"), format!("ix://{i}/O/w"), format!("ix://{i}/W")],
-                [format!("ix://{i}/W"), format!("ix://{i}/W/c"), clock]
-            ]),
+                [format!("ix://{i}/W"), format!("ix://{i}/W/c"), clock.clone()],
+            ],
         ]
     );
+    let o = &case["identity_rows"]["object_types"][0];
+    assert_eq!(o["source_identity"], "O");
+    assert_eq!(o["members"][0]["name"], "w");
+    assert_eq!(o["members"][0]["type_node"], case["nodes"]["W"]["node_id"]);
+    assert_eq!(o["members"][0]["member_type"], Value::Null);
+    assert_eq!(o["members"][1]["name"], "d");
+    assert_eq!(o["members"][1]["type_node"], Value::Null);
+    assert_eq!(o["members"][1]["member_type"], json!(clock));
+    assert_eq!(case["identity_rows"]["records"][0]["members"][0]["member_type"], json!(clock));
+    assert_eq!(case["nodes"]["W"]["body_bindings"], json!([]));
+    let row = "/body/members/2/value/members/";
+    assert_staged_source_refusals(
+        &vectors,
+        "read",
+        &[
+            ("TM-SR1-undeclared-member", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+            ("TM-SR2-foreign-owner", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+            ("TM-SR3-member-type", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+            ("TM-SR4-selected-model-row", "invalid_package", "malformed-clock-place", &format!("{row}1")),
+            ("TM-SR5-data-field-type", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+        ],
+    );
+}
+
+/// FR-789-AC-3 (TC-2023): a row that only the identity rows contradict passes
+/// the strict read and refuses at the identity-row join.
+#[trace("TC-2023", "FR-789-AC-3")]
+#[test]
+fn a_clock_member_row_refuses_at_the_identity_row_join() {
+    let vectors = parsed_fixture(SOURCE_TIMED_MODEL_VECTORS);
+    let bound = source_vector_case(&vectors, "TM-SJ5-clock-collection-bound");
+    assert_eq!(bound["identity_member"]["entry"]["type_node"], Value::Null);
+    assert_eq!(
+        bound["identity_member"]["entry"]["collections"],
+        json!([{"kind": "sequence", "minimum": "0", "maximum": "3"}])
+    );
+    let row = "/body/members/2/value/members/";
+    assert_staged_source_refusals(
+        &vectors,
+        "identity_row_join",
+        &[
+            ("TM-SJ1-coherent-undeclared-clock", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+            ("TM-SJ2-forged-presence", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+            ("TM-SJ3-clock-entry-missing", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+            ("TM-SJ4-record-clock-entry-missing", "invalid_package", "malformed-clock-place", &format!("{row}1")),
+            ("TM-SJ5-clock-collection-bound", "invalid_package", "malformed-clock-place", &format!("{row}0")),
+        ],
+    );
+}
+
+/// FR-789-AC-4 (TC-2024): `tuple` and `union` rows of a source timed model
+/// join the identity rows of the native tuple and union.
+#[trace("TC-2024", "FR-789-AC-4")]
+#[test]
+fn source_tuple_and_union_rows_join_their_identity_rows() {
+    let vectors = parsed_fixture(SOURCE_TIMED_MODEL_VECTORS);
+    let case = source_vector_case(&vectors, "TM-S2-tuple-and-union-steps");
+    let i = "src/timed-unit";
+    let clock = "ix://filament/native/Clock".to_owned();
+    assert_eq!(
+        source_place_rows(case),
+        [
+            vec![
+                [format!("ix://{i}/O"), format!("ix://{i}/O/p"), format!("ix://{i}/P")],
+                [format!("ix://{i}/P"), format!("ix://{i}/P/p0"), clock.clone()],
+            ],
+            vec![
+                [format!("ix://{i}/O"), format!("ix://{i}/O/u"), format!("ix://{i}/U")],
+                [format!("ix://{i}/U"), format!("ix://{i}/U/armed"), clock],
+            ],
+        ]
+    );
+    let row = "/body/members/2/value/members/1";
+    assert_staged_source_refusals(
+        &vectors,
+        "identity_row_join",
+        &[
+            ("TM-SJ6-data-tuple-position", "invalid_package", "malformed-clock-place", row),
+            ("TM-SJ7-nullary-union-case", "invalid_package", "malformed-clock-place", row),
+            ("TM-SJ8-absent-tuple-position", "invalid_package", "malformed-clock-place", row),
+        ],
+    );
+}
+
+/// FR-789-AC-5 (TC-2025): a source model's `Clock` parameters come from its
+/// identity rows, and a `parameter` reset's frame must name a clock.
+#[trace("TC-2025", "FR-789-AC-5")]
+#[test]
+fn source_clock_parameters_and_reset_frames_join_the_identity_rows() {
+    let vectors = parsed_fixture(SOURCE_TIMED_MODEL_VECTORS);
+    let case = source_vector_case(&vectors, "TM-S3-clock-parameters");
+    let operations = &case["identity_rows"]["object_types"][0]["operations"];
+    assert_eq!(operations[0]["identity"], "O::arm");
+    assert_eq!(operations[0]["clock_parameters"], json!(["x"]));
     assert_source_refusals(
         &vectors,
+        &[("TM-SR6-reset-frame-writes-no-clock", "invalid_package", "timed-node-reference", "/body/members/1/value/target")],
+    );
+    assert_eq!(source_vector_case(&vectors, "TM-SR6-reset-frame-writes-no-clock")["stage"], "read");
+    assert_staged_source_refusals(
+        &vectors,
+        "identity_row_join",
         &[
-            ("TM-SR1-undeclared-member", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/0"),
-            ("TM-SR2-foreign-owner", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/0"),
-            ("TM-SR3-member-type", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/0"),
-            ("TM-SR4-selected-model-row", "invalid_package", "malformed-clock-place", "/body/members/2/value/members/1"),
+            ("TM-SJ9-data-parameter", "invalid_package", "timed-node-reference", "/body/members/2"),
+            ("TM-SJ10-unlisted-clock-parameter", "invalid_package", "timed-node-reference", "/body/members/2"),
         ],
     );
 }
@@ -24613,6 +24740,35 @@ fn source_operations_carry_operation_body_rows_joined_through_the_source_owner()
             ("OBR-S3-precondition-as-body", "invalid_package", "invalid-value", "/operation_bodies/1/body/node"),
             ("OBR-S4-missing-subtype-row", "invalid_package", "invalid-value", "/operation_bodies"),
             ("OBR-S5-unknown-document", "missing_declaration", "missing-selection", "/operation_bodies/1/document"),
+        ],
+    );
+}
+
+/// FR-790-AC-3 (TC-2026): the identity-row join checks that the carrier holds
+/// exactly one row per operation each source type's identity row lists.
+#[trace("TC-2026", "FR-790-AC-3")]
+#[test]
+#[ignore = "QSL-2347: the source operation-body coverage vectors and their identity rows are not published yet"]
+fn source_operation_body_coverage_joins_the_identity_row_operations() {
+    let vectors: Value =
+        serde_json::from_str(OPERATION_BODY_VECTORS).expect("operation body vectors JSON");
+    let case = source_vector_case(&vectors, "OBC-08-source-declaration");
+    let operations: Vec<&str> = case["identity_rows"]["object_types"]
+        .as_array()
+        .expect("the identity rows")
+        .iter()
+        .flat_map(|row| row["operations"].as_array().expect("operations"))
+        .map(|entry| entry["identity"].as_str().expect("an identity"))
+        .collect();
+    assert_eq!(operations, ["Order::size", "Order::bump", "Sub::size"]);
+    for id in ["OBR-S6-uncovered-operation", "OBR-S7-unlisted-operation"] {
+        assert_eq!(source_vector_case(&vectors, id)["stage"], "identity_row_join", "{id}");
+    }
+    assert_source_refusals(
+        &vectors,
+        &[
+            ("OBR-S6-uncovered-operation", "invalid_package", "invalid-value", "/operation_bodies"),
+            ("OBR-S7-unlisted-operation", "invalid_package", "invalid-value", "/operation_bodies/3/operation"),
         ],
     );
 }

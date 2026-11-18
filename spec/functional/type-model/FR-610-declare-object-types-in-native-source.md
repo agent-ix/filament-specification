@@ -187,17 +187,43 @@ row per emitted source-declared `model`/`object_type` node:
 `structural_node`, `source_authority`, `source_identity` (the type's qualified
 source name), `abstract`, `supertypes` (the direct supertype node ids in
 source order), `identity_fields` (own, or inherited when it declares none),
-`members` (one entry per field of the effective view, in the node body's
-binding order: name, presence and member type) and `populations` (one `{name,
-symmetric}` entry per population the type itself declares, in source order),
-keyed by (`source_authority`, `source_identity`). A consumer SHALL read field
-types, identity fields, supertypes, abstractness and populations of a
-source-declared type from these rows wherever it reads them from an admitted
-domain document for a model-owned type, and SHALL refuse a row whose
-authority names no `SourceOwner` of the package, a row whose node is not a
-source-declared object type of the package or whose `source_identity`
-disagrees with the node's `declaration`, and a source-declared node no row
-names.
+`members` (one member entry per field of the effective view, inherited
+fields first in `extends` order and then its own in source order),
+`populations` (one `{name, symmetric}` entry per population the type itself
+declares, in source order) and `operations` (one entry per operation the
+type itself declares, in source order: its source identity
+`<type>::<operation>`, whether it is a query, and `clock_parameters`, the
+names of its parameters whose declared type is `Clock` or an alias of it, in
+declaration order; an operation the type only inherits has no entry, and a
+redefining operation has its own), keyed by (`source_authority`,
+`source_identity`). The producer SHALL also publish one identity row for each
+native record, tuple and union of the unit that the package names, listing
+its fields, its positions or the payload positions of each of its members in
+the same member-entry form.
+
+A **member entry** is a data entry or a clock entry. A **data entry** is a
+member whose type has a node: its name (a field name, or a position ordinal),
+its presence and the type node its binding or position references; the data
+entries of an object type or record are exactly its node body's bindings,
+in binding order. A **clock entry** is a member whose type has no node (a
+`Clock`, an `Option<Clock>`, or a clock collection whose element holds no
+data, FR-322 "Member type"): its name, its presence, its `member_type` in the
+rendering of FR-789 "Rendering", presence included, and the kind and bounds
+of each collection layer of its type, outermost first (empty for a member
+that is no collection). A clock entry carries no type node and a data entry
+no `member_type`, and no clock entry shares a name with a binding.
+
+A consumer SHALL read field types, identity fields, supertypes,
+abstractness, populations and operations of a source-declared type from
+these rows wherever it reads them from an admitted domain document for a
+model-owned type, and SHALL refuse a row whose authority names no
+`SourceOwner` of the package, a row whose node is not a source-declared
+declaration of the package of its kind or whose `source_identity` disagrees
+with the node's `declaration`, a row whose data entries differ from the
+node's bindings or that holds a malformed member entry, and a source-declared
+object type node no row names. The rows are joined after the strict read of
+the package, which never receives them; the joins that read them (the clock
+places of FR-789, the operation-body coverage of FR-790) run then.
 
 ## Acceptance Criteria
 
