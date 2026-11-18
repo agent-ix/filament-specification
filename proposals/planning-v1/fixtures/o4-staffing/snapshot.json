@@ -1,0 +1,38 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-staffing/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-staffing"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-staffing/crews",
+      "complete": true,
+      "objects": [
+        {
+          "key": "crew",
+          "type": "ix://example/plan-staffing/Crew",
+          "fields": {
+            "process": {
+              "integer": "3"
+            },
+            "pack": {
+              "integer": "2"
+            },
+            "ship": {
+              "integer": "3"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

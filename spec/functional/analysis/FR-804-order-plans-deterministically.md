@@ -54,8 +54,8 @@ FR-650-AC-1 relies on.
 ### Determinism
 
 - The search MAY run in parallel, but the reported plan, objective,
-  certificate, explored counts and outcome document SHALL be the ones a
-  sequential exploration in canonical order yields.
+  certificate, explored counts and outcome document SHALL be the ones the
+  canonical sequential exploration of FR-801 "Exploration order" yields.
 - An `incomplete` result's best plan SHALL be the first in the plan order
   among the admissible plans the explored nodes contain, and the explored
   counts SHALL be those of the canonical exploration up to the denied

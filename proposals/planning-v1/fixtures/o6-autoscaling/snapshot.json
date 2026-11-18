@@ -1,0 +1,35 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-autoscaling/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-autoscaling"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-autoscaling/clusters",
+      "complete": true,
+      "objects": [
+        {
+          "key": "cluster",
+          "type": "ix://example/plan-autoscaling/Cluster",
+          "fields": {
+            "hour": {
+              "integer": "0"
+            },
+            "replicas": {
+              "integer": "3"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

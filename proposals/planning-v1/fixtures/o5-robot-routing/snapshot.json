@@ -1,0 +1,59 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-routing/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-routing"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-routing/robots",
+      "complete": true,
+      "objects": [
+        {
+          "key": "a",
+          "type": "ix://example/plan-routing/Robot",
+          "fields": {
+            "at": {
+              "variant": {
+                "type": "ix://example/plan-routing/Cell",
+                "case": "c0"
+              }
+            },
+            "target": {
+              "variant": {
+                "type": "ix://example/plan-routing/Cell",
+                "case": "c4"
+              }
+            }
+          }
+        },
+        {
+          "key": "b",
+          "type": "ix://example/plan-routing/Robot",
+          "fields": {
+            "at": {
+              "variant": {
+                "type": "ix://example/plan-routing/Cell",
+                "case": "c4"
+              }
+            },
+            "target": {
+              "variant": {
+                "type": "ix://example/plan-routing/Cell",
+                "case": "c0"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

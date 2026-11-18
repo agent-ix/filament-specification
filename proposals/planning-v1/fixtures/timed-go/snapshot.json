@@ -1,0 +1,37 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-timed-go/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-timed-go"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-timed-go/machines",
+      "complete": true,
+      "objects": [
+        {
+          "key": "machine",
+          "type": "ix://example/plan-timed-go/Machine",
+          "fields": {
+            "x": {
+              "kind": "rational",
+              "numerator": "0",
+              "denominator": "1"
+            },
+            "done": {
+              "boolean": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

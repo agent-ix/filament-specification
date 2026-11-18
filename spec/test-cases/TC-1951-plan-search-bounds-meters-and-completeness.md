@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify the planner limits, the evaluation meter, cancellation, node merging and the separation from the verification planner's limit. Scope: FR-801-AC-1 to FR-801-AC-6.
+Verify the planner limits, the evaluation meter, cancellation, node merging and the separation from the verification planner's limit. Scope: FR-801-AC-1 to FR-801-AC-6 and FR-801-AC-8.
 
 ## Test Procedure
 
@@ -21,6 +21,7 @@ Verify the planner limits, the evaluation meter, cancellation, node merging and 
 4. Plan over a model where `inc, dec` returns to the start.
 5. Plan with a goal reading `Reach.steps[0]`.
 6. Run with `planner.max_work=1` and with `plan_search.max_work=1`.
+7. Over the counter, run twice with `plan_search.max_states` 2 and twice with `plan_search.max_work` 1.
 
 ## Expected Results
 
@@ -30,3 +31,4 @@ Verify the planner limits, the evaluation meter, cancellation, node merging and 
 - Step 4: `states` counts distinct nodes.
 - Step 5: no merging; `optimal` with first step `double`.
 - Step 6: unchanged, then `incomplete` naming `plan_search.max_work`.
+- Step 7: `explored` `{states: 2, work: 6}` and `{states: 1, work: 1}`, plan `null`, each pair byte-identical.

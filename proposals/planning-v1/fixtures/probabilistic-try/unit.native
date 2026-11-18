@@ -1,0 +1,8 @@
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+model M = "example/plan-probabilistic-try";
+random M::Device::try(ok) ~ { true: 1, false: 1 };
+post Try using p on M::Device::try { self.done = (pre(self.done) or ok) }
+post Retry using p on M::Device::retry { self.done }
+type Lengths = Int[1, 2];
+synthesis Reach using p grammar M::Device domain Lengths satisfies { Reach.final.done };

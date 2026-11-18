@@ -1,0 +1,113 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-rollout/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-rollout"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-rollout/servers",
+      "complete": true,
+      "objects": [
+        {
+          "key": "n1",
+          "type": "ix://example/plan-rollout/Server",
+          "fields": {
+            "state": {
+              "variant": {
+                "type": "ix://example/plan-rollout/State",
+                "case": "serving"
+              }
+            },
+            "version": {
+              "variant": {
+                "type": "ix://example/plan-rollout/Version",
+                "case": "old"
+              }
+            }
+          }
+        },
+        {
+          "key": "n2",
+          "type": "ix://example/plan-rollout/Server",
+          "fields": {
+            "state": {
+              "variant": {
+                "type": "ix://example/plan-rollout/State",
+                "case": "serving"
+              }
+            },
+            "version": {
+              "variant": {
+                "type": "ix://example/plan-rollout/Version",
+                "case": "old"
+              }
+            }
+          }
+        },
+        {
+          "key": "n3",
+          "type": "ix://example/plan-rollout/Server",
+          "fields": {
+            "state": {
+              "variant": {
+                "type": "ix://example/plan-rollout/State",
+                "case": "serving"
+              }
+            },
+            "version": {
+              "variant": {
+                "type": "ix://example/plan-rollout/Version",
+                "case": "old"
+              }
+            }
+          }
+        },
+        {
+          "key": "n4",
+          "type": "ix://example/plan-rollout/Server",
+          "fields": {
+            "state": {
+              "variant": {
+                "type": "ix://example/plan-rollout/State",
+                "case": "serving"
+              }
+            },
+            "version": {
+              "variant": {
+                "type": "ix://example/plan-rollout/Version",
+                "case": "old"
+              }
+            }
+          }
+        },
+        {
+          "key": "n5",
+          "type": "ix://example/plan-rollout/Server",
+          "fields": {
+            "state": {
+              "variant": {
+                "type": "ix://example/plan-rollout/State",
+                "case": "serving"
+              }
+            },
+            "version": {
+              "variant": {
+                "type": "ix://example/plan-rollout/Version",
+                "case": "old"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

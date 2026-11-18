@@ -1,0 +1,50 @@
+{
+  "format": "filament.state.snapshot/v1",
+  "identity": {
+    "authority": "agent-ix",
+    "identity": "ix://example/plan-production/fixtures/initial"
+  },
+  "observation": "initial",
+  "anchor": {
+    "kind": "handler",
+    "name": "initial"
+  },
+  "model": {
+    "identity": "example/plan-production"
+  },
+  "populations": [
+    {
+      "population": "ix://example/plan-production/shops",
+      "complete": true,
+      "objects": [
+        {
+          "key": "shop",
+          "type": "ix://example/plan-production/Shop",
+          "fields": {
+            "tick": {
+              "integer": "0"
+            },
+            "aRemaining": {
+              "integer": "3"
+            },
+            "bRemaining": {
+              "integer": "3"
+            },
+            "aOn": {
+              "variant": {
+                "type": "ix://example/plan-production/Assignment",
+                "case": "waiting"
+              }
+            },
+            "bOn": {
+              "variant": {
+                "type": "ix://example/plan-production/Assignment",
+                "case": "waiting"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
