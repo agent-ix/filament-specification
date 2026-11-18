@@ -77,7 +77,7 @@ setting.
    certificate checkers, the scheduler, and the window, sample-step and time
    budgets. Its setting name is the engine's name, a dot and the member, for
    example `model_check.max_states`, `statistical.max_samples` or
-   `zone_check.max_symbolic_states`, and the tick monitor's `monitor.max_event_rate` and `monitor.max_activations` (FR-487). The list of counters is open: each engine's limits
+   `zone_check.max_symbolic_states`, and the tick monitor's `monitor.max_event_rate` and `monitor.max_activations` (FR-487). The simulator (FR-181 "Simulation bounds and their published defaults") has `simulation.max_steps`, default 16,777,216 (2^24), and `simulation.samples`, default 1, beside `explore.states` (default 10,000,000) and `identity.input_bytes` (default 16,777,216) for its state count and state-key bytes. The list of counters is open: each engine's limits
    type defines its members, and each member has exactly one setting name. An
    engine item that stops at a limit settles `incomplete` and names the limit,
    its value and its setting, and the same name raises it at every entry

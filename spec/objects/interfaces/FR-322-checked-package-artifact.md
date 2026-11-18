@@ -1333,6 +1333,12 @@ A frame body refusal, meaning-join or canonical-order
   policy, source binding or transition; the body remains the sole source of
   authenticated task-set data under FR-482. This member is the checked-package
   carrier IR admits and exposes as a typed claim read.
+  Each row is also the package's requirement record of its task-set claim: a
+  consumer that writes analysis request items from the package writes one
+  `schedulability` item per row, in row order, keyed by the row's
+  `{declaration, occurrence}`, with extent `bounded` and the policy its FR-482
+  body states, so a package read from bytes routes the same task-set claims a
+  source compile routes.
 - `operation_effects` — an optional, closed carrier of the declared effect of
   every model operation member, which has no semantic graph node of its own.
   When absent the operation effects are unavailable, not empty, and a reader
@@ -5173,6 +5179,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-453 | A hyper clause whose two trace variables `s` and `n` range over two model aliases selecting packages `example/device-saving` and `example/device-normal`, under event-position, has two rows for its one body-wrapper occurrence, in quantifier order, with `trace` `s` and `n` and `clock` `{"kind": "event_position", "sequence_authority": A}` where `A` is each model's declaration identity text, both with `clock_name` `model-steps`; a hyper clause with two traces of one model has two rows with equal configurations. Removing the `n` row refuses `invalid_package`/`timed-node-reference` at the wrapper's node body; a row whose `trace` is `x` refuses at `/temporal_bindings/1/trace`; a third row repeating `s` refuses `conflicting-definition` at that row; a `trace` member on a single-trace clause's row refuses at its `trace`. | Test (TC-1680) |
 | FR-322-AC-454 | The clause forms `clock_guard`, `clock_reset` of kind `place` and `clock_reset` of kind `parameter` are admitted with and without a final `point_anchor` binding naming the point-qualified anchor of their operation (`pre` for the guard, `post` for the reset), and the two spellings of one guard have different node ids; a `point_anchor` before another binding, on a `clock_constraint`, a `time_invariant` or an `urgency`, or naming a node that is not that anchor, refuses `invalid_package`/`timed-node-reference` at the binding (FR-342-AC-13); the published V2 schema admits exactly these layouts. | Test (TC-1722) |
 | FR-322-AC-455 | The operation catalog of `filament-verification-contracts` and both V2 schemas' `OperationIdentity` enumerate `filament.op.collection.only`, `filament.op.collection.seq` and `filament.op.refinement.history` together, with the `history` kind in `OperationMember`, each entry exactly as "Operation catalog" of the population forms states (`only`: operator `collection`, operands `collection_kind` and `binder`, result `member`, member `type_argument`, constraint `bound_is_member` on operand 1). The reader admits, in a clause function body and in a refinement row, `only(x in P where c: e)` lowered as `filament.op.collection.only` over the `filament.op.collection.filter` of the `all_instances` value with binder body `e`, `type_argument` and `result_type` the type node of `e`; a `result_type` or member other than the binder body's type, and a second operand that is not a binder, refuse `ill_typed`/`operator-ineligible` at `/semantic_graph/nodes/{n}`; and a reader that does not hold the entries refuses the identity `unknown-operation`. | Test (TC-1921) |
+| FR-322-AC-456 | For a package compiled from a unit with `schedulable CtlFp on Ctl under fixed_priority;`, `schedulable CtlEdf on Ctl under edf;` and `response R on Ctl.c <= 12 ms under fixed_priority;`, the request items written from its `schedulability_claims` rows are three `schedulability` items in row order, each keyed by its row's `{declaration, occurrence}`, extent `bounded`, with the policy `fixed_priority`, `edf` and `fixed_priority` read from each FR-482 body; a package with no `schedulability_claims` gives no such item. | Test (TC-2007) |
 
 ## Dependencies
 
