@@ -133,7 +133,9 @@ source names by a `Reference<T>` term (a population binder, whose node is a
 `value`/`parameter` of type `Reference<T>`, a parameter, `other`, or a data
 read such as `self.r`) is carried as the `filament.op.model.deref`
 application over that term, whose `inner:0` result is the `object` term the
-owner position takes, exactly as a field projection over a reference is. The
+owner position takes, exactly as a field projection over a reference is. An owner that is already an `object` term (a `self` or `other`
+parameter typed by its object type) is carried as is, so the published
+presence vectors keep their encoding. The
 same rule holds for the owner of `presence_read` and of the slot domain. A
 `reference` term placed directly at the owner position refuses
 `ill_typed`/`operator-ineligible` at that argument.
