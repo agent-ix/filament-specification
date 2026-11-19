@@ -795,7 +795,12 @@ certificate checker and makes its counterexample canonical assignments, so:
   model-based test record carries, because that method is not negotiated and
   no provider runs it: the inconclusive cause `no-evaluated-case` and the
   `tool-failure` defects `oracle-disagreement` and `invalid-shrink`. No
-  provider's entry, plugin or in-process, carries one.
+  provider's entry, plugin or in-process, carries one. The stage schema
+  excludes all three, so a plugin `result` frame carrying one is refused by
+  the schema before the reader runs and FR-462 settles the item `failed`
+  with `tool-failure` `malformed-body`; the reader's `unknown-cause` refusal
+  applies to an in-process provider's entry and to an entry given to the
+  reader directly.
 - A plugin's `counterexamples` entry carries a `counterexample` whose `type`
   is `assignments`, `contract-counterexample` on the entry of an
   `operation-contract` item, or `hybrid-counterexample` on the entry of a hybrid
@@ -1009,7 +1014,7 @@ computed.
 | FR-331-AC-52 | A `local-projection` and a `realizability` request item carrying `assessed_root` `{observation, subject}` with an `object` subject are admitted; `assessed_root` on a `temporal-satisfaction` item, an `assessed_root` with an extra member, and one whose `subject` tag is `population` are each refused before consumption. | Test (TC-220) |
 | FR-331-AC-53 | A `realizability` item without `assessed_root`, and one whose `assessed_root` lacks `observation`, lacks `subject` or has an `object` subject that lacks an FR-207 member, each settle `declined` `invalid-input` with `invalid_runtime_input`/`missing-member` naming the absent member, in a request frame and in an in-process request. | Test (TC-220) |
 | FR-331-AC-54 | A hybrid item's `unsupported` entry carrying the diagnostic `unsupported_construct`/`expression-form` with its `detail` (`form`, `declaration`, `mode`, `variable` for a flow, `backend`, and `locus`, the construct's FR-331 `Locus`) and no `cause` is admitted and recorded `unsupported` with that diagnostic; the same entry carrying a `cause` `{"type": "expression-form"}` is refused `invalid_result`/`unknown-cause` at `/cause/type`; a hybrid `counterexamples` entry whose `undefined-evaluation` `where` lacks `time`, or carries `state_key`, fails the schema. | Test (TC-2049) |
-| FR-331-AC-55 | The cause `no-evaluated-case` and the `tool-failure` defects `oracle-disagreement` and `invalid-shrink` are closed spellings of the FR-190 model-based test record only: a provider result entry carrying any of them, as a temporal `inconclusive` cause or a Kani `failed` defect, is refused by the schema and by the reader before consumption, the reader's refusal `invalid_result`/`unknown-cause` at `/cause/type` for `no-evaluated-case` and at `/cause/defect` for either defect, from an in-process provider and from a plugin alike; an FR-190 record whose every generated case was discarded settles `inconclusive` with the bare `{"type": "no-evaluated-case"}` and no basis or counterexample, and one whose refusal case native admission accepted settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`. | Test (TC-431, TC-1600) |
+| FR-331-AC-55 | The cause `no-evaluated-case` and the `tool-failure` defects `oracle-disagreement` and `invalid-shrink` are closed spellings of the FR-190 model-based test record only: a provider result entry carrying any of them, as a temporal `inconclusive` cause or a Kani `failed` defect, is refused by the schema before consumption; an in-process provider's entry, and any entry given to the reader directly, is refused by the reader `invalid_result`/`unknown-cause` at `/cause/type` for `no-evaluated-case` and at `/cause/defect` for either defect; a plugin `result` frame carrying any of them fails its FR-331 stage schema before the reader runs, so FR-462 settles each affected item `failed` with `{"type": "tool-failure", "defect": "malformed-body"}`; an FR-190 record whose every generated case was discarded settles `inconclusive` with the bare `{"type": "no-evaluated-case"}` and no basis or counterexample, and one whose refusal case native admission accepted settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`. | Test (TC-431, TC-1600) |
 
 ## Dependencies
 
