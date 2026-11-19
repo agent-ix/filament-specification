@@ -1458,7 +1458,7 @@
         "occurrences": [
           {
             "ordinal": 0,
-            "role": "declaration"
+            "role": "generated"
           }
         ],
         "owner": {
@@ -6125,15 +6125,15 @@
       "ordinal": 0,
       "regions": [
         {
-          "end": 8,
+          "end": 2,
           "source": {
             "authority": "agent-ix",
             "identity": "example"
           },
-          "start": 7
+          "start": 1
         }
       ],
-      "role": "declaration"
+      "role": "generated"
     },
     {
       "node_id": {
@@ -7439,12 +7439,12 @@
       "ordinal": 0,
       "regions": [
         {
-          "end": 101,
+          "end": 2,
           "source": {
             "authority": "agent-ix",
             "identity": "example"
           },
-          "start": 100
+          "start": 1
         }
       ],
       "role": "generated"
