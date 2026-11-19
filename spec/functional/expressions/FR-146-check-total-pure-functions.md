@@ -337,7 +337,7 @@ facts of the redefined parent member being refined, not the redefining type. The
    precondition facts.
 8. **Two-path term facts.** A comparison `t op k` or `k op t`, where `k` is an
    integer literal (optionally negated), `op` is `=`, `<`, `<=`, `>` or `>=`,
-   and `t` is, ignoring parentheses and the conversions item 3 reads through,
+   and `t` is, ignoring parentheses,
    one binary `+` or `-` node whose operands are integer stable paths `u` and
    `v` that are not the same path, records a bound on that term:
    - for `t = u - v`, the difference bounds of item 7 over the ordered pair
@@ -354,7 +354,7 @@ facts of the redefined parent member being refined, not the redefining type. The
    of `=` records nothing. Two upper sum ends on one pair on one path keep the
    smaller and two lower ends the larger, and a join keeps only an end present on
    every alternative, the weaker of them. A sum bound is used only by a binary
-   `+` node whose operands, ignoring parentheses and those conversions, are
+   `+` node whose operands, ignoring parentheses, are
    the two paths of the bound in either order (below); a difference bound
    recorded here is used exactly as item 7's. A comparison `u + k1 op k` or
    `u - k1 op k` (also `k1 + u`) of one stable path `u` and two literals is
