@@ -257,8 +257,13 @@ members not listed for a kind being absent:
 | `memory_choice` | an access whose memory model chooses a message or slot | the choice its memory model names |
 | `memory_step` | `memory` | the identity its memory model gives |
 | `recommendation` | `recommend` | the recommendation record (FR-822) |
+| `message` | `send`, `receive` | the message occurrence ([FR-425](FR-425-define-protocol-subjects-and-state-keys.md)): for a `send`, the message it dispatches copies of, the same for every continuation step of a pending interval send; for a `receive`, the message of the entry it removes |
+| `delivery` | `receive` | the delivery index of the entry it removes, a decimal text |
+| `effect_occurrence` | `event` at an `effect` node | the effect occurrence key the step establishes (FR-425) |
 
-Several successors with one identity are told apart by their post-state's
+Two `receive` steps that remove different entries have different
+identities, because the `message` and `delivery` members name the entry, even
+when the two entries carry equal payloads. Several successors with one identity are told apart by their post-state's
 state key. Successors are visited in ascending
 JCS bytes of the identity, as FR-181 states for model transition identities.
 
@@ -288,6 +293,7 @@ JCS bytes of the identity, as FR-181 states for model transition identities.
 | FR-426-AC-20 | On a `fifo` channel of capacity 1 under `block` with delivery `[0,3]` and its one place full, the `d = 0` step is enabled, queues nothing and settles past the send, while the `d >= 1` steps wait; a `[0,0]` channel of capacity 0 completes its send by the `d = 0` step; two sends pending with count 1 and payloads `m1` and `m2` reach states with different keys, and each pending send's last step binds its binder to its own payload. | Test (TC-378) |
 | FR-426-AC-21 | A send on a `[0,1000]` channel whose run's work limit admits fewer charges than its interval steps settles the exploration `incomplete` naming the work limit, its frontier holding the state whose expansion stopped, and no count, entry or state is dropped or merged; the steps are generated in ascending `d`, and the same subject under a work limit that fits completes with 1001 send steps from that state. | Test (TC-378) |
 | FR-426-AC-22 | A thread at `recommend Advise by R on M::Cell::bump contracts [BumpPre] as (r: Boolean) { true };`, with `BumpPre: self.v = 0`, has one `recommend` step per receiver whose `v` is 0 and none where `v` is 1; each step's identity has `step` `recommend`, `operation`, `receiver`, `arguments` and a `recommendation` member equal to the FR-822 record, and its successor has the same model state as its predecessor. | Test (TC-2017) |
+| FR-426-AC-23 | Over `run sequence { send Snd via ch; receive Rcv via ch of Snd }` on an `unordered` channel with `delivery unknown`: the `send` identity holds `message` (instance 0, `Snd`, path `(0)`, ordinal 0); after a `duplicate`, the two `receive` steps have identities that differ only in `delivery` (`"0"` and `"1"`) and hold the same `message`, though both copies carry one payload; with an interval send `[3,3]` under overflow `block`, the `count` step and its continuation step hold one `message`. Over `run repeat { attempt Pay; effect Paid of Pay }`, the `k`-th `event(Paid)` identity holds `effect_occurrence` with ordinal `k - 1`, and a domain `event` or `commit` step holds no `effect_occurrence`. An identity with any of these members missing, or a `receive` identity whose `delivery` is the payload, fails this criterion. | Test (TC-376) |
 
 ## Dependencies
 

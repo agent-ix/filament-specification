@@ -297,13 +297,16 @@ FR-181 simulator state key with these member contents:
   race map (`race`, [FR-438](../memory/FR-438-report-data-races.md)).
 - `<node>` is the node's static declaration path ([FR-221](../../objects/protocol/FR-221-protocol-node-occurrence.md)).
 - `<message>` is `{"type":"message-occurrence","instance":"<decimal>","node":"<node>","path":<thread path>,"ordinal":"<decimal>"}`,
-  the message identity above.
+  the message identity above. A `send` and a `receive` step carry it as
+  their transition identity's `message` member, and a `receive` the index of
+  the entry it removes as `delivery` (FR-426 "Protocol transition identity").
 - An **effect occurrence key** is the protocol instance, the effect node, the
   thread path and the effect node's occurrence ordinal on that path, written
   `{"type":"effect-occurrence","instance":"<decimal>","node":"<node>","path":<thread path>,"ordinal":"<decimal>"}`.
   An effect node's `event` step (FR-426) establishes the occurrence whose
   ordinal is the node's `business-effect-ordinal` on the thread's path (0
-  when absent), carries that key in its transition identity, and advances
+  when absent), carries that key as its transition identity's `effect_occurrence` member
+  ([FR-426](FR-426-apply-protocol-steps.md) "Protocol transition identity"), and advances
   the ordinal by one. The ordinal is kept until the instance is removed, after
   the thread on that path has finished, for the reason the message ordinal
   is: a reused path's next `effect` step would otherwise mint an occurrence key

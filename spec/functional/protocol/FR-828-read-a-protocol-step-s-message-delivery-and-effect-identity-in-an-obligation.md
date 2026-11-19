@@ -80,10 +80,16 @@ clause's own controls name it (FR-466), for example `Echo::Rcv` or
 it is never evaluated, and it resolves in the named clause's node scope, not
 in the expression scope.
 
-The three identity types are reserved type names usable wherever a
-`type-ref` is admitted, so a capture can hold a read's value:
-`filament::protocol::Message`, `filament::protocol::Delivery` and
-`filament::protocol::EffectOccurrence`.
+The three identity types `filament::protocol::Message`,
+`filament::protocol::Delivery` and `filament::protocol::EffectOccurrence` are
+reserved type names admitted only as the declared type of a temporal
+clause's `capture`, bare or as `Option<…>`, so that a capture can hold a
+read's value. Named anywhere else (a model field, an operation parameter or
+result, a channel's `carries` type, a predicate parameter, a type alias, a
+collection element or a map key or value), a type refuses
+`ill_typed`/`operator-ineligible` at the type, because no term outside a
+temporal clause produces such a value and no state key, payload or model
+state can hold one.
 
 ## Behavior
 
@@ -98,11 +104,12 @@ The three identity types are reserved type names usable wherever a
   (FR-425): the protocol instance, the effect node, the thread path and the
   effect node's occurrence ordinal on that path. Its family is
   `step_identity`, with the same rules.
-- `filament::protocol::Delivery` is a record with two members, `message` of
-  type `filament::protocol::Message` and `index` of type `Integer` (the
-  delivery index, at least 0). Two deliveries are equal exactly when their
-  messages and indices are equal. `d.index` reads the index and `d.message`
-  the message.
+- `filament::protocol::Delivery` is the pair of a message and a delivery
+  index (at least 0). It is also of family `step_identity`, not a record:
+  `d.message` reads its message, typed `filament::protocol::Message`, and
+  `d.index` its index, typed `Integer`, through FR-322's
+  `filament.op.step_identity.project`; it has no other member. Two
+  deliveries are equal exactly when their messages and indices are equal.
 - `message(N)` has type `Option<filament::protocol::Message>`,
   `delivery(N)` has type `Option<filament::protocol::Delivery>` and
   `effect(N)` has type `Option<filament::protocol::EffectOccurrence>`.
@@ -116,19 +123,57 @@ position `i > 0`, with step `i` of the behaviour:
 
 | Read | `some(...)` exactly when step `i` is | Value |
 | --- | --- | --- |
-| `message(N)`, `N` a send node | a `send` step of `N`, including each continuation step of a pending interval send (FR-426 "Interval sends") | the message the step dispatches copies of |
-| `message(N)`, `N` a receive node | a `receive` step of `N` | the message of the delivery the step binds |
-| `delivery(N)`, `N` a receive node | a `receive` step of `N` | the delivery the step binds: its message and delivery index |
-| `effect(N)`, `N` an effect node | an `event` step of `N` (FR-426) | the step's effect occurrence key |
+| `message(N)`, `N` a send node | a `send` step of `N`, including each continuation step of a pending interval send (FR-426 "Interval sends") | the step's transition identity's `message` member |
+| `message(N)`, `N` a receive node | a `receive` step of `N` | the step's `message` member: the message of the entry it removes |
+| `delivery(N)`, `N` a receive node | a `receive` step of `N` | the pair of the step's `message` and `delivery` members |
+| `effect(N)`, `N` an effect node | an `event` step of `N` (FR-426) | the step's `effect_occurrence` member |
 
 Every other step, including `duplicate`, `lose`, `fork`, `join`, an `attempt`
-and a step of another node, gives `none`. The values are the identities the
-step's transition identity carries (FR-426), so a read never derives an
-identity from a payload, a queue position or a timestamp (FR-051). Over a
-recorded execution a read takes the same identities from the observation's
-bound FR-051 references: the delivery reference and its related send
-occurrence for `message` and `delivery`, and the business-effect binding's
-effect occurrence for `effect`.
+and a step of another node, gives `none`. The value is a function of the
+step's transition identity alone (FR-426 "Protocol transition identity"), so
+a read never derives an identity from a payload, a queue position or a
+timestamp (FR-051), and two `receive` successors of one state that remove
+different entries, which have different identities, give different values.
+
+Over a recorded execution of the protocol (FSL FR-895 replay mode) each
+observation is a position, and a read takes the same identities from the
+observation's bound FR-051 references: the delivery reference, its index and
+its related send occurrence for `message` and `delivery`, and the
+business-effect binding's effect occurrence for `effect`. Over a supplied
+protocol trace (FSL FR-636 `finite-replay`) a read takes them from each
+step's transition identity, as over a behaviour.
+
+### Instance scope of an obligation
+
+A message, delivery or effect occurrence identity is unique only within one
+protocol instance's lifetime: FR-425 gives a new instance the smallest free
+instance ordinal, so under `activation on each` a later instance can take
+the ordinal of a finished one and mint byte-equal identities. A read
+therefore SHALL be evaluated inside one obligation instance, which is bound
+to exactly one protocol instance lifetime:
+
+- Each activation of the clause is its own obligation instance (FR-093): one
+  for `on origin`, one per activating position for `on each`. Captures of
+  one obligation instance are never compared with reads of another.
+- An obligation instance activated at a position whose step belongs to a
+  protocol instance (its thread path's instance, or the instance an
+  `activate`, `spawn` or `retire` step names) is bound to that instance. One
+  activated at a position whose step belongs to no instance (position 0, a
+  memory step, the terminal stutter) is bound to instance 0 under `on
+  origin`; under an `on each` subject it is bound to each protocol instance
+  the behaviour starts, one obligation instance per `activate` step,
+  evaluated from that `activate` position.
+- Inside an obligation instance a read is `none` at every position whose
+  step belongs to another protocol instance, and at every position after the
+  step that removes the bound instance (ADR-027 AE-3), even when a later
+  instance reuses its ordinal. So a captured identity is compared only with
+  identities of the same instance lifetime, and two different messages that
+  share instance ordinal, node, path and ordinal across two lifetimes are
+  never read as equal.
+
+The model checker's product state records, for each live obligation
+instance, whether its bound instance has been removed; that bit is part of
+the monitor state, not of FR-425's state key.
 
 A read is a value at its position, like the observation a `holds` atom reads
 (FR-431 "Positions and anchors"). A capture fixes it at the activation
@@ -156,6 +201,18 @@ another protocol, refuses `invalid_runtime_input`/`invalid-value` naming the
 read, before any state is explored, because no position of that subject has
 a step of `N` and every read there would be `none`.
 
+A protocol `P` whose `requires temporal` names a clause that holds a read of
+a node of `P` refuses `invalid_package`/`definition-cycle` at the
+requirement, naming `P` and the clause, as FSL FR-218 refuses a requirement
+that reads back into its protocol: the requirement makes the clause part of
+`P`'s definition, and the read makes `P`'s node part of the clause's. A
+clause that reads `P`'s steps is a claim checked over `P`'s protocol subject
+by a request, not one of `P`'s own requirements. FSL FR-895's replay mode
+reads a `requires temporal` clause over the recording as its trace subject
+and so never meets a read there; it evaluates a clause that holds reads of
+the recorded protocol as a separate identity-claim obligation over the
+recording's observations, with the values the previous section states.
+
 ### Refusals at check time
 
 - The first `ident` naming no protocol clause of the unit, or a protocol
@@ -173,7 +230,13 @@ a step of `N` and every read there would be `none`.
 - A read in a position the previous section excludes:
   `ill_typed`/`operator-ineligible` at the read.
 - An ordering, arithmetic or member read on a `step_identity` value (`<`,
-  `+`, `m.ordinal`): `ill_typed`/`operator-ineligible` at the application.
+  `+`, `m.ordinal`, any member of a `Message` or `EffectOccurrence`, a
+  `Delivery` member other than `message` and `index`):
+  `ill_typed`/`operator-ineligible` at the application.
+- An identity type named outside a capture's type:
+  `ill_typed`/`operator-ineligible` at the type.
+- A `requires temporal` that reads back into its protocol:
+  `invalid_package`/`definition-cycle` at the requirement.
 
 No refusal produces a package.
 
@@ -211,17 +274,31 @@ send or receive node fixes which identity is meant and the channel follows
 from it; restricting `delivery` to receive nodes keeps every read
 single-valued.
 
+### Completeness limit: read labels are kept raw
+
+A clause that reads an identity keeps that identity's labels unrenumbered in
+FSL's cycle key (FSL FR-205), so an "at most once" claim over a `repeat`
+with no maximum around the read step never closes a loop: model checking
+gives bounded evidence (`BoundReached`) and never `proved`, even when the
+claim holds. Renumbering the read labels that no live capture holds would
+still be sound, because no obligation instance could tell two such labels
+apart, and would let these claims be proved. That refinement is not part of
+this requirement; until it is specified, such claims settle with bounded
+evidence, never with an unsound proof.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-828-AC-1 | Over protocol `Echo` (channel `ch` `fifo`, capacity 2, `delivery unknown`; `run sequence { send Snd via ch; receive Rcv via ch of Snd }`), the three reads parse as qualified calls with a `protocol-node-ref` argument and check: `filament::protocol::message(Echo::Snd)` and `filament::protocol::message(Echo::Rcv)` to `Option<filament::protocol::Message>`, `filament::protocol::delivery(Echo::Rcv)` to `Option<filament::protocol::Delivery>`, with `value(filament::protocol::delivery(Echo::Rcv)).index` typed `Integer`; over a protocol with `effect Paid of Pay`, `filament::protocol::effect(P::Paid)` checks to `Option<filament::protocol::EffectOccurrence>`. A capture `capture d: filament::protocol::Delivery = value(filament::protocol::delivery(Echo::Rcv));` checks. | Test (TC-2068) |
-| FR-828-AC-2 | Refusals, each with no package: `filament::protocol::delivery(Echo::Snd)` (a send node) and `filament::protocol::effect(Echo::Rcv)` refuse `ill_typed`/`operator-ineligible` at the argument naming the node's kind; `filament::protocol::message(Echo::Missing)`, `filament::protocol::message(Nope::Snd)` and a protocol name offered only by an import refuse `missing_declaration`/`missing-name` at the argument; `filament::protocol::message(1)`, `filament::protocol::message()` and `filament::protocol::message(Echo::Snd, Echo::Rcv)` refuse `ill_typed`/`operator-ineligible` at the call; the same read in a predicate, a state clause and a protocol `check` block each refuse `ill_typed`/`operator-ineligible` at the read; `value(filament::protocol::message(Echo::Snd)) < value(filament::protocol::message(Echo::Rcv))` refuses `ill_typed`/`operator-ineligible`. A checker that admits any of these fails this criterion. | Test (TC-2068) |
+| FR-828-AC-2 | Refusals, each with no package: `filament::protocol::delivery(Echo::Snd)` (a send node) and `filament::protocol::effect(Echo::Rcv)` refuse `ill_typed`/`operator-ineligible` at the argument naming the node's kind; `filament::protocol::message(Echo::Missing)`, `filament::protocol::message(Nope::Snd)` and a protocol name offered only by an import refuse `missing_declaration`/`missing-name` at the argument; `filament::protocol::message(1)`, `filament::protocol::message()` and `filament::protocol::message(Echo::Snd, Echo::Rcv)` refuse `ill_typed`/`operator-ineligible` at the call; the same read in a predicate, a state clause and a protocol `check` block each refuse `ill_typed`/`operator-ineligible` at the read; the same read in the formula of a clause that its own protocol requires refuses `invalid_package`/`definition-cycle`; `value(filament::protocol::message(Echo::Snd)) < value(filament::protocol::message(Echo::Rcv))` refuses `ill_typed`/`operator-ineligible`. A checker that admits any of these fails this criterion. | Test (TC-2068) |
 | FR-828-AC-3 | Values along `Echo`'s behaviour `send(Snd)`, `duplicate`, `receive(Rcv)` of delivery 1: at position 0 every read is `none`; at the `send` position `message(Echo::Snd)` is the message (instance 0, `Snd`, path `(0)`, ordinal 0) and `message(Echo::Rcv)` and `delivery(Echo::Rcv)` are `none`; at the `duplicate` position all three are `none`; at the `receive` position `message(Echo::Rcv)` equals the `send` position's `message(Echo::Snd)` and `delivery(Echo::Rcv)` is that message with index 1. A read that returns the payload or index 0 at the `receive` position fails this criterion. | Test (TC-2068) |
-| FR-828-AC-4 | Obligation over `Echo` with a `fifo` channel of `delivery at-least-once`, activation `on each` with `when (present(filament::protocol::delivery(Echo::Rcv)))`, capture `d` of that delivery, and formula `not eventually[1, 8] holds(filament::protocol::delivery(Echo::Rcv) = some(d))`: it holds on every behaviour, since a receive removes the copy it binds. In a variant with `run sequence { send Snd via ch; receive Rcv via ch of Snd; receive Rcv2 via ch of Snd }` and the formula over `message` instead, `not eventually[1, 8] holds(filament::protocol::message(Echo::Rcv2) = some(m))` with `m` captured at `Rcv`, the behaviour that duplicates and then receives both copies refutes it, with the counterexample's two receive identities carrying one message and deliveries 0 and 1. | Test (TC-2068) |
-| FR-828-AC-5 | Two `Paid` effect steps in two iterations of a `repeat` with no maximum around `attempt Pay; effect Paid of Pay` give `effect(P::Paid)` values with ordinals 0 and 1, which are not equal; the obligation "no `Paid` occurrence is established twice" (`on each` on `present(filament::protocol::effect(P::Paid))`, capture `e`, `not eventually[1, 8] holds(filament::protocol::effect(P::Paid) = some(e))`) holds. A read whose ordinal does not advance per iteration makes the two values equal and fails this criterion. | Test (TC-2068) |
+| FR-828-AC-4 | At most once over the whole run. Protocol `Echo2` (channel `ch` `fifo`, capacity 2, `delivery at-least-once`; `run sequence { send Snd via ch; receive Rcv via ch of Snd; receive Rcv2 via ch of Snd }`) under `filament.temporal.infinite-trace/v1`. The delivery claim: activation `on each` with `when (present(filament::protocol::delivery(Echo2::Rcv)) or present(filament::protocol::delivery(Echo2::Rcv2)))`, capture `d: filament::protocol::Delivery = if present(filament::protocol::delivery(Echo2::Rcv)) then value(filament::protocol::delivery(Echo2::Rcv)) else value(filament::protocol::delivery(Echo2::Rcv2))`, formula `not eventually[1, *] (holds(filament::protocol::delivery(Echo2::Rcv) = some(d)) or holds(filament::protocol::delivery(Echo2::Rcv2) = some(d)))`. It has no counterexample: on the behaviour `send`, `duplicate`, `receive(Rcv)` of delivery 0, `receive(Rcv2)` of delivery 1 the two receive positions read deliveries 0 and 1 of one message, which are not equal. The message claim, the same with `filament::protocol::message` and capture `m: filament::protocol::Message`, is refuted on that behaviour, its counterexample's two receive identities carrying one message and deliveries 0 and 1. A delivery read that drops the index makes the delivery claim refuted, and one that compares payloads refutes it on a behaviour with two sends of equal payload; this criterion rejects both. | Test (TC-2068) |
+| FR-828-AC-5 | Two `Paid` effect steps in two iterations of a `repeat` with no maximum around `attempt Pay; effect Paid of Pay` (protocol `P`) give `effect(P::Paid)` values with ordinals 0 and 1, which are not equal. The obligation "no `Paid` occurrence is established twice" (`on each` on `present(filament::protocol::effect(P::Paid))`, capture `e`, `not eventually[1, *] holds(filament::protocol::effect(P::Paid) = some(e))`) has no counterexample within `max_depth` 8 and settles `inconclusive` `BoundReached{depth: 8}`, never `proved` ("Completeness limit"). A read whose ordinal does not advance per iteration makes the two values equal and refutes the obligation, which this criterion rejects. | Test (TC-2068) |
 | FR-828-AC-6 | A model-check item that reads a clause holding `message(Echo::Snd)` over a model subject, and one over a protocol subject of another protocol `Other`, each refuse `invalid_runtime_input`/`invalid-value` naming the read, before any state is explored. | Test (TC-2068) |
 | FR-828-AC-7 | Identity: a package holding `delivery(Echo::Rcv)` twice carries one `protocol`/`step_read` node with two `expression` occurrences; adding `message(Echo::Rcv)` adds a second node; changing a read from `delivery` to `message`, or its target from `Rcv` to another receive node, changes the carrier node id and the obligation identity of an item over the reading clause, and leaves the clause's declared node id and `Echo`'s `protocol`/`protocol_clause` node id unchanged (FR-322-AC-480). | Test (TC-2068) |
+| FR-828-AC-8 | Instance scope. Protocol `Once` with `activation on each`, whose instance runs `sequence { send Snd via ch; receive Rcv via ch of Snd }` and finishes, and a trigger that activates twice in sequence, so the second instance takes ordinal 0 after the first is removed and its message is byte-equal to the first's (instance 0, `Snd`, path `(0)`, ordinal 0). The claim `on each` on `present(filament::protocol::message(Once::Rcv))`, capture `m`, `not eventually[1, *] holds(filament::protocol::message(Once::Rcv) = some(m))` is not refuted: in the obligation instance activated at the first receive, the second instance's receive position reads `none`, because its bound instance was removed. A product that compares the raw identities across the two lifetimes refutes the claim, which this criterion rejects. Over a recording of the same two runs, whose instances have distinct FR-287 keys, the claim is not refuted either. | Test (TC-2068) |
+| FR-828-AC-9 | Placement and cycles. A capture typed `filament::protocol::Message` and one typed `Option<filament::protocol::Delivery>` check; the same type as a model field, an operation parameter, a channel `carries` type and a predicate parameter each refuse `ill_typed`/`operator-ineligible` at the type; `value(filament::protocol::delivery(Echo::Rcv)).index` checks to `Integer` and `.ordinal` on it, or any member of a `Message`, refuses `ill_typed`/`operator-ineligible`. Protocol `Echo` with `requires temporal Due;`, `Due` holding `filament::protocol::delivery(Echo::Rcv)`, refuses `invalid_package`/`definition-cycle` at the requirement naming `Echo` and `Due`; the same `Due` required by a protocol `Drain` that it does not read checks, and `Due` checked over `Echo`'s protocol subject by a request is admitted. | Test (TC-2068) |
 
 ## Dependencies
 
