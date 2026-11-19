@@ -57,7 +57,8 @@ Snd via ch; receive Rcv via ch of Snd }`) over the `Fill` model, and protocol
   with no state explored.
 - Step 7: one carrier with two occurrences and the derived id; a second
   carrier for the second field; the field or target change moves the carrier
-  and clause ids and leaves `Echo`'s id unchanged; each mutation refuses with
+  id and the obligation identity and leaves the clause's declared id and
+  `Echo`'s id unchanged; each mutation refuses with
   the kind and pointer FR-322-AC-481 states; `step_identity.eq` and
   `structural.eq` over `Option<Delivery>` are admitted.
 

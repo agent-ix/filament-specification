@@ -190,8 +190,9 @@ occurrences are not. So two reads of `delivery(Echo::Rcv)` in one package
 share one node with two `expression` occurrences, and `message(Echo::Rcv)`
 and `delivery(Echo::Rcv)` are two nodes. The temporal clause that holds a
 read depends on its node, so changing a read's field or target, adding a read
-or removing one changes the clause's node, its obligation identity and the
-package identity. The protocol clause's own nodes do not depend on the read,
+or removing one changes the obligation identity of every item over the
+clause and the package identity; the clause's declared node id, which carries
+no body content, is unchanged. The protocol clause's own nodes do not depend on the read,
 so a read leaves the protocol's identity unchanged.
 
 ### Decision: an intrinsic value read, not a new atom or quantifier
@@ -220,7 +221,7 @@ single-valued.
 | FR-828-AC-4 | Obligation over `Echo` with a `fifo` channel of `delivery at-least-once`, activation `on each` with `when (present(filament::protocol::delivery(Echo::Rcv)))`, capture `d` of that delivery, and formula `not eventually[1, 8] holds(filament::protocol::delivery(Echo::Rcv) = some(d))`: it holds on every behaviour, since a receive removes the copy it binds. In a variant with `run sequence { send Snd via ch; receive Rcv via ch of Snd; receive Rcv2 via ch of Snd }` and the formula over `message` instead, `not eventually[1, 8] holds(filament::protocol::message(Echo::Rcv2) = some(m))` with `m` captured at `Rcv`, the behaviour that duplicates and then receives both copies refutes it, with the counterexample's two receive identities carrying one message and deliveries 0 and 1. | Test (TC-2068) |
 | FR-828-AC-5 | Two `Paid` effect steps in two iterations of a `repeat` with no maximum around `attempt Pay; effect Paid of Pay` give `effect(P::Paid)` values with ordinals 0 and 1, which are not equal; the obligation "no `Paid` occurrence is established twice" (`on each` on `present(filament::protocol::effect(P::Paid))`, capture `e`, `not eventually[1, 8] holds(filament::protocol::effect(P::Paid) = some(e))`) holds. A read whose ordinal does not advance per iteration makes the two values equal and fails this criterion. | Test (TC-2068) |
 | FR-828-AC-6 | A model-check item that reads a clause holding `message(Echo::Snd)` over a model subject, and one over a protocol subject of another protocol `Other`, each refuse `invalid_runtime_input`/`invalid-value` naming the read, before any state is explored. | Test (TC-2068) |
-| FR-828-AC-7 | Identity: a package holding `delivery(Echo::Rcv)` twice carries one `protocol`/`step_read` node with two `expression` occurrences; adding `message(Echo::Rcv)` adds a second node; changing a read from `delivery` to `message`, or its target from `Rcv` to another receive node, changes the reading clause's node id and its obligation identity, and leaves `Echo`'s `protocol`/`protocol_clause` node id unchanged (FR-322-AC-480). | Test (TC-2068) |
+| FR-828-AC-7 | Identity: a package holding `delivery(Echo::Rcv)` twice carries one `protocol`/`step_read` node with two `expression` occurrences; adding `message(Echo::Rcv)` adds a second node; changing a read from `delivery` to `message`, or its target from `Rcv` to another receive node, changes the carrier node id and the obligation identity of an item over the reading clause, and leaves the clause's declared node id and `Echo`'s `protocol`/`protocol_clause` node id unchanged (FR-322-AC-480). | Test (TC-2068) |
 
 ## Dependencies
 
