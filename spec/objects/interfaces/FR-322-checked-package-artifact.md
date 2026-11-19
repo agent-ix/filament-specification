@@ -2210,7 +2210,7 @@ constraints ("Reference conformance" below).
    | a variant type `V` of the same domain package, admitted under FR-208, none of whose cases carries a `payloadType` | `V`, an unordered enumeration whose cases are the case names of `V` | the self-typed `model`/`variant_type` declaration node owned by `V`, family `enum`; no `composite_type`/`reference` and no unit-owned `scalar_type`/`enum` node is introduced |
    | a variant type `V` of the same domain package, admitted under FR-208, at least one of whose cases carries a resolving `payloadType` | `V`, a union whose members are the cases of `V` in ascending UTF-8 byte order of case name, a case with a `payloadType` being a member of one payload position and a case without one a nullary member | the same self-typed `model`/`variant_type` declaration node owned by `V`, family `union` ("Tuple value types and payload-bearing variant types"); no `composite_type`/`union` node is introduced |
    | `ix://filament/unit/<name>`, naming either a unit the unit of compilation declares, by its qualified declaration name with its segments joined by `/` and never a dimension segment (`unit ms : Time` is `ix://filament/unit/ms`), or a unit an admitted domain package declares, by its FCD identity's package identity and `name` (`ms` in the `units` of `acme/rpc`, FCD identity `ix://acme/rpc/unit/ms`, is `ix://filament/unit/acme/rpc/ms`) | `Quantity<u>`, the type of a quantity in unit `u`, whether the unit of compilation or an admitted domain package declares `u` | the `scalar_type`/`unit` node of `u` (family `quantity`); no node is introduced, and a `min` or `max` constraint on the unit (FR-154 "Unit bounds") leaves an unbounded use typed by this node; a checked-package type position that must preserve the bounded form uses `scalar_type`/`bounded_quantity` with the same unit and exact inclusive bounds |
-   | a `reference` type whose `target` is `ix://filament/native/Clock`, an alias of it or a value type bound to it by `target` | `Reference<Clock>`, a data value naming one clock place (FR-415 "Clock places"); compared by place, never by clock value | none: no node stands for the clock or for the reference; the checker reads `ref` and `deref` over it and the state key holds the place id (FR-415 "Clock places") |
+   | a `reference` type whose `target` is `ix://filament/native/Clock`, an alias of it or a value type bound to it by `target` | `Reference<Clock>`, a data value naming one clock place (FR-415 "Clock places"); compared by place, never by clock value | the package's one `scalar_type`/`clock_reference` node, family `clock_reference`, shared by `Reference<Clock>` and `Reference<A>` for an alias `A` ([FR-829](FR-829-carry-a-clock-place-reference-as-a-place-id-term.md)); no node stands for the clock itself. `ref(p)` is the `filament.op.clock_reference.ref` application over the place's `clock_place` template, owner term and slot terms (FR-829), `deref` is read by the checker over it, and the state key holds the place id (FR-415 "Clock places") |
    | an option value type `Q` of the same domain package (FR-154 "Option value types"), whose `inner` names the type `T` | `Option<T>`, where `T` is the element type this table gives `inner` (the unit, native, value type, record, tuple, variant or object type row, `[1, 1]`); a field of `Q` with presence `required` and a field of `T` with presence `optional`, each with multiplicity `[1, 1]`, are the same type, and the multiplicity then applies to `Q` as to any element type (`Sequence<Option<T>>[0, 3]`) | the `composite_type`/`option` node over the node of `T`, the node presence `optional` gives, so the two spellings share one node; intake refused `Option<Option<T>>` and an option value type over `Clock` (FR-154-AC-40; an optional clock place is the presence spelling, FR-415), so the node never wraps an option node |
    | a `map` type `M` of the same domain package (FR-154 "Map types"), with `keys` naming `K`, `values` naming `V` and `bound` `{lower: l, upper: u}` | `Map<K, V>[l, u]`, `K` and `V` the element types this table gives `keys` and `values`, `K` a scalar key type, except that a native `Text` key (no bounds, no profile) is `Text` keyed as FR-144 states and typed by the `scalar_type`/`text` node; a `bound` `{lower: 0}` (no `upper`; FR-154 refuses a lower above `0` with no `upper`) gives `Map<K, V>`, with no maximum | the `bounded_domain`/`collection_bounds` node with bounds `l` and `u` over the `composite_type`/`map` node of `K`'s and `V`'s nodes ("Derived type forms and forwarding"); a `bound` `{lower: 0}` gives that `composite_type`/`map` node alone. A clock-bearing `V` makes `M` a clock collection typed by the `Clock` row's clock-collection rule, whose timed model records the map's key type, bound and key domain. The bound is the map type's own, read from `bound`; the multiplicity below then applies to `M` as to any element type (`Sequence<Map<K, V>[l, u]>` for `{0, 3, true, false}`) |
    | an object type `O` of the same domain package | `Reference<O>` | `composite_type`/`reference` over `O`'s model declaration node |
@@ -3464,7 +3464,7 @@ disagreement between them is a catalog defect, not a reader choice.
 
 A type node's **family** is read from the type the node resolves to through its
 `bounded_domain` base chain: `scalar_type` forms `boolean`, `integer`,
-`rational`, `decimal`, `float32`, `float64`, `text`, `string`, `uuid` and `timestamp` are their own family, a
+`rational`, `decimal`, `float32`, `float64`, `text`, `string`, `uuid`, `timestamp` and `clock_reference` (FR-829) are their own family, a
 `unit` and a `carried_quantity` are `quantity`, an enum is `ordered_enum` when its body's `ordered` is
 true and `enum` otherwise; `composite_type` forms `option`, `record`,
 `tuple`, `union`, `sequence`, `set`, `bag`, `ordered_set` and `reference` are
@@ -3475,11 +3475,13 @@ its cases carries a `payloadType` and `union` when one does, and
 a model declaration node whose `semantic_form` is `object_type`, `process`,
 `state_machine` or `systems_interface` is `object`; a `protocol`/`step_identity_type` node is `step_identity` ("Protocol step identity reads"). A `relation` node and a `model` node of any
 other form have no family, so a term they type fits no operand position. An
-`object` term is admitted only at a `field_owner` operand position and at
-the `object` anchor position of `filament.op.state.clause`: `object` is a
+`object` term is admitted only at a `field_owner` operand position, at
+the `object` anchor position of `filament.op.state.clause` and at the owner
+position of a clock-place read (the place form of `filament.op.option.present`,
+`filament.op.option.slots` and `filament.op.clock_reference.ref`, FR-829): `object` is a
 member of no other group, so the `inner:0` result of
 `filament.op.model.deref` is read only through a field projection ("Model-owned
-members"), and a reference to an object type or to a `state`/
+members") or as the owner of a clock-place read, and a reference to an object type or to a `state`/
 `operation_anchor` node (whose `semantic_type` is its context object type)
 is admitted only as a state clause's anchor. The same holds for the node of a
 process or a state machine, and for an anchor whose context is one.
@@ -3495,7 +3497,7 @@ or `temporal`/`fairness` node has the family of its body's root application
 
 | Group | Families | Decision rule |
 | --- | --- | --- |
-| `any_value` | `boolean`, `integer`, `rational`, `decimal`, `float32`, `float64`, `text`, `string`, `uuid`, `timestamp`, `enum`, `ordered_enum`, `quantity`, `option`, `record`, `tuple`, `union`, `sequence`, `set`, `bag`, `ordered_set`, `reference`, `step_identity` | An operand position admits a term whose family is a member. |
+| `any_value` | `boolean`, `integer`, `rational`, `decimal`, `float32`, `float64`, `text`, `string`, `uuid`, `timestamp`, `clock_reference`, `enum`, `ordered_enum`, `quantity`, `option`, `record`, `tuple`, `union`, `sequence`, `set`, `bag`, `ordered_set`, `reference`, `step_identity` | An operand position admits a term whose family is a member. |
 | `any_term` | `any_value` plus `function`, `population`, `aggregate`, `binder`, `clause`, `temporal` ([FR-370](FR-370-checked-package-temporal-clause-body.md)) | Used only as the rest position of clause and call operations. |
 | `exact_numeric` | `integer`, `rational`, `decimal` | Exact numeric operands of conversions. |
 | `rational_promotable` | `integer`, `rational` | Operands promoted exactly by `n ↦ n/1` (FR-146, FR-149). |
