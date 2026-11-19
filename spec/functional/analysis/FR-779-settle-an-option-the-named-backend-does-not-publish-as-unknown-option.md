@@ -58,11 +58,30 @@ The item's disposition, or no change.
 - An item whose every option the backend publishes carries them to the
   backend unchanged.
 
+### Option values
+
+- A backend publishes its option names and defaults, not their value
+  domains: a domain such as "a positive rational number of seconds" is not
+  a closed set a manifest can list. A backend that holds a domain for a
+  published option SHALL check the item's option values before any solving
+  step, and a value outside its domain SHALL settle the item
+  `invalid-request` with `invalid_capability`/`invalid-option-value`
+  (FR-272), payload `request_index`, `backend`, `option` (the least refused
+  option name in byte order) and `value` (that option's value as the item
+  wrote it). The cause is an `invalid_capability` one for the same reason
+  as `unknown-option`: the item asks the backend for a setting it does not
+  offer.
+- The value check SHALL run after the name check above, so an item with
+  both an unpublished name and a bad value settles `unknown-option`.
+- An item the value check settles SHALL NOT run a solving step, and its
+  refusal settles only that item.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-779-AC-1 | Over a registry whose backend `b` publishes the option `depth`, an item naming `b` with `options` `{"zeta": "1", "alpha": "2"}` settles `invalid-request` `invalid_capability`/`unknown-option` with `request_index` its index, `backend` `b` and `option` `alpha`, and is sent to no backend; an item naming `b` with `{"depth": "3"}` reaches `b` with that option; an item naming an unregistered backend with options settles `unknown-backend`; the native-diagnostics row and FR-272's row of `invalid_capability` each list `unknown-option` with the payload keys `request_index`, `backend` and `option`. | Test (TC-1891) |
+| FR-779-AC-2 | Over a registry whose backend `h` publishes the option `step` and holds its domain "a positive exact rational", an item naming `h` with `options` `{"step": "0"}` settles `invalid-request` `invalid_capability`/`invalid-option-value` with `request_index` its index, `backend` `h`, `option` `step` and `value` `0`, and the backend runs no solving step; `{"step": "1/4"}` reaches the backend; `{"colour": "blue", "step": "0"}` settles `unknown-option` with `option` `colour`; the native-diagnostics row and FR-272's row of `invalid_capability` each list `invalid-option-value` with the payload keys `request_index`, `backend`, `option` and `value`. | Test (TC-1891) |
 
 ## Dependencies
 

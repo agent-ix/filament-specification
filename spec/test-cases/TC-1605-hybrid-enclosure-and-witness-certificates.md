@@ -19,7 +19,7 @@ Verify the hybrid certificate forms, their exact check and their effect on certi
 
 1. Check the `inductive-enclosure` certificates FR-652-AC-1 lists.
 2. Check a `flowpipe` with a Picard violation and a well-formed one covering horizon 10.
-3. Read the non-polynomial point trace of FR-652-AC-3 with an accepted witness, with none, and with a straddling last box.
+3. Read the non-polynomial point trace of FR-652-AC-3 with its nine-step witness, with none, with the witness cut after its step at `[28, 32]`, and with the one-step witness whose `B` is `v [1, 41]`.
 4. Check the mismatched, malformed and work-limited certificates FR-652-AC-4 lists.
 5. Check the `Braking` flowpipe with its one jump step at the narrowed jump time `[0, 10]`, with a jump-step time omitting time 0, with time `[0, 20]`, and against the violated claim.
 
@@ -27,6 +27,6 @@ Verify the hybrid certificate forms, their exact check and their effect on certi
 
 - Step 1: accepted and `certified`; rejected at rule (a), `uncertified` with `certificate-rejected`.
 - Step 2: rejected naming the step and `uncertified`; accepted and `certified`.
-- Step 3: `refuted` and recorded in `counterexamples`; `inconclusive` twice.
+- Step 3: `refuted` and recorded in `counterexamples`; `inconclusive` three times, each cut witness rejected `witness-violation` at its last step.
 - Step 4: each refusal or rejection as stated.
 - Step 5: accepted and `certified`; rejected with rule `jump` at the jump step; accepted; rejected with rule `claim`.

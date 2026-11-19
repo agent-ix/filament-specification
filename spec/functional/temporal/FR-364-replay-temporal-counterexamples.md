@@ -48,8 +48,9 @@ byte provision by its zero-based position in `request.provision`.
 ## Outputs
 
 A replay settlement: `reproduced-with-evaluated-witness` with the item
-`refuted`; a located replay refusal; or `inconclusive` with cause
-`replay-parity`.
+`refuted`; for a hybrid trace exact replay cannot decide,
+`reproduced-with-validated-witness` with the item `refuted`; a located
+replay refusal; or `inconclusive` with cause `replay-parity`.
 
 ## Behavior
 
@@ -420,6 +421,15 @@ The replayer SHALL, in this order:
    with the engine; an enabled identity or `P` true disagrees.
 
 Agreement settles `reproduced-with-evaluated-witness` and the item `refuted`.
+A hybrid trace (FR-193) that exact replay cannot decide, as one through a
+mode whose flow is not polynomial, settles `reproduced-with-validated-witness`
+and the item `refuted` when the FR-652 `validated-witness` it carries is
+accepted: the witness encloses every solution from the trace's start in
+exact rational interval arithmetic and has a decisive box over which the
+claim is definitely violated, so the refutation is proved without replaying
+the solution exactly. The settlement is distinct from
+`reproduced-with-evaluated-witness`, which only exact replay reaches. A
+witness that is absent or rejected settles no `refuted`.
 Disagreement settles the item `inconclusive`, cause `replay-parity`. A refusal
 settles no `refuted`.
 
