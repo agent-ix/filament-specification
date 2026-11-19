@@ -4639,6 +4639,7 @@
         "filament.op.tuple.project",
         "filament.op.collection.index",
         "filament.op.option.present",
+        "filament.op.option.slots",
         "filament.op.option.value",
         "filament.op.state.pre",
         "filament.op.control.if",
@@ -4658,6 +4659,8 @@
         "filament.op.collection.fold",
         "filament.op.collection.reduce",
         "filament.op.collection.count",
+        "filament.op.collection.only",
+        "filament.op.collection.seq",
         "filament.op.collection.sum.integer",
         "filament.op.collection.sum.rational",
         "filament.op.collection.sum.decimal",
@@ -4676,6 +4679,7 @@
         "filament.op.model.reaches_field",
         "filament.op.model.lookup",
         "filament.op.model.all_instances",
+        "filament.op.refinement.history",
         "filament.op.model.dispatch_call",
         "filament.op.function.call",
         "filament.op.temporal.clause",
@@ -4828,6 +4832,26 @@
             "population": {
               "description": "Only on the field member of filament.op.model.reaches_field (FR-322 Population link of a reaches); the Operation rule refuses it on any other operation.",
               "$ref": "#/$defs/NodeId"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "declaration",
+            "name"
+          ],
+          "properties": {
+            "kind": {
+              "const": "history"
+            },
+            "declaration": {
+              "$ref": "#/$defs/NodeId"
+            },
+            "name": {
+              "$ref": "#/$defs/Identifier"
             }
           },
           "additionalProperties": false
@@ -5491,6 +5515,7 @@
                 "convert",
                 "pre",
                 "present",
+                "slots",
                 "value",
                 "deref",
                 "reaches",
