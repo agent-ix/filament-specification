@@ -19,6 +19,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-479
     type: references
+  - target: ix://agent-ix/filament-specification/FR-828
+    type: references
 ---
 ## Description
 
@@ -66,6 +68,15 @@ activation-unknown with its exact incomplete completeness or refused
 assessment-execution disposition. This requirement does not define protocol
 choice/conformance or the observation transport schema.
 
+A clause that holds a step identity read
+([FR-828](../protocol/FR-828-read-a-protocol-step-s-message-delivery-and-effect-identity-in-an-obligation.md))
+binds each activation to one protocol instance lifetime. Written `on origin`
+and checked over a subject whose protocol has `activation on each`, such a
+clause activates once per `activate` step, at that step's position, each
+activation a distinct obligation instance with its own captures (the
+per-instance origin of FR-828 "Instance scope of an obligation"); every
+other `on origin` clause activates once, at the origin, as above.
+
 For a protocol obligation, the evaluator shall publish the complete
 [FR-479](../../objects/protocol/FR-479-obligation-activation-binding.md)
 activation binding: qualified linked definition, activation relation row,
@@ -85,6 +96,7 @@ unrelated runtime fragments.
 | FR-093-AC-5 | A closed trigger scope with complete input and no trigger reports inactive; an open scope or missing/refused trigger evidence reports activation-unknown while completeness and execution retain their independently derived exact states, and neither case becomes temporal truth. | Test (TC-116) |
 | FR-093-AC-6 | False guards create no obligation, unestablished guards remain incomplete/refused, and conflicting payloads under one semantic trigger identity refuse without replacing retained captures. | Test (TC-114) |
 | FR-093-AC-7 | Every protocol obligation is published through one complete FR-479 activation binding; a missing, cross-definition, cross-row, cross-subject, cross-trigger or anchor-mismatched binding is incomplete or refused and never reconstructed by a consumer. | Test (TC-114) |
+| FR-093-AC-8 | Per-instance origin. Over FR-828-AC-8's `Once` (`activation on each`, two sequential instances), an `on origin` clause holding `filament::protocol::message(Once::Rcv)` creates two obligation instances, one at each `activate` step, each with its own captures and bound to its own instance; the same clause without the read, and the read clause over an `on origin` protocol, each create exactly one obligation instance at the origin. | Test (TC-2068) |
 
 ## Dependencies
 

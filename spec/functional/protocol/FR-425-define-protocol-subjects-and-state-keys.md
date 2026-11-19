@@ -39,6 +39,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-785
     type: references
+  - target: ix://agent-ix/filament-specification/FR-828
+    type: references
 ---
 
 # FR-425: Define protocol subjects and their state keys
@@ -282,6 +284,7 @@ FR-181 simulator state key with these member contents:
 | `bounds` | `{"type":"attempt-count","thread":<thread path>}` | a compensation thread's attempt count, an integer |
 | `bounds` | `{"type":"send-pending","thread":<thread path>}` | `{"type":"send-pending-state","count":<integer above 0>,"payload":<encoded>}`: the number of entries still pending of the thread's `block` send on a delivery count interval channel ([FR-426](FR-426-apply-protocol-steps.md) "Interval sends") and the payload they carry, present exactly while the thread rests at that send with entries pending; the send's binder has no `observations` entry while the send is pending, so this entry is the payload's only holder |
 | `bounds` | `{"type":"message-ordinal","node":"<node>","thread":<thread path>}` | the send node's next occurrence ordinal on that path, an integer, present from the completion of the node's first send on that path until the instance is removed |
+| `bounds` | `{"type":"business-effect-ordinal","node":"<node>","thread":<thread path>}` | the effect node's next occurrence ordinal on that path, an integer, present from the node's first `event` step on that path until the instance is removed |
 | `bounds` | `{"type":"next-delivery","message":<message>}` | the message's next delivery index, an integer: `d` after a first `send` step that dispatched `d` copies, advanced by the copies each continuation step dispatches and by one for each `duplicate` of it, present from its first `send` step until the instance is removed |
 | `queues` | `{"type":"queue","instance":"<decimal>","channel":"<qualified-name>","fifo_key":<encoded>\|null}` | `sequence` (`fifo`) or `bag` (`unordered`) of `{"type":"queue-entry","message":<message>,"delivery":"<decimal>","payload":<encoded>}` |
 | `roles` | `{"type":"role","instance":"<decimal>","role":"<ident>"}` | a static role's binding: for a role on a whole model `{"type":"model-binding","selection":"<identity>"}`, the `model_root` node identity it names; or a replicated role's instance map (FR-428) |
@@ -294,7 +297,23 @@ FR-181 simulator state key with these member contents:
   race map (`race`, [FR-438](../memory/FR-438-report-data-races.md)).
 - `<node>` is the node's static declaration path ([FR-221](../../objects/protocol/FR-221-protocol-node-occurrence.md)).
 - `<message>` is `{"type":"message-occurrence","instance":"<decimal>","node":"<node>","path":<thread path>,"ordinal":"<decimal>"}`,
-  the message identity above.
+  the message identity above. A `send` and a `receive` step carry it as
+  their transition identity's `message` member, and a `receive` the index of
+  the entry it removes as `delivery` (FR-426 "Protocol transition identity").
+- An **effect occurrence key** is the protocol instance, the effect node, the
+  thread path and the effect node's occurrence ordinal on that path, written
+  `{"type":"effect-occurrence","instance":"<decimal>","node":"<node>","path":<thread path>,"ordinal":"<decimal>"}`.
+  An effect node's `event` step (FR-426) establishes the occurrence whose
+  ordinal is the node's `business-effect-ordinal` on the thread's path (0
+  when absent), carries that key as its transition identity's `effect_occurrence` member
+  ([FR-426](FR-426-apply-protocol-steps.md) "Protocol transition identity"), and advances
+  the ordinal by one. The ordinal is kept until the instance is removed, after
+  the thread on that path has finished, for the reason the message ordinal
+  is: a reused path's next `effect` step would otherwise mint an occurrence key
+  equal to an earlier one, and FR-051 would read a second establishment of one
+  occurrence where there were two occurrences. So an effect node inside a
+  `repeat` takes a new ordinal on each iteration, and inside a `repeat` with
+  no maximum the ordinal grows on every iteration.
 - A thread path is `{"type":"thread-path","instance":"<decimal>","steps":[<step>, ...]}`,
   each step `{"node":"<node>","branch":"<label>","ordinal":"<decimal>"}` for a
   branch thread or `{"template":"<qualified-name>","ordinal":"<decimal>"}` for
@@ -307,22 +326,26 @@ Each map is sorted by its keys' JCS bytes, as FR-181 states. Two protocol
 states with equal keys are one state. The ordinal rule, the removal of parallel
 instances, binders, attempt records and finished instances make the key a function of what the
 protocol can still do, not of how it got there, except for the message
-ordinals and next delivery indices, which record identity history by design:
-a state that has duplicated a message and lost the original differs from the
-state before the duplicate in its entry's delivery index and in its next
-delivery index, although both enable the same steps, and the message ordinal
-of a send inside a `repeat` with no maximum grows on every iteration.
-Coalescing and loop closure over message ordinals and delivery labels that a
-checked obligation does not read are FSL's cycle key (FSL FR-205), a
-canonical form of this key that keeps every identity an obligation reads.
+ordinals, next delivery indices and business-effect ordinals, which record
+identity history by design: a state that has duplicated a message and lost
+the original differs from the state before the duplicate in its entry's
+delivery index and in its next delivery index, although both enable the same
+steps, and the message ordinal of a send, and the business-effect ordinal of
+an effect node, inside a `repeat` with no maximum grow on every iteration.
+Coalescing and loop closure over message ordinals, delivery labels and
+business-effect ordinals that a checked obligation does not read are FSL's
+cycle key (FSL FR-205), a canonical form of this key that keeps every
+identity an obligation reads.
 
 These members are run-time state, not checked-package content. They add no
 [FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md) node and
 change no package identity, node identity or obligation identity; only the
 state keys of a protocol run, its counterexamples and its certificates change
-bytes. FR-322 has no node through which an obligation reads a message
-identity or a delivery index; that term is not yet specified (Remaining work:
-QSL-2568), and until it is, no checked obligation reads one.
+bytes. An obligation reads a step's message identity, delivery and effect
+occurrence key through a step identity read
+([FR-828](FR-828-read-a-protocol-step-s-message-delivery-and-effect-identity-in-an-obligation.md)),
+whose FR-322 `protocol`/`step_read` node is package content; the identities
+it returns are the ones this key holds.
 
 ### Initial states
 
@@ -351,6 +374,7 @@ state holds the model state and no instance.
 | FR-425-AC-13 | A protocol with `role w on M`, `M` a model alias of the package, builds its subject with no binding supplied for `w`, and every state's `roles` entry for `w` is `{"type":"model-binding","selection":"<identity>"}` with `M`'s `model_root` node identity; a clause with `role w on M` and `role u on N` over two selections builds with no binding for either, and each state's `roles` entries name `M`'s and `N`'s identities; supplying a binding for `w` refuses `invalid_runtime_input`/`wrong-role-mapping` naming `w` before any expansion, and so does a static role on a model type with no binding. | Test (TC-375) |
 | FR-425-AC-14 | A protocol subject whose model selection reads a timed model is not a timed subject. | Test (TC-370) |
 | FR-425-AC-15 | A `fifo` channel `ch` of capacity 2 with `delivery unknown` and `run sequence { send Snd via ch; receive Rcv via ch of Snd }`: after `send`, the queue entry is exactly `{message, delivery, payload}` with the message `{instance 0, node Snd, path (0), ordinal 0}` and delivery `"0"`, and no `send` or `thread` member; `bounds` holds `message-ordinal` 1 for `Snd` on `(0)` and `next-delivery` 1 for the message (state `s1`). From `s1`, `duplicate` then `lose` of delivery 0 reaches a state whose entry has delivery `"1"` and whose `next-delivery` is 2, and `duplicate` then `lose` of delivery 1 reaches a state whose entry has delivery `"0"` and whose `next-delivery` is 2; the three states have three different keys, and a second `duplicate` from the first of them appends delivery `"2"`. Both copies queued after a `duplicate` are two entries with equal payloads. Dropping the `message`, `delivery` or `next-delivery` member makes two of the three keys equal, which this criterion rejects. The checked package and obligation identity are equal with and without these members. Interval sends: on a `fifo` channel of capacity 2 with delivery `[2,2]`, `send Snd`'s `count` 2 step appends deliveries `"0"` and `"1"` of one message (ordinal 0), and leaves `next-delivery` 2 and `message-ordinal` 1. With capacity 2, overflow `block` and delivery `[3,3]`, in `parallel P { branch s send Snd via ch; branch r receive Rcv via ch of Snd } join all`, the `count` 3 step appends deliveries `"0"` and `"1"`, leaves the send pending with count 1, `next-delivery` 2 and no `message-ordinal` entry for `Snd` on `s`'s path; after `receive Rcv` removes one copy, the continuation step appends delivery `"2"` of the same message (ordinal 0), and only then is `next-delivery` 3 and `message-ordinal` 1. Ordinal kept: in `parallel P { branch a sequence { send Snd via ch; attempt A }; branch b receive Rcv via ch of Snd } join all`, `message-ordinal` 1 for `Snd` on `a`'s path is present while `a` rests at `A`, after `receive` and `attempt(A)`, when `a` has completed and no copy is queued, and in every later state until the instance is removed. Reused path: `repeat maximum 2 { parallel P { branch a send Snd via ch; branch b receive Rcv via ch of Snd } join all }`: both iterations fork `a` on the same path `(0, P, a, 0)`; the first message (ordinal 0) has already been received when the second `send` runs, which takes ordinal 1, so the two `receive` steps bind deliveries of two different messages; a key that drops the ordinal when `a` completes, or when its last copy leaves the queue, gives both messages ordinal 0, which this criterion rejects. | Test (TC-375) |
+| FR-425-AC-16 | Business-effect ordinals. Protocol `Charge` over the `Fill` model with `run repeat { attempt Pay; effect Paid of Pay }`, a `repeat` with no maximum and `Pay` always enabled: before the first `event(Paid)` `bounds` holds no `business-effect-ordinal` entry; the first `event(Paid)` carries the effect occurrence key (instance 0, `Paid`, path `(0)`, ordinal 0) and leaves `business-effect-ordinal` 1 for `Paid` on `(0)`, and the `k`-th carries ordinal `k - 1` and leaves `k`, so the states with the root back at `Pay` after 0, 1 and 2 iterations have three different keys. Reused path: in `repeat maximum 2 { parallel P { branch a sequence { attempt Pay; effect Paid of Pay }; branch b attempt Q } join all }` both iterations run `Paid` on path `(0, P, a, 0)`; the second `event(Paid)` carries ordinal 1, and the entry is present after `a` completes and until the instance is removed. A key that omits the member makes the three loop states equal, and one that drops it when `a` completes gives both occurrences ordinal 0; this criterion rejects both. The checked package and obligation identity are equal with and without the member. | Test (TC-375) |
 
 
 ## Dependencies
