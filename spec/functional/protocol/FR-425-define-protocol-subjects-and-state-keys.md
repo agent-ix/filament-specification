@@ -220,7 +220,18 @@ removed once its join has settled and every branch thread has left
   protocol system's state graph through a repeat takes at least one step.
 - Each channel has one queue per protocol instance: a sequence in delivery
   order per FIFO key for `fifo` ordering, and a bag for `unordered`. An entry
-  is (send node, sending thread path, payload). A queue is bounded only by the
+  is (send node, sending thread path, message, delivery index, payload). The
+  **message** is the send step's occurrence: the protocol instance, the send
+  node, the sending thread path and the send node's occurrence ordinal on that
+  path, which advances once per `send` step of that node on that path. The
+  **delivery index** is 0 for the copy the `send` appends; each `duplicate`
+  step ([FR-426](FR-426-apply-protocol-steps.md)) appends a copy of the same
+  message with the message's next delivery index, and that next index then
+  advances by one. A delivery index is never reused within an instance: the
+  next index is kept after every copy of the message has left the queue, and
+  goes only with the instance. Two copies with equal payloads are therefore
+  two entries, and an entry's message and delivery index are identities, not
+  payload (FSL FR-894). A queue is bounded only by the
   channel's authored capacity. A channel is named by its **qualified name**, the
   declaring protocol's qualified name, `::` and the channel's handle, as
   [FR-429](FR-429-report-protocol-deadlocks.md) defines it over the
@@ -248,7 +259,9 @@ FR-181 simulator state key with these member contents:
 | `bounds` | `{"type":"repeat-counter","node":"<node>","thread":<thread path>}` | the counter, an integer |
 | `bounds` | `{"type":"attempt-count","thread":<thread path>}` | a compensation thread's attempt count, an integer |
 | `bounds` | `{"type":"send-pending","thread":<thread path>}` | `{"type":"send-pending-state","count":<integer above 0>,"payload":<encoded>}`: the number of entries still pending of the thread's `block` send on a delivery count interval channel ([FR-426](FR-426-apply-protocol-steps.md) "Interval sends") and the payload they carry, present exactly while the thread rests at that send with entries pending; the send's binder has no `observations` entry while the send is pending, so this entry is the payload's only holder |
-| `queues` | `{"type":"queue","instance":"<decimal>","channel":"<qualified-name>","fifo_key":<encoded>\|null}` | `sequence` (`fifo`) or `bag` (`unordered`) of `{"type":"queue-entry","send":"<node>","thread":<thread path>,"payload":<encoded>}` |
+| `bounds` | `{"type":"message-ordinal","node":"<node>","thread":<thread path>}` | the send node's next occurrence ordinal on that path, an integer, present from the node's first `send` step on that path until the instance is removed |
+| `bounds` | `{"type":"next-delivery","message":<message>}` | the message's next delivery index, an integer: 1 after its `send`, advanced by each `duplicate` of it, present from its `send` until the instance is removed |
+| `queues` | `{"type":"queue","instance":"<decimal>","channel":"<qualified-name>","fifo_key":<encoded>\|null}` | `sequence` (`fifo`) or `bag` (`unordered`) of `{"type":"queue-entry","send":"<node>","thread":<thread path>,"message":<message>,"delivery":"<decimal>","payload":<encoded>}` |
 | `roles` | `{"type":"role","instance":"<decimal>","role":"<ident>"}` | a static role's binding: for a role on a whole model `{"type":"model-binding","selection":"<identity>"}`, the `model_root` node identity it names; or a replicated role's instance map (FR-428) |
 | `memory` | the members its memory model names | empty under `sc` (FR-434) |
 
@@ -258,6 +271,8 @@ FR-181 simulator state key with these member contents:
   `tso`, when the subject has a non-atomic shared location, the sender's
   race map (`race`, [FR-438](../memory/FR-438-report-data-races.md)).
 - `<node>` is the node's static declaration path ([FR-221](../../objects/protocol/FR-221-protocol-node-occurrence.md)).
+- `<message>` is `{"type":"message-occurrence","instance":"<decimal>","node":"<node>","path":<thread path>,"ordinal":"<decimal>"}`,
+  the message identity above.
 - A thread path is `{"type":"thread-path","instance":"<decimal>","steps":[<step>, ...]}`,
   each step `{"node":"<node>","branch":"<label>","ordinal":"<decimal>"}` for a
   branch thread or `{"template":"<qualified-name>","ordinal":"<decimal>"}` for
@@ -269,7 +284,24 @@ FR-181 simulator state key with these member contents:
 Each map is sorted by its keys' JCS bytes, as FR-181 states. Two protocol
 states with equal keys are one state. The ordinal rule, the removal of parallel
 instances, binders, attempt records and finished instances make the key a function of what the
-protocol can still do, not of how it got there.
+protocol can still do, not of how it got there, except for the message
+ordinals and next delivery indices, which record identity history by design:
+a state that has duplicated a message and lost the original differs from the
+state before the duplicate in its entry's delivery index and in its next
+delivery index, although both enable the same steps. Coalescing and loop
+closure over delivery labels that a checked obligation does not read are
+FSL's cycle key (FSL FR-205), a canonical form of this key that keeps every
+label an obligation reads. Message ordinals grow in a `repeat` with no
+maximum; canonicalising unread message ordinals is not yet specified
+(Remaining work: QSL-2569).
+
+These members are run-time state, not checked-package content. They add no
+[FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md) node and
+change no package identity, node identity or obligation identity; only the
+state keys of a protocol run, its counterexamples and its certificates change
+bytes. FR-322 has no node through which an obligation reads a message
+identity or a delivery index; that term is not yet specified (Remaining work:
+QSL-2568), and until it is, no checked obligation reads one.
 
 ### Initial states
 
@@ -297,6 +329,7 @@ state holds the model state and no instance.
 | FR-425-AC-12 | Template `Refund` with `attempts 1` and `commit Committed`, whose forward `effect` node is reached twice in a `repeat` of maximum 2, giving registrations `r1` and `r2` that differ in a registration capture `id`, whose activation guard compares `id` with the `id` of the trigger record, and a `parallel Triggers` of two sibling branches each binding a trigger record with one of the two ids, followed by `commit Committed`, each compensation thread taking its `cattempt` and `cend` before the step of `Committed`. The state after `r1`'s trigger and then `r2`'s and the state after `r2`'s and then `r1`'s have different keys, because each compensation thread's `thread-state` names its registration: thread `(0, Refund, 0)` names `r1` in the first and `r2` in the second. The state after the step of `Committed` holds the `commit` entry for that node under its instance and the state before the step does not, so the two have different keys, and the entry is absent once the instance is removed. In a variant with `attempts 2 of M::RefundAttempt`, `RefundAttempt` with one field `ok: Boolean`, a template operation whose precondition is `true`, and the retry relation `not e.ok` over (`e`, `l`): after thread `(0, Refund, 0)`'s first `cattempt` with record `ok` false, `observations` holds that thread's `attempt-record` entry with `ok` false and a retry `cattempt` is enabled; after its first `cattempt` with `ok` true, the entry holds `ok` true and only `cend` is enabled, so the two post-states have different keys. The entry is absent after the thread's second `cattempt`, whose count reaches 2, after its `cend`, and in the post-state of the step of `Committed` taken while the thread rests at its retry point holding one. With the retry relation `l.ok`, which does not read `e`, no state holds an `attempt-record` entry, and the two first `cattempt` steps, `ok` true and `ok` false, reach one state. | Test (TC-375) |
 | FR-425-AC-13 | A protocol with `role w on M`, `M` a model alias of the package, builds its subject with no binding supplied for `w`, and every state's `roles` entry for `w` is `{"type":"model-binding","selection":"<identity>"}` with `M`'s `model_root` node identity; a clause with `role w on M` and `role u on N` over two selections builds with no binding for either, and each state's `roles` entries name `M`'s and `N`'s identities; supplying a binding for `w` refuses `invalid_runtime_input`/`wrong-role-mapping` naming `w` before any expansion, and so does a static role on a model type with no binding. | Test (TC-375) |
 | FR-425-AC-14 | A protocol subject whose model selection reads a timed model is not a timed subject. | Test (TC-370) |
+| FR-425-AC-15 | A `fifo` channel `ch` of capacity 2 with `delivery unknown` and `run sequence { send Snd via ch; receive Rcv via ch of Snd }`: after `send`, the queue entry carries the message `{instance 0, node Snd, path (0), ordinal 0}` and delivery `"0"`, `bounds` holds `message-ordinal` 1 for `Snd` on `(0)` and `next-delivery` 1 for the message (state `s1`). From `s1`, `duplicate` then `lose` of delivery 0 reaches a state whose entry has delivery `"1"` and whose `next-delivery` is 2, and `duplicate` then `lose` of delivery 1 reaches a state whose entry has delivery `"0"` and whose `next-delivery` is 2; the three states have three different keys, and a second `duplicate` from the first of them appends delivery `"2"`. Both copies queued after a `duplicate` are two entries with equal payloads. Dropping the `message`, `delivery` or `next-delivery` member makes two of the three keys equal, which this criterion rejects. The checked package and obligation identity are equal with and without these members. | Test (TC-375) |
 
 ## Dependencies
 
