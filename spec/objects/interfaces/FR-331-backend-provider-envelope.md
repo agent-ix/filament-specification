@@ -673,7 +673,9 @@ continuous dynamics carries no `limit`; its result cause is
 `bounded-search-incomplete{reason: "unresolved-dynamics"}`. Its frontier names
 each exact unresolved node with reason `unresolved-choice`; each such row's
 `open` set contains at least one of `demand`, `budget-change` or `queue`, and
-may also name `successors` or `delay`. The task-search checker
+may also name `successors` or `delay`. `budget-change` names a node at which a bound
+mode-switch operation (FR-419) is enabled over a dense delay window that the
+search did not enumerate at every instant. The task-search checker
 re-admits the package and product, replays every listed edge, verifies initial
 node reachability, the zones and the recorded open frontier, and verifies that
 the named effective limit stopped expansion at the recorded first

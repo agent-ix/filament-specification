@@ -226,7 +226,9 @@ reconstructs exact job occurrences and generations along any counterexample
 prefix before accepting its replay evidence.
 Each source declaration `release S.τ on M::o;` resolves `S` and `τ` to exactly
 one task-set declaration in `S`; a missing or ambiguous task binding is an
-invalid task automaton. The source operation is that task's **activation**.
+invalid task automaton, refused as a name-resolution failure
+(`missing_declaration`/`missing-name` or
+`ambiguous_declaration`/`ambiguous-name`), not as `invalid-task-set`. The source operation is that task's **activation**.
 All release declarations bound to one task share one activation clock and one
 occurrence counter, so adding another source operation cannot bypass the
 task's arrival rule. The first activation establishes the task's phase. A
@@ -267,8 +269,12 @@ cap is a search/frontier signal, not a task transition or a counterexample
 step. These derived transitions do not claim to be source-model operations.
 
 The product has one processor. Under fixed-priority policy, the ready job with
-the smallest declared numeric priority runs; equal priorities are rejected
-at claim admission. Under EDF, the ready job with the earliest absolute
+the smallest declared numeric priority runs; equal priorities of two tasks
+are rejected at claim admission. Jobs of one task share its priority; they are ordered by nominal activation
+time, then canonical source activation transition identity, then zero-based
+occurrence, so an earlier job of the task runs first. Scheduling is
+preemptive: whenever a higher-ranked job is eligible, a lower-ranked running
+job is preempted. Under EDF, the ready job with the earliest absolute
 deadline runs, independent of any declared priority. Equal-deadline jobs are
 ordered by ascending canonical task name in Unicode scalar value order
 (FR-482), then by canonical source activation transition identity and
@@ -315,24 +321,73 @@ For a task automaton using a task-set member's execution bounds, each activated
 at nominal activation, is retained across pending jitter, preemption and replay,
 and is never resampled. A zero-demand job completes at activation without
 processor service and cannot be a deadline miss.
-For a `HI` job while the source subject is in `LO` mode, `C(LO)` is its maximum
-service allowance; it does not change the job's selected `d`. A `HI` job with
-`d > C(LO)` needs the source-authorized mode change before receiving service
-beyond that allowance. A `LO` to `HI`
-mode change is enabled only by an admitted source transition whose post-state
-enters `HI` mode. The task product synchronizes with that transition and then
-emits one derived `budget-change` for each active `HI` job, carrying the exact
-allowance increase `budget_delta = C(HI) - C(LO)`. It preserves `d`, remaining
-actual work, accumulated service, job identity, optional declared priority and absolute deadline.
-Reaching service `C(LO)` alone never changes the source mode. If `d` equals
-the service at that threshold, the job completes and has no budget-change
-step. If `d` exceeds the threshold and no `LO` to `HI` source transition is
-enabled, the job receives no service beyond `C(LO)` and remains live; the
-product continues all other enabled source and scheduler behavior. A later
-deadline miss refutes only with the replay evidence below.
 
-An HI task released after the source enters `HI` mode selects from
-`[BCET, C(HI)]` and has no budget-change step. Completion occurs only after the
+**Criticality mode.** A task product over task set `S` has one criticality
+mode, `LO` or `HI`, held in its scheduler control (FR-181). Every initial
+product state is in `LO`. The source authorizes the change through a
+mode-switch declaration `mode S hi on M::o;` of the shared grammar, which
+binds operation `M::o` as a mode switch of `S`. It resolves `S` and `M::o`
+as a release declaration does. An unresolved task set or operation refuses
+`missing_declaration`/`missing-name`, an operation that resolves to several
+declarations refuses `ambiguous_declaration`/`ambiguous-name`, and a second
+declaration of one task set on one operation refuses
+`conflicting_declaration`/`duplicate-declaration`, each at the declaration;
+these are name-resolution failures, not task-set defects, so they never use
+`invalid-task-set`. Several operations may be
+bound, and one operation may carry both `release` and `mode` declarations. A
+product step whose synchronized source transition is a step of a bound
+operation, taken from a pre-state in `LO`, is the product's **entry into
+HI**, and its post-state is in `HI`. A step of a bound operation taken in
+`HI` changes no mode and no allowance. Nothing else enters `HI`: not a job
+reaching service `C(LO)`, not a deadline miss, not a source field value, not
+a scheduler step. No product step leaves `HI`, and the grammar has no `lo`
+form. A task set with no mode-switch declaration on the product's model stays
+in `LO` on every path. The mode is named by the declaration, never inferred
+from a source field or an operation name, because the product must know which
+step authorizes the higher budgets before it can bound any job's service.
+
+**Allowance.** Each live `HI` job has an allowance phase, `lo` or `hi`, in the
+product state. Its service allowance is `C(LO)` in phase `lo` and `C(HI)` in
+phase `hi`; it does not change the job's selected `d`. A `HI` job activated
+in `LO` starts in phase `lo`. One activated in `HI`, including by the entry
+step's own source transition, starts in phase `hi` and has no budget-change
+step. A `LO` job has no phase, and only its selected demand bounds its
+service. No delay carries a running job's service past its allowance. A
+running job whose service equals its selected demand completes, so a job with
+`d = C(LO)` completes at the threshold with no update. Otherwise, a running
+job whose service equals an allowance below its demand is stopped, at the
+instant its service reaches the allowance, by a `preempt` step whose
+`source_transition` is null (**budget exhaustion**); its delay is the time
+since the previous step, as for every step. The job stays live and its deadline clock continues, but it is
+not dispatched or resumed while its service is not below its allowance: a job
+is eligible for dispatch exactly when it is ready and its service is below its
+allowance. The product continues all other enabled source and scheduler
+behavior, and the job misses at its deadline if it is still incomplete. A
+later deadline miss refutes only with the replay evidence below.
+
+**Budget change.** Immediately after the entry step, and after every
+activation carried by the same source transition, the product emits one
+`budget-change` for each `HI` job live in the entry step's pre-state, whether
+pending jitter, ready, running, preempted or exhausted, and whether or not it
+has already missed. They are ordered by ascending canonical task name in
+Unicode scalar value order, then canonical source activation transition
+identity, then occurrence (the EDF tie tuple without the deadline). Each has
+delay zero, the entry step's source transition as its `source_transition`,
+and the exact `budget_delta = C(HI) - C(LO)` of its task, which is zero when
+the budgets are equal. It moves that job's phase from `lo` to `hi`, and it
+preserves `d`, remaining actual work, accumulated service, job identity,
+optional declared priority, absolute deadline, slot and generation. After it
+an exhausted job is eligible again. The budget changes are urgent and atomic
+with the entry: while one is pending (the product is in `HI` and a live `HI`
+job is in phase `lo`), no delay, source step or other scheduler step is
+enabled, and a deadline miss due at the same instant fires after them. Mode
+entry adds and removes no job, `LO` jobs keep running in `HI`, and the
+dispatch policy does not depend on the mode. The classic AMC switch at the
+instant of overrun is the interleaving in which a bound operation enabled at
+that instant is taken before the exhaustion `preempt`; a source guard that
+observes exhaustion is not part of the source language.
+
+Completion occurs only after the
 selected demand `d` units of scheduled service; a budget increase never adds
 work or resets service. Variable-demand and mode-change products use sound
 bounded exploration with the exact rational demands and allowance deltas
@@ -414,6 +469,8 @@ establish completeness for the fixed-work class.
 | FR-419-AC-11 | An EDF task may omit priority and its task-transition identity omits the member; EDF selects the earliest absolute deadline and resolves ties by canonical task name in Unicode scalar value order, source activation transition identity and occurrence. Source declaration order and fixed priority do not affect EDF tie order. A declared priority, if present, is carried and checked but does not change EDF order. A forged priority, a priority on a task that declares none, or an EDF ready order inconsistent with deadlines/ties is refused; fixed-priority task identities require and replay the checked declared priority. | Test (TC-372) |
 | FR-419-AC-12 | Replaying a fixed-work task-product certificate template across a periodic cycle instantiates successive absolute activation occurrences without renumbering any live job; after completion, reusing its finite rank/slot preserves the identities of all other live jobs and gives the new job the next exact prefix occurrence. Replayed deadline-miss evidence carries those exact occurrences and generations, and a template whose source transition, live-job rank or slot does not match the recomputed path is rejected. | Test (TC-371) |
 | FR-419-AC-13 | `Ctl` with the third WCET 6 under `fixed_priority` is refuted with the counterexample `{"type": "schedulability-miss", "claim": Q, "analysis": "fixed-priority", "unit": "ms", "miss": {"kind": "response", "task": "c", "job": "0", "iterates": [6, 10, 13], "response": 13, "bound": 12}}`, each number an FR-181 rational with denominator 1; under `edf` with `{"kind": "utilization", "utilization": 13/12}`. The reader refuses the first with `miss.kind` `late`, with `iterates` empty, with `mode` under `fixed-priority`, and with `utilization` written `26/24`, each `invalid_result`/`invalid-value`, and with an extra member `invalid_result`/`unknown-member`, each naming the member. | Test (TC-2006) |
+| FR-419-AC-14 | Model `C` (`time dense`; one object with `hi: Bool` initially false and a clock `y` never reset; fields `h_on` and `l_on`, initially false; operations `fire_h` (post `self.h_on = true`) and `fire_l` (post `self.l_on = true`), each always enabled, and `go_hi` guarded `not self.hi and y >= 12 ms` with post `self.hi = true`; `time invariant when not self.hi { y <= 12 ms }`, and `time invariant when not (self.h_on and self.l_on) { y <= 0 ms }`, which forces both first releases at 0, so `h` and `l` activate at 0, 10, 20, …) and task set `MC` (`h` periodic 10 ms, deadline 10 ms, `bcet 3 ms`, `wcet 2 ms`, priority 1, `hi wcet_hi 3 ms`; `l` periodic 10 ms, deadline 10 ms, `bcet` = `wcet` = 4 ms, priority 2, `lo`) with `release MC.h on C::fire_h;`, `release MC.l on C::fire_l;` and `mode MC hi on C::go_hi;`, under `fixed_priority`: on every path `h` job 0 is stopped at 2, when its service reaches 2, by a `preempt` with null `source_transition`, is not dispatched or resumed before 12, and misses at 10. The `go_hi` step at 12 is followed at once by `budget-change` for `h` job 0, then `h` job 1, each with `budget_delta` 1, delay 0 and `source_transition` `go_hi`, before any other step. `h` job 2 (activated at 20) has none. With `12 ms` replaced by `2 ms` in the guard and the invariant there is no miss. Without the `mode` declaration there is no `budget-change` on any path and no `h` job completes. | Test (TC-372) |
+| FR-419-AC-15 | Over `MC` with `h`'s `bcet 2 ms`, on the path that selects `d = 2` for `h` job 0, that job completes at 2 with no exhaustion `preempt` and no `budget-change`. Over `MC` with a third task `e` (periodic 10 ms, deadline 10 ms, `bcet` = `wcet` = 1 ms, priority 3, `hi wcet_hi 1 ms`), released by `release MC.e on C::fire_e;` over an always-enabled `fire_e` whose post sets `self.e_on = true` (with `self.e_on` added to the start invariant, so `e` also activates at 0), and `go_hi` at 2, entry at 2 emits `budget-change` for `e` job 0 with `budget_delta` 0, before the one for `h` job 0 (`e` precedes `h` by task name). With `go_hi` at 10 ms and `release MC.h on C::go_hi;` added beside `mode MC hi on C::go_hi;`, on the path where `go_hi` is the activation of `h` job 1 at 10 (exactly one period after job 0), that job starts in phase `hi` and has no `budget-change`, while the live `h` job 0 receives one. A variant whose `go_hi` has no `not self.hi` guard and fires again in `HI` emits no `budget-change` and no mode change at its second step. A delay that would carry a phase-`lo` job's service past `C(LO)`, and a `dispatch` of an exhausted job, are not product successors. | Test (TC-372) |
 
 ## Dependencies
 
