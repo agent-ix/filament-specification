@@ -67,7 +67,8 @@ document that is not a checked package, a malformed or duplicate member, unknown
 Exceeding a selected byte, node, edge, locus, diagnostic, or work limit
 returns an incomplete resource disposition naming the limit, its value and its
 setting, and no admitted package. A node body follows FR-322's closed
-five-stratum body grammar, so the wire's JSON depth is fixed by its schema.
+five-stratum body grammar, or for a probabilistic claim its claim member
+capped at four nested aggregates, so the wire's JSON depth is fixed by its schema.
 
 ## Operation identity
 

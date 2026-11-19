@@ -24945,3 +24945,125 @@ fn tc_1926_a_top_level_float_pair_selects_the_float_schedule() {
     let plan = source_vector_case(&vectors, "EQ-04-plan");
     assert_eq!(plan["schedule"], "plan", "a float leaf of a composite stays plan");
 }
+
+/// A `claim`/`probabilistic_claim` node of FR-640's nine bindings whose `form`
+/// is a `probability` over a `compare` event of a `fraction` measure: its
+/// `weighting` aggregate stands four aggregates below the body's own.
+fn probabilistic_claim_node() -> Value {
+    let node_ref = |path: Value| json!({"package": "example", "path": path, "ordinal": 0});
+    let text = |value: &str| {
+        json!({"term": "literal", "type": node_ref(json!(["scalar_type", "text"])),
+               "value_kind": "text", "value": value})
+    };
+    let exact = |kind: &str, ty: &str, value: &str| {
+        json!({"term": "literal", "type": node_ref(json!(["scalar_type", ty])),
+               "value_kind": kind, "value": value})
+    };
+    let reference = |path: Value| json!({"term": "reference", "target": node_ref(path)});
+    let bind = |name: &str, value: Value| json!({"term": "binding", "name": name, "value": value});
+    let agg = |members: Vec<Value>| json!({"term": "aggregate", "members": members});
+    let bound = || {
+        agg(vec![
+            bind("direction", text("at_least")),
+            bind("value", exact("rational", "rational", "1/2")),
+        ])
+    };
+    let measure = agg(vec![
+        bind("kind", text("fraction")),
+        bind("predicate", reference(json!(["Example", "Flag"]))),
+        bind("window", exact("integer", "integer", "2")),
+        bind("weighting", agg(vec![bind("kind", text("none"))])),
+    ]);
+    let event = agg(vec![bind("kind", text("compare")), bind("measure", measure), bind("bound", bound())]);
+    let body = agg(vec![
+        bind("subject", reference(json!(["model", "model_root"]))),
+        bind("scheduler", reference(json!(["probabilistic", "workload", "Steady"]))),
+        bind("reward", agg(vec![])),
+        bind("distributions", agg(vec![])),
+        bind("delays", agg(vec![])),
+        bind("form", agg(vec![bind("kind", text("probability")), bind("event", event), bind("bound", bound())])),
+        bind("over", agg(vec![])),
+        bind("activation", agg(vec![bind("kind", text("origin"))])),
+        bind("confidence", agg(vec![])),
+    ]);
+    let fixture = parsed_fixture(POSITIVE_ALL_FAMILIES);
+    let mut node = fixture["semantic_graph"]["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|node| node["node_tag"] == "claim")
+        .expect("a claim node")
+        .clone();
+    let object = node.as_object_mut().unwrap();
+    object.remove("declaration");
+    node["semantic_form"] = json!("probabilistic_claim");
+    node["node_id"]["path"] = json!(["claim", "probabilistic_claim", "A"]);
+    node["occurrences"] = json!([{"ordinal": 0, "role": "claim"}]);
+    node["body"] = body;
+    node
+}
+
+/// FR-322-AC-483: a probabilistic claim body is a claim member nested at most
+/// four aggregates below its own aggregate. FR-640's deepest shape, a
+/// `weighting` inside a `fraction` measure inside a `compare` event inside the
+/// `form`, is in the grammar; one aggregate more, a binding whose value is a
+/// binding and an inline application are outside it. The generic Body
+/// production does not admit the claim body, so the claim branch is what
+/// admits it, and it is keyed on `probabilistic_claim` alone.
+#[trace("TC-427", "FR-322-AC-483")]
+#[test]
+fn tc_427_probabilistic_claim_body_grammar_caps_nesting_at_four_aggregates() {
+    let node_schema = def_validator("ClaimNode");
+    let body_schema = def_validator("ProbabilisticClaimBody");
+    let node = probabilistic_claim_node();
+    let errors: Vec<String> = node_schema.iter_errors(&node).map(|e| e.to_string()).collect();
+    assert!(errors.is_empty(), "the claim node is in the grammar: {errors:?}");
+    assert_eq!(
+        node.pointer("/body/members/5/value/members/1/value/members/1/value/members/3/value/members/0/value/value"),
+        Some(&json!("none")),
+        "the deepest term is the weighting `kind` literal, nineteen steps below the package root"
+    );
+    assert!(
+        !def_validator("SemanticTerm").is_valid(&node["body"]),
+        "the generic Body production stops one aggregate short of the claim body"
+    );
+    let mut other = node.clone();
+    other["semantic_form"] = json!("verification_claim");
+    assert!(!node_schema.is_valid(&other), "only a probabilistic_claim node takes the claim grammar");
+
+    let weighting = "/body/members/5/value/members/1/value/members/1/value/members/3/value";
+    let mut deeper = node.clone();
+    let kind = deeper.pointer(&format!("{weighting}/members/0/value")).unwrap().clone();
+    *deeper.pointer_mut(&format!("{weighting}/members/0/value")).unwrap() =
+        json!({"term": "aggregate", "members": [kind]});
+    assert!(!node_schema.is_valid(&deeper), "an aggregate five below the body's is outside the grammar");
+    assert!(!body_schema.is_valid(&deeper["body"]));
+
+    let mut binding_of_binding = node.clone();
+    let activation_kind = "/body/members/7/value/members/0/value";
+    let inner = binding_of_binding.pointer(activation_kind).unwrap().clone();
+    *binding_of_binding.pointer_mut(activation_kind).unwrap() =
+        json!({"term": "binding", "name": "kind", "value": inner});
+    assert!(!body_schema.is_valid(&binding_of_binding["body"]), "a binding's value is never a binding");
+
+    let mut application = node.clone();
+    let fixture = parsed_fixture(POSITIVE_ALL_FAMILIES);
+    let inline = fixture["semantic_graph"]["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|node| node["body"]["term"] == "application")
+        .unwrap()["body"]
+        .clone();
+    *application
+        .pointer_mut("/body/members/5/value/members/1/value/members/1/value/members/1/value")
+        .unwrap() = inline;
+    assert!(!body_schema.is_valid(&application["body"]), "no application stands in a claim body");
+
+    let mut leaf_root = node.clone();
+    leaf_root["body"] = node["body"]["members"][0]["value"].clone();
+    assert!(
+        node_schema.is_valid(&leaf_root),
+        "a Leaf root is in the grammar and is left to FR-640 rule 6"
+    );
+}

@@ -1870,10 +1870,13 @@ request item, so nothing is left to key or replay.
 
 ## Body grammar
 
-A node's `body` is drawn from a closed grammar of five strata. No production
-names itself or a higher stratum, and a `node_id` holds its operands as operand
-segments, never as nested node ids ("Operand index segments"), so the JSON depth
-of every V2 package is fixed by the schema, whatever the model's size.
+A node's `body` is drawn from a closed grammar of five strata, and a
+`probabilistic_claim` body from the claim member below. No production names
+itself or a higher stratum, except the claim member, whose nesting the grammar
+caps at a fixed number of aggregates, and a `node_id` holds its operands as
+operand segments, never as nested node ids ("Operand index segments"), so the
+JSON depth of every V2 package is fixed by the schema, whatever the model's
+size.
 
 | Stratum | Productions |
 | --- | --- |
@@ -1881,7 +1884,37 @@ of every V2 package is fixed by the schema, whatever the model's size.
 | Group | `aggregate` whose members are each a Leaf or a `binding` whose value is a Leaf |
 | Tuple | `aggregate` whose members are each a Leaf or a Group |
 | Member | a Leaf, a Group, or a `binding` whose value is a Leaf, a Group or a Tuple |
-| Body | a Leaf; an `application` whose `arguments` are each a Member; an `aggregate` whose members are each a Member; a `frame` body ([FR-340](FR-340-checked-package-frame-location.md)); an `abstraction_relation` body ([FR-451](FR-451-checked-package-abstraction-relation-body.md)); an `implementation_guarantee` or `component_composition` body ([FR-490](../../functional/ir-proof/FR-490-spell-and-check-an-implementation-guarantee-declaration.md), [FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)); a `refinement` body with the closed row and target grammar of [FR-375](../../functional/analysis/FR-375-declare-model-refinement.md); or an `extension_form` body, whose clause values are each a `reference` ([FR-469](FR-469-checked-package-extension-nodes.md)) |
+| Body | a Leaf; an `application` whose `arguments` are each a Member; an `aggregate` whose members are each a Member; a `frame` body ([FR-340](FR-340-checked-package-frame-location.md)); an `abstraction_relation` body ([FR-451](FR-451-checked-package-abstraction-relation-body.md)); an `implementation_guarantee` or `component_composition` body ([FR-490](../../functional/ir-proof/FR-490-spell-and-check-an-implementation-guarantee-declaration.md), [FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)); a `refinement` body with the closed row and target grammar of [FR-375](../../functional/analysis/FR-375-declare-model-refinement.md); an `extension_form` body, whose clause values are each a `reference` ([FR-469](FR-469-checked-package-extension-nodes.md)); or a `claim`/`probabilistic_claim` body, which is a claim member ([FR-640](FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)) |
+
+**Probabilistic claim body.** A *claim member* is a Leaf, an `aggregate`
+whose members are each a claim member, or a `binding` whose value is a Leaf
+or such an aggregate. A binding's value is never a binding, no `application`
+stands anywhere in a claim body, and no aggregate of the body lies inside more
+than four other aggregates of it. A term outside these rules is outside the
+grammar. The schema spells the cap as five aggregate definitions, one per
+nesting level, the innermost being the Group stratum, so the claim member
+names itself in this prose only.
+
+FR-640's claim needs the claim member because the Group, Tuple and Member
+strata stop one aggregate short of its bindings. Its `form` holds an `event`
+or a `measure`, which holds a `measure` or a `bound`, and a `fraction`
+measure holds a `weighting`. Its `scheduler` holds a `fairness` set whose
+members are aggregates of bindings. These reach four aggregates below the
+body's own aggregate, so FR-640's nine bindings at their deepest have exactly
+the nesting the cap admits. The grammar therefore refuses no claim body that
+FR-640 defines. A body within the grammar that is not FR-640's nine bindings,
+including a Leaf, a `binding` or an empty aggregate at the body root, is
+refused by FR-640 rules 6 and 7 with their codes, not as `malformed_wire`.
+
+The deepest term of a claim body is the `kind` literal of the `weighting` of
+a `fraction` measure of a `compare` event of the `form`, at
+`/semantic_graph/nodes/{i}/body/members/5/value/members/1/value/members/1/value/members/3/value/members/0/value`,
+nineteen JSON Pointer steps below the package root. A member of that literal
+is at twenty. The deepest reference target is the `target` of the `from` of
+an `accumulate`, `steps` or `elapsed` measure of a `compare` event,
+`.../members/5/value/members/1/value/members/1/value/members/1/value/target`,
+at seventeen. No reader names a locus inside a claim body deeper than twenty
+steps.
 
 **Integer literal operands.** The producer SHALL write an integer literal
 operand of `filament.op.integer.add`, `filament.op.integer.sub`,
@@ -5868,6 +5901,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-480 | Step identity read carriers (FR-828). A package whose temporal clause holds `filament::protocol::delivery(Echo::Rcv)` twice is admitted with one `protocol`/`step_read` node: body `{term: "step-read", field: "delivery", target: <Rcv node id>}`, node id `{package, path: ["protocol", "step_read", "delivery", <Rcv node id>], ordinal: 0}`, `dependencies` `[<Rcv node id>]`, `semantic_type` the `composite_type`/`option` node over the `protocol`/`step_identity_type` node of kind `delivery`, and two `expression` occurrences; removing one occurrence leaves its node id unchanged. Changing the field to `message`, or the target to another receive node, changes the carrier node id, the package identity and the obligation identity of an item over the clause, and leaves the temporal clause's declared node id and the `protocol`/`protocol_clause` node id of `Echo` unchanged. | Test (TC-2068) |
 | FR-322-AC-481 | Step identity read refusals. With AC-480's carrier: a target absent from the graph refuses `missing_declaration`/`missing-name` at `/body/target`; a `delivery` carrier whose target is a `send` node and an `effect` carrier whose target is a `receive` node refuse `ill_typed`/`operator-ineligible` at `/body/target`; a `delivery` carrier whose `semantic_type` is the option over the `message` identity type refuses `ill_typed`/`operator-ineligible` at `/semantic_type`; the carrier referenced from a `present` application that is reached from the clause formula through a `holds` application is admitted, and the same `present` application also reached from a `state`/`state_clause` body refuses `ill_typed`/`operator-ineligible` at its referencing term; `dependencies` `[]` refuses `invalid_semantic_graph` at `/dependencies`. `filament.op.step_identity.eq` over two `message` identity operands is admitted with result `boolean`; an integer ordering application and a `field` application over a `message` identity operand refuse `ill_typed`/`operator-ineligible`; `filament.op.structural.eq` over two `Option<Delivery>` operands is admitted. | Test (TC-2068) |
 | FR-322-AC-482 | Identity type uses. `filament.op.step_identity.project` with member `index` over a `delivery`-typed capture reference is admitted with result `scalar_type`/`integer`, and with member `message` with the `message` identity type node; member `ordinal`, or operand 0 typed by the `message` identity type, refuses `ill_typed`/`operator-ineligible`; `filament.op.record.project` over a `delivery` operand refuses `ill_typed`/`operator-ineligible`. A capture typed `Option<Message>` is admitted; a model member, an operation parameter, a channel `carries` type and a `Set<Message>` element naming an identity type each refuse `ill_typed`/`operator-ineligible` at the naming member. Protocol `Fill` with `requires temporal Due;`, where `Due` holds `filament::protocol::delivery(Fill::Rcv)`, refuses `invalid_package`/`definition-cycle` at the requirement; the same `Due` required by a protocol `Drain` that it does not read is admitted. | Test (TC-2068) |
+| FR-322-AC-483 | A `claim`/`probabilistic_claim` node whose body is FR-640's nine bindings, with a `form` of `kind` `probability` over a `compare` event whose `measure` is a `fraction` with a `weighting` of `kind` `none`, passes the V2 schema, and its weighting `kind` literal is at `/semantic_graph/nodes/{i}/body/members/5/value/members/1/value/members/1/value/members/3/value/members/0/value`, nineteen pointer steps below the package root; the generic Body production refuses that body, and the same body on a `verification_claim` node fails the schema. Each mutation of it fails the schema and is refused `malformed_wire`: that `kind` literal wrapped in one more aggregate (an aggregate inside five others), the `activation` `kind` binding's value replaced by a binding, and the measure's `predicate` replaced by an inline application. A claim body that is a Leaf passes the schema and is left to FR-640 rule 6. A reader that admits a claim body deeper than four aggregates below its own, or refuses one of FR-640's nine-binding bodies as `malformed_wire`, fails this criterion. | Test (TC-427) |
 
 ## Dependencies
 

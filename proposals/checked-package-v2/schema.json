@@ -3418,9 +3418,33 @@
                           }
                         },
                         "else": {
-                          "properties": {
-                            "body": {
-                              "$ref": "#/$defs/SemanticTerm"
+                          "if": {
+                            "properties": {
+                              "node_tag": {
+                                "const": "claim"
+                              },
+                              "semantic_form": {
+                                "const": "probabilistic_claim"
+                              }
+                            },
+                            "required": [
+                              "node_tag",
+                              "semantic_form"
+                            ]
+                          },
+                          "then": {
+                            "description": "FR-322 \"Body grammar\", FR-640: a probabilistic claim body is a claim member nested at most four aggregates below its own aggregate.",
+                            "properties": {
+                              "body": {
+                                "$ref": "#/$defs/ProbabilisticClaimBody"
+                              }
+                            }
+                          },
+                          "else": {
+                            "properties": {
+                              "body": {
+                                "$ref": "#/$defs/SemanticTerm"
+                              }
                             }
                           }
                         }
@@ -5585,6 +5609,272 @@
           "additionalProperties": false
         }
       ]
+    },
+    "ProbabilisticClaimBody": {
+      "description": "FR-322 \"Body grammar\" claim member at the body root: a Leaf, the body aggregate, or a binding of either. FR-640 rule 6 refuses every root other than its nine-binding aggregate.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LeafTerm"
+        },
+        {
+          "$ref": "#/$defs/ProbabilisticClaimAggregate0"
+        },
+        {
+          "$ref": "#/$defs/ProbabilisticClaimBinding0"
+        }
+      ]
+    },
+    "ProbabilisticClaimBinding0": {
+      "type": "object",
+      "required": [
+        "term",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "term": {
+          "const": "binding"
+        },
+        "name": {
+          "$ref": "#/$defs/Nonempty"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LeafTerm"
+            },
+            {
+              "$ref": "#/$defs/ProbabilisticClaimAggregate0"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimAggregate0": {
+      "description": "A claim aggregate inside no other aggregate of the body.",
+      "type": "object",
+      "required": [
+        "term",
+        "members"
+      ],
+      "properties": {
+        "term": {
+          "const": "aggregate"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/LeafTerm"
+              },
+              {
+                "$ref": "#/$defs/ProbabilisticClaimAggregate1"
+              },
+              {
+                "$ref": "#/$defs/ProbabilisticClaimBinding1"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimBinding1": {
+      "type": "object",
+      "required": [
+        "term",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "term": {
+          "const": "binding"
+        },
+        "name": {
+          "$ref": "#/$defs/Nonempty"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LeafTerm"
+            },
+            {
+              "$ref": "#/$defs/ProbabilisticClaimAggregate1"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimAggregate1": {
+      "description": "A claim aggregate inside one other aggregate of the body.",
+      "type": "object",
+      "required": [
+        "term",
+        "members"
+      ],
+      "properties": {
+        "term": {
+          "const": "aggregate"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/LeafTerm"
+              },
+              {
+                "$ref": "#/$defs/ProbabilisticClaimAggregate2"
+              },
+              {
+                "$ref": "#/$defs/ProbabilisticClaimBinding2"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimBinding2": {
+      "type": "object",
+      "required": [
+        "term",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "term": {
+          "const": "binding"
+        },
+        "name": {
+          "$ref": "#/$defs/Nonempty"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LeafTerm"
+            },
+            {
+              "$ref": "#/$defs/ProbabilisticClaimAggregate2"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimAggregate2": {
+      "description": "A claim aggregate inside two other aggregates of the body.",
+      "type": "object",
+      "required": [
+        "term",
+        "members"
+      ],
+      "properties": {
+        "term": {
+          "const": "aggregate"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/LeafTerm"
+              },
+              {
+                "$ref": "#/$defs/ProbabilisticClaimAggregate3"
+              },
+              {
+                "$ref": "#/$defs/ProbabilisticClaimBinding3"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimBinding3": {
+      "type": "object",
+      "required": [
+        "term",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "term": {
+          "const": "binding"
+        },
+        "name": {
+          "$ref": "#/$defs/Nonempty"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LeafTerm"
+            },
+            {
+              "$ref": "#/$defs/ProbabilisticClaimAggregate3"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticClaimAggregate3": {
+      "description": "A claim aggregate inside three other aggregates of the body.",
+      "type": "object",
+      "required": [
+        "term",
+        "members"
+      ],
+      "properties": {
+        "term": {
+          "const": "aggregate"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/LeafTerm"
+              },
+              {
+                "$ref": "#/$defs/GroupTerm"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "term",
+                  "name",
+                  "value"
+                ],
+                "properties": {
+                  "term": {
+                    "const": "binding"
+                  },
+                  "name": {
+                    "$ref": "#/$defs/Nonempty"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/LeafTerm"
+                      },
+                      {
+                        "$ref": "#/$defs/GroupTerm"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "SemanticTerm": {
       "oneOf": [
