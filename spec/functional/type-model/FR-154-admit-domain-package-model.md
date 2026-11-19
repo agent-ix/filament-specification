@@ -378,8 +378,8 @@ parameter's type is `Option<X>` for the type `X` its `typeRef` and multiplicity
 give (FR-322 "Model-owned members"); a call may omit it (FR-151 "Dispatch
 rules") and an invocation may omit it, its value then being absent. A
 `required` parameter is never omitted. Presence is part of the operation's
-signature, and a redefining operation's parameter presence is checked by
-FR-151's parameter presence axis.
+signature: a redefining operation keeps whether each parameter is optional,
+since FR-151's parameter type axis compares the presence-wrapped types.
 
 Wrapping is single: presence `optional` on a field or parameter of option type
 with multiplicity `[1, 1]` is the refused `Option<Option<T>>`, while

@@ -54,7 +54,7 @@ Variants: (V1) `secondApprover`'s `presence` absent, `null` or `"maybe"`;
 the same with presence `required`; (V4) `secondApprover` `required`; (V5) an
 object type `RushOrder` with supertype `Order` declaring `note` with
 `redefines` `ix://test/refunds/Order/note` and the same parameters, under the
-three presence pairs of step 5.
+presence and type pairs of step 5.
 
 Unit (model alias `R`):
 
@@ -76,12 +76,17 @@ pre NoteSame using v on R::Order::note { secondApprover = secondApprover }
    `deref(secondApprover).badge > 0`. Tag `FR-151-AC-20`.
 3. Add, one at a time, a `Desk` invariant whose body is each call of
    FR-151-AC-20 compared `= true`. Tag `FR-151-AC-20`.
-4. Emit the checked package of the unit, of V4 with `NoteSame` only, and of V3;
+4. Emit the checked package of the unit kept to its `NoteSame` clause, of V4
+   with that same unit (`NoteBy` and `NoteVal` do not check over a required
+   parameter), and of V3;
    emit the `Desk` invariant package with the omitted and with the explicit
-   `absent` call; hand-edit the first to drop the call's third operand and read
-   it. Tag `FR-322-AC-476`.
-5. Admit V5 with (base, redefining) presences (`optional`, `optional`),
-   (`required`, `optional`) and (`optional`, `required`). Tag `FR-151-AC-21`.
+   `absent` call; hand-edit the first to drop the call's third operand
+   from its body, its `operand_rows` row and its `node_id.path`, with every
+   reference to the call following its new id, and read it. Tag `FR-322-AC-476`.
+5. Admit V5 with (base, redefining) `secondApprover` declared as (`Staff`
+   `optional`, `Staff` `optional`), (`Staff` `optional`, `OptStaff` `required`),
+   (`Staff` `required`, `Staff` `optional`) and (`Staff` `optional`, `Staff`
+   `required`). Tag `FR-151-AC-21`.
 
 ## Expected Results
 
@@ -106,8 +111,10 @@ pre NoteSame using v on R::Order::note { secondApprover = secondApprover }
   node and the `NoteSame` clause node keep theirs; under V3 its `node_id` and
   `semantic_type` equal the fixture's. The omitted-argument call is one
   `dispatch_call` with three operands, the third the `none` literal typed by the
-  option node, and the two call packages are byte-equal; the hand-edited package
-  refuses `ill_typed`/`operator-ineligible` at the call.
-- Step 5: the first two pairs are admitted; the third refuses
-  `ill_typed`/`variance-parameter` on the parameter presence axis at position 1,
-  with no parameter type axis refusal at that position.
+  option node, and the two call packages have equal `semantic_graph` nodes (`node_id`,
+  body, `dependencies`, `semantic_type`) and equal `checked_term_data`, only
+  source regions differing; the hand-edited package refuses
+  `ill_typed`/`operator-ineligible` at the call (FR-322-AC-31 argument count).
+- Step 5: the first two pairs are admitted (one type on each side); the third
+  and fourth each refuse `ill_typed`/`variance-parameter` on the parameter type
+  axis at position 1.
