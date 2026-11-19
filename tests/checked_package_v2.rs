@@ -15374,8 +15374,8 @@ fn tc_367_timed_clause_vectors_replay_to_their_refusals() {
 /// A family part's quantifier is part of its guard's derived id path: the
 /// path ends with `quantifier`, the part position and the quantifier text, so
 /// `each` and `some` give different node ids, and a guard with no family part
-/// writes no such segments (FR-322-AC-480).
-#[trace("TC-2063", "FR-322-AC-479", "FR-322-AC-480")]
+/// writes no such segments (FR-322-AC-484).
+#[trace("TC-2063", "FR-322-AC-479", "FR-322-AC-484")]
 #[test]
 fn tc_2063_family_part_quantifier_is_in_the_guard_id_path() {
     let vectors = parsed_fixture(TIMED_CLAUSE_NODE_VECTORS);
