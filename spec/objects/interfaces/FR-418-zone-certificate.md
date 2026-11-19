@@ -23,6 +23,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-482
     type: references
+  - target: ix://agent-ix/filament-specification/FR-712
+    type: references
 ---
 
 # FR-418: Zone certificate and its checker
@@ -61,10 +63,29 @@ For a safety form (TT-1, TT-2, TT-3, the deadlock-freedom item):
 | `nodes` | A finite list of nodes `(s, q, Z)`: discrete state key, claim-automaton state, canonical DBM. For a task-product certificate, `s` is the complete source-plus-scheduler product key modulo the finite live-job renaming below. |
 | `edges` | For each node and each recomputed source transition or finite task-transition template enabled from it, the index of a target node. |
 | `initials` | Nonempty. The position in `nodes` of the initial node of each initial state of the subject, in the subject's initial-state order (FR-361): the node that covers that state's initial symbolic state. A form with one initial state lists one position. FSL FR-244 reads its single `initial` as `initials[0]`; the wire carries no `initial` member. |
-| `admitted` | The ADR-026 TD-6 witness: a start node (in a refinement form, any positioned `initials[i]`, so a time-locked first initial state does not decide it) and a path of certificate edges to a quiescent node or to a node of a component with a cycle of positive total delay (FSL FR-244 `admitted`). |
+| `admitted` | Present on every certificate except the certificate of a state-graph item (`possible`, `always possible` or `unique path` over a timed subject, FR-712), which carries none. The ADR-026 TD-6 witness: a start node (in a refinement form, any positioned `initials[i]`, so a time-locked first initial state does not decide it) and a path of certificate edges to a quiescent node or to a node of a component with a cycle of positive total delay (FSL FR-244 `admitted`). |
 | `refinement` | Present only for the safety half of a timed refinement (FSL FR-430): the refinement part below. |
 | `state_graph` | Present only for the proof of an `always possible` claim over a timed subject (FR-712): `{form, ef_nodes}`, `form` the state-graph form `always-possible` and `ef_nodes` the positions in `nodes` of the zones of `E(P)` in ascending order; the checker accepts it only after one predecessor pass over those zones adds no zone and every reachable node where `Q` holds is among them (FR-712 "Proof basis and certificate"). |
 | `task_product` | Present for a fixed-work task-automaton proof or a verified no-reachable-release proof: the `bounded-subtraction-diagonal/v1` abstraction name, a structured `time_progress` closure method, each task's enforced arrival kind, minimum interarrival, nominal relative deadline and maximum candidate slot bound, each demand interval, auxiliary clock ceilings, diagonal constraints and typed `TaskTransitionTemplate` subtractions. Fixed-work closure requires equal `work_lower`/`work_upper`; no-reachable-release closure permits intervals only when the strict reader proves no checked release binding is reachable. |
+
+**The time-divergence witness by claim.** A claim that quantifies over
+time-divergent behaviours (a temporal form, the deadlock-freedom item, the
+time-lock-freedom item and a refinement half) holds vacuously when the subject
+admits no such behaviour, so its certificate SHALL carry `admitted` and the
+checker SHALL verify it (ADR-026 TD-6). A state-graph item reads reachable
+states and discrete step sequences of the timed state graph, which FR-712
+defines by reachability alone: a state reached only through zero-delay steps
+is reachable, so the claim does not depend on time divergence. Its certificate
+certifies the reachable timed graph (its reachability part, and for `always
+possible` its `state_graph` part) and SHALL carry no `admitted` member. The
+checker SHALL accept such a certificate over a graph that holds no quiescent
+node and no cycle of positive total delay (a Zeno-only graph) when every other
+rule holds, and SHALL reject an `admitted` member on it as `malformed` at the
+certificate member `{member: admitted}`, so a state-graph certificate has one
+canonical form; a certificate of any other item without `admitted` is rejected
+`malformed` at the same member. The wire does not name the item's form, so the
+`ZoneCertificate` definition admits a certificate with or without `admitted`
+and the checker decides by the item that `identity` names.
 
 FSL FR-244 names `identity`, `bounds` and a node's `automaton` as `obligation`,
 `lu_bounds` and `automaton_state`; the wire spellings here are the ones the
@@ -270,7 +291,7 @@ and AC-5), and the encoding is a function of the value alone.
   bound, is `"infinity"`. A DBM is its rows of entries, entry `[i][j]`
   bounding `x_i − x_j`, index 0 the reference clock. No number is a fraction
   or has an exponent.
-- **Option encoding.** An absent optional member (`components`, `reasons`,
+- **Option encoding.** An absent optional member (`admitted`, `components`, `reasons`,
   `divergence`, `non_zeno`, `refinement`, `task_product`, `locked`) is omitted, never `null`; `locked` is
   present only as `true`. In an array a position is significant, so the one
   option inside an array, a `taken` entry that is `None`, is `null`.
@@ -341,12 +362,13 @@ budget. Its cost is linear in the certificate's edges times the DBM operations.
 | FR-418-AC-7 | An index is a JSON integer in 0 to 2^53 − 1 and a scale or a bound an integer string; a bound written as a JSON number, with a leading zero, a `+` or `-0`, or a scale `0`, is not a `ZoneCertificate`, and a bound of 27 digits is carried exactly. | Test (TC-371) |
 | FR-418-AC-8 | An absent optional member is omitted: `components`, `reasons`, `divergence`, `refinement` or `task_product` as `null` is not a `ZoneCertificate`, `locked` is present only as `true`, and a `taken` entry that is absent is `null`. | Test (TC-371) |
 | FR-418-AC-9 | `identity` is the structural obligation identity, and in a refinement form the part's `refinement_node` is a `node_id` and `concrete_package` and `abstract_package` are package identities; no member carries a digest, hash or checksum of the certificate or of another artifact. | Test (TC-371) |
-| FR-418-AC-10 | Every certificate lists `initials` (nonempty), and a refinement-form certificate lists, in its part, `positions` (nonempty) and `taken`, so a refinement part with empty `positions` is not a `ZoneCertificate`; ZC-12's first initial node (`initials[0]`) is a `locked` node with `automaton` equal to the number of positions and its `admitted` starts at the positioned `initials[1]`, a refinement form whose `initials[i]` does not cover concrete initial state `i` is `initial-missing` at that state's State record (the locus is the discrete state; two initial states sharing one discrete state share the locus, and the checker reports the lowest failing index first), `admitted` may start at any positioned `initials[i]`, and a certificate without `initials` or `admitted`, or with an `initial` member, is not a `ZoneCertificate`; nor is a refinement part whose node-id member is named `refinement` or `node` rather than `refinement_node`. | Test (TC-371); the checker clauses by FSL TC-700 and TC-371 ZC-14 |
+| FR-418-AC-10 | Every certificate lists `initials` (nonempty), and a refinement-form certificate lists, in its part, `positions` (nonempty) and `taken`, so a refinement part with empty `positions` is not a `ZoneCertificate`; ZC-12's first initial node (`initials[0]`) is a `locked` node with `automaton` equal to the number of positions and its `admitted` starts at the positioned `initials[1]`, a refinement form whose `initials[i]` does not cover concrete initial state `i` is `initial-missing` at that state's State record (the locus is the discrete state; two initial states sharing one discrete state share the locus, and the checker reports the lowest failing index first), `admitted` may start at any positioned `initials[i]`, and a certificate without `initials`, or with an `initial` member, is not a `ZoneCertificate`; a certificate without `admitted` is a `ZoneCertificate` (the wire does not name the item's form), and the checker rejects it `malformed` at `{member: admitted}` unless its item is a state-graph item (FR-418-AC-16); nor is a refinement part whose node-id member is named `refinement` or `node` rather than `refinement_node`. | Test (TC-371); the checker clauses by FSL TC-700 and TC-371 ZC-14 |
 | FR-418-AC-11 | The `TaskProductCertificate` schema admits `abstraction: bounded-subtraction-diagonal/v1`, the structured `time_progress` object with method `closed-finite-product/v1`, a positive `live_job_cap` and closure label `recompute-all-reachable-successors/v1`, plus the queue-bound, clock-ceiling, diagonal-constraint and subtraction arrays; each task-scheduler edge and subtraction uses a finite `TaskTransitionTemplate`, source-operation edges retain their source identity, and task-search frontier edges retain exact `TaskTransitionIdentity`; the schema refuses an exact task identity, an occurrence or generation added to a template, an unknown method, zero cap or a producer-asserted closure label. This criterion covers wire shape only; the reader's exhaustive finite-product closure and SCC checks are normative in the behavior above. | Test (TC-371) |
 | FR-418-AC-12 | For a task-automaton certificate, the reader derives the scheduler policy from the checked claim named by `identity`, recomputes every policy successor and refuses an edge inconsistent with that policy; `task_product` carries no policy override. An EDF certificate with absent task priorities is admitted with no synthesized priorities, and a forged priority or ready order is refused. | Test (TC-371, TC-372) |
 | FR-418-AC-13 | In a fixed-work task certificate, every task-scheduler edge and bounded-subtraction row uses a finite `TaskTransitionTemplate`, while source-operation edges retain their source identity; the reader closes the source-plus-scheduler graph modulo capture-avoiding renaming of completed jobs, accepts a periodic cycle whose absolute activation occurrence grows on each traversal, and refuses a template with an out-of-range or mismatched live-job rank/slot. Concrete replay instantiates the template with the exact prefix occurrence and generation, including when a completed slot is reused. | Test (TC-371) |
 | FR-418-AC-14 | A task-product certificate may use `closed-no-release-product/v1` only with `live_job_cap: 0`, closure `recompute-all-source-successors-no-task-release/v1`, checked task demand intervals, no scheduler clock metadata and no task-transition edge; the reader recomputes every source successor from every initial state and accepts this closure only when no checked release binding is reachable. It refuses a positive cap, scheduler clocks, or a reachable release under this method. | Test (TC-371; TC-372) |
 | FR-418-AC-15 | The certificate of the `Rpc` response proof at `T = 4 ms` carries `non_zeno` `not-required` and that of its `reply` self-loop variant `assumed`, and the checker accepts both; each with its `non_zeno` swapped, or removed, settles `inconclusive`, `certificate-rejected{rule: non-zeno-mismatch, at: {member: non_zeno}}`; a time-lock-freedom certificate carrying `non_zeno` is rejected the same way. | Test (TC-2041) |
+| FR-418-AC-16 | Over a Zeno-only variant of `Rpc` (time invariant `x <= 0 ms` at every state, so no positive delay is admissible and every infinite path is zero-delay), the certificates of `possible` of `phase = Replied` and of `always possible` of `phase = Idle` carry no `admitted` member, are valid `ZoneCertificate`s, and are accepted, the items settling `proved` with basis `zone-certified`; either certificate given an `admitted` member settles `inconclusive`, `certificate-rejected` with rule `malformed` at `{member: admitted}`; ZC-01's `NoLateReply` certificate with `admitted` removed is a valid `ZoneCertificate` and settles `inconclusive`, `certificate-rejected` with rule `malformed` at `{member: admitted}`. | Test (TC-371 ZC-31); the checker clauses by FSL TC-3030 |
 
 ## Dependencies
 
