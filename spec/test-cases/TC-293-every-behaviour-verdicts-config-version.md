@@ -36,8 +36,10 @@ with the two successors `upd(a)` and `upd(b)`.
    `fair weak each Config::ConfigVersion::attemptUpdate;`.
 2. Check the same clause with `fair weak whole …` and with the unmarked
    `fair …`.
-3. Replace the postcondition with the shipped `VersionUnchanged`
-   (`self.versionNumber = pre(self.versionNumber)`) and repeat step 1.
+3. Replace the postcondition with the shipped `VersionAdvances`
+   (`(result implies convert<Integer>(self.versionNumber) = pre(self.versionNumber) + 1)
+   and (not result implies self.versionNumber = pre(self.versionNumber))`) and
+   repeat step 1.
 4. Check `eventually[0,5] holds(c.versionNumber = 2)` under
    `filament.temporal.event-position.false-extension/v1`, `on origin`, with the
    step 1 postcondition.
@@ -57,8 +59,9 @@ with the two successors `upd(a)` and `upd(b)`.
    `trace_position` (FR-364-AC-3). The same lasso replayed under the step 1
    premise refuses as an unfair lasso.
 3. `refuted` with a lasso whose loop is
-   `(0,0) -upd(a)-> (0,0) -upd(b)-> (0,0)` or another valid one: fairness makes
-   every identity run and the postcondition prevents progress.
+   `(0,0) -upd(a)-> (0,0) -upd(b)-> (0,0)`, each step returning `false`, or
+   another valid one: fairness makes every identity run, and an update that
+   returns `false` satisfies the postcondition without making progress.
 4. `refuted` with a six-position finite prefix on which the bound object's
    version is never 2, such as five `upd(a)` steps for `c = b`, covering the
    horizon 5 (FR-363-AC-6).

@@ -14951,10 +14951,10 @@ fn tc_935_selection_vector_disagreement_is_detected() {
 }
 
 /// Every switch of the clause oracle; the mutation test pins each to a vector.
-const TIMED_CLAUSE_RULES: [&str; 23] = [
+const TIMED_CLAUSE_RULES: [&str; 24] = [
     "state-anchor-types", "path-key", "member-key", "unlisted", "nested-order", "anchor-kind", "anchor-model", "no-point", "parameter-declared", "parameter-clock",
     "owner-type", "slot-count", "slot-domain", "part-predicate", "same-anchor", "quantified-binders",
-    "invariant-predicate", "invariant-bound", "frame-modifies", "binders", "condition", "one-guard", "root-constraints",
+    "invariant-predicate", "invariant-bound", "frame-modifies", "binders", "condition", "one-guard", "root-constraints", "quantifier",
 ];
 
 /// The refusal of FR-322 "Clause nodes" over a package whose root lists timed
@@ -15174,6 +15174,31 @@ fn timed_clause_refusal(
                             previous = position;
                         }
                     }
+                    // A family part (binders over a collection with no declared maximum) carries
+                    // `quantifier`; no other part does (FR-322-AC-479).
+                    let unbounded_slot = constraints.iter().any(|constraint| {
+                        node(constraint).filter(|n| word(n, 0) == "place").is_some_and(|named| {
+                            node(&target(&bound(named, "place"))).is_some_and(|place| {
+                                place["body"]["members"][1]["value"]["members"].as_array().unwrap().iter().any(|step| {
+                                    step["members"][0]["value"]["value"] == "slot"
+                                        && step["members"].as_array().unwrap().iter().any(|m| {
+                                            m["name"] == "maximum" && m["value"]["value"] == "unbounded"
+                                        })
+                                })
+                            })
+                        })
+                    });
+                    let family = unbounded_slot && members.iter().any(|m| m["name"] == "binders");
+                    let quantifier = members.iter().position(|m| m["name"] == "quantifier");
+                    if on("quantifier") {
+                        match (family, quantifier) {
+                            (false, Some(at)) => {
+                                return refuse(format!("/members/1/value/members/{part}/members/{at}/value"));
+                            }
+                            (true, None) => return refuse(format!("/members/1/value/members/{part}")),
+                            _ => {}
+                        }
+                    }
                 }
             }
             "time_invariant" => {
@@ -15329,7 +15354,7 @@ fn timed_clause_vector_defects(skip: &str) -> Vec<String> {
 fn tc_367_timed_clause_vectors_replay_to_their_refusals() {
     let vectors = parsed_fixture(TIMED_CLAUSE_NODE_VECTORS);
     let ids: Vec<&str> = vectors["cases"].as_array().unwrap().iter().map(|c| c["id"].as_str().unwrap()).collect();
-    let expected: Vec<String> = (1..=62).map(|n| format!("CL-{n:02}")).collect();
+    let expected: Vec<String> = (1..=64).map(|n| format!("CL-{n:02}")).collect();
     assert_eq!(ids, expected.iter().map(String::as_str).collect::<Vec<_>>());
     assert_eq!(timed_clause_vector_defects(""), Vec::<String>::new());
 }
@@ -15362,6 +15387,7 @@ fn tc_367_timed_clause_oracle_fails_on_each_mutation() {
         ("invariant-predicate", "CL-23"),
         ("invariant-bound", "CL-24"),
         ("quantified-binders", "CL-58"),
+        ("quantifier", "CL-64"),
         ("anchor-model", "CL-25"),
         ("state-anchor-types", "CL-54"),
         ("member-key", "CL-33"),
