@@ -15,6 +15,10 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-331
     type: references
+  - target: ix://agent-ix/filament-specification/FR-409
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-290
+    type: depends_on
 ---
 
 # FR-824: Request a verification plan run, select its plan and write the plan run outcome
@@ -126,21 +130,45 @@ identities (FR-192 "Package form"). On a source run `document` refuses
 - `inputs` echoes `initial` (or `null`) and the `seed` in force.
 - `dispositions` holds one entry per plan node, keyed by step name, or is
   `null` when `execute` is `false`. Its `status` is the step's FR-331
-  settlement (`proved`, `refuted`, `tested`, `incomplete`, `unsupported` or
-  `failed`), or `blocked` for a step a failed `requires` prerequisite
-  stopped, with `blocked_by` the first such prerequisite in source order;
-  `evidence` is the evidence kind the method produced (FR-192 method table),
-  never another; `result` is the step's FR-331 result entry, `null` on a
-  blocked step.
+  result value (`proved`, `refuted`, `tested`, `measured`, `inconclusive`,
+  `unsupported`, `declined`, `incomplete` or `failed`), or `blocked` for a
+  step a `requires` prerequisite stopped, with `blocked_by` the first such
+  prerequisite in source order. The vocabulary is closed and is the FR-331
+  result vocabulary with one addition, so a step settles exactly as the same
+  item settles outside a plan; a `measured` step's `result` carries its
+  FR-409 decision. `evidence` is the evidence kind the method produced
+  (FR-192 method table), never another, and `null` on a step that produced
+  none; `result` is the step's FR-331 result entry, `null` on a blocked
+  step.
+- A method with no registered engine is not a plan refusal. The step's item
+  is negotiated as every item is (FR-290): when no registered backend
+  matches its kind, extent and evidence kind, it settles `unsupported`
+  with `unsupported_projection`/`unsupported-requested-capability` naming
+  the kind and the extent, no engine runs, and every step that does not
+  require it still runs (FR-192-AC-2). Every other negotiated disposition
+  that runs no engine (a bounded-only candidate's `requires-bound` or
+  `unbounded-extent`, an ambiguous or unknown backend) settles the step with
+  the record and diagnostic the same item gets outside a plan, and never
+  stops a sibling step.
+- A `requires` prerequisite is satisfied when it settles `proved`, `tested`,
+  or `measured` with decision `accepted`. A prerequisite with any other
+  status, `blocked` included, blocks each step that requires it, because the
+  dependent step's premise is the prerequisite's evidence; a step that does
+  not require it is never blocked by it. A blocked step is not negotiated
+  and runs no engine.
 - `failed_steps` lists, in source order, every step whose status is
-  `refuted` or `failed`, so the plan result names each failing step.
-- `status` is `passed` when every node is `proved` or `tested`, `failed`
-  when any node is `refuted` or `failed`, and otherwise `incomplete`.
+  `refuted` or `failed`, or `measured` with decision `rejected`, so the plan
+  result names each failing step.
+- `status` is `passed` when every node is `proved`, `tested`, or `measured`
+  with decision `accepted`; `failed` when any node is in `failed_steps`; and
+  otherwise `incomplete`.
 
 The run is multi-item output, so its exit is FR-301's: each node's
 disposition has its FR-301 category (`proved` and `tested` success `0`,
 `refuted` violation `10`, `incomplete` and `blocked` incomplete `22`,
-`unsupported` `21`, `failed` internal-failure `30`), and the process exit is
+`inconclusive` `22`, `unsupported` `21`, `declined` refusal `20`, `failed`
+internal-failure `30`, and `measured` by its FR-409 decision: `accepted`
+success `0`, `rejected` violation `10`, `undecided` inconclusive `22`), and the process exit is
 the highest-severity code present under FR-301's ordering (`30`, `20`,
 `21`, `22`, `10`, `11`, `0`). There is no plan-specific ranking. A request
 with `execute` `false` settles no node and exits `0`.
@@ -152,6 +180,8 @@ with `execute` `false` settles no node and exits `0`.
 | FR-824-AC-1 | Executing FR-192's `Release` plan where `safe` is refuted writes `status` `failed`, `safe` `refuted` with `evidence` `refutation`, `tested` `tested`, `timely` `blocked` with `blocked_by` `safe` and `result` `null`, three dispositions, `failed_steps` `["safe"]`, `inputs.seed` 7, and exits `22`, FR-301's highest-severity code of the refuted `10` and the blocked `22`; `{"plan": "Release", "emit": true, "execute": false}` writes the plan document as `document`, `dispositions` `null`, exit `0`. | Test (TC-2039) |
 | FR-824-AC-2 | Over one plan, `{}` runs it; over two plans, `{}` refuses `invalid_runtime_input`/`missing-member` at `/plan` naming both; `plan` `Nope` and `plan` naming the claim `Never` each refuse `missing_declaration`/`missing-name` at `/plan`; a bare `Release` matching `A::Release` and `B::Release` refuses `ambiguous_declaration`/`ambiguous-name` at `/plan`; each exits `20` before any step runs. | Test (TC-2039) |
 | FR-824-AC-3 | `seed` `"7"` refuses `wrong-value-kind` at `/seed`; `emit` and `execute` both `false` refuse `invalid-value` at `/execute`; `engine` refuses `unknown-member` at `/engine`; `seed` on a plan with only `model_check` steps refuses `unknown-member` at `/seed`; a plan run over a selected package without `document` refuses `missing-member` at `/document`, and with a plan document of another package `invalid-value` at `/document` naming both identities. | Test (TC-2039) |
+| FR-824-AC-4 | `Release` executed with no registered engine advertising `temporal-satisfaction`: `safe` settles `unsupported` with `unsupported_projection`/`unsupported-requested-capability` naming `temporal-satisfaction` and the extent `bounded`, and no engine runs for it; `tested` still runs and settles `tested`; `timely`, whose prerequisite is not satisfied, is `blocked` by `safe` and is not negotiated; `status` is `incomplete`, `failed_steps` is empty and the exit is `21`, FR-301's highest-severity code of `21`, `22` and `0`. | Test (TC-2045) |
+| FR-824-AC-5 | A plan of a `probabilistic_statistical` step `s` and a `model_check` step `t depends [s]`: with `s` `measured` `accepted`, `t` runs and `s`'s disposition has category success `0`; with `s` `measured` `rejected`, `t` is `blocked` by `s`, `failed_steps` is `["s"]`, `status` `failed` and the exit `22`; with `s` `measured` `undecided`, `t` is `blocked`, `failed_steps` is empty, `status` `incomplete` and the exit `22`. | Test (TC-2045) |
 
 ## Dependencies
 
