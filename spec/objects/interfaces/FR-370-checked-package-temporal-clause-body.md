@@ -35,6 +35,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-778
     type: references
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: references
 ---
 
 # FR-370: Checked-package temporal clause body and temporal operation identities
@@ -328,7 +330,13 @@ upper: "1"}`; it has no identity of its own.
   `temporal`/`temporal_clause` node and stands nowhere else.
 - A `temporal_formula` application stands only as the body root of a
   `temporal`/`formula` node, and that node is referenced only from a clause's
-  formula argument or as an operand of another `temporal_formula` application.
+  formula argument, as an operand of another `temporal_formula` application,
+  or as the `formula` binding of the `event` of the `form` of a
+  `claim`/`probabilistic_claim` node's body
+  ([FR-640](FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)
+  binding 6), which is the event a probabilistic claim reads. The formula
+  is then read under the package's one `temporal_profile` selection, as a
+  clause's formula is read under its law.
   A `filament.op.temporal.fair` application stands only as the body root of a
   `temporal`/`fairness` node, referenced only from a clause's fairness
   argument or as a `reference` member of a quantifier Group of a
@@ -338,7 +346,10 @@ upper: "1"}`; it has no identity of its own.
   stands only where the rule above places it. In a `claim`/`hyperproperty`
   body, a fairness reference anywhere but a quantifier Group's `reference`
   members (in `match`, in `align_skip`, as `body`, or as the value of a
-  Group's `binding`) and every formula reference are misplaced. A
+  Group's `binding`) and every formula reference are misplaced. In a
+  `claim`/`probabilistic_claim` body, a formula reference anywhere but the
+  `formula` binding of `form`'s `event` (for example as a `from`, `until` or
+  `predicate` target) and every fairness reference are misplaced. A
   misplaced reference is located at the node whose body holds the
   reference, not at the formula or fairness node it names.
 - A diagnostic's `details` never reference a `temporal`/`formula`,
@@ -465,6 +476,7 @@ not here.
 | FR-370-AC-19 | Over the positive `sum` argument of FR-370-AC-18 under event-position, a `value` term whose type is the `scalar_type`/`carried_quantity` node of `Quantity<m, Int[-5, 5]>`, with a `threshold` literal of `m`'s unit node, refuses `ill_typed`/`type-mismatch` at the `value` member's value; the same over the `min`, `max` and `quantile` positives; a `threshold` term of that carried node beside a `value` of `m`'s unit node refuses the same at the `threshold` member's value; and a `value` and `threshold` of the package unit node `ix://acme/rpc/unit/ms` (FR-414-AC-13) are admitted. | Test (TC-303) |
 | FR-370-AC-20 | In a checked package named `acme/orders` that selects the domain package `acme/rpc` (base dimension `Time`, units `s` and `ms`), a timestamped-event clause whose `temporal_bindings` row names `timestamp_unit` `ix://acme/rpc/unit/ms`, with a `duration` `count` aggregate whose `lower` and `upper` are quantity literals typed by the model-owned node `{package: "acme/rpc", path: ["scalar_type", "unit", "ix://acme/rpc/unit/ms"], ordinal: 0}`, is admitted although the clause node's `node_id.package` is `acme/orders`; the package holds exactly one node with that path; and the same clause with `upper` typed by `ix://acme/rpc/unit/s`'s node refuses `ill_typed`/`unit-mismatch` at `upper`'s value. | Test (TC-303) |
 | FR-370-AC-21 | A reference to a `temporal`/`fairness` node as a `reference` member of a `claim`/`hyperproperty` node's quantifier Group is admitted by the temporal step; the same reference in that node's `match` aggregate, as its `body` target, or as the value of a quantifier Group's `binding`, and a reference to a `temporal`/`formula` node anywhere in that node's body, each refuse `ill_typed`/`operator-ineligible` at the hyperproperty node. | Test (TC-346) |
+| FR-370-AC-22 | In FSpec FR-640-AC-8's package, `Avail`'s `claim`/`probabilistic_claim` node, whose `form` `event` `formula` binding references the `temporal`/`formula` node of `always[0,2] holds(true)`, is admitted by the temporal step; the same formula node referenced as `P95`'s `measure` `from` target, and a `temporal`/`fairness` node referenced as `Avail`'s `event` `formula`, each refuse `ill_typed`/`operator-ineligible` at the claim node, before FSpec FR-640's reader runs. | Test (TC-303) |
 
 ## Published artifacts and the operation catalog
 

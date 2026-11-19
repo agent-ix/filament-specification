@@ -23,6 +23,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-414
     type: references
+  - target: ix://agent-ix/filament-specification/FR-640
+    type: references
 ---
 
 # FR-407: State probabilistic claims over events and measures
@@ -222,8 +224,14 @@ The obligation identity of a probabilistic claim includes its subject, form,
 event or measure, threshold, scheduler clause (the workload's identity, or every scheduler with
 its fairness set) and, when stated, its confidence parameters. One property
 stated under two workloads, two fairness sets or two confidences is two
-obligations. The evidence kind, the statistical method and every budget are
-request settings and are outside the obligation identity.
+obligations. The claim's `over` parameter and activation fix the instances
+its event or measure is read over and the position each is read from
+("Activation"), so they are part of the event or measure in this identity.
+The evidence kind, the statistical method and every budget are
+request settings and are outside the obligation identity. A checked package
+carries every member of this identity in the claim's node
+([FR-640](../../objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)
+"Probabilistic claim node").
 
 ## Acceptance Criteria
 

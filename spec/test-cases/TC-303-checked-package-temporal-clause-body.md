@@ -73,6 +73,7 @@ Encode as V2 packages:
 15. `temporal-aggregate-vectors.json`: one positive window aggregate argument per kind under event-position false-extension, a `duration` `quantile` under timestamped-event finite-window with its bounds in the clause's clock unit `ms` (`clock_unit`), and `min_count 0` on `count` and `sum`; and the reader cases of FR-370-AC-18, each its `base` positive with one member replaced, added, removed or moved, or with only the profile changed.
 16. FR-370-AC-19's arguments: the `sum`, `min`, `max` and `quantile` positives under event-position with the `value` term retyped by the `scalar_type`/`carried_quantity` node of `Quantity<m, Int[-5, 5]>` and the `threshold` a literal of `m`'s unit node; the `sum` positive with the `threshold` term retyped by that carried node and the `value` of `m`'s unit node; and the `sum` positive with `value` and `threshold` of the package unit node `ix://acme/rpc/unit/ms`.
 17. FR-370-AC-20's clause: a package named `acme/orders` selecting `acme/rpc`, a timestamped-event `count` aggregate under a clock in `ix://acme/rpc/unit/ms` with both `duration` bounds typed by the `acme/rpc` package's own `ms` node; and the same clause with `upper` typed by the `acme/rpc` `s` node.
+18. FR-370-AC-22: FSpec FR-640-AC-8's package as emitted; the same with `P95`'s `measure` `from` referencing `Avail`'s formula node; and with `Avail`'s `event` `formula` referencing a `temporal`/`fairness` node.
 
 ## Expected Results
 
@@ -137,3 +138,4 @@ Encode as V2 packages:
 15. The catalog and the schema enumerate `filament.op.temporal.aggregate` with one `aggregate` operand; each argument satisfies the schema's application argument shape; each reader case differs from its `base` positive by exactly one member, or by its profile alone; every positive is admitted and every reader case refuses with its listed code, cause and pointer (FR-370-AC-17, FR-370-AC-18).
 16. Each carried-value and carried-threshold argument refuses `ill_typed`/`type-mismatch` at the retyped member's value; the package-unit argument is admitted (FR-370-AC-19).
 17. The clause whose bounds name the domain package's `ms` node is admitted, its clause node's `node_id.package` being `acme/orders`, and the package holds one node with path `["scalar_type", "unit", "ix://acme/rpc/unit/ms"]`; the clause with `upper` in `s` refuses `ill_typed`/`unit-mismatch` at `upper`'s value (FR-370-AC-20).
+18. The emitted package is admitted by the temporal step; each of the two other packages refuses `ill_typed`/`operator-ineligible` at the claim node (FR-370-AC-22).

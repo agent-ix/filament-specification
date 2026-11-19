@@ -149,6 +149,161 @@ has `bits ≤ b`:
   yields no successor, it is counted in the provenance, and it is never read
   as a deadlock of the model.
 
+### Seeded draws
+
+The generator profile is `filament.simulation.sampler/v1`
+(`proposals/filament-v1/definitions/simulation-sampler.md`, the generator
+FR-181 and FR-408 select), and every seeded draw of a case uses its draw
+function: the draw value at `{choice, draw, seed, step, trace}` is
+`SHA-256(JCS{choice, draw, seed, step, trace})` read as a big-endian `u256`,
+each coordinate a decimal string. That function is counter-mode, uses
+integer arithmetic only and depends on no platform, so model-based testing
+needs no generator of its own and reproduces on every platform. Its
+coordinates are bound as follows:
+
+- `seed` is the request's seed, and `trace` is the case's index among all
+  cases of the run, from 0, partition and refusal cases included, so the
+  first seeded case after `k` partition cases has `trace` `k`.
+- For a value clause, `step` is 0 and `choice` is the parameter's position
+  in declaration order, from 0: one uniform choice per parameter over its
+  domain.
+- For a test trace, `step` 0 holds the case's start: `choice` 0 is the
+  uniform choice of the initial state over the initial-state domain in
+  canonical order, and `choice` 1 the uniform choice of the trace length over
+  `0` to `max_trace_length`. `step` `j` (from 1) is the `j`-th invocation:
+  `choice` 0 is the uniform choice of the operation among the operations that
+  have an enabled argument vector at the state, in declaration order, and
+  `choice` `p` (from 1) the uniform choice of the operation's `p`-th
+  parameter among the values for which an enabled vector exists with the
+  earlier parameters as drawn, in the root's domain order. The trace ends
+  early when no operation is enabled.
+- A choice's items are indexed in its root's order: enumeration order for
+  class E, `rank` order for a Text root and canonical value order for every
+  other class D root, and size order for class S.
+
+A choice keeps its index whether or not it draws: a choice over one item
+selects it with no draw value, and the next choice still takes its own
+position, so a change to one root's domain never shifts another root's
+draws. This differs from the sampler's step choices, which close up the
+indices of one-item choices: a case's roots have fixed positions, and fixed
+indices keep a shrink or a domain edit from re-seeding unrelated roots.
+
+A uniform choice over `n` items reads `k = ⌈bitlen(n − 1) / 256⌉` draw values,
+at `draw` `0` to `k − 1`, as one big-endian integer `V` of `256·k` bits.
+`V` is accepted when `V < n · ⌊2^(256·k) / n⌋`, and the choice selects the
+item `V mod n`. A rejected `V` reads the next `k` draw values. For
+`n ≤ 2^256` this is the sampler's uniform selection exactly. For a larger
+`n` the sampler would stop `total-above-draw-range`; model-based testing
+instead concatenates draw values, as the sampler's grid draws do for
+`q > 256`, because a declared domain larger than `2^256` members (`Text[0,
+13]`) is still a declared finite domain and is never narrowed or refused.
+
+For a class S `Integer` root, size order gives index 0 the value 0 and,
+for `i ≥ 1` with `b = ⌊log2(i + 1)⌋` and `o = i − (2^b − 1)`, the value
+`−(2^b − 1) + o` when `o < 2^(b − 1)`, otherwise `o` (the `2^b` values of
+bit length `b`, negatives first): `0, −1, 1, −3, −2, 2, 3, −7, …`.
+
+### Text domains
+
+A `Text[min, max; profile]` root is of class D. Its domain `D` is the set of
+values the type holds, its order is FR-804's, and a seeded draw indexes it by
+a bijection, so every member of `D` can be drawn and none is drawn by a
+second index.
+
+**Members.** The *alphabet* `Σ` is every Unicode scalar value, U+0000 to
+U+D7FF and U+E000 to U+10FFFF, in ascending order: `N = |Σ| = 1112064`. The
+length of a value is FR-141's length under the profile. `D` holds exactly the
+values whose length lies in `[min, max]`:
+
+- `unicode-scalars`: every sequence over `Σ`. FR-141 compares this profile
+  without normalization, so canonically equivalent sequences, such as
+  U+00E9 and U+0065 U+0301, are distinct values: both are members, and
+  neither is merged into the other.
+- `binary-utf8`: the UTF-8 encoding of every sequence over `Σ`, its length
+  being its byte count. Canonically equivalent sequences are distinct values
+  here too.
+- `nfc`, `nfd`, `nfkc` and `nfkd`: every sequence over `Σ` that equals its own
+  normalization under the profile, by the `filament.value.text.unicode-17.0.0/v1`
+  tables. These are the only values the type retains (FR-141; FR-322 "Text
+  literal membership"), so one canonical equivalence class (under `nfkc` and
+  `nfkd`, one compatibility equivalence class) is one member, held once as
+  its normal form. No raw sequence that is not normalized is a member, so
+  the domain needs no deduplication.
+
+**Order.** FR-804's canonical value order: lexicographic over the retained
+scalar sequence by scalar value, a proper prefix before every extension of
+it. Under `binary-utf8` this is the unsigned-byte order FR-141 states, because
+UTF-8 preserves scalar order.
+
+**Index.** `rank(v)` is the position of `v` in that order, from 0, and
+`unrank(i)`, for `0 ≤ i < |D|`, its inverse. With `count(q)` the number of
+members of `D` that have `q` as a prefix (`q` itself included when it is a
+member), `unrank(i)` is the result of this walk, in exact integers:
+
+1. `p` is the empty sequence and `r` is `i`.
+2. If `p` is a member of `D`: when `r` is 0 the result is `p`; otherwise `r`
+   decreases by 1.
+3. For each scalar `c` of `Σ` in ascending order: when `r < count(p·c)`, `p`
+   becomes `p·c` and the walk returns to step 2; otherwise `r` decreases by
+   `count(p·c)`.
+
+`count` is, for a prefix `q` of length `k`:
+
+- `unicode-scalars`: `Σ_{l = max(k, min)}^{max} N^(l − k)`, and 0 when
+  `k > max`;
+- `binary-utf8`: `Σ_{l = max(k, min)}^{max} W(l − k)`, `k` in bytes, where
+  `W(n)`, the number of scalar sequences whose encoding has exactly `n`
+  bytes, is `W(0) = 1` and `W(n) = 128·W(n−1) + 1920·W(n−2) + 61440·W(n−3) +
+  1048576·W(n−4)` (`W` of a negative is 0), the four counts being the
+  scalars of UTF-8 width 1 to 4;
+- `nfc`, `nfd`, `nfkc` and `nfkd`: the count of the definition, over the
+  pinned tables. An implementation conforms when its counts are equal. A
+  sequence is `nfd`-normalized (`nfkd`) exactly when each scalar has
+  `NFD_Quick_Check` (`NFKD_Quick_Check`) `Yes` and no two adjacent scalars
+  `a`, `b` have `ccc(a) > ccc(b) > 0`, so its count is a transfer count over
+  the canonical combining class of the last scalar. `nfc` and `nfkc` add
+  the composition state of the last starter.
+
+`unrank` is a function of the profile, `min`, `max`, the pinned tables and
+`i` alone. It uses no floating point, no platform text library and no locale,
+so it gives the same value on every platform.
+
+**Draws.** A seeded draw of a Text root is `unrank(i)`, `i` the uniform
+choice over `n = |D|` items that "Seeded draws" defines for every `n ≥ 1`,
+however large. A Text root is therefore never refused, truncated or narrowed
+because `|D|` exceeds one draw value: `Text[0, 13]` under `unicode-scalars`
+has more than `2^256` members and is drawn like `Text[0, 2]`.
+
+**Length partitions.** A Text root's *least content* of length `L` is
+U+0000 repeated `L` times (under `binary-utf8`, `L` zero bytes): U+0000 is
+the first scalar of `Σ`, has no decomposition and combines with nothing, so
+that sequence is a member under every profile and is the least member of
+length `L`.
+
+**Normalization partitions.** After its length partitions, a Text root gets
+one `normalization` partition per value below, in this order. Each value is
+the retained value of one *witness spelling* under the root's profile (the
+spelling itself under `unicode-scalars`, its UTF-8 encoding under
+`binary-utf8`, its normalization under the other four). A value whose length
+is outside `[min, max]` is skipped, and a value equal to one an earlier
+witness gave is skipped, because it is the same member:
+
+| # | Witness spelling | What it tests |
+| --- | --- | --- |
+| 1 | U+00E9 | precomposed `é` |
+| 2 | U+0065 U+0301 | decomposed `é`, canonically equivalent to 1 |
+| 3 | U+0064 U+0307 U+0323 | two combining marks out of canonical order |
+| 4 | U+0064 U+0323 U+0307 | the same marks in canonical order, canonically equivalent to 3 |
+| 5 | U+AC00 | a precomposed Hangul syllable |
+| 6 | U+1100 U+1161 | its conjoining jamo, canonically equivalent to 5 |
+| 7 | U+212B | the ANGSTROM SIGN, a singleton decomposition to U+00C5 |
+| 8 | U+FB01 | the `ﬁ` ligature, compatibility equivalent to U+0066 U+0069 |
+
+So under `unicode-scalars` and `binary-utf8` both spellings of each
+canonically equivalent pair are cases, as distinct values, wherever the
+bounds admit them, and a clause that confuses the two is exercised. Under the
+four normalizing profiles, each normal form is a case once.
+
 ## Partitions
 
 Partition cases are generated before any seeded case. Roots are visited in
@@ -160,7 +315,7 @@ represent its value.
 | Root | Partitions, in order |
 | --- | --- |
 | class E or D ordered scalar (`Int`, `Rational`, `Decimal`, `Float32`, `Float64`, `Timestamp`, bounded quantity) | `lower-refusal`, `lower-endpoint`, `upper-endpoint`, `upper-refusal`, with `singleton` in place of both endpoints when they are equal. A declared bound over several integer components (a rational's numerator and denominator, a decimal's coefficient and scale) adds one `component-refusal` per component bound, one past it with every other component at its least member. A float type adds `-0`, `+0`, `-inf`, `+inf` and `NaN` as `special` where it admits them, and has no refusal |
-| class E or D length or count (`Text[min, max]`, a collection or map `[min, max]`) | `empty` when `min` is 0, else `lower-endpoint` (shortest, least content), `singleton` (length 1, when admitted), `upper-endpoint` (longest, least content), `lower-refusal` (length `min - 1`, when `min ≥ 1`), `upper-refusal` (length `max + 1`) |
+| class E or D length or count (`Text[min, max]`, a collection or map `[min, max]`) | `empty` when `min` is 0, else `lower-endpoint` (shortest, least content), `singleton` (length 1, when admitted), `upper-endpoint` (longest, least content), `lower-refusal` (length `min - 1`, when `min ≥ 1`), `upper-refusal` (length `max + 1`); a Text root's least content is U+0000 repeated, and its `normalization` partitions follow (both in "Text domains") |
 | class E unordered (`Boolean`, enum, `Reference<T>`) | every member, as `member`, in enumeration order |
 | `Option<T>` | `none`, then the partitions of `T` |
 | class S | `size-least` (the least element), `size-unit` (each value whose every measure has `bits` 1, in size order, so `-1` then `1` for `Integer`), `size-extreme-low` and `size-extreme-high` (the least and greatest members of `S_b` in canonical value order, `-(2^b - 1)` and `2^b - 1` for `Integer`). There is no refusal partition: a value beyond `S_b` is a member of the type, so it is never generated and never reported as a refusal |
@@ -425,10 +580,14 @@ failing clause is rejected and never retained.
 | FR-190-AC-11 | Over a state model with `inc` raising `value` in `Int[0, 5]` (enabled when `value < 5`), `reset` (enabled when `value = 5`) and `jam` (enabled when `value > 5`), a run with `max_trace_length` 8 reports `operations` in declaration order: `inc` and `reset` `covered` with the index of the first case applying each, and `jam` `uncovered`, reason `unreachable`, naming `jam`'s declaration identity; `coverage` is `{status: partial, uncovered: {unreachable: 1}}`. `jam` is never reported `covered`. | Test (TC-2004) |
 | FR-190-AC-12 | The same model with `max_trace_length` 3 reports `reset` `uncovered`, reason `unreachable-within-bound` with `bounds` `["max_trace_length"]`, and never `unreachable`; with a work limit too small to finish the bounded exploration, the entry is `undetermined` naming that limit, and the run's case counts and verdict are those of the unlimited run. | Test (TC-2004) |
 | FR-190-AC-13 | A run whose suite passes with `jam` uncovered is `tested` evidence, settles no verdict and has the outcome category of a passing tested run; with a clause that fails, the same uncovered entry is reported beside the `refuted` counterexample. A value clause's record has no `operations` member, and two runs with equal inputs give byte-equal `operations` entries. | Test (TC-2004) |
-| FR-190-AC-14 | Over a value clause with parameters `x: Integer` and `t: Text[0, 4]`, a clause every case passes, seed 7, `max_cases` 30 and `max_value_bits` 8: every case's `x` lies in `[-255, 255]`; `x`'s partitions are, in order, `size-least` 0, `size-unit` -1 and 1, `size-extreme-low` -255 and `size-extreme-high` 255, and no partition of `x` has a kind ending in `-refusal`; `t`'s partitions are `empty`, `singleton`, `upper-endpoint` (length 4) and `upper-refusal` (length 5); `provenance.max_value_bits` is 8 and `provenance.size_bounded` has exactly one entry, for `x`, with `values` `"511"`. With `max_value_bits` 1, `x` lies in `[-1, 1]` and `t`'s partitions are unchanged. `max_value_bits` 0 and 65 each refuse `invalid_runtime_input`/`invalid-value`, its absence `missing-member`, and `max_value_bits` 8 over a clause whose one parameter is `q: Int[0, 3]` `unknown-member`; each names `max_value_bits` and runs no case. | Test (TC-1600) |
+| FR-190-AC-14 | Over a value clause with parameters `x: Integer` and `t: Text[0, 4]`, a clause every case passes, seed 7, `max_cases` 30 and `max_value_bits` 8: every case's `x` lies in `[-255, 255]`; `x`'s partitions are, in order, `size-least` 0, `size-unit` -1 and 1, `size-extreme-low` -255 and `size-extreme-high` 255, and no partition of `x` has a kind ending in `-refusal`; `t`'s partitions are `empty`, `singleton`, `upper-endpoint` (length 4) and `upper-refusal` (length 5), followed by the `normalization` partitions of its profile (FR-190-AC-19); `provenance.max_value_bits` is 8 and `provenance.size_bounded` has exactly one entry, for `x`, with `values` `"511"`. With `max_value_bits` 1, `x` lies in `[-1, 1]` and `t`'s partitions are unchanged. `max_value_bits` 0 and 65 each refuse `invalid_runtime_input`/`invalid-value`, its absence `missing-member`, and `max_value_bits` 8 over a clause whose one parameter is `q: Int[0, 3]` `unknown-member`; each names `max_value_bits` and runs no case. | Test (TC-1600) |
 | FR-190-AC-15 | Over a state model with `value` in `Int[0, 5]` (initial 0) and `inc(by: Int[1, 6])` (enabled when `value + by <= 5`), the postcondition clause of `inc`, seed 7, `max_cases` 100 and `max_trace_length` 8: cases 0 to 7 are the partitions of `value` (-1, 0, 5, 6) followed by those of `by` (0, 1, 6, 7); the cases for `value` -1 and 6 and `by` 0 and 7 are refusal cases, their partitions `refused`, and `cases.discarded_by.domain-refusal` is `{count: 4, first_case: 0}`; the `by` 6 case is discarded `precondition-false`, `discarded_by.precondition-false` is `{count: 1, first_case: 6}`, and its partition is `uncovered` with reason `precondition-false` and `bounds` `[]`; the `value` 0 case (the initial state, no `inc`) is discarded `no-check-point`; `cases.generated` is 100 and equals `passed + failed + discarded`; the run is `tested`. | Test (TC-1600) |
 | FR-190-AC-16 | AC-15's model with an added operation `jam()` (enabled when `value > 5`): the postcondition clause of `jam` discards every one of its 100 cases, with `discarded_by` `domain-refusal` `{count: 4, first_case: 0}`, `precondition-false` `{count: 1, first_case: 6}` (the `by` 6 partition case), `invariant-false` `{count: 0, first_case: null}` and `no-check-point` `{count: 95, first_case: 1}`, `cases.passed` and `cases.failed` 0, and settles `inconclusive` with cause `no-evaluated-case`, exit `22`, never `tested` or `proved`; the precondition clause of `inc` has `discarded_by.precondition-false.count` 0 and the `by` 6 partition `covered`, because a false precondition is a defined, passing point; with a test-double argument admission that accepts `by` 7, the run settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`, exit `30`. | Test (TC-1600) |
 | FR-190-AC-17 | Over a state model with `value: Integer` (initial 0), `add(by: Int[1, 100])` (`value' = value + by`) and `big()` (enabled when `value >= 300`), seed 7, `max_cases` 100, `max_trace_length` 8 and `max_value_bits` 8: `big` is `uncovered` with reason `unreachable-within-bound` and `bounds` `["max_value_bits"]`, never `unreachable`; `provenance.value_bound_cuts.count` is at least 1 and `first` names an `add` application from a state where `value + by` exceeds 255; the run is `tested`. With `max_value_bits` 10, `big` is `covered`, or `not-generated` with an `enabled_at` prefix of `add` invocations whose arguments sum to at least 300. | Test (TC-2004) |
+| FR-190-AC-18 | `unrank` ("Text domains") gives exactly these values. `Text[0, 2; unicode-scalars]` has a domain of 1236687452161; `unrank(0)` is the empty text, `unrank(1)` U+0000, `unrank(2)` U+0000 U+0000, `unrank(3)` U+0000 U+0001, `unrank(1112066)` U+0001, `unrank(61492746241)` U+E000 (the surrogates are not in `Σ`, so U+E000 follows U+D7FF) and `unrank(1236687452160)` U+10FFFF U+10FFFF, and `rank` of each is its index. `Text[0, 3; binary-utf8]` has a domain of 2668545 (`W` = 1, 128, 18304, 2650112); `unrank(18434)` is U+0001, `unrank(2359425)` U+0080, `unrank(2607105)` U+0800 and `unrank(2668544)` U+FFFF. Over `Text[0, 1]`, `unrank(193)` is U+00C0 under `unicode-scalars` and `nfc` and U+00C6 under `nfd` (U+00C0 to U+00C5 decompose), and `unrank(161)` is U+00A0 under `nfc` and U+00A1 under `nfkc` (U+00A0 has a compatibility decomposition). Every value is computed from exact integers and is the same on every platform the tests run on. | Test (TC-1600) |
+| FR-190-AC-19 | Over `t: Text[0, 4]`, the `normalization` partitions after `upper-refusal` are, in order: under `unicode-scalars` the eight witness spellings themselves, so U+00E9 and U+0065 U+0301, U+0064 U+0307 U+0323 and U+0064 U+0323 U+0307, and U+AC00 and U+1100 U+1161 are six distinct cases; under `binary-utf8` the encodings `C3 A9`, `65 CC 81`, `EA B0 80`, `E2 84 AB` and `EF AC 81` (witnesses 3, 4 and 6 are 5 or 6 bytes long and skipped); under `nfc` U+00E9, U+1E0D U+0307, U+AC00, U+00C5 and U+FB01; under `nfd` U+0065 U+0301, U+0064 U+0323 U+0307, U+1100 U+1161, U+0041 U+030A and U+FB01; under `nfkc` U+00E9, U+1E0D U+0307, U+AC00, U+00C5 and U+0066 U+0069; and under `nfkd` U+0065 U+0301, U+0064 U+0323 U+0307, U+1100 U+1161, U+0041 U+030A and U+0066 U+0069. Over `Text[0, 1; nfd]` no `normalization` partition is generated except U+FB01, every other normal form being 2 or 3 scalars long. `t`'s `empty`, `singleton` and `upper-endpoint` values are U+0000 repeated 0, 1 and 4 times. | Test (TC-1600) |
+| FR-190-AC-20 | A value clause over `t: Text[0, 13; unicode-scalars]` (more than `2^256` members), a clause every case passes, seed 7 and `max_cases` 30 settles `tested` with `cases.generated` 30, every seeded case a member of length at most 13 that is `unrank(i)` for the index the profile's uniform choice drew; it is never `unsupported` `total-above-draw-range` and no draw is truncated to fewer members. Two runs with equal inputs give equal `t` values in every case. | Test (TC-1600) |
+| FR-190-AC-21 | Seeded draws use `filament.simulation.sampler/v1`'s draw function with the coordinates "Seeded draws" binds. Over the value clause `Square` with parameter `x: Integer`, seed 7 and `max_value_bits` 8, the first seeded case is case 5 (after the five partition cases), and its one draw value is `SHA-256` of `{"choice":"0","draw":"0","seed":"7","step":"0","trace":"5"}`, `870d79a5aa0eeb2e99ebcf1b9bfd2c96fb3776efa3f045d4bec328c7b676eb65`, which is below `511 · ⌊2^256 / 511⌋`, so it is accepted; its value modulo 511 is 116, and size index 116 is `x` = 53. Over the value clause with parameter `t: Text[0, 2; unicode-scalars]` and seed 7, the first seeded case is case 10 (after `empty`, `singleton`, `upper-endpoint`, `upper-refusal` and the six `normalization` partitions of witnesses 1, 2, 5, 6, 7 and 8), and its draw value is `SHA-256` of `{"choice":"0","draw":"0","seed":"7","step":"0","trace":"10"}`, `018f5797cdbae46b5c12df4e591c545d037f369afd8b6ac8ffdd46bda1bbb5dd`, accepted; its value modulo 1236687452161 is 968414557300, and `unrank(968414557300)` is U+D51A9 U+87AC9. Every computation uses integers only, and the same seed gives the same values on every platform. | Test (TC-1600) |
 
 ## Dependencies
 
