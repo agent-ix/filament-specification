@@ -83,6 +83,13 @@
         "$ref": "#/$defs/OperationBodyRow"
       }
     },
+    "requirement_items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/RequirementItemRow"
+      }
+    },
     "capability_report": {
       "type": "array",
       "items": {
@@ -312,6 +319,161 @@
         },
         "trace": {
           "$ref": "#/$defs/Nonempty"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RequirementItemRow": {
+      "description": "FR-825: one requirement record in package order; record is present exactly on a value-validity row (reader rule 12).",
+      "type": "object",
+      "required": [
+        "claim",
+        "kind",
+        "extent"
+      ],
+      "properties": {
+        "claim": {
+          "type": "object",
+          "required": [
+            "node",
+            "occurrence"
+          ],
+          "properties": {
+            "node": {
+              "$ref": "#/$defs/NodeRef"
+            },
+            "occurrence": {
+              "$ref": "#/$defs/Occurrence"
+            }
+          },
+          "additionalProperties": false
+        },
+        "kind": {
+          "enum": [
+            "value-validity",
+            "operation-contract",
+            "finite-replay",
+            "temporal-satisfaction",
+            "global-conformance",
+            "monitorability",
+            "local-projection",
+            "refinement",
+            "realizability",
+            "composition",
+            "probabilistic-satisfaction",
+            "schedulability"
+          ]
+        },
+        "extent": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "classification"
+              ],
+              "properties": {
+                "classification": {
+                  "const": "bounded"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "classification",
+                "domains"
+              ],
+              "properties": {
+                "classification": {
+                  "const": "unbounded"
+                },
+                "domains": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "$ref": "#/$defs/RequirementDomain"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "record": {
+          "$ref": "#/$defs/NodeRef"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RequirementDomain": {
+      "type": "object",
+      "required": [
+        "domain",
+        "kind"
+      ],
+      "properties": {
+        "domain": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "type",
+                "node",
+                "path"
+              ],
+              "properties": {
+                "type": {
+                  "const": "node"
+                },
+                "node": {
+                  "$ref": "#/$defs/NodeRef"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4294967295
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "type",
+                "member_type",
+                "ordinal"
+              ],
+              "properties": {
+                "type": {
+                  "const": "population"
+                },
+                "member_type": {
+                  "$ref": "#/$defs/NodeRef"
+                },
+                "ordinal": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4294967295
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "collection",
+            "population",
+            "integer",
+            "recursive",
+            "quantity",
+            "loop",
+            "infinite-trace"
+          ]
         }
       },
       "additionalProperties": false
@@ -6142,7 +6304,8 @@
                 "step_relation",
                 "schedulability",
                 "synthesis_request",
-                "probabilistic_claim"
+                "probabilistic_claim",
+                "value_validity"
               ]
             }
           }

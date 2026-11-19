@@ -71,6 +71,13 @@ disposition settled it, and the registry the items were negotiated against.
   is negotiated.
 - An item routed to a process provider SHALL be sent as an FR-331 request
   whose `package` is the emitted bytes of the package that was executed.
+- When the executed package is a selected checked package rather than a
+  compile, the items, their owner and their package order SHALL be read from
+  the package's `requirement_items` rows and `claim`/`value_validity` nodes
+  ([FR-825](../../objects/interfaces/FR-825-carry-the-requirement-records-of-a-checked-package.md)),
+  and the items and their request indices SHALL equal those of a compile of
+  the package's source; no item is rebuilt from the graph and none is
+  dropped.
 - The evaluation SHALL be the same with and without settlement.
 - The outcome's category SHALL be the most severe of the evaluation's and the
   items' categories.
