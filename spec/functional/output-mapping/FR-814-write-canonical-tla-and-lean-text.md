@@ -31,30 +31,81 @@ The target bytes and the package's name map.
 
 ### Names
 
-- Every generated name SHALL be a kind prefix followed by the mangled FSL
-  name: `v_` variables, `T_` types, `op_` operations, `f_` functions, `c_`
-  clauses and invariants, `holds_` Lean clause semantics (FR-813), `Ob_`
-  Lean obligation propositions, `Th_` TLA+ obligation theorems, `e_` enum
-  members, `b_` population bounds (language FR-1035), `m_` monitor variables, `M_` modules, and `Q_`, `F_` and `D_`
-  generated helpers. Each prefix is a distinct word of ASCII letters
-  followed by one `_`; where one word is a proper prefix of another (`T`
-  and `Th`), the two names differ at the character after the shorter word
-  (`_` against a letter), so names of different kinds never coincide, and
-  with the injective mangling below the whole naming is injective.
-  No TLA+ or Lean keyword, and no name of a module or namespace the output
-  uses, begins with one of these prefixes, so no generated name collides
-  with one.
-- The structural names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`,
-  `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F` SHALL be written unprefixed,
-  once each; no mangled name equals one, because every mangled name carries
-  a prefix.
+- Every name the mapper writes SHALL belong to exactly one of the name
+  classes in the table below, and SHALL be spelled as that class says. A
+  *prefixed* class writes a kind prefix followed by the mangled FSL name
+  (Mangling, below). A *fixed* class writes a name from a closed set the
+  mapper owns, never derived from an FSL name. No other name appears in the
+  text.
+
+  | Class | Spelling |
+  | --- | --- |
+  | population variable | `v_` + mangled object type name |
+  | FSL type, enum or record type | `T_` + mangled name |
+  | Lean population key and record types (FR-812) | `Key_` and `Rec_` + mangled object type name |
+  | operation | `op_` + mangled name |
+  | FSL function | `f_` + mangled name |
+  | operation parameter | `p_` + mangled parameter name |
+  | FSL function parameter | `a_` + mangled parameter name |
+  | receiver (FSL `self`) of an operation or of a clause read per object | the fixed binder `r_self` |
+  | field of an object type, record or variant | `fld_` + mangled field name |
+  | quantifier, `let` and lambda binder of an FSL expression | `x_` + mangled binder name |
+  | clause and invariant | `c_` + mangled name |
+  | Lean clause semantics (FR-813) | `holds_` + mangled clause name |
+  | Lean obligation proposition | `Ob_` + mangled clause name |
+  | TLA+ obligation theorem | `Th_` + mangled clause name |
+  | enum member | `e_` + mangled member name |
+  | population bound (language FR-1035) | `b_` + mangled bound name |
+  | monitor variable (FR-813) | `m_` + mangled clause name |
+  | module and namespace | `M_` + mangled package name |
+  | generated helper | `Q_`, `F_` or `D_` + a fixed helper word of ASCII letters, optionally followed by `_` and a mangled FSL name the helper is generated for |
+  | structural definition | the fixed names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`, `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F`, each written once |
+  | generated value field | the fixed field and tag names of FR-812's value encodings: `num`, `den`, `tag`, `value`, `bits`, the floating-point `finite` record's fields, the tags `none`, `some`, `finite`, `inf` and `nan`, and the Lean tuple fields `_1`, `_2`, … |
+  | generated local binder | one lowercase ASCII letter, optionally followed by decimal digits and then optionally by `'` (`s`, `s'`, `b`, `i`, `j`, `k`, `k2`), bound only inside the definition the mapper generates it in |
+
+- The prefix words `v`, `T`, `Key`, `Rec`, `op`, `f`, `p`, `a`, `r`, `fld`,
+  `x`, `c`, `holds`, `Ob`, `Th`, `e`, `b`, `m`, `M`, `Q`, `F` and `D` SHALL be
+  pairwise distinct words of ASCII letters, each followed by one `_`. Where
+  one word is a proper prefix of another (`T` and `Th`, `f` and `fld`), the
+  two names differ at the character after the shorter word (`_` against a
+  letter). A prefixed name therefore determines its class by the text before
+  its first `_`, because no prefix word holds a `_`, and its FSL name by the
+  rest, because mangling is injective. A helper name determines its helper
+  word the same way. The receiver binder `r_self` is the only name of the
+  `r_` class. A fixed structural name holds no `_`, a generated value field
+  either holds no `_` or is a Lean tuple field `_<digits>` that begins with
+  `_`, and a generated local binder holds no `_`; every prefixed name begins
+  with a letter and holds a `_` after its prefix word. The whole naming is
+  therefore injective: two generated names are equal only when they are the
+  same class and the same FSL name, or the same fixed name.
+- The receiver has its own class so that it never collides with a declared
+  parameter. FR-012 admits a reserved word, `self` included, as a domain
+  model parameter name, so a parameter spelled `self` is `p_self`, distinct
+  from the receiver `r_self`. Likewise a field spelled `num` is `fld_num`,
+  distinct from the generated rational field `num`, and a `let` binder
+  spelled `Next` is `x_Next`, distinct from the structural `Next`.
+- No prefixed name SHALL collide with a TLA+ or Lean keyword, operator or
+  library name. TLA+ reserved words (`DOMAIN`, `INSTANCE`, `LET`, …) and
+  Lean keywords (`instance`, `fun`, `def`, …) hold no `_` except words that
+  begin with none of the prefix words above (Lean's `set_option`,
+  `termination_by`, `decreasing_by`, `simp_all`, `macro_rules`), TLA+'s
+  `WF_` and `SF_` fairness operators begin with no prefix word, and no
+  module or namespace the output uses begins with a prefix word followed by
+  `_`. No fixed name SHALL be a TLA+ or Lean keyword: the structural names,
+  the generated value fields and the one-letter local binders are none.
+  Fixed names do not shadow one another, because a generated local binder is
+  bound only where no structural name of the same spelling is in scope.
 - *Mangling* SHALL keep ASCII letters and digits, write `_` as `__`, write
   the namespace separator `::` as `_N_`, and write every other Unicode
   scalar as `_u` followed by its uppercase hexadecimal code point and `_`.
   The mapping is injective: distinct FSL names give distinct target names.
-- The package SHALL carry a name map from each generated name to its FSL
+- The package SHALL carry a name map from each prefixed name to its FSL
   node id and source region; a target tool's trace or error names a
-  generated name, which the map reads back to the FSL node.
+  generated name, which the map reads back to the FSL node. A fixed name
+  (the receiver binder `r_self`, a structural name, a generated value field
+  or a generated local binder) names no FSL node of its own and has no
+  entry; a trace value of `r_self` is read through the entry of the
+  operation or clause that binds it.
 - The TLA+ module name and file name SHALL be `M_` followed by the mangled
   package name, with the file `<module>.tla`; the Lean file is `<module>.lean`
   and its definitions sit in `namespace <module>`.
@@ -104,6 +155,10 @@ The target bytes and the package's name map.
 | FR-814-AC-4 | A function used by an invariant is written before it, and reordering two independent declarations in the source changes the text only by their node order. | Test (TC-1973) |
 | FR-814-AC-5 | A TLC error trace naming `v_Account` and `op_deposit` reads back through the name map to the FSL object type and operation nodes. | Test (TC-1973) |
 | FR-814-AC-6 | Every `fsl:` comment line of the counter's TLA+ and Lean exports matches `^(\\\*\|--) fsl: [^ ]+ ([^ ]+:(0\|[1-9][0-9]*)-(0\|[1-9][0-9]*)\|none)$`. The node id is a node of the package. The region's source is the unit's `<authority>/<identity>` and `start < end`, and that region's bytes are the definition's source declaration. A definition of a node with no source region writes `none`. | Test (TC-2030) |
+| FR-814-AC-7 | A model whose object type has a field `total`, whose operation `add` has a parameter `total`, and which declares a function `total` with a parameter `total`, exports in both targets the field as `fld_total`, the operation parameter as `p_total`, the function as `f_total` and the function parameter as `a_total`; the four names are pairwise distinct and each name-map entry reads back to its own FSL node (field, operation parameter, function, function parameter). Text that writes the field as `f_total`, or either parameter as unprefixed `total`, fails this criterion. | Test (TC-1973) |
+| FR-814-AC-8 | An operation `rename(self: Text)` of object type `Item`, whose declared parameter is spelled `self` (FR-012), exports in TLA+ as `op_rename(r_self, p_self)` bound in `Next` by `\E r_self \in DOMAIN v_Item, p_self \in Dom` and in Lean as `def op_rename (s s' : State) (r_self : Key_Item) (p_self : …)`, with `p_self` mapped to the parameter's node and `r_self`, a fixed name, with no name-map entry, and SANY and Lean parse both files. A mapper that wrote the receiver and the parameter under one name would declare one formal parameter twice, which SANY reports as a multiply-defined symbol and Lean as a duplicate binder, so this criterion fails for it. | Test (TC-1973) |
+| FR-814-AC-9 | An invariant whose quantifier and `let` binders are named `Next`, `instance`, `DOMAIN`, `num` and `tag`, over an object type with fields `num` and `tag`, a `Decimal` field and an `Option` field, exports the binders as `x_Next`, `x_instance`, `x_DOMAIN`, `x_num` and `x_tag` and the fields as `fld_num` and `fld_tag`, distinct from the structural `Next` and the generated rational fields `num` and `tag`; SANY and Lean parse both files. Unprefixed, `DOMAIN` is a TLA+ reserved word and `instance` a Lean keyword, both of which fail to parse, and a binder `Next` redefines the module's `Next`, which SANY rejects, so a mapper that writes any binder unprefixed fails this criterion. | Test (TC-1973) |
+
 
 ## Dependencies
 

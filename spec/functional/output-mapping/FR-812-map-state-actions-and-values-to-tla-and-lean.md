@@ -39,8 +39,8 @@ The state, action and value regions of the TLA+ module or Lean file.
 | population bound | `TypeOK` conjunct `Cardinality(DOMAIN v_T) <= n` | the well-typedness predicate `WF` conjunct `v_T.length <= n` |
 | field type | `TypeOK` conjunct over every present object | `WF` conjunct |
 | initial snapshot or constraint | `Init` | `def Init (s : State) : Prop` |
-| operation `op(p1, …)` | `op_op(p1, …) == pre /\ post /\ frame /\ wf'` with `UNCHANGED` for every variable the frame does not write | `def op_op (s s' : State) (p1 …) : Prop` with the same conjuncts |
-| the step relation | `Next == \E p1 \in Dom1, … : op_a(…) \/ …`, one disjunct per operation in declaration order | `def Step (s s' : State) : Prop`, one disjunct per operation |
+| operation `op(p1, …)` of object type `T` | `op_op(r_self, p_p1, …) == pre /\ post /\ frame /\ wf'` with `UNCHANGED` for every variable the frame does not write | `def op_op (s s' : State) (r_self : Key_T) (p_p1 …) : Prop` with the same conjuncts and `r_self` a present key of `s.v_T` |
+| the step relation | `Next == \E r_self \in DOMAIN v_T, p_p1 \in Dom1, … : op_a(…) \/ …`, one disjunct per operation in declaration order, each binding its own receiver and parameters | `def Step (s s' : State) : Prop`, one disjunct per operation, each `exists r_self p_p1 …` over a present key and the argument domains |
 | a behaviour | `Spec == Init /\ [][Next]_vars /\ WF_vars(Next) /\ fairness` | `structure Behaviour` over `Nat → State` with `Init (b 0)` and, at each `n`, `Step (b n) (b (n+1))` or `b (n+1) = b n` exactly when no step is enabled at `b n` |
 
 - A population's bound `n` SHALL be the authored maximum of a
@@ -73,6 +73,12 @@ The state, action and value regions of the TLA+ module or Lean file.
   enabled, which is FSL's reading of a behaviour: it stutters only at a
   terminal state. Finite stuttering, which every TLA+ formula ignores, is
   handled for step-sensitive clauses by FR-813's step counter.
+- The receiver binder `r_self` (FR-814) SHALL be bound by the operation's
+  definition and quantified in its `Next` and `Step` disjunct over the
+  present keys of the operation's object type: `DOMAIN v_T` in TLA+, and
+  the keys of `s.v_T` in Lean. It is the FSL `self` of that operation. Each
+  declared parameter is bound beside it as `p_` + its mangled name
+  (FR-814) and quantified over its argument domain.
 - An argument domain is the FSL parameter type's value set, written as a
   finite set when it is finite and as `Int` (TLA+) or `Int` with a range
   conjunct (Lean) otherwise; the meaning is exact either way, and only a
@@ -135,7 +141,7 @@ reads a NaN through a target's own floating point.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-812-AC-1 | A model with a population of `Account` keyed by text, a field `balance: Int[0, 100]` and an operation `deposit(a, n: Int[1, 10])` exports `v_Account`, `TypeOK`, `Init`, `op_deposit`, `Next` and `Spec` with `WF_vars(Next)` to TLA+, and the matching `State`, `WF`, `Init`, `op_deposit` and `Step` to Lean; every record is `preserved`. | Test (TC-1971) |
-| FR-812-AC-2 | An invariant `self.total / self.count >= 1` exports with the definedness conjunct `count /= 0` (TLA+) and `count ≠ 0` (Lean) before the comparison, so a state with `count` 0 violates the exported invariant. | Test (TC-1971) |
+| FR-812-AC-2 | An invariant `self.total / self.count >= 1` exports with the definedness conjunct over the field written `fld_count` (FR-814), `v_T[r_self].fld_count /= 0` (TLA+) and the same field of the receiver's record `≠ 0` (Lean), before the comparison, so a state with `count` 0 violates the exported invariant. | Test (TC-1971) |
 | FR-812-AC-3 | `(-7) div 2` under the floor law exports through the generated floor operator and evaluates to `-4` in both targets; under the truncating law, to `-3`. | Test (TC-1971) |
 | FR-812-AC-4 | The decimal `0.10 + 0.20` exports as the normalized rational `3/10`, and a `Float64` sum `0.1 + 0.2` exports through the generated rounding operator and compares unequal to the rational `3/10`, as in FSL. | Test (TC-1971) |
 | FR-812-AC-5 | A set `{3, 1, 2}` exports to Lean as `[1, 2, 3]`, and two sets built in different orders export to equal Lean lists; the text `"hé"` exports as the scalar sequence `<<104, 233>>`. | Test (TC-1971) |
