@@ -139,12 +139,16 @@ A `disposition.refusal.locus` is exactly one closed object tagged by
 `kind`, and `kind` is one of five values: `region`, `located`,
 `occurrence`, `artifact` and `document`. FSL FR-267 ("Refusal locus wire")
 owns each kind's members; `document` names the failing member of a JSON
-input document (a snapshot, invocation or model header) by the document's
-labels, path, RFC 6901 pointer, object and member. The set is closed: the
+input document (a request, snapshot, invocation or model document, its
+model header included) by the document's labels, path, RFC 6901 pointer,
+object and member. The five members of a `document` locus are required and
+nullable, not optional: each is always present, and `document`, `path`,
+`object` and `member` hold `null` when absent, so FR-352-AC-8's refusal of
+`null` for an absent optional member does not apply to them. The set is closed: the
 strict reader SHALL refuse a locus of any other `kind`, and a producer SHALL
 write every refusal it locates under one of the five, so every document the
 native route writes reads under this reader. A locus is report content and
-enters no checked-package identity (FR-322) and no `package_id`.
+enters no checked-package identity (FR-322).
 
 `usage` is a closed object with `admission` (a closed object of unsigned
 `document_bytes`, `objects` and `values`), unsigned
