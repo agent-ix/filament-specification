@@ -19,7 +19,7 @@ FR-824-AC-4 and FR-824-AC-5.
 
 ## Test Procedure
 
-1. Execute `Release` with an engine set that registers no
+1. Execute `Release` with `max_trace_length` 8 and an engine set that registers no
    `temporal-satisfaction` engine.
 2. Execute a plan of a `probabilistic_statistical` step `s` and a
    `model_check` step `t depends [s]` three times, with `s` measured

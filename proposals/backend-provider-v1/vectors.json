@@ -12728,6 +12728,42 @@
       ]
     },
     {
+      "name": "no-evaluated-case-on-provider-entry",
+      "base": "refuted-ignoring-constraints-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/cause/type",
+          "value": "no-evaluated-case"
+        }
+      ]
+    },
+    {
+      "name": "oracle-disagreement-on-provider-entry",
+      "base": "kani-outcome-incomplete-and-failed",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/3/cause/defect",
+          "value": "oracle-disagreement"
+        }
+      ]
+    },
+    {
+      "name": "invalid-shrink-on-provider-entry",
+      "base": "kani-outcome-incomplete-and-failed",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/3/cause/defect",
+          "value": "invalid-shrink"
+        }
+      ]
+    },
+    {
       "name": "derived-item-kind-time-lock",
       "base": "derived-items-request",
       "owner": "FR-368",
