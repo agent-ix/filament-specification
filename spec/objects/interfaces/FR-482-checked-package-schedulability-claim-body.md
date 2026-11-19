@@ -166,10 +166,11 @@ identity as a typed read by reference. It SHALL NOT infer a claim from source
 text, a display name, a task-set name, a graph path or declaration order.
 
 The IR read ends at the authenticated task claim. It does not bind that claim
-to a timed model, read source `release` declarations, create task-product
-states or recompute task successors. The FSL FR-418 checker SHALL resolve the
-same claim identity, join each checked task release to its exact source
-operation in the selected timed model, and recompute every source and
+to a timed model, read source `release` or `mode` declarations, create
+task-product states or recompute task successors. The FSL FR-418 checker SHALL
+resolve the same claim identity, join each checked task release and each
+checked mode switch (FR-419) to its exact source operation in the selected
+timed model, and recompute every source and
 scheduler successor before it accepts a finite task-product certificate.
 `TaskTransitionTemplate` belongs to the FR-418 `backend-provider-v1` zone
 certificate and is not a checked-package member. The finite template is a

@@ -52,10 +52,20 @@ mode. Every text that is not a number in the grammar has no value.
   (FR-322 `scalar_type`/`string`).
 - The target type `T` (FR-140, FR-142, FR-148, FR-044):
   - `Integer` or `Int[lo, hi]`;
-  - an unbounded `Decimal` or `Decimal[c1, c2; s1, s2; m]`;
-  - an unbounded `Rational` or `Rational[lo, hi; dmin, dmax]`;
+  - `Decimal[c1, c2; s1, s2; m]`, or the unbounded `Decimal` of a wire or
+    semantic form;
+  - `Rational[lo, hi; dmin, dmax]`, or the unbounded `Rational` of a wire or
+    semantic form;
   - `Float32[m]` or `Float64[m]`, where an omitted `m` is strict `exact`;
   - `Quantity<u>`.
+
+  The unbounded `Decimal` and `Rational` have no source spelling. The source
+  grammar's only `Decimal` form is `Decimal[lo, hi; smin, smax; mode]`
+  (FR-140, FR-501 item 5), and its only `Rational` form is
+  `Rational[lo, hi; dmin, dmax]`. A source `convert<Decimal>(e)` or
+  `convert<Rational>(e)` is therefore `invalid_syntax`/`unexpected-token` at
+  parse and reaches no type check. The unbounded targets are reached only by a
+  checked package or a kernel caller that builds the semantic type directly.
 - The selected `filament.value.accounting/v1` limits.
 
 ## Outputs
@@ -76,7 +86,8 @@ I13 dispositions are not evaluator outputs.
 
 The source form is the existing `convert<T>(e)`; no word is reserved. When the
 static type of `e` is a `Text[..]` type or `String`, `convert<T>(e)` SHALL
-type-check exactly when `T` is one of the target types under Inputs. The
+type-check exactly when `T` is one of the target types under Inputs and is
+written in a source spelling the grammar admits. The
 result type is `T`. For any other `T` there is no conversion from text: a
 `Boolean`, a `Text[..]` or `String` other than the operand's own type, enum,
 `UUID`, `Timestamp`,
@@ -270,17 +281,18 @@ charges and any target-specific rounding charge. A denied named charge returns
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-478-AC-1 | Under `unicode-scalars`, `convert<Integer>` of `0`, `42`, `-7` and `170141183460469231731687303715884105728` gives `0`, `42`, `-7` and that exact integer. `convert<Int[0, 99]>` of `42` gives `42`, and of `100` and of `-1` refuses `integer_out_of_domain`/`outside-domain`. `convert<Decimal>` of `1.50` gives coefficient `150` and scale `2`, of `-0.5` coefficient `-5` and scale `1`, and of `3` coefficient `3` and scale `0`. | Test (TC-964) |
-| FR-478-AC-2 | Each of these texts is undefined, with the undefined reason `malformed-number` located at the `convert` application and no value, for `convert<Integer>` under `unicode-scalars`: the empty text, `+5`, `05`, `-0`, ` 5`, `5 `, `1,000`, `1e3`, `1.0`, `2/1`, `٣` (U+0663) and `５` (U+FF15). For `convert<Decimal>` the same holds for `.5`, `5.`, `-0.00`, `1.2.3`, `1,5`, `1e3` and `3/4`. Under `nfkc`, `５` normalizes to `5` and converts to `5`; under `nfc` it is undefined. | Test (TC-964) |
+| FR-478-AC-1 | Under `unicode-scalars`, `convert<Integer>` of `0`, `42`, `-7` and `170141183460469231731687303715884105728` gives `0`, `42`, `-7` and that exact integer. `convert<Int[0, 99]>` of `42` gives `42`, and of `100` and of `-1` refuses `integer_out_of_domain`/`outside-domain`. At the kernel, with the unbounded semantic target, `convert<Decimal>` of `1.50` gives coefficient `150` and scale `2`, of `-0.5` coefficient `-5` and scale `1`, and of `3` coefficient `3` and scale `0`. | Test (TC-964) |
+| FR-478-AC-2 | Each of these texts is undefined, with the undefined reason `malformed-number` located at the `convert` application and no value, for `convert<Integer>` under `unicode-scalars`: the empty text, `+5`, `05`, `-0`, ` 5`, `5 `, `1,000`, `1e3`, `1.0`, `2/1`, `٣` (U+0663) and `５` (U+FF15). At the kernel, with the unbounded semantic target, for `convert<Decimal>` the same holds for `.5`, `5.`, `-0.00`, `1.2.3`, `1,5`, `1e3` and `3/4`. Under `nfkc`, `５` normalizes to `5` and converts to `5`; under `nfc` it is undefined. | Test (TC-964) |
 | FR-478-AC-3 | The type checker admits `convert<T>` of a `Text[..]` operand, and of a `String` operand, to each of `Integer`, `Decimal[0, 1000; 0, 2; exact]`, `Rational[-9, 9; 1, 9]`, `Float32[nearest-even]`, `Float64` and `Quantity<ms>` (AC-10's units). Over `t: Text[0, 64; unicode-scalars]`, to `Boolean`, `Text[0, 8; nfc]`, an enum, `UUID` or a record it refuses `ill_typed`/`operator-ineligible`. Over `t: Text[0, 8; nfc]` the checked package records `filament.op.text.to_integer` for `Int[0, 99]` with mode `null`, `filament.op.text.to_decimal` for `Decimal[0, 1000; 0, 2; nearest-even]` with mode `rounding` `nearest-even`, `filament.op.text.to_rational` for `Rational[-9, 9; 1, 9]` with mode `null`, `filament.op.text.to_float64` for `Float64[toward-zero]` with laws `text_profile` and `ieee_profile` and mode `rounding` `toward-zero`, and `filament.op.text.to_quantity` for `Quantity<ms>` with mode `rounding` `exact`. Each has member `type_argument` naming the target, and each `filament.op.text.*` row carries the `text_profile` law. Over `s: String`, the same targets record the `filament.op.string.*` identity of the same name, with no `text_profile` law. | Test (TC-964) |
 | FR-478-AC-4 | `function n using v(t: Text[0, 8; unicode-scalars]): Int[0, 99] pure { convert<Int[0, 99]>(t) }` links with no body obligation. Called with `abc` it is undefined with the reason `malformed-number`, and with `100` it is refused `integer_out_of_domain`, each at evaluation. | Test (TC-964) |
 | FR-478-AC-5 | With exact limits, `convert<Int[0, 99]>` of `42` succeeds after `text.input-bytes` and `text.decode-scalars`; denying `text.input-bytes` returns `incomplete` with no value. `abc` is undefined with the reason `malformed-number` after operand and applicable normalization charges, with no value. `100` into `Int[0, 99]` is refused after those charges and before a result is returned. | Test (TC-964) |
 | FR-478-AC-6 | Decimal rounding is the target's. `convert<Decimal[0, 1000; 0, 2; exact]>` of `1.555` refuses `inexact_decimal`/`nonzero-discarded-digit`, of `1.500` gives coefficient `150` and scale `2`, of `1.5` gives coefficient `15` and scale `1` (retained as spelled, not rescaled to scale 2), and of `10.01` refuses `decimal_out_of_domain`/`outside-domain`. `convert<Decimal[0, 1000; 0, 2; nearest-even]>` of `1.555` gives coefficient `156` and scale `2`, with `DecimalLoss` exact value `311/200` and mode `nearest-even`, and of `1.565` gives coefficient `156`, a tie to even. The `nearest-even` conversion of `1.555` charges `decimal.rounding` with `integer_bits` 11 and `decimal_digits` 4 after the operand and applicable normalization charges. The `exact` refusal charges no `decimal.rounding`. | Test (TC-964) |
-| FR-478-AC-7 | `convert<Rational[-9, 9; 1, 9]>` of `2/4` gives `1/2`, of `-3` gives `-3/1`, and of `0.25` gives `1/4`. Of `1/10` and of `10` it refuses `rational_out_of_domain`/`outside-domain`. `convert<Rational>` of `6/4` gives `3/2`. Each of `1/0`, `1/-2`, `-0/3`, `+1/2`, `1 / 2`, `01/2`, `1/02`, `1.5/2` and `1e1` is undefined. | Test (TC-964) |
+| FR-478-AC-7 | `convert<Rational[-9, 9; 1, 9]>` of `2/4` gives `1/2`, of `-3` gives `-3/1`, and of `0.25` gives `1/4`. Of `1/10` and of `10` it refuses `rational_out_of_domain`/`outside-domain`. At the kernel, with the unbounded semantic target, `convert<Rational>` of `6/4` gives `3/2`. Each of `1/0`, `1/-2`, `-0/3`, `+1/2`, `1 / 2`, `01/2`, `1/02`, `1.5/2` and `1e1` is undefined. | Test (TC-964) |
 | FR-478-AC-8 | `convert<Float64[nearest-even]>` gives bits `0x3fb999999999999a` with flags `{inexact}` for `0.1`, and `0x3fd0000000000000` with no flag for `0.25` and for `2.5e-1`. It gives `0x8000000000000000` for `-0`, `0x7ff0000000000000` with `{overflow, inexact}` for `1e309`, and `0x0000000000000000` with `{underflow, inexact}` for `1e-400`. It gives `0x7ff0000000000000` for `inf`, `0xfff0000000000000` for `-inf` and `0x7ff8000000000000` for `nan`, each with no flag. `convert<Float64[toward-zero]>` gives `0x3fb9999999999999` for `0.1` and `0x7fefffffffffffff` with `{overflow, inexact}` for `1e309`. `convert<Float64[toward-positive]>` of `1e-400` gives `0x0000000000000001` with `{underflow, inexact}`. `convert<Float32[nearest-even]>` of `0.1` gives `0x3dcccccd` and `convert<Float32[toward-zero]>` gives `0x3dcccccc`, each with `{inexact}`. | Test (TC-964) |
 | FR-478-AC-9 | Strict `exact` IEEE: `convert<Float64>` of `0.25` gives `0x3fd0000000000000`. Of `0.1` it refuses `ieee_not_exact`/`rounding-required` with would-be flags `{inexact}`, and of `1e309` with would-be flags `{overflow, inexact}`, each after `ieee.round` and with no bits. `convert<Float64[nearest-even]>` of `0.1` charges `text.input-bytes`, `text.decode-scalars`, then `ieee.round` (`integer_bits` 64). Of `inf` it charges no `ieee.round`. Each of `1E3`, `1e+3`, `1e03`, `1e-0`, `.5`, `5.`, `1e`, `Infinity`, `NaN`, `-nan`, `+inf` and `0x1p3` is undefined. | Test (TC-964) |
 | FR-478-AC-10 | With `dimension Time; unit s : Time = 1; unit ms : Time = 1/1000 * s;`, `convert<Quantity<ms>>` gives `3 ms` for `3` and for `3 ms`, and `1/2 ms` for `0.5` and for `2/4 ms`. Each of `3 s`, `3ms`, `3  ms` (two spaces), `3 MS` and `ms` is undefined. Under the domain package `acme/rpc` imported as `M` with its own unit `ms`, `convert<Quantity<M::ms>>` of `3 ms` gives `3` of that unit, and of `3 M::ms` it is undefined. | Test (TC-964) |
 | FR-478-AC-11 | Over `s: String`, `convert<Integer>(s)` of `42` gives `42`, and of `５` (U+FF15) it is undefined, because a `String` is never normalized. `convert<Float64[nearest-even]>(s)` of `0.1` gives `0x3fb999999999999a`. `convert<Rational[-9, 9; 1, 9]>(s)` of `2/4` gives `1/2`. Each conversion charges `text.input-bytes` and `text.decode-scalars` and no `text.normalize-*` point. | Test (TC-964) |
+| FR-478-AC-12 | In source, `convert<Decimal>(t)` and `convert<Rational>(t)` over `t: Text[0, 64; unicode-scalars]` each refuse `invalid_syntax`/`unexpected-token` at the `>` after the type name, and `convert<Decimal[0, 1000; 0, 2]>(t)` refuses the same at its closing `]`. None of them reaches type checking or records a `filament.op.text.to_decimal` or `filament.op.text.to_rational` row. `convert<Decimal[0, 1000; 0, 2; exact]>(t)` in the same unit parses, checks and records `filament.op.text.to_decimal` with mode `rounding` `exact`. | Test (TC-964) |
 
 ## Dependencies
 

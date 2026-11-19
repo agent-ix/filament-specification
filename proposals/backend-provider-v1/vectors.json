@@ -13284,6 +13284,30 @@
       ]
     },
     {
+      "name": "task-step-mode-member",
+      "base": "task-queue-growth-overload",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/counterexamples/0/counterexample/prefix/0/mode",
+          "value": "hi"
+        }
+      ]
+    },
+    {
+      "name": "task-transition-mode-member",
+      "base": "task-queue-growth-overload",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/counterexamples/0/counterexample/prefix/0/transition/mode",
+          "value": "hi"
+        }
+      ]
+    },
+    {
       "name": "task-queue-growth-stem-second-miss",
       "base": "task-queue-growth-overload",
       "owner": "FR-364",

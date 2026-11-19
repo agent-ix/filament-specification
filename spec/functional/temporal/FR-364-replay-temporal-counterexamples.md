@@ -216,13 +216,25 @@ against the bound task's periodic or sporadic inter-arrival rule; actual
 release is exactly the selected jitter after nominal activation, and the
 absolute deadline remains nominal activation plus `D`. Each `LO` job's
 selected `d` is in `[BCET,C]`; each `HI` job's selected `d` is in
-`[BCET,C(HI)]`. A `HI` job has LO-mode allowance `C(LO)` until an admitted
-source transition enters HI mode. Reaching service `C(LO)` alone does not
-change mode. A completed job at the threshold has no update; an incomplete
-job with no enabled LO-to-HI source transition remains at that allowance. A
-source-authorized `budget-change` carries exactly
-`budget_delta = C(HI)-C(LO)`, leaves actual `d` and remaining work unchanged,
-and preserves job identity, optional declared priority and deadline.
+`[BCET,C(HI)]`. Replay derives the criticality mode and each `HI` job's
+allowance phase by FR-419. It starts in `LO`. At each step it decides from the
+checked mode-switch declarations whether the step is the entry into HI. After
+an entry it requires the next steps to be exactly the pending `budget-change`
+steps, in FR-419 order, with delay zero, the entry's `source_transition`, and
+`budget_delta = C(HI)-C(LO)`; a `budget-change` leaves actual `d`, remaining
+work and accumulated service unchanged and preserves job identity, optional
+declared priority and deadline. Reaching service `C(LO)` alone does not change
+mode. Replay refuses a delay that would carry a running job's service past its
+allowance, a dispatch or resume of an exhausted job, and a budget-exhaustion
+`preempt` with a non-null `source_transition`. No counterexample, step or
+task-transition member carries the mode or the phase; the post-state key does
+(FR-181), and it is compared. Each mismatch refuses
+`invalid_runtime_input`/`invalid-value` at the offending step's `/transition`,
+`/transition/<member>`, `/delay` or `/post_state` pointer, the first in step
+order, naming the supplied and the recomputed value. A `queue_growth` cycle
+must exit in the mode it entered, so one that holds an entry step refuses at
+`/queue_growth/cycle/<i>`. An exhausted job in a `queue_growth` template has
+`status` `preempted` and `demand - remaining = allowance`.
 
 For a task-derived timed subject, a model-arm `transition` may be the typed
 `task-transition` identity defined by FR-181 and FR-331. Its `action` names an
@@ -246,7 +258,14 @@ order (FR-482), then canonical source activation transition identity and
 zero-based occurrence. Source declaration order and any declared task
 priority do not affect EDF ties. Declared priority is provenance only and is
 ignored for EDF ordering. The triggering source or scheduler transition is
-also checked. A
+also checked: replay recomputes every task step's `source_transition`. An
+`activate` or `release` step carries the source operation that activates the
+job, equal to its `release`; a completion synchronized with source feedback
+carries that feedback transition; a `budget-change` carries the entry step's
+source transition (FR-419); every autonomous scheduler step (dispatch,
+preemption, budget exhaustion, resumption, deadline miss, a completion with no
+feedback) carries null. A supplied value that differs refuses
+`invalid_runtime_input`/`invalid-value` at `/transition/source_transition`. A
 `budget-change` identity also carries the exact non-negative `budget_delta`;
 it does not alter `demand`.
 All steps for one live job repeat equal immutable identity fields; replay
@@ -429,6 +448,8 @@ counterexamples an engine returned.
 | FR-364-AC-18 | A task counterexample whose prefix continues past its `trace_position` miss to a closed positive-delay loop replays. The same with `trace_position` on a non-miss step, or with a second `deadline-miss` step after it, refuses `invalid_runtime_input`/`invalid-value` at `/trace_position` or at that step. The `task-queue-growth-overload` vector, whose `trace_position` is `0` for its one-step prefix whose only step is the miss, carries no `deadline-miss` step in its `queue_growth.stem`. | Test (TC-431 BP-58; replay cases by FSL TC-3008) |
 | FR-364-AC-19 | A single `terminal-stutter` loop with delay 1 from a quiescent product-terminal state replays. With delay 0 it refuses at `/loop/0/delay`. From a state with a live job or an enabled source transition it refuses at `/loop/0/transition`. | Test (FSL TC-704, TC-3008) |
 | FR-364-AC-20 | A miss step whose `deadline` or `demand` differs from the recomputed job value refuses at that step's `/transition/deadline` or `/transition/demand`, naming the supplied and the recomputed value. The same value changed on every step of the job refuses at the job's `activate` step. | Test (FSL TC-3008) |
+| FR-364-AC-21 | The FR-419-AC-14 counterexample replays; its prefix is, by index, `activate h#0`, `activate l#0`, `dispatch h#0` at 0; the exhaustion `preempt h#0` at 2 (3); `dispatch l#0` (4); `complete l#0` at 6 (5); `deadline-miss h#0` at 10 (6); `activate h#1`, `activate l#1`, `dispatch h#1` at 10 (7–9); source `go_hi` at 12 (10); `budget-change h#0` (11) and `budget-change h#1` (12) at 12; then the steps to `activate h#2` at 20 (20) and `activate l#2` (21). Each of these refuses `invalid_runtime_input`/`invalid-value` at the named pointer: step 11 moved before step 10 (`/prefix/10/transition`, budget change not enabled in `LO`); step 11 removed (`/prefix/11/transition/job`, the pending change is `h` job 0); steps 11 and 12 swapped (`/prefix/11/transition/job`); step 12 removed (`/prefix/12/transition`, a change is pending for `h` job 1); a third `budget-change h#0` after step 12 (`/prefix/13/transition`); a `budget-change` of `h` job 2 after step 20 (`/prefix/21/transition`); a `budget-change` of `l` job 1 after step 12 (`/prefix/13/transition/task`); step 11 `budget_delta` 2 (`/prefix/11/transition/budget_delta`); step 11 `source_transition` null or `fire_h` (`/prefix/11/transition/source_transition`); step 11 delay 1 (`/prefix/11/delay`); step 11 `demand` 2 (`/prefix/11/transition/demand`); steps 3 and 4 removed and step 5 replaced by `complete h#0` with delay 3 (`/prefix/3/delay`, service would exceed allowance 2); step 3 `source_transition` `fire_h` (`/prefix/3/transition/source_transition`); `resume h#0` inserted at index 5 (`/prefix/5/transition`, not eligible); step 10 `post_state` the key of the same state in `LO` (`/prefix/10/post_state`). The same counterexample against the package without the `mode` declaration refuses at `/prefix/10/post_state`, because the recomputed key of the `go_hi` step is in `LO`. | Test (FSL TC-704) |
+| FR-364-AC-22 | A model-arm step that carries a `mode` member, and a task-transition identity that carries one, are refused `malformed_wire` at that member's pointer before replay (`task-step-mode-member` at `/counterexamples/0/counterexample/prefix/0/mode`, `task-transition-mode-member` at `.../prefix/0/transition/mode`, over the `task-queue-growth-overload` vector). A `queue_growth` witness over the FR-419-AC-14 package whose `cycle` holds the `go_hi` entry step (entered in `LO`, exiting in `HI`) is refused `invalid_runtime_input`/`invalid-value` at `/queue_growth/cycle/<i>` of that step. | Test (TC-431; the queue-growth case by FSL TC-704) |
 
 ## Dependencies
 

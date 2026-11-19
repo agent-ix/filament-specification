@@ -1174,7 +1174,7 @@ own their meaning.
 declaration    =/ random-decl | reward-decl | delay-decl | workload-decl
                 | probabilistic-clause | time-decl | time-invariant
                 | urgent-decl | taskset-decl | release-decl
-                | schedulability-clause ;
+                | mode-switch-decl | schedulability-clause ;
 
 exact-value    = uint | decimal-literal | exact-number ;
 quantity-literal = exact-value, qualified-name ;
@@ -1254,6 +1254,7 @@ task           = 'task', ident, ( 'periodic' | 'sporadic' ), signed-quantity,
                  | 'hi', 'wcet_hi', signed-quantity ), ';' ;
 signed-quantity = [ '-' ], quantity-literal ;
 release-decl   = 'release', ident, '.', ident, 'on', qualified-name, ';' ;
+mode-switch-decl = 'mode', ident, 'hi', 'on', qualified-name, ';' ;
 schedulability-clause
                = 'schedulable', ident, 'on', ident, 'under', policy, ';'
                | 'response', ident, 'on', ident, '.', ident,
@@ -1320,6 +1321,16 @@ profile and time quantities under the timestamped-event finite-window profile
 In `release-decl`, `release S.τ on M::o;` makes each step of operation `o`
 release one job of task `τ` of task set `S`
 ([FR-419](../../spec/functional/analysis/FR-419-analyze-task-set-schedulability.md)).
+In `mode-switch-decl`, `mode S hi on M::o;` makes a step of operation `o`
+taken while the task product of task set `S` is in `LO` mode switch that
+product to `HI` mode
+([FR-419](../../spec/functional/analysis/FR-419-analyze-task-set-schedulability.md)
+"Criticality mode"). `mode` keeps its complete-V1 reservation and begins this
+declaration only at declaration level; inside a `hybrid` body it still begins
+`initial-entry` and `hybrid-mode`. `hi` is matched as a keyword spelling only
+here and in `task`, and remains an identifier elsewhere. There is no `lo`
+form: `mode S lo on M::o;` is `invalid_syntax`/`unexpected-token` at `lo`,
+because FR-419 defines no return from `HI` to `LO`.
 In `schedulability-clause`, the first `ident` names the claim and the second
 the task set. A clock read in `clock-bound` or in an operation's precondition
 compares a `Clock` field with a `quantity-literal` of the time dimension. In `task`, optional `bcet` is the lower bound on actual job demand and is

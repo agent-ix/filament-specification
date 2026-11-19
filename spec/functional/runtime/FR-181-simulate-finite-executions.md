@@ -377,7 +377,8 @@ bound").
 ### Task-automaton product states and steps
 
 A task-derived timed subject additionally carries the task scheduler's finite
-control state: the current mode, policy queue order, each live job's task
+control state: the task set's criticality mode (`LO` or `HI`, FR-419), each
+live `HI` job's allowance phase (`lo` or `hi`), policy queue order, each live job's task
 declaration, nominal activation identity and occurrence, selected jitter,
 slot generation, optional declared priority, absolute deadline and execution-demand phase, and
 whether it is pending jitter, ready, running, preempted or complete. It also
@@ -416,8 +417,10 @@ Service is credited only to the job selected as running by the queue policy.
 The product's diagonal constraints and bounded-subtraction transitions
 preserve each suspended job's accumulated service across preemption while its
 clocks continue to advance at unit rate. A completion transition removes one
-job only when its exact selected demand has been met; an HI budget change
-records its exact delta on every affected live job and retains each job's
+job only when its exact selected demand has been met; no delay carries a
+running job's service past its allowance (FR-419 budget exhaustion); an HI budget change
+follows the entry into HI for every `HI` job live before it, records its exact
+delta (FR-419) and retains each job's
 release, priority and deadline identity. A deadline is missed only when the
 absolute deadline is reached and the job still has positive remaining
 demand.
