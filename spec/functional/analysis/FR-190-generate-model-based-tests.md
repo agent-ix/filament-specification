@@ -55,8 +55,8 @@ SHALL be requested by a `verify` plan step whose method is `model_based_test`
 ([FR-192](FR-192-execute-linked-verification-plans.md) "Source form"), or by a
 direct request carrying the same members. The request names one clause by its
 identity, the generator profile, a seed, `max_cases`, for a clause over a
-state model `max_trace_length`, and, when a generation root has no finite
-bound ("Value domains"), `max_value_bits`.
+state model `max_trace_length`, and, when a generation root or an operation
+result has no finite bound ("Value domains"), `max_value_bits`.
 
 - For a value clause or a pure Boolean predicate, a *case* SHALL be one typed
   assignment of the clause's parameters drawn from their checked domains.
@@ -74,8 +74,8 @@ bound ("Value domains"), `max_value_bits`.
   clause and disposition, or is discarded because a precondition or domain
   rule rejected it; a discarded case is counted and is never a pass. "Case
   accounting" states the check points, premises and discard reasons.
-- A generation root SHALL be classified as "Value domains" states, and only
-  a root with no finite bound takes `max_value_bits`. The generator SHALL
+- Every generation root and operation result SHALL be classified as "Value
+  domains" states, and only one with no finite bound takes `max_value_bits`. The generator SHALL
   NOT narrow a declared finite domain, and SHALL NOT invent a bound the
   request did not state.
 
@@ -87,15 +87,21 @@ composite decomposition of FSL's model transition system. An operation
 result (`[2, o]`) is computed by the native runtime, never generated: it has
 no partitions and no draws, but its domain for candidate results is chosen
 by the same classes, so a result of a type with no finite bound takes the
-size-bounded domain below. Each root falls into exactly one class:
+size-bounded domain below. Each generation root and each operation result
+(together, the *bounded roots*) falls into exactly one class, the first row
+below that matches it:
 
 | Class | Types | Domain used | `max_value_bits` |
 | --- | --- | --- | --- |
-| E, enumerated finite | `Boolean`, `Int[lo, hi]`, enums, `Reference<T>`, `Option` of these, and records, tuples, unions, collections and maps with a declared maximum whose components are all of class E | the declared domain, in the model transition system's enumeration order | not applied |
+| E, enumerated finite | every type the model transition system enumerates as a finite domain (FSL FR-120 "Applications and transition identities"): `Boolean`, `Int[lo, hi]`, enums, `Reference<T>`, `Option` of these, records, tuples, unions, collections and maps with a declared maximum whose components are of class E, and the clock-bearing values whose clock slots add no factor, such as a record with a `Clock` member, a `Sequence<Clock>[0, n]`, and a `Set<Clock>` or `OrderedSet<Clock>` with or without a declared maximum (FR-230 caps it at one element) | the declared domain, in the model transition system's enumeration order | not applied |
+| C, clock-bearing with no finite enumeration | every other clock-bearing type, such as a map whose keys or values hold a clock (`Map<Boolean, Clock>[0, 1]`) or a `Reference<Clock>` collection | none: the model transition system's requires-bound refusal stands, naming the root, because a clock slot has no integer measure and FR-230 owns clock values | not applied |
 | D, declared finite | `Rational[..]`, `Decimal[..]`, `Text[..]`, `Float32`, `Float64`, `Uuid`, `Timestamp` and `Quantity<U>[min, max]` | the declared domain, indexed in its canonical value order (FR-804) and never materialized | not applied: a declared bound is never narrowed |
-| S, no finite bound | `Integer`; a quantity over an unbounded exact carrier; `String`; `Bytes`; `JsonObject`; a collection or map with no declared maximum; a recursive value type | the size-bounded domain `S_b` below, `b` the request's `max_value_bits` | required |
+| S, no finite bound | `Integer`; a quantity over an unbounded exact carrier; `String`; `Bytes`; `JsonObject`; a collection or map with no declared maximum that is not of class E or C; a recursive value type | the size-bounded domain `S_b` below, `b` the request's `max_value_bits` | required |
 | P, population with no maximum | `Population(None)` | the universe the `initial` snapshot admits; identities are never invented | not applied |
 
+Below, a *class S root* is any bounded root of class S, an operation result
+included, so a model whose only root with no finite bound is an operation
+result (an operation `size(): Integer`) takes `max_value_bits` and runs.
 A class P root with no universe keeps the model transition system's
 requires-bound refusal, naming the root. A class D root whose domain is too
 large for per-state candidate enumeration stops the expansion on
@@ -269,8 +275,10 @@ The method SHALL return one result record holding the clause identity, the
 generator profile, seed, every limit, the number of passing, failing and
 discarded cases, the partitions covered, the operation coverage ("Operation coverage") and either no failure or one retained
 counterexample. Its settlement is the member `result`, an FR-331 result
-value (`tested`, `refuted`, `inconclusive`, `incomplete` or `failed`), with
-`cause` where FR-331's result-entry table gives that value one. The method is
+value (`tested`, `refuted`, `inconclusive`, `unsupported`, `incomplete` or
+`failed`), with the `cause` or `diagnostic` FR-331's result-entry table gives
+that value; `unsupported` is the settlement of a `frame` clause with no
+contract-level reading ("Case accounting"), reached before any case. The method is
 not negotiated and no provider writes it, so in a verification plan this
 record is the `model_based_test` step's `result` (FR-824).
 
@@ -278,10 +286,11 @@ record is the `model_based_test` step's `result` (FR-824).
   an FR-364 `TemporalCounterexample`, an FR-485 contract counterexample or a
   value assignment, and that native replay reproduces; only then does the
   clause settle `refuted`.
-- With no failure, the clause SHALL NOT settle `proved`: testing establishes no
-  proof, and the result is evidence of the kind `tested` with its case counts.
-- Exhausting `max_cases` before any failure is a complete tested result, not
-  an incomplete proof; a run stopped by a work or deadline limit before
+- With no failure and at least one passing case, the clause SHALL NOT settle
+  `proved`: testing establishes no proof, and the result is evidence of the
+  kind `tested` with its case counts.
+- Exhausting `max_cases` before any failure, with at least one passing case,
+  is a complete tested result, not an incomplete proof; a run stopped by a work or deadline limit before
   `max_cases` is `incomplete` with the FR-461 limit that stopped it.
 - The record SHALL hold `cases` `{generated, passed, failed, discarded,
   discarded_by}`, `checks` `{evaluated, skipped}`, `partitions` and
@@ -418,7 +427,7 @@ failing clause is rejected and never retained.
 | FR-190-AC-13 | A run whose suite passes with `jam` uncovered is `tested` evidence, settles no verdict and has the outcome category of a passing tested run; with a clause that fails, the same uncovered entry is reported beside the `refuted` counterexample. A value clause's record has no `operations` member, and two runs with equal inputs give byte-equal `operations` entries. | Test (TC-2004) |
 | FR-190-AC-14 | Over a value clause with parameters `x: Integer` and `t: Text[0, 4]`, a clause every case passes, seed 7, `max_cases` 30 and `max_value_bits` 8: every case's `x` lies in `[-255, 255]`; `x`'s partitions are, in order, `size-least` 0, `size-unit` -1 and 1, `size-extreme-low` -255 and `size-extreme-high` 255, and no partition of `x` has a kind ending in `-refusal`; `t`'s partitions are `empty`, `singleton`, `upper-endpoint` (length 4) and `upper-refusal` (length 5); `provenance.max_value_bits` is 8 and `provenance.size_bounded` has exactly one entry, for `x`, with `values` `"511"`. With `max_value_bits` 1, `x` lies in `[-1, 1]` and `t`'s partitions are unchanged. `max_value_bits` 0 and 65 each refuse `invalid_runtime_input`/`invalid-value`, its absence `missing-member`, and `max_value_bits` 8 over a clause whose one parameter is `q: Int[0, 3]` `unknown-member`; each names `max_value_bits` and runs no case. | Test (TC-1600) |
 | FR-190-AC-15 | Over a state model with `value` in `Int[0, 5]` (initial 0) and `inc(by: Int[1, 6])` (enabled when `value + by <= 5`), the postcondition clause of `inc`, seed 7, `max_cases` 100 and `max_trace_length` 8: cases 0 to 7 are the partitions of `value` (-1, 0, 5, 6) followed by those of `by` (0, 1, 6, 7); the cases for `value` -1 and 6 and `by` 0 and 7 are refusal cases, their partitions `refused`, and `cases.discarded_by.domain-refusal` is `{count: 4, first_case: 0}`; the `by` 6 case is discarded `precondition-false`, `discarded_by.precondition-false` is `{count: 1, first_case: 6}`, and its partition is `uncovered` with reason `precondition-false` and `bounds` `[]`; the `value` 0 case (the initial state, no `inc`) is discarded `no-check-point`; `cases.generated` is 100 and equals `passed + failed + discarded`; the run is `tested`. | Test (TC-1600) |
-| FR-190-AC-16 | AC-15's model with an added operation `jam()` (enabled when `value > 5`): the postcondition clause of `jam` gives every case reason `no-check-point` or `domain-refusal`, `cases.passed` 0, and settles `inconclusive` with cause `no-evaluated-case`, exit `22`, never `tested` or `proved`; the precondition clause of `inc` has `discarded_by.precondition-false.count` 0 and the `by` 6 partition `covered`, because a false precondition is a defined, passing point; with a test-double argument admission that accepts `by` 7, the run settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`, exit `30`. | Test (TC-1600) |
+| FR-190-AC-16 | AC-15's model with an added operation `jam()` (enabled when `value > 5`): the postcondition clause of `jam` discards every one of its 100 cases, with `discarded_by` `domain-refusal` `{count: 4, first_case: 0}`, `precondition-false` `{count: 1, first_case: 6}` (the `by` 6 partition case), `invariant-false` `{count: 0, first_case: null}` and `no-check-point` `{count: 95, first_case: 1}`, `cases.passed` and `cases.failed` 0, and settles `inconclusive` with cause `no-evaluated-case`, exit `22`, never `tested` or `proved`; the precondition clause of `inc` has `discarded_by.precondition-false.count` 0 and the `by` 6 partition `covered`, because a false precondition is a defined, passing point; with a test-double argument admission that accepts `by` 7, the run settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`, exit `30`. | Test (TC-1600) |
 | FR-190-AC-17 | Over a state model with `value: Integer` (initial 0), `add(by: Int[1, 100])` (`value' = value + by`) and `big()` (enabled when `value >= 300`), seed 7, `max_cases` 100, `max_trace_length` 8 and `max_value_bits` 8: `big` is `uncovered` with reason `unreachable-within-bound` and `bounds` `["max_value_bits"]`, never `unreachable`; `provenance.value_bound_cuts.count` is at least 1 and `first` names an `add` application from a state where `value + by` exceeds 255; the run is `tested`. With `max_value_bits` 10, `big` is `covered`, or `not-generated` with an `enabled_at` prefix of `add` invocations whose arguments sum to at least 300. | Test (TC-2004) |
 
 ## Dependencies

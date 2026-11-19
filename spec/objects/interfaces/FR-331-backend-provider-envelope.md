@@ -791,6 +791,11 @@ certificate checker and makes its counterexample canonical assignments, so:
   the slot's result value, `absent` for an unfilled slot, or `assumption`
   for a premise supplied only as an assumption). No provider's
   entry, plugin or in-process, carries one.
+- A *method-record-only spelling* is a closed spelling that only the FR-190
+  model-based test record carries, because that method is not negotiated and
+  no provider runs it: the inconclusive cause `no-evaluated-case` and the
+  `tool-failure` defects `oracle-disagreement` and `invalid-shrink`. No
+  provider's entry, plugin or in-process, carries one.
 - A plugin's `counterexamples` entry carries a `counterexample` whose `type`
   is `assignments`, `contract-counterexample` on the entry of an
   `operation-contract` item, or `hybrid-counterexample` on the entry of a hybrid
@@ -811,7 +816,7 @@ This table lists the same closed causes as FR-272's `invalid_result` row:
 | `wrong-value-kind` | A member's JSON kind is not the kind its domain takes, such as a `certification` that is not a string, or an entry that is not an object | The member |
 | `invalid-value` | A member of the right JSON kind lies outside its domain here, such as a `certification` other than `certified`, `uncertified` and `trusted`, a count outside 0 to 2^53 − 1, or a plugin's counterexample `type` other than `assignments` and, on a hybrid item, `hybrid-counterexample` | The member |
 | `certification-mismatch` | A `proved` entry's `certification` is one of the three values but not the one the Certification table fixes for that proof | `/certification`; `expected` the fixed value, when there is one, and `actual` the received one |
-| `unknown-cause` | A result cause or proof basis spelling outside the closed set ("Wire spellings of result causes and proof bases"), or outside the subset its backend may send: a core-only basis or core-only cause in a plugin's entry, or a planner-only cause in any provider's entry | The `type` member; the received spelling |
+| `unknown-cause` | A result cause or proof basis spelling outside the closed set ("Wire spellings of result causes and proof bases"), or outside the subset its backend may send: a core-only basis or core-only cause in a plugin's entry, or a planner-only cause or method-record-only spelling in any provider's entry | The `type` member, or `defect` for a method-record-only defect; the received spelling |
 | `measured-with-truth` | A `measured` entry carries a truth or a basis (FR-409) | The truth or `basis` member |
 
 The reader reads an entry in this order and reports the first defect:
@@ -1004,7 +1009,7 @@ computed.
 | FR-331-AC-52 | A `local-projection` and a `realizability` request item carrying `assessed_root` `{observation, subject}` with an `object` subject are admitted; `assessed_root` on a `temporal-satisfaction` item, an `assessed_root` with an extra member, and one whose `subject` tag is `population` are each refused before consumption. | Test (TC-220) |
 | FR-331-AC-53 | A `realizability` item without `assessed_root`, and one whose `assessed_root` lacks `observation`, lacks `subject` or has an `object` subject that lacks an FR-207 member, each settle `declined` `invalid-input` with `invalid_runtime_input`/`missing-member` naming the absent member, in a request frame and in an in-process request. | Test (TC-220) |
 | FR-331-AC-54 | A hybrid item's `unsupported` entry carrying the diagnostic `unsupported_construct`/`expression-form` with its `detail` (`form`, `declaration`, `mode`, `variable` for a flow, `backend`, and `locus`, the construct's FR-331 `Locus`) and no `cause` is admitted and recorded `unsupported` with that diagnostic; the same entry carrying a `cause` `{"type": "expression-form"}` is refused `invalid_result`/`unknown-cause` at `/cause/type`; a hybrid `counterexamples` entry whose `undefined-evaluation` `where` lacks `time`, or carries `state_key`, fails the schema. | Test (TC-2049) |
-| FR-331-AC-55 | The cause `no-evaluated-case` and the `tool-failure` defects `oracle-disagreement` and `invalid-shrink` are closed spellings of the FR-190 model-based test record only: a provider result entry carrying any of them, as a temporal `inconclusive` cause or a Kani `failed` defect, is refused before consumption; an FR-190 record whose every generated case was discarded settles `inconclusive` with the bare `{"type": "no-evaluated-case"}` and no basis or counterexample, and one whose refusal case native admission accepted settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`. | Test (TC-431, TC-1600) |
+| FR-331-AC-55 | The cause `no-evaluated-case` and the `tool-failure` defects `oracle-disagreement` and `invalid-shrink` are closed spellings of the FR-190 model-based test record only: a provider result entry carrying any of them, as a temporal `inconclusive` cause or a Kani `failed` defect, is refused by the schema and by the reader before consumption, the reader's refusal `invalid_result`/`unknown-cause` at `/cause/type` for `no-evaluated-case` and at `/cause/defect` for either defect, from an in-process provider and from a plugin alike; an FR-190 record whose every generated case was discarded settles `inconclusive` with the bare `{"type": "no-evaluated-case"}` and no basis or counterexample, and one whose refusal case native admission accepted settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`. | Test (TC-431, TC-1600) |
 
 ## Dependencies
 
