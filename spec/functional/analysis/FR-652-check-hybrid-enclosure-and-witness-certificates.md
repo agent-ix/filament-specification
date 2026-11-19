@@ -65,7 +65,10 @@ declaration's variables, or with `lower > upper`, is rejected at its pointer.
    the claim being an invariant `always holds(e)` whose `e` is definitely true
    over every `E_m`.
 2. **`flowpipe`**, for a `bounded-solver` proof: an ordered list of steps,
-   each `{mode, time, box, apriori, step}`. The reader SHALL accept it when
+   each `{mode, time, box, apriori, step}`, `time` an FR-331 `Interval` of
+   seconds and `step` an FR-331 `Rational` number of seconds, both in the
+   object form FR-193 "Solver result on the wire" requires of every exact
+   number on the hybrid wire. The reader SHALL accept it when
    the first step's box contains every initial state; for each step the
    a-priori box `B` satisfies the Picard condition `box + [0, step] * f(B)
    ⊆ B` and the next step's box contains `box + step * f(B)` (or, at a

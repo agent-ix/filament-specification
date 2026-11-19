@@ -223,6 +223,7 @@
         "document": {"$ref": "#/$defs/Nonempty"},
         "locus": {"$ref": "#/$defs/Locus"},
         "transition": {"$ref": "#/$defs/TransitionIdentity"},
+        "time": {"description": "FR-193, FR-364: a hybrid counterexample's decisive instant, an Interval of exact rational seconds, a point when the instant is rational.", "$ref": "#/$defs/Interval"},
         "predicate": {"enum": ["P", "Q", "X", "Y"]},
         "variables": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["variable", "alias"], "properties": {"variable": {"$ref": "#/$defs/Identifier"}, "alias": {"$ref": "#/$defs/Identifier"}}, "additionalProperties": false}},
         "test": {"$ref": "#/$defs/Count"},
@@ -1195,7 +1196,7 @@
       "required": ["type", "kind", "trace"],
       "properties": {
         "type": {"const": "hybrid-counterexample"},
-        "kind": {"oneOf": [{"const": "formula"}, {"$ref": "#/$defs/UndefinedEvaluation"}]},
+        "kind": {"oneOf": [{"const": "formula"}, {"allOf": [{"$ref": "#/$defs/UndefinedEvaluation"}, {"properties": {"where": {"description": "FR-193: a hybrid where carries exactly position, time and locus.", "required": ["position", "time", "locus"], "propertyNames": {"enum": ["position", "time", "locus"]}}}}]}]},
         "trace": {"$ref": "#/$defs/HybridTrace"}
       },
       "additionalProperties": false

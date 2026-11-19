@@ -533,6 +533,53 @@ entry, and that entry is the wire form of the solver result.
   "trace": t}`, `k` `formula` or an `undefined-evaluation{where, cause}`
   envelope, and `t` a `HybridTrace`. The reader settles the item only after
   exact replay ("Trace replay").
+- A provider's claimed refutation is not a solver outcome. A reader SHALL
+  keep the `refuted` entry's `HybridCounterexample` as the provider's claim
+  until exact replay settles it, so that a trace replay does not reproduce
+  settles `inconclusive`, `replay-parity`, carrying the claim, and never
+  `solver-inconclusive`, which is reserved for a solver that claimed no
+  refutation.
+- The `where` of an `undefined-evaluation` kind SHALL carry exactly
+  `position`, `time` and `locus`. `position` is the trace state whose dwell,
+  or whose own point, holds the decisive instant: 0 for `start` and `k` for
+  the state of `jumps[k - 1]`. `time` is an FR-331 `Interval` of seconds
+  that holds the decisive instant. It is a point interval, `lower` equal to
+  `upper`, when the instant is rational. Otherwise it is the isolating
+  interval exact replay found for the instant, with rational ends and
+  `lower < upper`, holding that instant and no other instant at which the
+  expression changes from having a value to having none. When the
+  expression has no value only on an open stretch of instants, the instant
+  is the stretch's start. `locus` is the FR-331 `Locus` of the term node
+  (FR-481) that has no value. The envelope's `cause` is the reason the
+  native evaluator gives the same undefined value outside a hybrid model,
+  `division-by-zero` for a division whose divisor is 0. The trace's state
+  and the instant's time name the point of the behaviour, and the locus
+  names the expression, so a reader recomputes the state's values by
+  replay instead of reading them from the provider. A reader settles the
+  item from the counterexample its own exact replay reproduces; the
+  provider's `where` stays on the record only as part of its claim.
+- A provider that cannot decide a model because a construct is outside the
+  class its method decides SHALL return an `unsupported` entry carrying the
+  `diagnostic` `unsupported_construct`/`expression-form` (FR-272) and no
+  `cause`. Its `detail` names `form`, the recognized construct;
+  `declaration`, the `hybrid-decl`; `mode`, the mode whose flow, guard,
+  reset, invariant or initial entry holds the construct; `variable`, for a
+  flow, the variable whose rate it is; and `backend`, the provider whose
+  class excludes it, which stands in FR-272's payload for the profile. The
+  diagnostic's location is the FR-331 `Locus` of the construct's term node.
+  The construct is valid FSL, so the item is `unsupported` and not
+  `invalid-request`; another provider may decide it.
+- Every exact number on the hybrid wire SHALL be the FR-331 `Rational`
+  object `{"numerator": n, "denominator": d}`, as the checked-package schema
+  defines it: a proof's `horizon`, an `insufficient-horizon` cause's
+  `horizon`, a trace's `delta`, each `lower` and `upper` of an `Interval`,
+  and an FR-652 certificate's `step`. A plain string such as `"10"` or
+  `"1/16"`, or a JSON number, in such a member is refused
+  `invalid_result`/`wrong-value-kind` at that member. One spelling per
+  value lets one reader read every provider and keeps equality exact. The
+  one hybrid value written as text is an item's `options` entry, since
+  FR-331 keeps `options` as a map of strings; a provider that takes a
+  rational option reads it from that string by its own published grammar.
 - Every other row of the verdict map keeps its own value and cause: a budget
   stop, a `max_solver_time` exhaustion and a `deadline_ms` overrun settle
   `incomplete`, a run the caller's frontend cancels at its own deadline
@@ -754,6 +801,7 @@ without a certificate is settled by this requirement alone.
 | FR-193-AC-21 | Over `Braking`, whose one jump occurs at time `v0 / a`, anywhere in `[0, 20]`, and which takes no second jump: against `always [0, 10] holds(h.v < 30)`, a `delta-complete` `unsat` with `horizon` 10, `jumps` 1 and `exhaustive` `["time"]`, and one with `horizon` 21/2, settle `proved`, `bounded-solver`; one with `horizon` 1 settles `inconclusive`, `insufficient-horizon{horizon: 1, jumps: 1, exhaustive: ["time"]}`; one with `horizon` 10, `jumps` 0 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 0, exhaustive: []}`, and one with `horizon` 20, `jumps` 3 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `always [0, 10] eventually [0, 5] holds(h.v < 30)` a `horizon` 10 proof with `exhaustive` `["time"]` settles `insufficient-horizon`; under `clock "model-steps"`, against `eventually [0, 1] holds(h.v = 0)`, `jumps` 1 with `horizon` 20 and `exhaustive` `["jumps"]` settles `proved`, `jumps` 1 with `horizon` 10 and `exhaustive` `[]` settles `insufficient-horizon{horizon: 10, jumps: 1, exhaustive: []}`, and `jumps` 0 with `horizon` 100 and `exhaustive` `["jumps"]` settles `insufficient-horizon`; against `once [0, 2] holds(h.v = 20)` under `model-steps` (horizon 0 positions) a proof with `jumps` 0 and `exhaustive` `[]` settles `proved`; against `always holds(h.v < 30)` and against FR-193-AC-15's `on each (q: Braking) when (q.v > 10)` claim, every `bounded-solver` proof settles `insufficient-horizon` and an `inductive-solver` proof settles `proved`; a plugin's `trusted` `bounded-solver` entry with `horizon` 1 against the first claim settles `insufficient-horizon` at the reader; an `insufficient-horizon` cause on an FR-468 refinement item is refused `invalid_result`/`invalid-value` at `/cause/type`. | Test (TC-373) |
 | FR-193-AC-22 | A point trace through a mode whose flow is not polynomial refutes only with an accepted FR-652 `validated-witness`, and is then recorded in `counterexamples`; without one it is replayed statically and stays `inconclusive`. | Test (TC-1605) |
 | FR-193-AC-23 | Over `Braking` without `t`, against `always [0, 10] holds(h.v > 5)`, the point trace starting at `(Moving, v = 20, a = 2, time 0)` with no jump and `end` `(time 8, v = 4, a = 2)` replays exactly and settles `refuted`, the bad prefix ending at `end`; the same trace with `end` `(time 8, v = 5, a = 2)` settles `not-reproduced` at check 4; a trace carrying both `end` and `loop` refuses `invalid_result`/`invalid-value` at `/end`. | Test (TC-373) |
+| FR-193-AC-24 | A `proved` entry whose `horizon` is `{"numerator": "10", "denominator": "1"}` is read, and the same entry with `horizon` `"10"` or `10` is refused `invalid_result`/`wrong-value-kind` at `/basis/horizon`, as is a trace interval whose `lower` is `"0"` at its pointer; an item `options` entry `{"step": "1/16"}` is admitted as a string. A `refuted` entry whose point trace exact replay does not reproduce settles `inconclusive`, `replay-parity`, carrying the provider's counterexample, never `solver-inconclusive`. Against `always [0, 12] holds(1 / (h.v - 5) != 0)` over `Braking`, the reproduced counterexample's `kind` is `{"type": "undefined-evaluation", "where": {"position": 0, "time": {"lower": {"numerator": "15", "denominator": "2"}, "upper": {"numerator": "15", "denominator": "2"}}, "locus": L}, "cause": "division-by-zero"}`, `L` the division's term node, and a `where` carrying any other member is refused `invalid_result`/`unknown-member`. A provider's `unsupported` entry for the flow `v' = -a / (1 + v)` carries `unsupported_construct`/`expression-form` with `form`, `declaration`, `mode` `Moving`, `variable` `v` and `backend`, located at that flow's term node, and no `cause`. | Test (TC-2049) |
 
 ## Dependencies
 

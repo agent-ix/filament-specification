@@ -254,6 +254,7 @@ with these key names:
 | `sample` | observed arm over record samples, in place of `document`: the `U64String` index of the sample position there in the request trace's position list |
 | `locus` | the source locus of the expression that has no value |
 | `transition` | for an undefined guard only: the FR-181 transition identity whose guard it is |
+| `time` | for a hybrid counterexample only: the FR-331 `Interval` of seconds that holds the decisive instant, a point when the instant is rational; a hybrid `where` carries exactly `position`, `time` and `locus` ([FR-193](../analysis/FR-193-analyze-continuous-hybrid-models.md) "Solver result on the wire"), since a continuous behaviour's evaluation point is an instant within a trace state's dwell, not a position |
 | `predicate` | for a predicate of a state-graph claim only: `"P"`, `"Q"`, `"X"` or `"Y"`, the predicate that has no value ([FR-393](../../objects/interfaces/FR-393-state-graph-evidence.md)) |
 | `variables` | for a hyperproperty only: the trace or execution variables with their aliases, `[{"variable":"<ident>","alias":"<ident>"}, ...]`, in the order of the plural keys ([FR-400](../../objects/interfaces/FR-400-hyper-counterexample.md)) |
 
