@@ -11,7 +11,7 @@ relationships:
 ## Description
 
 Verify the `quantifier` binding of a quantified guard part over a collection
-with no declared maximum. Scope: FR-322-AC-479.
+with no declared maximum. Scope: FR-322-AC-479, FR-322-AC-480.
 
 ## Test Procedure
 
@@ -26,6 +26,9 @@ with no declared maximum. Scope: FR-322-AC-479.
    package with `quantifier` `each` added to a part, and step 1's package
    with `quantifier` `all`.
 
+5. Replay `CL-65` and `CL-66` and read guard node 47's `node_id`, and that
+   of `CL-57`.
+
 ## Expected Results
 
 - Step 1: one family part, `binders` `[e]`, `quantifier` `each` for `forall`
@@ -38,3 +41,8 @@ with no declared maximum. Scope: FR-322-AC-479.
   at the part; the bounded part's `quantifier` refuses the same at the
   binding's value (`CL-64`); `all` fails the closed schema, `malformed_wire`
   (`CL-63`).
+- Step 5: both admitted; the paths end `"quantifier", "0", "each"` and
+  `"quantifier", "0", "some"`, the two ids differ, and `CL-57`'s path has no
+  `quantifier` segment.
+
+Test: `tests/checked_package_v2.rs::tc_2063_family_part_quantifier_is_in_the_guard_id_path`.

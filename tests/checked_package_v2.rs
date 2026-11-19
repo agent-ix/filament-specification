@@ -15299,6 +15299,17 @@ fn timed_clause_case_package(case: &Value) -> Value {
     operand_slots::patched(&parsed_fixture(POSITIVE_TIMED_CLAUSE_NODES), &patch, apply_json_patch)
 }
 
+/// The selected document of a clause vector: the published one, with the
+/// case's `document_patch` applied when it has one (CL-65, CL-66 remove the
+/// declared maximum of `Order.ts`).
+fn timed_clause_case_document(document: &Value, case: &Value) -> Value {
+    let mut document = document.clone();
+    for operation in case.get("document_patch").and_then(Value::as_array).into_iter().flatten() {
+        apply_json_patch(&mut document, operation);
+    }
+    document
+}
+
 /// Replays every case of the clause vectors: the patch applied to the clause
 /// fixture, schema validity and the refusal.
 fn timed_clause_vector_defects(skip: &str) -> Vec<String> {
@@ -15309,6 +15320,7 @@ fn timed_clause_vector_defects(skip: &str) -> Vec<String> {
     for case in vectors["cases"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
         let package = timed_clause_case_package(case);
+        let document = timed_clause_case_document(&document, case);
         let valid = validator.is_valid(&package);
         if case["schema"] == "invalid" {
             if valid {
@@ -15354,9 +15366,26 @@ fn timed_clause_vector_defects(skip: &str) -> Vec<String> {
 fn tc_367_timed_clause_vectors_replay_to_their_refusals() {
     let vectors = parsed_fixture(TIMED_CLAUSE_NODE_VECTORS);
     let ids: Vec<&str> = vectors["cases"].as_array().unwrap().iter().map(|c| c["id"].as_str().unwrap()).collect();
-    let expected: Vec<String> = (1..=64).map(|n| format!("CL-{n:02}")).collect();
+    let expected: Vec<String> = (1..=66).map(|n| format!("CL-{n:02}")).collect();
     assert_eq!(ids, expected.iter().map(String::as_str).collect::<Vec<_>>());
     assert_eq!(timed_clause_vector_defects(""), Vec::<String>::new());
+}
+
+/// A family part's quantifier is part of its guard's derived id path: the
+/// path ends with `quantifier`, the part position and the quantifier text, so
+/// `each` and `some` give different node ids, and a guard with no family part
+/// writes no such segments (FR-322-AC-480).
+#[trace("TC-2063", "FR-322-AC-479", "FR-322-AC-480")]
+#[test]
+fn tc_2063_family_part_quantifier_is_in_the_guard_id_path() {
+    let vectors = parsed_fixture(TIMED_CLAUSE_NODE_VECTORS);
+    let case = |id: &str| vectors["cases"].as_array().unwrap().iter().find(|c| c["id"] == id).unwrap().clone();
+    let guard_id = |id: &str| timed_clause_case_package(&case(id))["semantic_graph"]["nodes"][47]["node_id"].clone();
+    let tail = |id: &Value| id["path"].as_array().unwrap().iter().rev().take(3).rev().cloned().collect::<Vec<_>>();
+    assert_eq!(tail(&guard_id("CL-65")), vec![json!("quantifier"), json!("0"), json!("each")]);
+    assert_eq!(tail(&guard_id("CL-66")), vec![json!("quantifier"), json!("0"), json!("some")]);
+    assert_ne!(guard_id("CL-65"), guard_id("CL-66"));
+    assert!(!guard_id("CL-57")["path"].as_array().unwrap().contains(&json!("quantifier")));
 }
 
 /// Each rule of the clause oracle is pinned by a published vector: switching
