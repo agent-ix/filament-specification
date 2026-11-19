@@ -50,9 +50,14 @@ the first defect by its RFC 6901 pointer.
 ```
 
 A native run carries the request as its one `verification_plan` member, and
-every pointer below is reported with that member's prefix
-(`/verification_plan/plan`), as FR-805 states for a host surface. The member
-list is closed:
+every pointer below is relative to the plan request object. A host surface
+reports it prefixed by the pointer of the `verification_plan` member in the
+document the caller sent, as FR-805 states for a host surface: in a
+`native-run/1` document that member sits in its `request` object, so `/plan`
+is reported as `/request/verification_plan/plan`, the same form as FR-817's
+`/request/export/obligations`. A pointer then resolves in the bytes the
+caller wrote, and every member of one run request is located the same way.
+The member list is closed:
 
 | Member | Type | Default | Consumed by |
 | --- | --- | --- | --- |
@@ -67,6 +72,21 @@ list is closed:
   pointer; a member of the wrong JSON kind `wrong-value-kind`; `emit` and
   `execute` both `false` `invalid-value` at `/execute`, since the request
   would ask for nothing.
+- A member whose value is JSON `null` is read as absent: it takes its
+  default, or for `plan`, `initial` and `document` the absent behaviour
+  above. FR-817's export request reads `null` the same way (its example
+  carries `"observer": null` for no observer), so one rule holds for every
+  member of a run request. The `verification_plan` member itself is the
+  request and has no default; `"verification_plan": null` is not an object
+  and refuses `wrong-value-kind` at the member's own pointer.
+- `seed` SHALL be a JSON number written as an integer, with no fraction or
+  exponent part, from 0 to 2^64 − 1. A JSON number outside that domain (a
+  negative number such as `-1`, a fraction such as `7.5`, an exponent form
+  such as `7e0`, or a value above 2^64 − 1) refuses `invalid-value` at
+  `/seed`, because its JSON kind is right and its value is outside the
+  member's domain, as FR-331's reader table and FR-805's negative deadline
+  read it. A value of another JSON kind (a string such as `"7"`, a boolean,
+  an array or an object) refuses `wrong-value-kind`.
 - Once the plan is selected, `initial` on a plan with no step it is consumed
   by, and `seed` on a plan with no step it is consumed by, refuse
   `unknown-member` at their pointers: the member set is closed by the
@@ -135,8 +155,15 @@ identities (FR-192 "Package form"). On a source run `document` refuses
   step a `requires` prerequisite stopped, with `blocked_by` the first such
   prerequisite in source order. The vocabulary is closed and is the FR-331
   result vocabulary with one addition, so a step settles exactly as the same
-  item settles outside a plan; a `measured` step's `result` carries its
-  FR-409 decision. `evidence` is the evidence kind the method produced
+  item settles outside a plan. A `measured` step's FR-409 decision is read
+  from its `result` only, at `result.verdict.decision.type` (`accepted`,
+  `rejected` or `undecided`), the FR-410 `StatisticalVerdict` the FR-331
+  `measured` entry carries, with its cause beside it in that object. A
+  disposition has exactly the members `status`, `method`, `evidence`,
+  `blocked_by` and `result`; it carries no `decision` member of its own,
+  because a second copy of the decision could disagree with the verdict
+  the engine wrote, and the gate, `failed_steps`, `status` and the exit all
+  read that one value. `evidence` is the evidence kind the method produced
   (FR-192 method table), never another, and `null` on a step that produced
   none; `result` is the step's FR-331 result entry, `null` on a blocked
   step.
@@ -161,7 +188,9 @@ identities (FR-192 "Package form"). On a source run `document` refuses
   result names each failing step.
 - `status` is `passed` when every node is `proved`, `tested`, or `measured`
   with decision `accepted`; `failed` when any node is in `failed_steps`; and
-  otherwise `incomplete`.
+  otherwise `incomplete`. When `execute` is `false`, `status` is `null`:
+  the run settled no node, so it neither passed nor failed, and
+  `incomplete` would name a category (exit `22`) the run does not have.
 
 The run is multi-item output, so its exit is FR-301's: each node's
 disposition has its FR-301 category (`proved` and `tested` success `0`,
@@ -182,6 +211,7 @@ with `execute` `false` settles no node and exits `0`.
 | FR-824-AC-3 | `seed` `"7"` refuses `wrong-value-kind` at `/seed`; `emit` and `execute` both `false` refuse `invalid-value` at `/execute`; `engine` refuses `unknown-member` at `/engine`; `seed` on a plan with only `model_check` steps refuses `unknown-member` at `/seed`; a plan run over a selected package without `document` refuses `missing-member` at `/document`, and with a plan document of another package `invalid-value` at `/document` naming both identities. | Test (TC-2039) |
 | FR-824-AC-4 | `Release` executed with no registered engine advertising `temporal-satisfaction`: `safe` settles `unsupported` with `unsupported_projection`/`unsupported-requested-capability` naming `temporal-satisfaction` and the extent `bounded`, and no engine runs for it; `tested` still runs and settles `tested`; `timely`, whose prerequisite is not satisfied, is `blocked` by `safe` and is not negotiated; `status` is `incomplete`, `failed_steps` is empty and the exit is `21`, FR-301's highest-severity code of `21`, `22` and `0`. | Test (TC-2045) |
 | FR-824-AC-5 | A plan of a `probabilistic_statistical` step `s` and a `model_check` step `t depends [s]`: with `s` `measured` `accepted`, `t` runs and `s`'s disposition has category success `0`; with `s` `measured` `rejected`, `t` is `blocked` by `s`, `failed_steps` is `["s"]`, `status` `failed` and the exit `22`; with `s` `measured` `undecided`, `t` is `blocked`, `failed_steps` is empty, `status` `incomplete` and the exit `22`. | Test (TC-2045) |
+| FR-824-AC-6 | Carried in a `native-run/1` request, `seed` `"7"` refuses `wrong-value-kind` at `/request/verification_plan/seed`; `seed` `-1`, `7.5` and `18446744073709551616` each refuse `invalid-value` there; `{"plan": "Release", "seed": null, "emit": null, "initial": null}` runs `Release` with `inputs` `{"initial": null, "seed": 0}` as if the three members were absent; `"verification_plan": null` refuses `wrong-value-kind` at `/request/verification_plan`; each refusal exits `20` before any step runs. In FR-824-AC-5's runs, `s`'s disposition has exactly the members `status`, `method`, `evidence`, `blocked_by` and `result`, and its decision is `result.verdict.decision.type` (`accepted`, `rejected`, `undecided`); `{"plan": "Release", "emit": true, "execute": false}` writes `status` `null`. | Test (TC-2046) |
 
 ## Dependencies
 

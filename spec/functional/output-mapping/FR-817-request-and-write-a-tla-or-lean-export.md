@@ -195,6 +195,28 @@ The export request is the `export` member of a `native-run/1` request:
   text, so they describe nothing that exists. Either way the caller raises
   the named limit and reruns. A caller reads from `cause` alone
   which setting to raise and from what value.
+- `refusal` is present exactly when `status` is `refused`, and absent on
+  every other status, so a caller reads why the export refused from one
+  member. It is a closed object in one of two shapes:
+  - an observer the implementation cannot run: `{"code":
+    "unsupported_projection", "cause": "unsupported-requested-capability",
+    "capability": "observer", "observer": O, "reason": R, "details":
+    {"path": "/request/export/observer"}}`, `O` the requested observer as
+    given and `R` a non-empty display string. `capability` names the kind of
+    capability missing, so a caller tells a missing observer backend from
+    any other missing capability by that member and never by `reason`. A
+    host whose observer backend is built but whose tool is absent writes
+    the same shape with `cause` `tool-unavailable` and the member `tool`
+    naming the tool after `observer`;
+  - a request below its floor: `{"code": "unsupported_projection", "cause":
+    "below-fidelity-floor", "failing": [F...]}`, `failing` every FR-298
+    record that fails the floor, in record order, each exactly as `records`
+    carries it (obligation, disposition and causes), as FR-811 lists them.
+
+  An admission refusal writes no export outcome; it is the FR-301 outcome
+  document's diagnostic at the member's pointer. The outcome document's
+  diagnostic of a `refused` export carries the same `code`, `cause` and,
+  when present, `details` as `refusal`.
 - `package` is present only when `assembled`. It holds FR-299's key apart
   from the records: the source package reference (identity and version),
   the exact target profile, the generator identity and semantic version, and
@@ -239,7 +261,16 @@ the export outcome document unchanged.
   refuses `invalid-request` naming `limits` and the setting, exit `20`.
 - Exits: `assembled` `0`; admission refusal `20`; an observer the
   implementation cannot run `21` (unsupported); `below-fidelity-floor`
-  `21` (unsupported); `incomplete` `22`; a mapper failure `30`.
+  `21` (unsupported); `incomplete` `22`; a mapper failure `30`; an output
+  failure `30`. An output failure is an admitted, assembled export whose
+  named target file cannot be written (a missing parent directory, a denied
+  permission, a full device): no file or partial file is left, the FR-301
+  outcome document carries one diagnostic with `code` and `cause`
+  `output-failure`, its category is internal-failure and its `last_stage`
+  is the greatest stage the export reached, not `null`, because the
+  program was checked and only the write failed. A file or directory found
+  already at the path stays the admission refusal above, exit `20`, so a
+  caller tells a path conflict from a write failure by the code.
 - When several stops could apply, the export SHALL report the first one
   in the order it works. First comes admission (exit `20`). Next comes the
   observer: a selected observer the implementation cannot run refuses
@@ -281,6 +312,8 @@ naming both, exit `20`, before any stage runs.
 | FR-817-AC-11 | The counter export under `{"export.work_units": 1}` stops `incomplete` with `records` `[]` and `cause` `limit-reached{limit: work_units, value: 1, setting: export.work_units}`, exit `22`; under `{"export.nodes": 1, "export.work_units": 1}` its `cause` is `limit-reached{limit: nodes, value: 1, setting: export.nodes}`. | Test (TC-2040) |
 | FR-817-AC-12 | For two invariants over one state model, the least `export.nodes` under which the export of both is not `incomplete` is less than the sum of the least values for each alone, and at least the greater of them. | Test (TC-2040) |
 | FR-817-AC-13 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc` and `output` `{"file": "m.tla"}`, in an implementation with no TLC backend, settles `refused` with `unsupported_projection`/`unsupported-requested-capability` naming `tlc`, exit `21`, with no `target_text`, no `package` and no `m.tla`; the same request with `observer` `tlc` and `limits` `{"export.nodes": 1}` refuses the same way, exit `21`, not `incomplete`; without `observer` it assembles, exit `0`. | Test (TC-2040) |
+| FR-817-AC-14 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc`, where the implementation has no TLC backend, writes `status` `refused` and `refusal` with exactly `code` `unsupported_projection`, `cause` `unsupported-requested-capability`, `capability` `observer`, `observer` `tlc`, a non-empty `reason` and `details` `{"path": "/request/export/observer"}`, exit `21`; `SlowEnough` under the default floor writes `refusal` with exactly `code` `unsupported_projection`, `cause` `below-fidelity-floor` and `failing` the one failing record as `records` carries it, exit `21`; an `assembled` and an `incomplete` outcome have no `refusal` member. | Test (TC-2047) |
+| FR-817-AC-15 | The same export under `any` with `output` `{"file": "missing-directory/m.tla"}`, whose parent directory does not exist, exits `30` with category internal-failure, one diagnostic with `code` and `cause` `output-failure`, `last_stage` the stage the export reached (S4 for an export of a checked package), and no file or directory created; with `m.tla` already present at the path it refuses `invalid-request`, exit `20`. | Test (TC-2047) |
 
 ## Dependencies
 
