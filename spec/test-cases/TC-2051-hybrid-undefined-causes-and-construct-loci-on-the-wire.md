@@ -31,6 +31,9 @@ FR-193-AC-25, FR-193-AC-26 and FR-193-AC-27.
    entry, `mode` `Moving` and no `variable`, whose `locus` names the `/` in
    `half`'s body; repeat with the `locus` naming the `/` in `spare`'s body,
    with `mode` `Stopped`, and with `variable` `v`.
+   Over `BrakingR`, read the same entry with its `locus` at the call term
+   `down(v)` of the recursive function `down`, then at the `/` inside
+   `down`'s body.
 
 ## Expected Results
 
@@ -41,3 +44,6 @@ FR-193-AC-25, FR-193-AC-26 and FR-193-AC-27.
   `invalid-value` at the kind's `cause`; the catalog lists the four.
 - Step 3: the construct is read, located in `half`'s declaration; then
   `invalid_result`/`invalid-value` at `/diagnostic/detail/locus` three times.
+  Over `BrakingR`, the call-term locus is read and the locus inside `down`'s
+  body is refused `invalid_result`/`invalid-value` at
+  `/diagnostic/detail/locus`.
