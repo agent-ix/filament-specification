@@ -143,8 +143,8 @@ the name by the same encoding:
 The tags `slot`, `op`, `rcv` and `arg` hold no `_`, so a name's tag, and
 with it its field count, is the text before its first `_`, and every name
 begins with a letter. In the rest of
-the name every `_` starts exactly one of `__`, `_x` plus two hexadecimal
-digits, or `_s`, none a prefix of another, so the name splits into its
+the name every `_` starts exactly one of `__`, `_x` plus two uppercase
+hexadecimal digits, or `_s`, none a prefix of another, so the name splits into its
 fields uniquely and each field decodes uniquely. Two distinct tags or field
 lists therefore never give one name, whatever underscores or non-ASCII
 characters the source names hold. A slot parameter's node identity is its
@@ -154,20 +154,25 @@ name, level and type, as for every `value`/`parameter` node (FR-322).
 
 The name is the only mark of a slot parameter: a slot parameter has the same
 node form, level rule and type rule as every other `value`/`parameter` node,
-and a reader that walks a body's `dependencies` sees no other difference. The
-names the encoding can produce are therefore reserved to slot parameters, so
-that every reader classifies a parameter the same way from its name alone.
+and a reader that walks a body's `dependencies` sees no other difference. Every
+name a decoder by the rules of "Slot parameters" accepts is therefore reserved
+to slot parameters, so that every reader classifies a parameter the same way
+from its name alone. That set is wider than the names the encoding writes: it
+holds non-canonical escapes the encoder never produces, such as `op_s_x41`,
+which decodes to the field `A`, and these are reserved too.
 
 A name is in the **reserved slot form** when it is one of the tags `slot`,
 `op`, `rcv` or `arg`, followed by exactly that tag's field count (`slot` 2,
 `op` 1, `rcv` 1, `arg` 4) of fields, each written `_s` and then one or more
 units, where a unit is an ASCII letter or digit, `__`, or `_x` and two
 uppercase hexadecimal digits, and the bytes a field's units decode to are
-well-formed UTF-8. This is exactly the set of names the decoder above
-accepts. A name outside the form is an ordinary parameter name, however it
+well-formed UTF-8. This is exactly the set of names the decoder of "Slot
+parameters" accepts. A name outside the form is an ordinary parameter name, however it
 begins: `slot_sv` (one field where `slot` takes two), `op_sa_sb` (two fields
 where `op` takes one), `rcv_s` (an empty field), `op_sa_x4` (a broken
-escape), `slotted` and `operand` are not reserved.
+escape), `op_s_xC3` (an escaped byte that is not well-formed UTF-8 alone),
+`op_s_xc3` (lowercase hexadecimal digits), `slotted` and `operand` are not
+reserved.
 
 - The producer SHALL write a `value`/`parameter` node whose name is in the
   reserved slot form only as a slot parameter, named by the encoding of its
@@ -313,8 +318,8 @@ order and the first failing check is its defect:
 | FR-402-AC-9 | Every slot parameter name matches `[A-Za-z_][A-Za-z0-9_]*` and decodes to its tag and fields: `v @ a` is `slot_sv_sa`, `a.step.op` is `op_sa` and `a.step.Vault::step.i` is `arg_sa_sVault_sstep_si`; the slots for object parameter `a_b` in trace `c` and for `a` in trace `b_c` are `slot_sa__b_sc` and `slot_sa_sb__c`, which differ; a byte outside ASCII letters, digits and `_` is `_x` and two uppercase hexadecimal digits; and names built from every pair of distinct tags and field lists over a set including `_`, `s`, `x` and digit-leading names are pairwise distinct. | Test (TC-346) |
 | FR-402-AC-10 | A `behaviours` clause whose Groups 0 and 1 both bind `variable` `s` refuses `ambiguous_declaration`/`ambiguous-name` at `/semantic_graph/nodes/{n}/body/members/3/value/members/1/members/0`, naming `s`, before the Subjects step; a finite-domain clause with Groups `t` and `t` refuses the same at Group 1's `variable`; Groups `s` and `n` are admitted. | Test (TC-346) |
 | FR-402-AC-11 | `hyper Whole using inf over behaviours () forall trace a of V forall trace b of V { always holds(true) }` is emitted with a body wrapper whose `over` references the `model`/`model_root` node of `V`'s package, and the reader admits it at the temporal and hyperproperty steps. Each refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`: a `NonInterference` wrapper, whose body reads `v @ a`, with `over` edited to the root; a `Whole` wrapper whose `over` is the root of a package no `subjects` binding names; and a single-trace `temporal`/`temporal_clause` that is no body wrapper with `over` a `model_root` node. | Test (TC-2034) |
-| FR-402-AC-12 | The checker refuses `ambiguous_declaration`/`ambiguous-name` at the parameter's declaring source region, naming `op_sa` and the tag `op`, for `function f(op_sa: Integer): Integer pure { op_sa }`, and refuses the same, naming `slot_sx_sy` and the tag `slot`, for the clock guard binder of `pre F using v on Config::ConfigVersion::attemptUpdate { forall(slot_sx_sy in self.us: slot_sx_sy.x < 5 ms) }` over a `us: Sequence<Timer>` field; neither unit emits a package. The same function with its parameter named `slot_sv`, `op_sa_sb`, `rcv_s`, `op_sa_x4` or `slotted` is admitted. With `Whole`'s body wrapper formula (FR-402-AC-11) edited to read an Integer `value`/`parameter` node, the reader refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0` when that node is named `op_sx` or `arg_sa_sVault_sstep_si`, and admits the package at the temporal and hyperproperty steps when it is named `op_sa_sb`, `slot_sv`, `rcv_s` or `slotted`. | Test (TC-2082) |
-| FR-402-AC-13 | Inside the hyperproperty step's Body check, `Whole`'s body wrapper (FR-402-AC-11) with a non-empty `fairness` argument and an `over` naming the `model_root` node of a selected package no `subjects` binding names refuses `invalid_semantic_graph` at `/semantic_graph/nodes/{w}/body/arguments/4`, not at `arguments/0`; with the `fairness` argument emptied it refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`; and a `body` that references a `temporal`/`formula` node directly refuses `ill_typed`/`operator-ineligible` at the hyperproperty node, with no wrapper check reported. | Test (TC-2082) |
+| FR-402-AC-12 | The checker refuses `ambiguous_declaration`/`ambiguous-name` at the parameter's declaring source region, naming `op_sa` and the tag `op`, for `function f(op_sa: Integer): Integer pure { op_sa }`, and refuses the same, naming `slot_sx_sy` and the tag `slot`, for the clock guard binder of `pre F using v on Config::ConfigVersion::attemptUpdate { forall(slot_sx_sy in self.us: slot_sx_sy.x < 5 ms) }` over a `us: Sequence<Timer>` field; neither unit emits a package. The same function with its parameter named `op_s_x41` is refused the same, naming the tag `op`, and with its parameter named `slot_sv`, `op_sa_sb`, `rcv_s`, `op_sa_x4`, `op_s_xC3`, `op_s_xc3` or `slotted` is admitted. With `Whole`'s body wrapper formula (FR-402-AC-11) edited to read an Integer `value`/`parameter` node, the reader refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0` when that node is named `op_sx`, `op_s_x41` or `arg_sa_sVault_sstep_si`, and admits the package at the temporal and hyperproperty steps when it is named `op_sa_sb`, `slot_sv`, `rcv_s`, `op_s_xC3`, `op_s_xc3` or `slotted`. | Test (TC-2082) |
+| FR-402-AC-13 | Inside the hyperproperty step's Body check, `Whole`'s body wrapper (FR-402-AC-11) with a non-empty `fairness` argument and an `over` naming the `model_root` node of a selected package no `subjects` binding names refuses `invalid_semantic_graph` at `/semantic_graph/nodes/{w}/body/arguments/4`, not at `arguments/0`; with the `fairness` argument emptied it refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`; and with its `body` retargeted to a Boolean `expression` node of the package (a node FR-370's placement check admits there) the node refuses `ill_typed`/`operator-ineligible` at the hyperproperty node, with no wrapper check reported. | Test (TC-2082) |
 
 ## Dependencies
 
