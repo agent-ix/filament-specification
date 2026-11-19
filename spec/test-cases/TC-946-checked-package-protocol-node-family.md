@@ -18,7 +18,7 @@ Schema and reader vectors for the `protocol` node family of
 body, the operator catalog, node ids, declaration paths, the clause body,
 membership and containment, binders and their scope, the derived causal
 relation and progress, placement, profile fit, the reader order and the
-activation relation. Scope: FR-464-AC-1 to FR-464-AC-15 and FR-464-AC-21 to FR-464-AC-23.
+activation relation. Scope: FR-464-AC-1 to FR-464-AC-15, FR-464-AC-21 to FR-464-AC-23 and FR-464-AC-25.
 
 ## Base package
 
@@ -123,6 +123,8 @@ node and the `value`/`parameter` binder nodes. The binders have levels
 | K21 | `K16` with every member's `recursion_group` removed | `invalid_semantic_graph`, no cause, at `Flow`'s node, the component's first member |
 | K22 | `K16` plus a second cyclic component of the same shape (`Flow2`, `Holder2`, carrier `R2`, `joinPred2`) carrying the same `recursion_group` label as the first | admitted: each component is compared with its own first member, the label's nodes are one group by label alone, nothing is refused and no node id changes; a producer-chosen path for a carrier is admitted because the group holds more than one declared member |
 | K23 | `K16` plus a second `protocol_reference` carrier of `Flow` at path `["R"]`, ordinal `1`, with the same label and dependency | `invalid_semantic_graph`, no cause, at the second carrier's `/semantic_graph/nodes/{n}/node_id` (FR-322-AC-286): the id differs but the body target repeats |
+| K24 | `K16` with `joinPred` replaced: `Flow`'s `attempt` lists the precondition `Pre` (a `state`/`state_clause` node), whose body calls the predicate `ready`, which references the carrier `R` to `Flow`, so `Flow`, `Pre`, `ready` and `R` form one cycle, each carrying one `recursion_group` | admitted: `Pre` is an anonymous derived member with a producer-chosen path and producer-assigned ordinal, and every in-component reference is an ordinary `reference` to a member `node_id` |
+| K25 | `K24` with `Pre`'s `recursion_group` removed; separately, `K24` with a `model`/`object_type` node given the group's label | `invalid_semantic_graph`, no cause, at `Pre`'s node in the graph-shape step; the second refuses `invalid_package`/`invalid-derived-shape` at the model node (FR-322-AC-29) |
 
 ## Clause body
 
@@ -262,7 +264,7 @@ node and the `value`/`parameter` binder nodes. The binders have levels
 3. K2 to K4 change exactly the keys stated; K7 to K12 refuse as listed;
    K15 is admitted with the two expected point-distinct anchors
    (FR-464-AC-3, FR-464-AC-4).
-   K16, K17 and K22 are admitted as listed; K18 to K21 and K23 refuse `invalid_semantic_graph` at the stated loci (FR-464-AC-15, FR-322-AC-283 to FR-322-AC-286).
+   K16, K17, K22 and K24 are admitted as listed; K18 to K21, K23 and K25 refuse at the stated loci (FR-464-AC-15, FR-464-AC-25, FR-322-AC-283 to FR-322-AC-286).
 4. C1 to C13a hold (FR-464-AC-5, FR-464-AC-6).
 5. M1 to M10 refuse as listed (FR-464-AC-4, FR-464-AC-6).
 6. B2 to B26 behave as listed (FR-464-AC-7, FR-464-AC-8).

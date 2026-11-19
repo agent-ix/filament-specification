@@ -13,7 +13,7 @@ relationships:
 
 ## Description
 
-Verify what model-based testing generates, its oracle, its result and its shrinking guarantee. Scope: FR-190-AC-6 to FR-190-AC-10 and FR-190-AC-14 to FR-190-AC-16, FR-190-AC-18 to FR-190-AC-21, and the record side of FR-331-AC-55.
+Verify what model-based testing generates, its oracle, its result and its shrinking guarantee. Scope: FR-190-AC-6 to FR-190-AC-10 and FR-190-AC-14 to FR-190-AC-16, FR-190-AC-18 to FR-190-AC-22, and the record side of FR-331-AC-55.
 
 Catches a generator that narrows a declared finite domain by `max_value_bits`, emits a refusal partition for a size-bounded root, drops a precondition-rejected partition instead of counting it, charges discards outside `max_cases`, or reports `tested` for a run that evaluated no case.
 
@@ -28,7 +28,7 @@ Catches a generator that narrows a declared finite domain by `max_value_bits`, e
 7. Over FR-190-AC-15's `inc(by: Int[1, 6])` model, run the postcondition clause of `inc` with seed 7, `max_cases` 100 and `max_trace_length` 8.
 8. Add `jam()` (enabled when `value > 5`) and run the postcondition clause of `jam`, the precondition clause of `inc`, and step 7 with a test-double argument admission that accepts `by` 7.
 9. Call `unrank` and `rank` on each domain and index of FR-190-AC-18 (`Text[0, 2; unicode-scalars]`, `Text[0, 3; binary-utf8]`, `Text[0, 1]` under `unicode-scalars`, `nfc`, `nfd` and `nfkc`); list the partitions of `t: Text[0, 4]` under each of the six profiles and of `Text[0, 1; nfd]` (FR-190-AC-19); run the value clause over `t: Text[0, 13; unicode-scalars]` with seed 7 and `max_cases` 30 twice and compare (FR-190-AC-20).
-10. Run `Square` (`x: Integer`, `max_value_bits` 8) and the value clause over `t: Text[0, 2; unicode-scalars]`, each with seed 7, and record the first seeded case's draw value, its index and its value (FR-190-AC-21).
+10. Run `Square` (`x: Integer`, `max_value_bits` 8) and the value clause over `t: Text[0, 2; unicode-scalars]`, each with seed 7, and record the first seeded case's draw value, its index and its value . Run the value clause over `t: Text[0, 1099511627776; nfc]` (body `size(t) >= 0`) with seed 7, `max_cases` 30 and `accounting.work_units` 1000000; repeat under `unicode-scalars`; repeat over `Text[0, 4; nfc]` (FR-190-AC-22).
 
 ## Expected Results
 
@@ -42,3 +42,4 @@ Catches a generator that narrows a declared finite domain by `max_value_bits`, e
 - Step 8: `jam`'s clause discards all 100 cases (`domain-refusal` 4, `precondition-false` 1 at case 6, `invariant-false` 0, `no-check-point` 95), `cases.passed` 0, `inconclusive`, cause `no-evaluated-case`, exit 22; `inc`'s precondition clause with no `precondition-false` discard and the `by` 6 partition `covered`; the accepting admission `failed` with `tool-failure` `oracle-disagreement`, exit 30.
 - Step 9: the domain sizes, values and ranks FR-190-AC-18 states; the partition values, in order, FR-190-AC-19 states; for `Text[0, 13]`, 30 cases, `tested`, no `total-above-draw-range`, and equal `t` values in both runs.
 - Step 10: the draw values, indices and values FR-190-AC-21 states: `x` = 53 at case 5 and `t` = U+D51A9 U+87AC9 at case 10.
+- Step 11: `incomplete`, `limit-reached` `work_units`/`accounting.work_units`/1000000, `cases.generated` 0, no abort and not `unsupported`, under both profiles; then `tested` with `cases.generated` 30.
