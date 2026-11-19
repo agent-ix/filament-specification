@@ -9,6 +9,10 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-323
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-272
+    type: verifies
+  - target: ix://agent-ix/filament-specification/FR-652
+    type: verifies
 ---
 
 # TC-2049: A hybrid result entry reads one wire form and replays by its claim
@@ -21,7 +25,7 @@ that a provider's claimed refutation that does not replay settles
 carries exactly `position`, `time` and `locus`, that a provider reports a
 construct outside its class as a located `unsupported` diagnostic, and that
 a hybrid counterexample replays through a `state_clause` target naming its
-claim. Scope: FR-193-AC-24, FR-331-AC-54 and FR-323-AC-47.
+claim. Verify that a hybrid solver proof carries an FR-652 certificate in its closed wire form and that the record, not the entry, becomes `certified`. Scope: FR-193-AC-24, FR-331-AC-54, FR-323-AC-47, FR-272-AC-31 and FR-652-AC-6.
 
 ## Test Procedure
 
@@ -42,6 +46,9 @@ claim. Scope: FR-193-AC-24, FR-331-AC-54 and FR-323-AC-47.
    its reproducing trace, with a trace that does not reproduce, and with
    `work_units` 100 over the FR-450-AC-7 lasso; then with a `state_clause`
    naming no declaration.
+6. Validate the FR-652-AC-6 entries against the schema; settle the
+   `inductive-solver` entry with its accepted and with a rejected
+   `inductive-enclosure` certificate.
 
 ## Expected Results
 
@@ -56,9 +63,9 @@ claim. Scope: FR-193-AC-24, FR-331-AC-54 and FR-323-AC-47.
   {"numerator": "15", "denominator": "2"}}, "locus": L}, "cause":
   "division-by-zero"}`, `L` the division's term node; both altered
   counterexamples fail the schema and are refused by the reader.
-- Step 4: admitted and recorded `unsupported` with `form`, `declaration`,
-  `mode` `Moving`, `variable` `v` and `backend`, located at the flow's term
-  node; the `cause` form is refused `invalid_result`/`unknown-cause` at
+- Step 4: admitted and recorded `unsupported` with `detail` `form`,
+  `declaration`, `mode` `Moving`, `variable` `v`, `backend` and `locus`, the
+  flow's term node as an FR-331 `Locus`, and no profile; the `cause` form is refused `invalid_result`/`unknown-cause` at
   `/cause/type`.
 - Step 5: the request carries `{"state_clause": "TooSlow"}` only and
   resolves to the hybrid claim; rows `arm` `hybrid` with settlement
@@ -68,3 +75,4 @@ claim. Scope: FR-193-AC-24, FR-331-AC-54 and FR-323-AC-47.
   `limit` `{"limit": "work_units", "value": "100", "setting":
   "accounting.work_units"}`); the unknown name refuses
   `missing_declaration`/`missing-name`.
+- Step 6: the object-form certificates are admitted and each altered entry is refused by the schema; the accepted certificate gives a `certified` record over an `uncertified` entry, and the rejected one a `proved`, `uncertified` record with `certificate-rejected{rule, at}` beside it.

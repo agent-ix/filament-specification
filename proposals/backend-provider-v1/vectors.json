@@ -4087,6 +4087,243 @@
       }
     },
     {
+      "name": "hybrid-certificate-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/basis": "FR-193",
+        "/results/0/certification": "FR-331",
+        "/results/1/cause": "FR-193",
+        "/results/2/basis/method": "FR-193",
+        "/results/3/basis/method": "FR-193",
+        "/results/3/certification": "FR-331",
+        "/results/0/certificate": "FR-652",
+        "/results/2/certificate": "FR-652"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          },
+          {
+            "request_index": 1,
+            "disposition": "supported"
+          },
+          {
+            "request_index": 2,
+            "disposition": "supported"
+          },
+          {
+            "request_index": 3,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "flowstar",
+            "kind": "temporal-satisfaction",
+            "result": "proved",
+            "certification": "uncertified",
+            "basis": {
+              "type": "inductive-solver",
+              "method": "inductive-enclosure"
+            },
+            "certificate": {
+              "type": "inductive-enclosure",
+              "boxes": {
+                "Moving": {
+                  "a": {
+                    "lower": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "2",
+                      "denominator": "1"
+                    }
+                  },
+                  "v": {
+                    "lower": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "20",
+                      "denominator": "1"
+                    }
+                  }
+                },
+                "Stopped": {
+                  "a": {
+                    "lower": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "2",
+                      "denominator": "1"
+                    }
+                  },
+                  "v": {
+                    "lower": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "request_index": 1,
+            "backend": "dreal",
+            "kind": "temporal-satisfaction",
+            "result": "inconclusive",
+            "cause": {
+              "type": "insufficient-horizon",
+              "horizon": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "jumps": 1,
+              "exhaustive": [
+                "time"
+              ]
+            }
+          },
+          {
+            "request_index": 2,
+            "backend": "flowstar",
+            "kind": "temporal-satisfaction",
+            "result": "proved",
+            "certification": "uncertified",
+            "basis": {
+              "type": "bounded-solver",
+              "method": "flowpipe-outward-rounded",
+              "horizon": {
+                "numerator": "21",
+                "denominator": "2"
+              },
+              "jumps": 1,
+              "exhaustive": [
+                "time"
+              ]
+            },
+            "certificate": {
+              "type": "flowpipe",
+              "steps": [
+                {
+                  "mode": "Moving",
+                  "time": {
+                    "lower": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "10",
+                      "denominator": "1"
+                    }
+                  },
+                  "box": {
+                    "a": {
+                      "lower": {
+                        "numerator": "1",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "2",
+                        "denominator": "1"
+                      }
+                    },
+                    "v": {
+                      "lower": {
+                        "numerator": "0",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "20",
+                        "denominator": "1"
+                      }
+                    }
+                  },
+                  "apriori": {
+                    "a": {
+                      "lower": {
+                        "numerator": "1",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "2",
+                        "denominator": "1"
+                      }
+                    },
+                    "v": {
+                      "lower": {
+                        "numerator": "0",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "20",
+                        "denominator": "1"
+                      }
+                    }
+                  },
+                  "step": {
+                    "numerator": "1",
+                    "denominator": "16"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "request_index": 3,
+            "backend": "example-plugin",
+            "kind": "temporal-satisfaction",
+            "result": "proved",
+            "certification": "trusted",
+            "basis": {
+              "type": "bounded-solver",
+              "method": "unclassified",
+              "horizon": {
+                "numerator": "10",
+                "denominator": "1"
+              },
+              "jumps": 0,
+              "exhaustive": []
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          },
+          {
+            "request_index": 1,
+            "settled_by": "result"
+          },
+          {
+            "request_index": 2,
+            "settled_by": "result"
+          },
+          {
+            "request_index": 3,
+            "settled_by": "result"
+          }
+        ]
+      }
+    },
+    {
       "name": "hybrid-request",
       "stage": "request",
       "owners": {
@@ -12202,6 +12439,131 @@
           "op": "replace",
           "path": "/results/0/certification",
           "value": "certified"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-step-string",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-193",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/2/certificate/steps/0/step",
+          "value": "1/16"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-interval-string",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-193",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/certificate/boxes/Moving/v/lower",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-unknown-form",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-652",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/certificate/type",
+          "value": "zonotope"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-certified-on-entry",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-652",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/certification",
+          "value": "certified"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-flowpipe-on-insufficient-horizon",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-652",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/1/certificate",
+          "value": {
+            "type": "flowpipe",
+            "steps": [
+              {
+                "mode": "Moving",
+                "time": {
+                  "lower": {
+                    "numerator": "0",
+                    "denominator": "1"
+                  },
+                  "upper": {
+                    "numerator": "10",
+                    "denominator": "1"
+                  }
+                },
+                "box": {
+                  "a": {
+                    "lower": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "2",
+                      "denominator": "1"
+                    }
+                  },
+                  "v": {
+                    "lower": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "20",
+                      "denominator": "1"
+                    }
+                  }
+                },
+                "apriori": {
+                  "a": {
+                    "lower": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "2",
+                      "denominator": "1"
+                    }
+                  },
+                  "v": {
+                    "lower": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "20",
+                      "denominator": "1"
+                    }
+                  }
+                },
+                "step": {
+                  "numerator": "1",
+                  "denominator": "16"
+                }
+              }
+            ]
+          }
         }
       ]
     },

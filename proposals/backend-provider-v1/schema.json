@@ -1257,6 +1257,18 @@
       },
       "additionalProperties": false
     },
+    "HybridBox": {"description": "FR-652 Certificate forms: one Interval of exact rationals per continuous variable, keyed by its name; key correspondence to the declaration and lower <= upper are reader checks (rule box-shape).", "type": "object", "minProperties": 1, "propertyNames": {"$ref": "#/$defs/Identifier"}, "additionalProperties": {"$ref": "#/$defs/Interval"}},
+    "HybridCertificateStep": {"description": "FR-652 flowpipe and validated-witness step: the mode, the step's time Interval, its box, its a-priori box B and its step length, every exact number a Rational object (FR-193).", "type": "object", "required": ["mode", "time", "box", "apriori", "step"], "properties": {"mode": {"$ref": "#/$defs/Identifier"}, "time": {"$ref": "#/$defs/Interval"}, "box": {"$ref": "#/$defs/HybridBox"}, "apriori": {"$ref": "#/$defs/HybridBox"}, "step": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+    "HybridCertificate": {
+      "description": "FR-652: a hybrid provider's certificate, checked by the reader (FSL FR-751): inductive-enclosure (one box per mode) for an inductive-solver proof, flowpipe (ordered steps) for a bounded-solver proof, validated-witness (one list of Picard steps per dwell of the trace it accompanies) with a hybrid-counterexample or a solver-inconclusive trace.",
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        {"properties": {"type": {"const": "inductive-enclosure"}, "boxes": {"type": "object", "minProperties": 1, "propertyNames": {"$ref": "#/$defs/Identifier"}, "additionalProperties": {"$ref": "#/$defs/HybridBox"}}}, "required": ["type", "boxes"], "additionalProperties": false},
+        {"properties": {"type": {"const": "flowpipe"}, "steps": {"type": "array", "items": {"$ref": "#/$defs/HybridCertificateStep"}}}, "required": ["type", "steps"], "additionalProperties": false},
+        {"properties": {"type": {"const": "validated-witness"}, "dwells": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/HybridCertificateStep"}}}}, "required": ["type", "dwells"], "additionalProperties": false}
+      ]
+    },
     "StatisticalVerdict": {
       "description": "FR-410 StatisticalVerdict.",
       "type": "object",
@@ -1420,7 +1432,7 @@
         "cross_check": {"description": "FR-331, FR-349, FR-354: the SMT backend's Z3 cross-check, recorded beside certification on a proved result when it ran; verdict is the result the cross-check alone settles.", "type": "object", "required": ["tool", "verdict"], "properties": {"tool": {"$ref": "#/$defs/Nonempty"}, "verdict": {"enum": ["proved", "refuted", "inconclusive"]}}, "additionalProperties": false},
         "cause": {"type": "object", "required": ["type"]},
         "diagnostic": {"$ref": "#/$defs/DiagnosticCause"},
-        "certificate": {"oneOf": [{"$ref": "#/$defs/ProbabilityCertificate"}, {"$ref": "#/$defs/ZoneCertificate"}]},
+        "certificate": {"oneOf": [{"$ref": "#/$defs/ProbabilityCertificate"}, {"$ref": "#/$defs/ZoneCertificate"}, {"$ref": "#/$defs/HybridCertificate"}]},
         "evidence": {"description": "FR-419 recomputable closed-form evidence (its owner's shape) under basis closed-form, or the FR-393 witness arm under cause well-definedness-unchecked; absent otherwise."},
         "task_search": {"description": "FR-331/FR-419: replayable stopped-search frontier; permitted only on an incomplete task-automaton result and never proof evidence.", "$ref": "#/$defs/TaskSearchEvidence"},
         "verdict": {"$ref": "#/$defs/StatisticalVerdict"},
@@ -1428,14 +1440,16 @@
         "ordering_restrictions": {"description": "FR-439, FR-741: each ordering a weak memory model restricted to its instantiated access kind, in canonical transition-identity order.", "type": "array", "items": {"type": "object", "required": ["site", "access", "written", "effective"], "properties": {"site": {"$ref": "#/$defs/Locus"}, "access": {"enum": ["load", "store", "rmw", "local"]}, "written": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}, "effective": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}}, "additionalProperties": false}}
       },
       "allOf": [
-        {"if": {"properties": {"result": {"const": "proved"}}}, "then": {"required": ["basis", "certification"], "properties": {"cause": false, "diagnostic": false, "verdict": false, "counterexample": false, "task_search": false}}, "else": {"properties": {"basis": false, "certification": false, "certificate": false, "cross_check": false}}},
+        {"if": {"properties": {"result": {"const": "proved"}}}, "then": {"required": ["basis", "certification"], "properties": {"cause": false, "diagnostic": false, "verdict": false, "counterexample": false, "task_search": false}}, "else": {"properties": {"basis": false, "certification": false, "cross_check": false}}},
+        {"description": "FR-652: a certificate rides on a result other than proved only as a hybrid validated-witness, with a refuted entry's hybrid-counterexample or an inconclusive entry's solver-inconclusive trace.", "if": {"required": ["result"], "properties": {"result": {"enum": ["refuted", "inconclusive"]}}}, "then": {"properties": {"certificate": {"allOf": [{"$ref": "#/$defs/HybridCertificate"}, {"properties": {"type": {"const": "validated-witness"}}}]}}}, "else": {"if": {"required": ["result"], "properties": {"result": {"not": {"const": "proved"}}}}, "then": {"properties": {"certificate": false}}}},
         {"description": "FR-331, FR-349: cross_check belongs to an SMT proof (basis bounded-complete or inductive), never to a trusted plugin proof.", "if": {"required": ["certification"], "properties": {"certification": {"const": "trusted"}}}, "then": {"properties": {"cross_check": false}}},
         {"if": {"required": ["basis"], "properties": {"basis": {"properties": {"type": {"not": {"enum": ["bounded-complete", "inductive"]}}}, "required": ["type"]}}}, "then": {"properties": {"cross_check": false}}},
         {"description": "FR-349: a disagreeing cross-check over an uncertified proof settles inconclusive, so an uncertified proof carries verdict proved only.", "if": {"required": ["certification"], "properties": {"certification": {"const": "uncertified"}}}, "then": {"properties": {"cross_check": {"properties": {"verdict": {"const": "proved"}}}}}},
         {"if": {"properties": {"basis": {"properties": {"type": {"enum": ["exact-value", "value-bounds"]}}}}, "required": ["basis"]}, "then": {"required": ["certificate"], "properties": {"certificate": {"$ref": "#/$defs/ProbabilityCertificate"}}}},
         {"if": {"properties": {"basis": {"properties": {"type": {"const": "zone-certified"}}}}, "required": ["basis"]}, "then": {"required": ["certificate"], "properties": {"certificate": {"$ref": "#/$defs/ZoneCertificate"}}}},
         {"if": {"properties": {"basis": {"properties": {"type": {"const": "closed-form"}}}}, "required": ["basis"]}, "then": {"required": ["evidence"]}},
-        {"if": {"properties": {"basis": {"properties": {"type": {"enum": ["exhaustive", "bounded-complete", "inductive", "reduced", "bounded-solver", "inductive-solver", "witnessed", "bounded-proof"]}}}}, "required": ["basis"]}, "then": {"properties": {"certificate": false, "evidence": false}}},
+        {"if": {"properties": {"basis": {"properties": {"type": {"enum": ["exhaustive", "bounded-complete", "inductive", "reduced", "witnessed", "bounded-proof"]}}}}, "required": ["basis"]}, "then": {"properties": {"certificate": false, "evidence": false}}},
+        {"description": "FR-652: a hybrid solver proof may carry a hybrid certificate, which the reader checks (FSL FR-751); its certification on the entry stays the provider's uncertified or trusted, and the record becomes certified only once the certificate is accepted. A form that does not match the basis is a reader refusal at /certificate (FR-652).", "if": {"properties": {"basis": {"properties": {"type": {"enum": ["bounded-solver", "inductive-solver"]}}}}, "required": ["basis"]}, "then": {"properties": {"certificate": {"$ref": "#/$defs/HybridCertificate"}, "evidence": false}}},
         {"if": {"properties": {"basis": {"properties": {"type": {"enum": ["bounded-solver", "inductive-solver"]}}}}, "required": ["basis"]}, "then": {"properties": {"certification": {"enum": ["uncertified", "trusted"]}}}},
         {"if": {"properties": {"basis": {"properties": {"type": {"const": "reduced"}, "reductions": {"contains": {"properties": {"reduction": {"enum": ["symmetry", "partial-order"]}}, "required": ["reduction"]}}}, "required": ["type", "reductions"]}}, "required": ["basis"]}, "then": {"properties": {"certification": {"enum": ["uncertified", "trusted"]}}}},
         {"if": {"properties": {"result": {"const": "refuted"}}}, "then": {"required": ["counterexample"], "properties": {"cause": {"$ref": "#/$defs/UndefinedEvaluation"}, "diagnostic": false, "verdict": false, "evidence": false}}},
