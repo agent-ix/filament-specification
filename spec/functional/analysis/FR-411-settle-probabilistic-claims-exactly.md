@@ -109,9 +109,10 @@ reward.
 
 An `on each` instance and a quantile are conditioned readings (FR-407
 "Conditioned values"). Over the product whose key carries the instance and
-its activation phase, the provider computes under a workload the
-numerator and the denominator exactly and settles on their ratio, and over
-every scheduler, for every form but a quantile, the optimal value of the form from each first activating state and then the
+its activation phase, the provider computes under a workload that leaves no
+choice the numerator and the denominator exactly and settles on their
+ratio, and over every scheduler or under a workload with free delays, for
+every form but a quantile over every scheduler, the optimal value of the form from each first activating state and then the
 optimal value of the reset process at the initial state. A reading with no
 reachable activating state holds vacuously and forms no ratio. A quantile
 over every scheduler is decided and proved by the shifted reward above, whose

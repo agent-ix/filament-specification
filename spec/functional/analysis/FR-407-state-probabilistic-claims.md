@@ -229,17 +229,19 @@ quantile, the first position at which its measure activates, which under
 for the form's event, or for its measure's quantity in an expectation or
 long-run form.
 
-- **Under a workload** the value is `Pr(E and act) / Pr(act)`, and for an
-  expectation or long-run form `Ex(X · [act]) / Pr(act)` with `X` the
-  form's quantity. Numerator and denominator are both computed exactly over
-  the same product. The reading holds vacuously exactly when
+- **Under a workload that leaves no choice** the value is
+  `Pr(E and act) / Pr(act)`, and for an expectation or long-run form
+  `Ex(X · [act]) / Pr(act)` with `X` the form's quantity. Numerator and
+  denominator are both computed exactly over the same Markov chain. The reading holds vacuously exactly when
   `Pr(act) = 0`, and that is decided by graph reachability: no activating
   state is reachable from the initial state along steps of positive
   probability. A vacuous reading reads no ratio.
-- **Under every scheduler** the value for a `>=` bound is the minimum, and
-  for a `<=` bound the maximum, of the conditional value over the schedulers
-  (with a fairness set, the fair schedulers) that activate with positive
-  probability. It is computed exactly by the reset construction for
+- **Under every scheduler, and under a workload with free delays,** the
+  value for a `>=` bound is the minimum, and for a `<=` bound the maximum,
+  of the conditional value over the schedulers (with a fairness set, the
+  fair schedulers; under a workload with free delays, the choices of those
+  delays) that activate with positive probability. The ratio of a
+  separately optimised numerator and denominator is not this optimum. It is computed exactly by the reset construction for
   conditional probabilities in Markov decision processes: every state from
   which activation is no longer reachable steps back to the initial state,
   and every end component that holds no activating state gains a step back

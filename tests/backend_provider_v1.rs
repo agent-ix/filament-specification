@@ -1071,6 +1071,8 @@ fn tc_431_canonical_key_bindings_are_complete() {
     assert_eq!(certificate["components"]["items"]["properties"]["bias"]
         ["items"]["properties"]["state"]["$ref"], "#/$defs/ProbabilityProductKey");
     assert_eq!(certificate["policy"]["items"]["properties"]["choice"]["$ref"],
+        "#/$defs/ProbabilityPolicyChoice");
+    assert_eq!(schema["$defs"]["ProbabilityPolicyChoice"]["oneOf"][0]["$ref"],
         "#/$defs/TransitionIdentity");
     for shape in ["ProductStateLocus", "HyperProductStateLocus"] {
         assert_eq!(schema["$defs"][shape]["properties"]["automaton_state"]["$ref"],
