@@ -1099,7 +1099,7 @@ A frame body refusal, meaning-join or canonical-order
 
   **Model declaration occurrences.** A model declaration node (a `model` or
   `relation` node that carries a `ModelOwner`, every form listed under `owner`
-  below other than `model_root`) is a compiler-derived node. No source text
+  above other than `model_root`) is a compiler-derived node. No source text
   declares it: it derives from exactly one declaration, the domain-document
   declaration its `ModelOwner` names, and its `node_id` is a function of that
   owner alone, so its identity covers everything the node reads and no source
