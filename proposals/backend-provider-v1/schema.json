@@ -632,6 +632,7 @@
       "allOf": [
         {"if": {"properties": {"kind": {"const": "time-lock"}}, "required": ["kind"]}, "then": {"required": ["final_delay"]}, "else": {"not": {"required": ["final_delay"]}}},
         {"if": {"required": ["queue_growth"]}, "then": {"properties": {"trace": {"const": "model"}, "kind": {"const": "formula"}, "loop": {"maxItems": 0}, "prefix": {"minItems": 1}}}},
+        {"description": "FR-364: a task-automaton deadline-miss counterexample carries exactly one continuation, a non-empty loop or queue_growth; a prefix alone is malformed_wire at /loop.", "if": {"properties": {"prefix": {"contains": {"properties": {"transition": {"properties": {"type": {"const": "task-transition"}, "action": {"const": "deadline-miss"}}, "required": ["type", "action"]}}, "required": ["transition"]}}}, "required": ["prefix"]}, "then": {"anyOf": [{"required": ["queue_growth"]}, {"properties": {"loop": {"minItems": 1}}}]}},
         {
           "description": "FR-364: the arms are coupled. Observed arm: null initial_state and over_binding, document steps, kind formula or an undefined-evaluation envelope whose where carries no model-arm state key. Model arm: a non-null initial_state, model steps, and an envelope whose where carries no document.",
           "if": {"properties": {"trace": {"const": "observed"}}, "required": ["trace"]},
@@ -712,7 +713,7 @@
       "required": ["type", "action", "taskset", "task", "job_ref", "occurrence", "generation", "virtual_position", "release_transition", "source_transition", "demand", "jitter", "deadline_offset"],
       "properties": {
         "type": {"const": "task-queue-growth-transition"},
-        "action": {"enum": ["activate", "release", "dispatch", "preempt", "resume", "complete", "budget-change", "deadline-miss"]},
+        "action": {"description": "FR-364: no deadline-miss; the product's miss latch is set at the counterexample's trace_position step, so no later step on the stem or cycle misses.", "enum": ["activate", "release", "dispatch", "preempt", "resume", "complete", "budget-change"]},
         "taskset": {"$ref": "#/$defs/Nonempty"},
         "task": {"$ref": "#/$defs/Nonempty"},
         "job_ref": {"$ref": "#/$defs/Nonempty"},

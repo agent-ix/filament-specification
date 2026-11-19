@@ -7342,206 +7342,6 @@
                       ],
                       "suffix": []
                     }
-                  },
-                  {
-                    "transition": {
-                      "type": "task-queue-growth-transition",
-                      "action": "deadline-miss",
-                      "taskset": "S",
-                      "task": "t",
-                      "job_ref": "stem-G",
-                      "occurrence": {
-                        "base": 1,
-                        "cycle_stride": 0,
-                        "cohort_stride": 0
-                      },
-                      "generation": {
-                        "base": 1,
-                        "cycle_stride": 0,
-                        "cohort_stride": 0
-                      },
-                      "virtual_position": {
-                        "base": 0,
-                        "cycle_stride": 0,
-                        "cohort_stride": 0
-                      },
-                      "release_transition": {
-                        "type": "transition",
-                        "operation": "Source::release",
-                        "receiver": null,
-                        "arguments": []
-                      },
-                      "source_transition": null,
-                      "demand": {
-                        "numerator": "2",
-                        "denominator": "1"
-                      },
-                      "jitter": {
-                        "numerator": "0",
-                        "denominator": "1"
-                      },
-                      "deadline_offset": {
-                        "base": {
-                          "numerator": "0",
-                          "denominator": "1"
-                        },
-                        "cycle_stride": {
-                          "numerator": "0",
-                          "denominator": "1"
-                        },
-                        "cohort_stride": {
-                          "numerator": "0",
-                          "denominator": "1"
-                        }
-                      },
-                      "priority": 1
-                    },
-                    "job_ref": "stem-G",
-                    "delay": {
-                      "numerator": "0",
-                      "denominator": "1"
-                    },
-                    "ready_order": {
-                      "cycle_offset": 0,
-                      "block_offset": 1,
-                      "prefix": [
-                        {
-                          "ref": "head",
-                          "taskset": "S",
-                          "task": "t",
-                          "occurrence": {
-                            "base": 1,
-                            "cycle_stride": 1,
-                            "cohort_stride": 0
-                          },
-                          "generation": {
-                            "base": 1,
-                            "cycle_stride": 1,
-                            "cohort_stride": 0
-                          },
-                          "queue_position": {
-                            "base": 0,
-                            "cycle_stride": 0,
-                            "cohort_stride": 0
-                          },
-                          "demand": {
-                            "numerator": "2",
-                            "denominator": "1"
-                          },
-                          "remaining": {
-                            "numerator": "2",
-                            "denominator": "1"
-                          },
-                          "activation_offset": {
-                            "base": {
-                              "numerator": "-1",
-                              "denominator": "1"
-                            },
-                            "cycle_stride": {
-                              "numerator": "-1",
-                              "denominator": "1"
-                            },
-                            "cohort_stride": {
-                              "numerator": "0",
-                              "denominator": "1"
-                            }
-                          },
-                          "deadline_offset": {
-                            "base": {
-                              "numerator": "0",
-                              "denominator": "1"
-                            },
-                            "cycle_stride": {
-                              "numerator": "-1",
-                              "denominator": "1"
-                            },
-                            "cohort_stride": {
-                              "numerator": "0",
-                              "denominator": "1"
-                            }
-                          },
-                          "jitter": {
-                            "numerator": "0",
-                            "denominator": "1"
-                          },
-                          "priority": 1,
-                          "allowance": {
-                            "numerator": "2",
-                            "denominator": "1"
-                          },
-                          "status": "ready"
-                        }
-                      ],
-                      "growth_block": [
-                        {
-                          "ref": "G",
-                          "taskset": "S",
-                          "task": "t",
-                          "occurrence": {
-                            "base": 2,
-                            "cycle_stride": 1,
-                            "cohort_stride": 1
-                          },
-                          "generation": {
-                            "base": 2,
-                            "cycle_stride": 1,
-                            "cohort_stride": 1
-                          },
-                          "queue_position": {
-                            "base": 1,
-                            "cycle_stride": 0,
-                            "cohort_stride": 1
-                          },
-                          "demand": {
-                            "numerator": "2",
-                            "denominator": "1"
-                          },
-                          "remaining": {
-                            "numerator": "2",
-                            "denominator": "1"
-                          },
-                          "activation_offset": {
-                            "base": {
-                              "numerator": "0",
-                              "denominator": "1"
-                            },
-                            "cycle_stride": {
-                              "numerator": "-1",
-                              "denominator": "1"
-                            },
-                            "cohort_stride": {
-                              "numerator": "1",
-                              "denominator": "1"
-                            }
-                          },
-                          "deadline_offset": {
-                            "base": {
-                              "numerator": "1",
-                              "denominator": "1"
-                            },
-                            "cycle_stride": {
-                              "numerator": "-1",
-                              "denominator": "1"
-                            },
-                            "cohort_stride": {
-                              "numerator": "1",
-                              "denominator": "1"
-                            }
-                          },
-                          "jitter": {
-                            "numerator": "0",
-                            "denominator": "1"
-                          },
-                          "priority": 1,
-                          "allowance": {
-                            "numerator": "2",
-                            "denominator": "1"
-                          },
-                          "status": "ready"
-                        }
-                      ],
-                      "suffix": []
-                    }
                   }
                 ],
                 "source_entry": {
@@ -13357,6 +13157,245 @@
             },
             "post_state": {
               "key": "eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "task-deadline-miss-without-continuation",
+      "base": "task-queue-growth-overload",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/counterexamples/0/counterexample/queue_growth"
+        }
+      ]
+    },
+    {
+      "name": "task-deadline-miss-divergence-member",
+      "base": "task-queue-growth-overload",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/counterexamples/0/counterexample/divergence",
+          "value": {
+            "elapsed": {
+              "numerator": "1",
+              "denominator": "1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "task-queue-growth-stem-second-miss",
+      "base": "task-queue-growth-overload",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/counterexamples/0/counterexample/queue_growth/stem/-",
+          "value": {
+            "transition": {
+              "type": "task-queue-growth-transition",
+              "action": "deadline-miss",
+              "taskset": "S",
+              "task": "t",
+              "job_ref": "stem-G",
+              "occurrence": {
+                "base": 1,
+                "cycle_stride": 0,
+                "cohort_stride": 0
+              },
+              "generation": {
+                "base": 1,
+                "cycle_stride": 0,
+                "cohort_stride": 0
+              },
+              "virtual_position": {
+                "base": 0,
+                "cycle_stride": 0,
+                "cohort_stride": 0
+              },
+              "release_transition": {
+                "type": "transition",
+                "operation": "Source::release",
+                "receiver": null,
+                "arguments": []
+              },
+              "source_transition": null,
+              "demand": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "jitter": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "deadline_offset": {
+                "base": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "cycle_stride": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "cohort_stride": {
+                  "numerator": "0",
+                  "denominator": "1"
+                }
+              },
+              "priority": 1
+            },
+            "job_ref": "stem-G",
+            "delay": {
+              "numerator": "0",
+              "denominator": "1"
+            },
+            "ready_order": {
+              "cycle_offset": 0,
+              "block_offset": 1,
+              "prefix": [
+                {
+                  "ref": "head",
+                  "taskset": "S",
+                  "task": "t",
+                  "occurrence": {
+                    "base": 1,
+                    "cycle_stride": 1,
+                    "cohort_stride": 0
+                  },
+                  "generation": {
+                    "base": 1,
+                    "cycle_stride": 1,
+                    "cohort_stride": 0
+                  },
+                  "queue_position": {
+                    "base": 0,
+                    "cycle_stride": 0,
+                    "cohort_stride": 0
+                  },
+                  "demand": {
+                    "numerator": "2",
+                    "denominator": "1"
+                  },
+                  "remaining": {
+                    "numerator": "2",
+                    "denominator": "1"
+                  },
+                  "activation_offset": {
+                    "base": {
+                      "numerator": "-1",
+                      "denominator": "1"
+                    },
+                    "cycle_stride": {
+                      "numerator": "-1",
+                      "denominator": "1"
+                    },
+                    "cohort_stride": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    }
+                  },
+                  "deadline_offset": {
+                    "base": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "cycle_stride": {
+                      "numerator": "-1",
+                      "denominator": "1"
+                    },
+                    "cohort_stride": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    }
+                  },
+                  "jitter": {
+                    "numerator": "0",
+                    "denominator": "1"
+                  },
+                  "priority": 1,
+                  "allowance": {
+                    "numerator": "2",
+                    "denominator": "1"
+                  },
+                  "status": "ready"
+                }
+              ],
+              "growth_block": [
+                {
+                  "ref": "G",
+                  "taskset": "S",
+                  "task": "t",
+                  "occurrence": {
+                    "base": 2,
+                    "cycle_stride": 1,
+                    "cohort_stride": 1
+                  },
+                  "generation": {
+                    "base": 2,
+                    "cycle_stride": 1,
+                    "cohort_stride": 1
+                  },
+                  "queue_position": {
+                    "base": 1,
+                    "cycle_stride": 0,
+                    "cohort_stride": 1
+                  },
+                  "demand": {
+                    "numerator": "2",
+                    "denominator": "1"
+                  },
+                  "remaining": {
+                    "numerator": "2",
+                    "denominator": "1"
+                  },
+                  "activation_offset": {
+                    "base": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "cycle_stride": {
+                      "numerator": "-1",
+                      "denominator": "1"
+                    },
+                    "cohort_stride": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    }
+                  },
+                  "deadline_offset": {
+                    "base": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "cycle_stride": {
+                      "numerator": "-1",
+                      "denominator": "1"
+                    },
+                    "cohort_stride": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    }
+                  },
+                  "jitter": {
+                    "numerator": "0",
+                    "denominator": "1"
+                  },
+                  "priority": 1,
+                  "allowance": {
+                    "numerator": "2",
+                    "denominator": "1"
+                  },
+                  "status": "ready"
+                }
+              ],
+              "suffix": []
             }
           }
         }

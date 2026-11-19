@@ -353,8 +353,11 @@ reached limit and the replayable frontier. A live-job or state cap used only to 
 task-queue overflow in the modeled system and cannot refute schedulability.
 A concrete miss is a refutation only after FR-364 replays each exact rational
 demand, delay, derived scheduler step, source mode transition, allowance update
-and missed-deadline state, and FR-418 or fresh exploration verifies a
-time-divergent continuation from that state. The fixed-work finite-region
+and missed-deadline state, and replays the counterexample's carried FR-364
+continuation (finite loop, terminal-stutter loop or `queue_growth`). The
+producer finds that continuation from the FR-418 closed graph or by forward
+exploration, and in both cases records it on the wire. Replay does not settle
+`refuted` from an exploration of its own. The fixed-work finite-region
 decision procedure is not claimed for interval demand with completion
 feedback and preemption; it is undecidable in general (Fersman et al.,
 Theorem 5). A budget change has the same rule: unless an exact finite
