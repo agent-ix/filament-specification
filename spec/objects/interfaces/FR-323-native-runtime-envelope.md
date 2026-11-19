@@ -199,7 +199,19 @@ the others are absent (never `null`, an empty name or a placeholder):
   precondition or a postcondition of an operation is a state clause and
   selects by `state_clause`, not by `frame_operation`: the frame and the
   clause are two obligations of one operation, and the target names the one
-  refuted.
+  refuted. A declared claim that is not a state clause also selects by
+  `state_clause`, by its own declared `QualifiedName`: a temporal clause, a
+  state-graph claim and a hybrid claim (a temporal clause whose `over`
+  parameter is typed by a `hybrid-decl`,
+  [FR-193](../../functional/analysis/FR-193-analyze-continuous-hybrid-models.md)
+  "Hybrid claims"). One member names every declared claim, because the
+  claim's declared name is unique in its package's one claim namespace and
+  the counterexample's own type tells the replay which check to run. A
+  replay request whose `state_clause` names a hybrid claim carries the
+  item's FR-331 `HybridCounterexample` as its witness payload; the executor
+  replays its trace by FR-193 "Trace replay" against the recompiled claim
+  and its hybrid model, and its row is the `hybrid` arm ("Replay result
+  rows").
 
 When the producer builds a replay request, the producer SHALL carry exactly one
 of the three members. A frame request carries no `arguments` and no occurrence
@@ -255,8 +267,9 @@ type, an event type) or an operation it only inherits,
 that two supertypes expose, `ambiguous_declaration`/`ambiguous-name`.
 
 The executor SHALL resolve a `state_clause` by declared name among the
-recompiled package's state clauses, refusing a name that declares no state
-clause, a function's name included, `missing_declaration`/`missing-name`
+recompiled package's state clauses and declared claims (temporal clauses,
+state-graph claims and hybrid claims), refusing a name that declares none of
+them, a function's name included, `missing_declaration`/`missing-name`
 naming the target.
 
 ## Supplied-value phase amendment
@@ -560,7 +573,7 @@ FSL TC-830/831/906, not replaced or qualified by this envelope proposal.
 
 A replay's `results` document holds one row per replayed item: the FSL
 FR-072 replay result in its wire spelling. A row is a closed JSON object
-whose `arm` member names which of the five replay-result arms it is, and
+whose `arm` member names which of the six replay-result arms it is, and
 whose other members are exactly that arm's. Every arm is spelled, because a
 replay's outcome document carries its rows unchanged (FSL FR-286) and its
 text renders each row's `arm` and `settlement` (FSL FR-865): a row that could
@@ -570,12 +583,12 @@ row with an unknown `arm`, a missing member or an extra member.
 
 Members every arm carries:
 
-- `arm`: `witness`, `input`, `observed-temporal`, `model-graph` or
-  `protocol-analysis`.
+- `arm`: `witness`, `input`, `observed-temporal`, `model-graph`,
+  `protocol-analysis` or `hybrid`.
 - `settlement`: the arm's own settlement. `witness`, `observed-temporal`,
-  `model-graph` and `protocol-analysis` settle
+  `model-graph`, `protocol-analysis` and `hybrid` settle
   `reproduced-with-evaluated-witness` or `inconclusive`, and `model-graph`
-  also `incomplete`; `input` settles `reproduced-without-witness` or
+  and `hybrid` also `incomplete`; `input` settles `reproduced-without-witness` or
   `inconclusive`, never `reproduced-with-evaluated-witness` (FSL FR-072).
 - `category`: the FSL ADR-013 O-16 category in its wire spelling.
 
@@ -587,10 +600,11 @@ Arm members:
 | `input` | the `witness` arm's members, with `record` always `null` |
 | `observed-temporal` | `position` (the packet's trace position, decimal ASCII with no leading zero); `outcome` (the typed temporal outcome, spelled as FR-352's `disposition.temporal` row of its kind, with that row's members beside `kind` except `counterexample`, which a replay row never carries because the packet it replays is the counterexample: `holds`, `violated`, `undefined`, `insufficient-data`, `pending`, `missing-fairness-premise`, `incomplete` or `window-limit-reached`, with the exception below); `undefined_locus` (the `FormulaNodeId` of the first atom observed undefined, as a bare JSON number, or `null`); `parity` (present exactly when `settlement` is `inconclusive`: `{expected, expected_position, actual_locus}`, `expected` `{"kind": "formula"}` or `{"kind": "undefined-evaluation", "locus", "cause"}`, `actual_locus` the `FormulaNodeId` of the first atom the replay observed undefined, as a bare JSON number, or `null`); `charges`; `limit` (as for `witness`) |
 | `model-graph` | `evaluated_predicates` (ordered `{role, value}` objects, `role` `target`, `from` or `to`, `value` Boolean, in evidence evaluation order); `closure_nodes` (decimal string or `null`); `first_target` (the unpadded base64url state key of the first target state of a replayed trap closure, or `null`); `disagreement` (present exactly when `settlement` is `inconclusive`: the typed cause, as for `witness`); `limit` (present exactly when `settlement` is `incomplete`: `{limit, value, setting}`, FR-394's `limit-reached` members, with `limit` the stopped limit's name, `value` its configured bound as a decimal string, and `setting` the name of the request limits member that raises it, for example `{"limit": "max_states", "value": "1", "setting": "model_check.max_states"}`) |
+| `hybrid` | `replay` (FR-193's replay object `{"static": s}` or `{"static": s, "exact": e}`, with `e` also `{"outcome": "reproduced"}` when exact replay reproduced the trace); `counterexample` (present exactly when `settlement` is `reproduced-with-evaluated-witness`: the `HybridCounterexample` exact replay reproduced, its `kind` the replay's own); `disagreement` (present exactly when `settlement` is `inconclusive`: FSL FR-450's `{"cause": "hybrid-trace", "disagreement": {"type": "not-reproduced"` or `"not-exact", "counterexample": ...}}` with the request's complete counterexample); `limit` (present exactly when `settlement` is `incomplete`: `{limit, value, setting}`, `limit` `work_units`, `value` its configured bound as a decimal string and `setting` `accounting.work_units`) |
 | `protocol-analysis` | `disagreement` (present exactly when `settlement` is `inconclusive`: `{"kind": "walk", "reason": R}`, `R` one of `unknown-choice`, `not-must-merge`, `step-not-successor`, `action-mismatch`, `wrong-branch`, `not-the-stated-divergence` and `cut`, with `port`, the FR-433 port reference `{"node": <CheckedNodeId>, "port": "enter"` or `"exit"}`, for `step-not-successor` and for no other reason) |
 
-- A `model-graph` row's `category` is `success`, `inconclusive` or
-  `incomplete` with its settlement; a `protocol-analysis` row's is `success`
+- A `model-graph` or `hybrid` row's `category` is `success`, `inconclusive`
+  or `incomplete` with its settlement; a `protocol-analysis` row's is `success`
   for `reproduced-with-evaluated-witness` and `inconclusive` otherwise; an
   `observed-temporal` row's is its `outcome`'s FR-352 category.
 - An `observed-temporal` row's `outcome` departs from FR-352's row in one
@@ -683,6 +697,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-44 | The row of an observed-temporal replay that reproduces an `undefined` packet at position 3, whose atom with formula node 7 divides by zero, carries `outcome` `{"kind": "undefined", "position": 3, "reason": R}`, R the same string as the packet's undefined-evaluation `cause`, with no `counterexample` member, and `undefined_locus` `7` (a JSON number); a reader refuses that row with `reason` removed and with `undefined_locus` `"7"`. | Test (TC-2010) |
 | FR-323-AC-45 | The row of an observed-temporal replay stopped by a window holding more than `max_window_values` 2 carries `outcome` `{"kind": "window-limit-reached", "limit": "max_window_values", "value": "2", "setting": "monitor.max_window_values"}`; the `model-graph` row of FR-323-AC-41 stopped at `max_states` 1 carries `limit` `{"limit": "max_states", "value": "1", "setting": "model_check.max_states"}`; a reader refuses either with `value` the number 1 or 2, or with `setting` removed. | Test (TC-2010) |
 | FR-323-AC-46 | An observed-temporal row that settles `inconclusive` because the replay observed formula node 4 undefined where the packet expected a formula verdict carries `parity.actual_locus` `4` and `undefined_locus` `4`, both JSON numbers, and `outcome.position` a JSON number; a reader refuses `actual_locus` `"4"` and `outcome.position` `"3"`. | Test (TC-2010) |
+| FR-323-AC-47 | A refuted hybrid claim `TooSlow`'s replay request carries `{"state_clause": "TooSlow"}` and no `function` or `frame_operation`, resolves to the hybrid claim in the recompiled package, and replays its `HybridCounterexample`: the reproducing trace's row is `{"arm": "hybrid", "settlement": "reproduced-with-evaluated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with a trace that does not reproduce is `inconclusive` with `disagreement` `hybrid-trace` `not-reproduced` carrying the request's counterexample; one stopped by `work_units` is `incomplete` with `limit` `{"limit": "work_units", "value": "100", "setting": "accounting.work_units"}`; a `state_clause` naming no declared claim or state clause refuses `missing_declaration`/`missing-name`. | Test (TC-2049) |
 
 ## Dependencies
 

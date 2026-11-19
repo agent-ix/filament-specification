@@ -65,7 +65,10 @@ declaration's variables, or with `lower > upper`, is rejected at its pointer.
    the claim being an invariant `always holds(e)` whose `e` is definitely true
    over every `E_m`.
 2. **`flowpipe`**, for a `bounded-solver` proof: an ordered list of steps,
-   each `{mode, time, box, apriori, step}`. The reader SHALL accept it when
+   each `{mode, time, box, apriori, step}`, `time` an FR-331 `Interval` of
+   seconds and `step` an FR-331 `Rational` number of seconds, both in the
+   object form FR-193 "Solver result on the wire" requires of every exact
+   number on the hybrid wire. The reader SHALL accept it when
    the first step's box contains every initial state; for each step the
    a-priori box `B` satisfies the Picard condition `box + [0, step] * f(B)
    ⊆ B` and the next step's box contains `box + step * f(B)` (or, at a
@@ -143,12 +146,24 @@ checked in the order listed within each form.
 
 ### Settlement
 
-- A `proved` entry whose certificate is accepted SHALL carry the FR-331
-  certification `certified`, whatever provider produced it. A rejected
-  certificate SHALL leave the entry as FR-193 settles it without one (a
-  first-party proof `uncertified`, a plugin's `trusted`) and SHALL record
-  `certificate-rejected{rule, at}` beside it; it never turns a proof into a
-  refutation.
+- The record of a `proved` entry whose certificate is accepted SHALL carry
+  the FR-331 certification `certified`, whatever provider produced it. The
+  entry itself keeps the label its provider wrote, `uncertified` from a
+  first-party provider or `trusted` from a plugin (FR-331 "Certification"),
+  because the provider cannot vouch for the core's check. A rejected
+  certificate SHALL leave the record as FR-193 settles it without one (a
+  first-party proof `uncertified`, a plugin's `trusted`), still `proved`,
+  and SHALL record `certificate-rejected{rule, at}` beside it; it never
+  turns a proof into a refutation or an `inconclusive`.
+- A `certificate` member SHALL be one of the three forms, each a closed
+  object with a `type` member: `{"type": "inductive-enclosure", "boxes":
+  {mode: box}}`, `{"type": "flowpipe", "steps": [step, ...]}` and
+  `{"type": "validated-witness", "dwells": [[step, ...], ...]}`, one list
+  of Picard steps per dwell of the trace it accompanies, whose start point
+  is that trace's `start`. A `proved` entry with a `bounded-solver` or
+  `inductive-solver` basis MAY carry one; a `refuted` entry and an
+  `inconclusive` entry MAY carry only a `validated-witness`; no other entry
+  carries one.
 - A trace through a mode whose flow is not polynomial (FR-193 "Trace replay"),
   which exact replay cannot decide, SHALL settle `refuted` when its
   `validated-witness` is accepted, with the trace as its
@@ -169,6 +184,7 @@ checked in the order listed within each form.
 | FR-652-AC-3 | In a mode with flow `v' = v * v / (1 + v * v)`, which is not polynomial, a point trace with an accepted `validated-witness` reaching `v > 30` against `always [0, 12] holds(h.v < 30)` settles `refuted`; without the witness, or with a witness whose last box straddles `v = 30`, it stays `inconclusive`. | Test (TC-1605) |
 | FR-652-AC-4 | A `flowpipe` certificate on an `inductive-solver` entry refuses `invalid_result`/`invalid-value` at `/certificate`; a box missing variable `a` is rejected at its pointer; a check stopped by the work limit is `rejected{rule: work-limit}`. | Test (TC-1605) |
 | FR-652-AC-5 | Over `Braking` without `t`, whose `Moving` invariant `v >= 0` is a boundary invariant of its guard `v = 0`, a `flowpipe` certificate whose `Moving` steps of `step` 1/16 are each contracted to `v >= 0` and whose one jump step is `Stopped: v [0, 0], a [1, 2]` with `time` `[0, 10]`, the narrowed jump time (the value `[0, 20]` of `(0 - v0) / (-a)` over `v0 [0, 20], a [1, 2]`, offset by time 0 and intersected with the horizon `[0, 10]`), is accepted against `always [0, 10] holds(h.v < 30)` and settles `certified`; the same with jump-step `time` `[1, 10]` is rejected with rule `jump` at that step, since it omits the jump at time 0 from `v0 = 0`; the same with `time` `[0, 20]` is accepted, since it contains the narrowed jump time; against `always [0, 10] holds(h.v > 5)` the claim is not definitely true over the first `Moving` step and the certificate is rejected with rule `claim`. | Test (TC-1605) |
+| FR-652-AC-6 | The schema admits a first-party `proved` `inductive-solver` entry labelled `uncertified` carrying an `inductive-enclosure` certificate and a `bounded-solver` entry carrying a `flowpipe` certificate whose `step` is `{"numerator": "1", "denominator": "16"}`, and refuses the same with `step` `"1/16"`, a box bound written `"0"`, a certificate `type` outside the three forms, the entry labelled `certified`, and a `flowpipe` on an `inconclusive` entry; when the reader accepts the `inductive-enclosure` the record is `certified` while the entry stays `uncertified`, and when it rejects it the record stays `proved`, `uncertified`, with `certificate-rejected{rule, at}` beside it and not `inconclusive`. | Test (TC-2049) |
 
 ## Dependencies
 
