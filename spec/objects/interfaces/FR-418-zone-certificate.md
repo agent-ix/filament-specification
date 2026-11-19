@@ -218,7 +218,15 @@ For TT-4 and the time-lock-freedom item, the certificate adds:
   the nodes that enable it removed;
 - for the time-lock-freedom item, per node, a reachable time-divergent target:
   a quiescent node, or a component that does not fail for want of the
-  divergence set.
+  divergence set;
+- for a proof of an item decided on a liveness product (FR-416 "Non-Zeno
+  premise"), `non_zeno`, the string `not-required` or `assumed`: `assumed`
+  exactly when some component holds a cycle, holds a node of every
+  acceptance set other than the time-divergence set, and passes the fairness
+  filter, so it is rejected only for want of the divergence set; otherwise
+  `not-required`. The member is present exactly on those certificates, and
+  absent from a time-lock-freedom, deadlock-freedom, TT-1 or TT-2
+  certificate.
 
 ### Refinement part
 
@@ -248,7 +256,7 @@ and AC-5), and the encoding is a function of the value alone.
 - **Member order.** Object members are in ascending UTF-16 code-unit order of
   their names, at every depth: for the certificate, `admitted`, `bounds`,
   `components`, `divergence`, `edges`, `identity`, `initials`, `nodes`,
-  `reasons`, `refinement`, `scale`, `task_product`. Array elements keep the order the
+  `non_zeno`, `reasons`, `refinement`, `scale`, `task_product`. Array elements keep the order the
   certificate states: `nodes` in discovery order, `edges` in canonical
   transition order, `bounds` by the first node of its state then by clock
   index, `components`, `divergence` and `zone` rows by node or clock index.
@@ -263,7 +271,7 @@ and AC-5), and the encoding is a function of the value alone.
   bounding `x_i − x_j`, index 0 the reference clock. No number is a fraction
   or has an exponent.
 - **Option encoding.** An absent optional member (`components`, `reasons`,
-  `divergence`, `refinement`, `task_product`, `locked`) is omitted, never `null`; `locked` is
+  `divergence`, `non_zeno`, `refinement`, `task_product`, `locked`) is omitted, never `null`; `locked` is
   present only as `true`. In an array a position is significant, so the one
   option inside an array, a `taken` entry that is `None`, is `null`.
 - **No embedded digests.** The certificate embeds no digest or hash of the
@@ -299,7 +307,13 @@ the initial discrete state, when no node of it covers the initial symbolic state
 target; `bad-state` at `{node}` for a bad node; `backward-edge` at `{edge}`
 for an edge to a smaller component index; `witness-fails` at `{component}`
 for a component whose reason does not hold, and at `{node}` for a node whose
-named target is not a reachable time-divergent target. `node` and `edge` are
+named target is not a reachable time-divergent target; and `non-zeno-mismatch`
+at the certificate member `{member: non_zeno}` when the `non_zeno` the checker
+recomputes from the certificate's nodes, edges, components and acceptance sets
+differs from the stated one, or when the member is absent from a certificate
+that must carry it or present on one that must not. The checker decides
+`assumed` by the rule of "Büchi emptiness certificate" over its own
+recomputed successors, never from the stated reasons alone. `node` and `edge` are
 positions in `nodes` and `edges`, and `component` is a component index. A
 checker stopped by a budget settles `incomplete`, `limit-reached` naming the
 budget. Its cost is linear in the certificate's edges times the DBM operations.
@@ -332,6 +346,7 @@ budget. Its cost is linear in the certificate's edges times the DBM operations.
 | FR-418-AC-12 | For a task-automaton certificate, the reader derives the scheduler policy from the checked claim named by `identity`, recomputes every policy successor and refuses an edge inconsistent with that policy; `task_product` carries no policy override. An EDF certificate with absent task priorities is admitted with no synthesized priorities, and a forged priority or ready order is refused. | Test (TC-371, TC-372) |
 | FR-418-AC-13 | In a fixed-work task certificate, every task-scheduler edge and bounded-subtraction row uses a finite `TaskTransitionTemplate`, while source-operation edges retain their source identity; the reader closes the source-plus-scheduler graph modulo capture-avoiding renaming of completed jobs, accepts a periodic cycle whose absolute activation occurrence grows on each traversal, and refuses a template with an out-of-range or mismatched live-job rank/slot. Concrete replay instantiates the template with the exact prefix occurrence and generation, including when a completed slot is reused. | Test (TC-371) |
 | FR-418-AC-14 | A task-product certificate may use `closed-no-release-product/v1` only with `live_job_cap: 0`, closure `recompute-all-source-successors-no-task-release/v1`, checked task demand intervals, no scheduler clock metadata and no task-transition edge; the reader recomputes every source successor from every initial state and accepts this closure only when no checked release binding is reachable. It refuses a positive cap, scheduler clocks, or a reachable release under this method. | Test (TC-371; TC-372) |
+| FR-418-AC-15 | The certificate of the `Rpc` response proof at `T = 4 ms` carries `non_zeno` `not-required` and that of its `reply` self-loop variant `assumed`, and the checker accepts both; each with its `non_zeno` swapped, or removed, settles `inconclusive`, `certificate-rejected{rule: non-zeno-mismatch, at: {member: non_zeno}}`; a time-lock-freedom certificate carrying `non_zeno` is rejected the same way. | Test (TC-2041) |
 
 ## Dependencies
 

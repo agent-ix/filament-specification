@@ -63,7 +63,27 @@ A construct the table marks `unrepresented` SHALL make its obligation
 node, locus}`: `target` the family, `construct` the construct's
 `node_tag`/`semantic_form`, `node` its node id, and `locus` its FR-203
 source region. An obligation whose closure holds several such nodes lists
-one cause per node, in node order.
+one cause per node, in node order. `locus` is `null` when the package's
+source map gives the node no region (FR-203 "Absence"); it is never another
+node's region and never an offset-zero region.
+
+### Representable nodes of an unrepresented obligation
+
+An `unrepresented` record claims no output region (FR-298, FR-299), yet its
+closure's representable nodes SHALL still be lowered and written: a hybrid's
+modes, discrete jumps, variables and `Init` as FR-651's "mode and
+discrete-jump skeleton", with each flow equation an uninterpreted relation,
+and a state model's variables, `TypeOK`, `Init` and actions. Each such
+definition is accounted for by its `name_map` entry (FR-817), which names its
+node and region. A node of an unrepresented obligation's closure is therefore
+named by one of the record's causes or by a `name_map` entry, and a node of
+any other record's closure by an output region of that record or by a
+`name_map` entry. Under `minimum_fidelity` `any` the package thus states
+every fact the target can state about the model, so a caller reads the
+model even where the claim itself is not stated. A module with no
+definitions is assembled only when no requested name resolves to an
+obligation; a mapper that writes no definition for a representable node it
+read fails as a mapper failure (FR-817, exit `30`).
 
 ### Decision: one refusal form, and only for what the target cannot state
 
@@ -109,6 +129,8 @@ of the model and is reported as a record.
 | FR-811-AC-4 | Under `minimum_fidelity` `preserved` a dense-time clause (`conditional`) fails the floor; under `conditional` it passes. | Test (TC-1970) |
 | FR-811-AC-5 | For every obligation of the export conformance corpus (FR-818), every node of its dependency closure is either covered by an output region of its record or named by one of its causes. | Test (TC-1970) |
 | FR-811-AC-6 | The counter's invariant `value <= 5` exports `preserved` under each profile with no cause; `SlowEnough` over the hybrid `Braking` exports `unrepresented` with one `target-unrepresentable` cause per flow-equation node of `Braking`, in node order, each with `target` the family, `construct` that node's `node_tag`/`semantic_form`, `node` its node id and `locus` its source region, and no record of either export carries any other cause for a construct of its closure. | Test (TC-2029) |
+| FR-811-AC-7 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` assembles a package whose record claims no region and whose text holds an `Init` naming the mode `Moving` and a definition for the jump to `Stopped`, each with a `name_map` entry; every node of the record's closure is named by one of its causes or by a `name_map` entry. | Test (TC-2040) |
+| FR-811-AC-8 | Every `target-unrepresentable` cause's `locus` is either `null` or a region with `start < end`; a cause whose node the source map gives no region has `locus` `null`. | Test (TC-2040) |
 
 ## Dependencies
 
