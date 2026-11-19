@@ -22,7 +22,10 @@ Typed predicate identities and call references with source locations, or a locat
 
 Calls resolve by exact declaration identity and parameter order/type, including
 declared units and optional-value obligations. There is no implicit numeric,
-collection or truthiness coercion. Pure local bindings and calls do not read
+collection or truthiness coercion, except FR-149's integer widening at a
+declared parameter or union payload position, which the checked package
+records as an explicit exact `filament.op.numeric.convert`; a narrowing
+argument carries FR-146's range obligation instead. Pure local bindings and calls do not read
 ambient objects, clocks, I/O or mutable monitor status. The predicate-only facet
 rejects recursion. The complete function facet admits recursion only when its
 well-founded termination obligation is discharged; unresolved/ambiguous calls
@@ -35,7 +38,7 @@ no-user-call profile is unchanged.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-033-AC-1 | An acyclic predicate called from two families resolves to the same checked declaration and preserves each call site. | Test (TC-033) |
-| FR-033-AC-2 | Wrong arity, wrong type/unit, unresolved or ambiguous names and a non-Boolean root refuse before evaluation. | Test (TC-033) |
+| FR-033-AC-2 | Wrong arity, wrong type/unit, including an argument type that FR-149's integer widening does not admit, unresolved or ambiguous names and a non-Boolean root refuse before evaluation. | Test (TC-033) |
 | FR-033-AC-3 | Predicate-only and historical profiles refuse direct or mutual recursion; the complete function facet admits a recursive call graph only with a checked well-founded decrease and reports every involved declaration/call on failure. | Test (TC-181) |
 | FR-033-AC-4 | An unguarded optional or partial operation refuses definedness; a supported guarded total body is admitted without adding ambient access. | Test (TC-033) |
 | FR-033-AC-5 | The historical first-profile no-call rule continues to refuse calls; reuse requires an explicitly selected extension. | Test (TC-033) |
