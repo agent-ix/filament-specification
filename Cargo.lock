@@ -178,8 +178,8 @@ dependencies = [
 
 [[package]]
 name = "filament-verification-contracts"
-version = "0.2.0"
-source = "git+https://github.com/agent-ix/filament-verification-contracts?tag=v0.2.0#ded996da2c3591818f7658d0518f6637b79bf2f4"
+version = "0.2.1"
+source = "git+https://github.com/agent-ix/filament-verification-contracts?rev=2714219621cfbfabdd8d411c39d9109d956b85dd#2714219621cfbfabdd8d411c39d9109d956b85dd"
 dependencies = [
  "jsonschema",
  "quire-canonical",

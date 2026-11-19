@@ -6445,9 +6445,12 @@ fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
                     .is_some_and(|kind| constraint_kinds.contains(kind)),
                 "{identity} constraint kind is closed"
             );
+            // A consumer-side constraint such as `quantifier_domain_only`
+            // names no operand of its own entry and carries no `operands`.
             assert!(
-                constraint["operands"]
-                    .as_array()
+                constraint
+                    .get("operands")
+                    .map_or(Some(&Vec::new()), Value::as_array)
                     .expect("constraint operands are an array")
                     .iter()
                     .all(|index| index
@@ -24777,7 +24780,6 @@ fn source_operation_body_coverage_joins_the_identity_row_operations() {
 /// are enumerated together in the schema, beside the `history` member kind.
 #[trace("TC-1921", "FR-322-AC-455")]
 #[test]
-#[ignore = "QSL-2179: collection.only, collection.seq and refinement.history land in the schemas with the catalog entries"]
 fn tc_1921_schema_enumerates_the_population_form_operations() {
     let schema = parsed_fixture(SCHEMA);
     let identities: Vec<&str> = schema["$defs"]["OperationIdentity"]["enum"]
