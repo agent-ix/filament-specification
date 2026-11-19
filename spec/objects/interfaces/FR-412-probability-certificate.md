@@ -62,7 +62,7 @@ components, conditional}`:
 | `kind` | `lower`, `upper`, `exact`, `long-run` or `conditional`. |
 | `values` | One exact rational per product state the certificate names (a dyadic value is an exact rational), keyed by product state key (FR-411). |
 | `ranking` | For `lower` and `exact`: one natural number per named state. |
-| `policy` | For a lower bound on a maximum or an upper bound on a minimum, including `workload-maximum` and `workload-minimum`: one choice per named state, a memoryless deterministic scheduler. For the `reset` part of an `optimum` certificate: one choice per waiting state, a transition identity or `{"type": "reset"}`. |
+| `policy` | For a lower bound on a maximum or an upper bound on a minimum, including `workload-maximum` and `workload-minimum`: one choice per named state, a memoryless deterministic scheduler. For the `reset` part of an `optimum` certificate: one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
 | `components` | For `long-run`: per component, its value `ρ_C` and a gain–bias pair. |
 | `conditional` | For `conditional`, the certificate of a conditioned reading (FR-407 "Conditioned values"): `{mode: "ratio", numerator, denominator}`, `{mode: "optimum", post, reset}` or `{mode: "vacuous"}`, each part an `exact` certificate of this form. |
 
@@ -158,6 +158,15 @@ decided, target and `Prob0` states:
       probability under the policy with a smaller rank, so the policy is
       proper.
 
+    `values`, `policy` and `ranking` each cover exactly the waiting states
+    the checker rebuilt as reachable from the initial states, one row each.
+    The rule that an unnamed successor counts as value 0 does not apply to
+    `reset`: a waiting state with no row would let a maximum ignore a
+    successor of high value. A missing, extra or duplicate row is rejected
+    `malformed` at the incomplete member (`values`, `policy` or
+    `ranking`), before any arithmetic, because coverage is a property of
+    the certificate's shape and not of one state's value.
+
     A value reached only by staying in a waiting end component forever,
     such as 0 for a minimum, therefore never passes. The certified value is
     `reset`'s value at each initial state from which activation is
@@ -169,8 +178,17 @@ decided, target and `Prob0` states:
     state, and under every scheduler with a fairness set none from which a
     fair continuation exists.
 
-  A policy choice in `reset` is a transition identity or `{"type":
-  "reset"}`, the reset process's step back to the initial state.
+  A policy choice in `reset` is a transition identity, `{"type":
+  "reset"}` (the reset process's step back to the initial state), or
+  `{"type": "randomized", "choices": [{choice, probability}, ...]}` over
+  two or more of those with exact positive probabilities that sum to 1.
+  Without a fairness set a deterministic memoryless proper policy attains
+  the optimum, so a randomized choice is never needed there and is
+  rejected `malformed` at `policy`. With a fairness set the attaining fair
+  policy may have to mix its choices inside a fair end component, as
+  FR-413's fair witness does. So a randomized choice is admitted then, and
+  the checker applies its weighted operator and checks the fair-end-
+  component condition on the chain it induces.
 
 The checker accepts a certificate that meets its conditions and puts the
 initial state's value on the claim's side of the threshold: `lower` for a
@@ -229,6 +247,7 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-9 | Over FR-407-AC-18's model, the `optimum` `conditional` certificate whose `post` values are 1 and `1/2` at the two first activating states and whose `reset` value at `s0` is `1/2` with policy `b` is accepted for `>= rational(1, 2)` and fails `threshold-missed` at `>= rational(3, 5)`; with `reset`'s value at `s0` set to the unconditioned `1/4` it is rejected `inequality-fails` at `{s0, part: reset}`, and with `post`'s `1/2` set to `3/5` it is rejected `inequality-fails` at that state with `part` `post`. The `ratio` certificate with numerator `3/8` and denominator `5/8` is accepted for `>= rational(3, 5)`; with denominator 1 it is rejected `inequality-fails` with `part` `denominator`. | Test (TC-2061) |
 | FR-412-AC-10 | A `vacuous` certificate is accepted over FR-407-AC-18's variant where `g` is unreachable and rejected `inequality-fails` at the initial state over the model itself; a `conditional` certificate without `conditional` is rejected `malformed` at `conditional`, a `ratio` one without `denominator` `malformed` at `denominator`, a `ratio` one under the objective `minimum` `malformed` at `mode`, and one with mode `"workload"` `malformed` at `mode`. Two states that differ only in `instance` or only in `activation` keep distinct keys after serialization and reading. | Test (TC-2061) |
 | FR-412-AC-11 | Over FR-407-AC-18's model with a further action `stay` that loops at `s0` without activating, for `>= rational(1, 2)` under every scheduler: the `optimum` certificate whose `reset` has value `1/2` at `s0` and at the state after `a` from which `g` is unreachable, policy `b` at `s0` and ranks 1 and 2 is accepted (`1/2 <= 1/2` under `stay`, the reset choice and `b`, `1/2 <= 1/4 + (3/4)(1/2) = 5/8` under `a`). A `reset` with value 0 at both states is rejected: with policy `stay` or the reset choice `rank-broken` at `{s0, part: reset}`, with policy `b` `inequality-fails` there (`F_b = 1/2`). The minimum over all schedulers, 0, is therefore never certified. | Test (TC-2061) |
+| FR-412-AC-12 | On FR-412-AC-11's model, a maximum `reset` certificate for `<= rational(9, 10)` with `y(s0) = 1/2`, policy `b` and no row for the state `u` after `a` from which `g` is unreachable is rejected `malformed` at `values`, and does not prove the claim. Read with `u` counted as 0, it would pass `F_a(y) = 1/4 + (3/4)(0) = 1/4 <= 1/2`, although the true maximum is 1. With `u` at `1/2` it is rejected `inequality-fails` at `{s0, part: reset}`, since `F_a(y) = 1/4 + (3/4)(1/2) = 5/8 > 1/2`. Without a fairness set, a `reset` policy entry that is randomized is rejected `malformed` at `policy`. | Test (TC-2061) |
 
 ## Dependencies
 
