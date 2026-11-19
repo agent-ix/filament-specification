@@ -34,4 +34,7 @@ with no declared maximum. Scope: FR-322-AC-479.
 - Step 2: empty: `each` enabled, `some` not; 3 ms and 7 ms: `each` not
   enabled, `some` enabled.
 - Step 3: the per-length parts, no `quantifier`, node id unchanged.
-- Step 4: each refuses `invalid_package`/`timed-node-reference`.
+- Step 4: the missing binding refuses `invalid_package`/`timed-node-reference`
+  at the part; the bounded part's `quantifier` refuses the same at the
+  binding's value (`CL-64`); `all` fails the closed schema, `malformed_wire`
+  (`CL-63`).

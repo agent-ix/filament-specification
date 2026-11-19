@@ -9082,6 +9082,50 @@
       },
       "additionalProperties": false
     },
+    "TimedQuantifierBinding": {
+      "type": "object",
+      "required": [
+        "term",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "term": {
+          "const": "binding"
+        },
+        "name": {
+          "const": "quantifier"
+        },
+        "value": {
+          "type": "object",
+          "required": [
+            "term",
+            "type",
+            "value_kind",
+            "value"
+          ],
+          "properties": {
+            "term": {
+              "const": "literal"
+            },
+            "type": {
+              "$ref": "#/$defs/NodeRef"
+            },
+            "value_kind": {
+              "const": "text"
+            },
+            "value": {
+              "enum": [
+                "each",
+                "some"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "TimedGuardPart": {
       "type": "object",
       "required": [
@@ -9149,6 +9193,41 @@
                 },
                 {
                   "$ref": "#/$defs/TimedBinderBinding"
+                }
+              ],
+              "items": {
+                "$ref": "#/$defs/ReferenceTermShape"
+              }
+            },
+            {
+              "type": "array",
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "object",
+                  "required": [
+                    "term",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "term": {
+                      "const": "binding"
+                    },
+                    "name": {
+                      "const": "predicate"
+                    },
+                    "value": {
+                      "$ref": "#/$defs/ReferenceTermShape"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "$ref": "#/$defs/TimedBinderBinding"
+                },
+                {
+                  "$ref": "#/$defs/TimedQuantifierBinding"
                 }
               ],
               "items": {
