@@ -578,6 +578,9 @@ reference. Whether a member typed by an unparameterized
 `Rational`, `Decimal` or `Text` can be used is decided where it is used, at
 member resolution: a bare `Text` field refuses there
 `ill_typed`/`operator-ineligible` (FR-322-AC-31), and intake raises nothing.
+A `Decimal` member whose filament-core-data resolution walk passes a decimal
+policy is not unparameterized: FR-322's decimal subject row types it from that
+policy and the bounds on its walk.
 A field typed by a native value type declares no type node of its own. A
 refusal of a `typeRef` names the field node and `Field.typeRef`, the operation
 node and `Operation.params[i].typeRef`, or the operation node and
