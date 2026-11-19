@@ -550,14 +550,35 @@ entry, and that entry is the wire form of the solver result.
   expression changes from having a value to having none. When the
   expression has no value only on an open stretch of instants, the instant
   is the stretch's start. `locus` is the FR-331 `Locus` of the term node
-  (FR-481) that has no value. The envelope's `cause` is the reason the
-  native evaluator gives the same undefined value outside a hybrid model,
-  `division-by-zero` for a division whose divisor is 0. The trace's state
+  (FR-481) that has no value. The envelope's `cause` SHALL be one of the
+  four catalogued hybrid undefined reasons (the native diagnostics catalog,
+  "Undefined reasons"), one for each way a hybrid expression has no value
+  ("Continuous values and expressions"), and no other spelling:
+  `division-by-zero`, a division whose divisor is 0, the reason the native
+  evaluator gives the same value outside a hybrid model;
+  `outside-parameter-range`, a call argument outside its parameter's value
+  range, `locus` the call term; `outside-result-range`, a call result outside
+  its result type's value range, `locus` the call term; and
+  `outside-capture-range`, a capture value outside its type's value range,
+  `locus` the capture initializer. The last three have no native counterpart,
+  because outside a hybrid model a range breach is a static obligation or a
+  refusal, not an undefined value; their payload (the function, the
+  parameter position, the capture) is not on the wire, because `locus` names
+  the term and a reader recomputes it by replay. A reader SHALL refuse any
+  other `cause` in a hybrid counterexample `invalid_result`/`invalid-value`
+  at the kind's `cause`. The trace's state
   and the instant's time name the point of the behaviour, and the locus
   names the expression, so a reader recomputes the state's values by
   replay instead of reading them from the provider. A reader settles the
   item from the counterexample its own exact replay reproduces; the
-  provider's `where` stays on the record only as part of its claim.
+  provider's `where` stays on the record only as part of its claim. The
+  claim agrees with the reproduced counterexample, as FR-364 step 6
+  requires, when both kinds are `formula`, or both are `undefined-evaluation`
+  with equal `position`, `locus` and `cause` and a claimed `time` that
+  contains the reproduced instant; a reproduced kind that does not agree
+  makes the exact replay outcome `not-reproduced` at check 5, `at` the
+  pointer of the trace state holding the reproduced decisive instant, and
+  the item settles `inconclusive`, `replay-parity`.
 - A provider that cannot decide a model because a construct is outside the
   class its method decides SHALL return an `unsupported` entry carrying the
   `diagnostic` `unsupported_construct`/`expression-form` (FR-272) and no
@@ -568,7 +589,16 @@ entry, and that entry is the wire form of the solver result.
   `{node, occurrence}` of the construct's term node (FR-481); and `backend`,
   the provider whose class excludes it, which stands in FR-272's payload for
   the profile. The location is a `detail` member because an FR-331 entry's
-  diagnostic has no member of its own for a locus.
+  diagnostic has no member of its own for a locus. A reader SHALL resolve
+  `locus` through the checked package it holds, wherever it reads the entry:
+  a `Locus` names a package node, and only the package maps it to the
+  mode's flow, guard, reset, invariant or initial entry that holds it, so
+  no reader leaves an admitted `expression-form` entry unread for want of
+  the package. A `locus` that names no term node of the named `mode`'s
+  entries (for a flow, of `variable`'s rate), or a `mode` or `variable` the
+  `declaration` lacks, SHALL be refused `invalid_result`/`invalid-value` at
+  `/diagnostic/detail/locus`, `/diagnostic/detail/mode` or
+  `/diagnostic/detail/variable`.
   The construct is valid FSL, so the item is `unsupported` and not
   `invalid-request`; another provider may decide it.
 - Every exact number on the hybrid wire SHALL be the FR-331 `Rational`
@@ -804,6 +834,8 @@ without a certificate is settled by this requirement alone.
 | FR-193-AC-22 | A point trace through a mode whose flow is not polynomial refutes only with an accepted FR-652 `validated-witness`, and is then recorded in `counterexamples`; without one it is replayed statically and stays `inconclusive`. | Test (TC-1605) |
 | FR-193-AC-23 | Over `Braking` without `t`, against `always [0, 10] holds(h.v > 5)`, the point trace starting at `(Moving, v = 20, a = 2, time 0)` with no jump and `end` `(time 8, v = 4, a = 2)` replays exactly and settles `refuted`, the bad prefix ending at `end`; the same trace with `end` `(time 8, v = 5, a = 2)` settles `not-reproduced` at check 4; a trace carrying both `end` and `loop` refuses `invalid_result`/`invalid-value` at `/end`. | Test (TC-373) |
 | FR-193-AC-24 | A `proved` entry whose `horizon` is `{"numerator": "10", "denominator": "1"}` is read, and the same entry with `horizon` `"10"` or `10` is refused `invalid_result`/`wrong-value-kind` at `/basis/horizon`, as is a trace interval whose `lower` is `"0"` at its pointer; an item `options` entry `{"step": "1/16"}` is admitted as a string. A `refuted` entry whose point trace exact replay does not reproduce settles `inconclusive`, `replay-parity`, carrying the provider's counterexample, never `solver-inconclusive`. Against `always [0, 12] holds(1 / (h.v - 5) != 0)` over `Braking`, the reproduced counterexample's `kind` is `{"type": "undefined-evaluation", "where": {"position": 0, "time": {"lower": {"numerator": "15", "denominator": "2"}, "upper": {"numerator": "15", "denominator": "2"}}, "locus": L}, "cause": "division-by-zero"}`, `L` the division's term node, and a `where` carrying any other member is refused `invalid_result`/`unknown-member`. A provider's `unsupported` entry for the flow `v' = -a / (1 + v)` carries `unsupported_construct`/`expression-form` with `detail` members `form`, `declaration`, `mode` `Moving`, `variable` `v`, `backend` and `locus`, the flow's term node as an FR-331 `Locus`, and no `cause`. | Test (TC-2049) |
+| FR-193-AC-25 | Over `Braking`, an `unsupported` entry carrying `unsupported_construct`/`expression-form` whose `locus` names the term node of `v`'s rate in `Moving` is read against the checked package into that construct; the same entry whose `locus` names a guard node of `Moving`, or a node of no hybrid declaration, is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`, and one naming `mode` `Halted` at `/diagnostic/detail/mode`. | Test (TC-2051) |
+| FR-193-AC-26 | A hybrid `undefined-evaluation` counterexample whose `cause` is `division-by-zero`, `outside-parameter-range`, `outside-result-range` or `outside-capture-range` is admitted by the schema and the reader; one whose `cause` is `absent-key` or `undefined` fails the schema and is refused `invalid_result`/`invalid-value` at the kind's `cause`; the native diagnostics catalog's "Undefined reasons" lists the four spellings. | Test (TC-2051) |
 
 ## Dependencies
 
