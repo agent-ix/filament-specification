@@ -15,6 +15,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-361
     type: references
+  - target: ix://agent-ix/filament-specification/FR-475
+    type: references
 ---
 
 # FR-476: Checked-package model terminal declaration body
@@ -45,9 +47,19 @@ nothing else.
     object type `T` that [FR-366](../../functional/temporal/FR-366-check-deadlock-freedom.md)
     binds `self` to, when the condition reads `self`; empty otherwise and for
     `any`;
-  - `condition` — for `when`, a `reference` to the `expression` node of the
+  - `condition` — for `when`, a `reference` to the predicate node of the
     Boolean state predicate `P`; for `any`, the empty aggregate
-    `{term: "aggregate", members: []}`.
+    `{term: "aggregate", members: []}`. The predicate node is one of the two
+    node forms [FR-475](FR-475-checked-package-state-graph-claim-body.md)
+    admits as a predicate, with `semantic_type` the `scalar_type`/`boolean`
+    node: an `expression` node, the predicate's Boolean term, or a
+    `value`/`literal` node, a constant predicate such as `true` or `false`,
+    as [FR-322](FR-322-checked-package-artifact.md)'s body grammar encodes
+    it. A predicate that reads no state is a valid Boolean condition:
+    `terminal T using v on M when { true }` intends every terminal state of
+    the model and `when { false }` none, exactly as the same constant does
+    as a state-graph claim predicate. A constant predicate reads no `self`,
+    so its `parameters` is empty.
 - **declaration** — none. A `temporal` node carries no `declaration` (the
   schema's `DeclarationTagRules`). The node has a derived node id and is nested
   under its model by the `model` reference: the written name `T` of
@@ -59,7 +71,12 @@ nothing else.
   that checks to this node, at the `terminal-decl` it was produced from, as
   every other undeclared clause node carries
   ([FR-341](FR-341-checked-package-state-clause-body.md),
-  [FR-370](FR-370-checked-package-temporal-clause-body.md)).
+  [FR-370](FR-370-checked-package-temporal-clause-body.md)), with ordinals
+  0, 1, … in source order. Two declarations check to one node only when
+  they are written on two model aliases that select one model identity and
+  have equal mode, parameters and condition (FR-366 "Several
+  declarations"); the node then carries both, one `claim` occurrence and
+  one `source_map` entry each, so neither declaration's locus is lost.
 - **dependencies** — exactly the unique, node-id-ascending set of the body's
   `reference` targets: the `model` node, the `self` parameter node when
   present and, for `when`, the condition node.
@@ -78,6 +95,38 @@ through the package identity
 so every obligation identity over the subject, the derived deadlock-freedom
 item's included, is a different identity when the model's `terminal` node
 differs; the request carries no separate terminal member.
+
+## Several terminal nodes on one model node
+
+A package names a model by the identity of its model selection, never by a
+source alias: the `model` binding references the selection's
+`model`/`model_root` node, whose structural key is `{package: <selected
+identity>, path: ["model", "model_root"], ordinal: 0}`. Two aliases that
+select one model identity therefore reference one model node, and the
+package cannot tell their declarations apart by alias. A model node MAY be
+referenced by several `temporal`/`terminal` nodes, one per distinct
+declaration on it, and one terminal node MAY carry several `claim`
+occurrences (above). Each is carried; none is merged into another or
+dropped.
+
+- **Terminal row order.** The package's terminal nodes are ordered by the
+  structural key of their `model` target (FR-322's ascending node-id order,
+  so by selection identity in UTF-8 byte order), then by their own
+  structural key. This order is a function of the semantic graph:
+  reordering the source declarations, the `model` aliases or the graph
+  array leaves it unchanged, though source regions and the order of equal
+  declarations' `claim` occurrences follow the text.
+- **Terminal ordinal.** A terminal node's *ordinal* is its zero-based
+  position among the terminal nodes of its model node in that order.
+- **Terminal key.** A terminal node is keyed by (the selection identity of
+  its model node, its ordinal). This key, not a source alias, is how every
+  consumer names a terminal declaration: a deadlock classifier's report, a
+  replay locus and a verdict join. A declaration among a node's several
+  `claim` occurrences is named by the node's key and the occurrence's
+  ordinal. A source alias is a display label only.
+
+FR-366 "Several declarations" states how the declarations combine when a
+terminal state is classified.
 
 ## Reader order
 
@@ -101,21 +150,22 @@ defect:
 4. **Targets**, in body order: a `model` target that is not a
    `model`/`model_root` node refuses `invalid_model_binding`/`malformed-declaration`; a `parameters`
    target that is not a `value`/`parameter` node, or a `condition` target
-   that is not an `expression` node, refuses `ill_typed`/`operator-ineligible`;
+   that is neither an `expression` node nor a `value`/`literal` node (the two
+   predicate node forms above), refuses `ill_typed`/`operator-ineligible`;
    a `parameters` target that is not named `self` at level 0, or whose type is
    not `Reference<M::T>` for FR-366's `T` of the referenced model, refuses
    `ill_typed`/`operator-ineligible`, as FR-341-AC-4 refuses a mistyped
    `self`; a `condition` target whose `semantic_type` is not the
    `scalar_type`/`boolean` node refuses `ill_typed`/`non-boolean-root`. The
    locus is the target.
-5. **One per model.** Once every `temporal`/`terminal` node's own checks
-   hold, a second node that references the same `model` node, in ascending
-   node-id order, refuses `ambiguous_declaration`/`ambiguous-name` at
-   that second node, naming both nodes (FR-366); a node that carries two or
-   more `claim` occurrences, two equal declarations for one model, refuses
-   `ambiguous_declaration`/`ambiguous-name` at that node, naming the first
-   two occurrences. No FR-322 name rule precedes this check, since the nodes
-   carry no `declaration`.
+5. **Rows.** Once every `temporal`/`terminal` node's own checks hold, the
+   reader orders the nodes into terminal rows and assigns each its ordinal
+   ("Several terminal nodes on one model node"). This step refuses nothing:
+   several terminal nodes on one `model` node, and several `claim`
+   occurrences on one terminal node, are admitted, because a package records
+   a model by selection identity and cannot see the source aliases whose
+   declarations FR-366 limits to one each. The one-per-alias rule is the
+   checker's (FR-366), applied to the source before a package exists.
 
 A `dependencies` list that differs from the body's targets is FR-322's
 graph-shape refusal, `invalid_semantic_graph` at the node's `/dependencies`,
@@ -128,7 +178,9 @@ which precedes this step.
 | FR-476-AC-1 | `terminal Done using v on M when { P }` produces one `temporal`/`terminal` node whose body has the bindings `model`, `mode`, `parameters` and `condition` in that order, with `mode` `when` and `condition` a reference to `P`'s `expression` node; `terminal Halt using v on M any` produces `mode` `any`, an empty `parameters` and an empty `condition`; neither node carries a `declaration`, its occurrences have role `claim` and its `dependencies` are exactly the body's targets. | Test (TC-961) |
 | FR-476-AC-2 | A `when` condition that reads `self` holds one reference in `parameters`, to the `self` parameter node at level 0 typed `Reference<M::C>`; one that reads no `self` has empty `parameters`. | Test (TC-961) |
 | FR-476-AC-3 | Changing the mode or the condition changes the node id; renaming `T` does not; the deadlock-freedom item over a subject whose model has a `terminal` node has a different obligation identity from the same subject whose model has none. | Test (TC-961) |
-| FR-476-AC-4 | With `dependencies` rebuilt after each edit: a body with `mode` and `condition` swapped in order refuses `invalid_semantic_graph`; `mode` `some` refuses `invalid_package`/`invalid-value`; an `any` node with a `condition` reference, a `when` node with an empty `condition`, a `parameters` with two entries, and an `any` node with both a `parameters` entry and a `condition` reference (at `parameters`) refuse `invalid_semantic_graph`; a `model` target that is a `value`/`parameter` node, and one that is a `model`/`object_type` node, refuse `invalid_model_binding`/`malformed-declaration`; a `parameters` entry naming a parameter `result` or typed `Reference<M::D>` for another object type refuses `ill_typed`/`operator-ineligible`; a `condition` naming an integer-typed expression node refuses `ill_typed`/`non-boolean-root`; two `terminal` nodes on one `model` node refuse `ambiguous_declaration`/`ambiguous-name` at the second, naming both, and a node given a second `claim` occurrence and `source_map` entry refuses the same at that node. | Test (TC-961) |
+| FR-476-AC-4 | With `dependencies` rebuilt after each edit: a body with `mode` and `condition` swapped in order refuses `invalid_semantic_graph`; `mode` `some` refuses `invalid_package`/`invalid-value`; an `any` node with a `condition` reference, a `when` node with an empty `condition`, a `parameters` with two entries, and an `any` node with both a `parameters` entry and a `condition` reference (at `parameters`) refuse `invalid_semantic_graph`; a `model` target that is a `value`/`parameter` node, and one that is a `model`/`object_type` node, refuse `invalid_model_binding`/`malformed-declaration`; a `parameters` entry naming a parameter `result` or typed `Reference<M::D>` for another object type refuses `ill_typed`/`operator-ineligible`; a `condition` naming an integer-typed expression node refuses `ill_typed`/`non-boolean-root`. | Test (TC-961) |
+| FR-476-AC-5 | `terminal Done using v on M when { true };` produces a node whose `condition` references the Boolean `value`/`literal` node of `true`, with empty `parameters` and `dependencies` the `model` node and that literal node; the reader admits it, and `when { false }` likewise. The `true` node's id differs from MT-02's `any` node's id. With `dependencies` rebuilt: `condition` referencing the `self` `value`/`parameter` node refuses `ill_typed`/`operator-ineligible` at the target, and referencing an added integer `value`/`literal` node of `3` refuses `ill_typed`/`non-boolean-root` at the target. | Test (TC-961) |
+| FR-476-AC-6 | In a unit whose aliases `M` and `N` select one model identity, `terminal Done using v on M when { self.value = 3 };` with `terminal Halt using v on N any;` produces two terminal nodes whose `model` binding references the one `model_root` node of that identity; the reader admits the package, and the rows are the two nodes in ascending terminal node structural key (the test establishes that order by comparing the rebuilt keys), with ordinals 0 and 1 and keys (that identity, 0) and (that identity, 1). The same unit with the two `model` alias lines swapped, or with the two `terminal` declarations swapped, gives an equal semantic graph (equal node ids and bodies) and equal rows; only source regions in the `source_map` follow the text. `terminal Halt using v on M any;` with `terminal Stop using v on N any;` produces one node with two `claim` occurrences, ordinals 0 and 1, each with its own `source_map` entry at its declaration; the reader admits it as one row with ordinal 0. In a unit whose alias `V` selects `test/vault` and alias `N` selects `test/vault-other`, a terminal on `N` and one on `V` give rows in the order `test/vault`, then `test/vault-other`, each with ordinal 0, the reverse of the aliases' order. | Test (TC-961) |
 
 ## Published artifacts
 

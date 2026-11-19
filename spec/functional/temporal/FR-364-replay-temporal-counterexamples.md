@@ -61,7 +61,7 @@ A replay settlement: `reproduced-with-evaluated-witness` with the item
 | Liveness | A lasso: a prefix, possibly empty, and a non-empty loop that re-enters at its first position. A model behaviour that ends at a terminal state is the lasso whose loop is the one terminal stutter step. |
 | Deadlock ([FR-366](FR-366-check-deadlock-freedom.md)) | A finite prefix from an initial state to the deadlocked state. Model arm only. |
 | Undefined evaluation ([FR-363](FR-363-settle-every-behaviour-temporal-verdicts.md)) | A finite prefix to the position at which an expression evaluates undefined, for every property form; `loop` is empty. |
-| Task-automaton deadline miss ([FR-419](../analysis/FR-419-analyze-task-set-schedulability.md)) | A prefix to a concrete job-specific missed-deadline state, with `trace_position` at that state, followed by exactly one checked continuation: either a finite timed loop with positive total delay, or a `queue_growth` induction witness. Queue-cap overflow is internal and is never a counterexample state. A continuation witness must establish a legal time-divergent extension; a prefix without one does not refute the timed claim. |
+| Task-automaton deadline miss ([FR-419](../analysis/FR-419-analyze-task-set-schedulability.md)) | A prefix that reaches a concrete job-specific missed-deadline state at `trace_position` (the zero-based index of its first `deadline-miss` step), followed by exactly one checked continuation: a finite timed loop with positive total delay, a single positive-delay terminal-stutter loop from a quiescent product-terminal state, or a `queue_growth` induction witness. With a finite loop, the prefix may continue past the miss step to the loop entry. With `queue_growth`, the prefix ends at the miss step. Queue-cap overflow is internal and is never a counterexample state. A prefix without a continuation is not a refutation, whatever the claim's safety shape, and is refused before replay as `malformed_wire` at `/loop`. The Reachable-state invariant row and any replay-time exploration of a finite endpoint do not apply to a deadline-miss counterexample of a task-derived subject: its claim is restricted to time-divergent behaviours, and a prefix alone does not show that the miss lies on one. |
 
 ### Wire form
 
@@ -82,7 +82,7 @@ this table does not list refuses before replay.
 | `fairness` | the item's resolved fairness set, each member `{kind, operation, granularity}` with `kind` `weak` or `strong` and `granularity` `whole` or `each`, in fairness-set order; empty for `kind: deadlock` |
 | `final_delay` | for `kind: time-lock` only (and then required): the exact rational delay that reaches the time-locked state ([FR-417](FR-417-settle-time-lock-freedom.md)); absent for every other kind |
 | `refinement_failure` | for a refinement item only: the refinement failure ([FR-379](../analysis/FR-379-report-and-replay-refinement-counterexamples.md)); absent otherwise |
-| `trace_position` | for `kind: formula`, the position at which the evaluator returns false; for the undefined-evaluation envelope, the position of its `where`, which is the prefix's last position; `null` for `kind: deadlock` |
+| `trace_position` | for `kind: formula`, the position at which the evaluator returns false, which for a task-automaton deadline-miss counterexample is the zero-based index in `prefix` of its first `deadline-miss` step, not necessarily the prefix's last position; for the undefined-evaluation envelope, the position of its `where`, which is the prefix's last position; `null` for `kind: deadlock` |
 
 The arms are coupled. The replayer SHALL refuse before replay, as
 `malformed_wire`, an observed-arm counterexample that has a non-null
@@ -111,17 +111,32 @@ at that index from the same request. A sample step carries no other member;
 one counterexample's steps are all `document` steps or all `sample` steps.
 The loop's entry is the position after the prefix's last step.
 
-For a task-automaton deadline-miss counterexample, the prefix ends at the
-concrete missed-deadline product state of a named live job: its absolute
-deadline has been reached and its exact remaining demand is positive. An
+For a task-automaton deadline-miss counterexample, the prefix's
+`trace_position` step is the concrete missed-deadline step of a named live
+job: its absolute deadline has been reached and its exact remaining demand is
+positive. After that step the product's miss latch is set and no further
+`deadline-miss` step occurs on the path or in its continuation; the claim is
+already violated, and the continuation only shows that the behaviour is legal
+and time-divergent. An
 internal queue-cap overflow is not an endpoint and does not itself refute. If
 overflow occurs, the producer must derive an actual missed-deadline state from
 the legal task trace and provide that trace and state here. Exactly one of a
-finite `loop` or `queue_growth` is then present. The finite loop is a concrete
+non-empty finite `loop` or `queue_growth` is then present; a counterexample
+with neither is refused before replay as `malformed_wire` at `/loop`, one with
+both as `malformed_wire` at `/queue_growth`. No other member witnesses
+divergence: an asserted divergence flag cannot be replayed, while a loop with
+positive delay can, so a member such as `divergence` is an unknown member and
+refuses before replay. The finite loop is a concrete
 positive-delay product path whose final state has the same source state and
 canonical scheduler control as its entry and whose clock valuations belong to
 the same FR-418 refined region. Its exact delays sum to a strictly positive
-rational. When a completed slot is reused on the loop, the replayer
+rational. A loop of one `terminal-stutter` step with positive delay is a
+finite loop when its entry state enables no source or scheduler transition,
+holds no live or pending job, is not urgent and has no applicable source or
+task time invariant (a periodic arrival invariant `x <= T` included); region
+equality is not required for it, because every delay is admissible from that
+state forever. This is the terminal-state lasso of the Liveness row applied to
+the product. When a completed slot is reused on the loop, the replayer
 alpha-renames the next iteration's job occurrence while preserving task
 declaration, slot, generation relation, demand choice and transition
 provenance; immutable live-job identities may not be merged.
@@ -294,8 +309,18 @@ The replayer SHALL, in this order:
    subtraction must satisfy its declared `c <= x <= M_x` side condition and
    leave a non-negative clock. A deadline-miss refutation also requires the
    exact time-divergent continuation checked by FR-418; a queue-cap overflow
-   is never a counterexample endpoint, and a missed-deadline state without
-   such a continuation does not refute the timed claim. When `queue_growth` is
+   is never a counterexample endpoint, and a task-derived counterexample
+   without exactly one continuation has already been refused `malformed_wire`
+   before replay. Each live job's `deadline` is recomputed as its nominal
+   activation plus checked `D`, and its `demand` is checked against the
+   checked interval at activation. Every step that carries either value is
+   compared with the recomputed one, and the first mismatch in step order
+   refuses `invalid_runtime_input`/`invalid-value` at that step's
+   `/transition/deadline` or `/transition/demand` pointer, naming the supplied
+   and the recomputed value; a tampered value is never reported only as a
+   transition that is not enabled. `prefix[trace_position]` must be the
+   first `deadline-miss` step, else the counterexample refuses
+   `invalid_runtime_input`/`invalid-value` at `/trace_position`. When `queue_growth` is
    present, replay its `stem` immediately after the prefix and require its last
    product state to equal the witness's `source_entry`, `region_entry` and
    `before(0)` queue valuation exactly.
@@ -334,7 +359,13 @@ The replayer SHALL, in this order:
    valuations occupy the same FR-418 refined region, and the exact sum of
    loop delays is positive. A zero-delay loop, a non-equivalent region, a
    changed live job's task/demand/deadline/declared priority, or a stale slot generation
-   refuses `invalid_runtime_input`/`invalid-value`.
+   refuses `invalid_runtime_input`/`invalid-value`. A one-step
+   `terminal-stutter` loop is checked instead against the quiescent
+   product-terminal rule of the wire form, without region equality: an entry
+   that enables a source or scheduler transition, holds a live or pending job,
+   is urgent or has an applicable time invariant refuses at
+   `/loop/0/transition`, and a stutter `delay` that is not positive refuses at
+   `/loop/0/delay`, both `invalid_runtime_input`/`invalid-value`.
 4. Fairness. Model arm, for a lasso: recompute the enabled transition
    identities at every loop state from the model, and check every constraint
    of `fairness` against the loop by
@@ -394,6 +425,10 @@ counterexamples an engine returned.
 | FR-364-AC-14 | The backend-provider schema admits the typed RT-25 `queue_growth` wire vector and refuses omission of `iteration_shift`, zero `elapsed`, and a simultaneous nonempty `loop`; the vector test recomputes the two-unit cycle delay, work balance, positive backlog increment, and verifies `after(k)=before(k+1)` by affine queue-word expansion for the authored index range. These are wire/vector checks only; the task replay and queue-growth behavior above remain normative and require behavioral verification in the downstream FSL implementation. | Test |
 | FR-364-AC-15 | The optional `priority` member on every task-transition identity, `QueueGrowthJob` and `QueueGrowthTransition` is a faithful projection of the checked task declaration: it is absent for a task with no declared priority and equals the declared value otherwise. Replay refuses a missing, extra or forged value for every carrier. Replay recomputes fixed-priority order from checked declared values and EDF order from checked deadlines, then canonical task name, activation transition identity and occurrence; source declaration order and declared priority do not affect EDF ties, including symbolic queue-growth `ready_order`. | Test (TC-372 RT-31, RT-32) |
 | FR-364-AC-16 | An observed-arm counterexample over a record-sample lasso with prefix samples `level` 0, 0 and loop sample `level` 2 is admitted with `prefix` `[{"sample": "0"}, {"sample": "1"}]` and `loop` `[{"sample": "2"}]`, and replays against the request that supplied the samples. A step carrying both `sample` and `document`, a `sample` that is a JSON number, `"01"` or an index beyond the trace's positions, a counterexample mixing `sample` and `document` steps, and a loop whose sample indices are not the request's loop positions are each refused before replay. An undefined-evaluation envelope over the same trace whose `where` carries `sample` `"1"` (with `position` and `locus`) is admitted; its `where` carrying `document` instead, both `sample` and `document`, or a `sample` that is not the index of the envelope's `position` is refused before replay. | Test (TC-1700) |
+| FR-364-AC-17 | A task-automaton counterexample whose prefix holds a `deadline-miss` step, with `loop: []` and no `queue_growth`, is refused `malformed_wire` at `/loop` before replay. The same with both a non-empty `loop` and `queue_growth` is refused at `/queue_growth`. One carrying an extra top-level `divergence` member is refused at `/divergence`. A `kind: time-lock` counterexample whose prefix passes a `deadline-miss` step, with no `loop` and no `queue_growth`, is admitted: the rule binds the deadline-miss refutation, `kind: formula`, only. Over the `task-queue-growth-overload` vector: removing `/queue_growth` gives the first refusal, adding a one-step `loop` gives the second, adding `divergence` `{"elapsed": {"numerator": "1", "denominator": "1"}}` gives the third. | Test (TC-431) |
+| FR-364-AC-18 | A task counterexample whose prefix continues past its `trace_position` miss to a closed positive-delay loop replays. The same with `trace_position` on a non-miss step, or with a second `deadline-miss` step after it, refuses `invalid_runtime_input`/`invalid-value` at `/trace_position` or at that step. The `task-queue-growth-overload` vector, whose `trace_position` is `0` for its one-step prefix whose only step is the miss, carries no `deadline-miss` step in its `queue_growth.stem`. | Test (TC-431 BP-58; replay cases by FSL TC-3008) |
+| FR-364-AC-19 | A single `terminal-stutter` loop with delay 1 from a quiescent product-terminal state replays. With delay 0 it refuses at `/loop/0/delay`. From a state with a live job or an enabled source transition it refuses at `/loop/0/transition`. | Test (FSL TC-704, TC-3008) |
+| FR-364-AC-20 | A miss step whose `deadline` or `demand` differs from the recomputed job value refuses at that step's `/transition/deadline` or `/transition/demand`, naming the supplied and the recomputed value. The same value changed on every step of the job refuses at the job's `activate` step. | Test (FSL TC-3008) |
 
 ## Dependencies
 

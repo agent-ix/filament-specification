@@ -43,6 +43,11 @@ successor-free.
    `done` and the one with `j` `done` and `k` `stuck`; repeat with universe
    `{}`; then add a second object type with its own population to `M`;
    then, instead, add a second population of `Job` to `M`.
+10. Over FR-366-AC-12's unit (`M` and `N` selecting one identity; `q(x)` is
+    `6 mod x`), classify the terminal state and settle the deadlock-freedom
+    item under each declaration pair of that criterion, in both placements;
+    then write the request for the same declarations over a unit whose
+    aliases select `test/vault` and `test/vault-other`.
 
 ## Expected Results
 
@@ -70,3 +75,10 @@ successor-free.
    refuses `missing_declaration`/`missing-name` at `self`; two populations of
    `Job`: `self` refuses `ambiguous_declaration`/`ambiguous-name` at `self`,
    naming both (FR-366-AC-9).
+10. One identity under `M` and `N`: undefined `Done` with `when { true }`,
+    in both placements: intended, `proved`. Undefined `Done` with
+    `when { false }`: `refuted`, `undefined-evaluation`, naming `Done`'s
+    terminal key in both placements (label `M`, then `N`). `when { false }`
+    on both: deadlocked, `kind: deadlock`. `Done` with `any`: no
+    deadlock-freedom item. The two-identity unit: `unsupported`, no request
+    item (FR-366-AC-12).
