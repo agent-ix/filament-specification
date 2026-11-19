@@ -127,7 +127,7 @@ follow the lexical contract. `EOF` requires the entire unit to be consumed.
 
 ```ebnf
 composed-unit = header, { profile }, { model },
-               declaration, { declaration }, EOF ;
+               { declaration }, EOF ;
 header       = 'language', string, 'edition', string, ';' ;
 profile      = 'profile', ident, '=', string, ';' ;
 model        = 'model', ident, '=', string, ';' ;
@@ -263,6 +263,16 @@ commit       = 'commit', ident, 'by', ident,
 finish       = 'finish', ident, 'as', '(', parameter, ')', block, ';' ;
 ```
 
+A unit with no declaration, such as a header alone or a header with profile
+and model lines, parses: the rule that a package needs at least one
+declaration that has a node is a package-content rule, checked at S3 as
+`missing_declaration`/`empty-package` at the unit's header (FR-746), so a unit
+of only type aliases and a unit of no declarations refuse alike, and tooling
+that runs over S1 alone (formatting, completion) works on a unit still being
+written. A token after the last declaration that begins no declaration is
+not a syntax refusal at end of input: it begins a top-level declaration, so a
+word refuses as an undeclared declaration form (FR-339-AC-7).
+
 `composed-unit` subsumes the earlier common-only and state/temporal drafting
 entry points. None has an adopted profile identity. All three families are now
 syntactically represented; grammar completeness does not establish agreement of
@@ -336,7 +346,7 @@ it.
 
 ```ebnf
 complete-unit = header, { profile }, { import-decl }, { model },
-                declaration, { declaration }, EOF ;
+                { declaration }, EOF ;
 import-decl   = 'import', string, [ 'as', ident ], ';' ;
 
 declaration   = dimension-decl | dimension-equivalence | unit-decl | enum-decl | record-decl
