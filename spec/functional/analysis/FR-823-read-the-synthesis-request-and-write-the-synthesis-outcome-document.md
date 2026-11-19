@@ -88,7 +88,7 @@ restate a fact the package already holds.
   weakens the check.
 - Every pointer is relative to the synthesis request object; a host
   surface prefixes it as FR-805 states, so the native runtime's member
-  reports `/synthesis/declaration` and `/synthesis/limits/max_work`.
+  reports `/request/synthesis/declaration` and `/request/synthesis/limits/max_work`.
 
 ### Selection
 
@@ -199,7 +199,7 @@ plan: a proof that no value of `D` meets the block.
 | FR-823-AC-1 | Over FR-194-AC-6's `Pick`, a request `{"declaration": "Pick"}` writes `filament.synthesis-outcome/v1` with `status` `candidate`, `check` `validated`, `candidate` `{"type": "integer", "value": "7"}`, `objective` and `optimal` `null`, `explored.visited` 8, `lineage.index` 7 and `lineage.symmetry` `identity`, `counterexample` and `cause` `null`, and every member present, exit `0`; `Pick * Pick = 50` writes `no-candidate` with `explored.visited` 10 and every other result member `null`, exit `10`; `minimize Pick` with `Pick >= 3` writes candidate 3, `optimal` `true`, `objective` `{"direction": "minimize", "expression": "Pick", "value": {"type": "integer", "value": "3"}}` and `explored.visited` 4. | Test (TC-2038) |
 | FR-823-AC-2 | `Pick * Pick = 50` with `limits` `{"max_candidates": 3}` writes `incomplete` with `limit-reached` naming `synthesis.max_candidates` and `explored.visited` 3, exit `22`, never `no-candidate`; `limits` `{"work": 1}` refuses `invalid_runtime_input`/`unknown-member` at `/limits/work` and `{"max_work": 0}` `invalid-value` at `/limits/max_work`, exit `20`. | Test (TC-2038) |
 | FR-823-AC-3 | A package holding only `Pick` runs it for a request with no `declaration`; a package holding `Pick` and `Reach` refuses that request `invalid_runtime_input`/`missing-member` at `/declaration` naming both; `declaration` `Nope` refuses `missing_declaration`/`missing-name` at `/declaration`; `declaration` naming the invariant `Positive` refuses `missing_declaration`/`missing-name` at `/declaration` naming `state_clause`; a bare `Pick` matching `A::Pick` and `B::Pick` refuses `ambiguous_declaration`/`ambiguous-name` at `/declaration`, and `A::Pick` runs; each refusal exits `20` before any search. | Test (TC-2038) |
-| FR-823-AC-4 | A request selecting the value synthesis `Pick` with `initial`, `policy` or `dwell_grid` refuses `invalid_runtime_input`/`unknown-member` at `/initial`, `/policy` or `/dwell_grid`; a request selecting the plan synthesis `Reach` without `initial` refuses `missing-member` at `/initial`; a member `engines` refuses `unknown-member` at `/engines` before any stage runs; under a native run's `synthesis` member each pointer carries the `/synthesis` prefix. | Test (TC-2038) |
+| FR-823-AC-4 | A request selecting the value synthesis `Pick` with `initial`, `policy` or `dwell_grid` refuses `invalid_runtime_input`/`unknown-member` at `/initial`, `/policy` or `/dwell_grid`; a request selecting the plan synthesis `Reach` without `initial` refuses `missing-member` at `/initial`; a member `engines` refuses `unknown-member` at `/engines` before any stage runs; under a native run's `synthesis` member each pointer carries the `/request/synthesis` prefix. | Test (TC-2038) |
 | FR-823-AC-5 | A candidate the independent checker rejects (a checker fault injected through a library test seam, never a request member) writes `check` `rejected`, the checker's `counterexample` and the `lineage`, exit `30`, never exit `0`. | Test (TC-2038) |
 
 ## Dependencies

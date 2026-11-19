@@ -282,6 +282,54 @@ Intake does not check which construct owns an admitted clock member or whether
 the model declares a time source; FSL FR-230 and FR-415 check those where the
 clock is used.
 
+**Value types bound to a native by `target`.** A value type (FR-208
+`filament.meaning.model.value-type/v1`) binds its native in one of two ways:
+by `scalar` and constraints, as the bounded Integer, Text and Rational value
+types of FR-322 "Model-owned members" step 4 and "Rational value types" below
+are bound, or by a `target` naming `ix://filament/native/<Name>`, `<Name>` one
+of the native set above. Intake SHALL admit a value type with such a
+`target`, and the value type SHALL be that native under its own name, exactly
+as an alias whose `target` is the native is: every position that may name the
+native (a field, parameter or result `typeRef`, an alias or reference
+`target`, a sequence `items`, a map `keys` or `values`, an option `inner`, a
+tuple position `typeRef` and a variant case `payloadType`) admits the value
+type with the admission and the refusals the same position has when it names
+`ix://filament/native/<Name>`. FR-322 step 4 then gives it the native's row.
+A `target` that begins `ix://filament/native/` and names no native of the set
+refuses `invalid_model_binding`/`malformed-declaration` at
+`TypeDefinition.target`, as such a `typeRef` does; a value type carrying both
+`target` and `scalar` refuses the same at `TypeDefinition.scalar`, because
+one value type has one binding.
+
+The constraint rules for a `target`-bound value type follow from its native:
+
+- A value type bound to `ix://filament/native/Clock` is an alias of the clock
+  type: it builds no type declaration and holds no data value, a member typed
+  by it is a clock member with the clock member shape above, a tuple position
+  or variant payload typed by it reads as one typed `Clock` does, a
+  `reference` whose `target` is it is `Reference<Clock>`, and an option
+  `inner` or a map `keys` naming it refuses as one naming
+  `ix://filament/native/Clock` does. A constraint whose `appliesTo` is the
+  value type is a clock constraint on it: intake admits the keywords `max`
+  and `min` (the checker bounds each clock place the value type types by a
+  `max`, and refuses a `min` `invalid_timed_model`/`time-invariant-shape`),
+  and refuses any other keyword `invalid_model_binding`/
+  `malformed-declaration` at `Constraint.keyword`.
+- A value type bound to any other native carries no constraint whose
+  `appliesTo` is the value type: such a constraint refuses
+  `invalid_model_binding`/`malformed-declaration` at `Constraint.keyword`.
+  Bounds and a text profile come only from the `scalar`-and-constraints
+  form, so a value type bound to `Text`, `Rational` or `Decimal` by `target`
+  is admitted and, as a member of the bare native is, gives its member no
+  type (FR-322 "A declared type outside the table").
+
+The reason is that a model has two spellings of a named native, the alias and
+the `target`-bound value type, and one native SHALL NOT get two meanings from
+them. The clock-bound value type is admitted as a clock alias rather than
+refused, because timed models already declare clock places through an alias
+of `Clock`, and refusing the second spelling would refuse a model the first
+spelling admits.
+
 **Option value types.** A `typeRef` is one of the three forms above and never
 carries a type argument, so `Option<T>` is not spelled in a `typeRef`:
 `ix://filament/native/Option` and every `typeRef` that embeds a second reference are
@@ -883,6 +931,7 @@ Admission checks are decided before the first charge.
 | FR-154-AC-48 | A map type `M` with `keys` `ix://filament/native/Text`, `values` the record value type `Timer` (clock field `x`, data field `n`) and `bound` `{lower: 0, upper: 2}` is admitted and reads as `Map<Text, Timer>[0, 2]`, a clock collection; with `bound` `{lower: 0}` it reads as `Map<Text, Timer>` with no maximum; `M` with `keys` `ix://filament/native/Integer`, a value type bound as `Int[0, 9]`, a variant type with no payload-bearing case, a unit `ix://filament/unit/ms` or an alias of `Text` is admitted, each the key type it names. | Test (TC-234) |
 | FR-154-AC-49 | Over `M`, each single defect refuses once at the `M` node: `keys` `ix://filament/native/Clock`, an alias of `Clock`, `Timer`, a record value type `Cfg` with one `Boolean` field `a`, an option value type over `Text`, a sequence type, a map type, a tuple value type, a variant type with a payload-bearing case, a `reference` type, an object type, the native `ix://filament/native/Rational` and a value type bound as a `Decimal[...]` domain each refuse `ill_typed`/`operator-ineligible` at `TypeDefinition.keys`; an absent `keys`, and a `keys` naming a namespace, refuse `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.keys` and a `keys` naming no node `missing_declaration`/`missing-name` there; an absent `values` refuses `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.values`; an `items` member on `M` refuses it at that member; an absent `bound`, a `bound` that is a string, has a negative or non-integer `lower` or `upper`, has no `lower` or carries another member refuses `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.bound`; `bound` `{lower: 3, upper: 2}` and `bound` `{lower: 1}` (no maximum) each refuse `invalid_model_binding`/`unpreserved-model-meaning` at `TypeDefinition.bound`; a `bound` on a `sequence` type definition refuses `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.bound`. | Test (TC-234) |
 | FR-154-AC-50 | A collection-typed field names its collection through a package type: the published `acme/orders` document types `Order.clock` by `ix://acme/orders/ClockMap`, a map type definition with `keys` `ix://filament/native/Text` and `values` `ix://filament/native/Clock`, and it is admitted and read as `Map<Text, Clock>`. The same field typed by the rendered type text `Map<Text, ix://filament/native/Clock>`, and a field typed `Sequence<ix://filament/native/Integer>`, each refuse `invalid_model_binding`/`malformed-declaration` at the field node and `Field.typeRef`, because a `typeRef` is one reference of the three forms and never embeds a second one; no published document carries a rendered type text in a `typeRef`. | Test (TC-1481) |
+| FR-154-AC-51 | A domain package declaring value types `Flag`, `Count`, `Name`, `Reading` and `Sample` with `target` `ix://filament/native/Boolean`, `Integer`, `String`, `Float64` and `Float32`, and `Memo`, `Ratio` and `Amount` with `target` `Text`, `Rational` and `Decimal`, each typing one field of an object type, is admitted with no refusal; a value type `Watch` with `target` `ix://filament/native/Clock` typing a required field and an optional field is admitted as two clock members, a `max` constraint whose `appliesTo` is `Watch` is admitted, `maxLength` on it refuses `invalid_model_binding`/`malformed-declaration` at `Constraint.keyword`, and an option value type whose `inner` is `Watch` refuses as one whose `inner` is `Clock`; a `min` constraint on `Count` refuses `malformed-declaration` at `Constraint.keyword`; a value type with `target` `ix://filament/native/Int64` refuses `malformed-declaration` at `TypeDefinition.target`, and one with both `target` and `scalar` at `TypeDefinition.scalar`. | Test (TC-2048) |
 
 ## Dependencies
 
