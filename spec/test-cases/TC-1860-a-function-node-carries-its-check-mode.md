@@ -21,12 +21,12 @@ Read a package with `linked` on every function node, then the same package
 with `kernel` on a declared function and a `body` clause function, then a
 dependency diamond that disagrees on one node's mode; then the variants with
 the member removed, set to `"strict"`, `""` and `true`, placed on an
-`expression` node, and set to `"kernel"` on an `invariant` and on a
-`precondition` clause function.
+`expression` node, and set to `"kernel"` on an `invariant`, on a
+`precondition` and on a `reward` clause function (FR-640-AC-1's `duration`).
 
 ## Expected Results
 
 - The first two packages are admitted and unequal; the diamond refuses `invalid_package`/`conflicting-definition`.
-- The missing, malformed and misplaced members refuse `malformed_wire`; `kernel` on the clause functions refuses `invalid_package`/`invalid-value`.
+- The missing, malformed and misplaced members refuse `malformed_wire`; `kernel` on the clause functions refuses `invalid_package`/`invalid-value`; the `duration` reward function is written `linked`.
 
 Test: `tests/checked_package_v2.rs` `tc_1860_a_function_node_carries_its_check_mode` (schema and vectors); filament-spec-language `fsl-analyze/tests/it/check_mode_record.rs`, traced `FSpec-TC-1860` (producer).

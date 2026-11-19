@@ -750,7 +750,10 @@ A frame body refusal, meaning-join or canonical-order
     interface), by a record value type (`model`/`record_value_type`) or by an
     event type (`model`/`event_type`);
     a `precondition`, `body` or `reward` clause function is owned by an operation
-    member of an object type, the operation's context. A `reward` clause
+    member of an object type, the operation's context (on a source-declared
+    type the function carries the unit's `SourceOwner` and the declaration
+    path of "Source-declared object types" item 5 instead, `[<type>,
+    <operation>, "reward", <reward name>]` for a reward). A `reward` clause
     function is the expression of an FR-640 `reward` node: its `parameters`
     are the operation's parameters in declared order, random parameters
     included, its result type is the reward's value type, and its body reads
@@ -1972,8 +1975,9 @@ display name:
    carries the unit's `SourceOwner` and a `declaration` distinct for every
    clause function of the package: `[<type>, <operation>, "precondition",
    <label>]` for an authored precondition, `[<type>, <operation>,
-   "effective_precondition"]` for an effective precondition and `[<type>,
-   <operation>, "body"]` for a body, with that name as its id path, ordinal
+   "effective_precondition"]` for an effective precondition, `[<type>,
+   <operation>, "body"]` for a body and `[<type>, <operation>, "reward",
+   <reward name>]` for the clause function of a reward (FR-640), with that name as its id path, ordinal
    `0` and one `declaration` occurrence. Every segment meets the identifier
    rule `[A-Za-z_][A-Za-z0-9_]*`, so the one-holder-per-qualified-name rule
    admits sibling clause functions with no change. The owner-presence row for
@@ -4606,7 +4610,8 @@ of the type that declares its effective operation (FR-790).
 **Check order.** The reader runs the graph stages of "One total order of the join
 stages" first, so every owner-bearing node, a clause function included, has
 already joined its owner (stage 2); then the `operation_effects` carrier; then
-the `operation_bodies` carrier; then the `checked_term_data` records. The owner
+the `operation_bodies` carrier; then FR-640's `probabilistic` reader
+checks; then the `checked_term_data` records. The owner
 join therefore outranks every carrier check: a clause function whose owner names
 no declared operation member refuses `missing_declaration`/`missing-selection` at
 its `node_id` and is never reached as a body, so the carrier meets only functions
@@ -5593,7 +5598,7 @@ declaration names" states.
 | FR-322-AC-468 | Fed to the reader, each edit of `Pick`'s node refuses with the code at the locus stated: `domain` and `grammar` swapped in order, `invalid_semantic_graph` at the body; `symmetry` `lexicographic`, `invalid_package`/`invalid-value` at that literal; `direction` `least`, `invalid_package`/`invalid-value` at that literal; `grammar` referencing a `temporal`/`temporal_clause` node, `ill_typed`/`operator-ineligible` at the `grammar` binding; `candidate` named `Other`, `invalid_package`/`invalid-value` at the `candidate` binding; `satisfies` referencing an Integer-typed node, `ill_typed`/`non-boolean-root` at the `satisfies` binding; `domain` and the candidate retyped to the builtin `Integer`, `unsupported_projection`/`unbounded-extent` at the `domain` binding naming `Integer`; the `claim_names` row removed, `invalid_package`/`invalid-value` at `/claim_names`. | Test (TC-2037) |
 | FR-322-AC-469 | Over FR-154-AC-51's package, the fields typed `Flag`, `Count`, `Name`, `Reading` and `Sample` have the element types `Boolean`, `Integer`, `String`, `Float64` and `Float32` with those natives' `scalar_type` nodes and no node of the value type, a value of `Count` and an `Integer` compare under `Integer` equality, and the fields typed `Memo`, `Ratio` and `Amount` have no type, so a read of `memo` refuses `ill_typed`/`operator-ineligible`; a tuple position typed `Ratio` refuses `invalid_model_binding`/`malformed-declaration` at the position as one typed `Rational` does; the field typed `Watch` is a `Clock` member by the Clock row, and a `reference` whose `target` is `Watch` is `Reference<Clock>`. | Test (TC-2048) |
 | FR-322-AC-470 | A consumer that holds a SHA-256 integrity digest of a package's exact bytes for a foreign interface (FSL's evaluator, for its filament-observation package selection) writes it to no document or file FSL writes, uses it as no package identity or version, and never decides package sameness by it: two packages whose JSON values are equal member by member are the same package, and the reader's and the comparison's answers are unchanged when the consumer's digest is removed. | Test (TC-2050) |
-| FR-322-AC-471 | In FR-640-AC-1's `Service` package, the `duration` reward's `function` node carries the `clause` binding `"reward"` and the `ModelOwner` of the operation member `Server/attempt`, and the owner join admits it; `Server::attempt`, which has no body, keeps its `operation_bodies` row `{"kind": "no_body"}` and the reader admits the package; the precondition clause functions read for `Server::attempt` hold no function whose `clause` is `reward`. Each mutation refuses `missing_declaration`/`missing-selection` at the clause function's `node_id`: the reward function owned by the object type `Server` instead of its operation member, and the same function owned by a field member of `Server`. The function with its `clause` binding rewritten to `"precondition"` is admitted by the owner join but refuses FR-640 reader rule 4 (`invalid_package`/`invalid-value` at the `reward` node's `/body/expression`), because a reward's expression is a `reward` clause function; with the binding rewritten to `"body"` it refuses `invalid_package`/`invalid-value` at `/operation_bodies/{i}/body` of `Server::attempt`'s row, because a `body` clause function gives the operation a body and the row says `no_body`. | Test (TC-1563) |
+| FR-322-AC-471 | In FR-640-AC-1's `Service` package, the `duration` reward's `function` node carries the `clause` binding `"reward"` and the `ModelOwner` of the operation member `Server/attempt`, and the owner join admits it; `Server::attempt`, which has no body, keeps its `operation_bodies` row `{"kind": "no_body"}` and the reader admits the package; the precondition clause functions read for `Server::attempt` hold no function whose `clause` is `reward`. Each mutation refuses `missing_declaration`/`missing-selection` at the clause function's `node_id`: the reward function owned by the object type `Server` instead of its operation member, and the same function owned by a field member of `Server`. The function with its `clause` binding rewritten to `"precondition"` is admitted by the owner join but refuses FR-640 reader rule 4 (`invalid_package`/`invalid-value` at the `reward` node's `/body/expression`), because a reward's expression is a `reward` clause function; with the binding rewritten to `"body"` it refuses `invalid_package`/`invalid-value` at `/operation_bodies/{i}/body` of `Server::attempt`'s row, because a `body` clause function gives the operation a body and the row says `no_body`; the `operation_bodies` carrier runs before FR-640's reader, so rule 4 is not reached and no `/body/expression` refusal is reported. | Test (TC-1563) |
 
 ## Dependencies
 
