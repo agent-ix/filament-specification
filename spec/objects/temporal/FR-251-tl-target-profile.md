@@ -28,19 +28,22 @@ output and never editable source."
 | --- | --- |
 | mltl_closed_trace_v1 | Wire spelling `mltl.closed-trace/v1`. The TL target named by FR-095 for "Event-position false-extension, bounded future core, complete execution", supported "when every bridge premise below holds". FR-095 also records it as the target of two unsupported rows: "Finite-window future semantics" is "Unsupported because TL extends atoms false beyond closure". FR-091 pins the native lower-bound convention to it: the `until` convention "matches `mltl.closed-trace/v1` and shall not be replaced by a different unbounded-until convention under the same identity." |
 | mltl_online_prefix_v1 | Wire spelling `mltl.online-prefix/v1`. The TL target named by FR-095 for "Event-position false-extension, bounded future core, open prefix", supported "when every bridge premise below holds". |
+| mltl_infinite_trace_v1 | Wire spelling `mltl.infinite-trace/v1`. The TL target named by FR-095 for a `filament.temporal.infinite-trace/v1` request whose reachable temporal operators are all FR-092 past operators with closed intervals `[a, b]` and no future operator, over a lasso trace, supported "when every bridge premise below holds". |
 
 FR-095 additionally records "The same TL profiles" as the target for
 fixed-sample false-extension bounded future core, "Supported only with one total
 valuation per required sample and retained epoch/period/unit correspondence",
 and "Current TL profiles" as the target of the two unsupported rows for
 timestamped-event finite-window and for "Any bounded past operator". FR-095
-also records "No TL target" for a `filament.temporal.infinite-trace/v1` unbounded
-property, resolving to an absent target rather than to either labeled member; FR-161 analyzes that
-request natively instead of lowering it. A `filament.temporal.timed/v1` claim
+also records "No target" for every `filament.temporal.infinite-trace/v1` request
+outside its infinite-trace closed-past row (an unbounded property, a future
+operator or no temporal operator), resolving to an absent target rather than to
+any labeled member; FR-161 analyzes that request natively instead of lowering
+it. A `filament.temporal.timed/v1` claim
 likewise resolves to an absent target; FR-416 analyzes it natively, and an
 embedded monitor of a timed claim runs under the timestamped-event profile.
 No requirement enumerates any TL
-profile identity beyond the two labels above, so no further member is supplied
+profile identity beyond the three labels above, so no further member is supplied
 here.
 
 These labels are **not** members of
@@ -87,7 +90,7 @@ equivalence claim."
 | --- | --- | --- |
 | FR-251-AC-1 | Each member's value equals the exact label string in the table. | Inspection |
 | FR-251-AC-2 | No member of this vocabulary is accepted where an authored temporal profile identity is required. | Analysis |
-| FR-251-AC-3 | A timestamped-event, bounded-past, infinite-trace or timed request resolves to an absent target rather than to a member. | Analysis |
+| FR-251-AC-3 | A timestamped-event, bounded-past or timed request, and an infinite-trace request outside FR-095's infinite-trace closed-past row, resolves to an absent target rather than to a member; an infinite-trace request inside that row resolves to `mltl.infinite-trace/v1`. | Analysis |
 | FR-251-AC-4 | Equal TL formula bytes under different bridge definition identities compare unequal. | Analysis |
 
 ## Dependencies

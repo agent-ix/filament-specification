@@ -84,18 +84,28 @@ The correspondence shall use the support table that FSL FR-045 classifies:
 
 | Native request | Existing TL target | Disposition |
 | --- | --- | --- |
-| `filament.temporal.infinite-trace/v1` | No target | Unsupported on the infinite-trace dimension; there is no bounded TL formula to generate, and QSpec FR-161 analyzes unbounded requests natively |
+| `filament.temporal.infinite-trace/v1`, other than the infinite-trace closed-past row below | No target | Unsupported on the infinite-trace dimension; there is no TL formula of that shape to generate, and QSpec FR-161 analyzes unbounded requests natively |
 | Timestamped-event finite-window | Current TL profiles | Unsupported; no index conversion is inferred |
 | Both a bounded past and bounded future operator reachable from the root | No target | Unsupported on the mixed-direction dimension; the past-operator profile admits no future or mixed graph |
 | Either false-extension profile, at least one bounded past operator defined by FR-092 and no future operator, with origin-complete history | `tl-syntax.past-operators/v1`, `mltl.origin-complete-history/v1`, and the selected position-history/past-evaluator contracts | Supported when every bridge premise below holds; a history cutoff is `incomplete` with cause `missing-history`, not unsupported |
+| `filament.temporal.infinite-trace/v1`, at least one past operator, every reachable temporal operator a past operator of FR-092 with a closed interval `[a, b]`, and no future operator, over a lasso trace | `tl-syntax.formula-unbounded/v1`, `tl-syntax.lasso-trace/v1` and `mltl.infinite-trace/v1` | Supported when every bridge premise below holds; the surrounding-execution closure does not select the row, because the infinite trace never closes (FR-090) |
 | Event-position false-extension, a bounded future operator and no past operator, complete surrounding execution | `mltl.closed-trace/v1` | Supported when every bridge premise below holds |
 | Event-position false-extension, a bounded future operator and no past operator, open surrounding execution | `mltl.online-prefix/v1` | Supported when every bridge premise below holds |
 | Fixed-sample false-extension, a bounded future operator and no past operator | The same TL profiles, selected by surrounding-execution closure | Supported only with one total valuation per required sample and retained epoch/period/unit correspondence |
 | Either false-extension profile, no bounded temporal operator reachable | The same TL profiles, selected by surrounding-execution closure | Supported; a proposition-only formula imposes no additional TL temporal obligation |
 
 The bounded-past operator set is exactly the set defined by QSpec FR-092; this
-row covers every member without a future operator. The table's infinite-trace
-row applies to the whole profile. The timestamped finite-window row also
+row covers every member without a future operator. The table's first infinite-trace
+row applies to every infinite-trace request outside the closed-past row: one
+reaching a future operator, an interval-less or `[a,*]` past operator, or no
+temporal operator. The closed-past row's target is the TL infinite-trace
+evaluator, which reads a closed past interval reaching before position 0 as
+FR-092 "Positions before the origin" states, every atom false there and the
+offset never skipped; the TL ecosystem adopted that reading in tl-mltl #186,
+and an infinite-trace evaluator that clips the window at the origin is not this
+target. The correspondence of that row preserves the lasso's prefix and loop
+exactly and the selected activation position, besides every member listed
+below. The timestamped finite-window row also
 precludes a finite-window-to-closed-trace equivalence claim, because TL extends
 atoms false beyond closure. The no-operator row covers each false-extension
 profile and is separate from the bounded-future and bounded-past rows.
@@ -164,9 +174,10 @@ correspondence.
 | FR-095-AC-6 | Fixed-sample lowering retains epoch/period/unit, reports an absent runtime sample as incomplete, and refuses a changed period or event-count reinterpretation even where the TL formula bytes match. | Test (TC-113) |
 | FR-095-AC-7 | A supported TL result is accepted only when the correspondence record preserves assessment execution, both progress/closure axes, settlement basis, exact decision support, completeness and supersession; mutating or omitting one axis cannot yield a healthy native result. | Test (TC-117) |
 | FR-095-AC-8 | Every generated formula, trace/history, request and mapped result passes its target owner's public reader and is retained as the exact admitted typed value with its public name/version and selected definition references. Mutating a preserved typed key changes the corresponding exposed member and cannot pass strict rereading; no content hash or synthetic record reference substitutes for an owner value. | Test (TC-117) |
-| FR-095-AC-9 | An infinite-trace unbounded-property request returns a typed unsupported mapping naming the absent TL target without emitting a substitute formula. | Test (TC-200) |
+| FR-095-AC-9 | An infinite-trace request outside the closed-past row (an unbounded property, a future operator or no temporal operator) returns a typed unsupported mapping naming the absent TL target without emitting a substitute formula. | Test (TC-200) |
 | FR-095-AC-10 | Independently admit identical producer bytes twice and obtain a subject/classification from the first admission: projection with the second admission refuses before TL construction. Original admission membership survives an unchanged package clone, but a subject borrowed from one package cannot authorize another borrow. Changing a public classification disposition, premise or retained fact while keeping its sealed selection refuses on complete reclassification. | Test (TC-117) |
 | FR-095-AC-11 | Two occurrences sharing a temporal clause node retain distinct node/role/ordinal selections and their original name/clock rows; selected model package identities retain their checked-owner order and no source alias is inferred. Missing or substituted occurrence/instance/observation selections refuse before TL construction. For a correction, substituting a different complete prior owner result with the same result identifier fails non-evaluating predecessor validation and yields no final agreement Boolean. | Test (TC-117) |
+| FR-095-AC-12 | Under `filament.temporal.infinite-trace/v1`, a request whose reachable temporal operators are all FR-092 past operators with closed intervals maps to `mltl.infinite-trace/v1` over a lasso trace, and independent native and TL evaluators emit equal verdicts at every activation position of every lasso of a declared finite exhaustive population; on the lasso where atomic `p` holds at every position, `once[1,1] not p` is true and `historically[0,2] p` is false at position 0 in both, and an evaluator that clips the closed past window at the origin disagrees on both. An infinite-trace request reaching a future operator, an interval-less or `[a,*]` past operator, or no temporal operator returns the typed unsupported mapping of AC-9. | Test (TC-2042) |
 
 ## Dependencies
 
@@ -181,7 +192,8 @@ correspondence.
   compiled-protocol `/2` classifier is not this checked-view bridge input.
 - tl-syntax FR-011 (past-operator semantics; FR-011-AC-4 admits no future or
   mixed node under `tl-syntax.past-operators/v1`), FR-013 and FR-014 (the
-  formula editions), tl-mltl FR-018 (trace and history wire) and filament-mltl
+  formula editions), tl-mltl FR-018 (trace and history wire), tl-mltl FR-031
+  (the infinite-trace evaluator `mltl.infinite-trace/v1` names) and filament-mltl
   FR-001 and FR-003 (request and result admission, result mapping).
 - TL syntax/evaluation retains its own semantic-profile and release authority.
 

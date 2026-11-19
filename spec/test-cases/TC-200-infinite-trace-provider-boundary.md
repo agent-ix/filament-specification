@@ -30,8 +30,10 @@ Sound infinite-trace analysis differential and typed-boundary controls for
 `historically`, `once` and `since`, with strong previous written as the derived
 form `once[1,1]`, selected under
 `filament.temporal.infinite-trace/v1`. Verifies the FR-161 result vocabulary maps
-exactly onto FR-360/FR-241/FR-242/FR-243, that infinite-trace requests never
-reach a TL target, and that a missing liveness backend settles `unsupported`
+exactly onto FR-360/FR-241/FR-242/FR-243, that infinite-trace requests reaching
+an unbounded operator never reach a TL target (closed-interval past requests
+such as `once[1,1]` map to `mltl.infinite-trace/v1` and are verified by
+[TC-2042](TC-2042-infinite-trace-closed-past-correspondence.md)), and that a missing liveness backend settles `unsupported`
 rather than holding.
 
 ## Test Procedure
@@ -103,9 +105,13 @@ carries execution `completed`, truth `pending` and basis `unsettled`;
 distinguished by their FR-241 execution disposition — `unsupported`,
 `resource-incomplete` or `failed` (FR-161-AC-6).
 
-The infinite-trace bridge request in the parallel FR-095 check returns a typed
-unsupported mapping naming an absent TL target and emits no substitute formula,
-while the event-position request from the same population resolves normally;
-[FR-251](../objects/temporal/FR-251-tl-target-profile.md) records the
-infinite-trace target as absent rather than as either of its two members
-(FR-095-AC-9, FR-251-AC-3).
+The infinite-trace bridge request in the parallel FR-095 check, which reaches an
+unbounded operator, returns a typed unsupported mapping naming an absent TL
+target and emits no substitute formula, while the event-position request from
+the same population resolves normally;
+[FR-251](../objects/temporal/FR-251-tl-target-profile.md) records the target of
+an infinite-trace request outside FR-095's closed-past row as absent rather than
+as any of its members (FR-095-AC-9, FR-251-AC-3). The `once[1,1]` member of this
+population lies inside the closed-past row and maps to `mltl.infinite-trace/v1`;
+[TC-2042](TC-2042-infinite-trace-closed-past-correspondence.md) verifies that
+mapping (FR-095-AC-12).

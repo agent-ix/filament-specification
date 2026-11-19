@@ -156,7 +156,9 @@ positions, so a formula that contains it is not stutter-invariant.
 - [FR-090](FR-090-select-temporal-profile-and-clock.md).
 - The TL ecosystem owns the exact formula-v2, `tl-syntax.past-operators/v1`,
   `mltl.origin-complete-history/v1`, position-history and past-evaluator
-  contracts; this requirement consumes their selected public interfaces.
+  contracts, and the `tl-syntax.formula-unbounded/v1`,
+  `tl-syntax.lasso-trace/v1` and `mltl.infinite-trace/v1` contracts of the
+  infinite-trace evaluator FR-095 maps closed-past infinite-trace requests to; this requirement consumes their selected public interfaces.
 
 ## Status
 
