@@ -203,11 +203,15 @@ follows, tracked by QSL-2584:
 - operand 0 of `filament.op.option.slots` (FR-772) changes from `object` to
   `place_owner`.
 
-The V2 schemas' `OperationIdentity`, operator-class and `semantic_form`
-enumerations SHALL list the three identities, the class `place_ref` and the
-form `place_reference` in the same release as the catalog entries, and the
-`scalar_type` form enumeration SHALL list `clock_reference` in that release:
-the schemas enumerate exactly the catalogued identities (FR-322-AC-17).
+The V2 schema `proposals/checked-package-v2/schema.json` SHALL list, in the
+same release as the catalog entries, the three identities in
+`OperationIdentity`, the class `place_ref` in the application `operator`
+enumeration, the form `place_reference` in the `expression` `semantic_form`
+enumeration and the form `clock_reference` in the `scalar_type`
+`semantic_form` enumeration: it is the one schema that enumerates the
+catalogued identities (FR-322-AC-17). The strict reader of
+filament-contract-ir reads the catalog from QVC and holds no copy, so its
+change for this requirement is the reader checks below, not a schema.
 
 ### Reader checks
 
@@ -233,7 +237,7 @@ under these checks, in this order:
 | FR-829-AC-2 | In a refinement row over a population `calls` of two `Call` objects `c1` (`n = 1`) and `c2` (`n = 2`), `only(c in M::calls where c.n = 2: ref(c.x))` evaluates to the place id of `c2.x`, `count(c in M::calls where ref(c.x) = self.r)` evaluates to `1` when `self.r` holds `c1`'s place id of `x` and to `0` when it holds `c1`'s place id of `y`, and both values are unchanged at a state that differs only in clock values; the `ref` node's owner term is the binder parameter `c` itself, typed `Reference<Call>`, with no `deref`. | Test (TC-2084) |
 | FR-829-AC-3 | Over `v: Option<Clock>` and `q: Sequence<Option<Clock>>[0, 2]` on `c1` (`v` present, `q` holding one present and one absent element) and `c2` (`v` absent, `q` empty): `count(c in M::calls where present(c.v))` and `sum(c in M::calls: if present(c.v) then 1 else 0)` are `1`; `all(c in M::calls: exists(e in c.q: present(e)))` is false and `exists(c in M::calls: forall(e in c.q: present(e)))` is true (`c2`'s empty `q`); each `present` is a `presence_read` whose owner term is the binder `c` itself, and each slot quantifier's operand 0 is FR-772's slot-domain application at that owner term. | Test (TC-2084) |
 | FR-829-AC-4 | With a field `peer: Reference<Call>`, `ref(self.peer.x)` is the place-reference application whose owner term is the `peer` field read of `self`, typed `Reference<Call>`, it equals `ref(other.x)` exactly at states where `self.peer` holds `other`, and `present(self.peer.v)` is the `presence_read` with the same owner term; `ref(self.v)` over an absent `v` is defined and equals the place id of the instance `self.v`. | Test (TC-2084) |
-| FR-829-AC-5 | A record value type `Tag { x: Clock; r: Reference<Clock>; n: Integer }` has the data part `r`, `n`, in that order, and no member for `x`; a `tuple_value` of a tuple `(Clock, Reference<Clock>)` carries one term, the place id; `filament.op.clock_reference.eq` over `ref(self.x)` and `ref(self.x)` is true and `ne` false; and the three identities, the operator class `place_ref`, the form `place_reference` and the `scalar_type` form `clock_reference` are enumerated by the catalog and both V2 schemas together. | Test (TC-2084) |
+| FR-829-AC-5 | A record value type `Tag { x: Clock; r: Reference<Clock>; n: Integer }` has the data part `r`, `n`, in that order, and no member for `x`; a `tuple_value` of a tuple `(Clock, Reference<Clock>)` carries one term, the place id; `filament.op.clock_reference.eq` over `ref(self.x)` and `ref(self.x)` is true and `ne` false; and the three identities, the operator class `place_ref`, the form `place_reference` and the `scalar_type` form `clock_reference` are enumerated together by the catalog and the V2 schema `proposals/checked-package-v2/schema.json` (`OperationIdentity`, application `operator`, `expression` and `scalar_type` `semantic_form`). | Test (TC-2084) |
 | FR-829-AC-6 | Negative: the place-reference application over `q`'s element place with no slot term refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with a `scalar_type` first argument, `ill_typed`/`operator-ineligible` at `/body/arguments/0`; over the `clock_place` of a place under a `Map` value, `ill_typed`/`type-mismatch` at `/body/arguments/0`; with an `Integer` owner term, `ill_typed`/`type-mismatch` at `/body/arguments/1`; with a `Reference<Order>` owner term (an object type `Order` that does not conform to `Call`), `ill_typed`/`type-mismatch` at `/body/arguments/1`; with the binder `c` itself as owner term (as AC-2 writes it), admitted; with the owner term the `filament.op.model.deref` application over `c` (an `object` term), `ill_typed`/`operator-ineligible` at `/body/arguments/1`, and the same for a `presence_read` and an FR-772 slot domain with that owner; with `result_type` the `composite_type`/`reference` node of `Call`, `ill_typed`/`type-mismatch` at `/body/result_type`; a `filament.op.reference.eq` and a `filament.op.integer.lt` over two place references each refuse `ill_typed`/`operator-ineligible` at `/body/arguments/0`; and a `filament.op.collection.sum.integer` whose binder body is a place reference refuses `ill_typed`/`operator-ineligible` at the sum's `/semantic_graph/nodes/{n}/body/arguments/1`. | Test (TC-2084) |
 
 ## Dependencies
