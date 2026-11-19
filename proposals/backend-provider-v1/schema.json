@@ -1196,7 +1196,7 @@
       "required": ["type", "kind", "trace"],
       "properties": {
         "type": {"const": "hybrid-counterexample"},
-        "kind": {"oneOf": [{"const": "formula"}, {"allOf": [{"$ref": "#/$defs/UndefinedEvaluation"}, {"properties": {"where": {"description": "FR-193: a hybrid where carries exactly position, time and locus.", "required": ["position", "time", "locus"], "propertyNames": {"enum": ["position", "time", "locus"]}}}}]}]},
+        "kind": {"oneOf": [{"const": "formula"}, {"allOf": [{"$ref": "#/$defs/UndefinedEvaluation"}, {"properties": {"where": {"description": "FR-193: a hybrid where carries exactly position, time and locus.", "required": ["position", "time", "locus"], "propertyNames": {"enum": ["position", "time", "locus"]}}, "cause": {"description": "FR-193, native diagnostics catalog Undefined reasons: the four closed hybrid undefined reasons.", "enum": ["division-by-zero", "outside-parameter-range", "outside-result-range", "outside-capture-range"]}}}]}]},
         "trace": {"$ref": "#/$defs/HybridTrace"}
       },
       "additionalProperties": false
@@ -1357,6 +1357,7 @@
         "divergence": {"description": "FR-418: per node, a reachable time-divergent target node.", "type": "array", "items": {"$ref": "#/$defs/Count"}},
         "non_zeno": {"description": "FR-418, FR-416: on a proof of an item decided on a liveness product, what the proof owes to the non-Zeno premise; the checker recomputes it and rejects a mismatch (non-zeno-mismatch).", "enum": ["not-required", "assumed"]},
         "refinement": {"$ref": "#/$defs/RefinementPart"},
+        "state_graph": {"description": "FR-418, FR-712: present only for the proof of an always possible claim over a timed subject: form the state-graph form always-possible and ef_nodes the positions in nodes of the zones of E(P), strictly ascending.", "type": "object", "required": ["form", "ef_nodes"], "properties": {"form": {"const": "always-possible"}, "ef_nodes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/Count"}}}, "additionalProperties": false},
         "task_product": {"$ref": "#/$defs/TaskProductCertificate"}
       },
       "additionalProperties": false

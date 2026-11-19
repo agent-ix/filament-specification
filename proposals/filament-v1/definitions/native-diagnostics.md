@@ -249,6 +249,20 @@ a refusal code or cause and does not make the outcome refused.
 | `only-not-one` | the population binding, the `only` form's locus and the enclosing refinement row, for an `only(x in P where c: e)` whose matching set is empty or holds two or more objects (FR-376); the reason is the same for both, and the payload carries no match count |
 | `precondition-false` | the called effective operation, the selected method's effective identity, the receiver reference and the call locus, for a dispatched call whose selected effective precondition is false (FR-151) |
 
+A hybrid model's expressions (FR-193 "Continuous values and expressions")
+have no value in exactly four ways, and the `cause` of a hybrid
+`undefined-evaluation` counterexample (FR-193 "Solver result on the wire",
+FR-364) carries exactly one of these closed reasons. The locus is the
+envelope's `where.locus`; the payload named here is recomputed by replay and
+is not on the wire.
+
+| Reason | Required payload |
+| --- | --- |
+| `division-by-zero` | the division term's locus, for a division whose divisor is 0; the same reason the native evaluator gives a division by zero |
+| `outside-parameter-range` | the call term's locus, the called function and the parameter position, for a call argument outside its parameter's value range |
+| `outside-result-range` | the call term's locus and the called function, for a call result outside its result type's value range |
+| `outside-capture-range` | the capture initializer's locus and the capture, for a capture value outside its type's value range |
+
 ## Outcomes and delivery boundary
 
 The catalog classifies diagnostics, not truth or adequacy. A false evaluated
