@@ -351,10 +351,23 @@ a subsumption. Everything else is unchanged:
 - `Some(e)` declares no position of its own. Its payload keeps FR-143's exact
   rule, and `Some(b)` for `b: Int[0, 3]` at `Option<Int[0, 9]>` stays
   `type-mismatch` (FR-143-AC-21).
-- A tuple constructor position is not covered by this rule.
-- A `let` binding, an annotated `let`, a declared result, a field write and an
-  operand of `=` or `!=` take no widening. Their rules are the ones stated
-  above and in FR-146.
+- An unannotated `let` declares no type: its binder takes the value's own
+  type, so there is nothing to widen.
+- An annotated `let` and a declared function result admit a value whose
+  integer type the declared integer type contains, with no conversion: the
+  term keeps its own type in the package. `function narrow using V(x: Int[0,
+  9]): Integer pure { x }` is admitted this way (FR-146-AC-21). A value whose
+  type the declared type does not contain carries the range obligation, as
+  for an argument.
+- An operand of `=` or `!=`, which includes a field write stated as an
+  equality over the field (`self.v = x`), is refused
+  `ill_typed`/`type-mismatch` when its integer type differs from the other
+  operand's, unless the arithmetic operand rule above applies or the source
+  writes an admitted `convert`.
+- A tuple constructor position admits today a value whose integer type the
+  position's declared type contains, with no conversion, as an annotated `let`
+  does. Whether it instead takes this section's explicit conversion is decided
+  under QSL-2636.
 
 ## Conversion classes
 
@@ -485,7 +498,7 @@ collection and object-reference rows of this requirement.
 | FR-149-AC-27 | `Rational[-3, 7; 1, 12]` is well formed and admits `1/4`, `-3` (`-3/1`), `0` and `7/12` and no `8`, `-4`, `1/13` or `127/5000`; `Rational[8, 7; 1, 12]`, `Rational[0, 1; 0, 12]`, `Rational[0, 1; -1, 12]` and `Rational[0, 1; 13, 12]` each refuse `ill_typed` at the type, and so does each as the carrier `C` of `Quantity<m, C>`. | Test (TC-981) |
 | FR-149-AC-28 | Over two parameters of type `Map<Int[0, 3], Integer>[0, 4]`, maps holding `{1: 5, 2: 6}` and `{2: 6, 1: 5}` compare equal and `!=` is false; `{1: 5}` against `{1: 6}`, against `{2: 5}` and against `{1: 5, 2: 6}` compare unequal; a map pair with equal keys forms one child pair per key in ascending key order; `=` between `Map<Int[0, 3], Integer>` and `Map<Int[0, 3], Integer>[0, 4]` or `Map<Int[0, 4], Integer>` is `ill_typed`/`type-mismatch`; and a map whose value type is an event type is `ill_typed`/`operator-ineligible` under `=`. | Test (TC-1321) |
 | FR-149-AC-29 | Over `a`, `b` and `c` of `Int[0, 10]`, `c = a + b` is `undefined_expression`/`unproved-range` at `a + b`, and the refusal names the derived interval `[0, 20]`, the expected type `Int[0, 10]` and the operand `c` that supplied it; `c = a + b` under the guard `a <= 4 and b <= 5` checks; and `convert<Integer>(c) = a + b` checks with no range obligation and is `false` at `a = 8`, `b = 9`, `c = 10`. | Test (TC-1325) |
-| FR-149-AC-30 | With `function g using v(a: Integer): Boolean pure { true }`, `function h using v(a: Int[0, 2000]): Boolean pure { true }`, `function t using v(a: Int[0, 9]): Boolean pure { true }`, `union Reading { Raw(Integer), Wide(Int[0, 2000]), Tiny(Int[0, 9]) }` and parameters `x: Int[0, 1000]`, `n: Integer`, `w: Int[0, 20]`, `b: Int[0, 3]`: `g(x)`, `h(x)`, `Reading::Raw(x)` and `Reading::Wide(x)` are admitted, and each argument or payload term in the checked package is one `filament.op.numeric.convert` application whose type node is the declared type node, with no obligation; `g(n)`, `g(7)` and `Reading::Raw(n)` carry no conversion. `t(w)`, `t(n)`, `Reading::Tiny(w)` and `Reading::Tiny(n)` are each `undefined_expression`/`unproved-range` at the argument, and `if w <= 9 then t(w) else false` is admitted. `Some(b)` at an `Option<Int[0, 9]>` parameter stays `ill_typed`/`type-mismatch` at `b`. | Test (TC-2097) |
+| FR-149-AC-30 | With `function g using v(a: Integer): Boolean pure { true }`, `function h using v(a: Int[0, 2000]): Boolean pure { true }`, `function t using v(a: Int[0, 9]): Boolean pure { true }`, `union Reading { Raw(Integer), Wide(Int[0, 2000]), Tiny(Int[0, 9]) }` and parameters `x: Int[0, 1000]`, `n: Integer`, `w: Int[0, 20]`, `b: Int[0, 3]`: `g(x)`, `h(x)`, `Reading::Raw(x)` and `Reading::Wide(x)` are admitted, and each argument or payload term in the checked package is one `filament.op.numeric.convert` application whose type node is the declared type node, with no obligation; `g(n)`, `g(7)` and `Reading::Raw(n)` carry no conversion. `t(w)`, `t(n)`, `Reading::Tiny(w)` and `Reading::Tiny(n)` are each `undefined_expression`/`unproved-range` at the argument, and `if w <= 9 then t(w) else false` is admitted. `Some(b)` at an `Option<Int[0, 9]>` parameter stays `ill_typed`/`type-mismatch` at `b`. `g(x div 2)`, whose argument the package carries as `Integer`, records no conversion. `let y: Integer = x in g(y)` is admitted with no conversion at the `let` or at the call, and `function r using v(x: Int[0, 1000]): Integer pure { x }` is admitted with no conversion in its body. `x = n` is `ill_typed`/`type-mismatch`. | Test (TC-2097) |
 
 ## Dependencies
 

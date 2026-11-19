@@ -21,6 +21,7 @@ Select `filament.value.complete/v1`. Declare `g(a: Integer)`, `h(a: Int[0, 2000]
 2. `g(n)`, `g(7)`, `Reading::Raw(n)`.
 3. `t(w)`, `t(n)`, `Reading::Tiny(w)`, `Reading::Tiny(n)`, and `if w <= 9 then t(w) else false`.
 4. `Some(b)` at an `Option<Int[0, 9]>` parameter.
+5. `g(x div 2)`, `let y: Integer = x in g(y)`, the body of `function r using v(x: Int[0, 1000]): Integer pure { x }`, and `x = n`.
 
 ## Expected Results
 
@@ -28,3 +29,4 @@ Select `filament.value.complete/v1`. Declare `g(a: Integer)`, `h(a: Int[0, 2000]
 2. No conversion node.
 3. Each of the four is `undefined_expression`/`unproved-range` at the argument; the guarded call is admitted.
 4. `ill_typed`/`type-mismatch` at `b`.
+5. `g(x div 2)` records no conversion; the `let` form and `r` are admitted with no conversion node anywhere; `x = n` is `ill_typed`/`type-mismatch`.
