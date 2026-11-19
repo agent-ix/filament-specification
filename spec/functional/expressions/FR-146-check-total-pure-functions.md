@@ -277,9 +277,15 @@ facts of the redefined parent member being refined, not the redefining type. The
    also records a nonzero fact for `x`. A comparison of two non-literal
    operands yields no fact other than the difference fact of item 7.
 4. **Membership facts.** `contains(c, v)`, where `c` is a stable collection
-   or map path and `v` is a stable path, yields the membership fact `contains(c, v)`
+   or map path and `v` is a stable path or a scalar literal (an integer
+   literal, optionally negated, or a Boolean, text, decimal, IEEE or
+   enumeration-member literal), yields the membership fact `contains(c, v)`
    on its true outcome, and on that outcome intersects `size(c)`'s interval
-   with `[1, +inf)`. Its false outcome yields no fact.
+   with `[1, +inf)`. Its false outcome yields no fact. A membership fact names
+   its key by the stable path at its observation, or, for a literal, by the
+   literal's value as checked against the map's key type or the collection's
+   element type. A literal key is a value fixed in the source, so it is as
+   stable as a path and is recorded the same way.
 5. **Propagation.** Facts flow into the `then` and `else` branches of `if`,
    the right operand of `and`, `or` and `implies` by the state-semantics rules,
    through `not` by exchanging outcomes, and through `let` aliases. At a join
@@ -296,7 +302,9 @@ facts of the redefined parent member being refined, not the redefining type. The
    `eff(m) = own(m) or eff(r)`, so its own precondition need not hold where
    its postcondition is required, and no fact transfers into it. In the
    conjunction, the interval facts of one key intersect and, for one ordered
-   pair, the difference bound with the smaller `c` (item 7) is kept; a
+   pair, the difference bound with the smaller `c` (item 7) is kept and, for
+   one unordered pair, the sum bounds with the smaller upper and the larger
+   lower end (item 8) are kept; a
    conjunction with an empty intersection, or a precondition whose true
    outcome is unreachable, transfers nothing. Only a fact keyed on a stable
    path rooted at `self` or at an operation parameter transfers, keyed in `Q`
@@ -320,12 +328,44 @@ facts of the redefined parent member being refined, not the redefining type. The
    difference fact is used only by a binary `-` node whose operands, ignoring
    parentheses, are the two paths of a recorded bound (below). `=` or `!=`
    between two non-literal operands, an ordering with an operand that is an
-   arithmetic node, call, `size` or any other non-path form, and a transitive
+   arithmetic node, call, `size` or any other non-path form (other than the
+   two-path term against a literal of item 8), and a transitive
    chain (`a <= b` and `b <= c` say nothing of `c - a`) yield no fact, and a
-   bound refines no `+`, `*` or unary `-` node and no difference written
+   difference bound refines no `+`, `*` or unary `-` node and no difference written
    `-b + a`. Difference facts apply wherever this definedness check runs: in a
    function body, in a state clause's own guards and in transferred
    precondition facts.
+8. **Two-path term facts.** A comparison `t op k` or `k op t`, where `k` is an
+   integer literal (optionally negated), `op` is `=`, `<`, `<=`, `>` or `>=`,
+   and `t` is, ignoring parentheses and the conversions item 3 reads through,
+   one binary `+` or `-` node whose operands are integer stable paths `u` and
+   `v` that are not the same path, records a bound on that term:
+   - for `t = u - v`, the difference bounds of item 7 over the ordered pair
+     `(u, v)`: the true outcome of `u - v <= k` records `u - v <= k`, of
+     `u - v < k` records `u - v <= k - 1`, of `u - v >= k` records
+     `v - u <= -k`, of `u - v > k` records `v - u <= -k - 1`, and of
+     `u - v = k` records both `u - v <= k` and `v - u <= -k`;
+   - for `t = u + v`, a sum bound over the unordered pair `{u, v}`: the true
+     outcome of `u + v <= k` records the upper end `u + v <= k`, of
+     `u + v < k` the upper end `k - 1`, of `u + v >= k` the lower end
+     `u + v >= k`, of `u + v > k` the lower end `k + 1`, and of `u + v = k`
+     both ends `k`.
+   A false outcome records the bound of the negated ordering; the false outcome
+   of `=` records nothing. Two upper sum ends on one pair on one path keep the
+   smaller and two lower ends the larger, and a join keeps only an end present on
+   every alternative, the weaker of them. A sum bound is used only by a binary
+   `+` node whose operands, ignoring parentheses and those conversions, are
+   the two paths of the bound in either order (below); a difference bound
+   recorded here is used exactly as item 7's. A comparison `u + k1 op k` or
+   `u - k1 op k` (also `k1 + u`) of one stable path `u` and two literals is
+   the comparison fact of item 3 on `u` with the literal bound shifted by
+   `k1`. A term of three or more operands, a term repeating one path
+   (`u + u`), a term with a non-literal coefficient or a product, a term
+   whose operand is a call, `size` or any other non-path form, and a comparison of such a term with a non-literal
+   operand yield no fact. Bounds do not combine: `u + v <= 9` with
+   `v >= 2` says nothing of `u`, and `u + v <= 9` with `v + w <= 9` says
+   nothing of `u + w`. Two-path term facts apply wherever this definedness
+   check runs, as item 7's do.
 
 The interval of an integer expression is computed over mathematical integers:
 a literal is its point; a stable path is its refined interval; `+`, `-`, `*`
@@ -336,7 +376,12 @@ operands are the paths `u` and `v` of a recorded difference bound has the exact
 interval difference intersected with that bound: `u - v <= c` caps its upper
 end at `c`, and `v - u <= c` raises its lower end to `-c`. The refined interval
 is the node's wherever it stands, so an enclosing arithmetic node is computed
-from it. No other reasoning is admitted.
+from it. A binary `+` node `a + b` whose operands are the paths `u` and `v` of
+a recorded sum bound, in either order, has the exact interval sum intersected
+with that bound: an upper end `c` caps its upper end at `c` and a lower end
+`c` raises its lower end to `c`. So under `x + y <= 9`, with `x` and `y` of
+type `Int[0, 9]`, the node `x + y` has the interval `[0, 9]`, not `[0, 18]`.
+No other reasoning is admitted.
 
 These two fact forms are what lets a postcondition such as
 `self.balance = pre(self.balance) - amount`, over `balance: Int[0, 100]` and a
@@ -437,8 +482,12 @@ obligation (`unproved-presence`). An index obligation holds when `c` is a stable
 path and `i` is an integer literal or a stable path whose interval, from its
 type and the interval facts on `i`, lies inside `[0, m - 1]`, where `m` is the
 minimum of `size(c)`'s interval (from the declared bound and the comparison
-facts on `size(c)`), or, for a map, when the membership fact `contains(c, i)`
-holds; a compound `c` or `i` must first be bound with `let`.
+facts on `size(c)`), or, for a map, when a membership fact `contains(c, j)`
+holds whose key is `i`: `i` and `j` the same stable path at the same
+observation, or `i` and `j` scalar literals whose values, checked against the
+map's key type, are the same key under FR-144's map key identity (so
+`contains(m, 1)` proves `m[1]`, and proves neither `m[2]` nor `m[k]` for a
+path `k`); a compound `c` or `i` must first be bound with `let`.
 Each obligation applies on a path
 that can execute, and an unproved one is
 `refused { code: undefined_expression, cause: ... }` at that operation when the
@@ -524,6 +573,8 @@ counter, and no call depth turns into an outcome (FR-460).
 | FR-146-AC-17 | Over an object type `Account` with `balance: Int[0, 100]` and an operation `withdraw(amount: Int[0, 100])` that redefines nothing and is redefined by nothing, with the precondition `amount <= self.balance`, the postcondition `self.balance = pre(self.balance) - amount` checks, with `pre(self.balance) - amount` typed `Int[0, 100]`, whatever the clauses' source order; without the precondition it is `undefined_expression`/`unproved-range` at `pre(self.balance) - amount`; with the precondition on a subtype's `withdraw` that redefines `Account/withdraw`, or on another operation, it is refused the same way, and no precondition fact enters an invariant or another precondition. | Test (TC-1360) |
 | FR-146-AC-18 | The precondition bodies `amount < self.balance` (with the postcondition `self.balance = (pre(self.balance) - amount) - 1`), `self.balance >= amount` and `not (amount > self.balance)` each discharge the AC-17 postcondition; `amount = self.balance`, `amount + 0 <= self.balance`, `amount <= self.limit and self.limit <= self.balance`, and `amount <= self.balance or amount <= 5` each leave it `undefined_expression`/`unproved-range`; `self.balance + amount <= 100` does not discharge `pre(self.balance) + amount`; and in a function body `a <= b implies r = b - a` over `a`, `b`, `r` of `Int[0, 100]` checks. | Test (TC-1360) |
 | FR-146-AC-19 | The rational interval rule is exact for positive products: with `a` and `b` of type `Rational[1, 9; 1, 9]`, `a * b` and `a * a` have raw numerator `[1, 81]` over raw denominator `[1, 81]` and normalized numerator `[1, 81]` and denominator `[1, 81]`, so a function returning either into `Rational[1, 81; 1, 81]` checks, while one returning it into `Rational[1, 80; 1, 81]` or `Rational[1, 81; 1, 80]` is `undefined_expression`/`unproved-range`; `a + b` has raw numerator `[2, 162]` over `[1, 81]` and checks into `Rational[1, 162; 1, 81]` but not into `Rational[1, 161; 1, 81]`. No other range rule, and no widening of the required numerator or denominator, is needed or applied. | Test (TC-1403) |
+| FR-146-AC-20 | With `m: Map<Int[0, 9], Integer>[0, 3]`, the bodies `if contains(m, 1) then m[1] else -1` and `if not contains(m, 1) then -1 else m[1]` are admitted, and so is `if contains(m, k) then m[k] else -1` for a parameter `k: Int[0, 9]`; `if contains(m, 1) then m[2] else -1`, `if contains(m, 1) then m[k] else -1`, `if contains(m, k) then m[1] else -1`, `if contains(m, 1) then -1 else m[1]` and an unguarded `m[1]` are each `undefined_expression`/`unproved-presence` at the index. | Test (TC-2064) |
+| FR-146-AC-21 | With `function narrow using V(x: Int[0, 9]): Integer pure { x }` and parameters `x`, `y` of type `Int[0, 9]`, the bodies `if x + y <= 9 then narrow(x + y) else 0`, `if 9 >= y + x then narrow(x + y) else 0`, `if x + y < 10 then narrow((x) + (y)) else 0`, `if x + y > 9 then 0 else narrow(x + y)` and `if x - y >= 0 then narrow(x - y) else 0` are admitted; `if x + y <= 10 then narrow(x + y) else 0`, `if x + y <= 9 then narrow(x + y + 1) else 0`, `if x + y != 10 then narrow(x + y) else 0` and an unguarded `narrow(x + y)` are each `undefined_expression`/`unproved-range` at the argument; with a third parameter `z: Int[0, 9]`, `if x + y + z <= 9 then narrow(x + y + z) else 0` and `if x + y <= 9 and y >= 2 then narrow(x + 2) else 0` are each `unproved-range` at the argument, and `if x + 1 <= 9 then narrow(x + 1) else 0` is admitted. | Test (TC-2064) |
 
 ## Dependencies
 
