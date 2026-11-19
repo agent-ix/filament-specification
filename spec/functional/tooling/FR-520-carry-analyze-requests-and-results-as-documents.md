@@ -25,6 +25,8 @@ relationships:
     type: traces_to
   - target: ix://agent-ix/filament-spec-language/FR-710
     type: references
+  - target: ix://agent-ix/filament-spec-language/FR-286
+    type: depends_on
 ---
 # FR-520: Carry an analyze request and its result as one document pair
 
@@ -105,7 +107,23 @@ An analysis item has these members:
   checker verdict when there is one, the FR-331 counterexample and replay
   target for a refuted record, its FR-331 accounting record, its exploration counts (states, transitions and
   automaton states) for an item whose engine explores states, and the four
-  outcome axes of FR-521 when the item has an activation scope.
+  outcome axes of FR-521 when the item has an activation scope. A
+  `finite-replay` item also carries its FR-352 `disposition`, and a
+  `global-conformance` item its per-obligation `obligations`, its `closure`,
+  its `global` verdict, its `projections` and, when it assessed one, its
+  `recording` identity (FSL FR-990, FR-1032). Its record also carries
+  `settled_by`, `backend` exactly when a result settled it, and, where the
+  run states them, `non_zeno`, `memory_bound` (FR-439) and, for a replayed
+  trace, `trace` and `steps`. A `simulation` item carries no record: it carries `request_index`, `kind`
+  `simulation`, its admitted `simulation` settings (`mode`, `seed` and
+  `samples` for `sample`, `max_steps`, `max_states`, `max_state_key_bytes`),
+  its `category`, for a `sample` run its `seed`, its `traces`, its
+  `coverage` (`states`, `transitions`, `choices`), its `findings`, always
+  present and an empty array when the traces meet no invariant violation,
+  its unexplored `frontier`, and `cause` when the run stopped at a limit or
+  could not simulate (FSL FR-634, FR-181). A `seed` is written as FR-331's
+  `U64String`. The result also carries the root
+  `aggregate` (`status` and `gaps`) and `registry` (FSL FR-621, FR-635).
 - **Kinds.** Every category label in the result is one FR-301 lists, and
   every temporal disposition is FR-352's `disposition.temporal` with one of
   its sixteen kinds and exactly that row's `category`, `truth`, `basis` and
@@ -121,6 +139,45 @@ An analysis item has these members:
   multi-item run does.
 - **Equivalence.** The same request through the library and through the CLI
   gives byte-equal documents (FR-300).
+- **Schema.** The result SHALL validate against the published JSON Schema
+  of `filament-outcome/1`, `$id` `urn:filament:outcome:1`.
+- **Canonical bytes.** The tool SHALL write the result in its RFC 8785 (JCS)
+  canonical encoding.
+
+## Result schema
+
+The analyze result is a `filament-outcome/1` document, so its schema is the
+one published for that format: `urn:filament:outcome:1` (JSON Schema draft
+2020-12), which the language implementation publishes with the outcome
+document it describes (FSL FR-286 "Published schema"). That schema's
+`analyze` branch, selected by `operation` `analyze`, requires the
+`aggregate` and `registry` members and describes each result item, the
+`simulation` item included, with every member "Result items" lists, in
+FR-331's spellings. It closes every object whose member names the format
+fixes, and describes a map keyed by names the program declares with
+`additionalProperties`. The language implementation's completeness test
+fails when a member in a writer's declared member list is absent from the
+schema (FSL FR-286-AC-31). It guards the members each writer declares; a
+writer that emitted an undeclared member would fail that writer's own
+member-list test, not the schema test. A second analyze-only schema is not published: it would
+describe the same bytes twice and could drift from the first. A tool that
+writes an analyze result conforms only if every result it writes validates
+against `urn:filament:outcome:1`; a tool that reads one may validate it
+before reading.
+
+The result's bytes are its RFC 8785 canonical encoding: at every depth an
+object's members are in ascending order of their names' UTF-16 code units.
+The member order of the request carries no meaning wherever the result
+does not depend on it: an admitted request and any permutation of its object
+members give byte-equal results, and so does a refusal whose named defect
+does not depend on request order. Two refusals depend on it by their own
+rule and legitimately change with a permutation: one that names the first
+defect in request order where its requirement says so (FSL FR-1031
+refuses a `refinement_transfer` request at its first defective member in
+request order), and one that keeps several defects in the order the reader met
+them. The key order is UTF-16 code-unit order, which differs from UTF-8
+byte order for a key holding a supplementary character against one holding
+a character from U+E000 to U+FFFF.
 
 ## Acceptance Criteria
 
@@ -133,8 +190,12 @@ An analysis item has these members:
 | FR-520-AC-5 | A `native-analyze/1` request whose program declares `a div 2` with no law header and carries `"integer_division": "floor"` compiles its program and settles its items; without the member it refuses the whole request `missing_declaration`/`missing-selection` at the `div` with no item settled; with `"integer_division": "ceiling"` it refuses `unknown_profile`/`unsupported-selection` before any source is read. | Test (TC-1654) |
 | FR-520-AC-6 | A request whose `subject` carries `protocol` `{"protocol": "SB", "over": O, "roles": {"w": B, "c": B}}` (`O` the `core` object reference, `B` a `model-binding`) and whose `memory` selects `SB::Both` as `tso` gives an item whose FR-331 request item carries `temporal.subject.protocol` with its `over` binding and the effective model; the binding with an unknown member refuses the whole request `invalid-request` naming it; the same claim with no `protocol` member is a model-subject item. | Test (TC-2005) |
 | FR-520-AC-7 | A `native-analyze/1` request whose `package` is `{"directory": "handoff"}`, naming a handoff directory holding `checked-package.json` and `identities.json`, is admitted; one whose `package` is `{"file": "package.json"}` refuses `invalid-request` naming `file`; the directory with `identities.json` removed refuses `invalid_package`, `missing-file`, naming `identities.json`; with `identities.json` replaced by `{}` it refuses `invalid_package`, `malformed-file`; with `equality.json` removed it is admitted, and with `equality.json` replaced by `not json` it refuses `invalid_package`, `refused-file`. | Test (TC-2009) |
+| FR-520-AC-8 | FR-520-AC-1's result validates against `urn:filament:outcome:1` and equals its own RFC 8785 re-encoding; the same result with `/items/0/request_index` removed fails validation at `/items/0`, with `/items/0/category` set to `"proven"` fails at `/items/0/category`, and with `aggregate` removed fails at the root pointer; FR-520-AC-1's request, and FR-520-AC-2's request whose item carries only `request_index`, each written with the members of every object reversed, give byte-equal results; the result of an FSL FR-990-AC-1 `global-conformance` item (with `obligations`, `closure` and `global`), of an FSL FR-990-AC-3 item with `recording`, and of an FSL FR-634-AC-1 `simulation` request each validate, the simulation item with `findings`, `coverage`, `traces` and `frontier`; the simulation item with `findings` removed fails at `/items/0`. | Test (TC-2096) |
 
 ## Dependencies
 
 - FR-331 owns the item, record, counterexample and accounting spellings;
   FR-352 owns the kind registry; FR-382 owns `reductions`.
+- FSL FR-286 publishes the `filament-outcome/1` schema
+  `urn:filament:outcome:1` the result validates against; RFC 8785 fixes its
+  canonical bytes.
