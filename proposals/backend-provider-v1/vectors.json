@@ -8860,6 +8860,99 @@
       }
     },
     {
+      "name": "task-time-lock-prefix-through-miss",
+      "stage": "outcome",
+      "owners": {
+        "/counterexamples/0/counterexample/kind": "FR-364"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-model-check",
+            "kind": "temporal-satisfaction",
+            "result": "refuted",
+            "counterexample": 0
+          }
+        ],
+        "counterexamples": [
+          {
+            "request_index": 0,
+            "backend": "fsl-model-check",
+            "counterexample": {
+              "trace": "model",
+              "kind": "time-lock",
+              "initial_state": 0,
+              "prefix": [
+                {
+                  "transition": {
+                    "type": "task-transition",
+                    "action": "deadline-miss",
+                    "taskset": "S",
+                    "task": "t",
+                    "job": 0,
+                    "slot": 0,
+                    "generation": 0,
+                    "release": {
+                      "type": "transition",
+                      "operation": "Source::release",
+                      "receiver": null,
+                      "arguments": []
+                    },
+                    "source_transition": null,
+                    "demand": {
+                      "numerator": "2",
+                      "denominator": "1"
+                    },
+                    "jitter": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "deadline": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "priority": 1
+                  },
+                  "post_state": {
+                    "key": "eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0"
+                  },
+                  "delay": {
+                    "numerator": "1",
+                    "denominator": "1"
+                  }
+                }
+              ],
+              "loop": [],
+              "over_binding": null,
+              "fairness": [],
+              "interval": null,
+              "trace_position": null,
+              "final_delay": {
+                "numerator": "0",
+                "denominator": "1"
+              }
+            }
+          }
+        ],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
+    },
+    {
       "name": "task-transition-optional-priority-edf-work-limit",
       "stage": "outcome",
       "owners": {

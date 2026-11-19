@@ -87,9 +87,13 @@ alias refuses `ambiguous_declaration`/`ambiguous-name`, naming both.
 
 The limit is one declaration per model alias, not per model. Two aliases
 that select one model identity may each carry one declaration, and both are
-in force. A subject's state is classified against every `terminal`
-declaration the package carries ([FR-476](../../objects/interfaces/FR-476-checked-package-model-terminal-declaration-body.md)
-terminal rows), on every model the package selects. Each declaration reads
+in force on that model. A model subject reads one model selection
+([FR-361](FR-361-read-model-behaviours-as-temporal-traces.md)), so its
+state is classified against the `terminal` declarations on that
+selection's `model_root` node and on no other model
+([FR-476](../../objects/interfaces/FR-476-checked-package-model-terminal-declaration-body.md)
+terminal rows): another model's predicate is not a predicate over this
+subject's state, and its opt-out does not reach this subject. Each declaration reads
 the terminal state as intends (`any`, or `when` with `P` true), does not
 intend (`P` false), undefined (`P` undefined) or unknown (the evaluation of
 `P` is refused, so its value is not known). The state is:
@@ -105,15 +109,16 @@ intend (`P` false), undefined (`P` undefined) or unknown (the evaluation of
 This is the three-valued disjunction over the declarations, the dual of the
 per-object rule above, under which a false object outweighs an undefined
 one. It does not depend on the order in which declarations are read, so
-renaming a model selection or reordering aliases never turns an intended
-state into an undefined one or back. Order matters only for the report: an
+reordering the aliases or their declarations never turns an intended state
+into an undefined one or back. Order matters only for the report: an
 unknown or undefined state names the first unknown or undefined declaration
-in terminal-row order (by selection identity, then terminal node key, then
-`claim` occurrence ordinal, FR-476), with that declaration's terminal key and
-its first undefined cause. A declaration's alias is a display label in that
-report. Because `any` intends every terminal state, a subject whose package
-carries any `terminal any` declaration has no deadlock, and the request
-writer adds no deadlock-freedom item for it.
+on the model in terminal-row order (terminal node key, then `claim`
+occurrence ordinal, FR-476), with that declaration's terminal key
+(selection identity, ordinal) and its first undefined cause. A
+declaration's alias is a display label in that report. Because `any`
+intends every terminal state, a model with a `terminal any` declaration on
+any of its aliases has no deadlock, and the request writer adds no
+deadlock-freedom item for a subject over it: the per-model opt-out below.
 
 The declaration is part of the checked package, so it is part of the subject
 and of every obligation identity that reads the subject.
@@ -127,8 +132,9 @@ the state graph alone; fairness plays no part in it.
 ### The derived deadlock-freedom item
 
 For each distinct model subject among a request's temporal items, the request
-writer SHALL add one deadlock-freedom item, unless the package carries a
-`terminal any` declaration ("Several declarations" above). The item:
+writer SHALL add one deadlock-freedom item, unless the subject's model
+carries a `terminal any` declaration on any of its aliases ("Several
+declarations" above). The item:
 
 - is the reachable-state invariant `always holds(not deadlocked)`, where
   `deadlocked` is the deadlock predicate above, derived and not authored;
@@ -191,7 +197,7 @@ A `terminal` declaration changes only the deadlock-freedom item.
 | FR-366-AC-9 | Over the Job subject with universe `{j, k}`, `terminal Finished using v on M when { self.status = done }` classifies a terminal state where both objects are `done` as intended, one where `j` is `done` and `k` is `stuck` as deadlocked, and, with universe `{}`, the initial terminal state as intended; a model whose populations cover two object types refuses `self` with `missing_declaration`/`missing-name` at `self`; a model with two populations that both cover `Job` refuses `self` with `ambiguous_declaration`/`ambiguous-name` at `self`, naming both populations. | Test (TC-297) |
 | FR-366-AC-10 | A bounded-delay terminal state is not reported by the deadlock-freedom item. | Test (TC-370) |
 | FR-366-AC-11 | A model subject's deadlock-freedom item adds no node to the checked package. Its claim node is the `model`/`model_root` node of the subject's model selection, `{package: "acme/orders", path: ["model", "model_root"], ordinal: 0}` in `derived-items-request`, at occurrence `generated` 0, and the item is told apart from the time-lock-freedom item of the same subject on that node by `item_kind`. Its key is (subject, anchor `node_id`, `item_kind`). | Test (TC-431 BP-51) |
-| FR-366-AC-12 | A unit selects `test/vault` as `V` and `test/vault-other` as `N`, each with one object `v` whose `step` sets `l` from 0 to 1, so the state with both at `l = 1` is terminal; `q(x)` is `6 mod x`, undefined at 0. With `terminal Done using v on V when { q(1 - self.l) = 0 };` and `terminal Halt using v on N any;` the terminal state is intended and the request carries no deadlock-freedom item; with the two declarations moved to the other alias each, the same. With `Done` on `V` and `terminal Stop using v on N when { false };` the item settles `refuted`, cause `undefined-evaluation`, naming the declaration keyed (`test/vault`, 0); with `Stop` on `V` and `Done` on `N`, it names (`test/vault-other`, 0). With `when { false }` on both, the state is deadlocked and the item settles `refuted` with a `kind: deadlock` counterexample. With aliases `M` and `N` selecting one identity and `when { self.l = 1 }` on `M` with `when { false }` on `N`, the state is intended and the item settles `proved`. | Test (TC-297) |
+| FR-366-AC-12 | A unit selects one model identity under two aliases `M` and `N`; its one object `v` steps `l` from 0 to 1, so the state at `l = 1` is terminal; `q(x)` is `6 mod x`, undefined at 0. With `terminal Done using v on M when { q(1 - self.l) = 0 };` (undefined at `l = 1`) and `terminal Stop using v on N when { true };` the terminal state is intended and the item settles `proved`, and so with `Done` on `N` and `Stop` on `M`. With `Done` on `M` and `terminal Stop using v on N when { false };` the item settles `refuted`, cause `undefined-evaluation`, naming `Done`'s terminal key (that identity, `Done`'s ordinal in terminal node key order, which the test establishes by comparing the rebuilt keys), and with the placements swapped it names the same key, with the other alias as label. With `when { false }` on both aliases the state is deadlocked and the item settles `refuted` with a `kind: deadlock` counterexample. With `Done` on `M` and `terminal Halt using v on N any;` the request carries no deadlock-freedom item. The same declarations in a unit whose aliases select two identities, `test/vault` and `test/vault-other`, give a subject that reads two `model_root` nodes, whose derived item is `unsupported` with no request item written (FR-368-AC-22), whatever the declarations. | Test (TC-297) |
 
 ## Dependencies
 
