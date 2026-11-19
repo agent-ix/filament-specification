@@ -7,7 +7,7 @@
       "value": "Bounded"
     }
   ],
-  "note": "QSL-2448. FR-322 \"Claim declaration names\", \"Clause declaration regions\" and \"One claim namespace\" (FR-322-AC-457..461, TC-2011, TC-2012, TC-2015). `base` holds three claim-bearing nodes (graph node 5, a claim/verification_claim, and nodes 15 and 16, two state/state_clause nodes, each with one `claim` occurrence) and the temporal clause node 3. The published base carries its temporal clause row's `declaration_region` and one `claim_names` row per claim-bearing occurrence, sorted by NodeRef then occurrence (node 5's path starts `claim`, before `state`; node 15's first operand is graph node 12 then node 10, before node 16's node 12 then node 14). `base_patch` is applied first: it renames the temporal clause row `Bounded` (a rename changes no node, CN-P3). The patched base is the package of FR-322-AC-457: `NotAboveThree` and `ReachThree` are the AC's names, `AtMostTwo` names the base's second state clause and is a stand-in. Each case is then an RFC 6902 patch on the patched base. The token \"<node N>\" in a patch value stands for the NodeRef of graph node N in index form, as the base's own `temporal_clause_names` row writes it, and \"<clause>\" for node 3, the temporal clause. A `declaration_region` must share the source of the occurrence's `source_map` region and contain every byte of it; the base has no source text, so its regions are stand-in spans one byte wider than the name token. `schema` is judged against the published `schema.json`, which declares `claim_names` and `declaration_region` on `TemporalClauseNameRow` and `ClaimNameRow`; a positive carries `null` because it is admitted. `expected` is admitted or the refusal code, optional cause and RFC 6901 locus; `ac` is the owning acceptance criteria.",
+  "note": "QSL-2448. FR-322 \"Claim declaration names\", \"Clause declaration regions\" and \"One claim namespace\" and \"Rows of one declaration\" (FR-322-AC-457..461, FR-322-AC-465, FR-322-AC-466, TC-2011, TC-2012, TC-2015, TC-2035, TC-2036). `base` holds three claim-bearing nodes (graph node 5, a claim/verification_claim, and nodes 15 and 16, two state/state_clause nodes, each with one `claim` occurrence) and the temporal clause node 3. The published base carries its temporal clause row's `declaration_region` and one `claim_names` row per claim-bearing occurrence, sorted by NodeRef then occurrence (node 5's path starts `claim`, before `state`; node 15's first operand is graph node 12 then node 10, before node 16's node 12 then node 14). `base_patch` is applied first: it renames the temporal clause row `Bounded` (a rename changes no node, CN-P3). The patched base is the package of FR-322-AC-457: `NotAboveThree` and `ReachThree` are the AC's names, `AtMostTwo` names the base's second state clause and is a stand-in. Each case is then an RFC 6902 patch on the patched base. The token \"<node N>\" in a patch value stands for the NodeRef of graph node N in index form, as the base's own `temporal_clause_names` row writes it, and \"<clause>\" for node 3, the temporal clause. A `declaration_region` must share the source of the occurrence's `source_map` region and contain every byte of it; the base has no source text, so its regions are stand-in spans one byte wider than the name token. `schema` is judged against the published `schema.json`, which declares `claim_names` and `declaration_region` on `TemporalClauseNameRow` and `ClaimNameRow`; a positive carries `null` because it is admitted. `expected` is admitted or the refusal code, optional cause and RFC 6901 locus; `ac` is the owning acceptance criteria.",
   "positive": [
     {
       "ac": [
@@ -189,6 +189,149 @@
           "op": "replace",
           "path": "/temporal_clause_names/0/declaration_region/end",
           "value": 5
+        }
+      ]
+    },
+    {
+      "ac": [
+        "FR-322-AC-465"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P7-one-declaration-two-nodes",
+      "lookups": {
+        "AtMostTwo": "/claim_names/2",
+        "NotAboveThree": "/claim_names/1"
+      },
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "AtMostTwo",
+        "NotAboveThree"
+      ],
+      "note": "node 16 stands for a derived conjunction node: a second claim occurrence whose row carries the NotAboveThree declaration's name, qualified_name and declaration_region [111,113). The two NotAboveThree rows are one declaration and not duplicates; its own node is node 15, which holds one row against node 16's two, so the lookup returns /claim_names/1",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/16/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/27",
+          "value": {
+            "node_id": "<node 16>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 113,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 112
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/3",
+          "value": {
+            "declaration": "<node 16>",
+            "declaration_region": {
+              "end": 113,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 111
+            },
+            "name": "NotAboveThree",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "NotAboveThree"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "ac": [
+        "FR-322-AC-465"
+      ],
+      "expected": {
+        "admitted": true
+      },
+      "id": "CL-P8-one-declaration-two-occurrences",
+      "lookups": {
+        "NotAboveThree": "/claim_names/1"
+      },
+      "names": [
+        "ReachThree",
+        "NotAboveThree",
+        "NotAboveThree",
+        "AtMostTwo"
+      ],
+      "note": "one declaration with two occurrences of one node, as a step relation's declaration and claim occurrences are: both rows carry declaration_region [111,113), which contains both name-token regions. The lookup returns the least claim row",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/15/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/27",
+          "value": {
+            "node_id": "<node 15>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 112,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 111
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/2",
+          "value": {
+            "declaration": "<node 15>",
+            "declaration_region": {
+              "end": 113,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 111
+            },
+            "name": "NotAboveThree",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "NotAboveThree"
+            ]
+          }
         }
       ]
     }
@@ -411,7 +554,7 @@
         ]
       },
       "id": "CL-R5-duplicate-qualified-name",
-      "note": "the shared node of CL-P2 with its second row also named NotAboveThree: two rows with one qualified_name",
+      "note": "the shared node of CL-P2 with its second row also named NotAboveThree: two rows of distinct declarations (declaration_region [111,113) and [119,121)) with one qualified_name. Two same-named probabilistic claims take this shape",
       "patch": [
         {
           "op": "add",
@@ -713,6 +856,241 @@
           "path": "/claim_names/0/qualified_name",
           "value": [
             "Scope",
+            "Bounded"
+          ]
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-465"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/2/name"
+      },
+      "id": "CL-R16-one-declaration-two-names",
+      "note": "CL-P8 with the second row named Other: rows with one declaration key carry one name",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/15/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/27",
+          "value": {
+            "node_id": "<node 15>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 112,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 111
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/2",
+          "value": {
+            "declaration": "<node 15>",
+            "declaration_region": {
+              "end": 113,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 111
+            },
+            "name": "Other",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "Other"
+            ]
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-465"
+      ],
+      "expected": {
+        "cause": "invalid-value",
+        "code": "invalid_package",
+        "locus": "/claim_names/4/declaration"
+      },
+      "id": "CL-R17-own-node-tie",
+      "note": "CL-P7 plus a second claim occurrence on node 15 for the declaration B ([119,121)): the NotAboveThree declaration's nodes 15 and 16 hold two rows each, so it has no own node. The refusal is at its first row on node 16, the later node",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/16/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/27",
+          "value": {
+            "node_id": "<node 16>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 113,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 112
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/15/occurrences/1",
+          "value": {
+            "ordinal": 1,
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/28",
+          "value": {
+            "node_id": "<node 15>",
+            "ordinal": 1,
+            "regions": [
+              {
+                "end": 121,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 120
+              }
+            ],
+            "role": "claim"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/2",
+          "value": {
+            "declaration": "<node 15>",
+            "declaration_region": {
+              "end": 121,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 119
+            },
+            "name": "B",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "B"
+            ]
+          }
+        },
+        {
+          "op": "add",
+          "path": "/claim_names/4",
+          "value": {
+            "declaration": "<node 16>",
+            "declaration_region": {
+              "end": 113,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 111
+            },
+            "name": "NotAboveThree",
+            "occurrence": {
+              "ordinal": 1,
+              "role": "claim"
+            },
+            "qualified_name": [
+              "NotAboveThree"
+            ]
+          }
+        }
+      ],
+      "schema": "valid"
+    },
+    {
+      "ac": [
+        "FR-322-AC-466"
+      ],
+      "expected": {
+        "cause": "ambiguous-name",
+        "code": "ambiguous_declaration",
+        "locus": "/claim_names/0/name",
+        "names": [
+          "/claim_names/0",
+          "/temporal_clause_names/0"
+        ]
+      },
+      "id": "CL-R18-namespace-collision-one-region",
+      "note": "CL-R14 with the claim row's declaration_region equal to the temporal row's [2,4), and its name token moved to [3,4) so that region contains it. This is the shape a hyper clause would take if its body wrapper kept a temporal row: rows in two tables never belong to one declaration, so the shared name is refused whatever the regions",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/source_map/13/regions/0",
+          "value": {
+            "end": 4,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 3
+          }
+        },
+        {
+          "op": "replace",
+          "path": "/claim_names/0/declaration_region",
+          "value": {
+            "end": 4,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 2
+          }
+        },
+        {
+          "op": "replace",
+          "path": "/claim_names/0/name",
+          "value": "Bounded"
+        },
+        {
+          "op": "replace",
+          "path": "/claim_names/0/qualified_name",
+          "value": [
             "Bounded"
           ]
         }
