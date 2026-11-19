@@ -25,7 +25,8 @@ refuses each defect at its own locus. Scope: FR-322-AC-490.
 2. Admit BL-02 (BL-01 with the second `sqrt`'s `path` set to `[0]`) and
    compare its node ids, `name` and that row's typed path with BL-01's.
 3. Admit each reader-refusal vector BL-R1 to BL-R6.
-4. Validate a `checked_term_data` object with the four other arrays and no
+4. Admit BL-03, then BL-03 with its second `+` row removed.
+5. Validate a `checked_term_data` object with the four other arrays and no
    `body_locations`, and admit BL-01 with the whole carrier removed.
 
 Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`.
@@ -40,5 +41,6 @@ Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`.
   `/checked_term_data/body_locations`; BL-R2 at the row's `application`;
   BL-R3 at the last row's `name`; BL-R4 at the last row's `index`; BL-R5 at
   the row's `function`; BL-R6 at the added row's `application`.
-- Step 4: the object is `malformed_wire`; the carrier-less package refuses
+- Step 4: BL-03 is admitted with two rows for its one `+` node (`term_ordinal` 0 and 1, paths `[0]` and `[1]`); without the second it refuses at `/checked_term_data/body_locations`.
+- Step 5: the object is `malformed_wire`; the carrier-less package refuses
   `invalid_package`/`invalid-value` at `/checked_term_data/body_locations`.
