@@ -32,8 +32,8 @@ The target bytes and the package's name map.
 ### Names
 
 - Every generated name SHALL be a kind prefix followed by the mangled FSL
-  name: `v_` variables, `T_` types, `op_` operations, `f_` functions, `c_`
-  clauses and invariants, `holds_` Lean clause semantics (FR-813), `Ob_`
+  name: `v_` variables, `T_` types, `op_` operations, `f_` functions, `p_`
+  operation parameters, `fld_` record fields, `c_` clauses and invariants, `holds_` Lean clause semantics (FR-813), `Ob_`
   Lean obligation propositions, `Th_` TLA+ obligation theorems, `e_` enum
   members, `b_` population bounds (language FR-1035), `m_` monitor variables, `M_` modules, and `Q_`, `F_` and `D_`
   generated helpers. Each prefix is a distinct word of ASCII letters
@@ -44,6 +44,17 @@ The target bytes and the package's name map.
   No TLA+ or Lean keyword, and no name of a module or namespace the output
   uses, begins with one of these prefixes, so no generated name collides
   with one.
+- Every name class the mapper writes SHALL have its own prefix from this
+  list, and no two classes SHALL share one. An operation parameter, written
+  as a binder of the operation's step, is `p_` followed by the mangled
+  parameter name; the operation's receiver is the binder `p_self`, which no
+  declared parameter mangles to, because `self` is an FSL keyword and never
+  a parameter name. A field of an object type or record, written as a TLA+
+  record field or a Lean structure field, is `fld_` followed by the mangled
+  field name. `f_` names only FSL functions, so a field, a parameter and a
+  function that share one FSL name give three distinct target names. A name
+  class the list does not name has no prefix of its own, and the mapper
+  never writes such a name under another class's prefix.
 - The structural names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`,
   `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F` SHALL be written unprefixed,
   once each; no mangled name equals one, because every mangled name carries
@@ -104,6 +115,7 @@ The target bytes and the package's name map.
 | FR-814-AC-4 | A function used by an invariant is written before it, and reordering two independent declarations in the source changes the text only by their node order. | Test (TC-1973) |
 | FR-814-AC-5 | A TLC error trace naming `v_Account` and `op_deposit` reads back through the name map to the FSL object type and operation nodes. | Test (TC-1973) |
 | FR-814-AC-6 | Every `fsl:` comment line of the counter's TLA+ and Lean exports matches `^(\\\*\|--) fsl: [^ ]+ ([^ ]+:(0\|[1-9][0-9]*)-(0\|[1-9][0-9]*)\|none)$`. The node id is a node of the package. The region's source is the unit's `<authority>/<identity>` and `start < end`, and that region's bytes are the definition's source declaration. A definition of a node with no source region writes `none`. | Test (TC-2030) |
+| FR-814-AC-7 | A model whose object type has a field `total`, whose operation `add` has a parameter `total`, and which declares a function `total` exports, in both targets, the field as `fld_total`, the parameter as `p_total`, the function as `f_total` and the receiver binder as `p_self`; the three `total` names are pairwise distinct, each name-map entry reads back to its own FSL node (field, parameter, function), and SANY and Lean parse both files with no duplicate-definition or shadowing error. Text that writes the field as `f_total` or the parameter without the `p_` prefix fails this criterion. | Test (TC-1973) |
 
 ## Dependencies
 

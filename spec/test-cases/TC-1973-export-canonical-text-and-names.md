@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5.
+Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7.
 
 ## Test Procedure
 
@@ -20,6 +20,7 @@ Verify keyword-safe and injective names, canonical layout, dependency order and 
 3. Export one request twice.
 4. Export a function used by an invariant; reorder two independent declarations.
 5. Read a TLC trace back through the name map.
+6. Export a model whose field, operation parameter and function are all named `total`.
 
 ## Expected Results
 
@@ -28,3 +29,4 @@ Verify keyword-safe and injective names, canonical layout, dependency order and 
 - Step 3: byte-identical ASCII text with the stated layout.
 - Step 4: the function first; only node order changes.
 - Step 5: the FSL nodes.
+- Step 6: `fld_total`, `p_total`, `f_total` and the receiver `p_self`, pairwise distinct, each mapped to its own node; both observers parse.
