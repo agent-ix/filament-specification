@@ -35,3 +35,19 @@ Not mergeable. FND-001 is high. The new "Owner terms" rule rests on a claim the 
 | FND-002 | medium | FR-829-AC-6 expects a `filament.op.collection.sum.integer` "whose summand is a place reference" to refuse `operator-ineligible` "at the offending argument". The catalog entry's operands are `collection_kind` and `binder`, so it has no summand argument, and the pointer is undefined. Name the pointer, for example the binder's body or `/body/arguments/1` under `member_family` | spec/objects/interfaces/FR-829-carry-a-clock-place-reference-as-a-place-id-term.md:211 |
 | FND-003 | low | AC-1 types `q` as `Sequence<Clock>[0, 2]` and attributes it to FR-415-AC-15's model, which has no `q`. AC-3 and AC-6 type `q` as `Sequence<Option<Clock>>[0, 2]`. TC-2084 has no single fixture, so the two `q`s conflict. Give AC-1 its own field name, or use one type throughout | spec/objects/interfaces/FR-829-carry-a-clock-place-reference-as-a-place-id-term.md:206 |
 | FND-004 | low | AC-5 gives the record `Tag`'s fields `r` and `n` "data index 0 and 1". FR-322 defines data index d(p) only for tuple positions, and a record's data part is read by field name in declaration order. Say "data part `r`, `n` in that order" | spec/objects/interfaces/FR-829-carry-a-clock-place-reference-as-a-place-id-term.md:210 |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-005 | medium | The new `place_owner` group (`reference`, `object`) admits an `object` term at the owner position. FR-322's object-placement paragraph still says "`object` is a member of no other group, so the `inner:0` result of `filament.op.model.deref` is read only through a field projection", which is now false, so a reader admits `deref(c)` at an owner position. That gives one source owner a second encoding and a second node identity, which FR-829 "Owner terms" ("one encoding") forbids only for producers. No published vector has an object-node-typed owner. Either drop `object` from `place_owner`, or state a reader refusal for a `deref` application at an owner position, and correct the paragraph (object is a member of `field_owner` and `place_owner`) | spec/objects/interfaces/FR-322-checked-package-artifact.md:3478 |
+| FND-006 | low | FR-829 states only the catalog entries. The QVC `checked-operation-catalog-v1.json` also has a `families` array and a `groups` map, and FR-829 and FR-772 need four matching changes there that the PR does not state or track: `clock_reference` added to `families` and to `groups.any_value`, a new `groups.place_owner`, and the `option.slots` operand changed from `object` to `place_owner`. QVC main 2714219 still has `"operands": ["object"]` for `option.slots`. `proposals/checked-package-v2/schema.json` names no operand group, so it needs no change. Name the QVC families and groups change, or file the QVC follow-up | spec/objects/interfaces/FR-829-carry-a-clock-place-reference-as-a-place-id-term.md:170 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | 0ebbc5a4: "Owner terms" now admits the `Reference<O>` term directly with no `deref` (group `place_owner`). FR-322 "Presence" and FR-772's entry take the same rule, the published `self`/`other` reference parameters are admitted unchanged, and AC-1 now agrees with AC-6 (binder `c` admitted) |
+| FND-002 | fixed | AC-6 names `/semantic_graph/nodes/{n}/body/arguments/1`, the `binder` operand in the catalog order (`collection_kind`, `binder`) |
+| FND-003 | fixed | AC-1 now uses `q: Sequence<Option<Clock>>[0, 2]` added to FR-415-AC-15's model, which is the `q` of AC-3 and AC-6 |
+| FND-004 | fixed | AC-5 and the prose now say the record data part is `r`, `n` in order, and keep d(p) for tuple positions |

@@ -128,7 +128,7 @@ application, as every binder whose bound fits no family of the entry does.
 Its arguments are, in order:
 
 1. a reference to the `clock_place` template node of `p`'s path;
-2. the owner term, a term of the place's owner type ("Owner terms");
+2. the owner term, a `Reference<O>` term of the place's owner type ("Owner terms");
 3. one term for each `slot` step of the path, in path order, each of its
    selector's domain (an `Integer` position).
 
@@ -139,15 +139,19 @@ It admits, directly and with no wrapper, a term typed `Reference<O>` (the
 type that conforms to it, "Reference conformance"): a `self` or `other`
 parameter, an operation parameter, a population binder (a `value`/`parameter`
 of type `Reference<O>`), or a path term that reaches the owner, such as the
-field read `self.peer`. It also admits a term typed by the object type's own
-model node, as before. A producer writes the `Reference<O>` term itself and never a
+field read `self.peer`. A producer writes the `Reference<O>` term itself and never a
 `filament.op.model.deref` at an owner position, so one source owner has one
 encoding and one node identity, and the
 published presence vectors, whose `self` and `other` are
 `composite_type`/`reference` parameters, are unchanged. The catalog names
-this position by the operand group `place_owner` (families `reference` and
-`object`); a term of any other family refuses `ill_typed`/`type-mismatch` at
-that argument, as an owner not of the owner type does (FR-322-AC-156).
+this position by the operand group `place_owner`, whose only family is
+`reference`. An `object` term at the owner position, such as the `inner:0`
+result of `filament.op.model.deref` over a reference, is not in the group and
+refuses `ill_typed`/`operator-ineligible` at the owner operand
+(`/body/arguments/1`), so a second encoding of one owner is never admitted. A
+`Reference<P>` term with `P` neither `O` nor a type conforming to it refuses
+`ill_typed`/`type-mismatch` at that argument, as an owner not of the owner
+type does (FR-322-AC-156).
 
 These are the arguments of the `presence_read` of the same place (FR-322
 "Presence"), so the place reference and the presence read of one instance
@@ -189,6 +193,16 @@ catalog's own shape:
   `Map` level.
 - **Result form** `clock_reference`: the `scalar_type`/`clock_reference` node.
 
+**Catalog changes.** The QVC `checked-operation-catalog-v1.json` changes as
+follows, tracked by QSL-2584:
+
+- the family `clock_reference` is added to the families and to
+  `groups.any_value`;
+- the group `groups.place_owner` is added, with the one family `reference`;
+- the three entries above are added;
+- operand 0 of `filament.op.option.slots` (FR-772) changes from `object` to
+  `place_owner`.
+
 The V2 schemas' `OperationIdentity`, operator-class and `semantic_form`
 enumerations SHALL list the three identities, the class `place_ref` and the
 form `place_reference` in the same release as the catalog entries, and the
@@ -220,7 +234,7 @@ under these checks, in this order:
 | FR-829-AC-3 | Over `v: Option<Clock>` and `q: Sequence<Option<Clock>>[0, 2]` on `c1` (`v` present, `q` holding one present and one absent element) and `c2` (`v` absent, `q` empty): `count(c in M::calls where present(c.v))` and `sum(c in M::calls: if present(c.v) then 1 else 0)` are `1`; `all(c in M::calls: exists(e in c.q: present(e)))` is false and `exists(c in M::calls: forall(e in c.q: present(e)))` is true (`c2`'s empty `q`); each `present` is a `presence_read` whose owner term is the binder `c` itself, and each slot quantifier's operand 0 is FR-772's slot-domain application at that owner term. | Test (TC-2084) |
 | FR-829-AC-4 | With a field `peer: Reference<Call>`, `ref(self.peer.x)` is the place-reference application whose owner term is the `peer` field read of `self`, typed `Reference<Call>`, it equals `ref(other.x)` exactly at states where `self.peer` holds `other`, and `present(self.peer.v)` is the `presence_read` with the same owner term; `ref(self.v)` over an absent `v` is defined and equals the place id of the instance `self.v`. | Test (TC-2084) |
 | FR-829-AC-5 | A record value type `Tag { x: Clock; r: Reference<Clock>; n: Integer }` has the data part `r`, `n`, in that order, and no member for `x`; a `tuple_value` of a tuple `(Clock, Reference<Clock>)` carries one term, the place id; `filament.op.clock_reference.eq` over `ref(self.x)` and `ref(self.x)` is true and `ne` false; and the three identities, the operator class `place_ref`, the form `place_reference` and the `scalar_type` form `clock_reference` are enumerated by the catalog and both V2 schemas together. | Test (TC-2084) |
-| FR-829-AC-6 | Negative: the place-reference application over `q`'s element place with no slot term refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with a `scalar_type` first argument, `ill_typed`/`operator-ineligible` at `/body/arguments/0`; over the `clock_place` of a place under a `Map` value, `ill_typed`/`type-mismatch` at `/body/arguments/0`; with an `Integer` owner term, `ill_typed`/`type-mismatch` at `/body/arguments/1`; with a `Reference<Order>` owner term (an object type `Order` that does not conform to `Call`), `ill_typed`/`type-mismatch` at `/body/arguments/1`; with the binder `c` itself as owner term (as AC-2 writes it), admitted; with `result_type` the `composite_type`/`reference` node of `Call`, `ill_typed`/`type-mismatch` at `/body/result_type`; a `filament.op.reference.eq` and a `filament.op.integer.lt` over two place references each refuse `ill_typed`/`operator-ineligible` at `/body/arguments/0`; and a `filament.op.collection.sum.integer` whose binder body is a place reference refuses `ill_typed`/`operator-ineligible` at the sum's `/semantic_graph/nodes/{n}/body/arguments/1`. | Test (TC-2084) |
+| FR-829-AC-6 | Negative: the place-reference application over `q`'s element place with no slot term refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with a `scalar_type` first argument, `ill_typed`/`operator-ineligible` at `/body/arguments/0`; over the `clock_place` of a place under a `Map` value, `ill_typed`/`type-mismatch` at `/body/arguments/0`; with an `Integer` owner term, `ill_typed`/`type-mismatch` at `/body/arguments/1`; with a `Reference<Order>` owner term (an object type `Order` that does not conform to `Call`), `ill_typed`/`type-mismatch` at `/body/arguments/1`; with the binder `c` itself as owner term (as AC-2 writes it), admitted; with the owner term the `filament.op.model.deref` application over `c` (an `object` term), `ill_typed`/`operator-ineligible` at `/body/arguments/1`, and the same for a `presence_read` and an FR-772 slot domain with that owner; with `result_type` the `composite_type`/`reference` node of `Call`, `ill_typed`/`type-mismatch` at `/body/result_type`; a `filament.op.reference.eq` and a `filament.op.integer.lt` over two place references each refuse `ill_typed`/`operator-ineligible` at `/body/arguments/0`; and a `filament.op.collection.sum.integer` whose binder body is a place reference refuses `ill_typed`/`operator-ineligible` at the sum's `/semantic_graph/nodes/{n}/body/arguments/1`. | Test (TC-2084) |
 
 ## Dependencies
 

@@ -3475,10 +3475,8 @@ its cases carries a `payloadType` and `union` when one does, and
 a model declaration node whose `semantic_form` is `object_type`, `process`,
 `state_machine` or `systems_interface` is `object`; a `protocol`/`step_identity_type` node is `step_identity` ("Protocol step identity reads"). A `relation` node and a `model` node of any
 other form have no family, so a term they type fits no operand position. An
-`object` term is admitted only at a `field_owner` operand position, at
-the `object` anchor position of `filament.op.state.clause` and at the owner
-position of a clock-place read (the place form of `filament.op.option.present`,
-`filament.op.option.slots` and `filament.op.clock_reference.ref`, FR-829): `object` is a
+`object` term is admitted only at a `field_owner` operand position and at
+the `object` anchor position of `filament.op.state.clause`: `object` is a
 member of no other group, so the `inner:0` result of
 `filament.op.model.deref` is read only through a field projection ("Model-owned
 members"), and a reference to an object type or to a `state`/
@@ -3506,7 +3504,7 @@ or `temporal`/`fairness` node has the family of its body's root application
 | `structural_kind` | `option`, `record`, `tuple`, `union`, `sequence`, `set`, `bag`, `ordered_set` | Structural comparison operands. |
 | `enum_kind` | `enum`, `ordered_enum` | Enum operands. |
 | `field_owner` | `record`, `object` | Operands of a `field` projection: a record value, or a dereferenced model object whose field the "Model-owned members" rule resolves. |
-| `place_owner` | `reference`, `object` | The owner operand of a clock-place read (the place form of `filament.op.option.present`, `filament.op.option.slots` and `filament.op.clock_reference.ref`): a `Reference<O>` term written directly, or a term typed by `O`'s model node, `O` the place's owner type or one conforming to it ([FR-829](FR-829-carry-a-clock-place-reference-as-a-place-id-term.md) "Owner terms"). |
+| `place_owner` | `reference` | The owner operand of a clock-place read (the place form of `filament.op.option.present`, `filament.op.option.slots` and `filament.op.clock_reference.ref`): a `Reference<O>` term written directly, `O` the place's owner type or one conforming to it; an `object` term, such as the `inner:0` result of `filament.op.model.deref`, refuses `ill_typed`/`operator-ineligible` at the owner operand ([FR-829](FR-829-carry-a-clock-place-reference-as-a-place-id-term.md) "Owner terms"). |
 
 An operand position or rest names a family or group; a supplied argument fits
 exactly when its family is that family or a member of that group, the argument
@@ -5002,7 +5000,7 @@ arguments, in order: a reference to the
 place's owner object type (`self`, another object such as `other`, a parameter,
 a bound variable such as a population binder, or a path term such as
 `self.peer`), written directly as the `Reference<O>`-typed term with no
-`filament.op.model.deref` wrapper, or as a term typed by `O`'s own model node
+`filament.op.model.deref` wrapper
 (operand group `place_owner`, [FR-829](FR-829-carry-a-clock-place-reference-as-a-place-id-term.md) "Owner terms"); and one term for each `slot` step of the path in path
 order, of the selector's domain (an Integer position, or a key for a `Map`).
 The owner, the `clock_place` node id and the slot terms are the whole operand,
