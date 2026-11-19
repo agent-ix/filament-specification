@@ -165,10 +165,10 @@ A window that reaches a terminal state continues on its stutter steps.
 
 The last two rows are the **exact-only forms**.
 
-A quantile claim whose activation has probability 0 holds vacuously, under
-every scheduler and under every workload: no activated run exists to violate
-it, so the conditional probability is not read. Over every scheduler this is
-the reading in which a scheduler that never activates contributes 0.
+A quantile claim reads a probability conditioned on its measure's
+activation, and is read as "Conditioned values" below states for every
+conditioned reading: under a workload whose activation has probability 0,
+and under every scheduler when no scheduler activates, it holds vacuously.
 
 ### Thresholds and units
 
@@ -209,14 +209,53 @@ conditioned on activation: a probability form reads
 `Pr(event from the activating position | the run activates)`, an
 expectation form reads the conditional expectation, and a long-run form,
 whose limit does not depend on where it starts, reads the same conditional
-value. A run that never activates is not counted. An instance whose
-activation has probability 0 holds vacuously, as a quantile claim does.
+value. A run that never activates is not counted. The conditioned value and
+its vacuous case are those of "Conditioned values" below.
 The claim holds when every instance holds; a population with no object gives
 no instance, which settles `inconclusive` with `no-instance` (FR-331). `T`
 must be an object type some population of the model admits, and `g` a
 Boolean state expression; the frontend refuses any other `T` with
 `invalid_probabilistic_model`/`over-not-object-type` and a non-Boolean `g`
 with `ill_typed`/`type-mismatch`.
+
+### Conditioned values
+
+A reading is **conditioned** when the claim's activation is `on each`, or
+its form is a quantile. Its **activation** `act` is the event that the run
+reaches the reading's first activating position: for an `on each` instance,
+the first position at which `g` holds for the instance's object; for a
+quantile, the first position at which its measure activates, which under
+`on each` lies at or after the instance's activating position. `E` stands
+for the form's event, or for its measure's quantity in an expectation or
+long-run form.
+
+- **Under a workload** the value is `Pr(E and act) / Pr(act)`, and for an
+  expectation or long-run form `Ex(X · [act]) / Pr(act)` with `X` the
+  form's quantity. Numerator and denominator are both computed exactly over
+  the same product. The reading holds vacuously exactly when
+  `Pr(act) = 0`, and that is decided by graph reachability: no activating
+  state is reachable from the initial state along steps of positive
+  probability. A vacuous reading reads no ratio.
+- **Under every scheduler** the value for a `>=` bound is the minimum, and
+  for a `<=` bound the maximum, of the conditional value over the schedulers
+  (with a fairness set, the fair schedulers) that activate with positive
+  probability. It is computed exactly by the reset construction for
+  conditional probabilities in Markov decision processes: every state from
+  which activation is no longer reachable steps back to the initial state,
+  and every end component that holds no activating state gains a step back
+  to the initial state. Each first activating state is terminal and valued
+  by the optimal value of the form read from it. The optimal expected
+  terminal value of the reset process, over its schedulers that reach a
+  terminal state with probability 1, is the conditional optimum. The
+  optimum is attained by a scheduler that activates with positive
+  probability, so a strict bound compares the value itself; a quantile's
+  reduced bound selects the minimum or the maximum by its own direction. The reading holds vacuously exactly when no scheduler (no
+  fair scheduler) activates, again decided by graph reachability on the
+  product. A scheduler that never activates takes no part in the minimum or
+  the maximum.
+
+A vacuous reading holds and is never `refuted` nor `inconclusive`; it
+differs from a population with no object, which gives no instance at all.
 
 ### Obligation identity
 
@@ -254,6 +293,7 @@ carries every member of this identity in the claim's node
 | FR-407-AC-15 | `LongRun` with its scheduler clause written `under Steady fair weak Server::tick` refuses `invalid_syntax`/`unexpected-token` at `fair`, and with it written `under every scheduler fair weak Server::tick` it is admitted with the fairness set in its obligation identity. | Test (TC-353) |
 | FR-407-AC-16 | Under a bounded profile, `probability >= 0.99 [always holds(n.healthy)]` and `probability >= 0.99 [eventually[2, *] holds(n.healthy)]` each refuse `unsupported_construct` at the operator or interval span with the owning claim and selected profile, exactly as the same formula in a temporal clause under that profile refuses, and neither refuses `unbounded-event`; under the timed profile `eventually holds(P)` with no interval refuses `unsupported_construct` and `eventually[0 ms, 4 ms] holds(P)` is admitted; under the infinite-trace profile `[eventually[2, *] holds(P)]` refuses `invalid_probabilistic_model`/`unbounded-event`. | Test (TC-1562) |
 | FR-407-AC-17 | On a vector with two objects of `T`, where `g` first holds for the first at position 1 and never for the second, `on each (x: T) when (g)` gives one activated instance, read from position 1 and conditioned on activation, and one instance that never activates and holds vacuously; the same claim over a population with no object settles `inconclusive`, `no-instance`; `on each (k: Integer)` refuses `over-not-object-type`. | Test (TC-1650) |
+| FR-407-AC-18 | A model's initial state `s0` has the action `a`, which reaches with probability `1/4` a state where `g` first holds and the event then holds with probability 1, and with probability `3/4` a state from which `g` is unreachable, and the action `b`, which reaches with probability 1 a state where `g` first holds and the event then holds with probability `1/2`. For `on each (x: T) when (g) { probability >= θ [E] }` over every scheduler, the conditioned minimum is `1/2` and the maximum is 1 (the unconditioned values `1/4` and `1/2` are wrong): `>= rational(1, 2)` holds, `>= rational(3, 5)` fails, and `<= rational(9, 10)` fails. Under a workload choosing `a` and `b` with `1/2` each, `Pr(act) = 5/8`, `Pr(E and act) = 3/8` and the value is `3/5`, so `>= rational(3, 5)` holds and `>= rational(2, 3)` fails. A variant where neither action reaches `g` holds vacuously under both scheduler clauses. | Test (TC-2060) |
 
 ## Dependencies
 
@@ -275,4 +315,7 @@ carries every member of this identity in the claim's node
   statistical evidence, and a claim without them is exact-only; weighted
   long-run claims are kept; mean latency is dropped in favour of quantiles;
   expected reward and time are exact-only.
+- C. Baier, J. Klein, S. Klüppelholz and S. Märcker, Computing conditional
+  probabilities in Markovian models efficiently, TACAS 2014: the reset
+  construction of "Conditioned values".
 - Ticket: STD-137 (paired with QSL-371).

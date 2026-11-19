@@ -293,8 +293,10 @@ substitute.
 
 `ProbabilityProductKey` SHALL travel as unpadded base64url of exactly FSL
 FR-196 / ADR-028 PR-4's RFC 8785 UTF-8 octets of
-`["filament.probability-product-key/v1", model, monitor, accumulator, pending]`.
-All five members are required. `model` retains the full typed canonical
+`["filament.probability-product-key/v1", binding, instance, activation, model, monitor, accumulator, pending]`.
+All eight members are required: `binding` is the `over` binding, `instance`
+the `on each` object, and `activation` its `"waiting"` or `"active"` phase,
+each null where the claim has none. `model` retains the full typed canonical
 simulation state (including digital clock, deadline and tail control when
 applicable). The remaining members retain their actual
 FR-196 closed forms, including activation, the accumulator,

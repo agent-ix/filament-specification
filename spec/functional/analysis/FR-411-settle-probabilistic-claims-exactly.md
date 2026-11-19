@@ -56,8 +56,10 @@ accumulator (steps, reward or weighted sums since activation, saturating one
 unit above the threshold) and the activation flag; rewards are non-negative
 values from finite supports, so the accumulator takes finitely many values.
 The complete product key SHALL use FSL FR-196's canonical RFC 8785 UTF-8
-octets of `["filament.probability-product-key/v1", model, monitor, accumulator,
-pending]`: the full typed model form, actual canonical monitor/accumulator,
+octets of `["filament.probability-product-key/v1", binding, instance,
+activation, model, monitor, accumulator, pending]`: the `over` binding, the
+`on each` instance and its `"waiting"`/`"active"` activation phase (null for
+`on origin`), the full typed model form, actual canonical monitor/accumulator,
 and actual pending scheduled identity and declaration-ordered drawn vector.
 All members are present; actual None is null, never a default component.
 Formula monitors retain the full parsed FSL FR-338 automaton array, not a
@@ -83,7 +85,9 @@ minimum or maximum over its actions of that sum over every scheduler. A
 quantile over every scheduler decides `quantile q of M <= c` from the minimum
 over schedulers of the expected terminal reward
 `X = [activated] · ([M <= c] − q)`, which is at least 0 exactly when the claim
-holds (a scheduler that never activates contributes 0). `quantile q of M >= c`
+holds: a scheduler that never activates has `X = 0`, so it never breaks the
+bound, which agrees with FR-407 "Conditioned values", where such a scheduler
+takes no part. `quantile q of M >= c`
 reduces to the strict bound `Pr(M < c | activated) < q` (FR-407), so the
 provider computes the maximum over schedulers of
 `Y = [activated] · ([M < c] − q)`: a maximum above 0 refutes and a maximum
@@ -100,6 +104,19 @@ formed. The
 unweighted mean of a fraction is `1/(h + 1)` times a finite-horizon expected
 count; a weighted fraction accumulates both sums and is an expected terminal
 reward.
+
+### Conditioned readings
+
+An `on each` instance and a quantile are conditioned readings (FR-407
+"Conditioned values"). Over the product whose key carries the instance and
+its activation phase, the provider computes under a workload the
+numerator and the denominator exactly and settles on their ratio, and over
+every scheduler, for every form but a quantile, the optimal value of the form from each first activating state and then the
+optimal value of the reset process at the initial state. A reading with no
+reachable activating state holds vacuously and forms no ratio. A quantile
+over every scheduler is decided and proved by the shifted reward above, whose
+certificate already accounts for activation; every other conditioned proof
+carries a `conditional` certificate ([FR-412](../../objects/interfaces/FR-412-probability-certificate.md)).
 
 ### Unbounded reachability and expected rewards
 
