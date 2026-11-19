@@ -92,7 +92,7 @@
         "operation",
         "parts"
       ],
-      "part": "binding predicate, optional binding binders with ordered slot parameter references, then one reference to a clock_constraint for each constraint of the part, in order; a part names at least one constraint and a guard at least one part"
+      "part": "binding predicate, optional binding binders with ordered place binder parameter references, then one reference to a clock_constraint for each constraint of the part, in order; a part names at least one constraint and a guard at least one part"
     },
     "time_invariant": {
       "body": [
@@ -100,7 +100,7 @@
         "bounds"
       ],
       "bounds": "a nonempty aggregate of references to clock_constraint nodes of kind place whose comparison is lt or le",
-      "binders": "ordered references to quantified place slot parameter nodes; empty when omitted for unquantified invariant",
+      "binders": "ordered references to quantified place binder parameter nodes; empty when omitted for unquantified invariant",
       "quantified_body": [
         "predicate",
         "binders",
@@ -13947,7 +13947,7 @@
     },
     {
       "id": "CL-57",
-      "subject": "a quantified guard part carries its typed slot parameter binder before its clock constraints",
+      "subject": "a quantified guard part carries its typed place binder before its clock constraints",
       "patch": [
         {
           "op": "add",
@@ -14588,7 +14588,7 @@
     },
     {
       "id": "CL-59",
-      "subject": "a quantified invariant carries its typed slot parameter binder before bounds",
+      "subject": "a quantified invariant carries its typed place binder before bounds",
       "patch": [
         {
           "op": "add",
@@ -15056,7 +15056,7 @@
     },
     {
       "id": "CL-62",
-      "subject": "two valid nested collection slot parameters bound in reverse slot order are refused at the second binder",
+      "subject": "two valid nested collection place binders bound in reverse slot order are refused at the second binder",
       "fixture": "fixtures/positive-timed-clause-nodes.json",
       "patch": [
         {
