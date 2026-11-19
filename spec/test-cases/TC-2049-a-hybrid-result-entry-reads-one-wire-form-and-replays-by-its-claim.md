@@ -25,7 +25,7 @@ that a provider's claimed refutation that does not replay settles
 carries exactly `position`, `time` and `locus`, that a provider reports a
 construct outside its class as a located `unsupported` diagnostic, and that
 a hybrid counterexample replays through a `state_clause` target naming its
-claim. Verify that a hybrid solver proof carries an FR-652 certificate in its closed wire form and that the record, not the entry, becomes `certified`. Scope: FR-193-AC-24, FR-331-AC-54, FR-323-AC-47, FR-272-AC-31 and FR-652-AC-6.
+claim. Verify that a hybrid solver proof carries an FR-652 certificate in its closed wire form and that the record, not the entry, becomes `certified`. Scope: FR-193-AC-24, FR-331-AC-54, FR-323-AC-47, FR-323-AC-48, FR-272-AC-31 and FR-652-AC-6.
 
 ## Test Procedure
 
@@ -49,6 +49,11 @@ claim. Verify that a hybrid solver proof carries an FR-652 certificate in its cl
 6. Validate the FR-652-AC-6 entries against the schema; settle the
    `inductive-solver` entry with its accepted and with a rejected
    `inductive-enclosure` certificate.
+7. Over FR-652-AC-3's `Grow`, build the replay request of its hybrid claim
+   `Below` refuted through its accepted `validated-witness`; replay it, then
+   with the witness cut after its step at `[28, 32]`, then with no
+   `certificate`; then put the witness on a `function` request, and a
+   `flowpipe` certificate on the `Below` request.
 
 ## Expected Results
 
@@ -76,3 +81,9 @@ claim. Verify that a hybrid solver proof carries an FR-652 certificate in its cl
   "accounting.work_units"}`); the unknown name refuses
   `missing_declaration`/`missing-name`.
 - Step 6: the object-form certificates are admitted and each altered entry is refused by the schema; the accepted certificate gives a `certified` record over an `uncertified` entry, and the rejected one a `proved`, `uncertified` record with `certificate-rejected{rule, at}` beside it.
+- Step 7: the request carries the counterexample and the witness as
+  `certificate`; the row settles `reproduced-with-validated-witness`,
+  category `success`, with `replay` and `counterexample`; then `inconclusive`
+  with `disagreement` `hybrid-trace` `not-exact` twice; refused
+  `unknown-member` at `/replay/certificate`; refused `invalid-value` at
+  `/replay/certificate/type`.

@@ -208,10 +208,21 @@ the others are absent (never `null`, an empty name or a placeholder):
   claim's declared name is unique in its package's one claim namespace and
   the counterexample's own type tells the replay which check to run. A
   replay request whose `state_clause` names a hybrid claim carries the
-  item's FR-331 `HybridCounterexample` as its witness payload; the executor
-  replays its trace by FR-193 "Trace replay" against the recompiled claim
-  and its hybrid model, and its row is the `hybrid` arm ("Replay result
-  rows").
+  item's FR-331 `HybridCounterexample` as its witness payload, and, for an
+  item refuted through an accepted FR-652 `validated-witness`, that
+  certificate as the `replay` sub-member `certificate` (pointer
+  `/replay/certificate`), in FR-652's closed `validated-witness` form; the
+  executor replays its trace by FR-193 "Trace replay" against the
+  recompiled claim and its hybrid model, checks the carried witness by
+  FR-652 when exact replay cannot decide the trace, and its row is the
+  `hybrid` arm ("Replay result rows"). `certificate` is present only on a
+  request whose `state_clause` names a hybrid claim: the executor SHALL
+  refuse it on any other request `invalid_runtime_input`/`unknown-member`
+  at `/replay/certificate`, after decode and before recompile, and SHALL
+  refuse a `certificate` whose `type` is not `validated-witness`
+  `invalid_runtime_input`/`invalid-value` at `/replay/certificate/type`;
+  a witness FR-652 rejects is not a refusal but a replay result, settling
+  the row `inconclusive` as an absent witness does.
 
 When the producer builds a replay request, the producer SHALL carry exactly one
 of the three members. A frame request carries no `arguments` and no occurrence
@@ -587,8 +598,9 @@ Members every arm carries:
   `protocol-analysis` or `hybrid`.
 - `settlement`: the arm's own settlement. `witness`, `observed-temporal`,
   `model-graph`, `protocol-analysis` and `hybrid` settle
-  `reproduced-with-evaluated-witness` or `inconclusive`, and `model-graph`
-  and `hybrid` also `incomplete`; `input` settles `reproduced-without-witness` or
+  `reproduced-with-evaluated-witness` or `inconclusive`, `model-graph`
+  and `hybrid` also `incomplete`, and `hybrid` also
+  `reproduced-with-validated-witness` (FR-652); `input` settles `reproduced-without-witness` or
   `inconclusive`, never `reproduced-with-evaluated-witness` (FSL FR-072).
 - `category`: the FSL ADR-013 O-16 category in its wire spelling.
 
@@ -600,11 +612,12 @@ Arm members:
 | `input` | the `witness` arm's members, with `record` always `null` |
 | `observed-temporal` | `position` (the packet's trace position, decimal ASCII with no leading zero); `outcome` (the typed temporal outcome, spelled as FR-352's `disposition.temporal` row of its kind, with that row's members beside `kind` except `counterexample`, which a replay row never carries because the packet it replays is the counterexample: `holds`, `violated`, `undefined`, `insufficient-data`, `pending`, `missing-fairness-premise`, `incomplete` or `window-limit-reached`, with the exception below); `undefined_locus` (the `FormulaNodeId` of the first atom observed undefined, as a bare JSON number, or `null`); `parity` (present exactly when `settlement` is `inconclusive`: `{expected, expected_position, actual_locus}`, `expected` `{"kind": "formula"}` or `{"kind": "undefined-evaluation", "locus", "cause"}`, `actual_locus` the `FormulaNodeId` of the first atom the replay observed undefined, as a bare JSON number, or `null`); `charges`; `limit` (as for `witness`) |
 | `model-graph` | `evaluated_predicates` (ordered `{role, value}` objects, `role` `target`, `from` or `to`, `value` Boolean, in evidence evaluation order); `closure_nodes` (decimal string or `null`); `first_target` (the unpadded base64url state key of the first target state of a replayed trap closure, or `null`); `disagreement` (present exactly when `settlement` is `inconclusive`: the typed cause, as for `witness`); `limit` (present exactly when `settlement` is `incomplete`: `{limit, value, setting}`, FR-394's `limit-reached` members, with `limit` the stopped limit's name, `value` its configured bound as a decimal string, and `setting` the name of the request limits member that raises it, for example `{"limit": "max_states", "value": "1", "setting": "model_check.max_states"}`) |
-| `hybrid` | `replay` (FR-193's replay object `{"static": s}` or `{"static": s, "exact": e}`, with `e` also `{"outcome": "reproduced"}` when exact replay reproduced the trace); `counterexample` (present exactly when `settlement` is `reproduced-with-evaluated-witness`: the `HybridCounterexample` exact replay reproduced, its `kind` the replay's own); `disagreement` (present exactly when `settlement` is `inconclusive`: FSL FR-450's `{"cause": "hybrid-trace", "disagreement": {"type": "not-reproduced"` or `"not-exact", "counterexample": ...}}` with the request's complete counterexample); `limit` (present exactly when `settlement` is `incomplete`: `{limit, value, setting}`, `limit` `work_units`, `value` its configured bound as a decimal string and `setting` `accounting.work_units`) |
+| `hybrid` | `replay` (FR-193's replay object `{"static": s}` or `{"static": s, "exact": e}`, with `e` also `{"outcome": "reproduced"}` when exact replay reproduced the trace); `counterexample` (present exactly when `settlement` is `reproduced-with-evaluated-witness`: the `HybridCounterexample` exact replay reproduced, its `kind` the replay's own; or `reproduced-with-validated-witness`: the request's `HybridCounterexample`, whose `validated-witness` the replay accepted again by FR-652, since exact replay cannot decide it); `disagreement` (present exactly when `settlement` is `inconclusive`: FSL FR-450's `{"cause": "hybrid-trace", "disagreement": {"type": "not-reproduced"` or `"not-exact", "counterexample": ...}}` with the request's complete counterexample); `limit` (present exactly when `settlement` is `incomplete`: `{limit, value, setting}`, `limit` `work_units`, `value` its configured bound as a decimal string and `setting` `accounting.work_units`) |
 | `protocol-analysis` | `disagreement` (present exactly when `settlement` is `inconclusive`: `{"kind": "walk", "reason": R}`, `R` one of `unknown-choice`, `not-must-merge`, `step-not-successor`, `action-mismatch`, `wrong-branch`, `not-the-stated-divergence` and `cut`, with `port`, the FR-433 port reference `{"node": <CheckedNodeId>, "port": "enter"` or `"exit"}`, for `step-not-successor` and for no other reason) |
 
 - A `model-graph` or `hybrid` row's `category` is `success`, `inconclusive`
-  or `incomplete` with its settlement; a `protocol-analysis` row's is `success`
+  or `incomplete` with its settlement, a `hybrid` row's `success` also for
+  `reproduced-with-validated-witness`; a `protocol-analysis` row's is `success`
   for `reproduced-with-evaluated-witness` and `inconclusive` otherwise; an
   `observed-temporal` row's is its `outcome`'s FR-352 category.
 - An `observed-temporal` row's `outcome` departs from FR-352's row in one
@@ -698,6 +711,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-45 | The row of an observed-temporal replay stopped by a window holding more than `max_window_values` 2 carries `outcome` `{"kind": "window-limit-reached", "limit": "max_window_values", "value": "2", "setting": "monitor.max_window_values"}`; the `model-graph` row of FR-323-AC-41 stopped at `max_states` 1 carries `limit` `{"limit": "max_states", "value": "1", "setting": "model_check.max_states"}`; a reader refuses either with `value` the number 1 or 2, or with `setting` removed. | Test (TC-2010) |
 | FR-323-AC-46 | An observed-temporal row that settles `inconclusive` because the replay observed formula node 4 undefined where the packet expected a formula verdict carries `parity.actual_locus` `4` and `undefined_locus` `4`, both JSON numbers, and `outcome.position` a JSON number; a reader refuses `actual_locus` `"4"` and `outcome.position` `"3"`. | Test (TC-2010) |
 | FR-323-AC-47 | A refuted hybrid claim `TooSlow`'s replay request carries `{"state_clause": "TooSlow"}` and no `function` or `frame_operation`, resolves to the hybrid claim in the recompiled package, and replays its `HybridCounterexample`: the reproducing trace's row is `{"arm": "hybrid", "settlement": "reproduced-with-evaluated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with a trace that does not reproduce is `inconclusive` with `disagreement` `hybrid-trace` `not-reproduced` carrying the request's counterexample; one stopped by `work_units` is `incomplete` with `limit` `{"limit": "work_units", "value": "100", "setting": "accounting.work_units"}`; a `state_clause` naming no declared claim or state clause refuses `missing_declaration`/`missing-name`. | Test (TC-2049) |
+| FR-323-AC-48 | Over FR-652-AC-3's `Grow`, the replay request of its hybrid claim `Below` (`always [0, 40] holds(h.v < 30)`), refuted through FR-652-AC-3's accepted nine-step `validated-witness`, carries `{"state_clause": "Below"}`, the `HybridCounterexample` and that witness at `/replay/certificate`, and its row is `{"arm": "hybrid", "settlement": "reproduced-with-validated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with the witness cut after its step at `[28, 32]` is `inconclusive` with `disagreement` `hybrid-trace` `not-exact` carrying the request's counterexample, and the same request with no `certificate` is `inconclusive` the same way; the witness on a request whose target is a `function` refuses `invalid_runtime_input`/`unknown-member` at `/replay/certificate`, and a `flowpipe` certificate on the `Below` request refuses `invalid_runtime_input`/`invalid-value` at `/replay/certificate/type`. | Test (TC-2049) |
 
 ## Dependencies
 
