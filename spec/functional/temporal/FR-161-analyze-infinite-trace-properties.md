@@ -187,7 +187,8 @@ clock valuation, and the analyzer reads them as follows.
   [FR-250](../../objects/temporal/FR-250-temporal-semantic-profile.md) select
   the `filament.temporal.infinite-trace/v1` profile this requirement requires.
 - [FR-251](../../objects/temporal/FR-251-tl-target-profile.md) records that an
-  infinite-trace request resolves to an absent TL target rather than lowering.
+  infinite-trace request outside FR-095's infinite-trace closed-past row
+  resolves to an absent TL target rather than lowering.
 - [FR-360](../../objects/temporal/FR-360-infinite-trace-result-disposition.md)
   records the closed result-disposition vocabulary this requirement's Outputs
   use.
