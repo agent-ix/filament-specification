@@ -135,7 +135,7 @@ Declaration refusals:
 | A map type's `keys` or `values` is a well-formed package type identity that names no node of the package | `missing_declaration`/`missing-name` at `TypeDefinition.keys` or `TypeDefinition.values` |
 | A map type's `keys` names (directly or through an alias chain) a type that is not a scalar key type ("Map types" below) | `ill_typed`/`operator-ineligible` at `TypeDefinition.keys` |
 | A map type's `bound` has `lower > upper`, or has no `upper` and a `lower` above `0` | `invalid_model_binding`/`unpreserved-model-meaning` at `TypeDefinition.bound` |
-| A field of option value type (directly or through an alias chain) with presence `optional` and multiplicity `[1, 1]` (lower and upper `1`, any ordered and unique flags), which would be `Option<Option<T>>` | `invalid_model_binding`/`malformed-declaration` at `Field.presence` |
+| A field or an operation parameter of option value type (directly or through an alias chain) with presence `optional` and multiplicity `[1, 1]` (lower and upper `1`, any ordered and unique flags), which would be `Option<Option<T>>` | `invalid_model_binding`/`malformed-declaration` at `Field.presence` (at `Operation.params[i].presence` for the parameter at zero-based position `i`, on the operation node) |
 | A `reference` whose `target` names an option value type (a reference names an object) | `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.target` |
 | A variant case's `payloadType` is unresolved or names a type not admitted as a value type | `unsupported_construct`/`declaration-form` |
 | A variant type (FR-208) declares no case, a case has no source span, a case's identity is not the variant slot identity of its owner and its name, or its construct's shape is not `enumeration` | `invalid_model_binding`/`malformed-declaration` |
@@ -351,15 +351,37 @@ chain: `Option<Option<T>>` has no spelling, and intake does not flatten one. A
 clock place is optional by presence alone (FR-415 "Clock places"), so `inner`
 never names `Clock` or an alias of it either.
 
-*Presence and option.* Presence `optional` on a field is the member-level
-spelling and an option value type is the type-level spelling of one type. A field
+*Presence and option.* Presence `optional` on a field or an operation
+parameter is the member-level spelling and an option value type is the
+type-level spelling of one type. A field
 of option type `O` over `T` with presence `required` and multiplicity `[1, 1]` and a field of `T` with presence `optional` and the same multiplicity
 have the same type `Option<T>`, the same `composite_type`/`option` node, the same
 equality and the same values; neither adds a meaning the other lacks, and a
-reader derives no difference between them. They differ in reach only: presence
-exists only on a field, so an optional element, map value, tuple position, variant
-payload, alias target or parameter is expressed by an option value type and by no
-other means. Wrapping is single: presence `optional` on a field of option type
+reader derives no difference between them. The same holds for two parameters.
+They differ in reach only: presence exists on a field and on an operation
+parameter, so an optional element, map value, tuple position, variant
+payload, alias target or operation result is expressed by an option value type
+and by no other means (a clock result also by multiplicity `{0, 1}`).
+
+*Operation parameter presence.* An operation parameter is an entry of
+`Operation.params`, and each entry has the semantic IR `field` shape, whose
+`presence` member is required and is exactly `required` or `optional`. Intake
+reads `Operation.params[i].presence` as it reads `Field.presence`: `required`
+and `optional` map one to one to the admitted parameter's presence, and any other
+value (absent, `null`, or a string outside the two) refuses
+`invalid_model_binding`/`malformed-declaration` at the operation node, path
+`Operation.params[i].presence`, after the parameter's `name` and `typeRef`
+refusals. Presence is read on every parameter because the declaring model
+states it on every parameter: ignoring `optional` would type a parameter the
+model marks as omissible as a value every call must supply. An `optional`
+parameter's type is `Option<X>` for the type `X` its `typeRef` and multiplicity
+give (FR-322 "Model-owned members"); a call may omit it (FR-151 "Dispatch
+rules") and an invocation may omit it, its value then being absent. A
+`required` parameter is never omitted. Presence is part of the operation's
+signature, and a redefining operation's parameter presence is checked by
+FR-151's parameter presence axis.
+
+Wrapping is single: presence `optional` on a field or parameter of option type
 with multiplicity `[1, 1]` is the refused `Option<Option<T>>`, while
 a collection multiplicity wraps the option type (`Sequence<Option<T>>[0, 3]`) and
 presence `optional` on a collection field wraps the collection
@@ -932,6 +954,7 @@ Admission checks are decided before the first charge.
 | FR-154-AC-49 | Over `M`, each single defect refuses once at the `M` node: `keys` `ix://filament/native/Clock`, an alias of `Clock`, `Timer`, a record value type `Cfg` with one `Boolean` field `a`, an option value type over `Text`, a sequence type, a map type, a tuple value type, a variant type with a payload-bearing case, a `reference` type, an object type, the native `ix://filament/native/Rational` and a value type bound as a `Decimal[...]` domain each refuse `ill_typed`/`operator-ineligible` at `TypeDefinition.keys`; an absent `keys`, and a `keys` naming a namespace, refuse `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.keys` and a `keys` naming no node `missing_declaration`/`missing-name` there; an absent `values` refuses `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.values`; an `items` member on `M` refuses it at that member; an absent `bound`, a `bound` that is a string, has a negative or non-integer `lower` or `upper`, has no `lower` or carries another member refuses `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.bound`; `bound` `{lower: 3, upper: 2}` and `bound` `{lower: 1}` (no maximum) each refuse `invalid_model_binding`/`unpreserved-model-meaning` at `TypeDefinition.bound`; a `bound` on a `sequence` type definition refuses `invalid_model_binding`/`malformed-declaration` at `TypeDefinition.bound`. | Test (TC-234) |
 | FR-154-AC-50 | A collection-typed field names its collection through a package type: the published `acme/orders` document types `Order.clock` by `ix://acme/orders/ClockMap`, a map type definition with `keys` `ix://filament/native/Text` and `values` `ix://filament/native/Clock`, and it is admitted and read as `Map<Text, Clock>`. The same field typed by the rendered type text `Map<Text, ix://filament/native/Clock>`, and a field typed `Sequence<ix://filament/native/Integer>`, each refuse `invalid_model_binding`/`malformed-declaration` at the field node and `Field.typeRef`, because a `typeRef` is one reference of the three forms and never embeds a second one; no published document carries a rendered type text in a `typeRef`. | Test (TC-1481) |
 | FR-154-AC-51 | A domain package declaring value types `Flag`, `Count`, `Name`, `Reading` and `Sample` with `target` `ix://filament/native/Boolean`, `Integer`, `String`, `Float64` and `Float32`, and `Memo`, `Ratio` and `Amount` with `target` `Text`, `Rational` and `Decimal`, each typing one field of an object type, is admitted with no refusal; a value type `Watch` with `target` `ix://filament/native/Clock` typing a required field and an optional field is admitted as two clock members, a `max` constraint whose `appliesTo` is `Watch` is admitted, `maxLength` on it refuses `invalid_model_binding`/`malformed-declaration` at `Constraint.keyword`, and an option value type whose `inner` is `Watch` refuses as one whose `inner` is `Clock`; a `min` constraint on `Count` refuses `malformed-declaration` at `Constraint.keyword`; a value type with `target` `ix://filament/native/Int64` refuses `malformed-declaration` at `TypeDefinition.target`, and one with both `target` and `scalar` at `TypeDefinition.scalar`. | Test (TC-2048) |
+| FR-154-AC-52 | Over TC-2054's `test/refunds` package, intake admits `Order/note` with parameter `firstApprover` (`required`) and `secondApprover` (`optional`), and the admitted parameters carry those presences one to one; FR-322 types `secondApprover` `Option<Reference<Staff>>` and `firstApprover` `Reference<Staff>`. The same package with `secondApprover`'s `presence` absent, `null` or `"maybe"` refuses `invalid_model_binding`/`malformed-declaration` at the `Order/note` node, path `Operation.params[1].presence`, naming the value; with `secondApprover` typed by the option value type `OptStaff` (over `Staff`) and presence `optional` it refuses the same pair at `Operation.params[1].presence` (no `Option<Option<..>>`); with `OptStaff` and presence `required` it is admitted with the same type `Option<Reference<Staff>>` as the `optional` spelling. | Test (TC-2054) |
 
 ## Dependencies
 
