@@ -36,6 +36,7 @@ FR-415 checker.
 | CP-05 | the guard `self.s.0 >= 2 ms`; then `self.s.0 = self.s.0` in an invariant | one convex part on the `Slot` place; `invalid_timed_model`/`clock-read-outside-constraint` at the projection |
 | CP-06 | a field `ss: Set<Slot>[0, 2]`; a map type keyed by `Slot`; a map type keyed by `Phase` | a clock collection; `ill_typed`/`operator-ineligible` at each key type |
 | CP-07 | `s1 = s2` over two `Slot` values, and `p1 = p2` over two `Phase` values | each `invalid_timed_model`/`clock-read-outside-constraint` at the comparison |
+| CP-08 | FR-322-AC-475: add tuple `Trio` (`p0` `Integer`, `p1` Clock, `p2` `Boolean`), tuple `Ticks` (`p0` Clock), record `Timer` (`x: Clock`, `n: Integer`) and field `t: Trio`; read each data part; project `Trio` at `position` `2` and `1`; write `self.t` with `4`, `0 ms`, `true`; hand a data consumer a three-position `Trio` value, a two-position `Slot` value and an `Armed` value with a payload term | data parts `Slot` = (`Integer`), `Trio` = (`Integer`, `Boolean`), `Ticks` = (), `Phase` = `Armed`, `Idle` both arity 0, `Timer` = `n`, each typed by its declaration node with no added node; projection at `2` typed `Boolean` reading data index `1`, at `1` `invalid_timed_model`/`clock-read-outside-constraint`; place path `field(t)`, `tuple(1)`; a `tuple_value` with terms `4`, `true` and a `clock_reset` of the place; each consumer value refused as an arity or payload mismatch |
 
 ## Expected Results
 

@@ -2491,6 +2491,49 @@ no operation identity, and the published operation catalog is unchanged.
   payload makes the tuple or union a clock-bearing type: a collection of it is a
   clock collection, and a map key of it is refused, as FR-415 "Clock collections"
   states.
+- **Data part of a clock-bearing record, tuple or union.** A data consumer of
+  the package (the evaluator, a semantic value store, a replay) holds the value
+  of a clock-bearing record, tuple or union as its **data part**, and has no
+  value type for `Clock`. A clock is timed-model state, recorded by place in the
+  timed model and read only by a clock constraint, so it is never a component of
+  a data value: a consumer carries no placeholder, unit value, absent slot or
+  presence bit for a clock member. A **clock member** is a field, position or
+  payload whose type the `Clock` row gives no type node (a clock, an alias of
+  it, a value type bound to it by `target`, or a clock collection whose element
+  holds no data); every other member is a data member, and one typed by a
+  clock-bearing record, tuple or union, or by a clock collection whose element
+  holds data, is typed by that type's data part. The data part is fixed as
+  follows, so that every consumer reads one shape.
+  - A record's data part lists its data fields in declaration order, each read
+    by its field name.
+  - A tuple's data part is the tuple of its data positions in ascending
+    ordinal. The data position at ordinal `p` has data index `d(p)`, the number
+    of data positions whose ordinal is below `p`, so `Slot` (`p0` a clock, `p1`
+    an `Integer`) has a data part of one `Integer` at data index `0`. The
+    package keeps ordinals: the `position` member of a
+    `filament.op.tuple.project` application and the `tuple(index)` step of a
+    `clock_place` are the ordinal `p`, never `d(p)`, and a projection of the
+    data position `p` reads data index `d(p)` of the data part. A
+    `tuple_value` of a clock-bearing tuple carries one term per data position,
+    in ascending ordinal, and no term for a clock position; a time constant
+    written at a clock position in a postcondition is a reset of that place,
+    recorded as a `clock_reset` beside the write, as for a clock payload. A
+    tuple whose every position is a clock has the empty data part.
+  - A union's data part keeps every case as a member, with its case name,
+    member identity and member order unchanged. A case whose payload is a clock
+    is a member of payload arity 0 with no payload type, as a nullary case is,
+    and stays a distinct member of the union; a variant type whose only payload
+    cases are clock payloads keeps family `union`.
+  - The data part has no node and no identity of its own: it is typed by the
+    `model`/`record_value_type`, `model`/`tuple_value_type` or
+    `model`/`variant_type` declaration node of its type, with that node's
+    `node_id`, so two tuples of equal data parts and two names are two types.
+
+  A data consumer refuses, as it refuses any arity or payload mismatch, a tuple
+  value whose position count is not its data part's (one that holds a slot for
+  a clock position), and a union value whose clock-payload case carries a
+  payload. `=` and `!=` over a clock-bearing tuple or union are refused by the
+  checker above, so no package asks a consumer to compare data parts of one.
 - **Refusals.** In FR-322's order: the closed V2 schema refuses (`malformed_wire`)
   a `tuple_value_type` node with no `owner`, with a `SourceOwner` and no
   `declaration`, with a `declaration` beside a `ModelOwner`, or with a
@@ -5628,6 +5671,7 @@ declaration names" states.
 | FR-322-AC-472 | Over `Service` with a second workload `Burst` and two claims both named `A`, written identically except that one is `under Steady` and the other `under Burst`, the producer emits two `probabilistic_claim` nodes whose paths differ only in the `scheduler` operand, each at ordinal 0, and two `probabilistic_claims` rows in the order of the `Steady` and `Burst` workload nodes' structural keys; the same rows reversed refuse `invalid_package`/`invalid-semantic-graph` at the second row (`PC-R7`'s rule). A `probabilistic_claim` node with an empty body refuses `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{i}/body` (FR-640 reader rule 6), and so a producer cannot satisfy the reader with a name-only claim node. In a package of the same unit with only the claim `A` under `Steady` (so no other claim node shares its path), that node's path rewritten to hold `Burst`'s node in place of `Steady`'s, its body unchanged, is admitted, because a derived node's path is an identity label the reader does not compare with its body; the producer vectors of FR-640-AC-3 and FR-640-AC-8 therefore hold the identity rule. | Test (TC-1563) |
 | FR-322-AC-473 | The requirement-record step runs in "Check order" between FR-640's reader and `checked_term_data`: FR-825-AC-1's package with `function f` added to a unit holding FR-640-AC-8's claims, with both `P95`'s body missing `delays` and the first `value_validity` record's `owner` referencing the `+` node, refuses at `P95`'s `body` (FR-640 rule 6); with only the record defect and a `checked_term_data` `probabilistic_claims` row reversed (PC-R7), it refuses at the record's `body/members/0` (FR-825 rule 3). A package whose only `claim` nodes are `claim`/`value_validity` nodes has no `claim_names` member and is admitted, and adding a `claim_names` row whose `declaration` is a `value_validity` node refuses `invalid_package`/`invalid-value` at that row's `declaration`, because no source declaration introduces such a node. `requirement_items` adds no node and changes no `node_id`: FR-825-AC-1's unit emitted by the producer is compared with the golden package of the same unit written before FR-825 (`proposals/checked-package-v2/fixtures/requirement-records-golden-without-records.json`, a test fixture of a producer that writes no records: it is emitted by FSL S4 at a commit before FR-531-AC-35's emission, never derived from a package that has records, and the coder of FR-531-AC-35 checks it into this repository before the emission change merges; TC-2053 step 6 fails when the file is absent), and every node of the golden is present in the new package with byte-identical `node_id`, body, `dependencies` and `source_map` entries, the new package adding only the two `value_validity` nodes, their `source_map` entries and `requirement_items`; a producer whose `value_validity` node changed the path of the `+` node or of `f`'s function node fails the comparison. | Test (TC-2053) |
 | FR-322-AC-474 | Over `Service` under `Steady`, two claims both named `A`, `probability >= 0.5 [always[0,2] holds(true)]` and the same with `0.6`, emit two `probabilistic_claim` nodes whose paths differ only in the FR-640 `bound` `value` segment (`"1/2"` and `"3/5"`), each at ordinal 0, and two `probabilistic_claims` rows with the `1/2` claim's first, by structural key; the same rows reversed refuse `invalid_package`/`invalid-semantic-graph` at the second row (`PC-R7`'s rule). With the second claim's threshold written `rational(2, 4)` instead, the two claims have equal bodies and one path, and take ordinals 0 (the claim written `0.5`) and 1 (the one written `rational(2, 4)`), by FSL FR-498's written-content ranking. A claim node whose `bound` `value` literal is spelled `2/4` refuses `invalid_package`/`invalid-value` at that literal's `value` ("Scalar literal values"), before FR-640's reader runs, so two spellings of one threshold can never stand as two bodies. | Test (TC-1563) |
+| FR-322-AC-475 | Over FR-322-AC-399's package with a tuple `Trio` added (`p0` `Integer`, `p1` `ix://filament/native/Clock`, `p2` `Boolean`) and a tuple `Ticks` whose only position `p0` is a clock: the data part of `Slot` is one `Integer` at data index `0`, of `Trio` an `Integer` at data index `0` and a `Boolean` at data index `1`, and of `Ticks` the empty tuple; `filament.op.tuple.project` of `Trio` carries `position` `2`, has the `Boolean` node as its type and reads data index `1`, and one carrying `position` `1` refuses `invalid_timed_model`/`clock-read-outside-constraint`; the clock place of a field `t: Trio` has the path `field(t)`, `tuple(1)`; a postcondition that writes `self.t` with `4` at `p0`, `0 ms` at `p1` and `true` at `p2` writes a `tuple_value` with the two terms `4` and `true` and records a `clock_reset` of that place. The data part of `Phase` has the members `Armed` and `Idle` in that order, each of payload arity 0, two distinct members; a record value type `Timer` with fields `x: Clock` and `n: Integer` has the data part of `n` alone. Each data part is typed by its declaration node's `node_id`, and no node, type node or value type is added for a clock or a data part. A data consumer given a `Trio` value of three positions, a `Slot` value of two, or an `Armed` value with a payload term refuses it as an arity or payload mismatch. | Test (TC-1361) |
 
 ## Dependencies
 
