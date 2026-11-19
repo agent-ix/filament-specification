@@ -21,6 +21,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-267
     type: references
+  - target: ix://agent-ix/filament-spec-language/FR-663
+    type: references
   - target: ix://agent-ix/filament-spec-language/FR-330
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-031
@@ -132,6 +134,21 @@ is absent when the frame verdict has `basis: closed-scope`. The strict
 reader SHALL restore the FR-115 witness without losing any member and
 SHALL refuse a missing, malformed or misplaced `frame_witness`. FR-115
 owns its fields and change variants; this requirement adds none.
+
+A `disposition.refusal.locus` is exactly one closed object tagged by
+`kind`, and `kind` is one of five values: `region`, `located`,
+`occurrence`, `artifact` and `document`. FSL FR-267 ("Refusal locus wire")
+owns each kind's members; `document` names the failing member of a JSON
+input document (a request, snapshot, invocation or model document, its
+model header included) by the document's labels, path, RFC 6901 pointer,
+object and member. The five members of a `document` locus are required and
+nullable, not optional: each is always present, and `document`, `path`,
+`object` and `member` hold `null` when absent, so FR-352-AC-8's refusal of
+`null` for an absent optional member does not apply to them. The set is closed: the
+strict reader SHALL refuse a locus of any other `kind`, and a producer SHALL
+write every refusal it locates under one of the five, so every document the
+native route writes reads under this reader. A locus is report content and
+enters no checked-package identity (FR-322).
 
 `usage` is a closed object with `admission` (a closed object of unsigned
 `document_bytes`, `objects` and `values`), unsigned
@@ -428,6 +445,7 @@ back SHALL restore an equal record.
 | FR-352-AC-20 | A clause-run record over a `progressed` record-sample trace carries a `ledger` whose covered entries are each `{identity, stamp, fingerprint}`, `identity` the sample's index and `fingerprint` `sha256:` plus 64 lowercase hexadecimal digits, with no sample text or value; a snapshot-position covered entry carries no `fingerprint`. The reader restores both without loss and refuses a record-sample entry without `fingerprint`, a snapshot-position entry with one, a `fingerprint` with uppercase digits or 63 digits, and a covered entry with any other extra member. | Test (TC-1910) |
 | FR-352-AC-21 | A clause-run document whose `witness` is FR-351-AC-9's comparison record, with `deciding_comparison`, two `operands`, `decision_path`, `deciding_element` and `value_path` and no `quantifier`, `index` or `trace_position`, is accepted and restores that record; the same document with `operands` absent, with three operands, with an empty `decision_path`, or with `quantifier` added is refused naming that member. | Test (TC-2014) |
 | FR-352-AC-22 | A `window-limit-reached` disposition is written at stage `evaluate` as `{"kind": "window-limit-reached", "limit": "max_window_values", "value": "2", "setting": "monitor.max_window_values"}`, its `value` a decimal string, and reads back equal; the same row with `value` the JSON number 2, with `value` `"02"` or with `value` `""` refuses with a located wire diagnostic naming `value`. Likewise `{"kind": "progress-limit-reached", "limit": "node count", "value": "4", "setting": "progress.covered_positions"}` reads back equal, and with `value` the JSON number 4 or `"04"` refuses naming `value`. | Test (TC-1485) |
+| FR-352-AC-23 | A stage `admit` clause-run document whose `disposition.refusal` is `invalid_runtime_input`/`missing-member` with `locus` `{"kind": "document", "document": {"authority": "agent-ix", "identity": "spine-snapshot"}, "path": "spine-snapshot.json", "pointer": "/populations/0/objects/1", "object": {"population": "ix://example/config-version/config_history", "key": "child"}, "member": "parent"}` reads, and its refusal retains that locus; the same document with `kind` `snapshot`, with `member` removed, or with an added member `line` is refused naming `disposition.refusal.locus`. | Test (TC-2081) |
 
 ## Dependencies
 
