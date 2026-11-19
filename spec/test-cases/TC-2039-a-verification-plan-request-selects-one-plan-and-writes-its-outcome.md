@@ -17,9 +17,9 @@ Scope: FR-824-AC-1 to FR-824-AC-3.
 
 ## Test Procedure
 
-1. Execute `Release` with `seed` 7 where `safe` is refuted; then request it
+1. Execute `Release` with `seed` 7 and `max_trace_length` 8 where `safe` is refuted; then request it
    with `emit` `true` and `execute` `false`.
-2. Send `{}` over one plan and over two; name `Nope`, the claim `Never`, and
+2. Send `{"max_trace_length": 8}` over the one plan `Release` and over two plans; name `Nope`, the claim `Never`, and
    a bare `Release` declared as `A::Release` and `B::Release`.
 3. Send `seed` `"7"`, both flags `false`, an `engine` member, `seed` on a
    plan of `model_check` steps only, and, over a selected package, no

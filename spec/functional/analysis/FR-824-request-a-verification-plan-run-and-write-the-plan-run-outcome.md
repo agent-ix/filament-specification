@@ -46,7 +46,7 @@ the first defect by its RFC 6901 pointer.
 ### Request
 
 ```json
-{"plan": "Release", "emit": false, "execute": true, "initial": "spine-snapshot.json", "seed": 7}
+{"plan": "Release", "emit": false, "execute": true, "initial": "spine-snapshot.json", "seed": 7, "max_trace_length": 8}
 ```
 
 A native run carries the request as its one `verification_plan` member, and
@@ -66,6 +66,8 @@ The member list is closed:
 | `execute` | boolean | `true` | the coordinator |
 | `initial` | string, a `filament.state.snapshot/v1` file resolved against the request file's directory | none | every `model_check`, `model_based_test`, `simulate` and `contract_check` step whose claim's subject is a state model: the state each such step starts from |
 | `seed` | unsigned 64-bit integer | `0` | every `model_based_test` and `probabilistic_statistical` step: the FR-190 generation seed, the same seed for each such step, so a rerun with one seed reproduces every step |
+| `max_trace_length` | unsigned 64-bit integer, at least 1 | none | every `model_based_test` step whose claim's subject is a state model: the FR-190 trace bound, the same for each such step |
+| `max_value_bits` | integer from 1 to 64 | none | every `model_based_test` step with a generation root of no finite bound (FR-190 "Value domains"): the FR-190 size bound, the same for each such step |
 | `document` | `{"file": P}` | none | the plan document, on a package-route run only (below) |
 
 - An unknown member refuses `invalid_runtime_input`/`unknown-member` at its
@@ -87,18 +89,34 @@ The member list is closed:
   member's domain, as FR-331's reader table and FR-805's negative deadline
   read it. A value of another JSON kind (a string such as `"7"`, a boolean,
   an array or an object) refuses `wrong-value-kind`.
-- Once the plan is selected, `initial` on a plan with no step it is consumed
-  by, and `seed` on a plan with no step it is consumed by, refuse
-  `unknown-member` at their pointers: the member set is closed by the
-  selected plan, as FR-823 closes it by the selected synthesis kind. A step
+- `max_trace_length` and `max_value_bits` are read as `seed` is: a JSON
+  number written as an integer, with no fraction or exponent part. A
+  `max_trace_length` outside 1 to 2^64 − 1, or a `max_value_bits` outside 1
+  to 64, refuses `invalid-value` at its pointer, and a value of another JSON
+  kind `wrong-value-kind`.
+- Once the plan is selected, `initial`, `seed`, `max_trace_length` or
+  `max_value_bits` on a plan with no step it is consumed by refuses
+  `unknown-member` at its pointer: the member set is closed by the
+  selected plan, as FR-823 closes it by the selected synthesis kind. The
+  coordinator supplies each of them only to the steps that consume it, so a
+  step never receives a member FR-190 would refuse as unknown.
+- When `execute` is `true`, a selected plan with a step that consumes
+  `max_trace_length` or `max_value_bits` and a request without that member
+  refuses `invalid_runtime_input`/`missing-member` at the member's pointer,
+  naming the first consuming step in source order, and no step runs. Neither
+  member has a default, because FR-190 forbids inventing a bound the request
+  did not state. A step
   that consumes `initial` and finds none starts from every state the step's
   `domain` admits (FR-192 "Source form").
 - `initial` is read by the snapshot's own admission for the step's model; an
   inadmissible snapshot refuses with that admission's refusal at `/initial`
   and the snapshot's member, as FR-806 states for a plan request.
-- No member sets a step's method, engine, bound or limits: those are the
+- No member sets a step's method, engine, `bound` or limits: those are the
   plan's (FR-192), and each step runs under its method's FR-461 settings, so
-  a request cannot weaken a step the plan states.
+  a request cannot weaken a step the plan states. `max_trace_length` and
+  `max_value_bits` are FR-190 inputs that a plan step does not state (its
+  `bound` is `max_cases`), so the request supplies them as it supplies
+  `seed`, and they change nothing the plan states.
 
 ### Selection
 
@@ -136,7 +154,7 @@ identities (FR-192 "Package form"). On a source run `document` refuses
   "plan": "Release",
   "document": null,
   "status": "failed",
-  "inputs": {"initial": "spine-snapshot.json", "seed": 7},
+  "inputs": {"initial": "spine-snapshot.json", "seed": 7, "max_trace_length": 8, "max_value_bits": null},
   "dispositions": {
     "safe":   {"status": "refuted", "method": "model_check", "evidence": "refutation", "blocked_by": null, "result": {}},
     "tested": {"status": "tested",  "method": "model_based_test", "evidence": "tested",     "blocked_by": null, "result": {}},
@@ -147,7 +165,7 @@ identities (FR-192 "Package form"). On a source run `document` refuses
 ```
 
 - `document` is the plan document when `emit` is `true`, else `null`.
-- `inputs` echoes `initial` (or `null`) and the `seed` in force.
+- `inputs` echoes `initial` (or `null`), the `seed` in force, and `max_trace_length` and `max_value_bits` (each `null` when absent).
 - `dispositions` holds one entry per plan node, keyed by step name, or is
   `null` when `execute` is `false`. Its `status` is the step's FR-331
   result value (`proved`, `refuted`, `tested`, `measured`, `inconclusive`,
@@ -166,7 +184,11 @@ identities (FR-192 "Package form"). On a source run `document` refuses
   read that one value. `evidence` is the evidence kind the method produced
   (FR-192 method table), never another, and `null` on a step that produced
   none; `result` is the step's FR-331 result entry, `null` on a blocked
-  step.
+  step. A `model_based_test` step is not negotiated and has no provider
+  entry, so its `result` is its FR-190 result record, whose `result` and
+  `cause` members carry the same FR-331 settlement; a run that evaluated no
+  case is `inconclusive` with cause `no-evaluated-case`, and so is not a
+  satisfied prerequisite.
 - A method with no registered engine is not a plan refusal. The step's item
   is negotiated as every item is (FR-290): when no registered backend
   matches its kind, extent and evidence kind, it settles `unsupported`
@@ -206,12 +228,13 @@ with `execute` `false` settles no node and exits `0`.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-824-AC-1 | Executing FR-192's `Release` plan where `safe` is refuted writes `status` `failed`, `safe` `refuted` with `evidence` `refutation`, `tested` `tested`, `timely` `blocked` with `blocked_by` `safe` and `result` `null`, three dispositions, `failed_steps` `["safe"]`, `inputs.seed` 7, and exits `22`, FR-301's highest-severity code of the refuted `10` and the blocked `22`; `{"plan": "Release", "emit": true, "execute": false}` writes the plan document as `document`, `dispositions` `null`, exit `0`. | Test (TC-2039) |
-| FR-824-AC-2 | Over one plan, `{}` runs it; over two plans, `{}` refuses `invalid_runtime_input`/`missing-member` at `/plan` naming both; `plan` `Nope` and `plan` naming the claim `Never` each refuse `missing_declaration`/`missing-name` at `/plan`; a bare `Release` matching `A::Release` and `B::Release` refuses `ambiguous_declaration`/`ambiguous-name` at `/plan`; each exits `20` before any step runs. | Test (TC-2039) |
+| FR-824-AC-1 | Executing FR-192's `Release` plan, over a model `M::Order` whose generation roots all have finite bounds, with `{"plan": "Release", "seed": 7, "max_trace_length": 8}` where `safe` is refuted writes `status` `failed`, `safe` `refuted` with `evidence` `refutation`, `tested` `tested`, `timely` `blocked` with `blocked_by` `safe` and `result` `null`, three dispositions, `failed_steps` `["safe"]`, `inputs` `{"initial": null, "seed": 7, "max_trace_length": 8, "max_value_bits": null}`, and exits `22`, FR-301's highest-severity code of the refuted `10` and the blocked `22`; `{"plan": "Release", "emit": true, "execute": false}` writes the plan document as `document`, `dispositions` `null`, exit `0`. | Test (TC-2039) |
+| FR-824-AC-2 | Over the one plan `Release`, `{"max_trace_length": 8}` runs it; over two plans, `{"max_trace_length": 8}` refuses `invalid_runtime_input`/`missing-member` at `/plan` naming both; `plan` `Nope` and `plan` naming the claim `Never` each refuse `missing_declaration`/`missing-name` at `/plan`; a bare `Release` matching `A::Release` and `B::Release` refuses `ambiguous_declaration`/`ambiguous-name` at `/plan`; each exits `20` before any step runs. | Test (TC-2039) |
 | FR-824-AC-3 | `seed` `"7"` refuses `wrong-value-kind` at `/seed`; `emit` and `execute` both `false` refuse `invalid-value` at `/execute`; `engine` refuses `unknown-member` at `/engine`; `seed` on a plan with only `model_check` steps refuses `unknown-member` at `/seed`; a plan run over a selected package without `document` refuses `missing-member` at `/document`, and with a plan document of another package `invalid-value` at `/document` naming both identities. | Test (TC-2039) |
-| FR-824-AC-4 | `Release` executed with no registered engine advertising `temporal-satisfaction`: `safe` settles `unsupported` with `unsupported_projection`/`unsupported-requested-capability` naming `temporal-satisfaction` and the extent `bounded`, and no engine runs for it; `tested` still runs and settles `tested`; `timely`, whose prerequisite is not satisfied, is `blocked` by `safe` and is not negotiated; `status` is `incomplete`, `failed_steps` is empty and the exit is `21`, FR-301's highest-severity code of `21`, `22` and `0`. | Test (TC-2045) |
+| FR-824-AC-4 | `Release` executed with `{"plan": "Release", "max_trace_length": 8}` and no registered engine advertising `temporal-satisfaction`: `safe` settles `unsupported` with `unsupported_projection`/`unsupported-requested-capability` naming `temporal-satisfaction` and the extent `bounded`, and no engine runs for it; `tested` still runs and settles `tested`; `timely`, whose prerequisite is not satisfied, is `blocked` by `safe` and is not negotiated; `status` is `incomplete`, `failed_steps` is empty and the exit is `21`, FR-301's highest-severity code of `21`, `22` and `0`. | Test (TC-2045) |
 | FR-824-AC-5 | A plan of a `probabilistic_statistical` step `s` and a `model_check` step `t depends [s]`: with `s` `measured` `accepted`, `t` runs and `s`'s disposition has category success `0`; with `s` `measured` `rejected`, `t` is `blocked` by `s`, `failed_steps` is `["s"]`, `status` `failed` and the exit `22`; with `s` `measured` `undecided`, `t` is `blocked`, `failed_steps` is empty, `status` `incomplete` and the exit `22`. | Test (TC-2045) |
-| FR-824-AC-6 | Carried in a `native-run/1` request, `seed` `"7"` refuses `wrong-value-kind` at `/request/verification_plan/seed`; `seed` `-1`, `7.5` and `18446744073709551616` each refuse `invalid-value` there; `{"plan": "Release", "seed": null, "emit": null, "initial": null}` runs `Release` with `inputs` `{"initial": null, "seed": 0}` as if the three members were absent; `"verification_plan": null` refuses `wrong-value-kind` at `/request/verification_plan`; each refusal exits `20` before any step runs. In FR-824-AC-5's runs, `s`'s disposition has exactly the members `status`, `method`, `evidence`, `blocked_by` and `result`, and its decision is `result.verdict.decision.type` (`accepted`, `rejected`, `undecided`); `{"plan": "Release", "emit": true, "execute": false}` writes `status` `null`. | Test (TC-2046) |
+| FR-824-AC-6 | Carried in a `native-run/1` request, `seed` `"7"` refuses `wrong-value-kind` at `/request/verification_plan/seed`; `seed` `-1`, `7.5` and `18446744073709551616` each refuse `invalid-value` there; `{"plan": "Release", "seed": null, "emit": null, "initial": null, "max_value_bits": null, "max_trace_length": 8}` runs `Release` with `inputs` `{"initial": null, "seed": 0, "max_trace_length": 8, "max_value_bits": null}` as if the three members were absent; `"verification_plan": null` refuses `wrong-value-kind` at `/request/verification_plan`; each refusal exits `20` before any step runs. In FR-824-AC-5's runs, `s`'s disposition has exactly the members `status`, `method`, `evidence`, `blocked_by` and `result`, and its decision is `result.verdict.decision.type` (`accepted`, `rejected`, `undecided`); `{"plan": "Release", "emit": true, "execute": false}` writes `status` `null`. | Test (TC-2046) |
+| FR-824-AC-7 | `{"plan": "Release"}` refuses `invalid_runtime_input`/`missing-member` at `/max_trace_length` naming the step `tested`, and carried in a `native-run/1` request at `/request/verification_plan/max_trace_length`; `max_trace_length` 0, `-1` and `8.5` each refuse `invalid-value` there and `"8"` `wrong-value-kind`; `max_value_bits` 8 on `Release`, whose roots all have finite bounds, refuses `unknown-member` at `/max_value_bits`, and `max_trace_length` 8 on a plan of `model_check` steps only refuses `unknown-member` at `/max_trace_length`; over a plan `Sized` whose one step `s` is a `model_based_test` of a state clause over a model with a field `n: Integer`, `{"plan": "Sized", "max_trace_length": 8}` refuses `missing-member` at `/max_value_bits` naming `s`, `max_value_bits` 0 and 65 refuse `invalid-value` there, and with `max_value_bits` 8 `s` runs with `max_trace_length` 8 and `max_value_bits` 8 and `inputs.max_value_bits` is 8; each refusal exits `20` before any step runs. A step of a plan whose FR-190 run discards every case is `inconclusive` with `result.cause` `{"type": "no-evaluated-case"}`, and a step that `depends` on it is `blocked` by it, exit `22`. | Test (TC-2046) |
 
 ## Dependencies
 
