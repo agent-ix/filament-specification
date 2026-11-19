@@ -138,8 +138,9 @@ Its body is an aggregate of exactly these eight bindings, in this order:
    `expression` occurrence the record is keyed at. Two occurrences of one
    application node, in one function or in two, are two records with two
    nodes, each with its own bound, guards and roots.
-4. `result_bound`: a `reference` to the type node of the record's result
-   bound: the `type_argument` node of the narrow that directly wraps the
+4. `result_bound`: a `reference` to the local type node, or a
+   `dependency_reference` to the dependency's type node, of the record's
+   result bound: the `type_argument` node of the narrow that directly wraps the
    application when there is one, and otherwise the type node of the
    application's checked type (for an integer `div`, `rem` or `mod`, the
    exact interval type node, which need not be the application's
@@ -250,8 +251,9 @@ node's graph index:
 5. an `occurrence` that is not a non-negative integer literal naming an
    `expression` occurrence of the application node in `source_map`:
    `invalid_package`/`invalid-value` at `body/members/2`;
-6. a `result_bound` that is not a `reference` to a local or dependency type
-   node (tag `scalar_type`, `composite_type` or `bounded_domain`):
+6. a `result_bound` that is neither a `reference` to a local type node nor
+   a `dependency_reference` resolving to a type node of a direct dependency
+   (tag `scalar_type`, `composite_type` or `bounded_domain` in either case):
    `invalid_package`/`invalid-value` at `body/members/3`;
 7. a `conversion` that is neither the empty aggregate nor the two bindings
    above, whose `narrow` is not a `filament.op.numeric.narrow` application
@@ -341,9 +343,12 @@ scan of the graph, and returns no record for a function that owns none.
   item's FR-331 request item from its row and record node.
 - A check arm that decides a `value-validity` item (FR-484) MAY read the
   item's record node in place of locating the occurrence by its source region
-  and walking its guards. For a package that passes this reader, both give
-  the same owner, guards, bound and conversion, because both describe one
-  claim site.
+  and walking its guards. The reader does not check that the two agree (it
+  re-derives no owner or guard); agreement is the producer's duty: for a
+  package a conforming producer wrote, both give the same owner, guards
+  (including `holds` false for the right operand of `or`, as FR-484's
+  premises state), bound and conversion, because both describe one claim
+  site.
 
 ## Acceptance Criteria
 
@@ -353,7 +358,7 @@ scan of the graph, and returns no record for a function that owns none.
 | FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` is emitted with three `value-validity` rows (the `>=`, the `<` and the `+`), each `{"classification": "unbounded", "domains": [{"domain": {"type": "node", "node": <n's parameter node>, "path": []}, "kind": "integer"}]}`, in package order, which the test first establishes by comparing the three application nodes' structural keys; the `<` record's `path_condition` is one member (`n >= 0`, `holds` true), the `+` record's one member (the `if` condition `n >= 0 and n < 10`, `holds` true), and the `>=` record's empty; their record nodes have `generated` ordinals equal to their positions among `f`'s rows. Rewriting `n < 10` as `n < 11` changes the `<` record node's `node_id` and the `+` record node's (its guard changed), and not the `>=` record node's. | Test (TC-2053) |
 | FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced, including `Bounded`'s `operation-contract` row at its `state_clause` node's `claim` occurrence and `BelowThree`'s `temporal-satisfaction` row at its clause node's `claim` occurrence, each without `record`, and `inc`'s one `value-validity` row with `record`; the rows are in package order, which the test establishes from the rows' structural keys, occurrences and kinds; the reader admits the package; and the typed read returns, for `inc`'s node, exactly its one record at the request index of its row. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
 | FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer the reader rule gives: a record node with a `declaration` member, and with a second `generated` occurrence (rule 1, at `occurrences`); `conversion` and `result_bound` swapped (rule 2, at `body`); `owner` referencing the `+` node (rule 3); `owner` referencing `g`'s node, which does not reach `+` (rule 4, at `body/members/1`); `application` referencing the narrow node (rule 4); `occurrence` 2 (rule 5); `result_bound` referencing `x`'s parameter node (rule 6); the first record's `conversion` naming the `Int[0, 20]` narrow (rule 7, at `body/members/4`); the second record's guard with `holds` the text `"true"` (rule 8, at `body/members/5/value/members/0`); `extent_roots` holding `x` twice (rule 9, at `body/members/6/value/members/1`); `objects` referencing the Boolean type node (rule 10). Each is `invalid_package`/`invalid-value`. | Test (TC-2053) |
-| FR-825-AC-5 | Over FR-825-AC-2's and FR-825-AC-3's packages, each mutation refuses with the code, cause and pointer the reader rule gives: `requirement_items` removed from AC-1's package (`invalid-value` at `/requirement_items`); `requirement_items` `[]`, a row without `extent`, and a row with `kind` `value-validty` (`malformed_wire`); a row whose `claim.occurrence` ordinal is 7 (at `/requirement_items/{i}/claim`); the `>=` row's one domain written twice (at `/requirement_items/{i}/extent/domains/1`); `inc`'s row without `record` (at `/requirement_items/{i}`); `Bounded`'s row with `inc`'s `record` (at its `record`); the `<` row's `record` naming the `+` record node (at its `record`); a `value-validity` row whose domain names `g`'s parameter `p` (at `extent/domains/0`); the `<` row repeated after itself (`conflicting-definition` at the later row); the first two rows of AC-2's package swapped (`invalid-semantic-graph` at `/requirement_items/1`); the `+` row removed (`invalid-value` at the `+` record node's `body`); and the `>=` and `<` record nodes' `generated` ordinals swapped (`invalid-value` at the first such node's `occurrences` in owner, then node-id, order). Over AC-1's package a reader budget one visit short of the package's count returns `incomplete` at the first uncharged member, and a package whose `claim_names` is absent and whose only `claim` nodes are `value_validity` nodes is admitted. | Test (TC-2053) |
+| FR-825-AC-5 | Over FR-825-AC-2's and FR-825-AC-3's packages, each mutation refuses with the code, cause and pointer the reader rule gives: `requirement_items` removed from AC-1's package (`invalid-value` at `/requirement_items`); `requirement_items` `[]`, a row without `extent`, and a row with `kind` `value-validty` (`malformed_wire`); a row whose `claim.occurrence` ordinal is 7 (at `/requirement_items/{i}/claim`); the `>=` row's one domain written twice (at `/requirement_items/{i}/extent/domains/1`); `inc`'s row without `record` (at `/requirement_items/{i}`); `Bounded`'s row with `inc`'s `record` (at its `record`); the `<` row's `record` naming the `+` record node (at its `record`); a `value-validity` row whose domain names `g`'s parameter `p` (at `extent/domains/0`); the `<` row repeated after itself (`conflicting-definition` at the later row); the first two rows of AC-2's package swapped (`invalid-semantic-graph` at `/requirement_items/1`); the `+` row removed (`invalid-value` at the `+` record node's `body`); and the `>=` and `<` record nodes' `generated` ordinals swapped (`invalid-value` at the first such node's `occurrences` in owner, then node-id, order). Over AC-1's package (whose rows are both `bounded`, so they carry no domain to charge) the step charges the two record nodes and their members, then `f`'s body walk, then rows 0 and 1, so a reader budget one visit short of the package's count returns `incomplete` at `/requirement_items/1`, the last charged member, with no partial view, and a package whose `claim_names` is absent and whose only `claim` nodes are `value_validity` nodes is admitted. | Test (TC-2053) |
 
 ## Dependencies
 
