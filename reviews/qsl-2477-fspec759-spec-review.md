@@ -29,3 +29,16 @@ Not mergeable. FND-001 must be fixed in this PR: the closed item member set must
 | --- | --- | --- | --- |
 | FND-001 | high | "Result schema" closes each result item to the members "Result items" lists, but FSL writes `obligations`, `closure`, `global`, `projections`, `recording` (FR-990, FR-1032) and FR-634 simulation members on analyze items; the closed schema the text specifies rejects real results | spec/functional/tooling/FR-520-carry-analyze-requests-and-results-as-documents.md:133-144 |
 | FND-002 | medium | "a request and any permutation of its object members give byte-equal results" except multi-defect refusals is false for first-defect refusals chosen in request order (FSL FR-1031 "at the first member in request order"); a two-defect request refused naming one defect changes with a permutation | spec/functional/tooling/FR-520-carry-analyze-requests-and-results-as-documents.md:146-151 |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-003 | low | "so the schema and the writers cannot drift apart" overstates FSL FR-286-AC-31: the completeness test checks only the member paths of hand-built full-member values, so a member a writer adds without a fixture change is not caught (see the FSL review's FND-015) | spec/functional/tooling/FR-520-carry-analyze-requests-and-results-as-documents.md:151-154 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | still-open | Round 1 at 2fcf725c added the conformance members, the record's settled_by/backend/non_zeno/memory_bound/trace/steps, finite-replay disposition and root aggregate/registry. The simulation item is still listed as "simulation settings, its traces, coverage and frontier", but FSL writes `findings` (FR-634 "Invariant findings", always present, `[]` when none) and `cause` on simulation items (fsl-analyze/src/analyze/simulation_item.rs:369-372, 441-454, 553-556, 622-636). A closed schema built from this list rejects every simulation result |
+| FND-002 | fixed | - |

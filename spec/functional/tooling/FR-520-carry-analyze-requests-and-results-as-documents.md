@@ -114,9 +114,15 @@ An analysis item has these members:
   `recording` identity (FSL FR-990, FR-1032). Its record also carries
   `settled_by`, `backend` exactly when a result settled it, and, where the
   run states them, `non_zeno`, `memory_bound` (FR-439) and, for a replayed
-  trace, `trace` and `steps`. A `simulation` item carries, in place of a
-  record, its admitted `simulation` settings, its traces, `coverage` and
-  `frontier` (FSL FR-634, FR-181). The result also carries the root
+  trace, `trace` and `steps`. A `simulation` item carries no record: it carries `request_index`, `kind`
+  `simulation`, its admitted `simulation` settings (`mode`, `seed` and
+  `samples` for `sample`, `max_steps`, `max_states`, `max_state_key_bytes`),
+  its `category`, for a `sample` run its `seed`, its `traces`, its
+  `coverage` (`states`, `transitions`, `choices`), its `findings`, always
+  present and an empty array when the traces meet no invariant violation,
+  its unexplored `frontier`, and `cause` when the run stopped at a limit or
+  could not simulate (FSL FR-634, FR-181). A `seed` is written as FR-331's
+  `U64String`. The result also carries the root
   `aggregate` (`status` and `gaps`) and `registry` (FSL FR-621, FR-635).
 - **Kinds.** Every category label in the result is one FR-301 lists, and
   every temporal disposition is FR-352's `disposition.temporal` with one of
@@ -150,8 +156,10 @@ document it describes (FSL FR-286 "Published schema"). That schema's
 FR-331's spellings. It closes every object whose member names the format
 fixes, and describes a map keyed by names the program declares with
 `additionalProperties`. The language implementation's completeness test
-fails when a writer can emit a member the schema does not declare (FSL
-FR-286-AC-31), so the schema and the writers cannot drift apart. A second analyze-only schema is not published: it would
+fails when a member in a writer's declared member list is absent from the
+schema (FSL FR-286-AC-31). It guards the members each writer declares; a
+writer that emitted an undeclared member would fail that writer's own
+member-list test, not the schema test. A second analyze-only schema is not published: it would
 describe the same bytes twice and could drift from the first. A tool that
 writes an analyze result conforms only if every result it writes validates
 against `urn:filament:outcome:1`; a tool that reads one may validate it
@@ -182,7 +190,7 @@ a character from U+E000 to U+FFFF.
 | FR-520-AC-5 | A `native-analyze/1` request whose program declares `a div 2` with no law header and carries `"integer_division": "floor"` compiles its program and settles its items; without the member it refuses the whole request `missing_declaration`/`missing-selection` at the `div` with no item settled; with `"integer_division": "ceiling"` it refuses `unknown_profile`/`unsupported-selection` before any source is read. | Test (TC-1654) |
 | FR-520-AC-6 | A request whose `subject` carries `protocol` `{"protocol": "SB", "over": O, "roles": {"w": B, "c": B}}` (`O` the `core` object reference, `B` a `model-binding`) and whose `memory` selects `SB::Both` as `tso` gives an item whose FR-331 request item carries `temporal.subject.protocol` with its `over` binding and the effective model; the binding with an unknown member refuses the whole request `invalid-request` naming it; the same claim with no `protocol` member is a model-subject item. | Test (TC-2005) |
 | FR-520-AC-7 | A `native-analyze/1` request whose `package` is `{"directory": "handoff"}`, naming a handoff directory holding `checked-package.json` and `identities.json`, is admitted; one whose `package` is `{"file": "package.json"}` refuses `invalid-request` naming `file`; the directory with `identities.json` removed refuses `invalid_package`, `missing-file`, naming `identities.json`; with `identities.json` replaced by `{}` it refuses `invalid_package`, `malformed-file`; with `equality.json` removed it is admitted, and with `equality.json` replaced by `not json` it refuses `invalid_package`, `refused-file`. | Test (TC-2009) |
-| FR-520-AC-8 | FR-520-AC-1's result validates against `urn:filament:outcome:1` and equals its own RFC 8785 re-encoding; the same result with `/items/0/request_index` removed fails validation at `/items/0`, with `/items/0/category` set to `"proven"` fails at `/items/0/category`, and with `aggregate` removed fails at the root pointer; FR-520-AC-1's request, and FR-520-AC-2's request whose item carries only `request_index`, each written with the members of every object reversed, give byte-equal results; the result of an FSL FR-990-AC-1 `global-conformance` item (with `obligations`, `closure` and `global`), of an FSL FR-990-AC-3 item with `recording`, and of an FSL FR-634-AC-1 `simulation` request each validate. | Test (TC-2096) |
+| FR-520-AC-8 | FR-520-AC-1's result validates against `urn:filament:outcome:1` and equals its own RFC 8785 re-encoding; the same result with `/items/0/request_index` removed fails validation at `/items/0`, with `/items/0/category` set to `"proven"` fails at `/items/0/category`, and with `aggregate` removed fails at the root pointer; FR-520-AC-1's request, and FR-520-AC-2's request whose item carries only `request_index`, each written with the members of every object reversed, give byte-equal results; the result of an FSL FR-990-AC-1 `global-conformance` item (with `obligations`, `closure` and `global`), of an FSL FR-990-AC-3 item with `recording`, and of an FSL FR-634-AC-1 `simulation` request each validate, the simulation item with `findings`, `coverage`, `traces` and `frontier`; the simulation item with `findings` removed fails at `/items/0`. | Test (TC-2096) |
 
 ## Dependencies
 

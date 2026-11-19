@@ -26,7 +26,8 @@ the request's member order where its refusal does not. Scope: FR-520-AC-8.
    only `request_index`, each with the members of every object reversed.
 4. Run an FSL FR-990-AC-1 `global-conformance` request, an FSL FR-990-AC-3
    request with a recording, and an FSL FR-634-AC-1 `simulation` request;
-   validate each result.
+   validate each result; remove `findings` from the simulation item and
+   validate again.
 
 ## Expected Results
 
@@ -34,4 +35,6 @@ the request's member order where its refusal does not. Scope: FR-520-AC-8.
 - Step 2: errors at `/items/0`, `/items/0/category` and the root pointer.
 - Step 3: each result is byte-equal to the result of the request as
   written.
-- Step 4: every result validates.
+- Step 4: every result validates, the simulation item with `findings`,
+  `coverage`, `traces` and `frontier`; without `findings` it fails at
+  `/items/0`.
