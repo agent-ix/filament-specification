@@ -3482,7 +3482,9 @@ enum ReadRefusal {
     /// lock does not select or whose selected document does not declare it.
     OwnerSelection(Value),
     /// `invalid_package`/`invalid-value` at a `/source_map/{i}` entry whose
-    /// region names a source other than its declared node's `SourceOwner`.
+    /// region names a source other than its declared node's `SourceOwner`, or
+    /// that breaks the model declaration occurrence rule (at `/source_map`
+    /// for a model declaration node with no entry).
     InvalidOwnerValue(String),
     /// `invalid_semantic_graph` at an `enum_value` node over a
     /// `model`/`variant_type` whose case the selected document does not
@@ -3834,6 +3836,50 @@ fn shape_stages_refusal(package: &Value, nodes: &[Value]) -> Result<(), ReadRefu
     owner_join_refusal(package, nodes)?;
     if let Some(node) = derived_shape_semantic_refusal(nodes) {
         return Err(ReadRefusal::DerivedShape(node["node_id"].clone()));
+    }
+    model_declaration_occurrence_refusal(package, nodes)
+}
+
+/// FR-322 "Model declaration occurrences": a model declaration node (a
+/// `model` or `relation` node carrying a `ModelOwner`) has exactly one
+/// `source_map` entry, role `generated` at ordinal 0, whose `regions` are the
+/// `regions` of the `model_root` entry of its owner identity. The entries are
+/// examined in `source_map` order and the first that fails refuses
+/// `invalid_package`/`invalid-value` at `/source_map/{i}`; a node with no entry
+/// refuses at `/source_map` only when every entry passes.
+fn model_declaration_occurrence_refusal(package: &Value, nodes: &[Value]) -> Result<(), ReadRefusal> {
+    let is_model_declaration = |node: &Value| {
+        node["owner"]["kind"] == "model" && matches!(node["node_tag"].as_str(), Some("model" | "relation"))
+    };
+    let models = nodes.iter().filter(|node| is_model_declaration(node)).collect::<Vec<_>>();
+    let entries = package["source_map"].as_array().map(Vec::as_slice).unwrap_or_default();
+    let root_regions = |identity: &Value| {
+        entries
+            .iter()
+            .find(|entry| {
+                entry["node_id"]["package"] == *identity
+                    && entry["node_id"]["path"] == json!(["model", "model_root"])
+                    && entry["node_id"]["ordinal"] == 0
+                    && entry["role"] == "generated"
+                    && entry["ordinal"] == 0
+            })
+            .map(|entry| &entry["regions"])
+    };
+    let mut located = BTreeSet::new();
+    for (index, entry) in entries.iter().enumerate() {
+        let Some(node) = models.iter().find(|node| node["node_id"] == entry["node_id"]) else {
+            continue;
+        };
+        let admitted = entry["role"] == "generated"
+            && entry["ordinal"] == 0
+            && located.insert(entry["node_id"].to_string())
+            && root_regions(&node["owner"]["identity"]) == Some(&entry["regions"]);
+        if !admitted {
+            return Err(ReadRefusal::InvalidOwnerValue(format!("/source_map/{index}")));
+        }
+    }
+    if models.iter().any(|node| !located.contains(&node["node_id"].to_string())) {
+        return Err(ReadRefusal::InvalidOwnerValue("/source_map".to_owned()));
     }
     Ok(())
 }
@@ -5926,10 +5972,30 @@ fn append_structural_node(package: &mut Value, mut node: Value) {
     if self_typed {
         node["semantic_type"] = node["node_id"].clone();
     }
+    locate_model_declaration(package, &node);
     package["semantic_graph"]["nodes"]
         .as_array_mut()
         .expect("fixture nodes are an array")
         .push(node);
+}
+
+/// FR-322 "Model declaration occurrences": a model declaration node appended
+/// to a fixture takes one `generated` ordinal-zero `source_map` entry carrying
+/// its identity's `model_root` regions, as every published one does.
+fn locate_model_declaration(package: &mut Value, node: &Value) {
+    if node["owner"]["kind"] != "model" || !matches!(node["node_tag"].as_str(), Some("model" | "relation")) {
+        return;
+    }
+    let root = json!({"package": node["owner"]["identity"], "path": ["model", "model_root"], "ordinal": 0});
+    let regions = package["source_map"]
+        .as_array()
+        .and_then(|entries| entries.iter().find(|entry| entry["node_id"] == root))
+        .map(|entry| entry["regions"].clone())
+        .expect("the model root entry of the node's identity");
+    package["source_map"]
+        .as_array_mut()
+        .expect("source map is an array")
+        .push(json!({"node_id": node["node_id"], "role": "generated", "ordinal": 0, "regions": regions}));
 }
 
 #[trace("TC-233", "FR-322-AC-13")]
@@ -13490,6 +13556,42 @@ fn tc_310_root_generated_occurrence_is_the_producer_asserted_source_relation() {
     }
 }
 
+/// FR-322 "Model declaration occurrences": in every published positive
+/// package, each model declaration node carries exactly the occurrence
+/// `generated` 0 and one `source_map` entry with that key whose `regions` are
+/// its `model_root` entry's, and the reader admits the package's entries.
+#[trace("TC-2085", "FR-322-AC-485")]
+#[test]
+fn tc_2085_every_model_declaration_node_takes_its_selecting_occurrence_region() {
+    let mut checked = 0;
+    for (name, package) in published_positive_packages() {
+        let nodes = package["semantic_graph"]["nodes"].as_array().unwrap();
+        let entries = package["source_map"].as_array().unwrap();
+        for node in nodes.iter().filter(|node| {
+            node["owner"]["kind"] == "model" && matches!(node["node_tag"].as_str(), Some("model" | "relation"))
+        }) {
+            assert_eq!(node["occurrences"], json!([{"ordinal": 0, "role": "generated"}]), "{name}");
+            let own = entries.iter().filter(|entry| entry["node_id"] == node["node_id"]).collect::<Vec<_>>();
+            assert_eq!(own.len(), 1, "{name}: one source-map entry");
+            assert_eq!((&own[0]["role"], &own[0]["ordinal"]), (&json!("generated"), &json!(0)), "{name}");
+            let root = entries
+                .iter()
+                .find(|entry| {
+                    entry["node_id"]
+                        == json!({"package": node["owner"]["identity"], "path": ["model", "model_root"], "ordinal": 0})
+                })
+                .unwrap_or_else(|| panic!("{name}: the root entry of the node's identity"));
+            assert_eq!(own[0]["regions"], root["regions"], "{name}: the selecting occurrence's region");
+            checked += 1;
+        }
+        assert!(
+            model_declaration_occurrence_refusal(&package, nodes).is_ok(),
+            "{name}: the reader admits the entries"
+        );
+    }
+    assert!(checked >= 7, "the published packages carry model declaration nodes");
+}
+
 const MODEL_TUPLE_UNION_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/model-tuple-union-vectors.json");
 /// The selected document of `acme/shapes`: a full FCD semantic IR 2.0.0
@@ -15880,6 +15982,7 @@ fn tc_233_event_type_is_a_model_declaration_node_with_a_model_owner() {
 /// cases over the fixture; each refuses with exactly its stated code, cause
 /// (none for a code that carries none) and locus.
 #[trace("TC-940", "FR-322-AC-140", "FR-322-AC-146", "FR-322-AC-152", "FR-322-AC-153")]
+#[trace("TC-2085", "FR-322-AC-486")]
 #[test]
 fn tc_940_tuple_node_wire_cases_run_from_the_published_vectors() {
     let vectors = parsed_fixture(MODEL_TUPLE_UNION_VECTORS);
@@ -15944,6 +16047,11 @@ fn tc_940_tuple_node_wire_cases_run_from_the_published_vectors() {
                         format!("/semantic_graph/nodes/{position}/node_id"),
                     ))
                 }
+                Err(ReadRefusal::InvalidOwnerValue(locus)) => Some((
+                    "invalid_package".to_owned(),
+                    "invalid-value".to_owned(),
+                    locus,
+                )),
                 Err(ReadRefusal::Operation(refusal)) => {
                     let oracle = OperationOracle::for_package(&catalog, &package);
                     let mut ordered = oracle.nodes.iter().enumerate().collect::<Vec<_>>();
@@ -17108,6 +17216,7 @@ fn tc_233_a_population_reference_names_the_declared_population_it_reads() {
                 node["owner"] =
                     json!({"kind": "model", "identity": "acme/orders", "node": owner_node});
             }
+            locate_model_declaration(&mut candidate, &node);
             candidate["semantic_graph"]["nodes"]
                 .as_array_mut()
                 .expect("fixture nodes are an array")

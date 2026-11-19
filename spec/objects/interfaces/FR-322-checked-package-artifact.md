@@ -680,7 +680,7 @@ A frame body refusal, meaning-join or canonical-order
   (FR-322-AC-74, `RM-CU-ORDER`, `TW-27`); (4) the edge existence check of a
   `semantic_type` or `dependencies` entry that names no node, for a node of tag
   `scalar_type`, `composite_type`, `bounded_domain`, `value`, `expression`,
-  `function` or `model` only. A node of tag `state`, `temporal`, `protocol`,
+  `function` or `model` only; (5) the model declaration occurrence check of `source_map` ("Model declaration occurrences"). A node of tag `state`, `temporal`, `protocol`,
   `relation`, `claim`, `correspondence`, `extension`, `hybrid` or `timed_model`
   is outside stage 4: this artifact defines no refusal for its `semantic_type`
   or `dependencies` edge. Where that form's own artifact defines one, that
@@ -807,7 +807,9 @@ A frame body refusal, meaning-join or canonical-order
     refuses `missing_import`/`missing-selection` at the node's `owner/identity`.
     The root has exactly one `generated` occurrence at ordinal zero, whose
     source-map region is the existing source occurrence that selected this
-    model package; the root has no declaration occurrence of its own.
+    model package; the root has no declaration occurrence of its own. Every
+    model declaration node of that identity carries the same regions
+    ("Model declaration occurrences" under `source_map`).
     The root is derived by the checked-package producer from the existing
     model selection; it does not require a new FCD declaration.
     **Completeness and stage.** The V2 schemas check only the closed root
@@ -1094,6 +1096,45 @@ A frame body refusal, meaning-join or canonical-order
   multiple ordered regions; regions for that one occurrence/document cannot
   overlap, while regions belonging to different occurrences may nest or
   overlap. A path, display name or search result is not a source identity.
+
+  **Model declaration occurrences.** A model declaration node (a `model` or
+  `relation` node that carries a `ModelOwner`, every form listed under `owner`
+  below other than `model_root`) is a compiler-derived node. No source text
+  declares it: it derives from exactly one declaration, the domain-document
+  declaration its `ModelOwner` names, and its `node_id` is a function of that
+  owner alone, so its identity covers everything the node reads and no source
+  construct contributes to it. No source role (`declaration`, `type`,
+  `expression`) therefore applies. The node carries exactly one occurrence,
+  role `generated` at ordinal 0 (one domain declaration derives one node), in
+  its `occurrences` and in `source_map`. This holds whatever reaches the node:
+  a `field`, `operation` or `relationship_end` member, a `Reference<T>`, a frame
+  or effect subject, a selected relationship, or a `clock_place`
+  `resolved_path` row that names a model tuple value type or variant type by
+  its text identity alone.
+  The declaration lives in a domain document the host supplies (FR-154), which
+  is not a `lock.sources` entry, so the node has no source region of its own.
+  The one source text that brings it into the package is the occurrence that
+  selected its domain package. Its `source_map` entry therefore carries
+  exactly the `regions` of the `generated` ordinal-zero entry of the
+  `model_root` whose owner `identity` is the node's owner `identity` ("Model
+  root"): the same regions, in the same order.
+  - A producer SHALL emit every model declaration node with that one entry. A
+    producer that has no selecting region for a model declaration node's
+    identity SHALL refuse emission with a typed refusal that names the node and
+    SHALL write no bytes; it SHALL NOT substitute a synthesized, placeholder or
+    expression-root region.
+  - The reader SHALL examine the entries of model declaration nodes in
+    `source_map` order and refuse the first that fails as
+    `invalid_package`/`invalid-value` at that entry (`/source_map/{i}`): a role
+    other than `generated`, an ordinal other than 0, a second entry for one
+    node, and `regions` that are not exactly the regions of its identity's
+    `model_root` entry (a package with no such root entry included).
+  - The reader SHALL refuse a model declaration node that has no `source_map`
+    entry as `invalid_package`/`invalid-value` at `/source_map`, only when
+    every entry passes.
+  - The reader SHALL run this check as stage 5 of "One total order of the
+    join stages", after the edge existence check of stage 4 and before every
+    declaration, frame, state and operation refusal.
 
   **Refinement step occurrences.** A refinement owner node
   (`node_tag: "relation"`, `semantic_form: "refinement"`,
@@ -2659,11 +2700,12 @@ no operation identity, and the published operation catalog is unchanged.
 - **Occurrence roles.** The schema's `DeclarationOccurrenceRule` governs: a
   `declaration` member is present if and only if a `declaration`-role occurrence is
   present, with `enum_value` exempt as it is for every nominal member node. A
-  model declaration node has no `declaration` member, so its occurrence takes the
-  role `expression` and its `source_map` region is the region of the declaring
-  construct; a `tuple_value_type` node follows the rule of every other model
-  declaration node. The `model_root` node's occurrence is `generated`
-  (FR-322-AC-132). An `enum_value` node over a model variant type takes the role
+  model declaration node has no `declaration` member. Its one occurrence is
+  `generated` at ordinal 0 and its `source_map` regions are those of its
+  identity's `model_root` entry ("Model declaration occurrences",
+  FR-322-AC-485); a `tuple_value_type` or `variant_type` node follows the rule
+  of every other model declaration node. The `model_root` node's occurrence
+  is `generated` (FR-322-AC-132). An `enum_value` node over a model variant type takes the role
   `declaration`, as the `enum_value` nodes of `positive-nominal-identities.json` do.
 - **Model root.** A tuple, a variant type or a payload adds no `model_root` node
   and changes none: a selection still has exactly one root, determined by its
@@ -5859,7 +5901,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-368 | A descent in the binding rows is reported before an uncovered occurrence (BO-R7). | Test (TC-233) |
 | FR-322-AC-369 | The clock name of the second occurrence's row is compared with the body's clock name: a differing name refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/clock_name` (BO-R8). | Test (TC-233) |
 | FR-322-AC-370 | The configuration kind of the second occurrence's row is compared with the selected profile: a kind the profile does not determine refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}/clock/kind` (BO-R9). | Test (TC-233) |
-| FR-322-AC-371 | Every refusal in the published tuple/union intake and wire vectors (`model-tuple-union-vectors.json`) carries a `stage` member beside its code, cause and locus, drawn from the closed set `schema` (the V2 closed-schema check; `malformed_wire`), `graph` (the join stages 1 to 4 of FR-322-AC-275, in that order) and `reader` (every declaration, frame, state, operation and later step, including FR-154 intake). The vector's `stage` is the stage that raises the refusal under the order of FR-322-AC-275; it is not the `Diagnostic` `stage` member of a `ReadResult`, which stays `package_read` for the reader. A replay oracle compares admission or refusal, code, cause, RFC 6901 locus and this `stage`; an admitted case is compared by admission, and an omitted case, a refusal without a `stage` or a refusal whose stage differs from the vector's is a replay failure. Admitted-package equality is not part of the oracle: the admitted package is the published fixture itself. The stage applies to every refusal case of every section of the file (`position_cases`, `union_value_cases`, `enum_value_cases`, `equality_cases`, `intake_cases` and `wire_cases`). The `schema` wire cases are `TW-01` to `TW-04`, `TW-10` and `TW-26`; `TW-06` to `TW-09`, `TW-21`, `TW-22`, `TW-27` and `TW-28` (owner join before the dangling edge) are `graph`; the `ill_typed` query cases (`TP-03`, `TP-07`, `TU-04` to `TU-08`, `TQ-02`, `TQ-04`) and every intake refusal are `reader`; `TE-02` to `TE-04` (`invalid_semantic_graph`) are `graph`. | Test (TC-940) |
+| FR-322-AC-371 | Every refusal in the published tuple/union intake and wire vectors (`model-tuple-union-vectors.json`) carries a `stage` member beside its code, cause and locus, drawn from the closed set `schema` (the V2 closed-schema check; `malformed_wire`), `graph` (the join stages 1 to 5 of FR-322-AC-275, in that order) and `reader` (every declaration, frame, state, operation and later step, including FR-154 intake). The vector's `stage` is the stage that raises the refusal under the order of FR-322-AC-275; it is not the `Diagnostic` `stage` member of a `ReadResult`, which stays `package_read` for the reader. A replay oracle compares admission or refusal, code, cause, RFC 6901 locus and this `stage`; an admitted case is compared by admission, and an omitted case, a refusal without a `stage` or a refusal whose stage differs from the vector's is a replay failure. Admitted-package equality is not part of the oracle: the admitted package is the published fixture itself. The stage applies to every refusal case of every section of the file (`position_cases`, `union_value_cases`, `enum_value_cases`, `equality_cases`, `intake_cases` and `wire_cases`). The `schema` wire cases are `TW-01` to `TW-04`, `TW-10` and `TW-26`; `TW-06` to `TW-09`, `TW-21`, `TW-22`, `TW-27`, `TW-28` (owner join before the dangling edge) and `TW-29` to `TW-33` (stage 5) are `graph`; the `ill_typed` query cases (`TP-03`, `TP-07`, `TU-04` to `TU-08`, `TQ-02`, `TQ-04`) and every intake refusal are `reader`; `TE-02` to `TE-04` (`invalid_semantic_graph`) are `graph`. | Test (TC-940) |
 | FR-322-AC-380 | A field, an operation parameter, an operation result and a plain alias typed by the Rational value type `Ratio` (FR-154-AC-42: `Rational[-3, 7; 1, 12]`, no `unit`) each have the type `Rational[-3, 7; 1, 12]` and name one `bounded_domain`/`rational_range` node over the `scalar_type`/`rational` node with bindings `numerator_min` `-3`, `numerator_max` `7`, `denominator_min` `1` and `denominator_max` `12`; a second value type of equal bounds names the same node and one with `maxDenominator` 13 names another; the accepted FR-154 operand encodings (a JSON integer within `[-2^53, 2^53]` or a canonical signed-64 decimal string) denote exact integer bounds, and the `rational_range` body's `IntegerString` values and structural path retain them exactly, including `i64::MIN`; `Ratio` as a tuple position `typeRef` and as a variant case `payloadType` is admitted (`TK-36`), while a Rational value type with no `constraints` there is refused as FR-322-AC-181 and FR-322-AC-182 state and a member of it has no type as FR-322-AC-183 states. | Test (TC-981) |
 | FR-322-AC-381 | `Ratio` with `unit` `ix://filament/unit/m` types its members `Quantity<m, Rational[-3, 7; 1, 12]>`, the `scalar_type`/`carried_quantity` node over `m`'s unit node, the `rational_range` node of FR-322-AC-380 and `rounding` `exact`; a second value type of equal bounds and unit `m` names that node, and `Ratio` without a unit and a value type of equal bounds with unit `cm` name two other nodes; a `unit` of `ix://filament/unit/nosuch` refuses `missing_declaration`/`missing-name` at the value type node and `TypeDefinition.unit`. | Test (TC-981) |
 | FR-322-AC-382 | A `scalar_type`/`carried_quantity` node whose carrier is a `rational_range` node and whose `rounding` is `exact` is admitted; the same node with `rounding` `nearest-even` and a node whose carrier is the unbounded `scalar_type`/`rational` node each refuse `invalid_package`/`invalid-derived-shape` at the node; a `filament.op.quantity.convert` application into it with `mode` `{kind: rounding, value: exact}` is admitted and one with any other `mode` or `null` refuses `invalid_package`/`operation-mode-type-mismatch` (`CQ-W06`, `CQ-W16` to `CQ-W19`). | Test (TC-981) |
@@ -5910,6 +5952,8 @@ is carried by two `protocol` node forms.
 | FR-322-AC-481 | Step identity read refusals. With AC-480's carrier: a target absent from the graph refuses `missing_declaration`/`missing-name` at `/body/target`; a `delivery` carrier whose target is a `send` node and an `effect` carrier whose target is a `receive` node refuse `ill_typed`/`operator-ineligible` at `/body/target`; a `delivery` carrier whose `semantic_type` is the option over the `message` identity type refuses `ill_typed`/`operator-ineligible` at `/semantic_type`; the carrier referenced from a `present` application that is reached from the clause formula through a `holds` application is admitted, and the same `present` application also reached from a `state`/`state_clause` body refuses `ill_typed`/`operator-ineligible` at its referencing term; `dependencies` `[]` refuses `invalid_semantic_graph` at `/dependencies`. `filament.op.step_identity.eq` over two `message` identity operands is admitted with result `boolean`; an integer ordering application and a `field` application over a `message` identity operand refuse `ill_typed`/`operator-ineligible`; `filament.op.structural.eq` over two `Option<Delivery>` operands is admitted. | Test (TC-2068) |
 | FR-322-AC-482 | Identity type uses. `filament.op.step_identity.project` with member `index` over a `delivery`-typed capture reference is admitted with result `scalar_type`/`integer`, and with member `message` with the `message` identity type node; member `ordinal`, or operand 0 typed by the `message` identity type, refuses `ill_typed`/`operator-ineligible`; `filament.op.record.project` over a `delivery` operand refuses `ill_typed`/`operator-ineligible`. A capture typed `Option<Message>` is admitted; a model member, an operation parameter, a channel `carries` type and a `Set<Message>` element naming an identity type each refuse `ill_typed`/`operator-ineligible` at the naming member. Protocol `Fill` with `requires temporal Due;`, where `Due` holds `filament::protocol::delivery(Fill::Rcv)`, refuses `invalid_package`/`definition-cycle` at the requirement; the same `Due` required by a protocol `Drain` that it does not read is admitted. | Test (TC-2068) |
 | FR-322-AC-483 | A `claim`/`probabilistic_claim` node whose body is FR-640's nine bindings, with a `form` of `kind` `probability` over a `compare` event whose `measure` is a `fraction` with a `weighting` of `kind` `none`, passes the V2 schema and the IR reader's body grammar check, and its weighting `kind` literal is at `/semantic_graph/nodes/{i}/body/members/5/value/members/1/value/members/1/value/members/3/value/members/0/value`, nineteen pointer steps below the package root; the generic Body production refuses that body, and the same body on a `verification_claim` node fails the schema. Each mutation of it fails the schema, and the IR reader refuses each `malformed_wire` at the offending term: that `kind` literal wrapped in one more aggregate (an aggregate inside five others), the `activation` `kind` binding's value replaced by a binding, and the measure's `predicate` replaced by an inline application. A claim body that is a Leaf passes the schema and the IR reader's grammar check, and the IR reader refuses it `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{i}/body` by FR-640 rule 6, not `malformed_wire`. A reader that admits a claim body deeper than four aggregates below its own, or refuses one of FR-640's nine-binding bodies as `malformed_wire`, fails this criterion. | Test (TC-427, against the V2 schema and the IR reader) |
+| FR-322-AC-485 | In every published positive package, each model declaration node (`model`/`object_type`, `relation`/`relationship`, `model`/`tuple_value_type`, `model`/`variant_type` and every other `ModelOwner`-owned `model` or `relation` node) has `occurrences` exactly `[{role: generated, ordinal: 0}]` and exactly one `source_map` entry with that key, whose `regions` equal the `regions` of the `generated` ordinal-zero entry of the `model_root` of its owner identity; in `positive-model-tuple-union.json` the tuple value types `Pair`, `Swap`, `Nest` and `Cell` and the variant types `Shape`, `Color` and `List` each carry the root's region `[0,1)` of `example`, and in `positive-all-families.json` the object type `Order` and the relationship `Order-order-Order` carry the root's region. The reader admits every such entry. The producer side, a `Phase` variant type and `Slot` tuple named only by `clock_place` `resolved_path` rows, is FSL FR-094's. | Test (TC-2085) |
+| FR-322-AC-486 | Over `positive-model-tuple-union.json` (`model-tuple-union-vectors.json` wire cases, each schema-valid and with that one defect), the reader refuses `invalid_package`/`invalid-value`: at `/source_map` when the `Shape` variant type node has no `source_map` entry (`TW-29`, a model declaration node with no located occurrence); at `/source_map/3` when its occurrence and entry take the role `expression` (`TW-30`), the ordinal 1 (`TW-31`), or a region of their own, `[1048,1052)`, instead of the root's (`TW-32`); and at `/source_map/38` for a second entry of the node appended after every other entry (`TW-33`). Moving the root's entry and every model declaration node's entry together to `[5,9)` is admitted (`TW-34`), so the rule is equality with the selecting region, not a fixed value. | Test (TC-2085) |
 
 ## Dependencies
 

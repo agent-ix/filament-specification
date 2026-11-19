@@ -4250,6 +4250,254 @@
       "locus": "/semantic_graph/nodes/0/owner",
       "cause": "missing-selection",
       "stage": "graph"
+    },
+    {
+      "id": "TW-29",
+      "description": "the Shape variant type node with no source_map entry: a model declaration node that carries no located occurrence",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/source_map/3"
+        }
+      ],
+      "schema": "valid",
+      "outcome": "refused:invalid_package",
+      "locus": "/source_map",
+      "cause": "invalid-value",
+      "stage": "graph"
+    },
+    {
+      "id": "TW-30",
+      "description": "the Shape variant type node's occurrence and source_map entry with role expression instead of generated",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/semantic_graph/nodes/3/occurrences/0/role",
+          "value": "expression"
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/3/role",
+          "value": "expression"
+        }
+      ],
+      "schema": "valid",
+      "outcome": "refused:invalid_package",
+      "locus": "/source_map/3",
+      "cause": "invalid-value",
+      "stage": "graph"
+    },
+    {
+      "id": "TW-31",
+      "description": "the Shape variant type node's source_map entry at ordinal 1 instead of 0",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/semantic_graph/nodes/3/occurrences/0/ordinal",
+          "value": 1
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/3/ordinal",
+          "value": 1
+        }
+      ],
+      "schema": "valid",
+      "outcome": "refused:invalid_package",
+      "locus": "/source_map/3",
+      "cause": "invalid-value",
+      "stage": "graph"
+    },
+    {
+      "id": "TW-32",
+      "description": "the Shape variant type node's source_map entry with a region of its own, [1048,1052), instead of the model root's region",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/source_map/3/regions",
+          "value": [
+            {
+              "end": 1052,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 1048
+            }
+          ]
+        }
+      ],
+      "schema": "valid",
+      "outcome": "refused:invalid_package",
+      "locus": "/source_map/3",
+      "cause": "invalid-value",
+      "stage": "graph"
+    },
+    {
+      "id": "TW-33",
+      "description": "a second source_map entry for the Shape variant type node, role expression at ordinal 0 with the model root's region, appended after every other entry",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/3/occurrences/-",
+          "value": {
+            "ordinal": 0,
+            "role": "expression"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/source_map/-",
+          "value": {
+            "node_id": {
+              "ordinal": 0,
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "variant_type",
+                "ix://acme/shapes/Shape"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 1,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                },
+                "start": 0
+              }
+            ],
+            "role": "expression"
+          }
+        }
+      ],
+      "schema": "valid",
+      "outcome": "refused:invalid_package",
+      "locus": "/source_map/38",
+      "cause": "invalid-value",
+      "stage": "graph"
+    },
+    {
+      "id": "TW-34",
+      "description": "the model root's entry and the entry of every model declaration node moved together to the selecting region [5,9): each node's regions equal its root's, so the package is admitted",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/source_map/0/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/1/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/2/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/3/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/4/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/5/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/6/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        },
+        {
+          "op": "replace",
+          "path": "/source_map/37/regions",
+          "value": [
+            {
+              "end": 9,
+              "source": {
+                "authority": "agent-ix",
+                "identity": "example"
+              },
+              "start": 5
+            }
+          ]
+        }
+      ],
+      "schema": "valid",
+      "outcome": "admitted"
     }
   ]
 }
