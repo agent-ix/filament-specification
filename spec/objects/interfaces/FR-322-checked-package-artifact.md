@@ -3473,7 +3473,7 @@ declaration is `record`, a `model`/`tuple_value_type` declaration is `tuple`, a
 `model`/`variant_type` declaration is `enum` (never `ordered_enum`) when none of
 its cases carries a `payloadType` and `union` when one does, and
 a model declaration node whose `semantic_form` is `object_type`, `process`,
-`state_machine` or `systems_interface` is `object`. A `relation` node and a `model` node of any
+`state_machine` or `systems_interface` is `object`; a `protocol`/`step_identity_type` node is `step_identity` or `record` as "Protocol step identity reads" states. A `relation` node and a `model` node of any
 other form have no family, so a term they type fits no operand position. An
 `object` term is admitted only at a `field_owner` operand position and at
 the `object` anchor position of `filament.op.state.clause`: `object` is a
@@ -3495,7 +3495,7 @@ or `temporal`/`fairness` node has the family of its body's root application
 
 | Group | Families | Decision rule |
 | --- | --- | --- |
-| `any_value` | `boolean`, `integer`, `rational`, `decimal`, `float32`, `float64`, `text`, `string`, `uuid`, `timestamp`, `enum`, `ordered_enum`, `quantity`, `option`, `record`, `tuple`, `union`, `sequence`, `set`, `bag`, `ordered_set`, `reference` | An operand position admits a term whose family is a member. |
+| `any_value` | `boolean`, `integer`, `rational`, `decimal`, `float32`, `float64`, `text`, `string`, `uuid`, `timestamp`, `enum`, `ordered_enum`, `quantity`, `option`, `record`, `tuple`, `union`, `sequence`, `set`, `bag`, `ordered_set`, `reference`, `step_identity` | An operand position admits a term whose family is a member. |
 | `any_term` | `any_value` plus `function`, `population`, `aggregate`, `binder`, `clause`, `temporal` ([FR-370](FR-370-checked-package-temporal-clause-body.md)) | Used only as the rest position of clause and call operations. |
 | `exact_numeric` | `integer`, `rational`, `decimal` | Exact numeric operands of conversions. |
 | `rational_promotable` | `integer`, `rational` | Operands promoted exactly by `n ↦ n/1` (FR-146, FR-149). |
@@ -5426,6 +5426,66 @@ refusal, `invalid_semantic_graph` at the node's `/dependencies`, which
 precedes this step. A node with no `claim_names` row is refused as "Claim
 declaration names" states.
 
+### Protocol step identity reads
+
+A step identity read ([FR-828](../../functional/protocol/FR-828-read-a-protocol-step-s-message-delivery-and-effect-identity-in-an-obligation.md))
+is carried by two `protocol` node forms.
+
+- **Identity type.** A `protocol` node with
+  `semantic_form: "step_identity_type"` stands for one of the three
+  intrinsic identity types. Its body is exactly
+  `{term: "step-identity-type", kind: "message"|"delivery"|"effect-occurrence"}`.
+  It has no `declaration`, `owner` or occurrence, and its node id is the
+  derived id `{package, path: ["protocol", "step_identity_type", <kind>], ordinal: 0}`,
+  so a package holds at most one per kind, present exactly when a read, a
+  capture or another type node of the package names that type. Its family
+  ("Operation families, groups and constraints") is `step_identity` for
+  `message` and `effect-occurrence`, and `record` for `delivery`, whose
+  members are `message` (the `message` identity type node) and `index` (the
+  `scalar_type`/`integer` node), read by `filament.op.record.project`.
+- **Read carrier.** A `protocol` node with `semantic_form: "step_read"` is
+  the sole carrier of a read. Its body is exactly
+  `{term: "step-read", field: "message"|"delivery"|"effect", target: NodeRef}`,
+  where `target` is the local node id of a `protocol`/`control` node of the
+  same `semantic_graph.nodes` collection: a `send` or `receive` node for
+  `message`, a `receive` node for `delivery`, an `effect` node for `effect`.
+  Its `semantic_type` is the `composite_type`/`option` node over the identity
+  type node of its field (`message` for `message`, `delivery` for
+  `delivery`, `effect-occurrence` for `effect`), and its `dependencies` are
+  exactly `[target]`. It has one or more `expression` occurrences, one per
+  source read, each with its own `source_map` entry keyed (`node_id`,
+  `expression`, `ordinal`), and no other role; no `declaration`, `owner` or
+  `nominal_structure`. Its node id is the derived id
+  `{package, path: ["protocol", "step_read", <field>, target node_id], ordinal: 0}`:
+  the field and the target are its identity and the occurrences are not, so
+  every read of one field of one node shares one carrier.
+- **Who may reference a carrier.** A carrier is referenced only by a
+  `reference` term inside the formula, a capture or the activation guard of
+  a `temporal`/`temporal_clause` node
+  ([FR-370](FR-370-checked-package-temporal-clause-body.md)). That clause's
+  node depends on the carrier, so the carrier's field and target enter the
+  clause's identity and its obligation identity. The target protocol node
+  does not depend on the carrier, so a read changes no protocol node id.
+- **Equality.** The family `step_identity` is a member of `any_value` and of
+  no other group. It has the identities `filament.op.step_identity.eq` and
+  `filament.op.step_identity.ne`, two operands of one identity type node,
+  result `boolean`; no ordering, arithmetic or `field` application admits
+  it. In the structural leaf walk a `step_identity` leaf compares by
+  `filament.op.step_identity.eq`, so `filament.op.structural.eq` over two
+  `Option<Delivery>` operands compares message identity and index.
+- **Reader checks**, at the declaration step after the protocol-reference
+  carrier join, carriers in ascending node-id order, the first failure
+  reported: an absent target refuses `missing_declaration`/`missing-name`;
+  a target that is not a `protocol`/`control` node of the kind the field
+  admits, or a `semantic_type` that is not the option over the field's
+  identity type node, refuses `ill_typed`/`operator-ineligible`, each at the
+  carrier's `/body/target` or `/semantic_type` pointer; a reference to a
+  carrier from any node other than a temporal clause's formula, capture or
+  activation guard refuses `ill_typed`/`operator-ineligible` at the
+  referencing term's pointer. A `dependencies` list other than `[target]` is
+  the graph-shape refusal `invalid_semantic_graph` at `/dependencies`. A
+  non-conforming body or an extra member fails the V2 schema.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -5765,6 +5825,8 @@ declaration names" states.
 | FR-322-AC-475 | Over FR-322-AC-399's package with a tuple `Trio` added (`p0` `Integer`, `p1` `ix://filament/native/Clock`, `p2` `Boolean`), a tuple `Ticks` whose only position `p0` is a clock, and a variant type `Mode` whose document declares the case `Zed` (`payloadType` `ix://filament/native/Clock`) before the case `Alpha` (no payload): the data part of `Slot` is one `Integer` at data index `0`, of `Trio` an `Integer` at data index `0` and a `Boolean` at data index `1`, and of `Ticks` the empty tuple; `filament.op.tuple.project` of `Trio` carries `position` `2`, has the `Boolean` node as its type and reads data index `1`, and one carrying `position` `1` in a value position refuses `invalid_timed_model`/`clock-read-outside-constraint`; the clock place of a field `t: Trio` has the path `field(t)`, `tuple(1)`; a postcondition that writes `self.t` with `4` at `p0`, `0 ms` at `p1` and `true` at `p2` writes a `tuple_value` with the two terms `4` and `true` and records a `clock_reset` of that place, and a `tuple_value` of `Trio` carrying the three terms `4`, `0 ms` and `true` refuses `ill_typed`/`type-mismatch` at that node. The data part of `Phase` has the members `Armed` and `Idle`, and that of `Mode` the members `Alpha` then `Zed` (ascending byte order, not declaration order), each of payload arity 0 and distinct; a `union_value` of `Mode` naming `Zed` with a payload term refuses `ill_typed`/`type-mismatch`. A record value type `Timer` with fields `x: Clock` and `n: Integer` has the data part of `n` alone, and a field `o: Option<Timer>` is an `Option` of that data part. Each data part is typed by its declaration node's type identity, and no node, type node or value type is added for a clock or a data part. The data consumer's refusals of a clock-shaped value are filament-semantic-value FR-133-AC-2's. | Test (TC-1361) |
 | FR-322-AC-476 | Over TC-2054's `test/refunds` unit, the `value`/`parameter` node binding `secondApprover` in `NoteSame` (`pre NoteSame using v on R::Order::note { secondApprover = secondApprover }`, which checks under either presence) has as its `semantic_type` the `composite_type`/`option` node over the `composite_type`/`reference` node of `Staff`, and the node binding `firstApprover` has that reference node. Recompiling a unit that keeps only the `NoteSame` clause (`NoteBy` and `NoteVal` apply `present` and `value` and do not check over a required parameter), with only `secondApprover`'s presence changed to `required`, gives a `secondApprover` parameter node with another `node_id` and leaves the `node_id` of the `Order` model declaration node and of the `NoteSame` clause node unchanged; recompiling with `secondApprover` typed `OptStaff` and presence `required` gives the `secondApprover` parameter node the same `node_id` and `semantic_type` as the `optional` spelling. The `Desk` invariant's call `deref(self.order).note(self.staff)` is one `dispatch_call` with three operands, the third the `literal` of `value_kind` `none` typed by the option node, and the package has `semantic_graph` nodes (`node_id`, body, `dependencies`, `semantic_type`) and `checked_term_data` equal to those of the package from `deref(self.order).note(self.staff, absent)`, only the source regions (`declaration_region`, the call's `source_map` entries) differing; the reader admits both. A hand-edited package that drops the third operand from the call's body, from its `operand_rows` row and from its `node_id.path` operand segments, every reference to the call node following its new id, so that every wire, operand-row and path check still holds, refuses `ill_typed`/`operator-ineligible` at the call by FR-322-AC-31's argument-count rule. | Test (TC-2054) |
 | FR-322-AC-478 | Over a domain package with value type `Soc` (`scalar` `decimal`, policy `(5, 2)`, `min` `"0"`, `max` `"1"`), `Price` (`scalar` `decimal`, policy `(10, 2)`, no bound), `Margin` (`(4, 1)`, `exclusiveMin` `"-1"`, `exclusiveMax` `"1"`), an alias `Rate` of `ix://filament/native/Decimal` carrying `(7, 4)`, `min` `"0.0001"` and `max` `"1"`, an alias `Half` of `Soc` carrying `max` `"0.5"`, and a field `fee` typed `ix://filament/native/Decimal` with the field policy `(6, 2)`: members typed `Soc`, `Price`, `Margin`, `Rate`, `Half` and `fee` have the types `Decimal[0, 100; 2, 2; exact]`, `Decimal[-9999999999, 9999999999; 2, 2; exact]`, `Decimal[-9, 9; 1, 1; exact]`, `Decimal[1, 10000; 4, 4; exact]`, `Decimal[0, 50; 2, 2; exact]` and `Decimal[-999999, 999999; 2, 2; exact]`. Each names the `bounded_domain`/`decimal_range` node over `scalar_type`/`decimal` with those coefficient bounds, `scale_min` and `scale_max` equal to the policy scale, and rounding `exact`. A `Soc` member and a source `Decimal[0, 100; 2, 2; exact]` annotation name the one node, and `Half` names a different node. The same holds as an operation parameter, an operation result, a tuple position and a variant case payload. A `target`-bound value type `Amount` of `ix://filament/native/Decimal` with no policy gives its member no type, as FR-322-AC-183 states. | Test (TC-2056) |
+| FR-322-AC-480 | Step identity read carriers (FR-828). A package whose temporal clause holds `filament::protocol::delivery(Echo::Rcv)` twice is admitted with one `protocol`/`step_read` node: body `{term: "step-read", field: "delivery", target: <Rcv node id>}`, node id `{package, path: ["protocol", "step_read", "delivery", <Rcv node id>], ordinal: 0}`, `dependencies` `[<Rcv node id>]`, `semantic_type` the `composite_type`/`option` node over the `protocol`/`step_identity_type` node of kind `delivery`, and two `expression` occurrences; removing one occurrence leaves its node id unchanged. Changing the field to `message`, or the target to another receive node, changes the carrier node id and the temporal clause node id, and leaves the `protocol`/`protocol_clause` node id of `Echo` unchanged. | Test (TC-2068) |
+| FR-322-AC-481 | Step identity read refusals. With AC-480's carrier: a target absent from the graph refuses `missing_declaration`/`missing-name` at `/body/target`; a `delivery` carrier whose target is a `send` node and an `effect` carrier whose target is a `receive` node refuse `ill_typed`/`operator-ineligible` at `/body/target`; a `delivery` carrier whose `semantic_type` is the option over the `message` identity type refuses `ill_typed`/`operator-ineligible` at `/semantic_type`; a reference to the carrier from a `state`/`state_clause` body refuses `ill_typed`/`operator-ineligible` at that term; `dependencies` `[]` refuses `invalid_semantic_graph` at `/dependencies`. `filament.op.step_identity.eq` over two `message` identity operands is admitted with result `boolean`; an integer ordering application and a `field` application over a `message` identity operand refuse `ill_typed`/`operator-ineligible`; `filament.op.structural.eq` over two `Option<Delivery>` operands is admitted. | Test (TC-2068) |
 
 ## Dependencies
 

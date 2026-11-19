@@ -647,6 +647,16 @@ library: `filament::value::ieee::sqrt(x)`,
 `filament::value::ieee::bitIdentical(a,b)`. User declarations cannot replace or
 shadow those selected definition identities.
 
+The selected `filament.protocol.complete/v1` definition likewise reserves the
+step identity reads `filament::protocol::message(N)`,
+`filament::protocol::delivery(N)` and `filament::protocol::effect(N)`, whose
+one argument is a protocol node reference `Protocol::node-ref` that is resolved
+in that protocol's node scope and never evaluated, and the identity type names
+`filament::protocol::Message`, `filament::protocol::Delivery` and
+`filament::protocol::EffectOccurrence`
+([FR-828](../../spec/functional/protocol/FR-828-read-a-protocol-step-s-message-delivery-and-effect-identity-in-an-obligation.md)
+owns their typing, where they are legal and their refusals).
+
 A `population-bound` `bound L on M::p [N]` states the authored finite maximum
 `N` of the population `p` of model `M` for every clause of the package; the
 maximum is part of the population's meaning, never a resource limit, and
