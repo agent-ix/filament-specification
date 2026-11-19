@@ -16,6 +16,7 @@ Check that an option a named backend does not publish settles the item `invalid-
 ## Test Procedure
 
 1. Build items naming `b` with unpublished options, with `depth`, and naming an unregistered backend with options.
+2. Compare the `invalid_capability` rows of native-diagnostics and FR-272.
 3. Build items naming a backend `h` that publishes `step` and holds its domain, with `{"step": "0"}`, `{"step": "1/4"}` and `{"colour": "blue", "step": "0"}`.
 4. Compare the `invalid_capability` rows of native-diagnostics and FR-272 for `invalid-option-value`.
 

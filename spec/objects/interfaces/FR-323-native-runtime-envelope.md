@@ -210,11 +210,19 @@ the others are absent (never `null`, an empty name or a placeholder):
   replay request whose `state_clause` names a hybrid claim carries the
   item's FR-331 `HybridCounterexample` as its witness payload, and, for an
   item refuted through an accepted FR-652 `validated-witness`, that
-  certificate beside it as `certificate`; the executor replays its trace by
-  FR-193 "Trace replay" against the recompiled claim and its hybrid model,
-  and checks the carried witness by FR-652 when exact replay cannot decide
-  the trace, and its row is the `hybrid` arm ("Replay result
-  rows").
+  certificate as the `replay` sub-member `certificate` (pointer
+  `/replay/certificate`), in FR-652's closed `validated-witness` form; the
+  executor replays its trace by FR-193 "Trace replay" against the
+  recompiled claim and its hybrid model, checks the carried witness by
+  FR-652 when exact replay cannot decide the trace, and its row is the
+  `hybrid` arm ("Replay result rows"). `certificate` is present only on a
+  request whose `state_clause` names a hybrid claim: the executor SHALL
+  refuse it on any other request `invalid_runtime_input`/`unknown-member`
+  at `/replay/certificate`, after decode and before recompile, and SHALL
+  refuse a `certificate` whose `type` is not `validated-witness`
+  `invalid_runtime_input`/`invalid-value` at `/replay/certificate/type`;
+  a witness FR-652 rejects is not a refusal but a replay result, settling
+  the row `inconclusive` as an absent witness does.
 
 When the producer builds a replay request, the producer SHALL carry exactly one
 of the three members. A frame request carries no `arguments` and no occurrence
@@ -703,7 +711,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-45 | The row of an observed-temporal replay stopped by a window holding more than `max_window_values` 2 carries `outcome` `{"kind": "window-limit-reached", "limit": "max_window_values", "value": "2", "setting": "monitor.max_window_values"}`; the `model-graph` row of FR-323-AC-41 stopped at `max_states` 1 carries `limit` `{"limit": "max_states", "value": "1", "setting": "model_check.max_states"}`; a reader refuses either with `value` the number 1 or 2, or with `setting` removed. | Test (TC-2010) |
 | FR-323-AC-46 | An observed-temporal row that settles `inconclusive` because the replay observed formula node 4 undefined where the packet expected a formula verdict carries `parity.actual_locus` `4` and `undefined_locus` `4`, both JSON numbers, and `outcome.position` a JSON number; a reader refuses `actual_locus` `"4"` and `outcome.position` `"3"`. | Test (TC-2010) |
 | FR-323-AC-47 | A refuted hybrid claim `TooSlow`'s replay request carries `{"state_clause": "TooSlow"}` and no `function` or `frame_operation`, resolves to the hybrid claim in the recompiled package, and replays its `HybridCounterexample`: the reproducing trace's row is `{"arm": "hybrid", "settlement": "reproduced-with-evaluated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with a trace that does not reproduce is `inconclusive` with `disagreement` `hybrid-trace` `not-reproduced` carrying the request's counterexample; one stopped by `work_units` is `incomplete` with `limit` `{"limit": "work_units", "value": "100", "setting": "accounting.work_units"}`; a `state_clause` naming no declared claim or state clause refuses `missing_declaration`/`missing-name`. | Test (TC-2049) |
-| FR-323-AC-48 | The replay request of FR-652-AC-3's `Below` item, refuted through its accepted nine-step `validated-witness`, carries the `HybridCounterexample` and that witness as `certificate`, and its row is `{"arm": "hybrid", "settlement": "reproduced-with-validated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with the witness cut after its step at `[28, 32]` is `inconclusive` with `disagreement` `hybrid-trace` `not-exact` carrying the request's counterexample, and the same request with no `certificate` is `inconclusive` the same way. | Test (TC-2049) |
+| FR-323-AC-48 | Over FR-652-AC-3's `Grow`, the replay request of its hybrid claim `Below` (`always [0, 40] holds(h.v < 30)`), refuted through FR-652-AC-3's accepted nine-step `validated-witness`, carries `{"state_clause": "Below"}`, the `HybridCounterexample` and that witness at `/replay/certificate`, and its row is `{"arm": "hybrid", "settlement": "reproduced-with-validated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with the witness cut after its step at `[28, 32]` is `inconclusive` with `disagreement` `hybrid-trace` `not-exact` carrying the request's counterexample, and the same request with no `certificate` is `inconclusive` the same way; the witness on a request whose target is a `function` refuses `invalid_runtime_input`/`unknown-member` at `/replay/certificate`, and a `flowpipe` certificate on the `Below` request refuses `invalid_runtime_input`/`invalid-value` at `/replay/certificate/type`. | Test (TC-2049) |
 
 ## Dependencies
 

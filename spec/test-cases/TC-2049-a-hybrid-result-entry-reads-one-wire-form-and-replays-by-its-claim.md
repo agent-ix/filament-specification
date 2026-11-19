@@ -49,9 +49,11 @@ claim. Verify that a hybrid solver proof carries an FR-652 certificate in its cl
 6. Validate the FR-652-AC-6 entries against the schema; settle the
    `inductive-solver` entry with its accepted and with a rejected
    `inductive-enclosure` certificate.
-7. Build the replay request of FR-652-AC-3's `Below` item refuted through
-   its accepted `validated-witness`; replay it, then with the witness cut
-   after its step at `[28, 32]`, then with no `certificate`.
+7. Over FR-652-AC-3's `Grow`, build the replay request of its hybrid claim
+   `Below` refuted through its accepted `validated-witness`; replay it, then
+   with the witness cut after its step at `[28, 32]`, then with no
+   `certificate`; then put the witness on a `function` request, and a
+   `flowpipe` certificate on the `Below` request.
 
 ## Expected Results
 
@@ -82,4 +84,6 @@ claim. Verify that a hybrid solver proof carries an FR-652 certificate in its cl
 - Step 7: the request carries the counterexample and the witness as
   `certificate`; the row settles `reproduced-with-validated-witness`,
   category `success`, with `replay` and `counterexample`; then `inconclusive`
-  with `disagreement` `hybrid-trace` `not-exact` twice.
+  with `disagreement` `hybrid-trace` `not-exact` twice; refused
+  `unknown-member` at `/replay/certificate`; refused `invalid-value` at
+  `/replay/certificate/type`.
