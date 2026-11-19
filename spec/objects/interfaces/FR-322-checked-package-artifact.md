@@ -4238,12 +4238,15 @@ one declaration's rows can name several nodes. Rows with one declaration key
 SHALL carry one `name` and one `qualified_name`; rows with different
 declaration keys SHALL NOT carry one `qualified_name`.
 
-A declaration's *own node* is the node of its rows that holds the fewest
-`claim_names` rows. The declaration names one node in most cases, and then
-that node is its own node. A derived conjunction node carries a row for every
-declaration of every clause it conjoins, and at least two clauses with
-distinct nodes contribute, so it always holds more rows than the own node of
-any one contributing declaration. The own node is the node a request that
+A node's *declaration set* is the set of declaration keys of its
+`claim_names` rows. A name's *own node* is the node, among the nodes its
+rows name, whose declaration set is strictly contained in the declaration
+set of every other node the name's rows name. A name whose rows name one
+node, as in most cases, has that node as its own node. A derived conjunction
+node carries a row for every declaration of every clause it conjoins, and at
+least two clauses with distinct nodes contribute. So its declaration set
+strictly contains the declaration set of each contributing clause's node,
+which holds only the declarations that check to that node. The own node is the node a request that
 names the declaration asks about. The declaration's *claim row* is its row on
 its own node of least occurrence key whose role is `claim`, or else its least
 row there.
@@ -4284,10 +4287,14 @@ visits rows in array order and checks each in full before the next:
 After every row has passed, a claim-bearing node occurrence with no row, or
 a missing member in a graph that holds a claim-bearing node, refuses
 `invalid_package`/`invalid-value` at `/claim_names`. Then, for each
-declaration key in order of its first row, a declaration whose rows name two
-or more nodes that tie for the fewest rows has no own node. It refuses
-`invalid_package`/`invalid-value` at `/claim_names/{i}/declaration`, where
-`i` is the declaration's first row on the tied node that sorts later.
+`qualified_name` in order of its first row, a name whose rows name two or more
+nodes and that has no own node (no node's declaration set is strictly
+contained in every other's, so the sets do not nest) refuses
+`ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/qualified_name`
+of the name's last row, naming its first and last rows. Without an own
+node the name would resolve to two nodes, as a duplicate name resolves to two
+declarations. This checks the nesting that a producer's conjunction
+guarantees.
 
 **Clause declaration regions.** A clause occurrence's `source_map` region
 covers only the clause's name token. The checked clause a source route builds
@@ -5456,7 +5463,7 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-462 | A package whose protocol declares `observe role Auditor on Orders::Order;` and `observe sequence Review { ... }` carries the `boundary` member `observe-only` as the last body argument of exactly the `Auditor` role node and the `Review` control node; removing the `observe` mark changes those two nodes' bodies and no other node's body, and leaves every `node_id` unchanged; and a `boundary` member on any node that is not a `protocol`/`role` or `protocol`/`control` node refuses `malformed_wire`. | Test (TC-2018) |
 | FR-322-AC-463 | Two hyper clauses with equal bodies, `Fwd` over `forall trace s of S forall trace n of N` and `Rev` over `forall trace n of N forall trace s of S`, are two `claim`/`hyperproperty` nodes that share one body wrapper; under event-position each node has its own two rows in its own quantifier order (`s` then `n` for `Fwd`, `n` then `s` for `Rev`), the wrapper has none, and the package is admitted. `Rev`'s rows written in `Fwd`'s order refuse `invalid_package`/`timed-node-reference` at the later row's `trace`. A clause with a third quantifier `forall trace m of N` that only its `match` block reads has three rows, and omitting the `m` row refuses `invalid_package`/`timed-node-reference` at that node's body. | Test (TC-2027) |
 | FR-322-AC-464 | `hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }`, under the lock's event-position selection and with role `t` bound to `{"kind": "event_position", "sequence_authority": "obs"}`, has two rows keyed by its `claim`/`hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t` and that configuration, and is admitted. Removing the `b` row refuses `invalid_package`/`timed-node-reference` at the node's body; a row whose `trace` is `c` refuses at that row's `trace`; a second row whose `clock_name` is `u` refuses at `/temporal_bindings/1/clock_name`; a `fixed_sample` row refuses at that row's `clock/kind`. | Test (TC-2028) |
-| FR-322-AC-465 | FR-322-AC-457's package with a second `claim` occurrence on the `AtMostTwo` node, whose `claim_names` row carries the `NotAboveThree` name, `qualified_name` and `declaration_region` (a derived conjunction node naming a contributing clause), is admitted, and `NotAboveThree` resolves to the row on its own node, the node with one row, never to the row on the two-row node. The same package with a second `claim` occurrence on the `NotAboveThree` node, under the same name and `declaration_region` (one declaration with two occurrences, as a step relation's `declaration` and `claim` occurrences are), is admitted, and `NotAboveThree` resolves to its least `claim` row. That second row renamed `Other` refuses `invalid_package`/`invalid-value` at its `/claim_names/{i}/name`. Two rows of one `qualified_name` with different `declaration_region`s still refuse `ambiguous_declaration`/`ambiguous-name` (FR-322-AC-458). A declaration whose rows name two nodes holding equally many rows refuses `invalid_package`/`invalid-value` at its first row on the later node's `/claim_names/{i}/declaration`. | Test (TC-2035) |
+| FR-322-AC-465 | FR-322-AC-457's package with a second `claim` occurrence on the `AtMostTwo` node, whose `claim_names` row carries the `NotAboveThree` name, `qualified_name` and `declaration_region` (a derived conjunction node naming a contributing clause), is admitted, and `NotAboveThree` resolves to the row on its own node, the node whose declaration set `{NotAboveThree}` is strictly contained in the other node's `{AtMostTwo, NotAboveThree}`, never to the row on that other node. The same package with a second `claim` occurrence on the `NotAboveThree` node, under the same name and `declaration_region` (one declaration with two occurrences, as a step relation's `declaration` and `claim` occurrences are), is admitted, and `NotAboveThree` resolves to its least `claim` row. That second row renamed `Other` refuses `invalid_package`/`invalid-value` at its `/claim_names/{i}/name`. Two rows of one `qualified_name` with different `declaration_region`s still refuse `ambiguous_declaration`/`ambiguous-name` (FR-322-AC-458). A name whose two nodes have declaration sets that do not nest (`{NotAboveThree, B}` and `{AtMostTwo, NotAboveThree}`) refuses `ambiguous_declaration`/`ambiguous-name` at its last row's `/claim_names/{i}/qualified_name`, naming its first and last rows. | Test (TC-2035) |
 | FR-322-AC-466 | A hyper clause's body wrapper has no `temporal_clause_names` row, and its `claim`/`hyperproperty` node has one `claim_names` row per `claim` occurrence, carrying the clause's name, `qualified_name` and the whole hyper declaration's `declaration_region`. A `temporal_clause_names` row whose `declaration` is a body wrapper refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/{i}/declaration`. A `claim_names` row and a `temporal_clause_names` row with one `name` refuse `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name`, even when their `declaration_region`s are equal. | Test (TC-2036) |
 
 ## Dependencies

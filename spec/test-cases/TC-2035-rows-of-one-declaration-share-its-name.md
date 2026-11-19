@@ -35,12 +35,15 @@ declarations still may not share a `qualified_name`.
 ## Expected Results
 
 - Step 1: the package is admitted. `NotAboveThree` resolves to the row on
-  its own one-row node, never to the row on the two-row node, and
+  its own node, whose declaration set is strictly contained in the other
+  node's, never to the row on that other node, and
   `AtMostTwo` resolves to its own row.
 - Step 2: the package is admitted, and `NotAboveThree` resolves to its least
   `claim` row.
 - Step 3: `invalid_package`/`invalid-value` at that row's
   `/claim_names/{i}/name`.
-- Step 4: `invalid_package`/`invalid-value` at `/claim_names/4/declaration`.
+- Step 4: the two nodes' declaration sets do not nest:
+  `ambiguous_declaration`/`ambiguous-name` at `/claim_names/4/qualified_name`,
+  naming `/claim_names/1` and `/claim_names/4`.
 - Step 5: every case gives its `expected` outcome, and `CL-R5` is
   `ambiguous_declaration`/`ambiguous-name`.

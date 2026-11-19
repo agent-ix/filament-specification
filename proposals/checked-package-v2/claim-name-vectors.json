@@ -210,7 +210,7 @@
         "AtMostTwo",
         "NotAboveThree"
       ],
-      "note": "node 16 stands for a derived conjunction node: a second claim occurrence whose row carries the NotAboveThree declaration's name, qualified_name and declaration_region [111,113). The two NotAboveThree rows are one declaration and not duplicates; its own node is node 15, which holds one row against node 16's two, so the lookup returns /claim_names/1",
+      "note": "node 16 stands for a derived conjunction node: a second claim occurrence whose row carries the NotAboveThree declaration's name, qualified_name and declaration_region [111,113). The two NotAboveThree rows are one declaration and not duplicates; its own node is node 15, whose declaration set {NotAboveThree} is strictly contained in node 16's {AtMostTwo, NotAboveThree}, so the lookup returns /claim_names/1",
       "patch": [
         {
           "op": "add",
@@ -932,12 +932,16 @@
         "FR-322-AC-465"
       ],
       "expected": {
-        "cause": "invalid-value",
-        "code": "invalid_package",
-        "locus": "/claim_names/4/declaration"
+        "cause": "ambiguous-name",
+        "code": "ambiguous_declaration",
+        "locus": "/claim_names/4/qualified_name",
+        "names": [
+          "/claim_names/1",
+          "/claim_names/4"
+        ]
       },
-      "id": "CL-R17-own-node-tie",
-      "note": "CL-P7 plus a second claim occurrence on node 15 for the declaration B ([119,121)): the NotAboveThree declaration's nodes 15 and 16 hold two rows each, so it has no own node. The refusal is at its first row on node 16, the later node",
+      "id": "CL-R17-own-node-not-nested",
+      "note": "CL-P7 plus a second claim occurrence on node 15 for the declaration B ([119,121)): the name NotAboveThree names node 15, declaration set {NotAboveThree, B}, and node 16, {AtMostTwo, NotAboveThree}. Neither set is strictly contained in the other, so the name has no own node, and the refusal is at its last row, naming its first and last rows",
       "patch": [
         {
           "op": "add",
