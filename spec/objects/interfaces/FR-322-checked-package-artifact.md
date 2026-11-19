@@ -58,6 +58,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-019
     type: references
+  - target: ix://agent-ix/filament-spec-language/FR-383
+    type: depends_on
   - target: ix://agent-ix/filament-spec-language/FR-093
     type: references
   - target: ix://agent-ix/filament-specification/FR-660
@@ -1384,24 +1386,63 @@ A frame body refusal, meaning-join or canonical-order
   stated over `body_locations` and its own locus
   `/checked_term_data/body_locations`. Its `location.origin` is closed to one
   variant, `{kind: "function_body", function, name, index}`: `function` is the
-  `NodeRef` of the local `function` node whose body holds the term, `name` is
-  the function's declared name and `index` its zero-based declaration index
-  among the package's functions, both as the checker assigned them to the
-  body's locations. `location.path` is the checker's child-index path from the
-  body's root, empty exactly for the root term.
-  The producer SHALL write one row for every term of the *body walk* of every
-  local `function` node that carries a body: the pre-order walk of FSL FR-383
-  "Protocol term locations" taken from the body's root, with a `function.call`
-  a term whose callee body is not entered. A function's `decreases` measure is
-  not walked. The reader SHALL refuse, as `invalid_package`/`invalid-value`:
-  a `function` that resolves to no local `function` node carrying a body, at
-  that `function` member; a `name` that differs from the last segment of that
-  node's declaration `qualified_name`, at `name`; two rows of one `function`
-  with different `index` values, or rows of two functions with one `index`, at
-  the later row's `index`; and a body-walk term with no row, at
-  `/checked_term_data/body_locations`, after every row-level check passes. So a
-  package the reader admits locates every term of every body it can
-  evaluate, and an evaluator never needs to invent or omit a location.
+  `NodeRef` of the local `function` node whose body holds the term, and `name`
+  and `index` are the function name and zero-based function index the
+  producer's checker gave that body's locations. The reader treats `name` as
+  an opaque string, as it treats a protocol site name, and derives neither
+  value from a declaration, a source-map region or node order.
+  `location.path` is the checker's child-index path from the body's root,
+  empty exactly for the root term.
+
+  The *body walk* of a function is defined over the admitted wire alone. A
+  function has one exactly when its node's aggregate body has a `body`
+  binding, which holds for a pure function, a predicate and an FSL FR-094
+  clause function that carries one; a function node with no `body` binding
+  has no body walk and no rows, and its `decreases` binding is never walked.
+  The walk starts at the local node the `body` binding references and visits
+  nodes in pre-order. At each visited node it follows, in the order they
+  occur in a pre-order traversal of that node's `body` term (members, then
+  arguments, left to right), each `reference` leaf whose target is a local
+  `expression` node of any form, and it visits that node next; it follows no
+  other reference, so a `value` node (a literal or a parameter), a `function`
+  node (the callee of a `function.call`, whose own body is not entered), a
+  type node and a node of another package end the branch. A node reached
+  along two references is visited twice and walked in full each time. A
+  *term* of the walk is a visit of an `expression`/`application` node; a
+  visit of a `let`, a conditional or another non-application `expression`
+  form is walked through and is not a term. FSL FR-383 "Protocol term
+  locations" is the producer-side statement of the same walk over the
+  checked tree; the producer writes its rows so that this wire walk pairs
+  them.
+
+  The producer SHALL write, for every function `F` with a body walk and
+  every application `A`, exactly as many rows whose origin `function` is `F`
+  and whose `application` is `A` as `F`'s body walk has terms at `A`. The
+  reader SHALL refuse, as `invalid_package`/`invalid-value`: a `function`
+  that resolves to no local `function` node with a `body` binding, at that
+  `function` member; two rows of one `function` with different `name` or
+  `index` values, at the later row's differing member; rows of two
+  functions with one `index`, at the later row's `index`; a row of `F` and
+  `A` beyond the count of `F`'s terms at `A`, at that row's `application`;
+  and, after every row-level check passes, a function and application with
+  fewer rows than terms, at `/checked_term_data/body_locations`. So a package
+  the reader admits holds a row for every term of every body it can
+  evaluate, and an evaluator never invents or omits a location. The reader
+  does not check a row's `path` against the walk, because the path is the
+  checker's and is not derivable from the wire.
+
+  **Format change.** `body_locations` is a required array of a closed carrier
+  and the format keeps its version, as it did when `probabilistic_claims`
+  was added. A reader built before the array refuses a package that carries
+  it (`malformed_wire` at the unknown member), and a reader with it refuses a
+  package written without it (`malformed_wire` at the missing array of a
+  present carrier) or, with the carrier absent, one whose function bodies
+  have any term (the missing-row refusal above). The consumers that change
+  with it are Contract IR's typed `CheckedTermDataV2`, strict reader and
+  encoder (Contract IR FR-019, FR-038, FR-051), FSL's emitters, including
+  the path that re-emits a package with typed timed models, which keeps the
+  base package's `checked_term_data`, and every test or tool that drops the
+  carrier from a package holding function bodies.
 
   `dispatch_tables` retains the producer's admitted candidate table for a
   selected model-operation dispatch. A table names the exact application and
@@ -5996,7 +6037,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-483 | A `claim`/`probabilistic_claim` node whose body is FR-640's nine bindings, with a `form` of `kind` `probability` over a `compare` event whose `measure` is a `fraction` with a `weighting` of `kind` `none`, passes the V2 schema and the IR reader's body grammar check, and its weighting `kind` literal is at `/semantic_graph/nodes/{i}/body/members/5/value/members/1/value/members/1/value/members/3/value/members/0/value`, nineteen pointer steps below the package root; the generic Body production refuses that body, and the same body on a `verification_claim` node fails the schema. Each mutation of it fails the schema, and the IR reader refuses each `malformed_wire` at the offending term: that `kind` literal wrapped in one more aggregate (an aggregate inside five others), the `activation` `kind` binding's value replaced by a binding, and the measure's `predicate` replaced by an inline application. A claim body that is a Leaf passes the schema and the IR reader's grammar check, and the IR reader refuses it `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{i}/body` by FR-640 rule 6, not `malformed_wire`. A reader that admits a claim body deeper than four aggregates below its own, or refuses one of FR-640's nine-binding bodies as `malformed_wire`, fails this criterion. | Test (TC-427, against the V2 schema and the IR reader) |
 | FR-322-AC-485 | In every published positive package, each model declaration node (`model`/`object_type`, `relation`/`relationship`, `model`/`tuple_value_type`, `model`/`variant_type` and every other `ModelOwner`-owned `model` or `relation` node) has `occurrences` exactly `[{role: generated, ordinal: 0}]` and exactly one `source_map` entry with that key, whose `regions` equal the `regions` of the `generated` ordinal-zero entry of the `model_root` of its owner identity; in `positive-model-tuple-union.json` the tuple value types `Pair`, `Swap`, `Nest` and `Cell` and the variant types `Shape`, `Color` and `List` each carry the root's region `[0,1)` of `example`, and in `positive-all-families.json` the object type `Order` and the relationship `Order-order-Order` carry the root's region. The reader admits every such entry. The producer side, a `Phase` variant type and `Slot` tuple named only by `clock_place` `resolved_path` rows, is FSL FR-094's. | Test (TC-2085) |
 | FR-322-AC-486 | Over `positive-model-tuple-union.json` (`model-tuple-union-vectors.json` wire cases, each schema-valid and with that one defect), the reader refuses `invalid_package`/`invalid-value`: at `/source_map` when the `Shape` variant type node has no `source_map` entry (`TW-29`, a model declaration node with no located occurrence); at `/source_map/3` when its occurrence and entry take the role `expression` (`TW-30`), the ordinal 1 (`TW-31`), or a region of their own, `[1048,1052)`, instead of the root's (`TW-32`); and at `/source_map/38` for a second entry of the node appended after every other entry (`TW-33`). Moving the root's entry and every model declaration node's entry together to `[5,9)` is admitted (`TW-34`), so the rule is equality with the selecting region, not a fixed value. | Test (TC-2085) |
-| FR-322-AC-490 | `checked-term-data-vectors.json` carries `body_locations` vectors over `function f(p: Float64[nearest-even], q: Float64[nearest-even]): Boolean pure { sqrt(p) <= sqrt(q) }`: BL-01, the positive package, holds one row per term of `f`'s body walk, each with origin `{kind: "function_body", function: <f's NodeRef>, name: "f", index: 0}`, the root composition at path `[]`, the first `sqrt` at `[0]` and the second at `[1]` (not `[1, 0]`, its position in the lowered body), and is admitted; BL-R1 removes the second `sqrt`'s row and refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations`; BL-R2 names a `value`/`parameter` node as `application` and refuses at that row's `application`; BL-R3 sets one row's `name` to `g` and refuses at that `name`; BL-R4 gives one row of `f` index `1` and refuses at that row's `index`; BL-R5 names a `scalar_type` node as `function` and refuses at that `function`. A `checked_term_data` object without `body_locations` is `malformed_wire`, and node ids and `name` of BL-01 equal those of the same package with its `body_locations` emptied. | Test (TC-2090) |
+| FR-322-AC-490 | `checked-term-data-vectors.json` carries `body_locations` vectors over the package of `function f(p: Float64[nearest-even], q: Float64[nearest-even]): Boolean pure { sqrt(p) <= sqrt(q) }`. BL-01, the positive package, holds one row per term of `f`'s body walk, each with origin `{kind: "function_body", function: <f's NodeRef>, name: "f", index: 0}`, the root composition at path `[]`, the first `sqrt` at `[0]` and the second at `[1]` (not `[1, 0]`, its position in the lowered body), and is admitted, the typed read returning those paths. BL-02 is BL-01 with the second `sqrt`'s `path` changed to `[0]`: it is admitted with node ids and `name` equal to BL-01's, and its typed read returns `[0]` for that row, because the reader keeps the captured path and never recomputes it. Each refusal vector refuses `invalid_package`/`invalid-value` at the stated locus: BL-R1 removes the second `sqrt`'s row (`/checked_term_data/body_locations`); BL-R2 names a `value`/`parameter` node as a row's `application` (that row's `application`); BL-R3 sets the last row of the array to `name` `g` (that row's `name`); BL-R4 sets the last row of the array to `index` `1` (that row's `index`); BL-R5 names a `scalar_type` node as a row's `function` (that row's `function`); BL-R6 duplicates the last row with `term_ordinal` one higher (the added row's `application`). A `checked_term_data` object holding the four other arrays and no `body_locations` is `malformed_wire` at the carrier, and BL-01 with the whole carrier removed refuses at `/checked_term_data/body_locations`. | Test (TC-2090) |
 
 ## Dependencies
 
