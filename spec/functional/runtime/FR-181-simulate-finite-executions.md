@@ -397,8 +397,11 @@ and jitter, and original absolute deadline. It carries `priority` exactly
 when the bound task declares one; otherwise the member is omitted. A supplied
 priority is never inferred from scheduler order or replaced with a default.
 For fixed-priority scheduling, the selected job is the ready job with the
-smallest declared numeric priority (equal priorities are rejected at claim
-admission). For EDF, declared priority does not affect dispatch: the ready job
+smallest declared numeric priority (equal priorities of two tasks are
+rejected at claim admission); jobs of one task are ordered by nominal
+activation time, then canonical source activation transition identity, then
+occurrence, and a higher-ranked eligible job preempts a lower-ranked running
+one (FR-419). For EDF, declared priority does not affect dispatch: the ready job
 with the earliest absolute deadline is selected, ties broken by ascending
 canonical task name in Unicode scalar value order (FR-482), then the canonical
 source activation transition identity and its zero-based occurrence. Source

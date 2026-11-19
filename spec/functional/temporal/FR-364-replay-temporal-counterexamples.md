@@ -251,7 +251,9 @@ to each `QueueGrowthJob` template and `QueueGrowthTransition` in a
 otherwise. A supplied priority must equal the checked task declaration, and a
 missing or extra priority is a replay refusal for either carrier. Replay
 derives the scheduling policy from the bound checked claim. Under fixed
-priority it recomputes ready order by ascending numeric priority. Under EDF it
+priority it recomputes ready order by ascending numeric priority, and jobs of
+one task by nominal activation time, then canonical source activation
+transition identity, then occurrence (FR-419). Under EDF it
 recomputes ready order, including every symbolic `ready_order`, by absolute
 deadline, with ties by ascending canonical task name in Unicode scalar value
 order (FR-482), then canonical source activation transition identity and

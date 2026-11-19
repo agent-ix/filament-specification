@@ -161,12 +161,12 @@
         "slot": {"$ref": "#/$defs/Count"},
         "generation": {"$ref": "#/$defs/Count"},
         "release": {"$ref": "#/$defs/SourceTransitionIdentity"},
-        "source_transition": {"description": "The source operation whose release or completion feedback enables this scheduler step; null for an autonomous scheduler action.", "oneOf": [{"type": "null"}, {"$ref": "#/$defs/SourceTransitionIdentity"}]},
+        "source_transition": {"description": "FR-364: the source operation that activates this job on an activate or release step (equal to release), the source feedback transition a synchronized complete enables, or on a budget-change the source transition of the entry into HI (FR-419); null for an autonomous scheduler action (dispatch, preempt including budget exhaustion, resume, deadline-miss, a complete with no feedback).", "oneOf": [{"type": "null"}, {"$ref": "#/$defs/SourceTransitionIdentity"}]},
         "demand": {"description": "FR-419: exact rational total work selected for this job, in the task set's time unit.", "$ref": "#/$defs/Rational"},
         "jitter": {"description": "FR-419: exact release delay selected once from [0,J]; the absolute deadline remains relative to nominal activation.", "$ref": "#/$defs/Rational"},
         "deadline": {"description": "FR-419: the job's absolute deadline from its source release, in the task set's time unit.", "$ref": "#/$defs/Rational"},
         "priority": {"$ref": "#/$defs/Count"},
-        "budget_delta": {"description": "FR-419: exact non-negative increase in this live HI job's service allowance applied by a source LO-to-HI transition; it changes no actual demand or remaining work and is present only on budget-change.", "$ref": "#/$defs/Rational"}
+        "budget_delta": {"description": "FR-419: exact non-negative increase in this live HI job's service allowance applied by the entry into HI, a step of a bound mode-switch operation taken in LO; it changes no actual demand or remaining work and is present only on budget-change.", "$ref": "#/$defs/Rational"}
       },
       "allOf": [
         {"if": {"properties": {"action": {"const": "budget-change"}}, "required": ["action"]}, "then": {"required": ["budget_delta"]}, "else": {"not": {"required": ["budget_delta"]}}}
@@ -185,7 +185,7 @@
         "job_rank": {"description": "Zero-based canonical rank among this task's live jobs in the source state, except activation which names the new job in the target state.", "$ref": "#/$defs/Count"},
         "slot": {"description": "Finite candidate slot bound to job_rank by the recomputed product state.", "$ref": "#/$defs/Count"},
         "release": {"$ref": "#/$defs/SourceTransitionIdentity"},
-        "source_transition": {"description": "Source operation that enables this task step; null for an autonomous scheduler action.", "oneOf": [{"type": "null"}, {"$ref": "#/$defs/SourceTransitionIdentity"}]},
+        "source_transition": {"description": "Source operation that enables this task step: the activating operation, the completion feedback, or for a budget-change the entry into HI (FR-419); null for an autonomous scheduler action.", "oneOf": [{"type": "null"}, {"$ref": "#/$defs/SourceTransitionIdentity"}]},
         "priority": {"$ref": "#/$defs/Count"}
       },
       "additionalProperties": false
