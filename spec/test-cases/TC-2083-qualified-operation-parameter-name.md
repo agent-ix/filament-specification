@@ -21,17 +21,21 @@ parameter and an invariant. Scope: FR-012-AC-9.
 
 1. Use FR-012-AC-9's model (`Meter` with field `by: P`, operations
    `adjust(by: P, step: P)` and `reset(by: P)`) and one invocation of `adjust`
-   supplying `by = 1.00`, with pre and post snapshots whose `Meter` has field
-   `by = -1.00`.
+   supplying `by = 1.00` and `step = 2.00`, with pre and post snapshots whose
+   `Meter` has field `by = -1.00`.
 2. Evaluate the precondition and the postcondition
-   `M::Meter::adjust::by >= 0.00`, and `M::Meter::adjust::step = step`.
+   `M::Meter::adjust::by >= 0.00`, `M::Meter::adjust::step = step`, and
+   `let step = M::Meter::adjust::by in M::Meter::adjust::step > step`.
 3. Check `M::Meter::adjust::nope >= 0.00` and `M::Meter::reset::by >= 0.00`
    in a precondition of `adjust`, and `M::Meter::adjust::by >= 0.00` in an
    invariant on `M::Meter`.
 4. Parse the precondition body `by >= 0.00`.
+5. Check the postcondition `pre(M::Meter::adjust::by) >= 0.00` of `adjust`.
 
 ## Expected Results
 
-- Step 2: each completes `true`.
+- Step 2: each completes `true`; in the `let` the qualified name reads the
+  parameter `2.00` and the bare `step` the binder `1.00`.
 - Step 3: each refuses `missing_declaration`/`missing-name` at the name.
 - Step 4: `invalid_syntax`/`unexpected-token` at `by`.
+- Step 5: `wrong_snapshot`/`forbidden-pre-read` at the `pre`.
