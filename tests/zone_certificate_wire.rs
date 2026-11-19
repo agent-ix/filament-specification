@@ -324,10 +324,23 @@ fn tc_371_refinement_form_lists_every_initial_node_and_a_locked_entry_node_uses_
     let mut inner = zc12.clone();
     inner["refinement"]["initials"] = json!([0, 1]);
     assert!(!valid.is_valid(&inner), "the part carries no initials");
-    // A certificate without initials or admitted is not a ZoneCertificate.
-    for member in ["initials", "admitted"] {
-        let mut bad = zc12.clone();
-        bad.as_object_mut().unwrap().remove(member);
-        assert!(!valid.is_valid(&bad), "{member} is required");
+    // A certificate without initials is not a ZoneCertificate.
+    let mut bad = zc12.clone();
+    bad.as_object_mut().unwrap().remove("initials");
+    assert!(!valid.is_valid(&bad), "initials is required");
+}
+
+/// FR-418-AC-16 (ZC-31): the wire does not name the item's form, so a
+/// certificate without `admitted` is a `ZoneCertificate`; the checker requires
+/// the witness for every item except a state-graph item.
+#[trace("TC-371", "FR-418-AC-16")]
+#[test]
+fn tc_371_zc_31_a_certificate_without_admitted_is_a_zone_certificate() {
+    let valid = validator();
+    for id in ["ZC-10", "ZC-11", "ZC-12"] {
+        let mut document = vector(id)["document"].clone();
+        assert!(document.get("admitted").is_some(), "{id} carries admitted");
+        document.as_object_mut().unwrap().remove("admitted");
+        assert!(valid.is_valid(&document), "{id} without admitted is wire-valid");
     }
 }
