@@ -98,7 +98,7 @@ The QVC `checked-operation-catalog-v1.json` SHALL carry this entry, in the
 catalog's own shape:
 
 ```json
-{"identity": "filament.op.option.slots", "operator": "slots", "operands": ["object"], "rest": "any_value", "result": "set", "laws": [], "mode": null, "member": null, "constraints": [{"kind": "place_slot_terms", "operands": [0]}, {"kind": "quantifier_domain_only"}], "leaves": null}
+{"identity": "filament.op.option.slots", "operator": "slots", "operands": ["place_owner"], "rest": "any_value", "result": "set", "laws": [], "mode": null, "member": null, "constraints": [{"kind": "place_slot_terms", "operands": [0]}, {"kind": "quantifier_domain_only"}], "leaves": null}
 ```
 
 - **Operator class** `slots`, a derived read like `present`; it is not a
@@ -106,7 +106,7 @@ catalog's own shape:
 - **Operands and rest.** As for the place form of `filament.op.option.present`,
   the leading `clock_place` reference argument is checked by FR-322
   "Presence" before the catalog and is not a catalog operand. The catalog
-  operands are the owner term (family `object`) and, as `rest`, the outer
+  operands are the owner term (group `place_owner`, FR-829 "Owner terms") and, as `rest`, the outer
   slot terms, each a value of its step's selector domain.
 - **`place_slot_terms`**: the rest count is `s - 1` and each rest term has
   its slot step's selector domain, with the refusals of the first two
