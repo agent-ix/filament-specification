@@ -162,7 +162,11 @@ to exactly one protocol instance lifetime:
   memory step, the terminal stutter) is bound to instance 0 under `on
   origin`; under an `on each` subject it is bound to each protocol instance
   the behaviour starts, one obligation instance per `activate` step,
-  evaluated from that `activate` position.
+  evaluated from that `activate` position. This is an activation form of its
+  own, the per-instance origin: [FR-093](../temporal/FR-093-bind-temporal-activation-and-captures.md)'s
+  single `on origin` activation is unchanged for every clause that holds no
+  read and for every subject whose protocol is `on origin`, and FSL keys the
+  form as activation `"each-activate"` (FSL FR-338).
 - Inside an obligation instance a read is `none` at every position whose
   step belongs to another protocol instance, and at every position after the
   step that removes the bound instance (ADR-027 AE-3), even when a later
@@ -173,7 +177,10 @@ to exactly one protocol instance lifetime:
 
 The model checker's product state records, for each live obligation
 instance, whether its bound instance has been removed; that bit is part of
-the monitor state, not of FR-425's state key.
+the monitor state, not of FR-425's state key. Once the bound instance is removed,
+the obligation instance's captured identities that are only compared with
+reads are dead, since every read is `none`, and the key drops them (FSL
+FR-338 "Capture vectors and bound instances").
 
 A read is a value at its position, like the observation a `holds` atom reads
 (FR-431 "Positions and anchors"). A capture fixes it at the activation
@@ -297,7 +304,7 @@ evidence, never with an unsound proof.
 | FR-828-AC-5 | Two `Paid` effect steps in two iterations of a `repeat` with no maximum around `attempt Pay; effect Paid of Pay` (protocol `P`) give `effect(P::Paid)` values with ordinals 0 and 1, which are not equal. The obligation "no `Paid` occurrence is established twice" (`on each` on `present(filament::protocol::effect(P::Paid))`, capture `e`, `not eventually[1, *] holds(filament::protocol::effect(P::Paid) = some(e))`) has no counterexample within `max_depth` 8 and settles `inconclusive` `BoundReached{depth: 8}`, never `proved` ("Completeness limit"). A read whose ordinal does not advance per iteration makes the two values equal and refutes the obligation, which this criterion rejects. | Test (TC-2068) |
 | FR-828-AC-6 | A model-check item that reads a clause holding `message(Echo::Snd)` over a model subject, and one over a protocol subject of another protocol `Other`, each refuse `invalid_runtime_input`/`invalid-value` naming the read, before any state is explored. | Test (TC-2068) |
 | FR-828-AC-7 | Identity: a package holding `delivery(Echo::Rcv)` twice carries one `protocol`/`step_read` node with two `expression` occurrences; adding `message(Echo::Rcv)` adds a second node; changing a read from `delivery` to `message`, or its target from `Rcv` to another receive node, changes the carrier node id and the obligation identity of an item over the reading clause, and leaves the clause's declared node id and `Echo`'s `protocol`/`protocol_clause` node id unchanged (FR-322-AC-480). | Test (TC-2068) |
-| FR-828-AC-8 | Instance scope. Protocol `Once` with `activation on each`, whose instance runs `sequence { send Snd via ch; receive Rcv via ch of Snd }` and finishes, and a trigger that activates twice in sequence, so the second instance takes ordinal 0 after the first is removed and its message is byte-equal to the first's (instance 0, `Snd`, path `(0)`, ordinal 0). The claim `on each` on `present(filament::protocol::message(Once::Rcv))`, capture `m`, `not eventually[1, *] holds(filament::protocol::message(Once::Rcv) = some(m))` is not refuted: in the obligation instance activated at the first receive, the second instance's receive position reads `none`, because its bound instance was removed. A product that compares the raw identities across the two lifetimes refutes the claim, which this criterion rejects. Over a recording of the same two runs, whose instances have distinct FR-287 keys, the claim is not refuted either. | Test (TC-2068) |
+| FR-828-AC-8 | Instance scope. Protocol `Once` over the `Fill` model with `activation on each (r: M::Request) when { true }`, `M::Request` an event type with the one field `id: Int[0, 0]` (so a trigger is always available), channel `ch` `fifo`, capacity 1, `delivery exactly-once-premise`, and `run sequence { send Snd via ch; receive Rcv via ch of Snd }`, checked with `max_live_instances` 1, so the second `activate` is enabled only after the first instance's `finish` has removed it; the second instance takes ordinal 0 again and its message is byte-equal to the first's (instance 0, `Snd`, path `(0)`, ordinal 0). The claim `on each` on `present(filament::protocol::message(Once::Rcv))`, capture `m`, `not eventually[1, *] holds(filament::protocol::message(Once::Rcv) = some(m))` has no counterexample: in the obligation instance activated at the first receive, the second instance's receive reads `none`, because its bound instance was removed. The run settles `inconclusive`, cause `instance-bound-reached` (FR-428), never `refuted`. The same claim written `on origin` binds one obligation instance per `activate` step (FSL FR-338 activation `"each-activate"`) and settles the same way. A product that compares raw identities across the two lifetimes refutes the claim, which this criterion rejects. Over a recording of the two runs, whose instances have distinct FR-287 keys, the identity-claim obligation is `satisfied`. | Test (TC-2068) |
 | FR-828-AC-9 | Placement and cycles. A capture typed `filament::protocol::Message` and one typed `Option<filament::protocol::Delivery>` check; the same type as a model field, an operation parameter, a channel `carries` type and a predicate parameter each refuse `ill_typed`/`operator-ineligible` at the type; `value(filament::protocol::delivery(Echo::Rcv)).index` checks to `Integer` and `.ordinal` on it, or any member of a `Message`, refuses `ill_typed`/`operator-ineligible`. Protocol `Echo` with `requires temporal Due;`, `Due` holding `filament::protocol::delivery(Echo::Rcv)`, refuses `invalid_package`/`definition-cycle` at the requirement naming `Echo` and `Due`; the same `Due` required by a protocol `Drain` that it does not read checks, and `Due` checked over `Echo`'s protocol subject by a request is admitted. | Test (TC-2068) |
 
 ## Dependencies

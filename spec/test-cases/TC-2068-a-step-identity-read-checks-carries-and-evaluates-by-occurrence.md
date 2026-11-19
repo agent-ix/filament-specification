@@ -11,6 +11,8 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-482
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-093-AC-8
+    type: verifies
 ---
 # TC-2068: A step identity read checks, is carried by node and evaluates by occurrence
 
@@ -21,7 +23,7 @@ Verify that `filament::protocol::message`, `filament::protocol::delivery` and
 every ill-formed or misplaced use, are carried as FR-322 `protocol`/`step_read`
 nodes keyed by field and target, and evaluate at each position to the
 identity the position's step carries. Scope: FR-828-AC-1 to FR-828-AC-9,
-FR-322-AC-480 to FR-322-AC-482.
+FR-322-AC-480 to FR-322-AC-482 and FR-093-AC-8.
 
 ## Test Procedure
 
@@ -42,8 +44,9 @@ Snd via ch; receive Rcv via ch of Snd }`) over the `Fill` model, and protocol
 7. Build the packages of FR-322-AC-480 (two occurrences, then a second field,
    a changed field and a changed target) and compare node ids; mutate the
    carrier as FR-322-AC-481 lists and read each package.
-8. Model-check FR-828-AC-8's claim over `Once` with two sequential
-   activations, and assess it over a recording of the two runs.
+8. Model-check FR-828-AC-8's claim, `on each` and `on origin`, over `Once`
+   with `max_live_instances` 1, count the obligation instances of the `on
+   origin` form (FR-093-AC-8), and assess it over a recording of the two runs.
 9. Check each placement and cycle case of FR-828-AC-9 and FR-322-AC-482.
 
 ## Expected Results
@@ -66,8 +69,11 @@ Snd via ch; receive Rcv via ch of Snd }`) over the `Fill` model, and protocol
   `Echo`'s id unchanged; each mutation refuses with the kind and pointer
   FR-322-AC-481 states; `step_identity.eq` and `structural.eq` over
   `Option<Delivery>` are admitted.
-- Step 8: not refuted in exploration nor over the recording; the second
-  lifetime's receive reads `none` in the first obligation instance.
+- Step 8: both forms settle `inconclusive`, cause `instance-bound-reached`,
+  never `refuted`; the `on origin` form has two obligation instances, one per
+  `activate`; the second lifetime's receive reads `none` in the first
+  obligation instance; the recording's identity-claim obligation is
+  `satisfied`.
 - Step 9: each kind and location FR-828-AC-9 and FR-322-AC-482 state.
 
 Assertions compare typed fields, causes, identities and keys, never message
