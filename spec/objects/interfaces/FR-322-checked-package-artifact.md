@@ -403,6 +403,15 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   FR-092), as an `integer` literal typed at the builtin Integer node. It is a
   derived node ("Structural node identity" below), so its id
   depends on its name, level and type and not on the function that binds it.
+  The node that binds an operation parameter of a state clause is typed by
+  the parameter's step 4 type, which reads the parameter's presence: an
+  `optional` parameter's node has the `composite_type`/`option` node as its
+  `semantic_type`, so changing only a parameter's presence changes that
+  parameter node's id and the id of every derived node that names it as an
+  operand, while every declared node, the operation's declaring `model` node
+  included, keeps its id (its body references change). A parameter of option
+  value type `Q` over `T` with presence `required` and a parameter of `T` with
+  presence `optional` bind one node.
   A model member (field, operation, clause) has no node of
   its own: it is named by its declaring node and its name. A selected model
   operation in `checked_term_data.dispatch_tables` therefore uses the typed
@@ -2165,8 +2174,8 @@ constraints ("Reference conformance" below).
 4. **Member type.** A field member's type is derived from its `typeRef`, its
    multiplicity and its presence; an operation member's type is derived from
    its result's `typeRef` and multiplicity, and each parameter's type from
-   the parameter's `typeRef` and multiplicity. The element type comes from
-   the declared type:
+   the parameter's `typeRef`, multiplicity and presence (FR-154 "Operation
+   parameter presence"). The element type comes from the declared type:
 
    | Declared type | Element type | Node |
    | --- | --- | --- |
@@ -2217,9 +2226,10 @@ constraints ("Reference conformance" below).
    `E`'s node, with no `collection_bounds` node. `K` is `set` (unordered,
    unique), `bag` (unordered, not unique), `sequence` (ordered, not unique)
    or `ordered_set` (ordered, unique). A lower bound of `0` makes an empty
-   collection legal, and a presence of `optional` makes a field optional
-   (`filament.model.complete/v1` Presence row), so `[0, 1]` gives `K<E>[0, 1]`
-   and a field whose presence is `optional` has `Option<X>`, the
+   collection legal, and a presence of `optional` makes a field or an
+   operation parameter optional (`filament.model.complete/v1` Presence row),
+   so `[0, 1]` gives `K<E>[0, 1]` and a field or parameter whose presence is
+   `optional` has `Option<X>`, the
    `composite_type`/`option` node over the node of the type `X` the
    multiplicity gives. The unit graph of the checked package holds the
    dimensions and units the unit of compilation declares and those of every
@@ -2880,7 +2890,18 @@ Conformance decides these positions:
   its callee equal the callee's parameters in number, and the arguments of an
   operation call (`dispatch_call`) after its receiver equal the resolved
   operation's parameters in number; the count is checked first. The parameters
-  of a `dispatch_call` come from the selected document (step 4). The parameters
+  of a `dispatch_call` come from the selected document (step 4). A source call
+  that omits a trailing optional parameter (FR-151 "Dispatch rules") is
+  emitted with one argument per parameter all the same: the producer writes,
+  for each omitted parameter, the `literal` term of `value_kind` `none` typed by
+  the parameter's `composite_type`/`option` node, the term an explicit `absent`
+  at that position lowers to ("The Option literals"). A package therefore
+  never carries fewer arguments than parameters, the reader's count rule has no
+  exception, and the omitted and the explicit-`absent` spellings of one call
+  give packages with equal `semantic_graph` nodes (each node's `node_id`,
+  body, `dependencies` and `semantic_type`) and equal `checked_term_data`;
+  only source regions (a declaration's `declaration_region`, the call's
+  `source_map` entries) differ. The parameters
   of a `function.call` come from the callee `function` node's body: its first
   binding, named `parameters`, is an `aggregate` of `reference` terms to the
   `value`/`parameter` nodes in parameter order, each typed by its
@@ -5681,6 +5702,7 @@ declaration names" states.
 | FR-322-AC-473 | The requirement-record step runs in "Check order" between FR-640's reader and `checked_term_data`: FR-825-AC-1's package with `function f` added to a unit holding FR-640-AC-8's claims, with both `P95`'s body missing `delays` and the first `value_validity` record's `owner` referencing the `+` node, refuses at `P95`'s `body` (FR-640 rule 6); with only the record defect and a `checked_term_data` `probabilistic_claims` row reversed (PC-R7), it refuses at the record's `body/members/0` (FR-825 rule 3). A package whose only `claim` nodes are `claim`/`value_validity` nodes has no `claim_names` member and is admitted, and adding a `claim_names` row whose `declaration` is a `value_validity` node refuses `invalid_package`/`invalid-value` at that row's `declaration`, because no source declaration introduces such a node. `requirement_items` adds no node and changes no `node_id`: FR-825-AC-1's unit emitted by the producer is compared with the golden package of the same unit written before FR-825 (`proposals/checked-package-v2/fixtures/requirement-records-golden-without-records.json`, a test fixture of a producer that writes no records: it is emitted by FSL S4 at a commit before FR-531-AC-35's emission, never derived from a package that has records, and the coder of FR-531-AC-35 checks it into this repository before the emission change merges; TC-2053 step 6 fails when the file is absent), and every node of the golden is present in the new package with byte-identical `node_id`, body, `dependencies` and `source_map` entries, the new package adding only the two `value_validity` nodes, their `source_map` entries and `requirement_items`; a producer whose `value_validity` node changed the path of the `+` node or of `f`'s function node fails the comparison. | Test (TC-2053) |
 | FR-322-AC-474 | Over `Service` under `Steady`, two claims both named `A`, `probability >= 0.5 [always[0,2] holds(true)]` and the same with `0.6`, emit two `probabilistic_claim` nodes whose paths differ only in the FR-640 `bound` `value` segment (`"1/2"` and `"3/5"`), each at ordinal 0, and two `probabilistic_claims` rows with the `1/2` claim's first, by structural key; the same rows reversed refuse `invalid_package`/`invalid-semantic-graph` at the second row (`PC-R7`'s rule). With the second claim's threshold written `rational(2, 4)` instead, the two claims have equal bodies and one path, and take ordinals 0 (the claim written `0.5`) and 1 (the one written `rational(2, 4)`), by FSL FR-498's written-content ranking. A claim node whose `bound` `value` literal is spelled `2/4` refuses `invalid_package`/`invalid-value` at that literal's `value` ("Scalar literal values"), before FR-640's reader runs, so two spellings of one threshold can never stand as two bodies. | Test (TC-1563) |
 | FR-322-AC-475 | Over FR-322-AC-399's package with a tuple `Trio` added (`p0` `Integer`, `p1` `ix://filament/native/Clock`, `p2` `Boolean`), a tuple `Ticks` whose only position `p0` is a clock, and a variant type `Mode` whose document declares the case `Zed` (`payloadType` `ix://filament/native/Clock`) before the case `Alpha` (no payload): the data part of `Slot` is one `Integer` at data index `0`, of `Trio` an `Integer` at data index `0` and a `Boolean` at data index `1`, and of `Ticks` the empty tuple; `filament.op.tuple.project` of `Trio` carries `position` `2`, has the `Boolean` node as its type and reads data index `1`, and one carrying `position` `1` in a value position refuses `invalid_timed_model`/`clock-read-outside-constraint`; the clock place of a field `t: Trio` has the path `field(t)`, `tuple(1)`; a postcondition that writes `self.t` with `4` at `p0`, `0 ms` at `p1` and `true` at `p2` writes a `tuple_value` with the two terms `4` and `true` and records a `clock_reset` of that place, and a `tuple_value` of `Trio` carrying the three terms `4`, `0 ms` and `true` refuses `ill_typed`/`type-mismatch` at that node. The data part of `Phase` has the members `Armed` and `Idle`, and that of `Mode` the members `Alpha` then `Zed` (ascending byte order, not declaration order), each of payload arity 0 and distinct; a `union_value` of `Mode` naming `Zed` with a payload term refuses `ill_typed`/`type-mismatch`. A record value type `Timer` with fields `x: Clock` and `n: Integer` has the data part of `n` alone, and a field `o: Option<Timer>` is an `Option` of that data part. Each data part is typed by its declaration node's type identity, and no node, type node or value type is added for a clock or a data part. The data consumer's refusals of a clock-shaped value are filament-semantic-value FR-133-AC-2's. | Test (TC-1361) |
+| FR-322-AC-476 | Over TC-2054's `test/refunds` unit, the `value`/`parameter` node binding `secondApprover` in `NoteSame` (`pre NoteSame using v on R::Order::note { secondApprover = secondApprover }`, which checks under either presence) has as its `semantic_type` the `composite_type`/`option` node over the `composite_type`/`reference` node of `Staff`, and the node binding `firstApprover` has that reference node. Recompiling a unit that keeps only the `NoteSame` clause (`NoteBy` and `NoteVal` apply `present` and `value` and do not check over a required parameter), with only `secondApprover`'s presence changed to `required`, gives a `secondApprover` parameter node with another `node_id` and leaves the `node_id` of the `Order` model declaration node and of the `NoteSame` clause node unchanged; recompiling with `secondApprover` typed `OptStaff` and presence `required` gives the `secondApprover` parameter node the same `node_id` and `semantic_type` as the `optional` spelling. The `Desk` invariant's call `deref(self.order).note(self.staff)` is one `dispatch_call` with three operands, the third the `literal` of `value_kind` `none` typed by the option node, and the package has `semantic_graph` nodes (`node_id`, body, `dependencies`, `semantic_type`) and `checked_term_data` equal to those of the package from `deref(self.order).note(self.staff, absent)`, only the source regions (`declaration_region`, the call's `source_map` entries) differing; the reader admits both. A hand-edited package that drops the third operand from the call's body, from its `operand_rows` row and from its `node_id.path` operand segments, every reference to the call node following its new id, so that every wire, operand-row and path check still holds, refuses `ill_typed`/`operator-ineligible` at the call by FR-322-AC-31's argument-count rule. | Test (TC-2054) |
 
 ## Dependencies
 

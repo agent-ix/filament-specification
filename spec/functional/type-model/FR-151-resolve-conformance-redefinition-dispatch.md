@@ -89,7 +89,7 @@ check stops at its first failure:
 | field | multiplicity | rule below | `ill_typed`/`multiplicity-narrowing` |
 | field | refinement | obligation below | `undefined_expression`/`unproved-refinement` |
 | operation | arity | equal parameter count; when unequal, no parameter axis is checked | `ill_typed`/`type-mismatch` |
-| operation | parameter type `i` | the redefined parameter type conforms to the redefining one (contravariant) | `ill_typed`/`variance-parameter` |
+| operation | parameter type `i` | the redefined parameter type conforms to the redefining one (contravariant); each side's type is its FR-322 step 4 type, which its `typeRef`, multiplicity and presence give, so an `optional` parameter of `X` and a `required` parameter of an option value type over `X` are one type and pass, while `Option<X>` and `X` never conform: a redefinition keeps whether each parameter is optional, because a call is typed against the redefined signature and linked to the redefining body, and the redefined precondition is evaluated over the same arguments (FR-154 "Operation parameter presence") | `ill_typed`/`variance-parameter` |
 | operation | parameter multiplicity `i` | the redefined multiplicity conforms to the redefining one | `ill_typed`/`multiplicity-narrowing` |
 | operation | result type | the redefining result type conforms to the redefined one; both absent passes; one absent fails | `ill_typed`/`variance-result` |
 | operation | result multiplicity | the redefining multiplicity conforms to the redefined one | `ill_typed`/`multiplicity-narrowing` |
@@ -186,6 +186,29 @@ Rule `filament.model.dispatch.single/v1`. A dispatched call is
 `Reference<T>` value. `member-name` resolves statically to exactly one exposed
 effective operation `o` of the receiver's static type `T`; its arguments are
 type-checked statically against `o`'s signature with reference upcasts only.
+
+Arguments bind to `o`'s parameters by position. A call may omit a trailing run
+of optional parameters (FR-154 "Operation parameter presence"): with `n`
+parameters and `k < n` arguments, the call is admitted exactly when every
+parameter at positions `k` to `n - 1` is `optional`, and each omitted parameter
+takes the absent value of its type `Option<X>`, exactly as if the call wrote
+`absent` at that position. An optional parameter before a supplied argument is
+not omitted: the call writes `absent`, `Some(e)` or another expression of type
+`Option<X>` there. An argument at an optional parameter is checked against
+`Option<X>` by FR-143's option rules, so a bare `X`-typed argument is
+`ill_typed`/`type-mismatch` at the argument (no implicit wrap), and the
+omitted and the explicit-`absent` spellings of one call are one call with one
+checked form (FR-322 "Model-owned members"). A call that omits a `required`
+parameter, or that supplies more arguments than `o` has parameters, is
+`ill_typed`/`type-mismatch` at the call, naming `o` and the position of the
+first omitted required parameter or the first extra argument. Inside the
+operation's own clauses and body an optional parameter `p` is a value of type
+`Option<X>`: `present(p)` is a Boolean, `value(p)` is `X` under FR-146's
+presence obligation and FR-005's guard facts (an unguarded `value(p)` is
+`undefined_expression`/`unproved-presence`), and `deref(p)` over an
+`Option<Reference<T>>` is `ill_typed`/`type-mismatch`, the reference being
+reached as `deref(value(p))`.
+
 Only query operations, whose result is present and whose effect set is empty,
 may be called, and only inside invariant, state constraint (FR-382),
 precondition and postcondition blocks; a call in a function or operation body is `ill_typed`/`operator-ineligible`.
@@ -262,6 +285,8 @@ type.
 | FR-151-AC-17 | An operation member `B/size` redefining `A/size` has the effective precondition `(PB1 and PB2) or PA` for its own clauses `PB1`, `PB2` and the redefined member's `PA`: with `PB1` true, `PB2` false and `PA` true the call proceeds, and with `PA` false it is `undefined` with reason `precondition-false`, which a flat disjunction of the three clauses would not give. | Test (TC-196) |
 | FR-151-AC-18 | An operation member with no own precondition clause has `true` as `own(m)`, so its effective precondition is `true` whatever the redefined member's precondition says. | Test (TC-196) |
 | FR-151-AC-19 | A member's own clauses are conjoined in ascending clause name under FR-006's short-circuit, whatever their source order or source unit: with `PB1` undefined (reason `absent-key`, from a `lookup` of a key the population lacks) and `PB2` false the call is `undefined` with reason `absent-key`, and with the two bodies' names swapped, so the false clause sorts first, it is `undefined` with reason `precondition-false` after the false clause and then `PA` are evaluated, the lookup clause being neither evaluated nor charged; the same clauses split across two linked units give the same result in both link orders. | Test (TC-196) |
+| FR-151-AC-20 | Over TC-2054's `test/refunds` unit, `pre NoteBy using v on R::Order::note { present(secondApprover) }` and `pre NoteVal using v on R::Order::note { present(secondApprover) implies deref(value(secondApprover)).badge > 0 }` check; `{ value(secondApprover) = firstApprover }` refuses `undefined_expression`/`unproved-presence` at `value(secondApprover)`; `{ deref(secondApprover).badge > 0 }` refuses `ill_typed`/`type-mismatch` at `deref(secondApprover)`. In an invariant of `Desk` (field `order: Order`, `staff: Staff`), the calls `deref(self.order).note(self.staff)`, `deref(self.order).note(self.staff, absent)` and `deref(self.order).note(self.staff, Some(self.staff))` check, and the first two lower to one checked form; `deref(self.order).note()` refuses `ill_typed`/`type-mismatch` at the call naming `note` and position 0; `deref(self.order).note(self.staff, self.staff)` refuses `ill_typed`/`type-mismatch` at the second argument; `deref(self.order).note(self.staff, absent, self.staff)` refuses `ill_typed`/`type-mismatch` at the call naming `note` and position 2. | Test (TC-2054) |
+| FR-151-AC-21 | A subtype `RushOrder` of `Order` whose `note` redefines `Order/note` is admitted when both `secondApprover` parameters are `optional`, and when `Order/note`'s is `optional` and the redefining one is `required` typed by the option value type `OptStaff` over `Staff` (one type). With (`Order/note`, `RushOrder/note`) presences (`required`, `optional`) and (`optional`, `required`), both typed `Staff`, it refuses `ill_typed`/`variance-parameter` on the parameter type axis at position 1. | Test (TC-2054) |
 
 ## Dependencies
 
