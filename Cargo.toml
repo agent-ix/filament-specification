@@ -14,7 +14,7 @@ name = "filament_specification"
 path = "src/lib.rs"
 
 [dev-dependencies]
-filament-verification-contracts = { git = "https://github.com/agent-ix/filament-verification-contracts", rev = "c7d0cecc8abae9f326884fb7161bc7ad4485b5cf" }
+filament-verification-contracts = { git = "https://github.com/agent-ix/filament-verification-contracts", rev = "2714219621cfbfabdd8d411c39d9109d956b85dd" }
 jsonschema = { version = "=0.55.0", default-features = false }
 serde_json = "=1.0.151"
 num-bigint = "=0.4.8"
