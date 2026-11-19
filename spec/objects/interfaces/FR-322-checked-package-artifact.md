@@ -5139,6 +5139,91 @@ expressed with the existing `filament.op.collection.flatten` and
 `filament.op.collection.sequence` identities, so the operation catalog is
 unchanged (FR-322-AC-308).
 
+### Synthesis-request nodes
+
+A checked `synthesis` declaration ([FR-194](../../functional/analysis/FR-194-synthesize-bounded-candidates.md)
+"Source form") is one node with `node_tag: "claim"` and `semantic_form:
+"synthesis_request"`. It is the only carrier a synthesizer or a planner reads
+the declaration from ([FR-807](../../functional/analysis/FR-807-read-the-checked-package-and-stay-apart-from-settlement.md)),
+so it holds everything the search needs and nothing the source text alone
+holds:
+
+- **body** — `{term: "aggregate", members: [binding("grammar", …),
+  binding("domain", …), binding("candidate", …), binding("objective", …),
+  binding("satisfies", …), binding("symmetry", …)]}`, in this order:
+  - `grammar` — a `reference` to `G`: a type node (record, enum, union,
+    tuple, alias or scalar) for a value synthesis, a `model`/`object_type`
+    node for a plan synthesis (FR-650), or a `hybrid`/`hybrid_model` node
+    for a hybrid plan synthesis (FR-819). The node tag of this target is the
+    synthesis kind; no other member states it, so the kind and the grammar
+    can never disagree;
+  - `domain` — a `reference` to `D`'s type node (for a plan synthesis the
+    `bounded_domain`/`integer_range` node of the admitted lengths);
+  - `candidate` — a `reference` to the `value`/`parameter` node the
+    declaration's own name binds inside the block and the objective: its
+    `name` the declaration's name, its `level` `0`, and its `semantic_type`
+    `D`'s node for a value synthesis and `G`'s node for a plan synthesis,
+    whose members FR-800 lists;
+  - `objective` — the empty aggregate when the declaration has no objective;
+    otherwise `aggregate{[binding "direction" = literal text, binding
+    "expression" = reference, binding "text" = literal text]}`: `direction`
+    `minimize` or `maximize`, `expression` the objective's root node, and
+    `text` the objective expression's source text, its tokens joined by one
+    space with comments dropped, which an outcome writes as
+    `objective.expression`;
+  - `satisfies` — a `reference` to the root node of the `satisfies` block;
+  - `symmetry` — the `literal` text `identity`, the symmetry rule of a
+    source-written synthesis (FR-194 "Source form"), recorded so the
+    canonical enumeration the result reports names its symmetry rule
+    (FR-194-AC-4).
+- **semantic_type** — the `scalar_type`/`boolean` node.
+- **declaration** — the synthesis declaration: the node is a declared node,
+  its `node_id.path` the declaration path, so two synthesis declarations are
+  two nodes even when their checked content is equal (each binds its own
+  name as the candidate). It has exactly one occurrence, role `declaration`,
+  ordinal `0`.
+- **dependencies** — exactly the nodes the body references: `G`, `D`, the
+  candidate parameter, the objective root when present, and the block root.
+- **identity row** — exactly one `claim_names` row ("Claim declaration
+  names"), on the node's `declaration` occurrence, carrying the
+  declaration's `name`, `qualified_name` and `declaration_region`. That row
+  is how a request names the declaration from the package alone; no other
+  carrier table exists for it. FR-290 gives the node no declaration family,
+  so it derives no verification item and no premise slot (FR-807).
+
+The reader visits every `claim`/`synthesis_request` node in ascending
+node-id order as the body step after the schedulability step, and for one
+node the first failing check is its defect:
+
+1. **Shape.** The body is an aggregate of exactly the six bindings in order,
+   and `objective` is the empty aggregate or exactly its three bindings in
+   order, else `invalid_semantic_graph` at the first aggregate, in body
+   order, that breaks the rule.
+2. **Literals.** `direction` is `minimize` or `maximize`, `text` is a
+   non-empty text literal and `symmetry` is `identity`, else
+   `invalid_package`/`invalid-value` at that literal.
+3. **Joins**, in body order: `grammar` references a type node, a
+   `model`/`object_type` node or a `hybrid`/`hybrid_model` node, else
+   `ill_typed`/`operator-ineligible` at the `grammar` binding; `candidate`
+   references a `value`/`parameter` node whose `name` equals the node's
+   `claim_names` row `name`, whose `level` is `0` and whose `semantic_type`
+   is the node this list requires, else `invalid_package`/`invalid-value` at
+   the `candidate` binding; the `satisfies` root's `semantic_type` is the
+   `scalar_type`/`boolean` node, else `ill_typed`/`non-boolean-root` at the
+   `satisfies` binding; the objective root's `semantic_type` is a numeric
+   type, else `ill_typed`/`type-mismatch` at the `expression` binding.
+4. **Bound.** `D`'s value set is finite by FR-194 "The bound" (for a plan
+   synthesis, an integer range with both bounds and no negative value), else
+   `unsupported_projection`/`unbounded-extent` at the `domain` binding,
+   naming the first component with no finite bound. The package repeats the
+   source rule because a synthesizer reads only the package: a package from
+   any producer that reaches a synthesizer states a finite search space.
+
+A `dependencies` list other than the one above is FR-322's graph-shape
+refusal, `invalid_semantic_graph` at the node's `/dependencies`, which
+precedes this step. A node with no `claim_names` row is refused as "Claim
+declaration names" states.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -5465,6 +5550,8 @@ unchanged (FR-322-AC-308).
 | FR-322-AC-464 | `hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }`, under the lock's event-position selection and with role `t` bound to `{"kind": "event_position", "sequence_authority": "obs"}`, has two rows keyed by its `claim`/`hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t` and that configuration, and is admitted. Removing the `b` row refuses `invalid_package`/`timed-node-reference` at the node's body; a row whose `trace` is `c` refuses at that row's `trace`; a second row whose `clock_name` is `u` refuses at `/temporal_bindings/1/clock_name`; a `fixed_sample` row refuses at that row's `clock/kind`. | Test (TC-2028) |
 | FR-322-AC-465 | FR-322-AC-457's package with a second `claim` occurrence on the `AtMostTwo` node, whose `claim_names` row carries the `NotAboveThree` name, `qualified_name` and `declaration_region` (a derived conjunction node naming a contributing clause), is admitted, and `NotAboveThree` resolves to the row on its own node, the node whose declaration set `{NotAboveThree}` is strictly contained in the other node's `{AtMostTwo, NotAboveThree}`, never to the row on that other node. The same package with a second `claim` occurrence on the `NotAboveThree` node, under the same name and `declaration_region` (one declaration with two occurrences, as a step relation's `declaration` and `claim` occurrences are), is admitted, and `NotAboveThree` resolves to its least `claim` row. That second row renamed `Other` refuses `invalid_package`/`invalid-value` at its `/claim_names/{i}/name`. Two rows of one `qualified_name` with different `declaration_region`s still refuse `ambiguous_declaration`/`ambiguous-name` (FR-322-AC-458). A name whose two nodes have declaration sets that do not nest (`{NotAboveThree, B}` and `{AtMostTwo, NotAboveThree}`) refuses `ambiguous_declaration`/`ambiguous-name` at its last row's `/claim_names/{i}/qualified_name`, naming its first and last rows. | Test (TC-2035) |
 | FR-322-AC-466 | A hyper clause's body wrapper has no `temporal_clause_names` row, and its `claim`/`hyperproperty` node has one `claim_names` row per `claim` occurrence, carrying the clause's name, `qualified_name` and the whole hyper declaration's `declaration_region`. A `temporal_clause_names` row whose `declaration` is a body wrapper refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/{i}/declaration`. A `claim_names` row and a `temporal_clause_names` row with one `name` refuse `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name`, even when their `declaration_region`s are equal. | Test (TC-2036) |
+| FR-322-AC-467 | Over `type Digit = Int[0, 9];`, `synthesis Pick using p grammar Digit domain Digit satisfies { Pick * Pick = 49 };` is one `claim`/`synthesis_request` node whose path is `["Pick"]`, with one `declaration` occurrence, `semantic_type` the `scalar_type`/`boolean` node, and a body of exactly `grammar` and `domain` (both the `Digit` node), `candidate` (a `value`/`parameter` node named `Pick` at level `0` typed `Digit`), `objective` the empty aggregate, `satisfies` (the block's root) and `symmetry` `identity`; its `dependencies` are the three nodes `Digit`, the candidate and the block root, and one `claim_names` row names it `Pick`. With `minimize Pick` the `objective` binding is `direction` `minimize`, `expression` the candidate node and `text` `Pick`. A second declaration `Pick2` with the same grammar, domain and block is a second node. | Test (TC-2037) |
+| FR-322-AC-468 | Fed to the reader, each edit of `Pick`'s node refuses with the code at the locus stated: `domain` and `grammar` swapped in order, `invalid_semantic_graph` at the body; `symmetry` `lexicographic`, `invalid_package`/`invalid-value` at that literal; `direction` `least`, `invalid_package`/`invalid-value` at that literal; `grammar` referencing a `temporal`/`temporal_clause` node, `ill_typed`/`operator-ineligible` at the `grammar` binding; `candidate` named `Other`, `invalid_package`/`invalid-value` at the `candidate` binding; `satisfies` referencing an Integer-typed node, `ill_typed`/`non-boolean-root` at the `satisfies` binding; `domain` and the candidate retyped to the builtin `Integer`, `unsupported_projection`/`unbounded-extent` at the `domain` binding naming `Integer`; the `claim_names` row removed, `invalid_package`/`invalid-value` at `/claim_names`. | Test (TC-2037) |
 
 ## Dependencies
 

@@ -23,6 +23,6 @@ Verify the `synthesis` source form, the finite-domain rule, the objective and th
 ## Expected Results
 
 - Step 1: `candidate` 7, `unchecked` then `validated`; `no-candidate` after ten values.
-- Step 2: optimal 3 with two earlier candidates failed; 9 for `maximize`.
+- Step 2: optimal 3 with the three earlier candidates 0, 1 and 2 failed; 9 for `maximize`.
 - Step 3: each refusal with the cause and component stated.
 - Step 4: `incomplete` naming the limit and visited count, never `no-candidate`.

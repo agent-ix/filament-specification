@@ -109,7 +109,7 @@ without its plans gives the same checked package identity. The compiler SHALL
 emit each plan as one linked document of format `filament.verification-plan/v1`
 holding:
 
-- `plan`: the plan name and its source location;
+- `plan`: the plan name, its package-local `qualified_name` (the declaring scopes, then the name) and its source location, which a plan request selects by (FR-824);
 - `package`: the checked package identity the plan was checked against;
 - `nodes`: one entry per step, in source order, with its step name, the
   bound clause's node identity and claim occurrence in that package, the

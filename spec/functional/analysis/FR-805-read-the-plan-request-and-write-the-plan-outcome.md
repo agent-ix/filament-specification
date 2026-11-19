@@ -15,6 +15,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-181
     type: references
+  - target: ix://agent-ix/filament-specification/FR-823
+    type: references
 ---
 
 # FR-805: Read the plan request and write the plan outcome document
@@ -86,6 +88,16 @@ refusal naming the first defect by its RFC 6901 pointer.
   `synthesis` member reports `/synthesis/limits/max_work` and
   `/synthesis/dwell_grid`. One rule for every member keeps a pointer
   resolvable in the document the caller actually sent.
+- The native runtime's `synthesis` member is FR-823's synthesis request,
+  one member for every synthesis kind: when its selected declaration is a
+  plan synthesis it carries exactly this requirement's members, and when it
+  is a value synthesis it carries FR-823's value members and runs FR-194.
+  Under that member, `declaration` is selected by FR-823 "Selection": it may
+  be omitted when the package holds exactly one `synthesis` declaration, and
+  a value-type declaration it names runs as a value synthesis rather than
+  refusing. In a `filament.plan-request/v1` document, which asks for a plan
+  by its format, `declaration` is required and FR-806's refusal of a
+  value-type declaration stands.
 - Admission refuses `invalid_runtime_input` at the first defect: not JSON or
   not an object (`malformed-json`); a missing, unknown or duplicate member
   (`missing-member`, `unknown-member`, `duplicate-member`); a member of the
