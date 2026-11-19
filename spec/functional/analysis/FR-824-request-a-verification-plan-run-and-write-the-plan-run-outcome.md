@@ -114,9 +114,9 @@ identities (FR-192 "Package form"). On a source run `document` refuses
   "status": "failed",
   "inputs": {"initial": "spine-snapshot.json", "seed": 7},
   "dispositions": {
-    "safe":   {"status": "refuted", "method": "model_based_test", "evidence": "refutation", "blocked_by": null, "result": {}},
+    "safe":   {"status": "refuted", "method": "model_check", "evidence": "refutation", "blocked_by": null, "result": {}},
     "tested": {"status": "tested",  "method": "model_based_test", "evidence": "tested",     "blocked_by": null, "result": {}},
-    "timely": {"status": "blocked", "method": "model_based_test", "evidence": null,         "blocked_by": "safe", "result": null}
+    "timely": {"status": "blocked", "method": "model_check", "evidence": null,         "blocked_by": "safe", "result": null}
   },
   "failed_steps": ["safe"]
 }
@@ -137,20 +137,19 @@ identities (FR-192 "Package form"). On a source run `document` refuses
 - `status` is `passed` when every node is `proved` or `tested`, `failed`
   when any node is `refuted` or `failed`, and otherwise `incomplete`.
 
-| Plan outcome | Category | Exit |
-| --- | --- | --- |
-| `execute` `false` (emitted only) | success | `0` |
-| `passed` | success | `0` |
-| any node `failed` | internal-failure | `30` |
-| otherwise any node `refuted` | violation | `10` |
-| otherwise any node `incomplete` or `blocked` | incomplete | `22` |
-| otherwise any node `unsupported` | unsupported | `21` |
+The run is multi-item output, so its exit is FR-301's: each node's
+disposition has its FR-301 category (`proved` and `tested` success `0`,
+`refuted` violation `10`, `incomplete` and `blocked` incomplete `22`,
+`unsupported` `21`, `failed` internal-failure `30`), and the process exit is
+the highest-severity code present under FR-301's ordering (`30`, `20`,
+`21`, `22`, `10`, `11`, `0`). There is no plan-specific ranking. A request
+with `execute` `false` settles no node and exits `0`.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-824-AC-1 | Executing FR-192's `Release` plan where `safe` is refuted writes `status` `failed`, `safe` `refuted` with `evidence` `refutation`, `tested` `tested`, `timely` `blocked` with `blocked_by` `safe` and `result` `null`, three dispositions, `failed_steps` `["safe"]`, `inputs.seed` 7, and exits `10`; `{"plan": "Release", "emit": true, "execute": false}` writes the plan document as `document`, `dispositions` `null`, exit `0`. | Test (TC-2039) |
+| FR-824-AC-1 | Executing FR-192's `Release` plan where `safe` is refuted writes `status` `failed`, `safe` `refuted` with `evidence` `refutation`, `tested` `tested`, `timely` `blocked` with `blocked_by` `safe` and `result` `null`, three dispositions, `failed_steps` `["safe"]`, `inputs.seed` 7, and exits `22`, FR-301's highest-severity code of the refuted `10` and the blocked `22`; `{"plan": "Release", "emit": true, "execute": false}` writes the plan document as `document`, `dispositions` `null`, exit `0`. | Test (TC-2039) |
 | FR-824-AC-2 | Over one plan, `{}` runs it; over two plans, `{}` refuses `invalid_runtime_input`/`missing-member` at `/plan` naming both; `plan` `Nope` and `plan` naming the claim `Never` each refuse `missing_declaration`/`missing-name` at `/plan`; a bare `Release` matching `A::Release` and `B::Release` refuses `ambiguous_declaration`/`ambiguous-name` at `/plan`; each exits `20` before any step runs. | Test (TC-2039) |
 | FR-824-AC-3 | `seed` `"7"` refuses `wrong-value-kind` at `/seed`; `emit` and `execute` both `false` refuse `invalid-value` at `/execute`; `engine` refuses `unknown-member` at `/engine`; `seed` on a plan with only `model_check` steps refuses `unknown-member` at `/seed`; a plan run over a selected package without `document` refuses `missing-member` at `/document`, and with a plan document of another package `invalid-value` at `/document` naming both identities. | Test (TC-2039) |
 

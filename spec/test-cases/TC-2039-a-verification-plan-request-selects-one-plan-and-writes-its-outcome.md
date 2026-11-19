@@ -28,7 +28,7 @@ Scope: FR-824-AC-1 to FR-824-AC-3.
 ## Expected Results
 
 - Step 1: `failed`, the three dispositions, `failed_steps` `["safe"]`, exit
-  10; then `document` present, `dispositions` `null`, exit 0.
+  22 (FR-301's highest-severity code); then `document` present, `dispositions` `null`, exit 0.
 - Step 2: the plan runs; `missing-member`, `missing-name` twice and
   `ambiguous-name`, each at `/plan`, exit 20.
 - Step 3: `wrong-value-kind` at `/seed`, `invalid-value` at `/execute`,
