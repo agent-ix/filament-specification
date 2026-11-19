@@ -278,9 +278,19 @@ has more than `2^256` members and is drawn like `Text[0, 2]`.
 `filament.value.accounting/v1` meter before it is allocated, so a valid
 declared `max`, however large, bounds no memory or time the caller did not
 fund. Preparing the root's domain, before the run's first case, charges one
-`work_units` per cell of its count table (one cell per length term for
-`unicode-scalars` and `binary-utf8`, one per length and transfer state for
-the four normalizing profiles), whole, before the table exists; building any
+`work_units` per cell of its count table, whole, before the table exists.
+The table has `max + 1` rows, one per length 0 to `max`, of `S` cells, `S`
+fixed by the profile:
+
+| Profile | `S` | One cell per |
+| --- | --- | --- |
+| `unicode-scalars`, `binary-utf8` | 1 | length term of `count` |
+| `nfd`, `nfkd` | 256 | canonical combining class value 0 to 255 of the last scalar |
+| `nfc`, `nfkc` | 512 | canonical combining class value 0 to 255 of the last scalar, and whether the last starter can still compose (2) |
+
+So the charge is `(max + 1) · S` `work_units` on every implementation,
+whatever transfer states its own count uses: `Text[0, 4; nfc]` charges
+2560 and `Text[0, 2^40; nfc]` charges `(2^40 + 1) · 512`. Then, building any
 Text value, a partition value or `unrank(i)`, charges one
 `normalized_scalars` per scalar it emits. A charge the budget cannot cover
 settles the run `incomplete` with `limit-reached{limit, value, setting:
@@ -602,7 +612,7 @@ failing clause is rejected and never retained.
 | FR-190-AC-19 | Over `t: Text[0, 4]`, the `normalization` partitions after `upper-refusal` are, in order: under `unicode-scalars` the eight witness spellings themselves, so U+00E9 and U+0065 U+0301, U+0064 U+0307 U+0323 and U+0064 U+0323 U+0307, and U+AC00 and U+1100 U+1161 are six distinct cases; under `binary-utf8` the encodings `C3 A9`, `65 CC 81`, `EA B0 80`, `E2 84 AB` and `EF AC 81` (witnesses 3, 4 and 6 are 5 or 6 bytes long and skipped); under `nfc` U+00E9, U+1E0D U+0307, U+AC00, U+00C5 and U+FB01; under `nfd` U+0065 U+0301, U+0064 U+0323 U+0307, U+1100 U+1161, U+0041 U+030A and U+FB01; under `nfkc` U+00E9, U+1E0D U+0307, U+AC00, U+00C5 and U+0066 U+0069; and under `nfkd` U+0065 U+0301, U+0064 U+0323 U+0307, U+1100 U+1161, U+0041 U+030A and U+0066 U+0069. Over `Text[0, 1; nfd]` no `normalization` partition is generated except U+FB01, every other normal form being 2 or 3 scalars long. `t`'s `empty`, `singleton` and `upper-endpoint` values are U+0000 repeated 0, 1 and 4 times. | Test (TC-1600) |
 | FR-190-AC-20 | A value clause over `t: Text[0, 13; unicode-scalars]` (more than `2^256` members), a clause every case passes, seed 7 and `max_cases` 30 settles `tested` with `cases.generated` 30, every seeded case a member of length at most 13 that is `unrank(i)` for the index the profile's uniform choice drew; it is never `unsupported` `total-above-draw-range` and no draw is truncated to fewer members. Two runs with equal inputs give equal `t` values in every case. | Test (TC-1600) |
 | FR-190-AC-21 | Seeded draws use `filament.simulation.sampler/v1`'s draw function with the coordinates "Seeded draws" binds. Over the value clause `Square` with parameter `x: Integer`, seed 7 and `max_value_bits` 8, the first seeded case is case 5 (after the five partition cases), and its one draw value is `SHA-256` of `{"choice":"0","draw":"0","seed":"7","step":"0","trace":"5"}`, `870d79a5aa0eeb2e99ebcf1b9bfd2c96fb3776efa3f045d4bec328c7b676eb65`, which is below `511 · ⌊2^256 / 511⌋`, so it is accepted; its value modulo 511 is 116, and size index 116 is `x` = 53. Over the value clause with parameter `t: Text[0, 2; unicode-scalars]` and seed 7, the first seeded case is case 10 (after `empty`, `singleton`, `upper-endpoint`, `upper-refusal` and the six `normalization` partitions of witnesses 1, 2, 5, 6, 7 and 8), and its draw value is `SHA-256` of `{"choice":"0","draw":"0","seed":"7","step":"0","trace":"10"}`, `018f5797cdbae46b5c12df4e591c545d037f369afd8b6ac8ffdd46bda1bbb5dd`, accepted; its value modulo 1236687452161 is 968414557300, and `unrank(968414557300)` is U+D51A9 U+87AC9. Every computation uses integers only, and the same seed gives the same values on every platform. | Test (TC-1600) |
-| FR-190-AC-22 | A value clause over `t: Text[0, 1099511627776; nfc]` (`max` 2^40), body `size(t) >= 0`, seed 7, `max_cases` 30 and `accounting.work_units` 1000000 settles `incomplete` with `{"kind": "limit-reached", "limit": "work_units", "setting": "accounting.work_units", "value": 1000000}` and `cases.generated` 0; it does not abort, is not `unsupported`, and `provenance.size_bounded` is empty. The same clause under `unicode-scalars` settles the same way, and over `Text[0, 4; nfc]` under the same limits it is `tested` with `cases.generated` 30. | Test (TC-1600) |
+| FR-190-AC-22 | A value clause over `t: Text[0, 1099511627776; nfc]` (`max` 2^40), body `size(t) >= 0`, seed 7, `max_cases` 30 and `accounting.work_units` 1000000 settles `incomplete` with `{"kind": "limit-reached", "limit": "work_units", "setting": "accounting.work_units", "value": 1000000}` and `cases.generated` 0; it does not abort, is not `unsupported`, and `provenance.size_bounded` is empty. The same clause under `unicode-scalars` settles the same way, and over `Text[0, 4; nfc]` under the same limits it is `tested` with `cases.generated` 30. Over `Text[0, 4; nfc]` with `accounting.work_units` 2559, one below the 2560 its count table charges, the run settles `incomplete` naming `accounting.work_units` with value 2559 and `cases.generated` 0. | Test (TC-1600) |
 
 ## Dependencies
 

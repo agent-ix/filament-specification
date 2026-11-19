@@ -4337,7 +4337,8 @@ A state clause, a refinement and a non-temporal claim are named by the
 source that declares them, and an analyze or replay request names the claim
 it asks about by that name. The graph does not carry the name for every such
 node: a `state`/`state_clause` node is an application node identified by its
-structure (FR-341), so two structurally equal clauses share one node, and a
+structure (FR-341), so two structurally equal clauses outside every
+recursion group share one node, and a
 `claim` node's `declaration` member holds no alias-free path for a claim
 declared inside a nested scope. A consumer that holds only the package bytes,
 such as the analysis of a selected package, could therefore not resolve
