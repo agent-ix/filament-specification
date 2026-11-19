@@ -188,7 +188,7 @@ draws. This differs from the sampler's step choices, which close up the
 indices of one-item choices: a case's roots have fixed positions, and fixed
 indices keep a shrink or a domain edit from re-seeding unrelated roots.
 
-A uniform choice over `n` items reads `k = ⌈bitlen(n) / 256⌉` draw values,
+A uniform choice over `n` items reads `k = ⌈bitlen(n − 1) / 256⌉` draw values,
 at `draw` `0` to `k − 1`, as one big-endian integer `V` of `256·k` bits.
 `V` is accepted when `V < n · ⌊2^(256·k) / n⌋`, and the choice selects the
 item `V mod n`. A rejected `V` reads the next `k` draw values. For
