@@ -14,7 +14,7 @@ The checker accepts a `conditional` certificate only after rebuilding the
 activating states and the reset process itself, and checks the reset process
 over proper schedulers only.
 
-Scope: FR-412-AC-9, FR-412-AC-10, FR-412-AC-11.
+Scope: FR-412-AC-9, FR-412-AC-10, FR-412-AC-11, FR-412-AC-12.
 
 ## Test Procedure
 
@@ -36,7 +36,11 @@ Scope: FR-412-AC-9, FR-412-AC-10, FR-412-AC-11.
    the state after `a` from which `g` is unreachable, policy `b`, ranks 1
    and 2; then values 0 with policy `stay`, with the reset choice, and with
    policy `b`.
-7. Serialize and read two product states that differ only in `instance`,
+7. On the step 6 model, offer a maximum `reset` for `<= rational(9, 10)`
+   with `y(s0) = 1/2`, policy `b` and no row for `u`, the state after `a`
+   from which `g` is unreachable; then with `u` at `1/2`; then a minimum
+   `reset` whose `s0` choice is randomized over `a` and `b`.
+8. Serialize and read two product states that differ only in `instance`,
    and two that differ only in `activation`.
 
 ## Expected Results
@@ -49,4 +53,6 @@ Scope: FR-412-AC-9, FR-412-AC-10, FR-412-AC-11.
 - Step 5: `malformed` at `conditional`, `denominator`, `mode` and `mode`.
 - Step 6: accepted; `rank-broken` at `{s0, part: reset}` twice;
   `inequality-fails` at `{s0, part: reset}`.
-- Step 7: each pair keeps two distinct keys.
+- Step 7: `malformed` at `values`; `inequality-fails` at
+  `{s0, part: reset}`; `malformed` at `policy`.
+- Step 8: each pair keeps two distinct keys.
