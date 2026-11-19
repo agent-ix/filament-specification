@@ -600,7 +600,10 @@ abstract class: this includes the `effect` and `commit` classes (each the
 `event` step kind of its node, spelled by the bare node path, `node` the effect
 or commit node, `binder_types` its binder record) and the `cend` class of each
 template (`cend <protocol>::<template>`, `node` the template node, no binder
-types). A catalog without them omits a class and refuses as an omitted class
+types) and the `recommend` class of each recommend node (spelled by the bare
+node path, `node` the recommend node, `binder_types` its FR-432 binder
+record: the receiver's reference type, then each parameter type of the
+recommended operation, with no result type). A catalog without them omits a class and refuses as an omitted class
 below; an abstract `protocol_step` target naming an `effect` or `commit` node
 resolves against the abstract entry of that node. Further:
 `fork` and `join` are two classes of one `parallel` node, and a memory class

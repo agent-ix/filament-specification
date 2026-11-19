@@ -41,21 +41,25 @@ replay recompiles each body under its recorded mode (FSL FR-098).
 
 A declared clause is always checked as `linked`, whatever mode its unit's
 function bodies were checked under. An `invariant` or `precondition` clause
-function ("clause kind", FR-322) therefore carries `linked`. A `body` clause
+function ("clause kind", FR-322) therefore carries `linked`, and so does a
+`reward` clause function (FR-640): a reward is a declared expression of the
+model, a provider evaluates it on every transition it rewards, and its
+definedness must not depend on the mode the unit's function bodies chose. A `body` clause
 function, a declared helper `function` and a declaration-less function carry
 the mode their body was checked under.
 
 ## Behavior
 
 - A producer SHALL write `check_mode` on every `function` node and SHALL
-  write `linked` on every `invariant` or `precondition` clause function.
+  write `linked` on every `invariant`, `precondition` or `reward` clause
+  function.
 - A reader SHALL refuse a `function` node with no `check_mode`, or with a
   value other than `linked` or `kernel`, as `malformed_wire` at
   `/semantic_graph/nodes/{i}/check_mode`, `i` the node's graph index.
 - A reader SHALL refuse `check_mode` on a node whose `node_tag` is not
   `function` as an unknown member (`malformed_wire`).
-- After the owner join, a reader SHALL refuse `kernel` on an `invariant` or
-  `precondition` clause function as `invalid_package`/`invalid-value` at
+- After the owner join, a reader SHALL refuse `kernel` on an `invariant`,
+  `precondition` or `reward` clause function as `invalid_package`/`invalid-value` at
   that pointer.
 
 ## Acceptance Criteria
@@ -63,7 +67,7 @@ the mode their body was checked under.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-770-AC-1 | A package whose every `function` node carries `"check_mode": "linked"` is admitted, and so is the same package with a declared function's and a `body` clause function's `check_mode` `"kernel"`; the two admitted packages are unequal, and a dependency diamond reaching one `{package, path}` with `linked` on one side and `kernel` on the other refuses `invalid_package`/`conflicting-definition`. | Test (TC-1860) |
-| FR-770-AC-2 | Negative: a `function` node with `check_mode` removed, or set to `"strict"`, `""` or `true`, refuses `malformed_wire` at `/semantic_graph/nodes/{i}/check_mode`; `check_mode` on an `expression` node refuses `malformed_wire`; `"kernel"` on an `invariant` clause function owned by `Order` refuses `invalid_package`/`invalid-value` at that pointer, and on a `precondition` clause function the same. | Test (TC-1860) |
+| FR-770-AC-2 | Negative: a `function` node with `check_mode` removed, or set to `"strict"`, `""` or `true`, refuses `malformed_wire` at `/semantic_graph/nodes/{i}/check_mode`; `check_mode` on an `expression` node refuses `malformed_wire`; `"kernel"` on an `invariant` clause function owned by `Order` refuses `invalid_package`/`invalid-value` at that pointer, and on a `precondition` clause function the same; FR-640-AC-1's `duration` reward function carries `"linked"`, and with `"kernel"` it refuses `invalid_package`/`invalid-value` at its `check_mode`. | Test (TC-1860) |
 
 ## Dependencies
 

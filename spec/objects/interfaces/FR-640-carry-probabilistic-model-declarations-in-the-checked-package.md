@@ -75,11 +75,48 @@ whose source region is the declaration's label span.
 - **`reward`** — body bindings, in this order: `declaring`, `operation`,
   `name` (a `literal` text term), `value_type` (a `reference` to the integer
   or quantity type node of the reward) and `expression` (a `reference` to a
-  `function` node). The function node is a clause function whose owner is the
-  `ModelOwner` naming the operation member, whose `parameters` binding
+  `function` node). The function node is a clause function of clause kind
+  `reward` (its `clause` binding is the text `"reward"`, FR-322 "Owner
+  joins") whose owner is the
+  `ModelOwner` naming the operation member (for an operation of a
+  source-declared type, the unit's `SourceOwner` with the `declaration`
+  `[<type>, <operation>, "reward", <reward name>]`, FR-322 "Source-declared
+  object types" item 5), whose `parameters` binding
   references the operation's parameters in declared order, random parameters
   included, whose result type is `value_type`, and whose body reads no state;
-  it is the function a provider evaluates on a transition's arguments.
+  it is the function a provider evaluates on a transition's arguments. It
+  has its own clause kind, not `precondition` or `body`: a consumer reads an
+  operation's guard from its `precondition` clause functions and its body
+  from its `body` clause function (FR-322 `operation_bodies`), and a reward
+  is neither, so a reward never adds a guard to its operation and never
+  makes an operation without a body read as having one. A consumer keys a
+  reward's function on the clause kind `reward` or reaches it through the
+  `reward` node's `expression`.
+
+  **Reward identity.** The `reward` node's operand (FR-322 "Structural node
+  identity") is, in this order: the `declaring` node's id, the operation's
+  name, the reward's name, and a **content operand** that spells what the
+  function computes: the node id of the expression node its `body` binding
+  references, which FR-322 keys by the expression's content, or, for a body
+  that is a literal, the literal's operand text. The function node of a reward on a source-declared
+  type is a declared node keyed by its `declaration` path at ordinal 0, so
+  the lowering-order rule below does not apply to it and its id is fixed by
+  the type, operation and reward names. The function node of a reward on a
+  selected model's type
+  shares its derived path with the other model-owned clause functions of its
+  owner and takes its ordinal in **lowering order**: the producer lowers
+  every other clause function first and then the package's rewards in
+  ascending order of (operation key, reward name), so a reward's function
+  ordinal depends on the clause functions and rewards that precede it in
+  that order and never on the source order of any declaration. The
+  function's key carries no content, so the content operand is what makes a
+  changed expression change the reward's identity. Writing the rewards, the
+  random parameters, the workloads or the claims of a unit in another order
+  therefore changes no node; changing a reward's expression changes that
+  reward node's id and the id of every claim that reads the reward, and
+  leaves every other node unchanged; adding a reward, or a clause function
+  that precedes it in lowering order, may shift the ordinals of the reward
+  functions after it.
 - **`delay_distribution`** — body bindings, in this order: `declaring`,
   `operation`, `family` (a `literal` text term, one of `uniform`,
   `uniform_interval`, `exponential` and `discrete`) and `parameters`: empty for
@@ -107,7 +144,9 @@ whose source region is the declaration's label span.
 ### Reader
 
 The reader SHALL check, for each `probabilistic` node in ascending node-id
-order and after FR-322's owner join, and refuse the first failure with
+order and after FR-322's owner join and its `operation_effects` and
+`operation_bodies` carriers (FR-322 `operation_bodies` "Check order"),
+and refuse the first failure with
 `invalid_package` and the cause given, at the JSON pointer of the failing
 member:
 
@@ -132,8 +171,12 @@ member:
    `invalid-value`; two `workload` nodes of one name in the package:
    `conflicting-definition` at the later node;
 4. a `reward` whose `value_type` is neither an integer nor a quantity type,
-   whose `expression` is not a clause function owned by that operation member
-   with exactly its parameters, or whose function body reads state:
+   whose `expression` is not a clause function of clause kind `reward` owned
+   by that operation member (for a source-declared `declaring` node, carrying
+   the unit's `SourceOwner` and the `declaration` `[<type>, <operation>,
+   "reward", <name>]` of that type, operation and reward) with exactly its
+   parameters, or whose function
+   body reads state:
    `invalid-value`; two `reward` nodes of one name on one operation:
    `conflicting-definition` at the later node;
 5. a `delay_distribution` on an operation of a model that is not `time
@@ -168,7 +211,8 @@ keyed by its node identity.
 | --- | --- | --- |
 | FR-640-AC-1 | A package with FSL ADR-024 §7.2's `Service` (two random parameters on `Server::attempt`, the reward `duration` and the workload `Steady`) is emitted with two `random_parameter` nodes, one `reward` node with its clause function and one `workload` node, each with one `declaration` occurrence; the reader admits it and its typed read gives the supports `1`, `3`, `12` with probabilities `9/10`, `7/100`, `3/100`, `duration` typed `Millis`, and weight 1 for each operation of `Steady`. | Test (TC-1563) |
 | FR-640-AC-2 | A `time dense` model with `delay Call::reply ~ discrete { 1 ms: 90, 3 ms: 10 };` is emitted with one `delay_distribution` node of family `discrete` whose delays are `1` and `3` in the model's unit `ms` with weights 90 and 10, and the reader admits it; `uniform`, `uniform[1 ms, 4 ms]` and `exponential(rational(1, 2))` are emitted with families `uniform`, `uniform_interval` and `exponential` and admitted. | Test (TC-1563) |
-| FR-640-AC-3 | Writing `Steady`'s weights in another order leaves the `workload` node byte-identical; changing one weight, one support value or one reward expression changes that node's identity and the identity of every claim that reads it. A workload with weight 0 on one operation is emitted and admitted. | Test (TC-1563) |
+| FR-640-AC-3 | Writing `Steady`'s weights in another order leaves the `workload` node byte-identical; changing one weight, one support value or one reward expression changes that node's identity and the identity of every claim that reads it. A workload with weight 0 on one operation is emitted and admitted. For a unit with rewards `cost` and `load` on `Server::attempt` and `stable` on `Server::reset`, a random parameter, a workload and a claim, the declaration orders [`stable`, workload, `load`, `cost`], [`load`, `stable`, `cost`, workload] and [workload, `load`, `stable`, `cost`] emit byte-identical packages, the reward functions ranked `cost`, `load`, `stable` by (operation key, name); changing `load`'s expression from `d` to `d + 1` changes the `load` node's id (its content operand) and the ids of the claims that read `load`, keeps the id of `load`'s function node, and changes no other node id except the new expression nodes of that function's body. | Test (TC-1563) |
+| FR-640-AC-7 | In `Service`, the `duration` reward's function carries `clause` `"reward"`; the reader admits the package, gives `Server::attempt` no precondition read from that function, and keeps its `operation_bodies` row `no_body` (FR-322-AC-471). The reward rewritten to name a function whose `clause` is `"precondition"`, and one owned by another operation member `Server/reset`, each refuse `invalid_package`/`invalid-value` at the `reward` node's `/body/expression` member (rule 4). FR-640-AC-6's unit with a reward `cost` on `Other::poke` returning `k` emits the function with the unit's `SourceOwner`, `declaration` `["Other", "poke", "reward", "cost"]`, ordinal 0 and `clause` `"reward"`, and the reader admits it; the same function with `declaration` `["Other", "poke", "reward", "load"]` refuses rule 4 at `/body/expression`. | Test (TC-1563) |
 | FR-640-AC-4 | Reader mutations each refuse `invalid_package` at the failing member: a support with a repeated value, a support weight 0, a workload missing an operation, a workload with a negative weight, workload members out of order, a reward whose function reads a state field, a reward typed `Boolean`, a delay on an untimed model and a `discrete` delay with weight 0 (`invalid-value`); a second `random_parameter` of one parameter, a second `workload` of one name, a second `reward` of one name on one operation and a second `delay_distribution` of one operation (`conflicting-definition` at the later node). A reader budget one visit short of the package's count returns `incomplete` at the first uncharged member. | Test (TC-1563) |
 | FR-640-AC-5 | A claim `under Steady` over `Service` resolves its scheduler to `Steady`'s `workload` node, and a provider run over the emitted package gives the same step probabilities as FSL FR-187-AC-1. | Test (TC-1563) |
 | FR-640-AC-6 | A package of a unit that declares `object O { d: Clock; operation step() modifies self.d; }`, `object Other { n: Integer; operation poke(k: Int[1, 3]) modifies self.n; }` and `time O dense unit ms;`, with `delay O::step ~ uniform;`, `delay Other::poke ~ discrete { 1 ms: 9, 3 ms: 1 };`, `random Other::poke(k) ~ { 1: 1, 3: 3 };` and `workload W on O { weight O::step = 1; }`, is emitted with operation references whose `declaring` is the source node of `O` or `Other` and a `workload` node whose `model` is the source node of `O`; the strict read and the identity-row join admit it and the typed read gives the delays, the support with probabilities `1/4` and `3/4`, and `W` with weight 1 on `O::step`, its weight rows joined to the `operations` entries of `O`'s identity row. Each refuses `invalid_package`/`invalid-value` at the member: at the identity-row join, an `operation` `nudge` that no `operations` entry of `Other`'s row carries a `parameter` `j` that no `parameters` entry of `Other::poke` carries, and a `W` whose weights omit `O::step` or name `O::nudge`; at the strict read, a `declaring` that is a source-declared `relation`/`population` node, and a delay on a source node of a unit whose source model has no `dense` time member. | Test (TC-2033) |
