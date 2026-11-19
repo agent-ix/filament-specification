@@ -571,7 +571,14 @@ entry, and that entry is the wire form of the solver result.
   names the expression, so a reader recomputes the state's values by
   replay instead of reading them from the provider. A reader settles the
   item from the counterexample its own exact replay reproduces; the
-  provider's `where` stays on the record only as part of its claim.
+  provider's `where` stays on the record only as part of its claim. The
+  claim agrees with the reproduced counterexample, as FR-364 step 6
+  requires, when both kinds are `formula`, or both are `undefined-evaluation`
+  with equal `position`, `locus` and `cause` and a claimed `time` that
+  contains the reproduced instant; a reproduced kind that does not agree
+  makes the exact replay outcome `not-reproduced` at check 5, `at` the
+  pointer of the trace state holding the reproduced decisive instant, and
+  the item settles `inconclusive`, `replay-parity`.
 - A provider that cannot decide a model because a construct is outside the
   class its method decides SHALL return an `unsupported` entry carrying the
   `diagnostic` `unsupported_construct`/`expression-form` (FR-272) and no
