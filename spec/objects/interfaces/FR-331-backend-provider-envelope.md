@@ -293,8 +293,10 @@ substitute.
 
 `ProbabilityProductKey` SHALL travel as unpadded base64url of exactly FSL
 FR-196 / ADR-028 PR-4's RFC 8785 UTF-8 octets of
-`["filament.probability-product-key/v1", model, monitor, accumulator, pending]`.
-All five members are required. `model` retains the full typed canonical
+`["filament.probability-product-key/v1", binding, instance, activation, model, monitor, accumulator, pending]`.
+All eight members are required: `binding` is the `over` binding, `instance`
+the `on each` object, and `activation` its `"waiting"` or `"active"` phase,
+each null where the claim has none. `model` retains the full typed canonical
 simulation state (including digital clock, deadline and tail control when
 applicable). The remaining members retain their actual
 FR-196 closed forms, including activation, the accumulator,
@@ -306,7 +308,11 @@ embeds the parsed complete FR-338 array, not its base64url spelling.
 The certificate's existing row member name `state` in `values`, `ranking`,
 `policy` and each component's `bias` SHALL carry this same
 `ProbabilityProductKey`; a rejection uses `{product_key}` to remain
-disjoint from the model-only `{key}` State locus. When a decoded
+disjoint from the model-only `{key}` State locus. Inside an FR-412 `conditional`
+certificate the locus also carries `part`, one of `numerator`,
+`denominator`, `post` and `reset`, naming the part whose check failed; a
+terminal copy in the reset process keeps its first activating state's key,
+so `part` is what tells the two apart. When a decoded
 key differs from the canonical re-encoding of the key that the checked claim
 and model derive under FSL FR-196 PR-4, or has an absent, extra or
 inadmissible component, the reader SHALL refuse the certificate or rejection

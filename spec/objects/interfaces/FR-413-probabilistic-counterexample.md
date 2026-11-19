@@ -30,6 +30,7 @@ reproduce it with no provider present before the item settles `refuted`.
 |---|---|---|---|
 | initial_state | Integer | 1..1 |  |
 | binding | JsonObject | 0..1 |  |
+| instance | JsonObject | 0..1 |  |
 | bound | JsonObject | 1..1 |  |
 | scheduler | WitnessScheduler | 0..1 |  |
 | evidence | JsonObject | 1..1 |  |
@@ -42,6 +43,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 |---|---|
 | initial_state | index of the initial state in the subject |
 | binding | the `over` binding; JSON object, or null (absent); `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.binding` |
+| instance | the `on each` object of the failing instance; JSON object, or null for an `on origin` claim; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.instance` |
 | bound | the claim bound with its threshold; JSON object; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.bound` |
 | scheduler | WitnessScheduler{entries} as defined in this document; present under every scheduler and under a workload over a timed subject with free delays; absent under a workload that leaves no choice |
 | evidence | exactly one of: path set, subsystem certificate, undefined path; JSON object tagged by `type`; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.evidence` |
@@ -74,10 +76,12 @@ defined on the evidence's states only.
 
 ### `ProbabilisticCounterexample`
 
-`{initial_state, binding, bound, scheduler, evidence}`:
+`{initial_state, binding, instance, bound, scheduler, evidence}`:
 
 - `initial_state` — the index of the initial state in the subject;
 - `binding` — the `over` binding;
+- `instance` — the reference of the `on each` object whose instance fails,
+  the first failing instance in key order, or null for an `on origin` claim;
 - `bound` — the claim's bound with its threshold;
 - `scheduler` — the witness scheduler: present under every scheduler, and
   under a workload over a timed subject with free delays, where it carries the
@@ -120,8 +124,19 @@ for every activation probability, including one below 1:
   refutes when `V > 0` and `V >= q · (1 − N)`, equality included, which is the
   negation of the strict reduced bound.
 
-A subsystem certificate for a quantile claim carries a `lower` certificate for
-`V` and one for `N`, and the same rule applies to their values.
+An `on each` instance is conditioned on its activation the same way (FR-407
+"Conditioned values"), and its path set reads the same two masses. A path is
+**violating** when it activates and its event, read from the activating
+position, is false for a `>= θ` bound or true for a `<= θ` bound, and **not
+activated** when it ends at a state from which no activating state is
+reachable. The evidence refutes when `V > (1 − θ) · (1 − N)` for `>= θ`, and
+when `V > θ · (1 − N)` for `<= θ`, strictly; for a quantile form under
+`on each` the quantile rule above applies with activation meaning its
+measure's activation.
+
+A subsystem certificate for a quantile claim or an `on each` instance
+carries a `lower` certificate for `V` and one for `N`, and the same rule
+applies to their values.
 
 **Subsystem certificate.** Otherwise the evidence is an FR-412 `lower`
 certificate, on the chain the witness scheduler induces or under the workload,
@@ -145,8 +160,12 @@ workload, that each step takes a choice the witness scheduler gives positive
 probability at its product state and, with a
 fairness set, that the witness is fair; it recomputes each path probability
 exactly, evaluates the event, checks prefix-freeness and checks the sum
-against the bound; for a quantile claim it classifies each path as violating
-or not activated, recomputes `V` and `N`, and checks the quantile rule above. For a subsystem certificate it applies the witness
+against the bound; for a quantile claim or an `on each` instance it classifies each path as
+violating or not activated, checking by its own graph search that a
+not-activated path ends where no activating state is reachable, recomputes
+`V` and `N`, and checks the rule above that applies; it checks that
+`instance` names an object of the claim's `on each` population in the start
+snapshot. For a subsystem certificate it applies the witness
 scheduler to rebuild the induced chain over the certificate's states and runs
 the FR-412 checker. For an undefined path it re-executes the path as a path
 of a path set, checks that its exact probability is positive, and evaluates
@@ -185,6 +204,7 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-7 | An undefined path re-executes with positive probability and replays to the undefined value with the item's locus and reason, settling `refuted`; the same path ending at a state where the claim is defined settles `inconclusive`, `replay-parity`. | Test (TC-364) |
 | FR-413-AC-8 | A refutation under a workload over a timed subject with a free delay carries a witness scheduler whose entries give that delay per drawn vector of the given delays; replay checks each step's free delay against it, and the same counterexample without `scheduler` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-374) |
 | FR-413-AC-9 | A quantile refutation replays by the two-mass rule: for `quantile q of M >= c` it refutes when `V > 0` and `V >= q · (1 − N)`, equality included, so the `Two` refutation of `quantile 0.5 of M >= 3` (`V = 1/2`, `N = 0`) replays; for `quantile q of M <= c` it refutes only when `V > (1 − q) · (1 − N)`; a path set whose activation probability is below 1 refutes only when its not-activated mass `N` is counted. | Test (TC-364, TC-360) |
+| FR-413-AC-10 | Under FR-407-AC-18's workload, `on each (x: T) when (g) { probability >= rational(2, 3) [E] }` is refuted by a path set naming `x` as its `instance`, with violating mass `V = 1/4` (`b`, then the event false) and not-activated mass `N = 3/8` (`a`, then the state from which `g` is unreachable): `1/4 > (1/3) · (5/8)`. The same paths without the not-activated path refute nothing, since `1/4` is not above `1/3`; and a counterexample without `instance` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-2062) |
 
 ## Dependencies
 

@@ -1071,6 +1071,8 @@ fn tc_431_canonical_key_bindings_are_complete() {
     assert_eq!(certificate["components"]["items"]["properties"]["bias"]
         ["items"]["properties"]["state"]["$ref"], "#/$defs/ProbabilityProductKey");
     assert_eq!(certificate["policy"]["items"]["properties"]["choice"]["$ref"],
+        "#/$defs/ProbabilityPolicyChoice");
+    assert_eq!(schema["$defs"]["ProbabilityPolicyChoice"]["oneOf"][0]["$ref"],
         "#/$defs/TransitionIdentity");
     for shape in ["ProductStateLocus", "HyperProductStateLocus"] {
         assert_eq!(schema["$defs"][shape]["properties"]["automaton_state"]["$ref"],
@@ -1783,7 +1785,7 @@ fn tc_431_zone_loci_admit_the_refinement_form_rules_and_the_added_members() {
     // The names are exactly the property names, at any depth, of the two certificates and
     // the certificate-owned definitions they reference (FR-331 "Certificate member").
     let walked = certificate_member_names();
-    assert_eq!(walked.len(), 51);
+    assert_eq!(walked.len(), 57);
     let enumerated: std::collections::BTreeSet<String> = parsed(SCHEMA)["$defs"]["CertificateRejected"]["oneOf"]
         .as_array().expect("causes").iter()
         .filter_map(|cause| cause["properties"]["at"]["properties"]["member"]["enum"].as_array())

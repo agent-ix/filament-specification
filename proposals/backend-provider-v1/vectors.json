@@ -3843,6 +3843,7 @@
                     "index": 0,
                     "initial_state": 0,
                     "binding": null,
+                    "instance": null,
                     "first_trace_index": "0",
                     "last_trace_index": "2302585"
                   }
