@@ -584,21 +584,32 @@ entry, and that entry is the wire form of the solver result.
   `diagnostic` `unsupported_construct`/`expression-form` (FR-272) and no
   `cause`. Its `detail` names `form`, the recognized construct;
   `declaration`, the `hybrid-decl`; `mode`, the mode whose flow, guard,
-  reset, invariant or initial entry holds the construct; `variable`, for a
-  flow, the variable whose rate it is; `locus`, the FR-331 `Locus`
+  reset, invariant or initial entry holds the construct or the call
+  that reaches it; `variable`, for a flow, the variable whose rate it is;
+  `locus`, the FR-331 `Locus`
   `{node, occurrence}` of the construct's term node (FR-481); and `backend`,
   the provider whose class excludes it, which stands in FR-272's payload for
   the profile. The location is a `detail` member because an FR-331 entry's
   diagnostic has no member of its own for a locus. A reader SHALL resolve
   `locus` through the checked package it holds, wherever it reads the entry:
   a `Locus` names a package node, and only the package maps it to the
-  mode's flow, guard, reset, invariant or initial entry that holds it, so
-  no reader leaves an admitted `expression-form` entry unread for want of
-  the package. A `locus` that names no term node of the named `mode`'s
-  entries (for a flow, of `variable`'s rate), or a `mode` or `variable` the
-  `declaration` lacks, SHALL be refused `invalid_result`/`invalid-value` at
-  `/diagnostic/detail/locus`, `/diagnostic/detail/mode` or
-  `/diagnostic/detail/variable`.
+  mode's flow, guard, reset, invariant or initial entry that holds it,
+  or to the function declaration whose body holds it, so no reader leaves
+  an admitted `expression-form` entry unread for want of
+  the package. The `locus` names the construct at its own source span, so a
+  construct reached through a call is a term node inside the called
+  function's body, in that function's declaration, while `mode` and
+  `variable` name the entry that holds the call: the body has one set of
+  term nodes whatever calls it, so the mode and rate say which use of it
+  the provider could not decide. A `locus` SHALL name a term node of the
+  named `mode`'s entries (for a flow, of `variable`'s rate) or a term node
+  in the body of a function those entries call, directly or through a chain
+  of calls none of which is recursive; a recursive call is not expanded, so
+  a construct it reaches is located at the call term. A `locus` that names
+  any other node, such as a node in the body of a function those entries do
+  not call, or a `mode` or `variable` the `declaration` lacks, SHALL be
+  refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`,
+  `/diagnostic/detail/mode` or `/diagnostic/detail/variable`.
   The construct is valid FSL, so the item is `unsupported` and not
   `invalid-request`; another provider may decide it.
 - Every exact number on the hybrid wire SHALL be the FR-331 `Rational`
@@ -836,6 +847,7 @@ without a certificate is settled by this requirement alone.
 | FR-193-AC-24 | A `proved` entry whose `horizon` is `{"numerator": "10", "denominator": "1"}` is read, and the same entry with `horizon` `"10"` or `10` is refused `invalid_result`/`wrong-value-kind` at `/basis/horizon`, as is a trace interval whose `lower` is `"0"` at its pointer; an item `options` entry `{"step": "1/16"}` is admitted as a string. A `refuted` entry whose point trace exact replay does not reproduce settles `inconclusive`, `replay-parity`, carrying the provider's counterexample, never `solver-inconclusive`. Against `always [0, 12] holds(1 / (h.v - 5) != 0)` over `Braking`, the reproduced counterexample's `kind` is `{"type": "undefined-evaluation", "where": {"position": 0, "time": {"lower": {"numerator": "15", "denominator": "2"}, "upper": {"numerator": "15", "denominator": "2"}}, "locus": L}, "cause": "division-by-zero"}`, `L` the division's term node, and a `where` carrying any other member is refused `invalid_result`/`unknown-member`. A provider's `unsupported` entry for the flow `v' = -a / (1 + v)` carries `unsupported_construct`/`expression-form` with `detail` members `form`, `declaration`, `mode` `Moving`, `variable` `v`, `backend` and `locus`, the flow's term node as an FR-331 `Locus`, and no `cause`. | Test (TC-2049) |
 | FR-193-AC-25 | Over `Braking`, an `unsupported` entry carrying `unsupported_construct`/`expression-form` whose `locus` names the term node of `v`'s rate in `Moving` is read against the checked package into that construct; the same entry whose `locus` names a guard node of `Moving`, or a node of no hybrid declaration, is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`, and one naming `mode` `Halted` at `/diagnostic/detail/mode`. | Test (TC-2051) |
 | FR-193-AC-26 | A hybrid `undefined-evaluation` counterexample whose `cause` is `division-by-zero`, `outside-parameter-range`, `outside-result-range` or `outside-capture-range` is admitted by the schema and the reader; one whose `cause` is `absent-key` or `undefined` fails the schema and is refused `invalid_result`/`invalid-value` at the kind's `cause`; the native diagnostics catalog's "Undefined reasons" lists the four spellings. | Test (TC-2051) |
+| FR-193-AC-27 | Over `BrakingH`, `Braking` whose `Moving` guard is `half(v) <= 0`, with the pure functions `half` and `spare`, each `(x: Rational[0, 20; 1, 2]): Rational[0, 10; 1, 4]` with body `x / 2`, of which only `half` is called: an `unsupported` entry carrying `unsupported_construct`/`expression-form` with `mode` `Moving`, no `variable`, and a `locus` naming the `/` term node in `half`'s body is read against the checked package into that construct, located in `half`'s declaration; the same entry whose `locus` names the `/` term node in `spare`'s body, or that names `half`'s `/` with `mode` `Stopped` (whose entries call no function) or with `variable` `v` (whose rate in `Moving` calls no function), is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`. Over `BrakingR`, `Braking` whose `Moving` guard is `down(v) <= 0` with `function down using p(x: Rational[0, 20; 1, 2]): Rational[0, 20; 1, 2] pure decreases(x) { if x <= 1 then x else down(x - 1) / 2 }`, a `locus` at the call term `down(v)` with `mode` `Moving` and no `variable` is read into that construct, and a `locus` at the `/` inside `down`'s body is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`, because a recursive call is not expanded. | Test (TC-2051) |
 
 ## Dependencies
 
