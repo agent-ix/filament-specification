@@ -33,4 +33,4 @@ Verify the outcome document members, exits and the request reader. Scope: FR-805
 - Step 5: `rejected` with `rule` and `entry`.
 - Step 6: every member present; `null` objective value, plan, replay and bound; certificate and certification as FR-805 "Members by status" states.
 - Step 7: `{"type": "integer", "value": "3"}`, the `rational` `60/1` with `unit` `min`, the `rational` `3/4`.
-- Step 8: `unknown-member` at the bare and the `/synthesis`-prefixed pointers; the half grid admitted, then `wrong-value-kind` and `invalid-value` at `/dwell_grid`; `unknown-member` at `/initial`.
+- Step 8: `unknown-member` at the bare and the `/request/synthesis`-prefixed pointers; the half grid admitted, then `wrong-value-kind` and `invalid-value` at `/dwell_grid`; `unknown-member` at `/initial`.

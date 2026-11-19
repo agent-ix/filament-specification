@@ -5,6 +5,8 @@ type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-817
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-271
+    type: verifies
 ---
 
 # TC-2047: An export outcome carries its refusal, and an output failure exits 30
@@ -14,7 +16,8 @@ relationships:
 Verify that a `refused` export outcome carries the closed `refusal` member in
 its observer and below-floor shapes, that no other status carries it, and
 that an export whose target file cannot be written is an output failure,
-exit 30. Scope: FR-817-AC-14 and FR-817-AC-15.
+exit 30, with the catalogued code and cause `output-failure`. Scope:
+FR-817-AC-14, FR-817-AC-15 and FR-271-AC-8.
 
 ## Test Procedure
 

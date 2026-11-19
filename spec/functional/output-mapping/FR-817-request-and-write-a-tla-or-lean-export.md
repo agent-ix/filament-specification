@@ -178,9 +178,8 @@ The export request is the `export` member of a `native-run/1` request:
 }
 ```
 
-- `status` is `assembled`, `refused` (with an admission refusal, an
-  observer the implementation cannot run, or FR-811's
-  `below-fidelity-floor`) or `incomplete` (with the limit).
+- `status` is `assembled`, `refused` (with an observer the implementation
+  cannot run, or FR-811's `below-fidelity-floor`) or `incomplete` (with the limit).
 - `records` are FR-298 records in request order; `target_text` and
   `name_map` are present only when `assembled`.
 - `cause` is present exactly when `status` is `incomplete`. It is FR-331's
@@ -266,7 +265,7 @@ the export outcome document unchanged.
   named target file cannot be written (a missing parent directory, a denied
   permission, a full device): no file or partial file is left, the FR-301
   outcome document carries one diagnostic with `code` and `cause`
-  `output-failure`, its category is internal-failure and its `last_stage`
+  `output-failure` (FR-271, FR-272), its category is internal-failure and its `last_stage`
   is the greatest stage the export reached, not `null`, because the
   program was checked and only the write failed. A file or directory found
   already at the path stays the admission refusal above, exit `20`, so a

@@ -83,10 +83,11 @@ refusal naming the first defect by its RFC 6901 pointer.
   requirement's. Every pointer this requirement and FR-801, FR-806 and
   FR-819 state (`/limits/<member>`, `/policy/<i>`, `/initial`,
   `/dwell_grid`) is relative to the plan request object; a host surface
-  SHALL report it prefixed by the pointer of the member that carries the
-  plan request in its own request object, so the native runtime's
-  `synthesis` member reports `/synthesis/limits/max_work` and
-  `/synthesis/dwell_grid`. One rule for every member keeps a pointer
+  SHALL report it prefixed by the pointer, in the document the caller
+  sent, of the member that carries the plan request. A `native-run/1`
+  document holds that member in its `request` object, so the native
+  runtime's `synthesis` member reports `/request/synthesis/limits/max_work` and
+  `/request/synthesis/dwell_grid`. One rule for every member keeps a pointer
   resolvable in the document the caller actually sent.
 - The native runtime's `synthesis` member is FR-823's synthesis request,
   one member for every synthesis kind: when its selected declaration is a
@@ -227,7 +228,7 @@ which is a definite negative answer and is never success.
 | FR-805-AC-5 | A `feasible` result whose certificate was rejected carries `certificate.outcome` `rejected` with `rule` and `entry`, and `bound` `null` when no certified bound exists. | Test (TC-1955) |
 | FR-805-AC-6 | Over the counter, the goal-21 `infeasible` outcome, a `plan_search.max_states` 2 `incomplete` outcome with no plan, and a hybrid `unsupported` outcome (FR-819-AC-3) each carry every member of the outcome document: `objective` with `direction`, `expression` and `value` `null`, and `plan`, `replay` and `bound` `null`; `certificate` is the accepted closure certificate with `certification` `certified` on `infeasible`, and `null` with `certification` `null` on the other two; no member is absent in any of the three. | Test (TC-1955) |
 | FR-805-AC-7 | FR-650-AC-1's outcome writes `objective.value` `{"type": "integer", "value": "3"}`; FR-810-AC-3's writes it as FR-181's unit-bearing quantity `{"type": "rational", "numerator": "60", "denominator": "1", "unit": "min"}`; FR-809-AC-2's writes `3/4` as `{"type": "rational", "numerator": "3", "denominator": "4"}`; none writes a bare JSON number. | Test (TC-1955) |
-| FR-805-AC-8 | A plan request with `limits` `{"max_steps": 1}` refuses `unknown-member` at `/limits/max_steps` and `accounting` `{"steps": 1}` at `/accounting/steps`, not FR-461-AC-4's setting refusal; carried under a host surface's `synthesis` member the same requests refuse at `/synthesis/limits/max_steps` and `/synthesis/accounting/steps`; a hybrid request's `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "2"}` is admitted as one half time unit, `dwell_grid` `1` (a JSON number) refuses `wrong-value-kind` and `{"type": "rational", "numerator": "0", "denominator": "1"}` refuses `invalid-value`, each at `/dwell_grid`; a hybrid request carrying `initial` refuses `unknown-member` at `/initial`. | Test (TC-1955) |
+| FR-805-AC-8 | A plan request with `limits` `{"max_steps": 1}` refuses `unknown-member` at `/limits/max_steps` and `accounting` `{"steps": 1}` at `/accounting/steps`, not FR-461-AC-4's setting refusal; carried under a host surface's `synthesis` member the same requests refuse at `/request/synthesis/limits/max_steps` and `/request/synthesis/accounting/steps`; a hybrid request's `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "2"}` is admitted as one half time unit, `dwell_grid` `1` (a JSON number) refuses `wrong-value-kind` and `{"type": "rational", "numerator": "0", "denominator": "1"}` refuses `invalid-value`, each at `/dwell_grid`; a hybrid request carrying `initial` refuses `unknown-member` at `/initial`. | Test (TC-1955) |
 
 ## Dependencies
 

@@ -68,6 +68,7 @@ catalog).
 | `malformed_command` | A CLI command or option set failed structural validation. |
 | `invalid_identifier` | A typed identity failed validation. |
 | `output_serialization` | A validated result could not be encoded under the selected output wire contract. |
+| output_failure | Wire spelling `output-failure`, exact as written. An admitted request whose result was produced and whose named output could not be written: an export's target file (a missing parent directory, a denied permission, a full device; FR-817) or a replay results row that fails to encode (FSL FR-862). Category internal-failure, exit `30`. It differs from `output_serialization`, which refuses a result the selected output wire contract cannot encode, and from an existing file at the output path, which is an admission refusal. |
 | `invalid_quire_context` | A lifecycle request supplied an incompatible package, stage or semantic context. |
 | `invalid_source_identity` | A required source label (authority or identity) is empty or only whitespace, or the source path is empty. Its causes are `blank-label` and `empty-path`. |
 | `invalid_source_map` | A source map was non-monotone, out of bounds or split a UTF-8 scalar. |
@@ -166,6 +167,7 @@ settling unselected native literals or treating spelling as a global convention.
 | FR-271-AC-5 | A code minted by a consumer for its own refusal does not resolve to a member of this table, even when its spelling equals a member spelling. | Analysis |
 | FR-271-AC-6 | The values table has exactly one row for each of `invalid_source_identity` and the eleven evaluator value-refusal codes: `inexact_decimal`, `inexact_conversion`, `decimal_out_of_domain`, `division_out_of_domain`, `modulo_out_of_domain`, `text_length_out_of_domain`, `integer_out_of_domain`, `rational_out_of_domain`, `ieee_not_exact`, `ieee_nan_payload_not_representable` and `ieee_rational_out_of_domain`. | Test (TC-233) |
 | FR-271-AC-7 | The values table has exactly one row for each of `unknown_contract_version`, `malformed_wire`, `duplicate_member`, `unknown_member`, `unknown_required_capability`, `invalid_semantic_graph` and `unsupported_node_tag`, the codes of the FR-322 reader vocabulary that no other row holds. | Test (TC-233) |
+| FR-271-AC-8 | The values table has exactly one row for `output_failure`, whose wire spelling is `output-failure`, and FR-272 gives it the one cause `output-failure`; an export whose target file cannot be written reports that code and cause (FR-817-AC-15). | Inspection (TC-2047) |
 
 ## Resolved catalog namespaces
 
