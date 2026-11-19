@@ -743,14 +743,27 @@ A frame body refusal, meaning-join or canonical-order
     function, the kind its clause kind names. A clause function's **clause
     kind** is the text literal of the one `clause` binding of its body, the
     `DeclaredClauseKind` of FSL FR-094's clause functions: `invariant`,
-    `precondition` or `body`. A postcondition is not a clause function: it is
+    `precondition`, `body` or `reward`. A postcondition is not a clause function: it is
     FR-341's `state`/`state_clause` node, an application-keyed node that
     carries no `owner`. An `invariant` clause function is owned by an object
     type with no `interfaceFeatures` (`model`/`object_type`, never a systems
     interface), by a record value type (`model`/`record_value_type`) or by an
     event type (`model`/`event_type`);
-    a `precondition` or `body` clause function is owned by an operation
-    member of an object type, the operation's context; a clause function with
+    a `precondition`, `body` or `reward` clause function is owned by an operation
+    member of an object type, the operation's context. A `reward` clause
+    function is the expression of an FR-640 `reward` node: its `parameters`
+    are the operation's parameters in declared order, random parameters
+    included, its result type is the reward's value type, and its body reads
+    no state (no field, `pre`, `self` state read or `all_instances`). It is
+    neither a guard nor a body: a consumer that reads an operation's
+    preconditions reads only its `precondition` clause functions, the
+    `operation_bodies` row of the operation is decided by its `body` clause
+    function alone and demands no `function` row for a `reward` one, and a
+    consumer finds a reward's function only through its `reward` node's
+    `expression` (or by the clause kind `reward`). The kind is its own,
+    rather than `precondition` or `body`, because each of those kinds already
+    has consumers that read every function of the kind on an operation, and
+    a reward is neither an enabling condition nor an effect; a clause function with
     no, a repeated, a non-text or another `clause` binding has no owner kind it can join. Any
     other owner refuses `missing_declaration`/`missing-selection`
     at that node's `node_id`, whether or not any member, frame, anchor or
@@ -4556,7 +4569,10 @@ exactly:
 }
 ```
 
-An operation without an authored body has `"body": {"kind": "no_body"}`. The
+An operation without an authored body has `"body": {"kind": "no_body"}`. A
+`reward` clause function owned by the operation member (FR-640) gives the
+operation no body: only a `body` clause function does, so a rewarded
+operation with no body keeps its `no_body` row. The
 row is never omitted and `body` is never omitted, `null`, empty or a default,
 so absence is stated and never implied. The member is not a `checked_term_data`
 array, which FR-322-AC-288 closes. A producer that emits the member emits a row
@@ -5577,6 +5593,7 @@ declaration names" states.
 | FR-322-AC-468 | Fed to the reader, each edit of `Pick`'s node refuses with the code at the locus stated: `domain` and `grammar` swapped in order, `invalid_semantic_graph` at the body; `symmetry` `lexicographic`, `invalid_package`/`invalid-value` at that literal; `direction` `least`, `invalid_package`/`invalid-value` at that literal; `grammar` referencing a `temporal`/`temporal_clause` node, `ill_typed`/`operator-ineligible` at the `grammar` binding; `candidate` named `Other`, `invalid_package`/`invalid-value` at the `candidate` binding; `satisfies` referencing an Integer-typed node, `ill_typed`/`non-boolean-root` at the `satisfies` binding; `domain` and the candidate retyped to the builtin `Integer`, `unsupported_projection`/`unbounded-extent` at the `domain` binding naming `Integer`; the `claim_names` row removed, `invalid_package`/`invalid-value` at `/claim_names`. | Test (TC-2037) |
 | FR-322-AC-469 | Over FR-154-AC-51's package, the fields typed `Flag`, `Count`, `Name`, `Reading` and `Sample` have the element types `Boolean`, `Integer`, `String`, `Float64` and `Float32` with those natives' `scalar_type` nodes and no node of the value type, a value of `Count` and an `Integer` compare under `Integer` equality, and the fields typed `Memo`, `Ratio` and `Amount` have no type, so a read of `memo` refuses `ill_typed`/`operator-ineligible`; a tuple position typed `Ratio` refuses `invalid_model_binding`/`malformed-declaration` at the position as one typed `Rational` does; the field typed `Watch` is a `Clock` member by the Clock row, and a `reference` whose `target` is `Watch` is `Reference<Clock>`. | Test (TC-2048) |
 | FR-322-AC-470 | A consumer that holds a SHA-256 integrity digest of a package's exact bytes for a foreign interface (FSL's evaluator, for its filament-observation package selection) writes it to no document or file FSL writes, uses it as no package identity or version, and never decides package sameness by it: two packages whose JSON values are equal member by member are the same package, and the reader's and the comparison's answers are unchanged when the consumer's digest is removed. | Test (TC-2050) |
+| FR-322-AC-471 | In FR-640-AC-1's `Service` package, the `duration` reward's `function` node carries the `clause` binding `"reward"` and the `ModelOwner` of the operation member `Server/attempt`, and the owner join admits it; `Server::attempt`, which has no body, keeps its `operation_bodies` row `{"kind": "no_body"}` and the reader admits the package; the precondition clause functions read for `Server::attempt` hold no function whose `clause` is `reward`. Each mutation refuses `missing_declaration`/`missing-selection` at the clause function's `node_id`: the reward function owned by the object type `Server` instead of its operation member, and the same function owned by a field member of `Server`. The function with its `clause` binding rewritten to `"precondition"` is admitted by the owner join but refuses FR-640 reader rule 4 (`invalid_package`/`invalid-value` at the `reward` node's `/body/expression`), because a reward's expression is a `reward` clause function; with the binding rewritten to `"body"` it refuses `invalid_package`/`invalid-value` at `/operation_bodies/{i}/body` of `Server::attempt`'s row, because a `body` clause function gives the operation a body and the row says `no_body`. | Test (TC-1563) |
 
 ## Dependencies
 

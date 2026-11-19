@@ -53,6 +53,7 @@ admits a step row. The left sides read:
 | --- | --- |
 | `attempt` of one attempt node | `step <C>::<protocol>::<node>`, or the operation's row when the node has none |
 | `cattempt` of one template | `step <C>::<protocol>::<template>`, or the operation's row when the template has none |
+| `recommend` of one recommend node | `step <C>::<protocol>::<node>`, the node's own row; an operation row never decides it |
 | `event`, `send`, `receive`, `fork`, `join`, `timeout`, `finish` of one node | `step <C>::<protocol>::<node>` naming the step kind: `step fork <C>::<protocol>::<parallel>`, `step join …`, and the node itself for event, effect, commit, send, receive, await (the `timeout` step of an `await` node, FR-426) and finish nodes. An `effect` node and a `commit` node each take the `event` step kind (FR-426) and are one class each, spelled by their bare node path exactly as an `event` node is; they have no spelling of their own |
 | `cend` of one template | `step cend <C>::<protocol>::<template>` |
 | `cfail`, `ctimeout` or `cexpire` of one template | `step cfail <C>::<protocol>::<template>`, `step ctimeout …`, `step cexpire …` |
@@ -69,11 +70,19 @@ exists, and otherwise the row of its operation; an operation row therefore
 decides every attempt node of that operation that has no node row, and a
 node row and an operation row for the same node are not a conflict. A
 `cattempt` class is decided the same way, by its template row or else its
-operation row. Every other class is decided by its own row. Each right side is written out, by `protocol-step-target`: an abstract operation application; an abstract protocol step,
+operation row. Every other class is decided by its own row; in particular a
+`recommend` class (FR-426, [FR-822](FR-822-declare-observe-only-protocol-boundaries-and-typed-recommendations.md))
+is decided by its node row `step <C>::<protocol>::<node>` alone, and a row
+of the recommended operation does not decide it. A `recommend` step names
+an operation application but applies none and changes no state, so the
+operation row, which maps the effect of applying the operation, says
+nothing about it, and a recommend node with no node row refuses
+`missing_declaration`/`missing-name` naming the node even when its
+operation has a row. Each right side is written out, by `protocol-step-target`: an abstract operation application; an abstract protocol step,
 `node <A>::<protocol>::<node>(…)`, whose arguments are the node's binder
 record as stated in "The binder record of an abstract node"; `stutter`; or
 `any`. A right side naming an abstract protocol node resolves to an `attempt`,
-`effect`, `event`, `commit`, `send`, `receive` or `finish` node of the selected abstract protocol;
+`recommend`, `effect`, `event`, `commit`, `send`, `receive` or `finish` node of the selected abstract protocol;
 a `timeout`, `fence`, `parallel` or other node, or a name that is no node of that
 protocol, refuses `missing_declaration`/`missing-name` at the node. No right
 side can therefore name an abstract `timeout`, `fence` or `parallel` node: those
@@ -96,9 +105,25 @@ kind are:
 | Node kind | Fields, in order | Field types |
 | --- | --- | --- |
 | `attempt` | `receiver`; one field per parameter of the node's operation, in declaration order; `result`, present only when the operation declares a result | the reference type of the type the attempt's operation name names (`on M::Cell::inc` names `M::Cell`, even when a supertype declares the operation); each parameter's declared type; the declared result type |
+| `recommend` | `receiver`; one field per parameter of the node's operation, in declaration order; no `result` | the reference type of the type the recommend's operation name names, as for `attempt`; each parameter's declared type |
 | `effect`, `event`, `commit`, `finish` | when the node's binder type `T` is a record type, one field per field of `T`, in the effective field order below; otherwise exactly one field | each field's declared type; otherwise `T` |
 | `send`, `receive` | as `event`, over the channel's `carries` type | as `event` |
 | `activate` | as `event`, over the declared type of the clause's `on each` trigger | as `event` |
+
+A `recommend` node's binder record is the part of its recommendation record
+(FR-822) that varies between the node's steps: the `receiver` and the
+`arguments`, one field per parameter. The record's `type`, `node`, `role`
+and `operation` are fixed by the node the row names; `actor` and
+`instance` identify the acting thread, as they do for an `attempt`, whose
+binder record does not list them either; and a recommendation has no
+operation result, so there is no `result` field even when the operation
+declares one. The declared binder type `B` of `as (r: B)` is not the binder
+record: no read of `r` is admitted (FR-822), so `B` constrains nothing a row
+could give. A visible concrete step mapped to an abstract `recommend` node
+has the observation label of kind `recommend`, the node, and the receiver
+and arguments its row gives, and it passes only from abstract states whose
+model state that step leaves unchanged, since an abstract `recommend` step
+changes no state (FR-426).
 
 An `activate` class is never the abstract node of a row's right side, so its
 binder record is read only from the checked class catalog ([FR-375](../analysis/FR-375-declare-model-refinement.md)
@@ -189,7 +214,7 @@ whitespace and no other characters, and is its own canonical spelling.
 
 | Abstract step class | Spelling |
 | --- | --- |
-| `attempt`, `effect`, `event`, `commit`, `send`, `receive`, `timeout` (of an `await` node), `finish` or `fence` of one node; `cattempt` of one template | `<A>::<protocol>::<node>`, or `<A>::<protocol>::<template>` |
+| `attempt`, `recommend`, `effect`, `event`, `commit`, `send`, `receive`, `timeout` (of an `await` node), `finish` or `fence` of one node; `cattempt` of one template | `<A>::<protocol>::<node>`, or `<A>::<protocol>::<template>` |
 | `fork`, `join` of one `parallel` node | `fork <A>::<protocol>::<node>`, `join <A>::<protocol>::<node>` |
 | `cend` of one template | `cend <A>::<protocol>::<template>` |
 | `cfail`, `ctimeout` or `cexpire` of one template | `cfail <A>::<protocol>::<template>`, `ctimeout …`, `cexpire …` |
@@ -200,7 +225,7 @@ whitespace and no other characters, and is its own canonical spelling.
 | cross-model drain class | `memory drain` |
 
 `<A>::<protocol>` must be the refinement's abstract alias and selected
-abstract protocol. A bare node path names the one class of an attempt, effect, event,
+abstract protocol. A bare node path names the one class of an attempt, recommend, effect, event,
 commit, send, receive, timeout, finish or fence node or of a template's `cattempt`; a
 `parallel` node has the two classes `fork` and `join`, so its bare path is not
 a class.
@@ -275,6 +300,8 @@ FR-177 over the same product.
 | FR-432-AC-20 | A concrete protocol with an `effect` node `E` and a `commit` node `K` (as well as an `event` node) decides each by exactly one row `step <C>::<protocol>::E` and `step <C>::<protocol>::K` (the `event` step kind, bare node path); with no row for `E` or `K` it refuses `missing_declaration`/`missing-name` naming that node, and two rows for one refuse `invalid_model_binding`/`conflicting-binding`. An abstract protocol `effect` or `commit` node is a valid right side `node <A>::<protocol>::E(…)` typed against its binder record, and its bare path `<A>::<protocol>::E` is a valid internal-list class. | Test (TC-386) |
 | FR-432-AC-21 | A concrete template with no `step cend <C>::<protocol>::<template>` row refuses `missing_declaration`/`missing-name` naming the template; with the row it is admitted, and a second `cend` row for the template refuses `invalid_model_binding`/`conflicting-binding` naming both. | Test (TC-386) |
 | FR-432-AC-22 | A concrete protocol with a `parallel` over a source-default model `sc`, `tso` or `ra` and no `step memory drain` row refuses `missing_declaration`/`missing-name`, naming the `drain` memory step kind, with the same code, cause and locus as FR-432-AC-3's missing `flush` row (the drain class is catalogued for each of those models, FR-375-AC-26, and nothing defaults, so the row is mandatory even under `sc` where the class is a no-op); with the one `step memory drain` row it is admitted, and a second drain row refuses `invalid_model_binding`/`conflicting-binding` naming both. A protocol with no `parallel` has no drain class and needs no row. | Test (TC-386) |
+| FR-432-AC-23 | A concrete protocol `P` over the concrete model alias `M` whose `run` holds `recommend Advise by Auditor on M::Cell::bump contracts [] as (r: Boolean) { true };` (FR-822-AC-1's form; `bump(k: Int[0, 3])`) beside an `attempt` of `M::Cell::bump`, with an operation row `step M::Cell::bump -> Spec::Cell::bump(self, k)` and no row for `Advise`, refuses `missing_declaration`/`missing-name` once, naming the node `Advise` (the operation row decides the attempt and not the recommend); with `step M::P::Advise -> stutter` added it is admitted, a second `Advise` row refuses `invalid_model_binding`/`conflicting-binding` naming both, and the explored product takes each `Advise` step as an internal step that leaves the mapped `v` unchanged and passes. | Test (TC-386) |
+| FR-432-AC-24 | Over an abstract protocol `A` of `Spec` whose `run` holds `recommend Adv by R on Spec::Cell::bump contracts [] as (r: Boolean) { true };` with `bump(k: Int[0, 3]): Int[0, 9]`, the binder record of `Adv` is (`receiver`, `k`), with no `result`: `node Spec::A::Adv(self, 1)` and `node Spec::A::Adv` are admitted, `node Spec::A::Adv(self, 1, 2)` refuses `ill_typed`/`operator-ineligible` at the node with `expected` 2 and `actual` 3, and `node Spec::A::Adv(self, true)` refuses `ill_typed`/`type-mismatch` at `true` with `expected` `Int[0, 3]` and `actual` `Boolean`. The internal-list entry `Spec::A::Adv` resolves to the class written `A::Adv` and makes it internal, and beside a row `-> node Spec::A::Adv(self, 1)` it refuses `invalid_model_binding`/`conflicting-binding` naming the row and the entry. The refinement's `class_catalog` (FR-375) holds `{class: "A::Adv", node: <Adv's RefinementKey>, binder_types: [<Cell reference type>, <Int[0, 3]>]}` on the abstract side, and a concrete step mapped to `node Spec::A::Adv(self, 1)` from a state where the mapped `v` would change refutes the refinement. | Test (TC-386) |
 
 ## Dependencies
 
