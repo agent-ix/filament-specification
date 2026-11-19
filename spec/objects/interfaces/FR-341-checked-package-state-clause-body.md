@@ -75,6 +75,14 @@ hold.
 - **dependencies** — FR-322's application-node rule: exactly the unique
   node-id-ascending `reference` targets of the body, so the anchor, each
   parameter node and every node the condition references.
+- **identity** — outside every recursion group the node is identified by
+  its structure, FR-322's derived-node form, so two structurally equal
+  clauses share one node. A state-clause node that is a member of a cyclic
+  component (FR-322 "Cycle check"), such as a precondition an `attempt`
+  lists whose condition calls a predicate that refers back to the protocol
+  (FR-464), carries the component's `recursion_group` and takes its
+  `node_id` by FR-322's group rule ("Structural node identity"), not from
+  its structure.
 
 The parameters a clause binds follow the state contract's "Operation
 anchors, aliases and captures" table:
@@ -230,8 +238,8 @@ other transition forms are outside this body and this version.
 - **dependencies** — FR-322's application-node rule: the unique
   node-id-ascending `reference` targets of the body, so the anchor, subject,
   each input, the `pre` clause when present and the `post` clause.
-- **identity** — the node is an application with no `declaration`, so its
-  `node_id` is the structural path of FR-322's derived-node form: the
+- **identity** — the node is an application with no `declaration`, so,
+  outside every recursion group, its `node_id` is the structural path of FR-322's derived-node form: the
   operator, the operation identity, the profile law's definition, the member
   operator and the five bindings (every referenced node's `node_id`, therefore
   the anchor's context, operation name and execution point, the subject's
@@ -239,7 +247,8 @@ other transition forms are outside this body and this version.
   occurrence or source-map entry: re-spelling the source, moving a region or
   adding an occurrence leaves the node id unchanged, while changing the
   field, the operation, an input, `pre`, `post` or the profile selection
-  yields a different node.
+  yields a different node. Inside a recursion group it takes FR-322's group
+  rule instead, as a state-clause node does.
 
 Placement. A `filament.op.state.transition` application is the body root of a
 `state`/`transition` node and nowhere else. The state step checks the

@@ -721,6 +721,16 @@ the cycle check unchanged. Acyclic protocol nodes carry no
 `recursion_group` from a producer; a label on one is admitted and means nothing. This adds no protocol-specific wire variant or
 alternate cycle encoding.
 
+The component may pass through a `state`/`state_clause` node. A protocol
+whose `attempt` lists a state clause, whose body calls a predicate that
+refers back to the protocol, forms one component of the protocol, the controls on the `run` path down to
+that `attempt` (whose `contracts` reference the state clause), the state
+clause, the predicate and the closing carrier; the state clause is a member
+and carries the group like the others (FR-322: only model declaration nodes
+never carry a `recursion_group`). Inside such a component the members are
+ordered by their group ordinals, not by the rule that a protocol follows the
+state clauses its attempts list.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -749,6 +759,7 @@ alternate cycle encoding.
 | FR-464-AC-22 | The exit-feasibility derivation adds no field and compares no guard. Atoms: every listed `visible` entry, in set order and read or not, then every other maximal subterm that is neither a Boolean constant (an inline Boolean `literal` or a reference to a Boolean `value`/`literal` node) nor an application of `filament.op.boolean.not`, `.and`, `.or` or `.implies`, by first occurrence in a depth-first walk visiting the last operand first; a node equal to a listed entry is an atom and is not descended into (the entry `E` listing `a and b` with the guard `E or not a or not b` has three atoms and a feasible exit, so the outer `repeat` refuses); equal nodes are one atom and `filament.op.boolean.eq(a, b)` and `filament.op.boolean.eq(b, a)` are two (`eq(a, b) or not eq(a, b)` is infeasible, `eq(a, b) or not eq(b, a)` is feasible); a guard `true` written as a reference to a Boolean literal node is the constant, as an inline literal is. Valuations are enumerated from the all-false valuation as a little-endian counter over the atoms in that order. One `work` unit is charged before each valuation: a two-atom tautology charges four units, a feasible guard stops at its first false valuation (`a or b` charges one), a nested `repeat` is charged whatever its `maximum`, a `repeat` that is not inside another `repeat`'s `body` is charged nothing (its total consumption equals that with the guard `true`) and the collection and comparison of atoms charges nothing. With *V* the total consumption through the nested `repeat`'s last valuation charge and *T* the total for the package, a limit of *V* minus 1 that denies a valuation yields `stage_limit_exceeded`/`work-budget-exceeded` located at the nested `repeat` with no progress refusal for the enclosing `repeat`, and a limit of *T* admits the package. | Test (TC-946) |
 | FR-464-AC-23 | A nested `repeat`'s counter is reset on each entry from outside it, so `repeat max 1 while true { attempt }` with an `exhausted` control, nested as the only body of an outer `repeat`, is admitted: its exit is infeasible, its `maximum` is 1 and its body steps, and the outer `repeat` takes a step on every iteration. A nested `repeat` is never counted through its `exhausted` control: a nested `repeat max 1 while true` whose body is only a `check` and whose `exhausted` control is an `attempt` leaves the outer `repeat` refused (`unsupported_construct`/`declaration-form` at the first `repeat` in tree order, the outer one). | Test (TC-946) |
 | FR-464-AC-24 | The V2 schema decides a protocol node's layout: every protocol node except a `protocol_reference` carrier must satisfy `ProtocolControlApplication`, so an operator's argument names, order and count, a Tuple-of-Groups record, and an enumerated value outside its set (`delivery`, `overflow`, `loss`, `memory`, `outstanding`, `policy`, `ordering`, `scheduling`, `mode`) each refuse `malformed_wire` at the schema stage, and the recorded locus is the node-level pointer `/semantic_graph/nodes/{i}` (the first error path of the strict validator); every spelling an enumeration admits, and an appended `fence`, `event` and `await` with their layouts, stay schema-valid. | Test (TC-946) |
+| FR-464-AC-25 | A protocol `Flow` whose `attempt` lists the precondition `Pre`, whose body calls the predicate `ready`, which holds `protocol Flow`, is admitted when `Flow`, its `attempt` control, `Pre`, `ready` and the carrier to `Flow` share one `recursion_group` (TC-946 K24); `Pre` is an anonymous derived member whose path is producer-chosen and whose ordinal is producer-assigned. The same package with `Pre`'s `recursion_group` removed refuses `invalid_semantic_graph`, with no cause, at `Pre`'s node, and a `model`/`object_type` node given the same label still refuses `invalid_package`/`invalid-derived-shape` (FR-322-AC-29). | Test (TC-946) |
 
 ## Published artifacts and the operation catalog
 

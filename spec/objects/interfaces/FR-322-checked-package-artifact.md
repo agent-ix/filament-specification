@@ -425,7 +425,17 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   when every cycle member names the same explicit `recursion_group`; all other
   graph cycles refuse. A `recursion_group` label on a node outside every
   cycle is admitted and means nothing: the label constrains cycles only, and
-  no refusal is invented for an acyclic node that carries one.
+  no refusal is invented for an acyclic node that carries one. Any node that
+  is not a model declaration node may be a group member, a
+  `state`/`state_clause` node included: a protocol whose `attempt` lists a
+  state clause whose body calls a predicate that refers back to the protocol
+  closes a cycle through that `state_clause` node, which then carries the
+  component's `recursion_group` like every other member and takes its
+  `node_id` by the group rule of "Structural node identity" instead of its
+  application key. The refusal of a `recursion_group` in FR-322-AC-29 applies
+  to model declaration nodes (those carrying a `ModelOwner`) only, because
+  their ids are a function of `owner` alone and a cycle among model types
+  lives in the selected document.
   **Cycle check.** A **cyclic component** is a set of two or more nodes that
   reach one another, or one node that reaches itself, through the edges a reader
   follows when it builds a node's closure: a non-null `semantic_type` other
@@ -4327,7 +4337,8 @@ A state clause, a refinement and a non-temporal claim are named by the
 source that declares them, and an analyze or replay request names the claim
 it asks about by that name. The graph does not carry the name for every such
 node: a `state`/`state_clause` node is an application node identified by its
-structure (FR-341), so two structurally equal clauses share one node, and a
+structure (FR-341), so two structurally equal clauses outside every
+recursion group share one node, and a
 `claim` node's `declaration` member holds no alias-free path for a claim
 declared inside a nested scope. A consumer that holds only the package bytes,
 such as the analysis of a selected package, could therefore not resolve
