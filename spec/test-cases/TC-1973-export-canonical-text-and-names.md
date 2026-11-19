@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7.
+Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7 to FR-814-AC-9.
 
 ## Test Procedure
 
@@ -20,7 +20,9 @@ Verify keyword-safe and injective names, canonical layout, dependency order and 
 3. Export one request twice.
 4. Export a function used by an invariant; reorder two independent declarations.
 5. Read a TLC trace back through the name map.
-6. Export a model whose field, operation parameter and function are all named `total`.
+6. Export a model whose field, operation parameter, function and function parameter are all named `total`.
+7. Export an operation of `Item` whose declared parameter is spelled `self`.
+8. Export an invariant whose binders are named `Next`, `instance`, `DOMAIN`, `num` and `tag` over fields `num` and `tag`, a `Decimal` field and an `Option` field.
 
 ## Expected Results
 
@@ -29,4 +31,6 @@ Verify keyword-safe and injective names, canonical layout, dependency order and 
 - Step 3: byte-identical ASCII text with the stated layout.
 - Step 4: the function first; only node order changes.
 - Step 5: the FSL nodes.
-- Step 6: `fld_total`, `p_total`, `f_total` and the receiver `p_self`, pairwise distinct, each mapped to its own node; both observers parse.
+- Step 6: `fld_total`, `p_total`, `f_total` and `a_total`, pairwise distinct, each mapped to its own node.
+- Step 7: `r_self` and `p_self`, mapped to the operation and the parameter; SANY and Lean parse both files.
+- Step 8: `x_Next`, `x_instance`, `x_DOMAIN`, `x_num`, `x_tag`, `fld_num` and `fld_tag`; SANY and Lean parse both files.
