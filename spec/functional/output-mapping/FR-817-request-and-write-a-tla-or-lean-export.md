@@ -93,7 +93,16 @@ The export request is the `export` member of a `native-run/1` request:
   match it (FR-297-AC-5); `obligations` names the requested obligations in
   order, each once; `minimum_fidelity` (optional, default `conditional`) is
   FR-811's floor; `observer` (optional) selects a structural observer
-  (`sany`, `tlc`, `apalache`, `lean`) run on the assembled package.
+  (`sany`, `tlc`, `apalache`, `lean`) run on the assembled package. A
+  well-formed `observer` that the implementation cannot run SHALL settle the
+  request `refused` with `unsupported_projection`/
+  `unsupported-requested-capability` naming the observer (no backend for it
+  is built) or `unsupported_projection`/`tool-unavailable` naming the
+  observer and its tool (the backend is built and the host lacks the tool),
+  at `/request/export/observer`, exit `21`, with no package, no target text
+  and no file. The member is valid, so this is never an admission refusal;
+  and the export never assembles without the observer it was asked for, so a
+  caller who asked for an observer gets its result or a refusal naming it.
 - `obligations` SHALL hold at least one name, because FR-120's obligation
   set is nonempty. An absent member refuses `invalid_runtime_input`/
   `missing-member`, and an empty array refuses `invalid-value`, at
@@ -169,8 +178,9 @@ The export request is the `export` member of a `native-run/1` request:
 }
 ```
 
-- `status` is `assembled`, `refused` (with FR-811's `below-fidelity-floor`
-  or an admission refusal) or `incomplete` (with the limit).
+- `status` is `assembled`, `refused` (with an admission refusal, an
+  observer the implementation cannot run, or FR-811's
+  `below-fidelity-floor`) or `incomplete` (with the limit).
 - `records` are FR-298 records in request order; `target_text` and
   `name_map` are present only when `assembled`.
 - `cause` is present exactly when `status` is `incomplete`. It is FR-331's
@@ -178,8 +188,12 @@ The export request is the `export` member of a `native-run/1` request:
   FR-805 spells it: `limit` the counter (`output_bytes`, `nodes` or
   `work_units`), `value` its effective bound and `setting` its FR-461 name
   (`export.output_bytes`, `export.nodes` or `export.work_units`). An
-  `incomplete` outcome's `records` is `[]`, because classification stopped
-  before the record set was complete. A caller reads from `cause` alone
+  `incomplete` outcome's `records` is `[]` at every limit stop. A stop
+  during classification leaves the record set incomplete; a stop while the
+  text is written leaves no package and no text, and FR-298 records are the
+  per-obligation part of FR-299's package key and claim regions of that
+  text, so they describe nothing that exists. Either way the caller raises
+  the named limit and reruns. A caller reads from `cause` alone
   which setting to raise and from what value.
 - `package` is present only when `assembled`. It holds FR-299's key apart
   from the records: the source package reference (identity and version),
@@ -223,10 +237,14 @@ the export outcome document unchanged.
   settings of the program the request compiles, through the FR-461 settings
   operation; a setting given both there and in the request's `limits`
   refuses `invalid-request` naming `limits` and the setting, exit `20`.
-- Exits: `assembled` `0`; admission refusal `20`; `below-fidelity-floor`
+- Exits: `assembled` `0`; admission refusal `20`; an observer the
+  implementation cannot run `21` (unsupported); `below-fidelity-floor`
   `21` (unsupported); `incomplete` `22`; a mapper failure `30`.
 - When several stops could apply, the export SHALL report the first one
-  in the order it works. First comes admission (exit `20`). Next comes
+  in the order it works. First comes admission (exit `20`). Next comes the
+  observer: a selected observer the implementation cannot run refuses
+  (exit `21`) before any node is classified or charged, because no package
+  the request can accept will be produced. Next comes
   classification, which charges `export.nodes` and `export.work_units` for
   each node it classifies. A denied charge there stops `incomplete` (exit
   `22`), because the floor cannot be decided over a partial set of records.
@@ -262,6 +280,7 @@ naming both, exit `20`, before any stage runs.
 | FR-817-AC-10 | `SlowEnough` over `Braking` under the default floor with `limits` `{"export.output_bytes": 1}` refuses `below-fidelity-floor`, exit `21`. The counter's `Bounded` under the same limit stops `incomplete` naming `export.output_bytes`, exit `22`. `SlowEnough` with `{"export.nodes": 1}` stops `incomplete` naming `export.nodes`, exit `22`. | Test (TC-2032) |
 | FR-817-AC-11 | The counter export under `{"export.work_units": 1}` stops `incomplete` with `records` `[]` and `cause` `limit-reached{limit: work_units, value: 1, setting: export.work_units}`, exit `22`; under `{"export.nodes": 1, "export.work_units": 1}` its `cause` is `limit-reached{limit: nodes, value: 1, setting: export.nodes}`. | Test (TC-2040) |
 | FR-817-AC-12 | For two invariants over one state model, the least `export.nodes` under which the export of both is not `incomplete` is less than the sum of the least values for each alone, and at least the greater of them. | Test (TC-2040) |
+| FR-817-AC-13 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc` and `output` `{"file": "m.tla"}`, in an implementation with no TLC backend, settles `refused` with `unsupported_projection`/`unsupported-requested-capability` naming `tlc`, exit `21`, with no `target_text`, no `package` and no `m.tla`; the same request with `observer` `tlc` and `limits` `{"export.nodes": 1}` refuses the same way, exit `21`, not `incomplete`; without `observer` it assembles, exit `0`. | Test (TC-2040) |
 
 ## Dependencies
 

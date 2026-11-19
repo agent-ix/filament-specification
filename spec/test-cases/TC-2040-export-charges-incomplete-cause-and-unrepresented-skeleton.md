@@ -13,7 +13,7 @@ relationships:
 
 ## Description
 
-Verify the `limit-reached` cause of an incomplete export, that shared closure nodes are charged once, that an unrepresented obligation's representable nodes are still written, and the `null` locus of an unlocated node. Scope: FR-817-AC-11, FR-817-AC-12, FR-811-AC-7 and FR-811-AC-8.
+Verify the `limit-reached` cause of an incomplete export, that shared closure nodes are charged once, that an unrepresented obligation's representable nodes are still written, and the `null` locus of an unlocated node. Scope: FR-817-AC-11 to FR-817-AC-13, FR-811-AC-7 and FR-811-AC-8.
 
 ## Test Procedure
 
@@ -21,6 +21,7 @@ Verify the `limit-reached` cause of an incomplete export, that shared closure no
 2. For two invariants over one state model, find the least `export.nodes` under which each alone and both together export without stopping `incomplete`.
 3. Export `SlowEnough` over `Braking` under `minimum_fidelity` `any`; read its record, text and `name_map`.
 4. Read every `target-unrepresentable` cause's `locus` from step 3.
+5. Export `SlowEnough` under `any` with `observer` `tlc` and an `output` file in an implementation with no TLC backend, then with `export.nodes` 1 added, then without `observer`.
 
 ## Expected Results
 
@@ -28,3 +29,4 @@ Verify the `limit-reached` cause of an incomplete export, that shared closure no
 - Step 2: the value for both is less than the sum of the two single values and at least the greater of them.
 - Step 3: the record claims no region; the text holds an `Init` naming `Moving` and the jump to `Stopped`, each with a `name_map` entry; each closure node is named by a cause or a `name_map` entry.
 - Step 4: each `locus` is `null` or a region with `start < end`, and `null` exactly for a node with no source-map region.
+- Step 5: `refused`, `unsupported_projection`/`unsupported-requested-capability` naming `tlc`, exit 21, no text, package or file; the same with `export.nodes` 1, not `incomplete`; then `assembled`, exit 0.

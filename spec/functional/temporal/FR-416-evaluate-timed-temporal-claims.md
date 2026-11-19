@@ -126,19 +126,27 @@ owes to that premise:
 
 | `non_zeno` | Result | Meaning |
 | --- | --- | --- |
-| `not-required` | `proved` | The product has no accepting cycle even when time divergence is not required: the claim holds on every behaviour, Zeno ones included. |
-| `assumed` | `proved` | The product has accepting cycles, and every one has zero total delay: the proof holds only because Zeno behaviours are not admitted. |
-| `checked` | `refuted` | The counterexample's accepting loop has positive total delay, which its timed replay (FR-181) confirms, so the refutation is over an admitted behaviour. |
+| `not-required` | `proved` | The product has no accepting cycle even without the divergence acceptance condition: the claim holds on every behaviour, Zeno ones included. |
+| `assumed` | `proved` | The product has accepting cycles without the divergence acceptance condition and none with it: every behaviour that would violate the claim is Zeno, and the proof holds only because Zeno behaviours are not admitted. |
+| `checked` | `refuted` | The counterexample's accepting loop satisfies the divergence acceptance condition, and its timed replay (FR-181) reproduces its delays, so the refutation is over an admitted behaviour. |
 | `refuted` | `inconclusive`, `no-admitted-behaviour` | No time-divergent behaviour exists from the initial state, so the premise fails and no verdict is given. |
 
-On the digital-clock route a cycle's total delay is the sum of its integer
-delays. Any other result of such an item (`incomplete`, `unsupported`,
-`cancelled`, a rejected certificate, a replay that refuses) and every result
-of a TT-1 claim, a TT-2 claim, a time-lock-freedom item or a deadlock-freedom
-item carries no `non_zeno`. For a `certified` proof, the zone certificate
-checker (FR-418) SHALL recompute `not-required` or `assumed` from the
-certificate and reject a certificate whose stated value differs, so the
-member is covered by the certification like the verdict. The member lets a
+On the zone route the divergence acceptance condition is the one the
+non-Zeno emptiness construction adds to the product: a cycle passes it only
+when time diverges along it. A cycle of positive but bounded total delay,
+such as a self-loop that resets no clock under an upper-bound time invariant,
+does not pass it. On the digital-clock route, where every delay is an integer
+number of ticks, a cycle passes it exactly when its total delay is positive.
+Any other result of such an item (`incomplete`, `unsupported`, `cancelled`, a
+rejected certificate, a replay that refuses, and a `refuted` result with
+cause `undefined-evaluation`, whose finite prefix decides no liveness cycle,
+FR-416-AC-8) and every result of a TT-1 claim, a TT-2 claim, a
+time-lock-freedom item or a deadlock-freedom item carries no `non_zeno`. A
+zone-certified proof states its value in the certificate's `non_zeno` member
+(FR-418), and the certificate checker SHALL recompute it from the
+certificate's nodes, edges and acceptance members and reject a certificate
+whose stated value differs, so the member is covered by the certification
+like the verdict. The member lets a
 reader tell a proof that holds outright from one that holds only under the
 timed semantics' exclusion of Zeno runs, which a downstream consumer whose
 own semantics admit Zeno runs must not reuse as its own proof.
@@ -192,7 +200,7 @@ identity.
 | FR-416-AC-7 | Every timed counterexample has exact rational delays chosen canonically and replays with no provider present; an unconcretizable lasso settles `inconclusive`, `lasso-not-concretized`. | Test (TC-369) |
 | FR-416-AC-8 | A timed claim that evaluates undefined at a position of an admitted behaviour settles `refuted`, cause `undefined-evaluation` naming the position, time stamp, discrete state key, clock valuation, expression locus and catalogued reason, with a finite prefix of exact rational delays ending there that replays to the same undefined value. | Test (TC-369) |
 | FR-416-AC-9 | A `Blink` model (`time dense`; object `b` with `fired: Bool` and clock `x`; `tick` with guard `x >= 1` and reset `x`; `fire` with guard `x > 0 and x < 1` and postcondition `self.fired = true`; time invariant `when true { x <= 1 }`; initial `fired = false`, `x = 0`), in which `tick` fires exactly at `x = 1`, and `eventually holds(b.fired)` under infinite-trace: under `fair { weak Blink::fire }` it settles `refuted` with a lasso of `tick` steps of loop delay 1; under `fair { strong Blink::fire }` it settles `proved` with an accepted zone certificate, because `fire` is enabled at instants inside every delay of that lasso, though at no position of it. | Test (TC-963) |
-| FR-416-AC-10 | On the zone route over `Rpc` with `T = 4 ms`, the response claim proves with `non_zeno` `not-required`; the variant in which `reply` loops on itself with no reset, under the deadline `x <= 3 ms`, proves with `non_zeno` `assumed`; the variant with an `echo` step that resets `x` refutes with `non_zeno` `checked`; `always eventually holds(true)` over `Stall` settles `inconclusive`, `no-admitted-behaviour`, with `non_zeno` `refuted`; `NoLateReply` (TT-1) and the time-lock-freedom item carry no `non_zeno`; a certificate of the reply-loop proof whose stated value is changed to `not-required` is rejected; and the closed MITL claim `Within` proved on the digital-clock route carries the same `non_zeno` as on the zone route. | Test (TC-2041) |
+| FR-416-AC-10 | On the zone route over `Rpc` with `T = 4 ms`, the response claim proves with `non_zeno` `not-required`; the variant in which `reply` loops on itself with no reset, under the deadline `x <= 3 ms`, proves with `non_zeno` `assumed`; the variant with an `echo` step that resets `x` refutes with `non_zeno` `checked`; `always eventually holds(true)` over `Stall` settles `inconclusive`, `no-admitted-behaviour`, with `non_zeno` `refuted`; `NoLateReply` (TT-1), the time-lock-freedom item and FR-416-AC-8's `undefined-evaluation` refutation carry no `non_zeno`; the reply-loop proof's FR-418 certificate states `non_zeno` `assumed`, and the same certificate with that member changed to `not-required` is rejected; and the closed MITL claim `Within` proved on the digital-clock route carries the same `non_zeno` as on the zone route. | Test (TC-2041) |
 
 ## Dependencies
 
