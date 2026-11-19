@@ -106,9 +106,10 @@ carries a `behaviours`-domain body:
 
 The wrapper is not a single-trace temporal claim. A
 `temporal`/`temporal_clause` node that is the `body` target of a
-`claim`/`hyperproperty` node is a body wrapper: its `claim` occurrences and
-its `temporal_clause_names` rows (FR-322) are the hyper clause's. It has no
-`temporal_bindings` row: the hyper clause's clock rows, one per quantified
+`claim`/`hyperproperty` node is a body wrapper: its `claim` occurrences are the hyper clause's. It has no
+`temporal_clause_names` row: the clause's declared name and declaration region
+are the `claim_names` rows of the `hyperproperty` node (FR-322 "Temporal clause
+names"). It has no `temporal_bindings` row: the hyper clause's clock rows, one per quantified
 trace, are keyed by the `hyperproperty` node, whose identity holds the
 quantifier prefix the wrapper lacks (FR-322 "Hyper clause rows"), so
 hyperproperty nodes that differ only in their prefixes share one wrapper and
