@@ -56,7 +56,7 @@ it with the pointer of the member carrying the plan request (FR-805):
 | Defect | Code / cause | Locus |
 | --- | --- | --- |
 | malformed request member (FR-805 "Request") | `invalid_runtime_input` with FR-805's cause | the member's pointer |
-| `declaration` names no `synthesis` declaration, or one whose grammar is not a state model object type | `missing_declaration`/`missing-name` | `/declaration` |
+| `declaration` names no `synthesis` declaration, or, in a `filament.plan-request/v1` document, one whose grammar is not a state model object type (under a host surface's synthesis request such a declaration runs as a value synthesis, FR-823) | `missing_declaration`/`missing-name` | `/declaration` |
 | a policy name names no `temporal` declaration | `missing_declaration`/`missing-name` | `/policy/<i>` |
 | a policy clause's `over` binding is not an object of `G`'s model | `ill_typed`/`type-mismatch` | `/policy/<i>` |
 | the initial snapshot does not admit for `G`'s model | the snapshot's own admission refusal | `/initial` and the snapshot's member |
@@ -76,7 +76,7 @@ it with the pointer of the member carrying the plan request (FR-805):
 | --- | --- | --- |
 | FR-806-AC-1 | A `domain` naming `Integer`, and an operation parameter `n: Integer`, each refuse `unsupported_projection`/`unbounded-extent` at S3, located at the `domain` name and at the parameter respectively, and no plan request is read. | Test (TC-1956) |
 | FR-806-AC-2 | A goal reading `Reach.elapsed` over an untimed model refuses `missing_declaration`/`missing-name` at `elapsed`; a `domain` `Int[-1, 3]` refuses `ill_typed`/`type-mismatch`. | Test (TC-1956) |
-| FR-806-AC-3 | A request whose `declaration` names an ordinary `synthesis` over a value type refuses `missing_declaration`/`missing-name` at `/declaration`; a policy over another model refuses `ill_typed`/`type-mismatch` at `/policy/0`. | Test (TC-1956) |
+| FR-806-AC-3 | A `filament.plan-request/v1` document whose `declaration` names an ordinary `synthesis` over a value type refuses `missing_declaration`/`missing-name` at `/declaration`; a policy over another model refuses `ill_typed`/`type-mismatch` at `/policy/0`. | Test (TC-1956) |
 | FR-806-AC-4 | A request whose initial snapshot violates the model's population bound refuses with that snapshot's own admission cause located at `/initial`, exit `20`, and writes no plan. | Test (TC-1956) |
 | FR-806-AC-5 | A goal no plan reaches exits `10` as `infeasible`, never `20`. | Test (TC-1956) |
 

@@ -107,6 +107,10 @@ The synthesizer SHALL return exactly one of:
 - `unsupported` or `failed`, from a selected external synthesizer, as FR-331
   records them.
 
+The request that selects the declaration and the outcome document that
+carries the result are FR-823's; the declaration reaches the synthesizer
+only as FR-322's `claim`/`synthesis_request` node.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -117,7 +121,7 @@ The synthesizer SHALL return exactly one of:
 | FR-194-AC-4 | Canonical enumeration records the candidate grammar, domains, symmetry rule and cost ordering. | Test (TC-216) |
 | FR-194-AC-5 | Validation uses an independently identified checker and the exact synthesis subject, assumptions and bounds. | Test (TC-216) |
 | FR-194-AC-6 | `synthesis Pick using p grammar Digit domain Digit satisfies { Pick * Pick = 49 };` over `type Digit = Int[0, 9];` returns `candidate` 7, `unchecked` and then `validated`; with `satisfies { Pick * Pick = 50 }` it returns `no-candidate` after visiting all ten values. | Test (TC-1602) |
-| FR-194-AC-7 | With `minimize Pick` and `satisfies { Pick >= 3 }` the result is the validated, optimal candidate 3 with two earlier candidates visited and failed; with `maximize Pick` it is 9. | Test (TC-1602) |
+| FR-194-AC-7 | With `minimize Pick` and `satisfies { Pick >= 3 }` the result is the validated, optimal candidate 3 with the three earlier candidates 0, 1 and 2 visited and failed; with `maximize Pick` it is 9. | Test (TC-1602) |
 | FR-194-AC-8 | A `domain` naming `Integer` with no bounds, a record with an unbounded `Text` field, and a recursive union with no finite bound each refuse `unsupported_projection`/`unbounded-extent` at the `domain` name naming the unbounded component. | Test (TC-1602) |
 | FR-194-AC-9 | A `grammar` naming nothing refuses `missing_declaration`/`missing-name`; a `domain` whose values do not convert to the grammar refuses `ill_typed`/`type-mismatch`; a `satisfies` block of type `Integer` refuses `ill_typed`/`non-boolean-root`; a `Text` objective refuses `ill_typed`/`type-mismatch`. | Test (TC-1602) |
 | FR-194-AC-10 | A search stopped by its work limit returns `incomplete` naming the limit and the visited count, never `no-candidate`, and any best candidate it carries makes no optimality claim. | Test (TC-1602) |
