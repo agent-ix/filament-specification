@@ -150,6 +150,50 @@ lists therefore never give one name, whatever underscores or non-ASCII
 characters the source names hold. A slot parameter's node identity is its
 name, level and type, as for every `value`/`parameter` node (FR-322).
 
+### Reserved slot names
+
+The name is the only mark of a slot parameter: a slot parameter has the same
+node form, level rule and type rule as every other `value`/`parameter` node,
+and a reader that walks a body's `dependencies` sees no other difference. The
+names the encoding can produce are therefore reserved to slot parameters, so
+that every reader classifies a parameter the same way from its name alone.
+
+A name is in the **reserved slot form** when it is one of the tags `slot`,
+`op`, `rcv` or `arg`, followed by exactly that tag's field count (`slot` 2,
+`op` 1, `rcv` 1, `arg` 4) of fields, each written `_s` and then one or more
+units, where a unit is an ASCII letter or digit, `__`, or `_x` and two
+uppercase hexadecimal digits, and the bytes a field's units decode to are
+well-formed UTF-8. This is exactly the set of names the decoder above
+accepts. A name outside the form is an ordinary parameter name, however it
+begins: `slot_sv` (one field where `slot` takes two), `op_sa_sb` (two fields
+where `op` takes one), `rcv_s` (an empty field), `op_sa_x4` (a broken
+escape), `slotted` and `operand` are not reserved.
+
+- The producer SHALL write a `value`/`parameter` node whose name is in the
+  reserved slot form only as a slot parameter, named by the encoding of its
+  role and fields, and SHALL write every slot parameter so.
+- A reader SHALL treat a `value`/`parameter` node as a slot parameter exactly
+  when its name is in the reserved slot form, whatever node references it.
+  FR-370's `over` check for a body wrapper ("Body wrapper") uses this
+  classification.
+- The checker SHALL refuse a source identifier in the reserved slot form
+  wherever the producer would write that identifier as the `name` of a
+  `value`/`parameter` node: a function or operation parameter, a clause's
+  `over` parameter, trigger or capture, a quantifier or clock-guard binder,
+  a synthesis candidate, and every other declaration that lowers to a
+  `value`/`parameter` node. The refusal is
+  `ambiguous_declaration`/`ambiguous-name`, located at the identifier's
+  declaring source region, naming the identifier and the slot tag it would
+  decode as. The checker emits no package for the unit. Without the
+  refusal, a source parameter named `op_sx` would be read as the operation
+  label of a trace `x` wherever a body reaches it, and a body wrapper whose
+  formula reads it would lose its `model_root` `over`.
+
+A source identifier holding a character other than an ASCII letter, digit or
+`_`, and a producer-made name such as a timed `binders` entry `ts#0`, is
+never in the reserved slot form, so the reservation reaches only names that
+already fit the identifier rule.
+
 ## Obligation identity
 
 The obligation identity of a hyper item binds:
@@ -214,19 +258,31 @@ order and the first failing check is its defect:
    refuses `missing_declaration`/`missing-name` at that `alias` binding,
    and a `subjects` binding no Group names refuses `invalid_semantic_graph`
    at that binding.
-3. **Body.** For a `behaviours` domain, a `body` target that is not a
-   `temporal`/`temporal_clause` node refuses `ill_typed`/
-   `operator-ineligible` at the hyperproperty node, and a body wrapper whose
-   `fairness` argument is not empty refuses `invalid_semantic_graph` at the
-   wrapper's `/semantic_graph/nodes/{w}/body/arguments/4`. A wrapper whose
-   `over` targets a `model`/`model_root` node refuses
-   `invalid_model_binding`/`malformed-declaration` at
-   `/semantic_graph/nodes/{w}/body/arguments/0` when its formula reads a
-   slot parameter or when the root is not the target of the node's first
-   `subjects` binding. For a finite
-   domain, a `body` target that is not an `expression` node whose
-   `semantic_type` is the `scalar_type`/`boolean` node refuses
-   `ill_typed`/`non-boolean-root` at the target.
+3. **Body.** With `w` the `body` target, the checks run in this order, and
+   the first that fails is the node's defect:
+   1. for a `behaviours` domain, a `body` target that is not a
+      `temporal`/`temporal_clause` node refuses `ill_typed`/
+      `operator-ineligible` at the hyperproperty node, and the next two
+      checks do not run;
+   2. for a `behaviours` domain, a body wrapper whose `fairness` argument is
+      not empty refuses `invalid_semantic_graph` at the wrapper's
+      `/semantic_graph/nodes/{w}/body/arguments/4`;
+   3. for a `behaviours` domain, a body wrapper whose `over` targets a
+      `model`/`model_root` node that is not the target of the node's first
+      `subjects` binding refuses `invalid_model_binding`/
+      `malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`;
+   4. for a finite domain, a `body` target that is not an `expression` node
+      whose `semantic_type` is the `scalar_type`/`boolean` node refuses
+      `ill_typed`/`non-boolean-root` at the target.
+
+   A wrapper with both a non-empty `fairness` argument and an `over` naming
+   another package's root is therefore refused at `arguments/4`: the
+   fairness check reads the wrapper alone, while the root check reads the
+   wrapper against the node's `subjects`. A wrapper whose `over` targets a
+   `model`/`model_root` node while its formula reads a slot parameter
+   ("Reserved slot names") never reaches this step: FR-370's temporal step,
+   which runs earlier, refuses it `invalid_model_binding`/
+   `malformed-declaration` at the same `arguments/0`.
 4. **Fairness**, Group by Group and reference by reference in body order.
    Every refusal of this step is located at the reference,
    `B/members/3/value/members/{g}/members/{m}`, and for one reference the
@@ -257,6 +313,8 @@ order and the first failing check is its defect:
 | FR-402-AC-9 | Every slot parameter name matches `[A-Za-z_][A-Za-z0-9_]*` and decodes to its tag and fields: `v @ a` is `slot_sv_sa`, `a.step.op` is `op_sa` and `a.step.Vault::step.i` is `arg_sa_sVault_sstep_si`; the slots for object parameter `a_b` in trace `c` and for `a` in trace `b_c` are `slot_sa__b_sc` and `slot_sa_sb__c`, which differ; a byte outside ASCII letters, digits and `_` is `_x` and two uppercase hexadecimal digits; and names built from every pair of distinct tags and field lists over a set including `_`, `s`, `x` and digit-leading names are pairwise distinct. | Test (TC-346) |
 | FR-402-AC-10 | A `behaviours` clause whose Groups 0 and 1 both bind `variable` `s` refuses `ambiguous_declaration`/`ambiguous-name` at `/semantic_graph/nodes/{n}/body/members/3/value/members/1/members/0`, naming `s`, before the Subjects step; a finite-domain clause with Groups `t` and `t` refuses the same at Group 1's `variable`; Groups `s` and `n` are admitted. | Test (TC-346) |
 | FR-402-AC-11 | `hyper Whole using inf over behaviours () forall trace a of V forall trace b of V { always holds(true) }` is emitted with a body wrapper whose `over` references the `model`/`model_root` node of `V`'s package, and the reader admits it at the temporal and hyperproperty steps. Each refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`: a `NonInterference` wrapper, whose body reads `v @ a`, with `over` edited to the root; a `Whole` wrapper whose `over` is the root of a package no `subjects` binding names; and a single-trace `temporal`/`temporal_clause` that is no body wrapper with `over` a `model_root` node. | Test (TC-2034) |
+| FR-402-AC-12 | The checker refuses `ambiguous_declaration`/`ambiguous-name` at the parameter's declaring source region, naming `op_sa` and the tag `op`, for `function f(op_sa: Integer): Integer pure { op_sa }`, and refuses the same, naming `slot_sx_sy` and the tag `slot`, for the clock guard binder of `pre F using v on Config::ConfigVersion::attemptUpdate { forall(slot_sx_sy in self.us: slot_sx_sy.x < 5 ms) }` over a `us: Sequence<Timer>` field; neither unit emits a package. The same function with its parameter named `slot_sv`, `op_sa_sb`, `rcv_s`, `op_sa_x4` or `slotted` is admitted. With `Whole`'s body wrapper formula (FR-402-AC-11) edited to read an Integer `value`/`parameter` node, the reader refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0` when that node is named `op_sx` or `arg_sa_sVault_sstep_si`, and admits the package at the temporal and hyperproperty steps when it is named `op_sa_sb`, `slot_sv`, `rcv_s` or `slotted`. | Test (TC-2082) |
+| FR-402-AC-13 | Inside the hyperproperty step's Body check, `Whole`'s body wrapper (FR-402-AC-11) with a non-empty `fairness` argument and an `over` naming the `model_root` node of a selected package no `subjects` binding names refuses `invalid_semantic_graph` at `/semantic_graph/nodes/{w}/body/arguments/4`, not at `arguments/0`; with the `fairness` argument emptied it refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`; and a `body` that references a `temporal`/`formula` node directly refuses `ill_typed`/`operator-ineligible` at the hyperproperty node, with no wrapper check reported. | Test (TC-2082) |
 
 ## Dependencies
 
