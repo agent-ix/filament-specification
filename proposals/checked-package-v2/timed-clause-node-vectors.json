@@ -16752,7 +16752,7 @@
         }
       ],
       "schema": "valid",
-      "rule": "FR-322-AC-480",
+      "rule": "FR-322-AC-484",
       "expected": "admitted",
       "document_patch": [
         {
@@ -17236,7 +17236,7 @@
         }
       ],
       "schema": "valid",
-      "rule": "FR-322-AC-480",
+      "rule": "FR-322-AC-484",
       "expected": "admitted",
       "document_patch": [
         {

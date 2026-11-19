@@ -11,7 +11,7 @@ relationships:
 ## Description
 
 Verify the `quantifier` binding of a quantified guard part over a collection
-with no declared maximum. Scope: FR-322-AC-479, FR-322-AC-480.
+with no declared maximum. Scope: FR-322-AC-479, FR-322-AC-484.
 
 ## Test Procedure
 
