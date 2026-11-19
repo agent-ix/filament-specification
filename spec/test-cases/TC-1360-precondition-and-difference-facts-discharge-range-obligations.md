@@ -38,7 +38,7 @@ base unit declares `pre CanAfford` on `Account::withdraw` with the body
 | P08 | `CanAfford`'s body `amount < self.balance` and `Debited`'s body `self.balance = (pre(self.balance) - amount) - 1` | checks |
 | P09 | `CanAfford`'s body `self.balance >= amount`; then `not (amount > self.balance)` | checks; checks |
 | P10 | `CanAfford`'s body `amount = self.balance`; `amount + 0 <= self.balance`; `amount <= self.limit and self.limit <= self.balance`; `amount <= self.balance or amount <= 5` | each refused at `pre(self.balance) - amount` |
-| P11 | `CanAfford`'s body `self.balance + amount <= 100` and `Debited`'s body `self.balance = pre(self.balance) + amount` | refused at `pre(self.balance) + amount` |
+| P11 | `CanAfford`'s body `self.balance + amount <= 100` and `Debited`'s body `self.balance = pre(self.balance) + amount`; then `CanAfford`'s body `self.balance + amount <= 101` | checks, `pre(self.balance) + amount` typed `Int[0, 100]` by the transferred sum bound; refused at `pre(self.balance) + amount` (proved `[0, 101]`) |
 | P12 | `CanAfford`'s body `amount < 0 and amount <= self.balance` (unreachable true outcome) | refused at `pre(self.balance) - amount` |
 | P13 | the function `function f using v(a: Int[0, 100], b: Int[0, 100], r: Int[0, 100]): Boolean pure { a <= b implies r = b - a }` | checks |
 

@@ -339,7 +339,7 @@ facts of the redefined parent member being refined, not the redefining type. The
    integer literal (optionally negated), `op` is `=`, `<`, `<=`, `>` or `>=`,
    and `t` is, ignoring parentheses,
    one binary `+` or `-` node whose operands are integer stable paths `u` and
-   `v` that are not the same path, records a bound on that term:
+   `v` that are not the same (observation, path), records a bound on that term:
    - for `t = u - v`, the difference bounds of item 7 over the ordered pair
      `(u, v)`: the true outcome of `u - v <= k` records `u - v <= k`, of
      `u - v < k` records `u - v <= k - 1`, of `u - v >= k` records
@@ -356,16 +356,30 @@ facts of the redefined parent member being refined, not the redefining type. The
    every alternative, the weaker of them. A sum bound is used only by a binary
    `+` node whose operands, ignoring parentheses, are
    the two paths of the bound in either order (below); a difference bound
-   recorded here is used exactly as item 7's. A comparison `u + k1 op k` or
-   `u - k1 op k` (also `k1 + u`) of one stable path `u` and two literals is
-   the comparison fact of item 3 on `u` with the literal bound shifted by
-   `k1`. A term of three or more operands, a term repeating one path
-   (`u + u`), a term with a non-literal coefficient or a product, a term
-   whose operand is a call, `size` or any other non-path form, and a comparison of such a term with a non-literal
-   operand yield no fact. Bounds do not combine: `u + v <= 9` with
-   `v >= 2` says nothing of `u`, and `u + v <= 9` with `v + w <= 9` says
-   nothing of `u + w`. Two-path term facts apply wherever this definedness
-   check runs, as item 7's do.
+   recorded here is used exactly as item 7's. A comparison of one stable path
+   `u` shifted by a literal `k1` against a literal `k`, with `op` any item-3
+   operator including `!=`, is the comparison fact of item 3 on `u` with the
+   literal moved across: `u + k1 op k` and `k1 + u op k` are `u op k - k1`,
+   `u - k1 op k` is `u op k + k1`, and `k1 - u op k` is `u op' k1 - k` with
+   `op'` the mirrored ordering (`<` and `>` exchanged, `<=` and `>=`
+   exchanged, `=` and `!=` unchanged); so `x + 1 != 10` over `x: Int[0, 9]`
+   removes the endpoint `9`. `u + v != k` and `u - v != k` record nothing.
+   Each path of a bound in items 7 and 8 is keyed by its (observation, path),
+   and a bound is used only by a node whose operands are the same two
+   (observation, path) keys, so `self.x + pre(self.x) <= 9` bounds that node
+   and not `self.x + self.x` or `pre(self.x) + pre(self.x)`. Items 7 and 8
+   read an operand `convert<Integer>(p)` of an integer stable path `p` as `p`,
+   both where a bound is recorded and where it is used, because the
+   conversion preserves the value. A term of three or more operands, a term
+   repeating one key (`u + u`), a term with a non-literal coefficient or a
+   product, a term whose operand is a call, `size` or any other non-path
+   form, and a two-path term compared with a non-literal operand (such as
+   `amount + 0 <= self.balance`) yield no fact. Bounds do not combine:
+   `u + v <= 9` with `v >= 2` says nothing of `u`, and `u + v <= 9` with
+   `v + w <= 9` says nothing of `u + w`. Two-path term facts apply wherever
+   this definedness check runs, as item 7's do, including precondition facts
+   transferred by item 6: a precondition `self.balance + amount <= 100`
+   bounds the postcondition node `pre(self.balance) + amount`.
 
 The interval of an integer expression is computed over mathematical integers:
 a literal is its point; a stable path is its refined interval; `+`, `-`, `*`
@@ -571,7 +585,7 @@ counter, and no call depth turns into an outcome (FR-460).
 | FR-146-AC-15 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes a removal filter of `s` (`x != e`, `e != x` or `not (x = e)` over an element type without a float leaf, `not filament::value::ieee::bitIdentical(x, e)` over a `Float32` or `Float64` element type, or `not contains(d, x)` under a further `contains(d, e)` fact, for a stable path `e`) under a `contains(s, e)` guard fact, or that filter inside a same-kind `convert`, and evaluates its declared result; passing `s` unchanged, a removal filter without the membership fact, a filter of any other predicate shape, or a removal of a non-stable `e` refuses `undefined_expression`/`unproved-decrease` with obligation `decrease`; `size` of a non-parameter operand, and one measure position holding a cardinality element in one function and an integer element in another of its component, refuse with obligation `measure-kind`; and a lexicographic tuple mixing cardinality and integer positions decreases by the earlier-equal rule. | Test (TC-191) |
 | FR-146-AC-16 | A recursive function measured by `decreases(size(s))` over a `Sequence`, `Set`, `Bag` or `OrderedSet` parameter `s` is admitted when each recursive call passes `removeOne(s, e)` for a stable path `e` under a `contains(s, e)` guard fact, including over an element type with a float leaf, or passes `dropFirst(s)` for a `Sequence` or `OrderedSet` `s` under a fact that `size(s) >= 1` (a `size(s) > 0` comparison, a `contains(s, v)` fact or a declared minimum of at least `1`), or either inside a same-kind `convert`, and evaluates its declared result, so a duplicate-holding `Sequence` or `Bag` is walked one occurrence at a time; `removeOne(s, e)` without the membership fact, with a non-stable `e`, and `dropFirst(s)` without the size fact, refuse `undefined_expression`/`unproved-decrease` with obligation `decrease`. | Test (TC-191) |
 | FR-146-AC-17 | Over an object type `Account` with `balance: Int[0, 100]` and an operation `withdraw(amount: Int[0, 100])` that redefines nothing and is redefined by nothing, with the precondition `amount <= self.balance`, the postcondition `self.balance = pre(self.balance) - amount` checks, with `pre(self.balance) - amount` typed `Int[0, 100]`, whatever the clauses' source order; without the precondition it is `undefined_expression`/`unproved-range` at `pre(self.balance) - amount`; with the precondition on a subtype's `withdraw` that redefines `Account/withdraw`, or on another operation, it is refused the same way, and no precondition fact enters an invariant or another precondition. | Test (TC-1360) |
-| FR-146-AC-18 | The precondition bodies `amount < self.balance` (with the postcondition `self.balance = (pre(self.balance) - amount) - 1`), `self.balance >= amount` and `not (amount > self.balance)` each discharge the AC-17 postcondition; `amount = self.balance`, `amount + 0 <= self.balance`, `amount <= self.limit and self.limit <= self.balance`, and `amount <= self.balance or amount <= 5` each leave it `undefined_expression`/`unproved-range`; `self.balance + amount <= 100` does not discharge `pre(self.balance) + amount`; and in a function body `a <= b implies r = b - a` over `a`, `b`, `r` of `Int[0, 100]` checks. | Test (TC-1360) |
+| FR-146-AC-18 | The precondition bodies `amount < self.balance` (with the postcondition `self.balance = (pre(self.balance) - amount) - 1`), `self.balance >= amount` and `not (amount > self.balance)` each discharge the AC-17 postcondition; `amount = self.balance`, `amount + 0 <= self.balance`, `amount <= self.limit and self.limit <= self.balance`, and `amount <= self.balance or amount <= 5` each leave it `undefined_expression`/`unproved-range`; `self.balance + amount <= 100` discharges `pre(self.balance) + amount` in the postcondition `self.balance = pre(self.balance) + amount` while `self.balance + amount <= 101` leaves it `undefined_expression`/`unproved-range`; and in a function body `a <= b implies r = b - a` over `a`, `b`, `r` of `Int[0, 100]` checks. | Test (TC-1360) |
 | FR-146-AC-19 | The rational interval rule is exact for positive products: with `a` and `b` of type `Rational[1, 9; 1, 9]`, `a * b` and `a * a` have raw numerator `[1, 81]` over raw denominator `[1, 81]` and normalized numerator `[1, 81]` and denominator `[1, 81]`, so a function returning either into `Rational[1, 81; 1, 81]` checks, while one returning it into `Rational[1, 80; 1, 81]` or `Rational[1, 81; 1, 80]` is `undefined_expression`/`unproved-range`; `a + b` has raw numerator `[2, 162]` over `[1, 81]` and checks into `Rational[1, 162; 1, 81]` but not into `Rational[1, 161; 1, 81]`. No other range rule, and no widening of the required numerator or denominator, is needed or applied. | Test (TC-1403) |
 | FR-146-AC-20 | With `m: Map<Int[0, 9], Integer>[0, 3]`, the bodies `if contains(m, 1) then m[1] else -1` and `if not contains(m, 1) then -1 else m[1]` are admitted, and so is `if contains(m, k) then m[k] else -1` for a parameter `k: Int[0, 9]`; `if contains(m, 1) then m[2] else -1`, `if contains(m, 1) then m[k] else -1`, `if contains(m, k) then m[1] else -1`, `if contains(m, 1) then -1 else m[1]` and an unguarded `m[1]` are each `undefined_expression`/`unproved-presence` at the index. | Test (TC-2064) |
 | FR-146-AC-21 | With `function narrow using V(x: Int[0, 9]): Integer pure { x }` and parameters `x`, `y` of type `Int[0, 9]`, the bodies `if x + y <= 9 then narrow(x + y) else 0`, `if 9 >= y + x then narrow(x + y) else 0`, `if x + y < 10 then narrow((x) + (y)) else 0`, `if x + y > 9 then 0 else narrow(x + y)` and `if x - y >= 0 then narrow(x - y) else 0` are admitted; `if x + y <= 10 then narrow(x + y) else 0`, `if x + y <= 9 then narrow(x + y + 1) else 0`, `if x + y != 10 then narrow(x + y) else 0` and an unguarded `narrow(x + y)` are each `undefined_expression`/`unproved-range` at the argument; with a third parameter `z: Int[0, 9]`, `if x + y + z <= 9 then narrow(x + y + z) else 0` and `if x + y <= 9 and y >= 2 then narrow(x + 2) else 0` are each `unproved-range` at the argument, and `if x + 1 <= 9 then narrow(x + 1) else 0` is admitted. | Test (TC-2064) |
