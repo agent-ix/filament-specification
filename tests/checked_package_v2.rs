@@ -16503,7 +16503,7 @@ fn tc_367_timed_model_fixture_is_closed_self_typed_and_ordered() {
         "all timed forms form a closed checked package: {:?}",
         package_validator
             .iter_errors(&package)
-            .map(|error| error.to_string())
+            .map(|error| format!("{} {:?}", error.instance_path(), error.kind()))
             .collect::<Vec<_>>()
     );
     let tick_package: Value = parsed_fixture(POSITIVE_TICK_TIMED_MODEL_NODES);
@@ -25175,5 +25175,323 @@ fn tc_427_probabilistic_claim_body_grammar_caps_nesting_at_four_aggregates() {
     assert!(
         node_schema.is_valid(&leaf_root),
         "a Leaf root is in the grammar and is left to FR-640 rule 6"
+    );
+}
+
+type BodyLocationRefusal = (String, String, String);
+
+/// FR-322 `body_locations`: the reader refusals over a package's wire graph, in
+/// the order the rule states them. The repository has no production reader;
+/// this decider is the executable statement of the body walk, the row checks
+/// and the missing-row check over a vector's package.
+fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<(), BodyLocationRefusal> {
+    let nodes = package["semantic_graph"]["nodes"].as_array().unwrap();
+    let local = package["name"].as_str().unwrap();
+    let invalid = |locus: String| -> BodyLocationRefusal {
+        ("invalid_package".to_owned(), "invalid-value".to_owned(), locus)
+    };
+    let position = |id: &Value| -> Option<usize> {
+        if id["package"] != local {
+            return None;
+        }
+        nodes.iter().position(|node| node["node_id"] == *id)
+    };
+    // The positions of the local expression nodes `term` references, in the
+    // order a pre-order traversal of the term meets them.
+    fn references(term: &Value, found: &mut Vec<Value>) {
+        match term["term"].as_str() {
+            Some("reference") => found.push(term["target"].clone()),
+            Some("application") => term["arguments"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .for_each(|argument| references(argument, found)),
+            Some("aggregate") => term["members"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .for_each(|member| references(member, found)),
+            Some("binding") => references(&term["value"], found),
+            _ => {}
+        }
+    }
+    let body_binding = |function: &Value| -> Option<Option<Value>> {
+        function["body"]["members"]
+            .as_array()?
+            .iter()
+            .find(|member| member["term"] == "binding" && member["name"] == "body")
+            .map(|member| {
+                (member["value"]["term"] == "reference").then(|| member["value"]["target"].clone())
+            })
+    };
+    let is_term = |node: &Value| {
+        node["node_tag"] == "expression"
+            && node["semantic_form"] != "reference"
+            && !(node["body"]["term"] == "application"
+                && [
+                    "filament.op.control.let",
+                    "filament.op.control.if",
+                    "filament.op.control.case",
+                ]
+                .contains(&node["body"]["operation"]["identity"].as_str().unwrap_or("")))
+    };
+    // The terms of each application along `function`'s body walk.
+    let walk = |function: usize| -> BTreeMap<usize, u64> {
+        let mut counts = BTreeMap::new();
+        let Some(Some(start)) = body_binding(&nodes[function]) else {
+            return counts;
+        };
+        let mut pending: Vec<usize> = position(&start).into_iter().collect();
+        while let Some(at) = pending.pop() {
+            let node = &nodes[at];
+            if is_term(node) {
+                *counts.entry(at).or_default() += 1;
+            }
+            let mut found = Vec::new();
+            references(&node["body"], &mut found);
+            let mut next: Vec<usize> = found
+                .iter()
+                .filter_map(position)
+                .filter(|target| nodes[*target]["node_tag"] == "expression")
+                .collect();
+            next.reverse();
+            pending.extend(next);
+        }
+        counts
+    };
+    let mut names: BTreeMap<usize, (Value, Value)> = BTreeMap::new();
+    let mut owners: BTreeMap<String, usize> = BTreeMap::new();
+    let mut held: BTreeMap<(usize, usize), u64> = BTreeMap::new();
+    let mut walks: BTreeMap<usize, BTreeMap<usize, u64>> = BTreeMap::new();
+    let mut previous: Option<(&Value, &Value, u64)> = None;
+    let mut gap = false;
+    for (index, row) in rows.iter().enumerate() {
+        let here = format!("/checked_term_data/body_locations/{index}");
+        let origin = format!("{here}/location/origin");
+        let ordinal = row["term_ordinal"].as_u64().unwrap();
+        let expected = match previous {
+            Some((application, occurrence, last))
+                if *application == row["application"] && *occurrence == row["occurrence"] =>
+            {
+                last + 1
+            }
+            _ => 0,
+        };
+        gap |= ordinal != expected;
+        previous = Some((&row["application"], &row["occurrence"], ordinal));
+        let application = position(&row["application"])
+            .filter(|at| {
+                nodes[*at]["node_tag"] == "expression"
+                    && nodes[*at]["semantic_form"] != "reference"
+                    && nodes[*at]["body"]["term"] == "application"
+            })
+            .ok_or_else(|| invalid(format!("{here}/application")))?;
+        if !nodes[application]["occurrences"]
+            .as_array()
+            .unwrap()
+            .contains(&row["occurrence"])
+        {
+            return Err(invalid(format!("{here}/occurrence")));
+        }
+        let function_id = &row["location"]["origin"]["function"];
+        let function = position(function_id)
+            .filter(|at| {
+                nodes[*at]["node_tag"] == "function" && body_binding(&nodes[*at]).is_some()
+            })
+            .ok_or_else(|| invalid(format!("{origin}/function")))?;
+        let name = &row["location"]["origin"]["name"];
+        let function_index = &row["location"]["origin"]["index"];
+        if let Some((held_name, held_index)) = names.get(&function) {
+            if held_name != name {
+                return Err(invalid(format!("{origin}/name")));
+            }
+            if held_index != function_index {
+                return Err(invalid(format!("{origin}/index")));
+            }
+        } else {
+            names.insert(function, (name.clone(), function_index.clone()));
+        }
+        match owners.get(&function_index.to_string()) {
+            Some(owner) if *owner != function => return Err(invalid(format!("{origin}/index"))),
+            Some(_) => {}
+            None => {
+                owners.insert(function_index.to_string(), function);
+            }
+        }
+        let count = held.entry((function, application)).or_default();
+        *count += 1;
+        let terms = walks
+            .entry(function)
+            .or_insert_with(|| walk(function))
+            .get(&application)
+            .copied()
+            .unwrap_or(0);
+        if *count > terms {
+            return Err(invalid(format!("{here}/application")));
+        }
+    }
+    if gap {
+        return Err(invalid("/checked_term_data/body_locations".to_owned()));
+    }
+    for (function, node) in nodes.iter().enumerate() {
+        if node["node_tag"] != "function" || body_binding(node).is_none() {
+            continue;
+        }
+        for (application, terms) in walks.entry(function).or_insert_with(|| walk(function)) {
+            if held.get(&(function, *application)).copied().unwrap_or(0) < *terms {
+                return Err(invalid("/checked_term_data/body_locations".to_owned()));
+            }
+        }
+    }
+    Ok(())
+}
+
+/// FR-322-AC-490 (TC-2090): the `body_locations` vectors over the packages of
+/// `f` and `h`. The rows keep the checker's paths, a node reached twice has one
+/// row per position, and each refusal vector refuses at its own locus.
+#[trace("TC-2090", "FR-322-AC-490")]
+#[test]
+fn tc_2090_function_body_location_rows() {
+    let vectors = parsed_fixture(CHECKED_TERM_DATA_VECTORS);
+    let cases = &vectors["body_locations"];
+    let schema = parsed_fixture(SCHEMA);
+    let row_schema = schema_for_def(&schema, "BodySemanticLocation");
+    let carrier = schema_for_def(&schema, "CheckedTermData");
+    let package_with = |case: &Value| -> Value {
+        let mut package = cases["packages"][case["package"].as_str().unwrap()].clone();
+        package["checked_term_data"]["body_locations"] = case["rows"].clone();
+        package
+    };
+    let rows_of = |case: &Value| case["rows"].as_array().unwrap().clone();
+    let positive = |id: &str| -> &Value {
+        cases["positive"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|case| case["id"] == id)
+            .unwrap_or_else(|| panic!("missing positive vector {id}"))
+    };
+    for (id, case) in cases["positive"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|case| (case["id"].as_str().unwrap(), case))
+    {
+        let package = package_with(case);
+        assert!(
+            carrier.is_valid(&package["checked_term_data"]),
+            "{id} carries the five arrays"
+        );
+        for row in case["rows"].as_array().unwrap() {
+            assert!(row_schema.is_valid(row), "{id} row is closed: {row}");
+            assert_eq!(row["location"]["origin"]["kind"], "function_body", "{id}");
+        }
+        assert_eq!(decide_body_locations(&package, &rows_of(case)), Ok(()), "{id}");
+    }
+
+    // BL-01: one row per term of f's body walk; the `let`s lowering introduces
+    // have none, the two `sqrt` rows hold the checker's paths, and every other
+    // term of the ordering's composition sits at the ordering's own path.
+    let bl01 = positive("BL-01");
+    let rows = rows_of(bl01);
+    let paths: Vec<&Value> = rows.iter().map(|row| &row["location"]["path"]).collect();
+    assert_eq!(
+        paths.iter().filter(|path| ***path == json!([])).count(),
+        rows.len() - 2
+    );
+    assert_eq!(paths[rows.len() - 2], &json!([0]));
+    assert_eq!(paths[rows.len() - 1], &json!([1]));
+    let origin = &rows[0]["location"]["origin"];
+    assert_eq!(origin["name"], "f");
+    assert_eq!(origin["index"], 0);
+    assert!(rows.iter().all(|row| row["location"]["origin"] == *origin));
+    assert!(
+        !paths.contains(&&json!([1, 0])),
+        "the second sqrt is at [1], not its lowered position"
+    );
+
+    // BL-02: only the second sqrt's path differs, and the node ids are BL-01's.
+    let bl02 = rows_of(positive("BL-02"));
+    assert_eq!(bl02.len(), rows.len());
+    for (left, right) in rows.iter().zip(&bl02) {
+        assert_eq!(left["application"], right["application"]);
+        assert_eq!(left["location"]["origin"], right["location"]["origin"]);
+    }
+    let last = rows.len() - 1;
+    assert_eq!(bl02[last]["location"]["path"], json!([0]));
+    assert_ne!(bl02[last]["location"]["path"], rows[last]["location"]["path"]);
+
+    // BL-03: the one `+` node is reached through both `let`s and has a row per
+    // position, at its two `expression` occurrences.
+    let bl03 = rows_of(positive("BL-03"));
+    let first_plus = bl03
+        .iter()
+        .find(|row| row["location"]["path"] == json!([0]))
+        .expect("a row at path [0]");
+    let plus: Vec<&Value> = bl03
+        .iter()
+        .filter(|row| row["application"] == first_plus["application"])
+        .collect();
+    assert_eq!(plus.len(), 2);
+    assert_eq!(plus[0]["occurrence"], json!({"role": "expression", "ordinal": 0}));
+    assert_eq!(plus[1]["occurrence"], json!({"role": "expression", "ordinal": 1}));
+    assert!(plus.iter().all(|row| row["term_ordinal"] == 0));
+    assert_eq!(plus[0]["location"]["path"], json!([0]));
+    assert_eq!(plus[1]["location"]["path"], json!([1]));
+
+    for case in cases["reader_refusals"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let package = package_with(case);
+        assert!(
+            carrier.is_valid(&package["checked_term_data"]),
+            "{id} carries well-formed rows"
+        );
+        assert_eq!(case["expected_code"], "invalid_package", "{id}");
+        assert_eq!(case["expected_cause"], "invalid-value", "{id}");
+        assert_eq!(
+            decide_body_locations(&package, &rows_of(case)),
+            Err((
+                "invalid_package".to_owned(),
+                "invalid-value".to_owned(),
+                case["locus"].as_str().unwrap().to_owned()
+            )),
+            "{id}"
+        );
+    }
+    let refused: Vec<&str> = cases["reader_refusals"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|case| case["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(
+        refused,
+        [
+            "BL-R1", "BL-R2", "BL-R3", "BL-R4", "BL-R5", "BL-R6", "BL-R7-no-occurrence-1"
+        ]
+    );
+
+    // A carrier with the four other arrays and no `body_locations` is not
+    // closed, and BL-01 without its carrier has no row for any term.
+    for case in cases["schema_invalid"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let validator = match case["target"].as_str().unwrap() {
+            "CheckedTermData" => &carrier,
+            "BodyLocationOrigin" => &schema_for_def(&schema, "BodyLocationOrigin"),
+            other => panic!("unknown schema-negative target {other}"),
+        };
+        assert!(!validator.is_valid(&case["value"]), "{id} is malformed wire");
+        assert_eq!(case["expected_code"], "malformed_wire", "{id}");
+    }
+    let carrierless = &cases["carrierless"];
+    let mut bare = cases["packages"][carrierless["package"].as_str().unwrap()].clone();
+    bare.as_object_mut().unwrap().remove("checked_term_data");
+    assert_eq!(
+        decide_body_locations(&bare, &[]),
+        Err((
+            carrierless["expected_code"].as_str().unwrap().to_owned(),
+            carrierless["expected_cause"].as_str().unwrap().to_owned(),
+            carrierless["locus"].as_str().unwrap().to_owned()
+        ))
     );
 }
