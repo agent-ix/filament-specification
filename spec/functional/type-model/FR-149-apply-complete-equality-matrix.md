@@ -357,7 +357,10 @@ a subsumption. Everything else is unchanged:
 - An annotated `let` and a declared function result admit a value whose
   integer type the declared integer type contains, with no conversion: the
   term keeps its own type in the package. `function narrow using V(x: Int[0,
-  9]): Integer pure { x }` is admitted this way (FR-146-AC-21). A value whose
+  9]): Integer pure { x }` is admitted this way (FR-146-AC-21). The same holds
+  where the expected type passes on to a leaf: an `if` branch, a `let` body
+  and a `case` arm body. A package reader admits these terms by FR-322
+  "Integer containment", which reads this section at the package. A value whose
   type the declared type does not contain carries the range obligation, as
   for an argument.
 - An operand of `=` or `!=`, which includes a field write stated as an
