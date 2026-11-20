@@ -31,3 +31,18 @@ Not mergeable as is. FR-193-AC-28's capture is never out of range, and the decis
 | FND-001 | high | FR-193-AC-28: `capture v0: Rational[0, 1; 1, 2] = q.v` is never out of range. The type's members are 0, 1/2 and 1, so its value range is [0, 1] (FR-149 "Bounded rationals"), and FR-193 applies a capture's value range only. AC-28's "no value exactly for the activation instants in (1/2, 1)" is therefore false, and the expected `undefined-evaluation` cannot occur. Replace with `capture v0: Rational[0, 1; 1, 2] = q.v + 1/2; eventually [0, 1] holds(h.v + 1/2 >= v0)`, whose capture leaves [0, 1] exactly for τ in (1/2, 1). Same edit in TC-373 HY-22 | spec/functional/analysis/FR-193-analyze-continuous-hybrid-models.md:863 |
 | FND-002 | high | The text contradicts AC-28. "if an expression has no value at the decisive instant ... `undefined-evaluation`" together with "An expression with no value only after the decisive instant changes nothing" makes the open-below case (no value only after the infimum 1/2) not `undefined-evaluation`, while AC-28 expects `undefined-evaluation`. Replace the second sentence with: "When the decisive instant is the infimum of an open set, the kind is that of the set: `undefined-evaluation` when an expression has no value at every instant of some interval `(d, d + e)`, `formula` otherwise; outside that case an expression with no value only after the decisive instant changes nothing." | spec/functional/analysis/FR-193-analyze-continuous-hybrid-models.md:797-805 |
 | FND-003 | medium | Point 4: "as the activation instants of an `on each` obligation that fails exactly on an open stretch are" makes the decisive set the activation instants. That holds only for a capture, which is evaluated at activation. For a formula failure the decisive instants are the bad-prefix ends; for FSL FR-750-AC-12(a) they are (3/2, 2). Write "as the no-value instants of a capture that is out of range exactly on an open stretch of activation instants are; for a formula failure the decisive instants are the ends of the bad prefixes, not the activation instants" | spec/functional/analysis/FR-193-analyze-continuous-hybrid-models.md:791-794 |
+
+## Dispositions
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | AC-28 and TC-373 HY-22 use `q.v + 1/2` with body `h.v + 1/2 >= v0` (9254d4c4) |
+| FND-002 | fixed | The open-set kind rule replaces "no value only after the decisive instant changes nothing" outside that case |
+| FND-003 | fixed | The infimum sentence names a capture's no-value instants and states bad-prefix ends for a formula failure |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-004 | medium | The new loop-trace sentence in "On each" has FSL FR-450's boundary defect. Obligations are periodic only for activations more than `R` past the prefix, and the decided range must include the instant that closes the last period (FSL SR FND-014; counterexample `once [0, 1] once [0, 1] holds(h.w = 1) or holds(h.x != 0)` over Phase). Write "from more than `R` after the prefix ... decides the activation instants of the prefix and of the first `1 + ceil(R / P)` periods, the instant that closes the last period included" | spec/functional/analysis/FR-193-analyze-continuous-hybrid-models.md:336-345 |
+| FND-005 | medium | AC-28's Phase sentence "its obligations hold below 3 and fail above 3" leaves out 3, which "Behaviours and positions" (closed dwell spans) and FR-416 settle: obligations at time 3 hold, through the pre-jump position `(0, 1)` with `w = 1`. Write "hold at every activation instant at most 3 and fail at every one after 3" | spec/functional/analysis/FR-193-analyze-continuous-hybrid-models.md:878 |
