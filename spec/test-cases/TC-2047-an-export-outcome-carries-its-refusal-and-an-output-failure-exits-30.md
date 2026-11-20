@@ -47,4 +47,4 @@ FR-817-AC-14, FR-817-AC-15, FR-817-AC-16 to FR-817-AC-18 and FR-271-AC-8.
 - Step 4: each program or package refusal keeps its own code, cause and
   exit; none exits 30.
 - Step 5: the fixed `over`, then the FR-520 refusal, `wrong-role-mapping` naming
-  each role, and `unbounded-extent` naming the population.
+  each role, and `invalid_runtime_input`/`invalid-value` naming the replicated role.

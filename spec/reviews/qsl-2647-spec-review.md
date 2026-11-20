@@ -70,3 +70,38 @@ Hand traces (infinite-trace profile):
   -1,-1,0,1, read `/= 1`: T,T,T,F, equal to FR-092's range `0..i-1`.
 - `p since[1,*] q` with q = T,F,F,F and p = F,T,T,F: unbounded `h` =
   T,T,T,F; a length-1 register reads F,T,T,T, equal to FR-092 at each i.
+
+## Dispositions
+
+Round 1, fix commit 40f999df3ed0f4e6f58b52c14198b1a49bbe8fde.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | One composed form with model and clause fairness; AC-22 pins both shapes. |
+| FND-002 | fixed | Clause-level `[](ok_<clause>)` with no atom presence conjunct; AC-25. |
+| FND-003 | fixed | No origin antecedent; `Ids_<T>` is the admitted keys (snapshot, else `Keys_<T>`; Lean: some initial state); AC-26. |
+| FND-004 | fixed | `PK_Counted` advance and distance-0 accumulating cell 0; the register rule is sound by hand (AC-28 cells match). FND-018 and FND-019 are new defects in that text. |
+| FND-005 | fixed | FR-416 idle-tail sentence and AC-11; `Idle(d)` positions in TLA+ and an idle step in Lean; AC-27 checks by hand. FND-020 is a new defect in that text. |
+| FND-006 | fixed | `each` row moved to "Constructs not lowered"; AC-17 expects the refusal. |
+| FND-007 | fixed | `Mon` conjuncts in reverse ordinal order; AC-10. |
+| FND-008 | fixed | `Keys_<T>` constant, finite, `conditional` `bounded-identity-universe`; no `Seq(Nat)` range. FND-022 covers the snapshot-with-creation case. |
+| FND-009 | fixed | Set of open start stamps under `always`; other nestings refused. Checked by hand on `always eventually[1,2] p`. |
+| FND-010 | fixed | `n_<clause>_<n>` with ordinal in FR-813 and FR-814; AC-21. |
+| FND-011 | fixed | FR-425 sentence and AC-17; FR-813 send-ordered sequence; AC-16. |
+| FND-012 | fixed | `B0p` defined in AC-19. |
+| FND-013 | fixed | FR-817-AC-16 uses `export.nodes` `N - 1`. |
+| FND-014 | fixed | `PTypeOK_<P>`; AC-12. |
+| FND-015 | fixed | FR-812 population row and FR-812-AC-9. |
+| FND-016 | fixed | FR-298 property text and FR-298-AC-6; FR-813 "Conditions". FND-023 is a leftover table row. |
+| FND-017 | fixed | `pre(φ)` reads nested unbounded and `[a,*]` operators at their empty-range value; AC-10. |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-018 | high | AC-28 says the clause holds, but at the terminal stutter position 6 (counted) the distance-1 positions are 3 to 5 with `value` 2, so `always (value = 2 implies once[1,1] value = 1)` is violated in FSL and in the stated export, whose cells read (F, F) there. | FR-813.md:695, FR-431.md:60-62 |
+| FND-019 | high | Over a protocol subject, an `[a,*]` counter "stays unchanged on every other step", so its `-1` to `0` move is lost when the operand first holds at an uncounted step: `once[1,*] p` with `p` only at a `fork` position stays false for ever. | FR-813.md:501-505 |
+| FND-020 | high | Dense time: `Tick` at a quiescent state can repeat for ever with no later position; `Spec` and `NZ` admit that behaviour, which is no FSL behaviour, and it falsifies `[]<>(~tick /\ P)` and every `[]<>accept` monitor that FSL's idle tail satisfies. | FR-813.md:541-567 |
+| FND-021 | medium | A replicated role with no universe refuses `unsupported_projection`/`unbounded-extent` in the export, but analyze refuses the same binding `invalid_runtime_input`/`invalid-value` (fsl-eval simulation/protocol.rs:160-165, fsl-analyze analyze/items.rs:1126-1132), against ruling 1 ("same schema and validation"). | FR-817.md:160-165, FR-817.md:366 |
+| FND-022 | medium | With a snapshot and a key-creating operation, `Keys_<T>` bounds `TypeOK` but no rule says whether a step that adds a key outside it is disabled; if it is, the truncated behaviour stutters at an artificial dead end that FSL does not have, which the condition text does not name. `Ids_<T>` is finite there anyway. | FR-813.md:141-152 |
+| FND-023 | low | FR-298's property table still types `conditions` as `String` beside the new typed-object text. | FR-298.md:31 |
