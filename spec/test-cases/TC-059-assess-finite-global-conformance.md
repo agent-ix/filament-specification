@@ -23,6 +23,11 @@ premise; substitute decision-scope closure, surrounding-execution closure and
 completed assessment execution for the global closure record in turn. Keep one
 independently settled per-obligation truth fixed through every mutation.
 
+Assess a recording of a protocol with a fan-out node, with no activated
+replicated-role population stated and no obligation violated, under a `closed`
+and an open closure record; then state the population, once with a complete
+`closed` record and once with an obligation pending (FR-059-AC-6).
+
 ## Expected Results
 
 Valid interleavings conform. Every adverse event names its obligation;
@@ -31,4 +36,7 @@ incremental semantic results agree exactly. Complete global success occurs only
 with the exact `closed` complete-global-conformance closure record and full
 required premise set. Every omitted, duplicate, cross-wired, wrong-scope or
 wrong-identity premise prevents complete success or refuses the record, while
-the independently settled per-obligation truth remains unchanged.
+the independently settled per-obligation truth remains unchanged. The fan-out recording
+without a population settles `inconclusive`, cause `incomplete-closure-scope`,
+under either closure state; with the population it settles `proved`, and
+`inconclusive`, cause `open-history`, with an obligation pending.

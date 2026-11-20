@@ -17,6 +17,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-247
     type: references
+  - target: ix://agent-ix/filament-specification/FR-331
+    type: references
 ---
 ## Description
 
@@ -39,7 +41,13 @@ causes and provenance.
 The evaluator SHALL accept any observation order consistent with the authored
 partial order and channel premises. It SHALL report unexpected, missing,
 misordered, duplicated and wrongly correlated events without repairing them.
-Open or incomplete histories SHALL NOT establish complete global success. Batch
+Open or incomplete histories SHALL NOT establish complete global success: a
+global result that no violation refutes and no run limit stops, over a pending
+obligation or a closure record that is not `closed`, settles FR-360
+`inconclusive` with cause `open-history`, or, over a recording whose protocol
+has a fan-out node and whose activated replicated-role population the request
+does not state, cause `incomplete-closure-scope` whatever the closure state
+([FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md)). Batch
 replay and settled incremental assessment over the same admitted facts SHALL
 produce the same semantic results.
 
@@ -59,9 +67,10 @@ cross-wired or scope-mismatched required premise.
 | --- | --- | --- |
 | FR-059-AC-1 | Valid split-shipment and payment/refund observations conform under each permitted branch interleaving. | Test (TC-059) |
 | FR-059-AC-2 | Unexpected, missing, causally misordered, duplicate-effect and cross-workflow observations identify their exact violated obligation. | Test (TC-059) |
-| FR-059-AC-3 | An open or incomplete history remains pending/incomplete even when no violation has yet been observed. | Test (TC-059) |
+| FR-059-AC-3 | An open or incomplete history remains pending/incomplete even when no violation has yet been observed, and its global result settles `inconclusive` with cause `open-history`, never `proved`. | Test (TC-059) |
 | FR-059-AC-4 | Settled incremental and batch replay results agree for the same protocol, inputs, progress and closure identities. | Test (TC-059) |
 | FR-059-AC-5 | Complete global success is available only with a `closed` complete-global-conformance closure record carrying every exact required execution, branch and workflow premise; independently omitting, duplicating, cross-wiring or changing each premise prevents complete success or refuses the record without changing an independently settled per-obligation result. | Test (TC-059) |
+| FR-059-AC-6 | A recording of a protocol with a fan-out node, whose request states no activated replicated-role population and in which no obligation is violated, settles its global result `inconclusive` with cause `incomplete-closure-scope`, never `open-history` and never `proved`, with a `closed` closure record and with an open one; the same recording with the population stated and a `closed` record carrying every required premise settles `proved`, and with that population and an obligation pending settles `open-history`. | Test (TC-059) |
 
 ## Dependencies
 

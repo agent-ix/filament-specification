@@ -23,6 +23,12 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-326
     type: references
+  - target: ix://agent-ix/filament-specification/FR-059
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-737
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-520
+    type: references
 ---
 
 # FR-785: Bind symbolic channel capacities in a protocol subject
@@ -65,6 +71,18 @@ package carries the name and no value (FR-465), and analysis bounds are
 request members ([FR-326](../../objects/interfaces/FR-326-checked-protocol-artifact.md)).
 The binding is not an FR-331 `ProofBound`. It does not enter the item's
 `extent`, and it does not change the extent's classification.
+
+A request that replays a supplied finite trace over the protocol subject, or
+that assesses a recorded execution against it
+([FR-059](FR-059-assess-finite-global-conformance.md), the
+[FR-737](../../objects/interfaces/FR-737-protocol-execution-recording.md) recording),
+supplies the binding the same way, with that subject's other bindings: in a
+[FR-520](../tooling/FR-520-carry-analyze-requests-and-results-as-documents.md)
+analyze document it is the `capacities` member of the subject's `protocol`
+binding. The trace and the
+recording carry no capacity value. The recording's channel
+obligations read each symbolic capacity at its bound value, and a name with
+no binding is an unbounded root of that request, as above.
 
 ### Admission
 
@@ -170,6 +188,7 @@ never a default capacity. A projection reads no capacity (FR-735).
 | FR-785-AC-4 | The AC-1 subjects at `"1"` and `"2"` have different obligation identities. The deadlock-freedom item settles `refuted` at `"1"` and `proved` at `"2"`. The subject of the `proved` result's obligation identity holds the capacity binding `{"Bound": "2"}`, and no result at one value is reused for the other. | Test (TC-1911) |
 | FR-785-AC-5 | The `refuted` counterexample at `"1"` carries `subject.capacities` `{"Bound": "1"}` and replays to `reproduced-with-evaluated-witness`. The same counterexample with `capacities` `{"Bound": "2"}` settles `inconclusive`, cause `replay-parity`, because its last state enables a step. The counterexample without `capacities` refuses before replay `invalid_runtime_input`/`missing-member` at `subject.capacities`, and a counterexample with `capacities` over a clause that has no capacity name refuses before replay `invalid_runtime_input`/`unknown-member` at `subject.capacities`. | Test (TC-1911) |
 | FR-785-AC-6 | A realizability item over the AC-1 clause with `{"Bound": "2"}` is decided, and its channel premise carries `Bound` and `2`. The same item at `"1"` has a different witness identity. With no binding the item's key holds the channel premise with `Bound` recorded as not stated, is not refused `missing-member`, and settles `inconclusive`, cause `premise-not-stated`, never `requires-bound`. | Test (TC-1911) |
+| FR-785-AC-7 | A finite replay of a supplied trace over the AC-1 clause, and the assessment of a recorded execution of it, take the binding from the request's subject: with `{"Bound": "1"}` the trace that sends `P` then `Q` declines at the second send, as over `capacity 1`, and the recording that shows both sends queued violates the channel obligation; with no binding each returns `requires-bound`, never `unsupported`. | Test (TC-1911) |
 
 ## Dependencies
 
