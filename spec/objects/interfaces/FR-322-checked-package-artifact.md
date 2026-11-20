@@ -831,7 +831,7 @@ A frame body refusal, meaning-join or canonical-order
     The root is derived by the checked-package producer from the existing
     model selection; it does not require a new FCD declaration.
     **Completeness and stage.** The V2 schema checks only the closed root
-    shape; they cannot join one node to a supplied document, so the join is a
+    shape; it cannot join one node to a supplied document, so the join is a
     reader rule. A reader refuses a root whose owner identity names no supplied
     document `missing_import`/`missing-selection` at
     `/semantic_graph/nodes/{i}/owner/identity`. A second root for one identity has the same id; it
@@ -1819,7 +1819,7 @@ nested ids.
   or sorted order of the nodes. The relation in which node *k* names node *j*
   through an operand slot of its own `node_id.path` is acyclic: no node's key
   is defined in terms of itself.
-- **Reader checks.** After the V2 schema checks and before every
+- **Reader checks.** After the V2 schema check and before every
   `semantic_graph` check (so before the duplicate-`node_id` refusal), the
   reader checks the operand references and refuses `malformed_wire`, with no
   cause, at the first defect of the first of these steps that has one:

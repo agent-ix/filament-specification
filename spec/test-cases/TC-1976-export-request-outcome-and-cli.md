@@ -29,4 +29,4 @@ Verify the export verb's file writing, refusals, fidelity exit, limits and famil
 - Step 3: exit 21, no file.
 - Step 4: `incomplete` naming `export.output_bytes`, exit 22, twice; then `assembled`; then `invalid-request` naming `limits` and `export.output_bytes`, exit 20.
 - Step 5: exit 20, no text.
-- Step 6: entries in `(name, binding)` order; `binding` on every `p_`, `a_` and `x_` entry and on no other; two `p_a` entries with distinct `binding` and `node`; no repeated `(name, binding)`; byte-equal `name_map` members.
+- Step 6: entries in `(name, binding)` order; `binding` on every `p_`, `a_`, `x_`, `o_`, `w_`, `fld_` and `e_` entry and on no other; two `p_a` entries and two `fld_total` entries with distinct `binding` and `node`; no repeated `(name, binding)`; byte-equal `name_map` members.

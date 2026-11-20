@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify that the operation catalog and the V2 schema carries
+Verify that the operation catalog and the V2 schema carry
 `filament.op.collection.only`, `filament.op.collection.seq` and
 `filament.op.refinement.history` together, and that the reader admits a
 lowered `only` and refuses its malformed shapes. Scope: FR-322-AC-455.

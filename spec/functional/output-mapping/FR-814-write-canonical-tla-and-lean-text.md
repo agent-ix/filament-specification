@@ -125,14 +125,21 @@ The target bytes and the package's name map.
   map SHALL hold one entry per binding site of a bound name, and each such
   entry SHALL carry `binding`, the node id of the operation, function,
   clause, quantifier, `let`, lambda or protocol construct that introduces
-  the binder, beside the `node` and region of the binder itself. Every other
-  prefixed name names one FSL node and has one entry, with no `binding`.
+  the binder, beside the `node` and region of the binder itself. A field
+  (`fld_`) or enum member (`e_`) name derives from the member name alone,
+  and two owners may declare one member name (FR-154), so it too has one
+  entry per declaring owner, whose `binding` is the node id of the object
+  type, record, variant or enum that declares it. Every other prefixed name
+  names one FSL node and has one entry, with no `binding`.
   Entries SHALL be ordered by `name`, then by `binding`, each compared as
-  UTF-8 bytes, an entry with no `binding` before one with it. A trace or
-  error that names a bound name is read through the entry whose `binding`
-  is the definition the trace step or error names (the operation of a TLA+
-  action step, the function or clause of an error), so `p_a` in a step of
-  `op_dec` reads back to `dec`'s parameter, never to `inc`'s. The map never
+  UTF-8 bytes, an entry with no `binding` before one with it. A trace step
+  or error names a definition (the operation of a TLA+ action step, the
+  function or clause of an error). A `p_` or `a_` name is read through the
+  entry whose `binding` is that definition, so `p_a` in a step of `op_dec`
+  reads back to `dec`'s parameter, never to `inc`'s. An `x_`, `o_` or `w_`
+  name is read through the entries whose `binding` lies inside that
+  definition; where that definition holds more than one such site, the map
+  gives each of them and does not choose one. The map never
   merges two binding sites into one entry, and never picks one of them
   without the binding: a reader that ignored `binding` could resolve a
   bound name to the wrong operation's binder.
@@ -194,7 +201,7 @@ The target bytes and the package's name map.
 | FR-814-AC-8 | An operation `rename(self: Text)` of object type `Item`, whose declared parameter is spelled `self` (FR-012), exports in TLA+ as `op_rename(r_self, p_self)` bound in `Next` by `\E r_self \in DOMAIN v_Item, p_self \in Dom` and in Lean as `def op_rename (s s' : State) (r_self : Key_Item) (p_self : …)`, with `p_self` mapped to the parameter's node and `r_self`, a fixed name, with no name-map entry, and SANY and Lean parse both files. A mapper that wrote the receiver and the parameter under one name would declare one formal parameter twice, which SANY reports as a multiply-defined symbol and Lean as a duplicate binder, so this criterion fails for it. | Test (TC-1973) |
 | FR-814-AC-9 | An invariant whose quantifier and `let` binders are named `Next`, `instance`, `DOMAIN`, `num` and `tag`, over an object type with fields `num` and `tag`, a `Decimal` field and an `Option` field, exports the binders as `x_Next`, `x_instance`, `x_DOMAIN`, `x_num` and `x_tag` and the fields as `fld_num` and `fld_tag`, distinct from the structural `Next` and the generated rational fields `num` and `tag`; SANY and Lean parse both files. Unprefixed, `DOMAIN` is a TLA+ reserved word and `instance` a Lean keyword, both of which fail to parse, and a binder `Next` redefines the module's `Next`, which SANY rejects, so a mapper that writes any binder unprefixed fails this criterion. | Test (TC-1973) |
 | FR-814-AC-10 | The exports of FR-813-AC-1, FR-813-AC-7, FR-813-AC-12 and FR-813-AC-19 spell the clause binder `o_c` (or `o_l`), the Lean atom `at_T_0`, the definedness predicate `ok_T`, the key bound `Keys_Counter`, the counter `n_T_0` and the protocol type invariant `PTypeOK_Hand`; no clause binder is spelled with `p_`, no Lean atom with `a_`, and every name of those texts belongs to exactly one class of the table. | Test (TC-1973) |
-| FR-814-AC-11 | A model whose object type `Counter` has operations `inc(a: Integer)` and `dec(a: Integer)`, which declares `function f(a: Integer): Boolean` and two invariants `Up` and `Down` that each quantify a binder `k`, exports in TLA+ a name map with exactly two `p_a` entries, one whose `binding` is `inc`'s operation node id and whose `node` is `inc`'s parameter `a`, and one whose `binding` is `dec`'s and whose `node` is `dec`'s parameter; one `a_a` entry whose `binding` is `f`'s node; and two `x_k` entries, each whose `binding` is the quantifier node of its own invariant. The two `p_a` entries are adjacent and ordered by their `binding` bytes; `op_inc` and every other name naming one node has one entry and no `binding`. A TLC trace step of `op_dec` that names `p_a` reads back through the map to `dec`'s parameter node and region. | Test (TC-1973) |
+| FR-814-AC-11 | A model whose object type `Counter` has operations `inc(a: Integer)` and `dec(a: Integer)`, which declares `function f(a: Integer): Boolean` and two invariants `Up` and `Down` that each quantify a binder `k`, exports in TLA+ a name map with exactly two `p_a` entries, one whose `binding` is `inc`'s operation node id and whose `node` is `inc`'s parameter `a`, and one whose `binding` is `dec`'s and whose `node` is `dec`'s parameter; one `a_a` entry whose `binding` is `f`'s node; and two `x_k` entries, each whose `binding` is the quantifier node of its own invariant. The two `p_a` entries are adjacent and ordered by their `binding` bytes; `op_inc` and every other name naming one node has one entry and no `binding`. A model with two object types `Cart` and `Till`, each declaring a field `total`, exports two `fld_total` entries, each whose `binding` is its own object type node and whose `node` is that type's field. A TLC trace step of `op_dec` that names `p_a` reads back through the map to `dec`'s parameter node and region. | Test (TC-1973) |
 
 
 ## Dependencies
