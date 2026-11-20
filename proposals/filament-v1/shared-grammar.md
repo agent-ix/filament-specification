@@ -810,8 +810,8 @@ behaviours-domain = 'behaviours',
                     [ '(', parameter, { ',', parameter }, ')' ] ;
 quantifier    = ('forall' | 'exists'), 'trace', ident,
                 [ 'of', ident, { fairness } ] ;
-align-skip    = 'align', 'skip', '{', qualified-name,
-                { ',', qualified-name }, '}' ;
+align-skip    = 'align', 'skip', '{',
+                [ qualified-name, { ',', qualified-name } ], '}' ;
 match-block   = 'match', block ;
 step-label    = ident, '.', 'step', '.',
                 ( 'op' | 'receiver' | qualified-name, '.', member-name ) ;
@@ -1119,9 +1119,12 @@ rules only.
   `unsupported_construct`/`expression-form` at the form, naming `hyper`
   clauses as the place the form is admitted (FR-501 item 2). In every other
   position (a function body, a state clause, a refinement row) `@` stays
-  `invalid_syntax`/`unexpected-token` at the `@`. An `align skip` list
-  names at least one operation; `align skip {}` is
-  `invalid_syntax`/`unexpected-token` at the `}`.
+  `invalid_syntax`/`unexpected-token` at the `@`. The `align skip`
+  entry list is optional in the grammar: `align skip {}` parses, and the
+  checker refuses it `unsupported_construct`/`expression-form` at the list
+  ([FR-398](../../spec/functional/analysis/FR-398-align-hyperproperty-traces-on-a-projection.md);
+  FSL FR-172), so an empty list is a stage S3 refusal, never an S1
+  `invalid_syntax`.
 - An `align-skip` entry and a model-operation execution binding each name an
   operation as `qualified-name`, whose first segment is a model alias the
   clause binds.

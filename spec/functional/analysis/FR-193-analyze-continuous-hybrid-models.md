@@ -328,6 +328,23 @@ a `hybrid-decl`. In its body `h.x` reads the continuous variable `x`.
   no value ("Continuous values and expressions").
 - The claim SHALL hold on a behaviour when every obligation's body holds at
   its activation position.
+- A past operator (`once`, `historically`, `since`, `triggered`) in an
+  `on each` body, guard or capture SHALL read the behaviour from its first
+  position, not from the activation position: its history at an activation
+  is the whole behaviour up to that position. An obligation is a claim on
+  the one behaviour, so what happened before it was activated is part of
+  what its past operators see. On a `loop` trace an obligation is periodic
+  only once its history reads no instant of the prefix: with past reach `R`
+  (a past operator whose interval has upper bound `b` adds `b`, one with an
+  open interval `[a, *]` adds `a + P`, `P` the loop's period, a future
+  operator adds nothing, and nested operators add up; the largest reach
+  over the body, the guard and the captures), an activation more than `R`
+  past the end of the prefix has a history that reads only periodic
+  behaviour, so the obligations activated from period `1 + ceil(R / P)`
+  after the prefix on repeat with period `P`. Replay SHALL decide the
+  activation instants of the prefix and of the first `1 + ceil(R / P)`
+  periods, the instant that closes the last period included. One unbounded
+  past operator, or one bounded with `0 < b <= P`, gives two periods.
 
 ### Fairness
 
@@ -779,21 +796,34 @@ time whose sign on an interval is decidable:
    it, decided by the pointwise meaning with every position past the
    prefix's end unknown.
 
-The *decisive instant* of a reproduced trace SHALL be the earliest instant
-of the replayed behaviour at which either the prefix up to it is a bad
-prefix of the claim or an expression the replay evaluates has no value.
+The *decisive instant* of a reproduced trace SHALL be the infimum of the
+instants of the replayed behaviour at which either the prefix up to it is a
+bad prefix of the claim or an expression the replay evaluates has no value.
+When that set has a least element the infimum is that instant. When it is
+open below, as the no-value instants of a capture that is out of range
+exactly on an open stretch of activation instants are (a capture is
+evaluated at its activation instant), there is no earliest instant, and the
+decisive instant is the infimum, the stretch's start, reported as the
+`where.time` interval states: a point interval when it is rational, otherwise
+its isolating interval with rational ends. For a formula failure the
+decisive instants are the ends of the bad prefixes, not the activation
+instants.
 When checks 1 to 4 hold and that instant exists, the replay settles
 `reproduced-with-evaluated-witness` (FR-364): if an expression has no value
 at the decisive instant, the item settles `refuted` with the counterexample
 of kind `undefined-evaluation{where, cause}`, `where` naming that instant's
 state, its time stamp and the expression's locus, and the cause
 `undefined-evaluation` (FR-331); otherwise the item settles `refuted` with
-the trace as its `HybridCounterexample` of kind `formula`. An expression
-with no value only after the decisive instant changes nothing. A `loop`
+the trace as its `HybridCounterexample` of kind `formula`. When the
+decisive instant is the infimum of an open set, the kind is that of the set:
+`undefined-evaluation` when an expression has no value at every instant of
+some interval `(d, d + e)`, `d` the decisive instant and `e > 0`, `formula`
+otherwise; outside that case an expression with no value only after the
+decisive instant changes nothing. A `loop`
 trace has no bad prefix: when checks 1 to 4 hold, it reproduces with kind
-`undefined-evaluation` at the earliest instant of its periodic behaviour at
-which an expression has no value, and otherwise with kind `formula` when
-check 5 holds. Otherwise the exact
+`undefined-evaluation` at the infimum of the instants of its periodic
+behaviour at which an expression has no value, and otherwise with kind
+`formula` when check 5 holds. Otherwise the exact
 replay outcome is `not-reproduced{at, check}`: a `solver-inconclusive` item
 stays `inconclusive` with its static outcome, and a provider's `refuted`
 item settles `inconclusive`, `replay-parity` (FR-364).
@@ -848,6 +878,7 @@ without a certificate is settled by this requirement alone.
 | FR-193-AC-25 | Over `Braking`, an `unsupported` entry carrying `unsupported_construct`/`expression-form` whose `locus` names the term node of `v`'s rate in `Moving` is read against the checked package into that construct; the same entry whose `locus` names a guard node of `Moving`, or a node of no hybrid declaration, is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`, and one naming `mode` `Halted` at `/diagnostic/detail/mode`. | Test (TC-2051) |
 | FR-193-AC-26 | A hybrid `undefined-evaluation` counterexample whose `cause` is `division-by-zero`, `outside-parameter-range`, `outside-result-range` or `outside-capture-range` is admitted by the schema and the reader; one whose `cause` is `absent-key` or `undefined` fails the schema and is refused `invalid_result`/`invalid-value` at the kind's `cause`; the native diagnostics catalog's "Undefined reasons" lists the four spellings. | Test (TC-2051) |
 | FR-193-AC-27 | Over `BrakingH`, `Braking` whose `Moving` guard is `half(v) <= 0`, with the pure functions `half` and `spare`, each `(x: Rational[0, 20; 1, 2]): Rational[0, 10; 1, 4]` with body `x / 2`, of which only `half` is called: an `unsupported` entry carrying `unsupported_construct`/`expression-form` with `mode` `Moving`, no `variable`, and a `locus` naming the `/` term node in `half`'s body is read against the checked package into that construct, located in `half`'s declaration; the same entry whose `locus` names the `/` term node in `spare`'s body, or that names `half`'s `/` with `mode` `Stopped` (whose entries call no function) or with `variable` `v` (whose rate in `Moving` calls no function), is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`. Over `BrakingR`, `Braking` whose `Moving` guard is `down(v) <= 0` with `function down using p(x: Rational[0, 20; 1, 2]): Rational[0, 20; 1, 2] pure decreases(x) { if x <= 1 then x else down(x - 1) / 2 }`, a `locus` at the call term `down(v)` with `mode` `Moving` and no `variable` is read into that construct, and a `locus` at the `/` inside `down`'s body is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`, because a recursive call is not expanded. | Test (TC-2051) |
+| FR-193-AC-28 | Over FSL FR-750-AC-12's `Shuttle`, whose point lasso from `(Moving, v = 0)` at time 0 jumps back to `(Moving, v = 0)` at time 1 with `loop_to` 0, under `model-time`: `on each (q: Shuttle) when (q.v > 0) { historically holds(h.v > 0) }` is false on that behaviour, because `historically` reads from time 0, where `v = 0`, and `on each (q: Shuttle) when (q.v > 0) { once holds(h.v = 0) }` is true on it; `on each (q: Shuttle) when (q.v > 0) { capture v0: Rational[0, 1; 1, 2] = q.v + 1/2; eventually [0, 1] holds(h.v + 1/2 >= v0) }`, whose capture value `τ + 1/2` leaves its type's value range `[0, 1]` exactly for the activation instants in `(1/2, 1)` of each period and is `1` at `τ = 1/2`, reproduces with kind `undefined-evaluation` whose decisive instant is the infimum `1/2`, `where.position` 0 and `where.time` `{lower: 1/2, upper: 1/2}`. Over FSL FR-450-AC-12 (d)'s `Phase` lasso (prefix `[0, 1)` on which `w = 1`, period 1 on which `w = 0`), `on each (q: Phase) { once [0, 1] once [0, 1] holds(h.w = 1) }` has past reach 2, its obligations hold at every activation instant at most 3 and fail at every activation instant after 3, and it reproduces with kind `formula` only by deciding the prefix and three periods. | Test (TC-373) |
 
 ## Dependencies
 
