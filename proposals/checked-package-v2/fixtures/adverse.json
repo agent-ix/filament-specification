@@ -660,7 +660,8 @@
       "id": "reaches-population-names-absent-node",
       "base": "positive-operation-identities",
       "population": {
-        "absent": true
+        "absent": true,
+        "node_id": {"package": "test/families", "path": ["missing-population"], "ordinal": 0}
       },
       "expected_code": "invalid_semantic_graph",
       "expected_locus": "/semantic_graph/nodes/6/dependencies/2"
@@ -794,9 +795,11 @@
       "field": "origin",
       "declaration": "ix://acme/orders/Order",
       "population": {
-        "absent": true
+        "absent": true,
+        "node_id": {"package": "test/families", "path": ["missing-population"], "ordinal": 0}
       },
-      "expected_code": "invalid_semantic_graph"
+      "expected_code": "invalid_semantic_graph",
+      "expected_locus": "/semantic_graph/nodes/6/dependencies/2"
     },
     {
       "id": "reaches-field-population-omitted-from-dependencies",
