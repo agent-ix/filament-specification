@@ -53,3 +53,31 @@ Three rules still accept wrong certificates: the boundary-face test of rule (b),
 filament-specification #771: blocking (FND-001, FND-002, FND-003). filament-spec-language #3165: no high in its own text, so mergeable, but land it with #771's fix round. FR-1019 "Dwells" changes if FND-002 takes the uncontracted fallback, and FND-004 (medium) is in FR-621.
 
 Open point 3 is an acceptable incompleteness. No AC requires certification of Braking with `horizon` 20, `jumps` 1 and `exhaustive` `["jumps"]`. FR-193's example and TC-373 HY-20 are verdict-mapping cases with no certificate. FR-1019's `model-steps` bound reports no `jumps` exhaustiveness for such a dwell. The cause is step granularity: the `Moving` dwell empties only on a step whose covered instants pass 20. With `horizon` 21 the certificate passes.
+
+## New findings (disposition pass 1)
+
+Reviewed fix commits: filament-specification 036c9e98..15ed2258 and filament-spec-language 2ed2446f..7a0f3b3a.
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-010 | high | Uncontracted Picard, and rule (b)'s face-rate test, are unsound for a rate with a conditional even under classical solutions. With `x' = 1`, `y' = if y > 0 then x else 0` and `x = y = 0` initially, `y = t²/2` is a classical solution, since `y'` is continuous and equals the right side at every instant. Yet one flowpipe step with box `(0, 0)` and `B` `x [0, 1], y [0, 0]` passes `tube ⊆ B`, and the inductive box `x [-1, 1], y [-1, 0]` passes (b) (the `y` face rate is 0). Both certify `always … holds(h.y <= 0)`. | spec/functional/analysis/FR-652-check-hybrid-enclosure-and-witness-certificates.md:237-239, 314, 350 |
+| FND-011 | high | Under `model-steps`, a behaviour that dwells forever after its last jump has no rule in FR-193, and FR-652's position reading misses its states. Over `Decay` (`x' = -x`, `0 <= x <= 1`, `x = 1` initially, no transition), the closing two-step certificate certifies `always [1, 1] holds(h.x < 1)`: position 1 reads only the may-end `B` `x [0, 3/4]`. Under the terminal-stutter reading recommended below, position 1 holds `x = 1`. | spec/functional/analysis/FR-193-analyze-continuous-hybrid-models.md:289-294; spec/functional/analysis/FR-652-check-hybrid-enclosure-and-witness-certificates.md:457-471 |
+
+Recommendations:
+
+- FND-010: at FR-652:237-239, replace "For a mode that is not contraction-admitted the reader SHALL therefore check the uncontracted inclusion `tube ⊆ B`, the classical a-priori condition, and still contract `box` and the advance." with "For a mode that is not contraction-admitted the reader SHALL therefore check the uncontracted inclusion `tube ⊆ B`, and still contract `box` and the advance. Both the uncontracted inclusion and rule (b)'s face rates also need rates that are Lipschitz near the box. So a step of a mode whose expanded rates contain a conditional fails `picard`, and such a mode's box fails `b`, unless every conditional's condition is *strictly decided* over that box: each comparison `a ~ b` it reads has `a - b` with an interval that excludes 0. The same branch is then taken near the box. Otherwise a classical solution can take the other branch just outside the box: with `x' = 1` and `y' = if y > 0 then x else 0` from `(0, 0)`, `y = t²/2` leaves `B` `x [0, 1], y [0, 0]` although `tube ⊆ B`." Add to FR-652-AC-10: "over `Lift`, `hybrid Lift using p { initial { mode M when { x = 0 and y = 0 }; } mode M invariant { x >= -1 and x <= 1 and y >= -1 } flow { x' = 1; y' = if y > 0 then x else 0; } }`, the step `{M, time [0, 1], box x [0, 0], y [0, 0], B x [0, 1], y [0, 0], step 1}` under `horizon` 1, `jumps` 0, `exhaustive` `["time"]` against `always [0, 1] holds(h.y <= 0)` is rejected `picard` at `/certificate/steps/0`, and the box `M: x [-1, 1], y [-1, 0]` against `always holds(h.y <= 0)` is rejected `b` at `/certificate/boxes/M`, `y > 0` not being strictly decided."
+- FND-011: append to FR-193:294: "A behaviour that takes `k` jumps and then dwells forever, diverging in time, SHALL have at every position after `k` its state at position `k`, the state its last jump reaches (its start state when `k` is 0). A discrete behaviour that takes no further step stutters in its last state for the same reason (FSL ADR-018 terminal stutter): positions observe only jumps, so its last observation repeats." At FR-652:457-471, replace "so the reading at position `p` is the meet of the readings of the `box` of every jump step of depth `p` and of the `B` of every may-end step of every dwell of depth less than `p`; it is never read from the box at a behaviour's last jump alone, because the behaviour moves on from there before it ends." with "and, for the behaviours that dwell forever after `j < p` jumps, their state at position `j`. So the reading at position `p` is the meet of the readings of the `box` of every jump step of depth `p`, of the `B` of every may-end step of every dwell of depth less than `p`, and of the first `box` of every dwell of depth less than `p` that closes." Add to FR-652-AC-14 and FR-193-AC-30: "over `Decay`, `hybrid Decay using p { initial { mode D when { x = 1 }; } mode D invariant { x >= 0 and x <= 1 } flow { x' = -x; } }`, the steps `{D, time [0, 1/2], box x [1, 1], B x [1/2, 1], step 1/2}` and `{D, time [1/2, 1], box x [0, 3/4], B x [0, 3/4], step 1/2}` under `clock "model-steps"` with `horizon` 1, `jumps` 1 and `exhaustive` `["jumps"]` are rejected `claim` at `/certificate/steps/0` against `always [1, 1] holds(h.x < 1)`, since position 1 holds the start state `x = 1`."
+
+## Dispositions
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | - |
+| FND-002 | fixed | - |
+| FND-003 | fixed | - |
+| FND-004 | fixed | - |
+| FND-005 | fixed | - |
+| FND-006 | fixed | - |
+| FND-007 | fixed | - |
+| FND-008 | fixed | - |
+| FND-009 | fixed | - |
