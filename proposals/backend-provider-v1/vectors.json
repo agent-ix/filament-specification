@@ -9274,6 +9274,42 @@
           }
         ]
       }
+    },
+    {
+      "name": "global-conformance-incomplete-closure-scope-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause": "FR-059"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-protocol",
+            "kind": "global-conformance",
+            "result": "inconclusive",
+            "cause": {
+              "type": "incomplete-closure-scope"
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
     }
   ],
   "adverse": [
@@ -13629,6 +13665,18 @@
           "value": [
             "successors"
           ]
+        }
+      ]
+    },
+    {
+      "name": "incomplete-closure-scope-on-local-projection",
+      "base": "global-conformance-incomplete-closure-scope-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/kind",
+          "value": "local-projection"
         }
       ]
     },

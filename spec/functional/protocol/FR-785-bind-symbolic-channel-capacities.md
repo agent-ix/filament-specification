@@ -78,7 +78,8 @@ that assesses a recorded execution against it
 [FR-737](../../objects/interfaces/FR-737-protocol-execution-recording.md) recording),
 supplies the binding the same way, with that subject's other bindings: in a
 [FR-520](../tooling/FR-520-carry-analyze-requests-and-results-as-documents.md)
-analyze document it is the `subject` member `capacities`. The trace and the
+analyze document it is the `capacities` member of the subject's `protocol`
+binding. The trace and the
 recording carry no capacity value. The recording's channel
 obligations read each symbolic capacity at its bound value, and a name with
 no binding is an unbounded root of that request, as above.
