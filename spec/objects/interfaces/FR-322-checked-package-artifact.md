@@ -481,6 +481,23 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   whose entry names the
   operation's operator class, operand positions and rest, result form,
   constraints, required law roles, mode kind, member kind and leaf source.
+  The catalog's vocabulary is enumerated by one wire schema,
+  `proposals/checked-package-v2/schema.json` in this repository: its
+  `OperationIdentity`, the application `operator` classes, the `OperationLaw`
+  roles, the `OperationMode` kinds and values and the `OperationMember` kinds
+  list exactly the catalog's. When a catalog entry introduces an `expression`
+  or `scalar_type` `semantic_form` (as FR-829's `place_reference` and
+  `clock_reference` do), `schema.json` SHALL list that form in its form
+  enumeration in the same release. The catalog records no node forms, so this
+  obligation is not checked mechanically against the catalog: it is checked by
+  spec review of the change and by the reader tests that admit a package
+  carrying the form. The catalog is the definition, `schema.json` the wire
+  check, and the readers (filament-contract-ir's strict reader, the shared model oracle)
+  read the catalog from `agent-ix/filament-verification-contracts` rather than
+  holding a copy. Where this and the requirements that specify it say "the V2
+  schemas", "both V2 schemas" or "either schema" of the package wire, they
+  name `schema.json`; a catalog change and its `schema.json` change are
+  released together (FR-322-AC-17).
   `laws` is the ordered list of `{role, definition}` pairs whose roles are
   exactly the entry's roles. For a value law role the `DefinitionRef` names,
   by authority and identity, one of that role's catalogued definitions (integer division truncating/floor/Euclidean,
@@ -3466,7 +3483,7 @@ row `history Counter.seen: Int[0, 9] = 0`).
   `integer` and `binder`, result `sequence`, member `type_argument`, constraint
   `bound_is_member` on operand 2); the `history` member is `{kind: "history",
   declaration, name}` beside the `field` member of the closed `OperationMember`
-  schema. The catalog, both V2 schemas' `OperationIdentity` and `OperationMember`
+  schema. The catalog and the V2 schema's `OperationIdentity` and `OperationMember`
   enumerate them together or not at all
   (FR-322-AC-17), so a reader that does not yet hold the entries refuses these
   identities `unknown-operation` and no earlier.
@@ -3768,7 +3785,7 @@ is its negation. The family `bytes` also has `filament.op.bytes.length`, one
 `filament.op.bytes.concat`, two `bytes` operands and result `bytes`, the octets of
 operand 0 followed by those of operand 1, so that
 `length(concat(a, b)) = length(a) + length(b)` and `concat` is associative with
-the empty sequence as identity. Both V2 schemas enumerate these six identities in
+the empty sequence as identity. The V2 schema enumerates these six identities in
 `OperationIdentity`, so a package that applies them validates. `json_object` has no operation identity beyond
 `eq` and `ne`, and `bytes` none beyond these four: an ordering, arithmetic,
 member-access or any other identity over either family refuses
@@ -4027,7 +4044,7 @@ quantity argument that is a carried quantity or of an affine unit, and a
 `result_type` other than argument 0's type each refuse
 `ill_typed`/`operator-ineligible` at the application; a `mode` value refuses
 `invalid_package`/`operation-mode-mismatch` and a `laws` entry
-`invalid_package`/`operation-law-mismatch`. The catalog and both V2 schemas'
+`invalid_package`/`operation-law-mismatch`. The catalog and the V2 schema's
 `OperationIdentity` enumerate the two identities together, directly after
 `filament.op.quantity.pow` (FR-322-AC-17).
 
@@ -5716,7 +5733,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-13 | The published V2 checked-package schema admits its positive fixture carrying all 15 closed node tags with an exact source-map entry for every occurrence, and refuses each authored document-type and node mutation. | Test |
 | FR-322-AC-14 | Withdrawn: the content-hash identity (package id, node key, digest or stale comparison) this criterion tested is removed. | Withdrawn |
 | FR-322-AC-15 | Withdrawn: the content-hash identity (package id, node key, digest or stale comparison) this criterion tested is removed. | Withdrawn |
-| FR-322-AC-17 | The published operation catalog is closed: both V2 schemas carry identical operation definitions and enumerate exactly its identities, law roles, mode kinds and values, member kinds and operator classes; every law-role `DefinitionRef` names a complete-value lock definition by authority and identity; every entry's operands, rest, result form, laws, mode, member, leaf source and constraints use only catalogued families, groups and kinds; integer `div`/`rem` require the integer-division law and `mod` none, IEEE operations require the IEEE profile and have no `eq`, `ne` or ordering identity, and `negate` per width takes one float and returns the operand's type; text comparisons and size require the text profile law and mode; the six FR-478 text conversions carry the `text_profile` law, the six string conversions do not, IEEE conversion targets also carry `ieee_profile`, each conversion names its target with a `type_argument` member and `member_family` constraint, and `rounding` is pinned by decimal, IEEE and quantity result types while integer and rational conversions have no mode; `all_instances` takes one population, `lookup` requires an absence mode, `navigate` and `reaches` a relationship end, `reaches_field` a `field` member and the `reference_edge` constraint, `filament.op.state.clause` the `state_clause` member kind and no law, and the record, tuple and index projections, numeric/total-order/bit-identical IEEE comparisons, `deref` and `dispatch_call` are present. | Test (TC-233) |
+| FR-322-AC-17 | The published operation catalog (`contracts/checked-operation-catalog-v1.json` of `agent-ix/filament-verification-contracts`) is closed: the V2 wire schema `proposals/checked-package-v2/schema.json` enumerates exactly its identities (`OperationIdentity`), law roles, mode kinds and values, member kinds and operator classes, and an identity, class or kind present on one side and absent from the other fails; every law-role `DefinitionRef` names a complete-value lock definition by authority and identity; every entry's operands, rest, result form, laws, mode, member, leaf source and constraints use only catalogued families, groups and kinds; integer `div`/`rem` require the integer-division law and `mod` none, IEEE operations require the IEEE profile and have no `eq`, `ne` or ordering identity, and `negate` per width takes one float and returns the operand's type; text comparisons and size require the text profile law and mode; the six FR-478 text conversions carry the `text_profile` law, the six string conversions do not, IEEE conversion targets also carry `ieee_profile`, each conversion names its target with a `type_argument` member and `member_family` constraint, and `rounding` is pinned by decimal, IEEE and quantity result types while integer and rational conversions have no mode; `all_instances` takes one population, `lookup` requires an absence mode, `navigate` and `reaches` a relationship end, `reaches_field` a `field` member and the `reference_edge` constraint, `filament.op.state.clause` the `state_clause` member kind and no law, and the record, tuple and index projections, numeric/total-order/bit-identical IEEE comparisons, `deref` and `dispatch_call` are present. | Test (TC-233) |
 | FR-322-AC-18 | Withdrawn: the published operation vectors and their mutation file it checked are removed. | Withdrawn |
 | FR-322-AC-19 | Withdrawn: the published operation mutations it checked are removed. | Withdrawn |
 | FR-322-AC-21 | Every node of each published V2 package carries a `declaration` member exactly when it declares; the schema refuses a declaring node without it and an expression with it; a name duplicated on two nodes refuses as `ambiguous-name` at the node later in node-id order; and a source nominal node whose `node_id.path` differs from its `declaration.qualified_name` refuses as `declaration-nominal-mismatch` before any ambiguity. | Test (TC-233) |

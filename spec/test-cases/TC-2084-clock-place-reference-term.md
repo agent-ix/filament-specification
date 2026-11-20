@@ -29,7 +29,7 @@ reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-6.
 4. Check FR-829-AC-4's `ref(self.peer.x)`, `present(self.peer.v)` and
    `ref(self.v)` over an absent `v`, and evaluate them.
 5. Emit FR-829-AC-5's `Tag` record and tuple, evaluate `eq` and `ne`, and
-   read the catalog and both V2 schemas.
+   read the catalog and the V2 schema `proposals/checked-package-v2/schema.json`.
 6. Feed the strict reader each malformed variant of FR-829-AC-6.
 
 ## Expected Results
