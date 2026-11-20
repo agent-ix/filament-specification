@@ -398,9 +398,11 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   and operation parameters of a state clause; or a continuous variable of a
   hybrid model, [FR-481](FR-481-checked-package-hybrid-model-nodes.md)), and
   its `semantic_type` is the bound value's type, except that the binder of an
-  annotated `let` is typed by the annotation, a type node equal to the bound
-  value's or, for an integer value, one that integer-contains it ("Integer
-  containment"). It carries no `declaration` and no `owner`, and its
+  annotated `let` is typed by its annotation: the bound value's type node, a
+  record type node the value's conforms to, or a type node that
+  integer-contains the value's ("Integer containment"). A reader cannot tell
+  an annotated `let` from an unannotated one, so it admits any of these at
+  every `let` binder, and refuses any other as "Integer containment" states. It carries no `declaration` and no `owner`, and its
   body is exactly `aggregate{[binding "name" = literal text, binding "level"
   = literal integer]}`, in that order: `name` is the binder's name as a
   `text` literal typed at the builtin text node, and `level` is the binder's
@@ -3331,11 +3333,12 @@ type"; FSL FR-495 "Bounded position"):
 - a `filament.op.control.case` application's result type against each arm
   body's type node (the `arm_body` result form,
   [FR-440](FR-440-checked-package-union-and-case-nodes.md));
-- a `filament.op.control.if` application's `result_type` against its
-  then-branch, and a `filament.op.control.let` application's `result_type`
-  against its body, the `operand:1` result form of each;
-- an annotated `let` binder's `semantic_type` against the type of the value
-  its binding binds (the `value`/`parameter` node rule).
+- a `filament.op.control.if` application's `result_type` against each of its
+  two branches, the then-branch (operand 1) and the else-branch (operand 2);
+- a `filament.op.control.let` application's `result_type` against its body,
+  the `operand:1` result form;
+- a `let` binder's `semantic_type` against the type of the value its binding
+  binds (the `value`/`parameter` node rule).
 
 In each, the expected type node is `E` and the term's is `T`. So
 `function c1 using v(x: Int[0, 9]): Int[0, 10] pure { x }`, whose `body`
@@ -3344,7 +3347,29 @@ binding references `x`'s parameter node, and the same function with result
 `let y: Integer = x in g(y)` binds `y` at the `Integer` node with no convert
 node.
 
-Nothing else is widened. Each of these still refuses exactly as before, with
+**The `if` check.** The producer types an integer-typed `if` at the hull of
+the lowered types of its two branches, `Integer` absorbing every interval
+(FSL FR-093, FR-495 "Representation of an integer division result"), so its
+`result_type` can equal neither branch: `if c then x else y` over
+`x: Int[0, 9]` and `y: Int[5, 20]` has `result_type` `Int[0, 20]`. An `if`
+of any other type has branches of one checked type, or record branches that
+conform to its record result. The reader therefore checks, in addition to the
+catalog entry's `same_family` constraint over operands 1 and 2, that each
+branch's type node equals the application's `result_type`, is a record type
+node that conforms to it, or is integer-contained in it; and it takes that
+check in place of the `operand:1` result form's equality for the
+then-branch. A branch that satisfies none of the three refuses
+`ill_typed`/`operator-ineligible` at the `if` application.
+
+**The `let` binder check.** A `let` binder's `semantic_type` is the bound
+value's type node, a record type node that the value's conforms to, or a type
+node that integer-contains the value's: an annotated `let` binds at its
+annotation, an unannotated one at the value's own type, and a reader cannot
+tell the two apart, so it admits any of these at every `let` binder. A binder
+whose `semantic_type` is none of them refuses `ill_typed`/`operator-ineligible`
+at the `let` application.
+
+Nothing else is widened. Each of these refuses, with
 `ill_typed`/`type-mismatch` at a `function` or `expression` node, and
 `ill_typed`/`operator-ineligible` at a `case`, `if` or `let` application or a
 call:
@@ -3371,9 +3396,11 @@ call:
 A `return:0` call result stays typed at the callee's declared result,
 whatever narrower integer value the callee's body yields.
 
-The rule admits exactly the packages the producer is required to write, so one
-source still lowers to one package: a reader never accepts both a converted
-and an unconverted spelling of one value flow.
+At these positions the rule admits every package the producer is required to
+write, and nothing it admits holds a value outside the type its node
+declares, because containment only widens and is transitive. At every
+position that declares its type to an argument the reader keeps the exact
+match, so there one value flow has one spelling.
 
 ### Reaches over a field
 
@@ -3897,9 +3924,10 @@ the type the member names; `absence` `option` for mode `empty`, otherwise
 `reference`; `arm_body` the type every arm body of a `case` application has
 ([FR-440](FR-440-checked-package-union-and-case-nodes.md)). The application's `result_type` must have the derived family and,
 when the derived result names a type, be that same type node, except that the
-`operand:1` result of `filament.op.control.if` and `filament.op.control.let`
-also admits a `result_type` that integer-contains operand 1's type node
-("Integer containment"); a clause result
+`operand:1` result of `filament.op.control.let` also admits a `result_type`
+that integer-contains operand 1's type node, and a `filament.op.control.if`
+application's branches are checked against its `result_type` by "The `if`
+check" ("Integer containment"); a clause result
 is declared `boolean`. An `expression` or `function` whose body root is the
 application has `semantic_type` equal to that `result_type`, or, as
 "Results" under "Record conformance" states, a record type node that
@@ -6270,8 +6298,9 @@ is carried by two `protocol` node forms.
 | FR-322-AC-497 | A result integer type that does not contain the root's is not widened. IC-03, IC-01 with `c1`'s `semantic_type` an `Int[0, 8]` node and no `convert` node, and IC-04, the package of a function with parameter `n: Integer` and result `Int[0, 10]` whose `body` binding references `n`'s parameter node with no `convert` node, each refuse `ill_typed`/`type-mismatch` at the function node. | Test (TC-2099) |
 | FR-322-AC-498 | A call argument keeps the exact match. Over `function g using v(a: Int[0, 10]): Boolean pure { true }` and a caller parameter `x: Int[0, 9]`, IC-05, the call `g(x)` whose argument is one `filament.op.numeric.convert` application over `x` with member `type_argument` and `result_type` the `Int[0, 10]` node (FSpec FR-149), is admitted; IC-06, the same call with the argument the bare `reference` to `x`'s parameter node, and IC-07, IC-06 with `g`'s parameter `Int[0, 8]`, each refuse `ill_typed`/`operator-ineligible` at the `filament.op.function.call` application. | Test (TC-2099) |
 | FR-322-AC-499 | Containment is not applied through a constructor. IC-08, the package of a function with parameter `s: Sequence<Int[0, 9]>[0, 3]` and result `Sequence<Int[0, 10]>[0, 3]` whose `body` binding references `s`'s parameter node with no `convert` node, refuses `ill_typed`/`type-mismatch` at the function node. | Test (TC-2099) |
-| FR-322-AC-500 | Integer containment at control results. With parameters `c: Boolean` and `x: Int[0, 9]`, each of these is admitted with no `convert` node over `x`: IC-09, `if c then x else 10` as the body of a function of result `Int[0, 10]`, its `filament.op.control.if` application's `result_type` the `Int[0, 10]` node and its then-branch the `reference` to `x`; IC-10, a `case` over a union `U { A(Int[0, 9]), B(Int[0, 20]) }` whose arm bodies are the two binder reads, with result type the builtin `Integer` node (FR-146 "Case result type"); IC-11, `let z = x in z` as the body of a function of result `Int[0, 10]`, its `filament.op.control.let` application's `result_type` the `Int[0, 10]` node. IC-12, IC-09 with the `if`'s `result_type` and the function's result `Int[0, 8]`, refuses `ill_typed`/`operator-ineligible` at the `if` application; IC-13, IC-10 with result type an `Int[0, 9]` node, refuses `ill_typed`/`operator-ineligible` at the `case` node. | Test (TC-2099) |
-| FR-322-AC-501 | Integer containment at an annotated `let`. Over `function g using v(a: Integer): Boolean pure { true }` and a parameter `x: Int[0, 1000]`, IC-14, the package of `let y: Integer = x in g(y)` (FSpec FR-149-AC-30), whose `let` binder `y` is a `value`/`parameter` node typed by the builtin `Integer` node bound to the `reference` to `x`, and whose call argument is the `reference` to `y`, with no `convert` node, is admitted; IC-15, IC-14 with `y` and `g`'s parameter typed by an `Int[0, 999]` node, so that only the binder fails, refuses `ill_typed`/`operator-ineligible` at the `let` application. | Test (TC-2099) |
+| FR-322-AC-500 | Integer containment at control results. With parameters `c: Boolean` and `x: Int[0, 9]`, each of these is admitted with no `convert` node over `x`: IC-09, `if c then x else 10` as the body of a function of result `Int[0, 10]`, its `filament.op.control.if` application's `result_type` the `Int[0, 10]` node, its then-branch the `reference` to `x` and its else-branch the `filament.op.numeric.narrow` application over the literal `10` with member `type_argument` and `result_type` the `Int[0, 10]` node (FSL FR-093-AC-4); IC-10, a `case` over a union `U { A(Int[0, 9]), B(Int[0, 20]) }` whose arm bodies are the two binder reads, with result type the builtin `Integer` node (FR-146 "Case result type"); IC-11, `let z = x in z` as the body of a function of result `Int[0, 10]`, its `filament.op.control.let` application's `result_type` the `Int[0, 10]` node. IC-12, IC-09 with the literal `8` and the else-branch narrow's `type_argument` and `result_type`, the `if`'s `result_type` and the function's result all the `Int[0, 8]` node, so that only the then-branch fails, refuses `ill_typed`/`operator-ineligible` at the `if` application; IC-13, IC-10 with result type an `Int[0, 9]` node, refuses `ill_typed`/`operator-ineligible` at the `case` node. | Test (TC-2099) |
+| FR-322-AC-502 | Both branches of an `if` are checked. With parameters `c: Boolean`, `x: Int[0, 9]`, `y: Int[5, 20]` and `w: Int[0, 1000]`: IC-16, `if c then 10 else x` as the body of a function of result `Int[0, 10]`, its then-branch the `filament.op.numeric.narrow` over the literal `10` to the `Int[0, 10]` node, its else-branch the `reference` to `x` and its `result_type` the `Int[0, 10]` node, is admitted; IC-17, `if c then x else y` as the body of a function of result `Int[0, 20]`, its `result_type` the `Int[0, 20]` node, the hull of its branches, which equals neither branch's type node, is admitted with no `convert` node; IC-18, IC-16 with the else-branch the `reference` to `w`, typed by the `Int[0, 1000]` node, and no `narrow` node over it, refuses `ill_typed`/`operator-ineligible` at the `if` application. | Test (TC-2099) |
+| FR-322-AC-501 | Integer containment at an annotated `let`. Over `function g using v(a: Integer): Boolean pure { true }` and a parameter `x: Int[0, 1000]`, IC-14, the package of `let y: Integer = x in g(y)` (FSpec FR-149-AC-30), whose `let` binder `y` is a `value`/`parameter` node typed by the builtin `Integer` node bound to the `reference` to `x`, and whose call argument is the `reference` to `y`, with no `convert` node, is admitted; IC-15, IC-14 with `y` and `g`'s parameter typed by an `Int[0, 999]` node, so that only the binder fails, refuses `ill_typed`/`operator-ineligible` at the `let` application; IC-19, IC-14 with `y` typed by the `Int[0, 1000]` node of its bound value, so that the call argument is a bare `Int[0, 1000]` term at the `Integer` parameter, refuses `ill_typed`/`operator-ineligible` at the `filament.op.function.call` application. IC-20, the package of `function f using v(): Money pure { let r: Money = make_taxed() in r }` with `TaxedMoney` a record subtype of `Money`, whose binder `r` is typed by the `Money` node bound to the call's `TaxedMoney` result, is admitted. | Test (TC-2099) |
 
 ## Dependencies
 
