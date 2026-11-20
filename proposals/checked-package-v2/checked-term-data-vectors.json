@@ -16577,6 +16577,56 @@
           "kind": "type_declaration",
           "name": "f"
         }
+      },
+      {
+        "id": "BL-S3-reserved-name-spelled-differently",
+        "target": "ParameterBody",
+        "expected_code": "malformed_wire",
+        "value": {
+          "members": [
+            {
+              "name": "name",
+              "term": "binding",
+              "value": {
+                "term": "literal",
+                "type": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "scalar_type",
+                    "text"
+                  ]
+                },
+                "value": "#ieee_operand2",
+                "value_kind": "text"
+              }
+            },
+            {
+              "name": "level",
+              "term": "binding",
+              "value": {
+                "term": "literal",
+                "type": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "scalar_type",
+                    "integer"
+                  ]
+                },
+                "value": "3",
+                "value_kind": "integer"
+              }
+            }
+          ],
+          "term": "aggregate"
+        }
+      },
+      {
+        "id": "BL-S4-reserved-name-as-identifier",
+        "target": "Identifier",
+        "expected_code": "malformed_wire",
+        "value": "#ieee_operand"
       }
     ],
     "carrierless": {

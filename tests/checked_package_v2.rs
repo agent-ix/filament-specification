@@ -25356,6 +25356,7 @@ fn tc_2090_function_body_location_rows() {
     let cases = &vectors["body_locations"];
     let schema = parsed_fixture(SCHEMA);
     let row_schema = schema_for_def(&schema, "BodySemanticLocation");
+    let root = jsonschema::validator_for(&schema).expect("the checked-package schema is valid");
     let carrier = schema_for_def(&schema, "CheckedTermData");
     let package_with = |case: &Value| -> Value {
         let mut package = cases["packages"][case["package"].as_str().unwrap()].clone();
@@ -25381,6 +25382,13 @@ fn tc_2090_function_body_location_rows() {
         assert!(
             carrier.is_valid(&package["checked_term_data"]),
             "{id} carries the five arrays"
+        );
+        assert!(
+            root.is_valid(&package),
+            "{id} is a valid checked package: {:?}",
+            root.iter_errors(&package)
+                .map(|error| format!("{} {:?}", error.instance_path(), error.kind()))
+                .collect::<Vec<_>>()
         );
         for row in case["rows"].as_array().unwrap() {
             assert!(row_schema.is_valid(row), "{id} row is closed: {row}");
@@ -25485,6 +25493,8 @@ fn tc_2090_function_body_location_rows() {
         let validator = match case["target"].as_str().unwrap() {
             "CheckedTermData" => &carrier,
             "BodyLocationOrigin" => &schema_for_def(&schema, "BodyLocationOrigin"),
+            "ParameterBody" => &schema_for_def(&schema, "ParameterBody"),
+            "Identifier" => &schema_for_def(&schema, "Identifier"),
             other => panic!("unknown schema-negative target {other}"),
         };
         assert!(!validator.is_valid(&case["value"]), "{id} is malformed wire");
