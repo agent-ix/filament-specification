@@ -56,15 +56,26 @@ The target bytes and the package's name map.
   | TLA+ obligation theorem | `Th_` + mangled clause name |
   | enum member | `e_` + mangled member name |
   | population bound (language FR-1035) | `b_` + mangled bound name |
-  | monitor variable (FR-813) | `m_` + mangled clause name |
+  | monitor and history variable (FR-813) | `m_` + mangled clause name, optionally followed by `_` and one of the letters `h`, `r`, `c`, `s` and a decimal ordinal (`m_T_r0`) |
+  | step counter (FR-813) | `n_` + mangled clause name |
+  | per-clause composed definition (FR-813) | one of the words `vars`, `TypeOK`, `Init`, `Mon`, `Next`, `Spec`, `accept`, `fair` + `_` + mangled clause name |
+  | identity universe (FR-813) | `Ids_` + mangled object type name |
+  | clock variable (FR-813) | `k_` + mangled object type name + `_` + mangled field name |
+  | protocol subject variable (FR-813) | `pr_` + mangled protocol name + `_` + one of the words `over`, `last`, `control`, `observations`, `bounds`, `queues`, `roles`, `memory` |
+  | protocol step action (FR-813) | `s_` + mangled protocol name + `_` + mangled static declaration path of the step's node, channel, template or role, optionally followed by `_` and a step word (`fork`, `join`, `timeout`, `duplicate`, `lose`) |
+  | protocol binder (FR-813) | `w_` + mangled binder name |
+  | protocol subject definition (FR-813) | one of the words `PState`, `PInit`, `PStep`, `PNext`, `PSpec`, `Pvars`, `PBehaviour` + `_` + mangled protocol name |
   | module and namespace | `M_` + mangled package name |
-  | generated helper | `Q_`, `F_` or `D_` + a fixed helper word of ASCII letters, optionally followed by `_` and a mangled FSL name the helper is generated for |
-  | structural definition | the fixed names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`, `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F`, each written once |
+  | generated helper | `Q_`, `F_`, `D_` or `PK_` (FR-813) + a fixed helper word of ASCII letters, optionally followed by `_` and a mangled FSL name the helper is generated for |
+  | structural definition | the fixed names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`, `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F`, and for FR-813 `J`, `Clocks`, `TBehaviour`, `now`, `tick`, `Tick`, `TNext`, `TimeInv`, `Urgent` and `NZ`, each written once |
   | generated value field | the fixed field and tag names of FR-812's value encodings: `num`, `den`, `tag`, `value`, `bits`, the floating-point `finite` record's fields, the tags `none`, `some`, `finite`, `inf` and `nan`, and the Lean tuple fields `_1`, `_2`, … |
   | generated local binder | one lowercase ASCII letter, optionally followed by decimal digits and then optionally by `'` (`s`, `s'`, `b`, `i`, `j`, `k`, `k2`), bound only inside the definition the mapper generates it in |
 
 - The prefix words `v`, `T`, `Key`, `Rec`, `op`, `f`, `p`, `a`, `r`, `fld`,
-  `x`, `c`, `holds`, `Ob`, `Th`, `e`, `b`, `m`, `M`, `Q`, `F` and `D` SHALL be
+  `x`, `c`, `holds`, `Ob`, `Th`, `e`, `b`, `m`, `M`, `Q`, `F`, `D`, `n`,
+  `vars`, `TypeOK`, `Init`, `Mon`, `Next`, `Spec`, `accept`, `fair`, `Ids`,
+  `k`, `pr`, `s`, `w`, `PK`, `PState`, `PInit`, `PStep`, `PNext`, `PSpec`,
+  `Pvars` and `PBehaviour` SHALL be
   pairwise distinct words of ASCII letters, each followed by one `_`. Where
   one word is a proper prefix of another (`T` and `Th`, `f` and `fld`), the
   two names differ at the character after the shorter word (`_` against a

@@ -179,7 +179,8 @@ The export request is the `export` member of a `native-run/1` request:
 ```
 
 - `status` is `assembled`, `refused` (with an observer the implementation
-  cannot run, or FR-811's `below-fidelity-floor`) or `incomplete` (with the limit).
+  cannot run, a construct this build does not lower, or FR-811's
+  `below-fidelity-floor`) or `incomplete` (with the limit).
 - `records` are FR-298 records in request order; `target_text` and
   `name_map` are present only when `assembled`.
 - `cause` is present exactly when `status` is `incomplete`. It is FR-331's
@@ -196,7 +197,13 @@ The export request is the `export` member of a `native-run/1` request:
   which setting to raise and from what value.
 - `refusal` is present exactly when `status` is `refused`, and absent on
   every other status, so a caller reads why the export refused from one
-  member. It is a closed object in one of two shapes:
+  member. It is a closed object in one of three shapes:
+  - a construct this build does not lower (below): `{"code":
+    "unimplemented_capability", "cause": "unimplemented-meaning",
+    "capability": C, "target": F, "construct": K, "node": N, "locus": L}`,
+    `F` the family (`tla` or `lean`), `K` the construct's
+    `node_tag`/`semantic_form`, `N` its node id, `L` its FR-203 source
+    region or `null`, and `C` the text `export:` + `F` + `:` + `K`;
   - an observer the implementation cannot run: `{"code":
     "unsupported_projection", "cause": "unsupported-requested-capability",
     "capability": "observer", "observer": O, "reason": R, "details":
@@ -215,7 +222,28 @@ The export request is the `export` member of a `native-run/1` request:
   An admission refusal writes no export outcome; it is the FR-301 outcome
   document's diagnostic at the member's pointer. The outcome document's
   diagnostic of a `refused` export carries the same `code`, `cause` and,
-  when present, `details` as `refusal`.
+  when present, `details` as `refusal`; for the first shape its FR-272
+  `capability` payload is `C`.
+- **A construct this build does not lower.** When classification meets a
+  construct of an obligation's closure that FR-811's table marks
+  `preserved` or `conditional` for the selected target and that the
+  implementation's mapper does not lower, the export SHALL stop `refused`
+  with the first shape above, naming the first such construct in node
+  order, category unsupported, exit `21`, with no package, no
+  `target_text` and no file. The source is valid and the target can state
+  the construct, so this is neither `target-unrepresentable` (FR-811) nor a
+  record: it is FR-272's `unimplemented_capability`/`unimplemented-meaning`,
+  the cause of valid complete-V1 meaning the selected producer does not
+  implement. It is never a mapper failure (exit `30`), which stays the
+  outcome of a mapper that breaks its own invariant, such as one that
+  writes no definition for a node it lowered (FR-811).
+- **Admission of the program and package.** A refusal that compiling the
+  request's program or admitting its checked package returns
+  (`invalid_package`, `resource_exhausted`, `missing_import`, or any other
+  FR-271 code) SHALL be the export's result with that refusal's own `code`,
+  `cause`, payload and locus, under that refusal's own category and exit,
+  as the same request's compile would report it; the export never rewrites
+  it into a mapper failure or into text that hides the cause.
 - `package` is present only when `assembled`. It holds FR-299's key apart
   from the records: the source package reference (identity and version),
   the exact target profile, the generator identity and semantic version, and
@@ -258,8 +286,10 @@ the export outcome document unchanged.
   settings of the program the request compiles, through the FR-461 settings
   operation; a setting given both there and in the request's `limits`
   refuses `invalid-request` naming `limits` and the setting, exit `20`.
-- Exits: `assembled` `0`; admission refusal `20`; an observer the
-  implementation cannot run `21` (unsupported); `below-fidelity-floor`
+- Exits: `assembled` `0`; admission refusal `20`, or the program or
+  package refusal's own exit (above); an observer the
+  implementation cannot run `21` (unsupported); a construct this build does
+  not lower `21` (unsupported); `below-fidelity-floor`
   `21` (unsupported); `incomplete` `22`; a mapper failure `30`; an output
   failure `30`. An output failure is an admitted, assembled export whose
   named target file cannot be written (a missing parent directory, a denied
@@ -278,6 +308,8 @@ the export outcome document unchanged.
   classification, which charges `export.nodes` and `export.work_units` for
   each node it classifies. A denied charge there stops `incomplete` (exit
   `22`), because the floor cannot be decided over a partial set of records.
+  A construct this build does not lower stops classification at its node
+  (exit `21`), after the charges of the nodes classified before it.
   Next is the fidelity floor over the complete records (exit `21`). Last is
   writing the text, which charges `export.output_bytes` and
   `export.work_units` for each region it writes (exit `22`). A request below
@@ -313,6 +345,8 @@ naming both, exit `20`, before any stage runs.
 | FR-817-AC-13 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc` and `output` `{"file": "m.tla"}`, in an implementation with no TLC backend, settles `refused` with `unsupported_projection`/`unsupported-requested-capability` naming `tlc`, exit `21`, with no `target_text`, no `package` and no `m.tla`; the same request with `observer` `tlc` and `limits` `{"export.nodes": 1}` refuses the same way, exit `21`, not `incomplete`; without `observer` it assembles, exit `0`. | Test (TC-2040) |
 | FR-817-AC-14 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc`, where the implementation has no TLC backend, writes `status` `refused` and `refusal` with exactly `code` `unsupported_projection`, `cause` `unsupported-requested-capability`, `capability` `observer`, `observer` `tlc`, a non-empty `reason` and `details` `{"path": "/request/export/observer"}`, exit `21`; `SlowEnough` under the default floor writes `refusal` with exactly `code` `unsupported_projection`, `cause` `below-fidelity-floor` and `failing` the one failing record as `records` carries it, exit `21`; an `assembled` and an `incomplete` outcome have no `refusal` member. | Test (TC-2047) |
 | FR-817-AC-15 | The same export under `any` with `output` `{"file": "missing-directory/m.tla"}`, whose parent directory does not exist, exits `30` with category internal-failure, one diagnostic with `code` and `cause` `output-failure`, `last_stage` the stage the export reached (S4 for an export of a checked package), and no file or directory created; with `m.tla` already present at the path it refuses `invalid-request`, exit `20`. | Test (TC-2047) |
+| FR-817-AC-16 | In an implementation whose mapper does not lower clauses over protocol subjects, exporting a temporal clause that a protocol requires on an `origin` row settles `status` `refused` with `refusal` exactly `{"code": "unimplemented_capability", "cause": "unimplemented-meaning", "capability": C, "target": "tla", "construct": K, "node": N, "locus": L}`, `K` the protocol clause node's `node_tag`/`semantic_form`, `C` the text `export:tla:` followed by `K`, `N` its node id and `L` its region or `null`, exit `21`, with no `target_text`, no `package` and no file; the outcome diagnostic carries the same `code`, `cause` and `capability`. Under `minimum_fidelity` `any` the result is the same, and under `{"export.nodes": 1}` the export stops `incomplete` at the first node, exit `22`. No such export exits `30`. | Test (TC-2047) |
+| FR-817-AC-17 | An export whose program compiles to a checked package that admission refuses `invalid_package`, and one whose import is missing (`missing_import`), each write the outcome diagnostic with that code, its own cause, payload and locus, and exit with the exit the same request's compile gives, not `30`; no diagnostic text of either is a generic mapper message in place of the cause. | Test (TC-2047) |
 
 ## Dependencies
 

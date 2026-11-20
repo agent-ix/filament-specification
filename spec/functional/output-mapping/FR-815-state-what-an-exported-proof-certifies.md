@@ -70,7 +70,7 @@ mapper's own correctness, which is part of the trust base.
 | --- | --- | --- |
 | FR-815-AC-1 | A Lean term checked against `Ob_Low` of a `preserved` record yields `proved`, `trusted`, extent `unbounded`, with a trust base naming the mapper, its version and the Lean release; never `certified`. | Test (TC-1974) |
 | FR-815-AC-2 | A TLC run with a state constraint yields extent `bounded` naming the constraint; a complete run over the finite counter yields extent `unbounded`. | Test (TC-1974) |
-| FR-815-AC-3 | A proof over a `conditional` dense-time record lists the non-Zeno condition as an assumption; a result over an `unrepresented` record yields no entry. | Test (TC-1974) |
+| FR-815-AC-3 | A proof over a `conditional` dense-time TLA+ record lists its `real-valued-time` condition, which states the non-Zeno premise, as an assumption; a result over an `unrepresented` record yields no entry. | Test (TC-1974) |
 | FR-815-AC-4 | A TLC counterexample reads back to FSL states and settles `refuted` after native replay; a trace edited so it no longer replays settles nothing. | Test (TC-1974) |
 | FR-815-AC-5 | A Lean proof recorded against a package whose model changed after export is inapplicable to the new package. | Test (TC-1974) |
 
