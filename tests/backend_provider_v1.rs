@@ -2116,16 +2116,18 @@ fn certificate_member_names_from_fr331() -> BTreeSet<String> {
         .split_once(": exactly the distinct property names")
         .expect("FR-331 certificate member row describes the schema-derived names")
         .0;
+    let quoted_names: Vec<&str> = listed_names.split('`').collect();
+    assert_eq!(quoted_names.len() % 2, 1, "FR-331 member names are backtick-delimited");
     let mut names = BTreeSet::new();
-    for name in listed_names.split(',') {
-        let name = name.trim();
-        let name = name.strip_prefix("and ").unwrap_or(name).trim();
-        let name = name.trim_matches('`');
+    for name in quoted_names.iter().skip(1).step_by(2) {
         assert!(
             !name.is_empty(),
             "FR-331 certificate member names are non-empty"
         );
-        assert!(names.insert(name.to_owned()), "FR-331 lists {name} only once");
+        assert!(
+            names.insert((*name).to_owned()),
+            "FR-331 lists {name} only once"
+        );
     }
     names
 }
