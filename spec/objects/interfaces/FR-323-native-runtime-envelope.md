@@ -63,7 +63,25 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 - `package` — exact FR-322 checked-package reference; a non-replay request
   carries the reference alone, and the reference is the same checked-package v2
   document a replay request carries (a corpus schema for a non-replay request is
-  added when the first non-replay corpus vector lands). In a replay request `package` is the proved
+  added when the first non-replay corpus vector lands). A request that
+  selects an existing package by path (FSL FR-100, FR-1039) carries the
+  reference as one closed selection: `{"file": P}` or
+  `{"file": P, "equality": E}`, `P` the path of a checked-package v2 file
+  and `E`, an optional string, the path of that package's equality witness
+  file (FSL FR-531's equality file, the `equality.json` an FSL FR-517
+  handoff writes); or `{"directory": D}`, the path of an FSL FR-517 handoff
+  directory. Either form MAY carry `source_package`, the closed
+  `{identity, version}` object of FSL FR-1039. `equality` is admitted on the
+  file form only. The equality rows
+  of a file selection come only from `E`, read by the same strict reader
+  the directory form uses for its `equality.json`, and never from the
+  package bytes (FSL FR-850, FR-531, FR-533). A file selection without
+  `equality` over a package whose `checked_term_data.equality_decisions` is
+  non-empty refuses `invalid_package`/`missing-file` at
+  `/request/package/equality`, exit 20, before any member runs; with no
+  equality decision it runs. `equality` beside `directory`, or an
+  `equality` that is not a string, refuses `invalid-request` naming
+  `package.equality` before any selected file is opened. In a replay request `package` is the proved
   FR-322 checked-package document itself (its `contract_version` is the constant
   `filament.checked-package/v2`), which supplies the package `name`, its lock
   `sources` and, when its lock has one, the lock's `refinement_internals`; the
@@ -712,6 +730,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-46 | An observed-temporal row that settles `inconclusive` because the replay observed formula node 4 undefined where the packet expected a formula verdict carries `parity.actual_locus` `4` and `undefined_locus` `4`, both JSON numbers, and `outcome.position` a JSON number; a reader refuses `actual_locus` `"4"` and `outcome.position` `"3"`. | Test (TC-2010) |
 | FR-323-AC-47 | A refuted hybrid claim `TooSlow`'s replay request carries `{"state_clause": "TooSlow"}` and no `function` or `frame_operation`, resolves to the hybrid claim in the recompiled package, and replays its `HybridCounterexample`: the reproducing trace's row is `{"arm": "hybrid", "settlement": "reproduced-with-evaluated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with a trace that does not reproduce is `inconclusive` with `disagreement` `hybrid-trace` `not-reproduced` carrying the request's counterexample; one stopped by `work_units` is `incomplete` with `limit` `{"limit": "work_units", "value": "100", "setting": "accounting.work_units"}`; a `state_clause` naming no declared claim or state clause refuses `missing_declaration`/`missing-name`. | Test (TC-2049) |
 | FR-323-AC-48 | Over FR-652-AC-3's `Grow`, the replay request of its hybrid claim `Below` (`always [0, 40] holds(h.v < 30)`), refuted through FR-652-AC-3's accepted nine-step `validated-witness`, carries `{"state_clause": "Below"}`, the `HybridCounterexample` and that witness at `/replay/certificate`, and its row is `{"arm": "hybrid", "settlement": "reproduced-with-validated-witness", "category": "success"}` with `replay` and `counterexample`; the same request with the witness cut after its step at `[28, 32]` is `inconclusive` with `disagreement` `hybrid-trace` `not-exact` carrying the request's counterexample, and the same request with no `certificate` is `inconclusive` the same way; the witness on a request whose target is a `function` refuses `invalid_runtime_input`/`unknown-member` at `/replay/certificate`, and a `flowpipe` certificate on the `Below` request refuses `invalid_runtime_input`/`invalid-value` at `/replay/certificate/type`. | Test (TC-2049) |
+| FR-323-AC-49 | A request selecting `{"file": "handoff/checked-package.json", "equality": "handoff/equality.json"}` over FSL FR-754-AC-3's `Pick` package (whose `checked_term_data.equality_decisions` is non-empty) is admitted with the equality rows of that file and runs; `{"file": "handoff/checked-package.json"}` alone refuses `invalid_package`/`missing-file` at `/request/package/equality`, exit 20, with no member run; `{"directory": "handoff", "equality": "handoff/equality.json"}` and `{"file": "handoff/checked-package.json", "equality": 7}` each refuse `invalid-request` naming `package.equality` before any selected file is opened; a package with no equality decision (FSL FR-1039-AC-1's `half`) runs from `{file}` alone, its `call` `half` giving `-4`, exit 0; `Pick` from `{file, equality}` gives `candidate` 7, exit 0. | Test (TC-278) |
 
 ## Dependencies
 

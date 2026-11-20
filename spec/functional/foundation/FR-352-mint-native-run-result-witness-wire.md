@@ -136,17 +136,22 @@ SHALL refuse a missing, malformed or misplaced `frame_witness`. FR-115
 owns its fields and change variants; this requirement adds none.
 
 A `disposition.refusal.locus` is exactly one closed object tagged by
-`kind`, and `kind` is one of five values: `region`, `located`,
-`occurrence`, `artifact` and `document`. FSL FR-267 ("Refusal locus wire")
-owns each kind's members; `document` names the failing member of a JSON
+`kind`, and `kind` is one of six values: `region`, `located`,
+`occurrence`, `artifact`, `document` and `input`. FSL FR-267 ("Refusal locus
+wire") owns each kind's members; `document` names the failing member of a JSON
 input document (a request, snapshot, invocation or model document, its
 model header included) by the document's labels, path, RFC 6901 pointer,
-object and member. The five members of a `document` locus are required and
+object and member, and `input` names a position in another input the caller
+named by path that is not an artifact named by `{authority, identity}`
+labels (the member files of a
+handoff directory) by the operand as written, the member path relative to a
+directory operand and an RFC 6901 pointer, all three always present, the
+last two nullable. The five members of a `document` locus are required and
 nullable, not optional: each is always present, and `document`, `path`,
 `object` and `member` hold `null` when absent, so FR-352-AC-8's refusal of
 `null` for an absent optional member does not apply to them. The set is closed: the
 strict reader SHALL refuse a locus of any other `kind`, and a producer SHALL
-write every refusal it locates under one of the five, so every document the
+write every refusal it locates under one of the six, so every document the
 native route writes reads under this reader. A locus is report content and
 enters no checked-package identity (FR-322).
 
@@ -446,6 +451,7 @@ back SHALL restore an equal record.
 | FR-352-AC-21 | A clause-run document whose `witness` is FR-351-AC-9's comparison record, with `deciding_comparison`, two `operands`, `decision_path`, `deciding_element` and `value_path` and no `quantifier`, `index` or `trace_position`, is accepted and restores that record; the same document with `operands` absent, with three operands, with an empty `decision_path`, or with `quantifier` added is refused naming that member. | Test (TC-2014) |
 | FR-352-AC-22 | A `window-limit-reached` disposition is written at stage `evaluate` as `{"kind": "window-limit-reached", "limit": "max_window_values", "value": "2", "setting": "monitor.max_window_values"}`, its `value` a decimal string, and reads back equal; the same row with `value` the JSON number 2, with `value` `"02"` or with `value` `""` refuses with a located wire diagnostic naming `value`. Likewise `{"kind": "progress-limit-reached", "limit": "node count", "value": "4", "setting": "progress.covered_positions"}` reads back equal, and with `value` the JSON number 4 or `"04"` refuses naming `value`. | Test (TC-1485) |
 | FR-352-AC-23 | A stage `admit` clause-run document whose `disposition.refusal` is `invalid_runtime_input`/`missing-member` with `locus` `{"kind": "document", "document": {"authority": "agent-ix", "identity": "spine-snapshot"}, "path": "spine-snapshot.json", "pointer": "/populations/0/objects/1", "object": {"population": "ix://example/config-version/config_history", "key": "child"}, "member": "parent"}` reads, and its refusal retains that locus; the same document with `kind` `snapshot`, with `member` removed, or with an added member `line` is refused naming `disposition.refusal.locus`. | Test (TC-2081) |
+| FR-352-AC-24 | FR-352-AC-23's document with its locus replaced by `{"kind": "input", "member": "selection.json", "operand": "handoff", "pointer": null}` reads, and its refusal retains that locus, as does `{"kind": "input", "member": null, "operand": "handoff", "pointer": null}`; the same `input` locus with `member` removed, with `pointer` removed, with `operand` `null`, or with an added member `identity` is refused naming `disposition.refusal.locus`, and a locus with `kind` `file` is refused as outside the six kinds. | Test (TC-2081) |
 
 ## Dependencies
 

@@ -33,6 +33,22 @@ invariants:
   - exhaustion never truncates meaning into a completed value
 ```
 
+## Package selection
+
+A request that selects an existing checked package by path carries FR-323's
+`package` reference as one closed selection (FSL FR-100, FR-1039):
+
+```yaml
+PackageSelection:
+  oneOf:
+    - { type: object, required: [file], properties: { file: string, equality: string, source_package: SourcePackageRef }, additionalProperties: false }
+    - { type: object, required: [directory], properties: { directory: string, source_package: SourcePackageRef }, additionalProperties: false }
+SourcePackageRef: { type: object, required: [identity, version], properties: { identity: { type: string, minLength: 1 }, version: { type: string, minLength: 1 } }, additionalProperties: false }
+```
+
+`equality` is the path of the package's equality witness file and is
+admitted on the file form only; FR-323 states its reading and refusals.
+
 ## FSL source Value-call binding
 
 For the FSL source-compiled Value function boundary, I05's typed values SHALL

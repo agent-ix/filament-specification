@@ -12,8 +12,8 @@ relationships:
 ## Description
 
 Verify that the strict `native-run-result/2` reader reads a refusal whose
-locus is a `document` locus and keeps the locus kind set closed. Scope:
-FR-352-AC-23.
+locus is a `document` or an `input` locus and keeps the locus kind set
+closed at six. Scope: FR-352-AC-23 and FR-352-AC-24.
 
 ## Test Procedure
 
@@ -23,8 +23,12 @@ FR-352-AC-23.
 2. Read the same document with `kind` set to `snapshot`.
 3. Read it with `member` removed.
 4. Read it with an added locus member `line`.
+5. Read it with each `input` locus of FR-352-AC-24, then with each
+   defective `input` locus and with `kind` `file`.
 
 ## Expected Results
 
 - Step 1: the document reads and the refusal retains the equal locus.
 - Steps 2-4: each is refused naming `disposition.refusal.locus`.
+- Step 5: both `input` loci read back equal; each defective one and `file`
+  are refused naming `disposition.refusal.locus`.
