@@ -4098,7 +4098,8 @@
         "/results/3/basis/method": "FR-193",
         "/results/3/certification": "FR-331",
         "/results/0/certificate": "FR-652",
-        "/results/2/certificate": "FR-652"
+        "/results/2/certificate": "FR-652",
+        "/results/2/certificate/steps/1/from": "FR-331"
       },
       "document": {
         "contract_version": "filament.backend-provider/v1",
@@ -4280,6 +4281,71 @@
                   "step": {
                     "numerator": "1",
                     "denominator": "16"
+                  }
+                },
+                {
+                  "mode": "Stopped",
+                  "from": {
+                    "dwell": 0,
+                    "transition": 0
+                  },
+                  "time": {
+                    "lower": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "upper": {
+                      "numerator": "10",
+                      "denominator": "1"
+                    }
+                  },
+                  "box": {
+                    "a": {
+                      "lower": {
+                        "numerator": "1",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "2",
+                        "denominator": "1"
+                      }
+                    },
+                    "v": {
+                      "lower": {
+                        "numerator": "0",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "0",
+                        "denominator": "1"
+                      }
+                    }
+                  },
+                  "apriori": {
+                    "a": {
+                      "lower": {
+                        "numerator": "1",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "2",
+                        "denominator": "1"
+                      }
+                    },
+                    "v": {
+                      "lower": {
+                        "numerator": "0",
+                        "denominator": "1"
+                      },
+                      "upper": {
+                        "numerator": "0",
+                        "denominator": "1"
+                      }
+                    }
+                  },
+                  "step": {
+                    "numerator": "21",
+                    "denominator": "2"
                   }
                 }
               ]
@@ -12453,6 +12519,30 @@
           "op": "replace",
           "path": "/results/0/certification",
           "value": "certified"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-jump-source-unknown-member",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/2/certificate/steps/1/from/mode",
+          "value": "Moving"
+        }
+      ]
+    },
+    {
+      "name": "hybrid-certificate-jump-source-string-dwell",
+      "base": "hybrid-certificate-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/2/certificate/steps/1/from/dwell",
+          "value": "0"
         }
       ]
     },

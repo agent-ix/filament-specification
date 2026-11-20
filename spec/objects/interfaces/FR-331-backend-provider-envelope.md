@@ -185,7 +185,15 @@ entry is unchanged, so this rejection is never a result `cause`, and its loci
 are not the certificate loci below. A rejected `validated-witness` leaves its
 trace's item as FR-193 settles it without the witness. The hybrid `rule` is
 FR-652's "Rule names" spelling and `at` the RFC 6901 pointer into the
-certificate.
+certificate, rooted at `/certificate` on the analyze path and on a replay
+request alike. The hybrid certificate's wire form is `HybridCertificate`:
+its `flowpipe` and `validated-witness` steps are `HybridCertificateStep`
+objects, and a `flowpipe` jump step also carries `from`, a
+`HybridJumpSource` `{dwell, transition}` of two `Count` values naming the
+dwell the jump leaves and the position of the transition it takes
+(FR-652 "Certificate forms"); the schema checks its shape, and the reader
+checks that it names an earlier dwell and a transition of that dwell's
+mode.
 
 `rule` is a closed value: the name of the check rule, lower-case words
 joined by `-`, so FSL FR-338's `CertificateRule::QueryMismatch` is written
@@ -1044,6 +1052,7 @@ computed.
 | FR-331-AC-54 | A hybrid item's `unsupported` entry carrying the diagnostic `unsupported_construct`/`expression-form` with its `detail` (`form`, `declaration`, `mode`, `variable` for a flow, `backend`, and `locus`, the construct's FR-331 `Locus`) and no `cause` is admitted and recorded `unsupported` with that diagnostic; the same entry carrying a `cause` `{"type": "expression-form"}` is refused `invalid_result`/`unknown-cause` at `/cause/type`; a hybrid `counterexamples` entry whose `undefined-evaluation` `where` lacks `time`, or carries `state_key`, fails the schema. | Test (TC-2049) |
 | FR-331-AC-55 | The cause `no-evaluated-case` and the `tool-failure` defects `oracle-disagreement` and `invalid-shrink` are closed spellings of the FR-190 model-based test record only: a provider result entry carrying any of them, as a temporal `inconclusive` cause or a Kani `failed` defect, is refused by the schema before consumption; an in-process provider's entry, and any entry given to the reader directly, is refused by the reader `invalid_result`/`unknown-cause` at `/cause/type` for `no-evaluated-case` and at `/cause/defect` for either defect; a plugin `result` frame carrying any of them fails its FR-331 stage schema before the reader runs, so FR-462 settles each affected item `failed` with `{"type": "tool-failure", "defect": "malformed-body"}`; an FR-190 record whose every generated case was discarded settles `inconclusive` with the bare `{"type": "no-evaluated-case"}` and no basis or counterexample, and one whose refusal case native admission accepted settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`. | Test (TC-431, TC-1600) |
 | FR-331-AC-56 | The positive vectors `global-conformance-open-history-outcome` and `global-conformance-incomplete-closure-scope-outcome`, each a `global-conformance` entry settled `inconclusive` with that bare cause, are admitted; the adverse vectors `open-history-on-realizability` and `incomplete-closure-scope-on-local-projection` (the cause on another kind's entry) and `open-history-with-payload` (a payload member on the bare cause) are each refused by the schema. | Test (TC-431) |
+| FR-331-AC-57 | The schema admits a `bounded-solver` entry's `flowpipe` certificate whose second step is a jump step carrying `from` `{"dwell": 0, "transition": 0}` (vector `hybrid-certificate-outcome`), and refuses that `from` with an added member `mode` (`hybrid-certificate-jump-source-unknown-member`) and with `dwell` written `"0"` (`hybrid-certificate-jump-source-string-dwell`), each at or above the patched member. | Test (TC-431) |
 
 ## Dependencies
 
