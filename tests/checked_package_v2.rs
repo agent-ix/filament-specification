@@ -6328,7 +6328,7 @@ fn backticked(text: &str) -> BTreeSet<String> {
 
 #[trace("TC-233", "FR-322-AC-17")]
 #[test]
-fn tc_233_operation_catalog_is_closed_and_bound_to_both_schemas() {
+fn tc_233_operation_catalog_is_closed_and_bound_to_the_schema() {
     let catalog = parsed_fixture(OPERATION_CATALOG);
     let package_schema = parsed_fixture(SCHEMA);
     let entries = catalog["operations"]
@@ -8595,7 +8595,7 @@ fn exact_rational(value: &Value) -> Option<(BigInt, BigInt)> {
 }
 
 /// Strict wire validation of one `temporal_interval` member's `interval`
-/// against both V2 schemas, then the graph's lowest-terms rule for a timed
+/// against the V2 schema, then the graph's lowest-terms rule for a timed
 /// bound.
 fn interval_wire_refusal(
     member_schemas: &[jsonschema::Validator],
@@ -10802,7 +10802,7 @@ fn collect_value_kind_enums<'a>(schema: &'a Value, found: &mut Vec<&'a Value>) {
     }
 }
 
-/// SE-01 to SE-06 and SE-09: both schemas enumerate the six identities and the
+/// SE-01 to SE-06 and SE-09: the schema enumerates the six identities and the
 /// three literal kinds, the catalog defines each identity as a plain binary
 /// boolean comparison, and each identity over two operands of its family is admitted.
 #[trace("FR-322-AC-67", "TC-233")]
@@ -10905,7 +10905,7 @@ fn tc_233_rational_literals_spell_one_canonical_magnitude() {
 }
 
 /// QL-01 to QL-04 (FR-322-AC-79): a `quantity` literal typed by a unit node is
-/// admitted, both schemas enumerate the kind, and a literal typed by another
+/// admitted, the schema enumerates the kind, and a literal typed by another
 /// family or carrying a non-canonical magnitude is refused by exactly its step.
 #[trace("FR-322-AC-79", "TC-233")]
 #[test]
@@ -16503,7 +16503,7 @@ fn tc_367_timed_model_fixture_is_closed_self_typed_and_ordered() {
         "all timed forms form a closed checked package: {:?}",
         package_validator
             .iter_errors(&package)
-            .map(|error| format!("{} {:?}", error.instance_path(), error.kind()))
+            .map(|error| error.to_string())
             .collect::<Vec<_>>()
     );
     let tick_package: Value = parsed_fixture(POSITIVE_TICK_TIMED_MODEL_NODES);
@@ -25467,7 +25467,14 @@ fn tc_2090_function_body_location_rows() {
     assert_eq!(
         refused,
         [
-            "BL-R1", "BL-R2", "BL-R3", "BL-R4", "BL-R5", "BL-R6", "BL-R7-no-occurrence-1"
+            "BL-R1",
+            "BL-R2",
+            "BL-R3",
+            "BL-R4",
+            "BL-R5",
+            "BL-R6",
+            "BL-R7-no-occurrence-1",
+            "BL-R8-bl03-without-occurrence-1-row"
         ]
     );
 
