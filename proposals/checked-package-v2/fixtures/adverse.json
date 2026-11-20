@@ -662,8 +662,8 @@
       "population": {
         "absent": true
       },
-      "expected_code": "ill_typed",
-      "expected_cause": "operator-ineligible"
+      "expected_code": "invalid_semantic_graph",
+      "expected_locus": "/semantic_graph/nodes/6/dependencies/2"
     },
     {
       "id": "reaches-population-over-another-model-declaration",
@@ -796,8 +796,7 @@
       "population": {
         "absent": true
       },
-      "expected_code": "ill_typed",
-      "expected_cause": "operator-ineligible"
+      "expected_code": "invalid_semantic_graph"
     },
     {
       "id": "reaches-field-population-omitted-from-dependencies",
