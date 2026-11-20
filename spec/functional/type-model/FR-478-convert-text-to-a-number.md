@@ -304,5 +304,5 @@ charges and any target-specific rounding charge. A denied named charge returns
   FR-149 (conversion classes), FR-322 (the checked operation catalog, the
   `convert` operator, `type_pinned_modes` and the `string` family).
 - The twelve catalog rows above follow in `filament-verification-contracts`'s
-  `checked-operation-catalog-v1` (a cross-repository dependency). Both checked-package V2 schemas then
-  enumerate them, because the schemas list exactly the catalogued identities.
+  `checked-operation-catalog-v1` (a cross-repository dependency). The checked-package V2 schema then
+  enumerates them, because the schema lists exactly the catalogued identities.

@@ -28,7 +28,7 @@ its named code and cause.
   `case s { Empty: 0; Rect(w, h): w * h; Circle(r): r }`, with its parameter
   and binder nodes, and the constructions `Shape::Rect(2, 3)` and
   `Shape::Empty`.
-- Both V2 schemas enumerate the `union`, `union_value` and `case` forms, the
+- The V2 schema enumerates the `union`, `union_value` and `case` forms, the
   `case` operator class and `filament.op.control.case`. The reader vectors
   (N01 and N05 to N09) additionally need the operation catalog to carry the `union`
   family, the `arm_body` result form, the `union_arms` constraint kind and
@@ -51,9 +51,9 @@ below, each made to an otherwise admitted copy.
 | N08 | FR-440's "Binder levels" worked vector, then the same function with `let t = k in` removed and `t` replaced by `k` | `t`, `w`, `h`, `r`, `x` at levels `3`, `4`, `5`, `4`, `5`; then `w`, `h`, `r`, `x` at `3`, `4`, `3`, `4` |
 | N09 | `filament.op.structural.eq` over two `Shape` values; over a `Shape` value and a value of a second union | admitted; `ill_typed`/`operator-ineligible` by `same_type` |
 | N10 | the `area` body's `filament.op.control.case` application placed as the body root of the `area` `function` node; the same `case` as an `expression`/`case` node the function body references; the same `case` application nested in another application's arguments | `ill_typed`/`operator-ineligible` at the `function` node; admitted; `ill_typed`/`operator-ineligible` at the nested application's `operator`, not `malformed_wire` (FR-440-AC-7) |
-| N11 | `filament.op.structural.eq` over two values of `union Label { Named(Text[0,8;nfc]), Tagged(Integer, Text[0,8;nfc]), Empty }` | admitted with exactly the leaves `["member:Named", "position:0"]` then `["member:Tagged", "position:1"]`, each with the `nfc` text law and mode, and none for `Empty`; both V2 schemas admit the `member:<Ident>` segment (FR-322-AC-45, FR-440-AC-8) |
+| N11 | `filament.op.structural.eq` over two values of `union Label { Named(Text[0,8;nfc]), Tagged(Integer, Text[0,8;nfc]), Empty }` | admitted with exactly the leaves `["member:Named", "position:0"]` then `["member:Tagged", "position:1"]`, each with the `nfc` text law and mode, and none for `Empty`; the V2 schema admits the `member:<Ident>` segment (FR-322-AC-45, FR-440-AC-8) |
 | N12 | `filament.op.structural.eq` over two values of `union List { Cons(Integer, List), Nil }` whose cycle names one `recursion_group`; over two values of a record whose field's type cycles back to it through a union | each admitted with empty `leaves`, neither `operator-ineligible` (FR-322-AC-46, FR-440-AC-8) |
-| N13 | `filament.op.structural.eq` over two values of each of FR-322's `Node`, `Cell`, `Chain` and `Option<Chain>` | each admitted with exactly FR-322's listed leaves in order, ending in `recursion:0`, `recursion:0`, `recursion:0` and `recursion:1` with `laws` `[]` and `mode` `null`; both V2 schemas admit the `recursion:<d>` segment (FR-322-AC-46, FR-440-AC-8) |
+| N13 | `filament.op.structural.eq` over two values of each of FR-322's `Node`, `Cell`, `Chain` and `Option<Chain>` | each admitted with exactly FR-322's listed leaves in order, ending in `recursion:0`, `recursion:0`, `recursion:0` and `recursion:1` with `laws` `[]` and `mode` `null`; the V2 schema admits the `recursion:<d>` segment (FR-322-AC-46, FR-440-AC-8) |
 | N16 | N04's reordered source arms | the case retains its declared-order body and node id (FR-440-AC-10) |
 
 QSpec's Rust fixture/schema qualification and the strict

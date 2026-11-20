@@ -4026,7 +4026,7 @@
       "section": "Clause model owner edge",
       "id": "OM-03",
       "Edit to the base": "Omit `owner_model`, or use an external `PackageNodeKey`",
-      "Expected": "`malformed_wire` at the node (both V2 schemas)"
+      "Expected": "`malformed_wire` at the node (the V2 schema)"
     },
     {
       "test_case": "TC-946",

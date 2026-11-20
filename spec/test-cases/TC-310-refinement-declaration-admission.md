@@ -211,7 +211,7 @@ Mutations, each applied alone to the positive unit:
     For malformed cases, omit the abstract machine's row, duplicate it, or
     replace its concrete machine key with an object-type key. For the accepted
     cases, check the closed row shape and canonical object and field order;
-    pass the bytes through both V2 schemas and the strict reader. `SM-03`
+    pass the bytes through the V2 schema and the strict reader. `SM-03`
     replaces the concrete
     machine key with an object-type key; `SM-04` omits the abstract machine's
     row; `SM-05` duplicates that row.
@@ -228,7 +228,7 @@ Mutations, each applied alone to the positive unit:
     model package, remove `owner` from its root (`MR-01`), add an extra
     unknown member to `ModelRootOwner` (`MR-02`), attach `ModelRootOwner` to
     an object-type node (`MR-03`), and add a second root whose owner identity
-    names no supplied domain package (`MR-04`). Validate `MR-01` to `MR-03` against both V2 schemas
+    names no supplied domain package (`MR-04`). Validate `MR-01` to `MR-03` against the V2 schema
     (`schema.json`) and `MR-04` against `schema.json`,
     which admits it; validate every mutation with the strict reader. The
     vectors are the RFC 6902 patches of `model-root-vectors.json`.
@@ -379,8 +379,8 @@ except in `CC-07` (FR-375-AC-23).
 | `CC-09` | `RW-01`'s model-only refinement with no catalog; then add an empty catalog | The first admits; the second refuses `invalid_semantic_graph` at `/body/class_catalog`, reader step 4. |
 | `CC-10` | From `CC-01`, request analysis twice over the same admitted package: once with its source-default `tso` choice and once with an override to `sc` under FR-434 | The checked catalog is byte-identical; the resolved memory model and resulting obligation identities differ. Package admission makes no claim that an override's memory class is a source class. |
 | `CC-11` | From `CC-04`'s wrong `fork` association and matching row, also make an independent protocol-body defect: a `send` binder whose type disagrees with its channel's `carries` type (FR-466-AC-7). Rewrite every changed send-node id in the graph, catalog and deciding row, and keep the catalog binder types equal to the edited binder while preserving the wrong `fork` association. First read with both defects; then repair only the send binder type and rebuild affected node ids and dependencies; separately introduce a step-row class mismatch with both defects present. | The first read reports the binder-type refusal in protocol step 4 before the catalog graph join; after repair, the catalog association refuses in protocol step 7; the separate row mismatch refuses in the earlier refinement step 5 before either protocol defect. |
-| `CC-12` | Use source `parallel` controls whose defaults include `sc`, `tso` and `ra`; supply, in canonical order `ra`, `sc`, `tso`, a `memory drain` entry for each, carrying `drain: store-buffer-flush`, plus a `memory flush` entry for `tso` without `drain` | Both schemas admit the entries; the catalog is reconstructed from the subject's source defaults. Drain flushes pending writes under the selected model's visibility rule, is a no-op under `sc`, and under `ra` gives no additional visibility or ordering beyond FR-437. |
-| `CC-13` | Omit `drain` from `memory drain`, use another drain spelling, add `drain` to `memory flush`, or pair `memory flush` with `sc` or `ra` | Both schemas refuse the malformed memory-class entry. |
+| `CC-12` | Use source `parallel` controls whose defaults include `sc`, `tso` and `ra`; supply, in canonical order `ra`, `sc`, `tso`, a `memory drain` entry for each, carrying `drain: store-buffer-flush`, plus a `memory flush` entry for `tso` without `drain` | The V2 schema admits the entries; the catalog is reconstructed from the subject's source defaults. Drain flushes pending writes under the selected model's visibility rule, is a no-op under `sc`, and under `ra` gives no additional visibility or ordering beyond FR-437. |
+| `CC-13` | Omit `drain` from `memory drain`, use another drain spelling, add `drain` to `memory flush`, or pair `memory flush` with `sc` or `ra` | The V2 schema refuses the malformed memory-class entry. |
 | `CC-14` | Give two protocol clauses distinct owner-model edges and a refinement with no deciding rows; then retarget one clause's edge and rebuild it | Classes of every clause whose `owner_model` is the object-type node of a model owned by the selected concrete declaration, even with no deciding rows, are included; the foreign clause is excluded; retargeting changes the clause identity and which concrete catalog receives its classes. |
 | `CC-15` | From `CC-12`, reorder the three `memory drain` entries to `tso`, `sc`, `ra`; separately repeat the `sc` drain entry; separately repeat a declared class entry; separately select `tso` by two source `parallel` controls | Reordered, repeated-pair and repeated-spelling catalogs refuse `invalid_semantic_graph` at the first out-of-order or later duplicate entry in reader step 2; two controls selecting `tso` yield one `tso` drain and one `tso` flush entry. The canonical `CC-12` order is `memory drain` for `ra`, `sc`, `tso`, then `memory flush` for `tso`. Uniqueness is by (`class`, `memory_model`) (FR-375-AC-26). |
 | `CC-16` | A concrete protocol clause `activation on each (x: T)` with non-record `T`, then with record `T{p, q}`, then `activation on origin`; the abstract clause likewise | `on each` catalogues `activate <protocol>` with the clause node and `binder_types` `[T]`, then one key per field of `T` in effective field order; `on origin` catalogues none (FR-375-AC-27). |
@@ -424,7 +424,7 @@ id. For a model subject, `abstract` and the refinement's
 `semantic_type` identify the selected roots; for a protocol subject,
 `abstract` identifies the abstract root, `protocol` identifies the exact
 clause, and the clause's `owner_model` remains its exact declaring node. The
-reader admits both V2 schemas and the package without a new FCD field.
+reader admits the package, and the V2 schema admits it, without a new FCD field.
 
 For mutation 28, `MR-01` fails the schema because the root lacks its required
 owner; `MR-02` fails the closed-owner schema; `MR-03` fails the graph-owner

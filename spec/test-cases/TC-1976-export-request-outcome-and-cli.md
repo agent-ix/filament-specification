@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify the export verb's file writing, refusals, fidelity exit, limits and family check. Scope: FR-817-AC-1 to FR-817-AC-5.
+Verify the export verb's file writing, refusals, fidelity exit, limits and family check. Scope: FR-817-AC-1 to FR-817-AC-5 and FR-817-AC-19.
 
 ## Test Procedure
 
@@ -20,6 +20,7 @@ Verify the export verb's file writing, refusals, fidelity exit, limits and famil
 3. Export below the fidelity floor.
 4. Export with `limits` `{"export.output_bytes": 1}`; without the entry and with `--limit export.output_bytes=1`; with `--limit export.output_bytes=16777216`; with the entry and the option together.
 5. Export with a mismatched family.
+6. Export FR-814-AC-11's model twice and read each outcome's `name_map`.
 
 ## Expected Results
 
@@ -28,3 +29,4 @@ Verify the export verb's file writing, refusals, fidelity exit, limits and famil
 - Step 3: exit 21, no file.
 - Step 4: `incomplete` naming `export.output_bytes`, exit 22, twice; then `assembled`; then `invalid-request` naming `limits` and `export.output_bytes`, exit 20.
 - Step 5: exit 20, no text.
+- Step 6: entries in `(name, binding)` order; `binding` on every `p_`, `a_`, `x_`, `o_`, `w_`, `fld_` and `e_` entry and on no other; two `p_a` entries and two `fld_total` entries with distinct `binding` and `node`; no repeated `(name, binding)`; byte-equal `name_map` members.

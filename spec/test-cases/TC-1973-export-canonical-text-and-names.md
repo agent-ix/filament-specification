@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7 to FR-814-AC-10.
+Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7 to FR-814-AC-11.
 
 ## Test Procedure
 
@@ -23,6 +23,7 @@ Verify keyword-safe and injective names, canonical layout, dependency order and 
 6. Export a model whose field, operation parameter, function and function parameter are all named `total`.
 7. Export an operation of `Item` whose declared parameter is spelled `self`.
 8. Export an invariant whose binders are named `Next`, `instance`, `DOMAIN`, `num` and `tag` over fields `num` and `tag`, a `Decimal` field and an `Option` field.
+9. Export a model with operations `inc(a: Integer)` and `dec(a: Integer)`, a function `f(a: Integer)`, two invariants that each quantify `k`, and object types `Cart` and `Till` each with a field `total`; read every `p_a`, `a_a`, `x_k` and `fld_total` name-map entry, and read a TLC step of `op_dec` naming `p_a` back through the map.
 
 ## Expected Results
 
@@ -34,3 +35,4 @@ Verify keyword-safe and injective names, canonical layout, dependency order and 
 - Step 6: `fld_total`, `p_total`, `f_total` and `a_total`, pairwise distinct, each mapped to its own node.
 - Step 7: `r_self` and `p_self`, mapped to the operation and the parameter; SANY and Lean parse both files.
 - Step 8: `x_Next`, `x_instance`, `x_DOMAIN`, `x_num`, `x_tag`, `fld_num` and `fld_tag`; SANY and Lean parse both files.
+- Step 9: two `p_a` entries, each with the `binding` of its own operation and `node` its own parameter, ordered by `binding`; one `a_a` entry bound by `f`; two `x_k` entries, each bound by its invariant's quantifier; two `fld_total` entries, each bound by its own object type; no `binding` on single-node names; the `op_dec` step reads back to `dec`'s parameter.

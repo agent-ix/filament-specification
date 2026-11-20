@@ -15,7 +15,7 @@ relationships:
 
 Verify the FR-322 "Quantity scaling" entries: the reader admits
 `filament.op.quantity.scale` and `filament.op.quantity.scale_div` applications
-of the catalogued shape, refuses every other shape, and both V2 schemas and the
+of the catalogued shape, refuses every other shape, and the V2 schema and the
 operation catalog enumerate the two identities after `filament.op.quantity.pow`.
 
 ## Test Procedure
