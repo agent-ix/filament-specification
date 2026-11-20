@@ -277,6 +277,67 @@ activation are checked as one derived transition; subsequent actual release
 is checked at the selected jitter delay. A completion-feedback step checks
 the derived completion and the source transition it enables.
 
+**Step alphabet.** The re-admitted subject fixes which `transition` types a
+model-arm counterexample may carry. The payload never fixes them. Over a
+task-derived subject the alphabet is `transition`, `task-transition` and
+`terminal-stutter`, where a `transition` step is a source move that activates
+no job. Over any other model subject it is `transition` and
+`terminal-stutter`, plus `protocol-transition` over a protocol subject
+(FR-425). The replayer resolves the item and its subject before it reads the
+steps. A step whose `type` is outside the subject's alphabet refuses
+`invalid_runtime_input`/`invalid-value` at that step's `/transition/type`. It
+is not `malformed_wire`, because the schema admits every type and cannot see
+the subject. The rule exists because a task trace re-spelled as its source
+projection holds only source steps, and each of them is enabled in the source
+model alone. Read with the payload's own alphabet, such a trace would replay
+with every scheduler check dropped.
+
+**Synchronized source moves.** A source move that activates jobs is written
+only as its `activate` steps. There is one step per activated job, the steps
+are consecutive, and they are ordered by ascending canonical task name in
+Unicode scalar value order (FR-482), independent of release declaration
+order. The first step carries the move's delay and the others carry delay 0.
+Each step carries as `post_state` the key of the move's whole post-state: every
+activation applied, and `HI` mode when the move is the entry into `HI`. Each
+step's `release` and `source_transition` equal the move's source identity.
+The move never also appears as a `transition` step. The replayer refuses each
+of these `invalid_runtime_input`/`invalid-value`:
+
+- a `transition` step whose identity is a move that activates a job, at its
+  `/transition/type`, naming the first activation the move carries;
+- a missing activation, at the `/transition` of the step where it was
+  expected;
+- an activation out of task-name order, at its `/transition/task`;
+- a positive delay on any step after the first, at that step's `/delay`.
+
+A completion synchronized with source feedback is likewise one `complete`
+step, which carries the feedback transition as its `source_transition`.
+
+**Comparison with the re-derived step.** Replay compares each task step with
+the identity that the rebuilt product derives at the step's delayed
+pre-state, and refuses at the first failing check in this order:
+
+1. Static checks against the checked declarations. `taskset` and `task` must
+   name the claim's task set and one of its tasks. A `budget-change` must name
+   a `hi` task. `priority` must be present exactly as declared. A failure
+   refuses at that member.
+2. Enabledness. Some enabled derived move must have the step's `action`.
+   Otherwise the step refuses at `/transition` as not enabled.
+3. Member comparison. Replay compares the enabled move with equal `task` and
+   `job`, or, when there is none, the first such move in policy order. It
+   compares the members in schema order: `taskset`, `task`, `job`, `slot`,
+   `generation`, `release`, `source_transition`, `demand`, `jitter`,
+   `deadline`, `priority`, `budget_delta`. The first member that differs
+   refuses at `/transition/<member>`, naming the supplied and the recomputed
+   value. On an `activate` step, `demand` is checked against the admitted
+   interval and then fixes the job's value for its later steps.
+4. Post-state. The full source-plus-scheduler `post_state` key is compared
+   last, at `/post_state`.
+
+Matching on `action` first and pointing at the member keeps every tamper
+reported at the field that was changed, and never only as a transition that
+is not enabled.
+
 The **undefined-evaluation envelope** is the one shape of an undefined
 evaluation for every engine:
 `{"type": "undefined-evaluation", "where": {...}, "cause": <reason>}`. `cause`
@@ -462,6 +523,8 @@ counterexamples an engine returned.
 | FR-364-AC-20 | A miss step whose `deadline` or `demand` differs from the recomputed job value refuses at that step's `/transition/deadline` or `/transition/demand`, naming the supplied and the recomputed value. The same value changed on every step of the job refuses at the job's `activate` step. | Test (FSL TC-3008) |
 | FR-364-AC-21 | The FR-419-AC-14 counterexample replays; its prefix is, by index, `activate h#0`, `activate l#0`, `dispatch h#0` at 0; the exhaustion `preempt h#0` at 2 (3); `dispatch l#0` (4); `complete l#0` at 6 (5); `deadline-miss h#0` at 10 (6); `activate h#1`, `activate l#1`, `dispatch h#1` at 10 (7–9); source `go_hi` at 12 (10); `budget-change h#0` (11) and `budget-change h#1` (12) at 12; then the steps to `activate h#2` at 20 (20) and `activate l#2` (21). Each of these refuses `invalid_runtime_input`/`invalid-value` at the named pointer: step 11 moved before step 10 (`/prefix/10/transition`, budget change not enabled in `LO`); step 11 removed (`/prefix/11/transition/job`, the pending change is `h` job 0); steps 11 and 12 swapped (`/prefix/11/transition/job`); step 12 removed (`/prefix/12/transition`, a change is pending for `h` job 1); a third `budget-change h#0` after step 12 (`/prefix/13/transition`); a `budget-change` of `h` job 2 after step 20 (`/prefix/21/transition`); a `budget-change` of `l` job 1 after step 12 (`/prefix/13/transition/task`); step 11 `budget_delta` 2 (`/prefix/11/transition/budget_delta`); step 11 `source_transition` null or `fire_h` (`/prefix/11/transition/source_transition`); step 11 delay 1 (`/prefix/11/delay`); step 11 `demand` 2 (`/prefix/11/transition/demand`); steps 3 and 4 removed and step 5 replaced by `complete h#0` with delay 3 (`/prefix/3/delay`, service would exceed allowance 2); step 3 `source_transition` `fire_h` (`/prefix/3/transition/source_transition`); `resume h#0` inserted at index 5 (`/prefix/5/transition`, not eligible); step 10 `post_state` the key of the same state in `LO` (`/prefix/10/post_state`). The same counterexample against the package without the `mode` declaration refuses at `/prefix/10/post_state`, because the recomputed key of the `go_hi` step is in `LO`. | Test (FSL TC-704) |
 | FR-364-AC-22 | A model-arm step that carries a `mode` member, and a task-transition identity that carries one, are refused `malformed_wire` at that member's pointer before replay (`task-step-mode-member` at `/counterexamples/0/counterexample/prefix/0/mode`, `task-transition-mode-member` at `.../prefix/0/transition/mode`, over the `task-queue-growth-overload` vector). A `queue_growth` witness over the FR-419-AC-14 package whose `cycle` holds the `go_hi` entry step (entered in `LO`, exiting in `HI`) is refused `invalid_runtime_input`/`invalid-value` at `/queue_growth/cycle/<i>` of that step. | Test (TC-431; the queue-growth case by FSL TC-704) |
+| FR-364-AC-23 | Over FSL FR-249-AC-9's task-derived subject, the counterexample whose `prefix/0` `activate t1#0` is replaced by the source identity `{"type": "transition", "operation": "M::Call::fire_t1", "receiver": null, "arguments": []}` refuses `invalid_runtime_input`/`invalid-value` at `/prefix/0/transition/type`, naming the activation of `t1` job 0. The same counterexample with every task step removed and each activating move written as its `transition` step is refused, and is never reproduced, although each step is enabled in the source model alone. A plain timed model counterexample with a `task-transition` step inserted refuses at that step's `/transition/type`. For a model whose one operation `tick` releases tasks `b` and `a` (declared in that order), the move is written as `activate a#0` then `activate b#0`, both with the move's post-state key, and it replays. With the two steps swapped it refuses at `/prefix/0/transition/task`. With delay 1 on the second it refuses at `/prefix/1/delay`. With the second removed it refuses at `/prefix/1/transition`. Written as one `transition` step `tick`, it refuses at `/prefix/0/transition/type`. | Test (FSL TC-704) |
+| FR-364-AC-24 | Over the FR-249-AC-9 counterexample, each tamper refuses `invalid_runtime_input`/`invalid-value` at the named member, naming the supplied and the recomputed value: the miss step's `slot` changed (`/prefix/<miss>/transition/slot`); `activate t1#0`'s `release` operation changed to `M::Call::fire_t2` (`/prefix/0/transition/release`); its `source_transition` set to null (`/prefix/0/transition/source_transition`); its `generation` set to 1 (`/prefix/0/transition/generation`); its `task` set to an undeclared `t9` (`/prefix/0/transition/task`); its `post_state` set to the key of the initial state (`/prefix/0/post_state`). | Test (FSL TC-704) |
 
 ## Dependencies
 
