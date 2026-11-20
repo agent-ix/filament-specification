@@ -108,10 +108,10 @@ and additional spend must be observed, not inferred from equal Booleans.
 | RE-40 | RE-37's request with `arguments` added; then with an occurrence key added | `invalid_runtime_input`/`unknown-member` at `/replay/arguments`; at `/replay/occurrence_key` | FR-323-AC-19 |
 | RE-41 | RE-37's request with `state_clause` naming an undeclared clause; then naming a function of the package; then naming an invariant and, separately, a precondition | `missing_declaration`/`missing-name`; `missing_declaration`/`missing-name`; admitted, resolving to that invariant and that precondition | FR-323-AC-21 |
 | RE-42 | RE-01's request with its occurrence key removed; then also with a byte-provision entry removed | `invalid_runtime_input`/`missing-member` at `/replay/occurrence_key` for each, the second not the provision refusal | FR-323-AC-22 |
-| RE-43 | A request selecting `{file, equality}` over the `Pick` package and its `equality.json` | Admitted with that file's equality rows; runs | FR-323-AC-49 |
+| RE-43 | A request selecting `{file, equality}` over the `Pick` package and its `equality.json` | Admitted with that file's equality rows; the `synthesis` member `{"declaration": "Pick"}` gives `candidate` 7, exit 0 | FR-323-AC-49 |
 | RE-44 | RE-43's request with `equality` removed | `invalid_package`/`missing-file` at `/request/package/equality`, exit 20, no member run | FR-323-AC-49 |
 | RE-45 | `{directory, equality}`; then `equality` the number 7 on the file form | `invalid-request` naming `package.equality`, before any selected file is opened | FR-323-AC-49 |
-| RE-46 | `{file}` alone over a package with no equality decision | Admitted; runs | FR-323-AC-49 |
+| RE-46 | `{file}` alone over FSL FR-1039-AC-1's `half` package (`-7 div 2` under `floor`), which holds no equality decision, with the `call` `half` | Admitted; `-4`, exit 0 | FR-323-AC-49 |
 
 ## Expected Results
 

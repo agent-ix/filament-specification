@@ -43,6 +43,7 @@ PackageSelection:
   oneOf:
     - { type: object, required: [file], properties: { file: string, equality: string, source_package: SourcePackageRef }, additionalProperties: false }
     - { type: object, required: [directory], properties: { directory: string, source_package: SourcePackageRef }, additionalProperties: false }
+SourcePackageRef: { type: object, required: [identity, version], properties: { identity: { type: string, minLength: 1 }, version: { type: string, minLength: 1 } }, additionalProperties: false }
 ```
 
 `equality` is the path of the package's equality witness file and is
