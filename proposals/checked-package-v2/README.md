@@ -237,7 +237,7 @@ structures, but any external consumer receives only the contract.
   `dependency-call-vectors.json` names packages a reader can be supplied. Each
   `supply_vectors` entry lists the direct entries in lock order with a symbolic
   `supply` state (`bound` or `absent`) and the outcome FR-322-AC-84 requires.
-- Both schemas carry the `dependency_reference` term
+- The V2 schema carries the `dependency_reference` term
   `{term: "dependency_reference", package, node}` (FR-322): `package` is the
   identity string of a `dependency_selections` entry and `node` a `NodeId`
   naming a declaration node of that dependency. It is never listed in a node's

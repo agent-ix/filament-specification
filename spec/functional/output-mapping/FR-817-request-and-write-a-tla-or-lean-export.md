@@ -188,7 +188,8 @@ The export request is the `export` member of a `native-run/1` request:
     "limits": {"export.output_bytes": 16777216, "export.nodes": 100000, "export.work_units": 16777216}
   },
   "target_text": "---- MODULE M_Counter ----\n...",
-  "name_map": [ {"name": "op_inc", "node": "<NodeId>", "region": [10, 40]} ],
+  "name_map": [ {"name": "op_inc", "node": "<NodeId>", "region": [10, 40]},
+                {"name": "p_n", "node": "<NodeId>", "region": [17, 27], "binding": "<NodeId>"} ],
   "observer": null,
   "output": {"path": "counter.tla", "bytes_written": 1234}
 }
@@ -199,6 +200,12 @@ The export request is the `export` member of a `native-run/1` request:
   `below-fidelity-floor`) or `incomplete` (with the limit).
 - `records` are FR-298 records in request order; `target_text` and
   `name_map` are present only when `assembled`.
+- A `name_map` entry is `{name, node, region}`, `region` the FR-203 half-open
+  byte region of the named node, and the entry of a bound name (FR-814) also
+  carries `binding`, the node id of the construct that introduces the
+  binder: one entry per binding site, in FR-814's order (by `name`, then
+  `binding`). An entry of any other name carries no `binding`. A consumer keys a
+  bound name by `(name, binding)` and every other name by `name`.
 - `cause` is present exactly when `status` is `incomplete`. It is FR-331's
   `limit-reached{limit, value, setting}`, as every limit stop of FR-801 and
   FR-805 spells it: `limit` the counter (`output_bytes`, `nodes` or
@@ -364,6 +371,7 @@ naming both, exit `20`, before any stage runs.
 | FR-817-AC-16 | In an implementation whose mapper does not lower clauses over protocol subjects, exporting a temporal clause that a protocol requires on an `origin` row settles `status` `refused` with `refusal` exactly `{"code": "unimplemented_capability", "cause": "unimplemented-meaning", "capability": C, "target": "tla", "construct": K, "node": N, "locus": L}`, `K` the protocol clause node's `node_tag`/`semantic_form`, `C` the text `export:tla:` followed by `K`, `N` its node id and `L` its region or `null`, exit `21`, with no `target_text`, no `package` and no file; the outcome diagnostic carries the same `code`, `cause` and `capability`. Under `minimum_fidelity` `any` the result is the same, and under `export.nodes` `N - 1`, with `N` the number of nodes classification charges up to and including the protocol clause node, the export stops `incomplete`, exit `22`. No such export exits `30`. | Test (TC-2047) |
 | FR-817-AC-17 | An export whose program compiles to a checked package that admission refuses `invalid_package`, and one whose import is missing (`missing_import`), each write the outcome diagnostic with that code, its own cause, payload and locus, and exit with the exit the same request's compile gives, not `30`; no diagnostic text of either is a generic mapper message in place of the cause. | Test (TC-2047) |
 | FR-817-AC-18 | An export of a clause required by `Hand` (FR-813-AC-12) whose `protocols` member holds `{"protocol": "Hand", "over": O, "roles": {}}` assembles with `pr_Hand_over` fixed to `O`'s key; the same binding with an unknown member, or without `over`, refuses `invalid_runtime_input` at its pointer under `/request/export/protocols`, exit `20`, as FR-520 refuses it; a binding that supplies `a` (a role on a whole model) refuses `wrong-role-mapping` naming `a`; a protocol with a static role on a model type and no binding refuses `wrong-role-mapping` naming that role; a protocol with a replicated role and no `universes` entry for its population refuses `invalid_runtime_input`/`invalid-value` naming the role, as the analyze request refuses it. | Test (TC-2047) |
+| FR-817-AC-19 | An `assembled` export of FR-814-AC-11's model writes a `name_map` whose entries are in ascending `(name, binding)` order, an entry with no `binding` first among equal names; each `p_a`, `a_a` and `x_k` entry carries `binding`, the two `p_a` entries differing in `binding` and `node`; no entry of a name of any other class carries `binding`; and no two entries share both `name` and `binding`. The two exports of one request give byte-equal `name_map` members. | Test (TC-1976) |
 
 ## Dependencies
 

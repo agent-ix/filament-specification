@@ -161,7 +161,7 @@ diamond reaches one identity as two structurally unequal packages, and that the 
 package is in the derived closure but absent from the importer's direct entries.
 With one direct dependency, name its transitive-only selection in a
 `dependency_reference` and require `missing_declaration`/`missing-selection`,
-even though the named package is in the derived closure. Validate a `dependency_reference` term against both schemas, and its missing-`node` and extra-member mutations; place it as the callee of the `function-call` operation vector (FR-322-AC-36). Validate
+even though the named package is in the derived closure. Validate a `dependency_reference` term against the V2 schema, and its missing-`node` and extra-member mutations; place it as the callee of the `function-call` operation vector (FR-322-AC-36). Validate
 `fixtures/positive-dependency-library.json`,
 then read `fixtures/positive-dependency-call.json`, whose function calls the
 library's `Int[0, 9] -> Boolean` function through a `dependency_reference`
@@ -177,7 +177,7 @@ mutation, requiring the exact refusing check it names (`schema` or `semantic`),
 including `-0` spellings, and require the semantic oracle itself to refuse
 `-0`. Evaluate every accepted and refused
 package-selection vector with an independent selection oracle. Check the
-operation catalog's closure against both V2 schemas and the value lock;
+operation catalog's closure against the V2 schema and the value lock;
 check every operation vector; classify every
 operation mutation, ordering case and declaration mutation with an
 independent operation and declaration oracle; check the published fixture's
@@ -406,15 +406,15 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| SE-01 | `filament.op.string.eq` over two `string` operands, result `boolean` | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-02 | `filament.op.string.ne` over two `string` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-03 | `filament.op.uuid.eq` over two `uuid` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-04 | `filament.op.uuid.ne` over two `uuid` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-05 | `filament.op.timestamp.eq` over two `timestamp` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
-| SE-06 | `filament.op.timestamp.ne` over two `timestamp` operands | Identity enumerated by both schemas; application admitted | FR-322-AC-67 |
+| SE-01 | `filament.op.string.eq` over two `string` operands, result `boolean` | Identity enumerated by the V2 schema; application admitted | FR-322-AC-67 |
+| SE-02 | `filament.op.string.ne` over two `string` operands | Identity enumerated by the V2 schema; application admitted | FR-322-AC-67 |
+| SE-03 | `filament.op.uuid.eq` over two `uuid` operands | Identity enumerated by the V2 schema; application admitted | FR-322-AC-67 |
+| SE-04 | `filament.op.uuid.ne` over two `uuid` operands | Identity enumerated by the V2 schema; application admitted | FR-322-AC-67 |
+| SE-05 | `filament.op.timestamp.eq` over two `timestamp` operands | Identity enumerated by the V2 schema; application admitted | FR-322-AC-67 |
+| SE-06 | `filament.op.timestamp.ne` over two `timestamp` operands | Identity enumerated by the V2 schema; application admitted | FR-322-AC-67 |
 | SE-07 | `filament.op.string.eq` over a `string` and a `text` operand | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
 | SE-08 | `filament.op.integer.lt` over two `uuid` operands | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
-| SE-09 | literal of `value_kind` `string`, `uuid` and `timestamp`, each typed by its own family with a canonical value | Admitted by both schemas and the literal rule | FR-322-AC-67 |
+| SE-09 | literal of `value_kind` `string`, `uuid` and `timestamp`, each typed by its own family with a canonical value | Admitted by the V2 schema and the literal rule | FR-322-AC-67 |
 | SE-10 | literal of `value_kind` `uuid` typed by a `string` type | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
 | SE-11 | `filament.op.uuid.eq` over a `uuid` and a `string` operand; `filament.op.timestamp.eq` over a `timestamp` and a `uuid` operand | `ill_typed`/`operator-ineligible` | FR-322-AC-67 |
 | SE-12 | `filament.op.string.eq` carrying a `text_profile` law | `invalid_package`/`operation-law-mismatch` | FR-322-AC-67 |
@@ -425,7 +425,7 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 | SE-17 | literal of `value_kind` `timestamp` with value `-0`, `+1`, `01`, empty text or `170141183460469231731687303715884105728` | `invalid_package`/`invalid-value` | FR-322-AC-67 |
 | SE-18 | `filament.op.text.eq` over two `string` operands with a `text_profile` law and mode | `invalid_package`/`operation-mode-type-mismatch` | FR-322-AC-67 |
 | SE-19 | literal of `value_kind` `string` whose `value` is a number, `null` or an array | `invalid_package`/`invalid-value` | FR-322-AC-67 |
-| QL-01 | literal of `value_kind` `quantity` typed by a unit node, values `3`, `0`, `-5`, `1/1000` and `-7/2` | Admitted with family `quantity`; both schemas enumerate `quantity` | FR-322-AC-79 |
+| QL-01 | literal of `value_kind` `quantity` typed by a unit node, values `3`, `0`, `-5`, `1/1000` and `-7/2` | Admitted with family `quantity`; the V2 schema enumerates `quantity` | FR-322-AC-79 |
 | QL-02 | literal of `value_kind` `quantity` typed by `integer`, `string` or `boolean` | `ill_typed`/`operator-ineligible` | FR-322-AC-79 |
 | QL-03 | literal of `value_kind` `integer` typed by a unit node | `ill_typed`/`operator-ineligible` | FR-322-AC-79 |
 | QL-04 | literal of `value_kind` `quantity` with value `03`, `+3`, `2/4`, `3/1`, `0/5`, `1/0`, `2.5` or empty text | `invalid_package`/`invalid-value` | FR-322-AC-79 |
@@ -444,13 +444,13 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| TN-01 | `filament.op.text.to_integer` over a `text` operand, `integer` result and `type_argument` member naming that result | Admitted by both V2 schemas and the operation catalog with `text_profile`, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
+| TN-01 | `filament.op.text.to_integer` over a `text` operand, `integer` result and `type_argument` member naming that result | Admitted by the V2 schema and the operation catalog with `text_profile`, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
 | TN-02 | `filament.op.text.to_decimal` over a `text` operand and a `decimal` result | Admitted with `text_profile`, `rounding` pinned by the decimal result, and `member_family` `decimal` | FR-322-AC-17; FR-478-AC-3 |
 | TN-03 | `filament.op.text.to_rational` over a `text` operand and a `rational` result | Admitted with `text_profile`, no mode and `member_family` `rational` | FR-322-AC-17; FR-478-AC-3 |
 | TN-04 | `filament.op.text.to_float32` over a `text` operand and a `float32` result | Admitted with `text_profile` and `ieee_profile`, `rounding` pinned by the result, and `member_family` `float32` | FR-322-AC-17; FR-478-AC-3 |
 | TN-05 | `filament.op.text.to_float64` over a `text` operand and a `float64` result | Admitted with `text_profile` and `ieee_profile`, `rounding` pinned by the result, and `member_family` `float64` | FR-322-AC-17; FR-478-AC-3 |
 | TN-06 | `filament.op.text.to_quantity` over a `text` operand and a `quantity` result | Admitted with `text_profile`, `rounding` pinned by the quantity result, and `member_family` `quantity` | FR-322-AC-17; FR-478-AC-3 |
-| TN-07 | `filament.op.string.to_integer` over a `string` operand, `integer` result and `type_argument` member naming that result | Admitted by both V2 schemas and the operation catalog with no law, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
+| TN-07 | `filament.op.string.to_integer` over a `string` operand, `integer` result and `type_argument` member naming that result | Admitted by the V2 schema and the operation catalog with no law, no mode and `member_family` `integer` | FR-322-AC-17; FR-478-AC-3 |
 | TN-08 | `filament.op.string.to_decimal` over a `string` operand and a `decimal` result | Admitted with no law, `rounding` pinned by the decimal result, and `member_family` `decimal` | FR-322-AC-17; FR-478-AC-3 |
 | TN-09 | `filament.op.string.to_rational` over a `string` operand and a `rational` result | Admitted with no law, no mode and `member_family` `rational` | FR-322-AC-17; FR-478-AC-3 |
 | TN-10 | `filament.op.string.to_float32` over a `string` operand and a `float32` result | Admitted with `ieee_profile`, `rounding` pinned by the result, and `member_family` `float32` | FR-322-AC-17; FR-478-AC-3 |
@@ -463,7 +463,7 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| NF-01 | `filament.op.ieee.float64.negate` over one `Float64[nearest-even]` operand, `result_type` that operand's type node, the `ieee_profile` law, mode `null`; the same with `filament.op.ieee.float32.negate` over `Float32[toward-zero]` | Identities enumerated by both schemas; application admitted | FR-322-AC-111 |
+| NF-01 | `filament.op.ieee.float64.negate` over one `Float64[nearest-even]` operand, `result_type` that operand's type node, the `ieee_profile` law, mode `null`; the same with `filament.op.ieee.float32.negate` over `Float32[toward-zero]` | Identities enumerated by the V2 schema; application admitted | FR-322-AC-111 |
 | NF-02 | `filament.op.ieee.float64.negate` over a `float32` operand; `filament.op.ieee.float32.negate` over a `float64` operand; over an `integer` operand; over two operands | `ill_typed`/`operator-ineligible` | FR-322-AC-111 |
 | NF-03 | NF-01's `float64` application with `result_type` `Float64[toward-zero]` | `ill_typed`/`operator-ineligible` | FR-322-AC-111 |
 | NF-04 | NF-01's application with a `rounding` mode, with no law, and in a lock without the `ieee_profile` selection | `invalid_package`/`operation-mode-mismatch`; `operation-law-missing`; `operation-law-unselected` | FR-322-AC-111 |
@@ -476,7 +476,7 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| DL-01 | literal of `value_kind` `decimal` typed by `Decimal[0, 1000; 0, 2; nearest-even]` with values `1.25`, `0.05`, `10`, `0.00`, `1000`, `0.5`, `1000.00` and `1.250` | Admitted by both schemas and the literal rule: each is a member by value (FR-140), whatever its written coefficient and scale | FR-322-AC-113 |
+| DL-01 | literal of `value_kind` `decimal` typed by `Decimal[0, 1000; 0, 2; nearest-even]` with values `1.25`, `0.05`, `10`, `0.00`, `1000`, `0.5`, `1000.00` and `1.250` | Admitted by the V2 schema and the literal rule: each is a member by value (FR-140), whatever its written coefficient and scale | FR-322-AC-113 |
 | DL-02 | the same type with values `.5`, `1.`, `+1.5`, `01.5`, `-0.0`, `1e2`, `1/4` and empty text | `invalid_package`/`invalid-value` | FR-322-AC-113 |
 | DL-03 | the same type with values `1.255` (membership scale 3), `1001`, `1000.01` and `-1` | `invalid_package`/`invalid-value` | FR-322-AC-113 |
 | DL-04 | values `1.0` and `1.00` typed by one decimal type | Two literals with two node ids | FR-322-AC-113 |
@@ -500,7 +500,7 @@ body changed, canonical order and `dependencies` kept (FR-322-AC-54).
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| OO-01 | `filament.op.collection.sequence.drop_first` over a `Sequence<Integer>[0,9]` operand and `filament.op.collection.ordered_set.drop_first` over an `OrderedSet<Integer>[0,9]` operand, each with `result_type` of the operand's family and bound `[0,8]` | Identities enumerated by both schemas; applications admitted with no law, mode, member or leaf | FR-322-AC-117 |
+| OO-01 | `filament.op.collection.sequence.drop_first` over a `Sequence<Integer>[0,9]` operand and `filament.op.collection.ordered_set.drop_first` over an `OrderedSet<Integer>[0,9]` operand, each with `result_type` of the operand's family and bound `[0,8]` | Identities enumerated by the V2 schema; applications admitted with no law, mode, member or leaf | FR-322-AC-117 |
 | OO-02 | `filament.op.collection.sequence.drop_first` over a `Set<Integer>[0,9]` operand and over a `Bag<Integer>[0,9]` operand; `filament.op.collection.ordered_set.drop_first` over a `Sequence<Integer>[0,9]` operand; `filament.op.collection.sequence.drop_first` over two operands | `ill_typed`/`operator-ineligible` | FR-322-AC-117 |
 | OO-03 | `filament.op.collection.remove_one` over `Bag<Text[0,8;nfc]>[0,9]` and a `Text[0,8;nfc]` value; over `Set<Float64[nearest-even]>[0,9]` and a `Float64[nearest-even]` value; over `Sequence<Integer>[0,9]` and an `Integer` value | Admitted with the empty-path `nfc` text leaf, the empty-path `ieee_profile` float leaf with mode `null`, and no leaf | FR-322-AC-117 |
 | OO-04 | OO-03's `Sequence<Integer>[0,9]` application with a `Text[0,8;nfc]` value, with one operand and with `result_type` `Set<Integer>[0,9]`; OO-01's applications with a `text_profile` law, a `rounding` mode or a `field` member | `ill_typed`/`operator-ineligible`; `invalid_package`/`operation-law-mismatch`, `operation-mode-mismatch` and `operation-member-mismatch` | FR-322-AC-117 |
@@ -531,7 +531,7 @@ Check the refinement step occurrences of `refinement-step-occurrence-vectors.jso
 
 ### Refinement class catalog wire vectors
 
-Validate both closed V2 schemas against a refinement body carrying
+Validate the closed V2 schema against a refinement body carrying
 `class_catalog: {concrete: [...], abstract: [...]}`. Each declared entry has
 exactly `class`, `node` and ordered `binder_types`; a concrete key is a local
 `NodeRef`, an abstract key is a local `NodeRef` or selected dependency
@@ -542,14 +542,14 @@ model-only case (FR-322-AC-130).
 
 | Vector | Schema or identity change | Expected result |
 | --- | --- | --- |
-| `CCW-01` | Positive protocol case; reorder source step rows, which reorders `steps`, and update both `refinement_step_rows` regions and the matching generated owner `source_map` occurrence regions | Both schemas accept the body; each generated occurrence equals its sidecar row region, while the refinement node id stays equal. |
-| `CCW-02` | Remove a declared class entry's `node` or `binder_types`, add any extra member, give a concrete entry an external key, or give an abstract entry an ill-shaped key | Both schemas refuse the malformed member. |
-| `CCW-03` | Add `node` or `binder_types` to a memory entry, omit `drain` from `memory drain`, add `drain` to `memory flush`, use a memory class spelling other than `memory drain` or `memory flush`, or use a second word after the kind | Both schemas refuse the malformed member. |
+| `CCW-01` | Positive protocol case; reorder source step rows, which reorders `steps`, and update both `refinement_step_rows` regions and the matching generated owner `source_map` occurrence regions | The V2 schema accepts the body; each generated occurrence equals its sidecar row region, while the refinement node id stays equal. |
+| `CCW-02` | Remove a declared class entry's `node` or `binder_types`, add any extra member, give a concrete entry an external key, or give an abstract entry an ill-shaped key | The V2 schema refuses the malformed member. |
+| `CCW-03` | Add `node` or `binder_types` to a memory entry, omit `drain` from `memory drain`, add `drain` to `memory flush`, use a memory class spelling other than `memory drain` or `memory flush`, or use a second word after the kind | The V2 schema refuses the malformed member. |
 | `CCW-05` | Change the refinement and update references, but leave a local catalog node or binder type out of exact `dependencies` | Graph shape refuses `invalid_semantic_graph` at `/dependencies` before the refinement body step. |
-| `CCW-06` | Remove a protocol clause's `owner_model`, put an external key there, or remove its local owner node from exact dependencies | Both schemas refuse the absent edge or external-key shape; graph admission refuses a missing owner dependency. |
-| `CCW-07` | Retarget `owner_model` to another selected model | Both schemas admit the closed local edge; the clause body changes and the reader returns the new owner identity unchanged. |
-| `CCW-08` | Memory entries `memory drain` for `ra`, `sc` and `tso`, each with `drain: store-buffer-flush`, and `memory flush` for `tso`, in that order | Both schemas admit each entry (a schema states shape, not order); the reader admits the canonical order and refuses a reordered or repeated (`class`, `memory_model`) pair as `invalid_semantic_graph` at the entry in step 2 (FR-322-AC-133). |
-| `CCW-09` | A declared class entry `{class: "activate P", node, binder_types}` on the concrete (`NodeRef`) and abstract (`RefinementKey`) side | Both schemas admit it as an ordinary declared class (FR-322-AC-133). |
+| `CCW-06` | Remove a protocol clause's `owner_model`, put an external key there, or remove its local owner node from exact dependencies | The V2 schema refuses the absent edge or external-key shape; graph admission refuses a missing owner dependency. |
+| `CCW-07` | Retarget `owner_model` to another selected model | The V2 schema admits the closed local edge; the clause body changes and the reader returns the new owner identity unchanged. |
+| `CCW-08` | Memory entries `memory drain` for `ra`, `sc` and `tso`, each with `drain: store-buffer-flush`, and `memory flush` for `tso`, in that order | The V2 schema admits each entry (a schema states shape, not order); the reader admits the canonical order and refuses a reordered or repeated (`class`, `memory_model`) pair as `invalid_semantic_graph` at the entry in step 2 (FR-322-AC-133). |
+| `CCW-09` | A declared class entry `{class: "activate P", node, binder_types}` on the concrete (`NodeRef`) and abstract (`RefinementKey`) side | The V2 schema admits it as an ordinary declared class (FR-322-AC-133). |
 | `CCW-10` | The cases `CCF-01` to `CCF-15` of `proposals/checked-package-v2/class-catalog-vectors.json` (effect, commit, event, attempt, template `cend`, the three drain entries and `memory flush`) validated against the closed catalog definition, then read for canonical order, duplicates and the effect, commit and `cend` classes | `CCF-01` admitted; `CCF-02` to `CCF-06` (an entry without `node` or `binder_types`, an extra member, a memory entry with `node`, a drain without `drain`) refuse in the schema; `CCF-07` to `CCF-13` (one class dropped each: `Impl::E`, `Impl::K`, `cend`, each of the three drains, `memory flush`) are schema-valid and refuse in the reader as `omitted_class`, `CCF-14` (two drains swapped) as `misordered_class` and `CCF-15` (repeated `cend`) as `duplicate_class` (FR-375-AC-28). |
 
 ### Body-step precedence vector
@@ -565,7 +565,7 @@ Each vector edits the published clause-operations package and edits the node bef
 
 | Vector | Input | Expected result | Criteria |
 | --- | --- | --- | --- |
-| CN-01 | The invariant node's kind member `clause` rewritten to `constraint` | Valid against both V2 schemas; admitted by the state step; its node id differs from the invariant's | FR-341-AC-13 |
+| CN-01 | The invariant node's kind member `clause` rewritten to `constraint` | Valid against the V2 schema; admitted by the state step; its node id differs from the invariant's | FR-341-AC-13 |
 | CN-02 | CN-01's constraint with its anchor argument referencing the operation anchor | `invalid_model_binding`/`malformed-declaration` at the anchor's target | FR-341-AC-13 |
 | CN-03 | CN-01's constraint with a second parameter reference in its aggregate | `ill_typed`/`operator-ineligible` at the clause node | FR-341-AC-13 |
 
@@ -573,7 +573,7 @@ Each vector edits the published clause-operations package and edits the node bef
 
 Each vector below applies the
 execution point to the published `positive-clause-operations.json` state-clause
-body. Both V2 schemas admit each. On complete package reads, exercise valid
+body. The V2 schema admits each. On complete package reads, exercise valid
 initialization/handler invariants and pre/post operation clauses, and verify
 that each accepted point round trips and yields a distinct clause and anchor
 node. Mutate a variant, name, or
@@ -715,7 +715,7 @@ refusal. The filament-contract-ir reader implements both outcomes: its diamond
 test refuses conflicting transitive selections with both importer-rooted
 selection paths, and its transitive-reference test refuses a transitive-only
 package as `missing_declaration`/`missing-selection`. A `dependency_reference`
-term is admitted by both schemas and each of its four mutations fails both; as a call's callee it forms a valid application, and changing its `package` or its `node` each gives a distinct application. The dependency library is admitted,
+term is admitted by the V2 schema and each of its four mutations fails it; as a call's callee it forms a valid application, and changing its `package` or its `node` each gives a distinct application. The dependency library is admitted,
 and the dependency call package that selects it by identity is admitted with it
 supplied. Each published mutation passes the V2 schema and refuses
 `missing_import`/`missing-selection` at the selection entry,

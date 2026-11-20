@@ -85,7 +85,7 @@ Encode as V2 packages:
    (FR-370-AC-1).
 2. Each operator carries its own identity; bounded operators carry
    `{lower, upper}` and unbounded ones `null`; `once[1,1]` is
-   `filament.op.temporal.once` with `{lower: "1", upper: "1"}`; both V2 schemas
+   `filament.op.temporal.once` with `{lower: "1", upper: "1"}`; the V2 schema
    enumerate every identity, class, family and member kind used
    (FR-370-AC-2, FR-370-AC-6).
 3. Reordered or missing arguments fail the schema (FR-370-AC-1); the unbounded

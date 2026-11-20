@@ -11,14 +11,14 @@ relationships:
 
 ## Description
 
-Verify that the operation catalog and both V2 schemas carry
+Verify that the operation catalog and the V2 schema carries
 `filament.op.collection.only`, `filament.op.collection.seq` and
 `filament.op.refinement.history` together, and that the reader admits a
 lowered `only` and refuses its malformed shapes. Scope: FR-322-AC-455.
 
 ## Test Procedure
 
-1. Read both schemas' `OperationIdentity` and `OperationMember` enumerations
+1. Read the V2 schema's `OperationIdentity` and `OperationMember` enumerations
    and the catalog entries of the three identities.
 2. Read an `only(x in P where c: e)` application in a clause function body
    and in a refinement row; then with a wrong `result_type`, a wrong member

@@ -5,13 +5,15 @@ type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-149-AC-30
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-149-AC-31
+    type: verifies
 ---
 
 # TC-2097: Integer widening at declared parameter and payload positions
 
 ## Description
 
-Verify that a bounded integer argument at a declared function parameter or union member payload of a containing integer type is admitted as an explicit exact `filament.op.numeric.convert` in the checked package, that a narrowing argument at those positions keeps its range obligation, and that `Some` payloads stay exact.
+Verify that a bounded integer argument at a declared function parameter, union member payload or tuple constructor position of a containing integer type is admitted as an explicit exact `filament.op.numeric.convert` in the checked package, that a narrowing argument at those positions keeps its range obligation, and that `Some` payloads stay exact.
 
 ## Test Procedure
 
@@ -22,6 +24,7 @@ Select `filament.value.complete/v1`. Declare `g(a: Integer)`, `h(a: Int[0, 2000]
 3. `t(w)`, `t(n)`, `Reading::Tiny(w)`, `Reading::Tiny(n)`, and `if w <= 9 then t(w) else false`.
 4. `Some(b)` at an `Option<Int[0, 9]>` parameter.
 5. `g(x div 2)`, `let y: Integer = x in g(y)`, the body of `function r using v(x: Int[0, 1000]): Integer pure { x }`, and `x = n`.
+6. With `tuple Pair(Integer, Int[0, 2000])` and `tuple Small(Int[0, 9])`: `Pair(x, x)`, `Pair(n, x)`, `Pair(7, x)`, `Small(w)`, `Small(n)` and `if w <= 9 then Small(w) else Small(0)`; read `Pair(x, x)` through a package reader, then with its position-0 term replaced by `x` typed `Int[0, 1000]`.
 
 ## Expected Results
 
@@ -30,3 +33,4 @@ Select `filament.value.complete/v1`. Declare `g(a: Integer)`, `h(a: Int[0, 2000]
 3. Each of the four is `undefined_expression`/`unproved-range` at the argument; the guarded call is admitted.
 4. `ill_typed`/`type-mismatch` at `b`.
 5. `g(x div 2)` records no conversion; the `let` form and `r` are admitted with no conversion node anywhere; `x = n` is `ill_typed`/`type-mismatch`.
+6. `Pair(x, x)` records one conversion per position, to `Integer` (equal to `g(x)`'s) and to `Int[0, 2000]`; `Pair(n, x)` and `Pair(7, x)` none at position 0; `Small(w)` and `Small(n)` `undefined_expression`/`unproved-range` at the argument; the guarded form admitted; the reader admits the package and refuses the edited one `ill_typed`/`type-mismatch` at the `tuple_value` node.

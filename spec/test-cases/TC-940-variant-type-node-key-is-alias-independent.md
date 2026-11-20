@@ -62,8 +62,8 @@ the package `acme/shapes` declares the tuples `Pair` (`p0: Boolean`,
 `p1: Shape`), the variant type `Shape` (cases `Empty`, `Flag(Boolean)`,
 `Both(Pair)`), the enumeration `Color` and the object `Holder`.
 
-6. Validate a `model`/`tuple_value_type` node owned by `Pair` against both V2
-   schemas; remove its `owner`, give it a
+6. Validate a `model`/`tuple_value_type` node owned by `Pair` against the V2
+   schema; remove its `owner`, give it a
    `SourceOwner`, a `declaration`, a `version` in its owner and a non-empty body.
    Own it by `Color`, by `Holder` and by an undeclared node. Own it by an
    undeclared node while the `Pair`-typed parameter's `semantic_type` names a

@@ -321,24 +321,25 @@ expected type to their operands and need none: an ordering comparison between an
 
 ## Integer widening at declared parameter and payload positions
 
-Two argument positions declare the type their argument must have: a
-parameter of a declared function, and a payload position of a declared union
-member. When the argument at such a position has type `Int[lo,hi]` and the
+Three argument positions declare the type their argument must have: a
+parameter of a declared function, a payload position of a declared union
+member, and a position of a declared tuple type at a tuple constructor. When the argument at such a position has type `Int[lo,hi]` and the
 declared type is `Integer`, or an `Int[lo2,hi2]` with `lo2 <= lo` and
 `hi <= hi2`, the argument SHALL be admitted, and the checked package SHALL
 record it as one `filament.op.numeric.convert` application to the declared
 type, located at the argument. This is the exact class of the conversion
 classes below: every member of the source is a member of the target, so it has
-no obligation, rounding, loss or charge point. The function-call argument or
-the `union_value` payload term then has exactly the declared type node, the
-exact match a package reader applies at both positions. An argument whose type
+no obligation, rounding, loss or charge point. The function-call argument,
+the `union_value` payload term or the `tuple_value` position term then has
+exactly the declared type node, the exact match a package reader applies at
+each of the three positions. An argument whose type
 is already the declared type takes no conversion. A producer that already
 types an argument as the declared `Integer` in the package (an integer
 division, or a local the package carries as `Integer`) records no conversion
 either, because the term's type node is already the declared one. The rule
 needs no selection beyond the one that admits the declared function or union.
 
-The widening is admitted because both positions declare their type: the
+The widening is admitted because each of these positions declares its type: the
 author who passes a bounded value where `Integer` or a wider range is declared
 cannot lose a value, and an explicit `convert<Integer>` there would add no
 information. The package still carries the conversion, so no consumer infers
@@ -364,10 +365,13 @@ a subsumption. Everything else is unchanged:
   `ill_typed`/`type-mismatch` when its integer type differs from the other
   operand's, unless the arithmetic operand rule above applies or the source
   writes an admitted `convert`.
-- A tuple constructor position admits today a value whose integer type the
-  position's declared type contains, with no conversion, as an annotated `let`
-  does. Whether it instead takes this section's explicit conversion is decided
-  under QSL-2636.
+- A tuple constructor position takes this section's rule exactly as a union
+  payload position does: `Pair(x, x)` for `tuple Pair(Integer, Int[0, 2000])`
+  and `x: Int[0, 1000]` records one `filament.op.numeric.convert` to `Integer`
+  at position 0 and one to `Int[0, 2000]` at position 1, and an argument that
+  does not fit its position is a narrowing, as above. For a clock-bearing
+  tuple only the data positions take a term (FR-322), so the rule applies to
+  each data position.
 
 ## Conversion classes
 
@@ -499,6 +503,7 @@ collection and object-reference rows of this requirement.
 | FR-149-AC-28 | Over two parameters of type `Map<Int[0, 3], Integer>[0, 4]`, maps holding `{1: 5, 2: 6}` and `{2: 6, 1: 5}` compare equal and `!=` is false; `{1: 5}` against `{1: 6}`, against `{2: 5}` and against `{1: 5, 2: 6}` compare unequal; a map pair with equal keys forms one child pair per key in ascending key order; `=` between `Map<Int[0, 3], Integer>` and `Map<Int[0, 3], Integer>[0, 4]` or `Map<Int[0, 4], Integer>` is `ill_typed`/`type-mismatch`; and a map whose value type is an event type is `ill_typed`/`operator-ineligible` under `=`. | Test (TC-1321) |
 | FR-149-AC-29 | Over `a`, `b` and `c` of `Int[0, 10]`, `c = a + b` is `undefined_expression`/`unproved-range` at `a + b`, and the refusal names the derived interval `[0, 20]`, the expected type `Int[0, 10]` and the operand `c` that supplied it; `c = a + b` under the guard `a <= 4 and b <= 5` checks; and `convert<Integer>(c) = a + b` checks with no range obligation and is `false` at `a = 8`, `b = 9`, `c = 10`. | Test (TC-1325) |
 | FR-149-AC-30 | With `function g using v(a: Integer): Boolean pure { true }`, `function h using v(a: Int[0, 2000]): Boolean pure { true }`, `function t using v(a: Int[0, 9]): Boolean pure { true }`, `union Reading { Raw(Integer), Wide(Int[0, 2000]), Tiny(Int[0, 9]) }` and parameters `x: Int[0, 1000]`, `n: Integer`, `w: Int[0, 20]`, `b: Int[0, 3]`: `g(x)`, `h(x)`, `Reading::Raw(x)` and `Reading::Wide(x)` are admitted, and each argument or payload term in the checked package is one `filament.op.numeric.convert` application whose type node is the declared type node, with no obligation; `g(n)`, `g(7)` and `Reading::Raw(n)` carry no conversion. `t(w)`, `t(n)`, `Reading::Tiny(w)` and `Reading::Tiny(n)` are each `undefined_expression`/`unproved-range` at the argument, and `if w <= 9 then t(w) else false` is admitted. `Some(b)` at an `Option<Int[0, 9]>` parameter stays `ill_typed`/`type-mismatch` at `b`. `g(x div 2)`, whose argument the package carries as `Integer`, records no conversion. `let y: Integer = x in g(y)` is admitted with no conversion at the `let` or at the call, and `function r using v(x: Int[0, 1000]): Integer pure { x }` is admitted with no conversion in its body. `x = n` is `ill_typed`/`type-mismatch`. | Test (TC-2097) |
+| FR-149-AC-31 | With FR-149-AC-30's declarations and parameters, `function g using v(a: Integer): Boolean pure { true }`, `tuple Pair(Integer, Int[0, 2000])` and `tuple Small(Int[0, 9])`: `Pair(x, x)` is admitted, and its position-0 term in the checked package is one `filament.op.numeric.convert` application whose type node is the `Integer` node, the same node `g(x)` records for its argument, and its position-1 term one whose type node is the `Int[0, 2000]` node, each with no obligation; `Pair(n, x)` and `Pair(7, x)` carry no conversion at position 0. `Small(w)` and `Small(n)` are each `undefined_expression`/`unproved-range` at the argument, as `t(w)` and `t(n)` are, and `if w <= 9 then Small(w) else Small(0)` is admitted. A package reader admits every `tuple_value` of these constructions, and the same package with `Pair(x, x)`'s position-0 term replaced by `x`, typed `Int[0, 1000]`, is refused `ill_typed`/`type-mismatch` at the `tuple_value` node. | Test (TC-2097) |
 
 ## Dependencies
 

@@ -151,7 +151,7 @@ node and the `value`/`parameter` binder nodes. The binders have levels
 | --- | --- | --- |
 | OM-01 | Keep the `over` argument and add `owner_model` as the object-type node of the model owned by a selected declaration that the source clause's `over` type names | Admitted; the target is in `dependencies` |
 | OM-02 | Change only `owner_model` to another existing selected model node | Admitted as a different clause identity; FR-375 class-catalog reconstruction associates its classes only with the new owner model |
-| OM-03 | Omit `owner_model`, or use an external `{package, node}` key | `malformed_wire` at the node (both V2 schemas) |
+| OM-03 | Omit `owner_model`, or use an external `{package, node}` key | `malformed_wire` at the node (the V2 schema) |
 | OM-04 | Keep two clauses over distinct selected models and build the concrete catalog for one of them, including a clause with no deciding step rows | Classes from all clauses owned by the selected model are included; the other model's classes are excluded |
 | OM-05 | Retarget `owner_model` to a `model`/`object_type` node whose `ModelOwner` joins no `model_root` node (or whose selected document does not declare it as an object type), rebuild the clause key and package identity | `missing_declaration`/`missing-selection` at the target's own `node_id` in the owner join, before any body step and before the clause edge is read |
 | OM-06 | Retarget `owner_model` to a selected declaration's model node of another form (a `state_machine`), then a `process`, a `record_value_type`, and the selected package's `model_root` node | each `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{i}/owner_model` after the refinement step, as the clause's first step 6 check |

@@ -140,7 +140,7 @@ whose joins below do not hold with the refusal this requirement names, in
 - **Published schema** — the published V2 package schema enumerates
   `union` among `CompositeTypeNode` forms, `union_value` among `ValueNode`
   forms and `case` among `ExpressionNode` forms, and binds the three bodies
-  above (`UnionTypeBody`, `UnionValueBody`, `CaseBody`). Both V2 schemas
+  above (`UnionTypeBody`, `UnionValueBody`, `CaseBody`). The V2 schema
   enumerate `case` among the application operator classes and
   `filament.op.control.case` among the operation identities, so they enumerate
   exactly the catalog's identities and operator classes (FR-322-AC-17) once
