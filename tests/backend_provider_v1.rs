@@ -1786,12 +1786,12 @@ fn tc_431_zone_loci_admit_the_refinement_form_rules_and_the_added_members() {
     // The names are exactly the property names, at any depth, of the two certificates and
     // the certificate-owned definitions they reference (FR-331 "Certificate member").
     let walked = certificate_member_names();
-    assert_eq!(walked.len(), 57);
     let enumerated: std::collections::BTreeSet<String> = parsed(SCHEMA)["$defs"]["CertificateRejected"]["oneOf"]
         .as_array().expect("causes").iter()
         .filter_map(|cause| cause["properties"]["at"]["properties"]["member"]["enum"].as_array())
         .flatten().map(|name| name.as_str().expect("name").to_owned()).collect();
     assert_eq!(enumerated, walked, "the {{member}} enum is the walked member set");
+    assert_eq!(walked.len(), 61, "the reconciled certificate member count");
     for member in &walked {
         let cause = serde_json::json!({"type": "certificate-rejected", "rule": "malformed", "at": {"member": member}});
         assert!(rejection.is_valid(&cause), "{member} is a member");
