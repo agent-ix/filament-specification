@@ -14,7 +14,9 @@ relationships:
 Verify that `checked_term_data.body_locations` carries the checker's
 location of every term of a function's body walk, that the strict reader
 admits a complete set of rows and keeps each captured path, and that it
-refuses each defect at its own locus. Scope: FR-322-AC-490.
+refuses each defect at its own locus, and that a source-model clause
+function's rows carry no check-time package in their `name`. Scope:
+FR-322-AC-490, FR-322-AC-494.
 
 ## Test Procedure
 
@@ -28,8 +30,12 @@ refuses each defect at its own locus. Scope: FR-322-AC-490.
 4. Admit BL-03, then BL-03 with its occurrence-1 `+` row removed.
 5. Validate a `checked_term_data` object with the four other arrays and no
    `body_locations`, and admit BL-01 with the whole carrier removed.
+6. Emit FSL FR-531-AC-40's unit (a precondition clause function of an
+   operation of a source object type, `SourceOwner` identity `I`) and read
+   every `body_locations` row of that clause function.
 
-Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`.
+Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`
+(steps 1 to 5); FSL `tests/it/dispatch_emission.rs` (step 6).
 
 ## Expected Results
 
@@ -44,3 +50,4 @@ Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`.
 - Step 4: BL-03 is admitted with two rows for its one `+` node, at its `expression` occurrences 0 and 1, each `term_ordinal` 0, paths `[0]` and `[1]`; without the occurrence-1 row it refuses at `/checked_term_data/body_locations`.
 - Step 5: the object is `malformed_wire`; the carrier-less package refuses
   `invalid_package`/`invalid-value` at `/checked_term_data/body_locations`.
+- Step 6: every row's `name` begins `ix://I/`; none begins `ix://source/`.
