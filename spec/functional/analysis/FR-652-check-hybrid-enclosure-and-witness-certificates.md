@@ -185,11 +185,17 @@ with a `type` member.
   Every rule below states the direction of its inclusion.
 - **Boundary face.** The upper face `x_i = u_i` of a box `E` is a *boundary
   face* of an invariant when the invariant has a top-level conjunct
-  `x_i <= e`, `x_i < e` or `x_i = e`, or a mirrored form, with `e` not
-  reading `x_i` and `u_i >= ` the upper bound of `e` over `E`; a lower face
+  `x_i <= e`, `x_i < e` or `x_i = e`, or a mirrored form, with `e` free of
+  conditionals and reading no continuous variable other than those whose
+  rate in the mode is the constant 0, and `u_i >=` the upper bound of `e`
+  over `E`; a lower face
   `x_i = l_i` is one when it has `x_i >= e`, `x_i > e` or `x_i = e` with
   `l_i <=` the lower bound of `e` over `E`. Beyond a boundary face that
-  conjunct is definitely false, so no behaviour of the mode crosses it. This
+  conjunct is definitely false, so no behaviour of the mode crosses it: `e`
+  reads only variables the flow holds fixed, so its bound over `E` holds
+  however the other variables move. An `e` that reads a moving variable, as
+  `y` in the invariant `x = y` under `x' = y' = 1`, moves with the
+  behaviour, and its face is no boundary face. This
   is decided from the invariant's variable-bound conjuncts by interval
   reasoning alone; the reader never probes a point beyond a face.
 
@@ -199,20 +205,42 @@ that falsify a conjunct of the condition: for `x <= e`, a removed state has
 A behaviour satisfies its mode's invariant at every instant of its dwell
 (FR-193 "Behaviours and positions"), so contracting by the invariant
 removes no state a behaviour holds inside the dwell, and contracting by a
-guard removes no state at which the guard holds. The Picard and advance
-inclusions are checked after contraction, and the a-priori enclosure
-argument carries over: while a behaviour's state over a step lies in `B` it
-is its start state plus the integral of the flow over states in `B`, so it
-lies in the tube, and, satisfying the invariant, in the tube's contraction;
-if `Contract(Inv, tube) ⊆ B`, a behaviour has no first instant within the
-step at which it leaves `B`, because at that instant its state lies in the
-contracted tube and so in `B`, exactly as the uncontracted condition gives
-for the flow alone. A behaviour whose flow would carry it past the
-invariant's boundary within the step does not continue the dwell: it jumps
-or ends there, inside `B`. Contraction therefore drops only states no
-behaviour reaches, and every state a behaviour reaches stays enclosed. A
-`validated-witness` proves that a behaviour exists rather than that every
-behaviour is enclosed, so its inclusions are checked without contraction.
+guard removes no state at which the guard holds; once `B` encloses a
+behaviour over a step, contracting its `box` and its advance is therefore
+sound. The Picard inclusion needs more, because it is what makes `B` an
+enclosure. A mode is *contraction-admitted* when, after expansion, its
+rates and the bounds `e` of its invariant's contracting conjuncts (the
+variable-bound conjuncts the contractor reads) contain no conditional and
+no recursive call. For such a mode the reader checks
+`Contract(Inv, tube) ⊆ B`, and the argument is this. A behaviour follows a
+classical solution of the flow (FR-193 "Behaviours and positions"). Let
+`t*` be the last instant up to which its state over the step stays in `B`.
+Up to `t*` the state is its start state plus the integral of the flow over
+states in `B`, so it lies in the tube and, satisfying the invariant, in
+`Contract(Inv, tube) ⊆ B`. Suppose it leaves `B` just after `t*` through a
+face of variable `x_i`. If the contraction narrowed that face, from a
+conjunct `x_i <= e` (or its mirror), the behaviour keeps `x_i <= e` at every
+instant, and `e` is at most `B`'s bound at every state of the tube. If it
+did not, `B`'s bound is at least the tube's; where it is greater there is
+strict room and `x_i` cannot reach the face just after `t*`, so it can
+leave only at a face where `B`'s bound equals the tube's, which needs its
+rate to reach 0 there. In both cases the excess is bounded by a rate or a
+bound `e` read just outside `B`. Rates and bounds free of conditionals and
+definitely defined over `B` are Lipschitz near `B`, so the distance `d(t)`
+of the state beyond `B` satisfies `d(t) <= C * ∫ d` over `[t*, t]` for a
+constant `C`, and `d = 0` by Grönwall's inequality: the behaviour never
+leaves `B` within the step. A strict conjunct `x < e` is read as `x <= e`,
+which only keeps more states. A conditional, or a recursive call, can make a
+rate or a bound jump at a face of `B`, which breaks the Lipschitz step: with
+`x' = 1`, `y' = x` and the invariant `x <= if y > 0 then 10 else 0`, the
+contracted tube of the box `x [0, 0], y [0, 0]` lies in `B` `x [-1, 0],
+y [-1, 0]` although `x = t`. For a mode that is not contraction-admitted
+the reader SHALL therefore check the uncontracted inclusion `tube ⊆ B`, the
+classical a-priori condition, and still contract `box` and the advance.
+Contraction drops only states no behaviour reaches, and every state a
+behaviour reaches stays enclosed. A `validated-witness` proves that a
+behaviour exists rather than that every behaviour is enclosed, so its
+inclusions are checked without contraction.
 
 ### Checking order
 
@@ -319,7 +347,7 @@ in position order. `H`, `J` and `E` are the entry's `horizon`, `jumps` and
 | --- | --- | --- | --- | --- |
 | 1 | `box-shape` | every step's `box`, then its `apriori` | as for `inductive-enclosure` | `/certificate/steps/<k>/box` or `/certificate/steps/<k>/apriori` |
 | 2 | `initial` | the initial dwells; then each initial entry `(M, c)` | the first step of every initial dwell has `time` `[0, h]`; and for each entry, with `H_e = Hull(c and Inv_M)`: `H_e` is empty, or `c` and `Inv_M` are definitely defined over `H_e`, an initial dwell in mode `M` exists, and `H_e ⊆` its first step's `box` | that dwell's first step; `/certificate/steps/0` when no initial dwell has mode `M` |
-| 3 | `picard` | each step `k`: `box`, `B`, `h`, the rates | every rate and `Inv` are definitely defined over `B`, and `Contract(Inv, tube) ⊆ B` | `/certificate/steps/<k>` |
+| 3 | `picard` | each step `k`: `box`, `B`, `h`, the rates | every rate and `Inv` are definitely defined over `B`, and `Contract(Inv, tube) ⊆ B` for a contraction-admitted mode, `tube ⊆ B` for any other ("Why contraction is sound") | `/certificate/steps/<k>` |
 | 4 | `successor` | each step `k` that is not the first step of its dwell, with the previous step `p` | `time` equals the `C` its `S` derives ("Instants"), and `Contract(Inv, advance of p) ⊆ box_k` | `/certificate/steps/<k>` |
 | 5 | `jump` | each dwell `D` of depth `< J`; each transition `τ` of its mode; the steps `k` of `D` with `S_k.lower <= H` | see "Following transitions" | see "Following transitions" |
 | 6 | `coverage` | each dwell `D`; `H`, `J`, `E` | see "Coverage" | see "Coverage" |
@@ -380,7 +408,13 @@ which only widens what they read.
 
 With the transitions followed and these four checks passed, the steps
 enclose FR-193's proof region, every state a behaviour reaches by time `H`
-with at most `J` jumps, and establish each dimension `E` lists.
+with at most `J` jumps, and establish each dimension `E` lists. The
+rule is incomplete in one stated way: a dwell that empties only on a step
+whose covered instants pass `H` cannot show `jumps` at that horizon, so
+such a proof stays `proved` and uncertified. FR-193's `Braking` example
+with `horizon` 20, `jumps` 1 and `exhaustive` `["jumps"]` is one: its
+`Moving` dwell empties only on a step whose covered instants pass 20, and
+with `horizon` 21 the same certificate passes.
 
 **Reading the claim.** A `flowpipe` reaches this rule only for a claim
 FR-193 coverage lets the proof cover, an `on origin` claim with a horizon;
@@ -392,8 +426,14 @@ a claim of any other form is rejected `claim` at `/certificate`. Under
   definitely defined over `B`, holding at every instant of `C`. A step from
   which a behaviour may end, because `Inv` is not definitely true over its
   uncontracted tube or it is the last step of a dwell that empties or
-  closes, also holds its reading at every later instant, since FR-193 reads
-  a finite maximal behaviour as repeating its last state.
+  closes (a *may-end* step), also holds its reading at every later instant,
+  since FR-193 reads a finite maximal behaviour as repeating its last state.
+  This test ignores whether a transition is enabled at the invariant's
+  boundary, which would force the behaviour to jump rather than end, so it
+  can leave a true claim uncertified and never certifies a false one: every
+  `Moving` step of `Braking` is a may-end step and holds `v [0, 20 - k/16]`
+  at every later instant, so the true `always [5, 10] holds(h.v <= 15)` is
+  not certified.
 - At an instant `t`, an atom is definitely true when every reading holding
   at `t` is definitely true, definitely false when every one is definitely
   false, and unknown otherwise or when none holds at `t`. With coverage
@@ -414,18 +454,27 @@ a claim of any other form is rejected `claim` at `/certificate`. Under
   true and every claim atom is definitely defined over every `B` whose
   covered instants meet the claim region `[0, r]`.
 
-Under `model-steps`, position 0 reads the first `box` of each initial dwell
-and position `p >= 1` reads the `box` of each jump step of depth `p`; a
-behaviour with fewer than `p` jumps reads at position `p` its last
-position's state (FR-193's repetition of a finite behaviour's last state,
-read over positions), so the reading at position `p` is the meet of the
-readings of every such box of depth at most `p`. The claim is evaluated over
-positions 0 to its horizon `n` as above.
+Under `model-steps`, position 0 reads the first `box` of each initial
+dwell, and position `p >= 1` reads the `box` of each jump step of depth `p`
+and, for the behaviours with fewer than `p` jumps, the state at which each
+ends, which FR-193 "Behaviours and positions" makes such a behaviour's state
+at every position after its last jump. A behaviour with `j < p` jumps ends
+in a dwell of depth `j`, at an instant of a step from which it may end (the
+*may-end* steps above), so the reading at position `p` is the meet of the
+readings of the `box` of every jump step of depth `p` and of the `B` of
+every may-end step of every dwell of depth less than `p`; it is never read
+from the box at a behaviour's last jump alone, because the behaviour moves
+on from there before it ends. With `x' = 1`, the invariant
+`x >= 0 and x <= 1`, `x = 0` initially and no transition, the behaviour
+ends at `x = 1`, so position 1 reads `x = 1` and `always [0, 1]
+holds(h.x < 1)` is not certified. The claim is evaluated over positions 0
+to its horizon `n` as above.
 
 On failure, `at` is the first step, in list order, among the steps read in
-the claim region over whose `B` (or, under `model-steps`, whose `box`) some
-claim atom is not definitely defined, reads unknown or reads definitely
-false; when no step reads so, the first step read in the claim region.
+the claim region over whose `B` (or, under `model-steps`, over the `box` or
+`B` it is read by) some claim atom is not definitely defined, reads unknown
+or reads definitely false; when no step reads so, the first step read in
+the claim region.
 
 ### Rules of `validated-witness`
 
@@ -436,7 +485,7 @@ step's mode's invariant, and dwell `d`'s mode is its trace state's mode.
 | --- | --- | --- | --- | --- |
 | 1 | `box-shape` | every step's `box`, then its `apriori` | as for `inductive-enclosure` | `/certificate/dwells/<d>/<k>/box` or `/certificate/dwells/<d>/<k>/apriori` |
 | 2 | `witness-start` | the trace's `start`; the initial entries; `dwells[0][0]` | `start.time` is `[0, 0]`; every interval of `start.enclosure` is a point, together the point `p`; some initial entry of `start.mode` has its condition and `Inv` definitely true and defined at `p`; and `dwells[0][0]` has `time.lower` 0 and `p` in its `box` | `/certificate/dwells/0/0` |
-| 3 | `witness-picard` | each step `(d, k)` | `time` is `[l, l + h]`, `l` the previous step's `time.upper` in the dwell, or for the first step of dwell `d > 0` the jump instant of dwell `d - 1`; every rate and `Inv` are definitely defined over `B`; the uncontracted tube `⊆ B`; `Inv` is definitely true over `box`, and over `B` unless the step is the witness's last; and the uncontracted advance of the previous step in the dwell `⊆ box` | `/certificate/dwells/<d>/<k>` |
+| 3 | `witness-picard` | each step `(d, k)` | `time` is `[l, l + h]`, `l` being 0 for the first step of dwell 0, the jump instant of dwell `d - 1` for the first step of dwell `d > 0`, and otherwise the previous step's `time.upper` in the dwell; every rate and `Inv` are definitely defined over `B`; the uncontracted tube `⊆ B`; `Inv` is definitely true over `box`, and over `B` unless the step is the witness's last; and the uncontracted advance of the previous step in the dwell `⊆ box` | `/certificate/dwells/<d>/<k>` |
 | 4 | `witness-unique` | each step's `B`; the expanded rates | every `if c then a else b` in the mode's rates has `c` definitely true or definitely false over `B`, and so on in the branch taken; a rate whose expansion reaches a recursive call fails, since no branch can be established | `/certificate/dwells/<d>/<k>` |
 | 5 | `witness-guard` | each dwell `d` except the last; `trace.jumps[d]`; the next dwell's first step | see "Jumps of a witness" | the last step of dwell `d` |
 | 6 | `witness-violation` | the readings | the witness has a decisive reading, and a trace `end`, when present, equals it | the witness's last step |
@@ -496,6 +545,29 @@ reading, the step's `time` for a `B` reading) and `end.enclosure` SHALL
 equal its box. A provider that cannot build a witness with a decisive box
 returns its trace without one, and the item stays `inconclusive` as FR-193
 "Trace replay" states.
+
+**Decisive readings of an `on each` claim.** A witness accompanies a trace
+with no `loop` (a witness on a lasso is refused), so the activation rules
+of FSL FR-450 apply to a finite prefix and no period count arises. Each
+activation instant `τ` creates one obligation with its own captured values,
+and a past operator in the body, the guard or a capture reads the witness
+from position 0 (FR-193 "Activations and captures"). The reader reads
+activations at the instants of the witness's `box` readings: the instant
+`time.lower` of a step is an *activation* when the activation condition is
+definitely true and definitely defined over that step's `box`, and its
+captures are read over that `box`. A reading is decisive for an `on each`
+claim when, over the readings up to and including it with every later
+instant unknown, some activation's obligation, evaluated from its instant
+by the three-valued meaning of "Reading the claim", is definitely false, or
+some activation has a capture definitely outside its type's value range
+(kind `undefined-evaluation`, cause `outside-capture-range`) or an atom,
+activation condition or capture definitely without value. Of several such readings the
+earliest in reading order is decisive, as for an `on origin` claim, and its
+instants, a point for a `box` reading, contain the infimum FSL FR-450 takes
+as the decisive instant when that infimum lies in the reading. A behaviour
+whose violating activations form an open set with no earliest element is
+refuted by a witness only when some box reading inside that set is
+decisive; the witness never reports an instant no reading holds.
 
 ### Work limit
 
@@ -596,21 +668,22 @@ A rejection names the first failing rule by one of these 17 spellings.
 | FR-652-AC-1 | Over FR-193's `Braking` without its variable `t`, an `inductive-solver` proof of `always holds(h.v < 30)` with boxes `Moving: v [0, 20], a [1, 2]` and `Stopped: v [0, 0], a [1, 2]` is accepted (the `v = 0` face of `Moving` lies on its invariant's boundary) and settles `certified`; with `Moving: v [0, 19]` it is rejected naming rule (a), since the initial state `v = 20` lies outside, and the proof stays `uncertified` with `certificate-rejected` recorded. | Test (TC-1605) |
 | FR-652-AC-2 | A `flowpipe` certificate whose step violates the Picard condition is rejected naming that step, and the `bounded-solver` proof stays `uncertified` with `certificate-rejected` recorded; a well-formed one covering horizon 10 settles `certified`. | Test (TC-1605) |
 | FR-652-AC-3 | Over `Grow`, one mode `Up` with invariant `v >= 1 and v <= 100`, initial `v = 1` and flow `v' = 1 - 1 / (1 + v * v)`, which is not polynomial, against its hybrid claim `Below`, `always [0, 40] holds(h.v < 30)`: a point trace from `v = 1` with a `validated-witness` of nine steps of 4 s, step `k` at time `[4k, 4k + 4]` with `box` `v [l_k, 1 + 4k]` and `B` `v [l_k, 5 + 4k]`, `l` being 1, 3, 33/5, 21/2, 72/5, 183/10, 111/5, 261/10, 30, is accepted, its decisive box the `box` `v [30, 33]` at time 32 over which `v < 30` is definitely false, and settles `refuted` with one `counterexamples` entry. The same trace stays `inconclusive` without a witness; with that witness cut after its step at `[28, 32]`, whose `B` `v [261/10, 33]` straddles 30; and with one step at `[0, 40]` whose `box` is `v [1, 1]` and whose `B` `v [1, 41]` satisfies the Picard condition but straddles 30. Each cut witness is rejected `witness-violation` at its last step, `/certificate/dwells/0/7` and `/certificate/dwells/0/0`. | Test (TC-1605) |
-| FR-652-AC-4 | A `flowpipe` certificate on an `inductive-solver` entry refuses `invalid_result`/`invalid-value` at `/certificate`; a box missing variable `a` is rejected at its pointer; a check stopped by the work limit is `rejected{rule: work-limit}`. | Test (TC-1605) |
+| FR-652-AC-4 | A `flowpipe` certificate on an `inductive-solver` entry refuses `invalid_result`/`invalid-value` at `/certificate`; a box missing variable `a` is rejected `box-shape` at `/certificate/boxes/Moving`, and FR-652-AC-5's certificate with `steps/3` `apriori` `v [1, 0], a [1, 2]` is rejected `box-shape` at `/certificate/steps/3/apriori`; a check stopped by the work limit is `rejected{rule: work-limit}`. | Test (TC-1605) |
 | FR-652-AC-5 | Over `Braking` without `t`, whose `Moving` invariant `v >= 0` is a boundary invariant of its guard `v = 0`, a `flowpipe` certificate whose 160 `Moving` steps of `step` 1/16 cover `[0, 10]`, step `k` with `time` `[k/16, (k + 1)/16]` and `box` and `B` `v [0, 20 - k/16], a [1, 2]`, each contracted to `v >= 0`, and whose one jump step, `steps/160`, carries `from` `{"dwell": 0, "transition": 0}` with `Stopped: v [0, 0], a [1, 2]`, `step` 10 and `time` `[0, 10]`, the narrowed jump time (the value `[0, 20]` of `(0 - v0) / (-a)` over `v0 [0, 20], a [1, 2]`, offset by the start instant 0 and intersected with the horizon `[0, 10]`), is accepted against `always [0, 10] holds(h.v < 30)` with an entry of `horizon` 10, `jumps` 1 and `exhaustive` `["time"]`, and settles `certified`; the same with jump-step `time` `[1, 10]` is rejected with rule `jump` at `/certificate/steps/160`, since it omits the jump at time 0 from `v0 = 0`; the same with `time` `[0, 20]` is accepted, since it contains the narrowed jump time, and its width 20 differs from its `step` 10 without failing any rule, a jump step's `time` being its start instants; against `always [0, 10] holds(h.v > 5)` the claim is not definitely true over the first `Moving` step and the certificate is rejected with rule `claim` at `/certificate/steps/0`. | Test (TC-1605) |
 | FR-652-AC-6 | The schema admits a first-party `proved` `inductive-solver` entry labelled `uncertified` carrying an `inductive-enclosure` certificate and a `bounded-solver` entry carrying a `flowpipe` certificate whose `step` is `{"numerator": "1", "denominator": "16"}`, and refuses the same with `step` `"1/16"`, a box bound written `"0"`, a certificate `type` outside the three forms, the entry labelled `certified`, and a `flowpipe` on an `inconclusive` entry; when the reader accepts the `inductive-enclosure` the record is `certified` while the entry stays `uncertified`, and when it rejects it the record stays `proved`, `uncertified`, with `certificate-rejected{rule, at}` beside it and not `inconclusive`. | Test (TC-2049) |
-| FR-652-AC-7 | Over `Rise`, `hybrid Rise using p { initial { mode Up when { v >= 0 and v <= 20 }; } mode Up invariant { v >= 0 and v <= 41/2 } flow { v' = 1; } }`, an `inductive-solver` proof of `always holds(h.v <= 21)` with the box `Up: v [0, 41/2]` is accepted (the upper face lies on the conjunct `v <= 41/2`, the lower face has rate 1 `>= 0`); with `Up: v [0, 39/2]` it is rejected `a` at `/certificate/boxes/Up`, since the initial hull `v [0, 20]` is not included in the box; with `Up: v [0, 20]` it is rejected `b` at `/certificate/boxes/Up`, since the rate 1 on the upper face points out and `20` is below the conjunct's bound `41/2`, so states with `20 < v <= 41/2` escape (the step-back finding that a probe at one point beyond the face accepted this box). | Test (TC-1605) |
+| FR-652-AC-7 | Over `Rise`, `hybrid Rise using p { initial { mode Up when { v >= 0 and v <= 20 }; } mode Up invariant { v >= 0 and v <= 41/2 } flow { v' = 1; } }`, an `inductive-solver` proof of `always holds(h.v <= 21)` with the box `Up: v [0, 41/2]` is accepted (the upper face lies on the conjunct `v <= 41/2`, the lower face has rate 1 `>= 0`); with `Up: v [0, 39/2]` it is rejected `a` at `/certificate/boxes/Up`, since the initial hull `v [0, 20]` is not included in the box; with `Up: v [0, 20]` it is rejected `b` at `/certificate/boxes/Up`, since the rate 1 on the upper face points out and `20` is below the conjunct's bound `41/2`, so states with `20 < v <= 41/2` escape (the step-back finding that a probe at one point beyond the face accepted this box). Over `Twin`, `hybrid Twin using p { initial { mode M when { x = 0 and y = 0 }; } mode M invariant { x = y } flow { x' = 1; y' = 1; } }`, the box `M: x [0, 1], y [0, 1]` against `always holds(h.x <= 1)` is rejected `b` at `/certificate/boxes/M`: the conjunct `x = y` reads `y`, whose rate is 1, so neither upper face is a boundary face, and the rate 1 points out (the behaviour reaches `x = 2` at time 2). | Test (TC-1605) |
 | FR-652-AC-8 | Over `Braking` without `t`: FR-652-AC-1's accepted boxes with `Stopped: v [0, 0], a [1, 3/2]` are rejected `c` at `/certificate/boxes/Stopped`, the post image `v [0, 0], a [1, 2]` of `Moving`'s guarded part not being included; FR-652-AC-1's accepted boxes against `always holds(h.v < 10)` are rejected `d` at `/certificate/boxes/Moving`, against `always holds(1 / h.v < 100)` are rejected `d` at `/certificate/boxes/Moving` since `1 / v` is not definitely defined over `v [0, 20]`, and against `always [0, 10] eventually [0, 1] holds(h.v < 30)` are rejected `d` at `/certificate`. Over `Hold`, `hybrid Hold using p { initial { mode H when { v >= 40 and v <= 50 }; } mode H invariant { v >= 0 and v <= 50 } flow { v' = 0; } }`, the box `H: v [40, 50]` is accepted against `always not holds(h.v < 30)` and rejected `d` at `/certificate/boxes/H` against `always not holds(h.v >= 30)`, whose atom reads definitely true and its negation definitely false. | Test (TC-1605) |
 | FR-652-AC-9 | Over `Braking` without `t`: FR-652-AC-5's accepted certificate with `steps/0` `box` `v [0, 1/32], a [1, 2]` is rejected `initial` at `/certificate/steps/0`, since the initial states up to `v = 20` lie outside it (the step-back finding that the first box was never compared with the initial states); with `steps/0` `time` `[0, 1/8]` it is rejected `initial` at `/certificate/steps/0`. Over `Braking` without `t` with `initial { mode Moving when { v = 20 and a >= 1 and a <= 2 }; mode Stopped when { v = 0 and a = 1 }; }`, two initial modes, FR-652-AC-5's steps followed by an initial `Stopped` dwell, one step without `from` with `time` `[0, 10]`, `step` 10 and `box` and `B` `v [0, 0], a [1, 1]`, and then FR-652-AC-5's jump step with `from` `{"dwell": 0, "transition": 0}`, are accepted; without that initial `Stopped` dwell they are rejected `initial` at `/certificate/steps/0`, since no initial dwell has mode `Stopped`. | Test (TC-1605) |
-| FR-652-AC-10 | Over FR-652-AC-5's accepted certificate: the step `steps/0` `B` is `v [0, 20]` although its uncontracted tube is `v [-1/8, 20]`, and it is accepted because the tube is contracted by `v >= 0` before the inclusion; with `steps/3` `apriori` `v [0, 20 - 3/16 - 1/32], a [1, 2]` it is rejected `picard` at `/certificate/steps/3`; with `steps/6` `box` `v [0, 20 - 6/16 - 1/32], a [1, 2]` it is rejected `successor` at `/certificate/steps/6`, since the contracted advance of `steps/5` reaches `20 - 6/16`; with `steps/1` `time` `[1/8, 3/16]` it is rejected `successor` at `/certificate/steps/1`, since `steps/1` starts at `1/16`. | Test (TC-1605) |
+| FR-652-AC-10 | Over FR-652-AC-5's accepted certificate: the step `steps/0` `B` is `v [0, 20]` although its uncontracted tube is `v [-1/8, 20]`, and it is accepted because the tube is contracted by `v >= 0` before the inclusion; with `steps/3` `apriori` `v [0, 20 - 3/16 - 1/32], a [1, 2]` it is rejected `picard` at `/certificate/steps/3`; with `steps/6` `box` `v [0, 20 - 6/16 - 1/32], a [1, 2]` it is rejected `successor` at `/certificate/steps/6`, since the contracted advance of `steps/5` reaches `20 - 6/16`; with `steps/1` `time` `[1/8, 3/16]` it is rejected `successor` at `/certificate/steps/1`, since `steps/1` starts at `1/16`. `Braking`'s `Moving` mode is contraction-admitted (its rates `-a` and `0` and its invariant's bounds have no conditional). Over `Cond`, `hybrid Cond using p { initial { mode M when { x = 0 and y = 0 }; } mode M invariant { x <= if y > 0 then 10 else 0 } flow { x' = 1; y' = x; } }`, which is not contraction-admitted, the one step `{M, time [0, 1], box x [0, 0], y [0, 0], B x [-1, 0], y [-1, 0], step 1}` under an entry of `horizon` 1, `jumps` 0 and `exhaustive` `["time"]` against `always [0, 1] holds(h.x <= 0)` is rejected `picard` at `/certificate/steps/0`: the uncontracted tube `x [0, 1], y [-1, 0]` is not included in `B`, although its contraction is, and the behaviour has `x = t`. | Test (TC-1605) |
 | FR-652-AC-11 | Over `Fork`, `hybrid Fork using p { initial { mode A when { x = 0 }; } mode A invariant { x >= 0 and x <= 10 } flow { x' = 1; } transition to B when { x >= 5 } reset { x = 100 }; transition to C when { x >= 7 } reset { x = 0 }; mode B invariant { x >= 0 and x <= 200 } flow { x' = 0; } mode C invariant { x >= 0 and x <= 1 } flow { x' = 0; } }`, with an entry of `horizon` 10, `jumps` 1 and `exhaustive` `["time"]`: the certificate of ten `A` steps, step `k` with `time` `[k, k + 1]`, `step` 1, `box` `x [k, k]` and `B` `x [k, k + 1]`, then a `B` jump step with `from` `{"dwell": 0, "transition": 0}`, `time` `[4, 10]`, `step` 6 and `box` and `B` `x [100, 100]`, then a `C` jump step with `from` `{"dwell": 0, "transition": 1}`, `time` `[6, 10]`, `step` 4 and `box` and `B` `x [0, 0]`, a dwell with two children, is accepted against `always [0, 10] holds(h.x >= 0)` and rejected `claim` at `/certificate/steps/10` against `always [0, 10] holds(h.x < 50)`; the ten `A` steps alone are rejected `jump` at `/certificate/steps/4` against either claim, the first step from whose `B` `x >= 5` can fire (the step-back finding that a flowpipe of source steps alone was accepted while a jump to `x = 100` violates the claim); without the `C` jump step they are rejected `jump` at `/certificate/steps/6`; with the `B` jump step's `time` `[5, 10]` they are rejected `jump` at `/certificate/steps/10`, since the jumps from `steps/4` may occur at time 4 and no equality conjunct narrows the time; with its `box` `x [99, 99]` they are rejected `jump` at `/certificate/steps/10`. | Test (TC-1605) |
 | FR-652-AC-12 | Over `Tick`, `hybrid Tick using p { initial { mode T when { x = 0 }; } mode T invariant { x >= 0 and x <= 1 } flow { x' = 1; } transition to T when { x = 1 } reset { x = 0 }; }`, a self-loop, with an entry of `horizon` 3/2, `jumps` 1 and `exhaustive` `["time"]`, against `always [0, 3/2] holds(h.x <= 1)`: the steps `{T, time [0, 1], box x [0, 0], B x [0, 1], step 1}`, `{T, time [1, 3/2], box x [1, 1], B x [1, 1], step 1/2}` and `{T, from {dwell 0, transition 0}, time [1, 1], box x [0, 0], B x [0, 1/2], step 1/2}` are accepted, the jump step's `time` containing the narrowed jump time `[1, 1]`; the same third step without `from` continues dwell 0 and is rejected `successor` at `/certificate/steps/2`, since it would start at time 3/2. | Test (TC-1605) |
 | FR-652-AC-13 | Coverage, with `Braking` without `t` and `always [0, 10] holds(h.v < 30)`: FR-652-AC-5's 160 `Moving` steps alone, under an entry of `horizon` 10, `jumps` 0 and `exhaustive` `["time"]`, are rejected `coverage` at `/certificate/steps/0`, since `v = 0` can fire on the first step of a depth-0 dwell, so a behaviour takes a jump the entry denies (the step-back finding that `jumps` was compared with the step count and `exhaustive` ignored); FR-652-AC-5's accepted certificate under `exhaustive` `["time", "jumps"]` is rejected `coverage` at `/certificate/steps/159`, since that last step closes the `Moving` dwell while `v = 0` can still fire from its `B`, whose covered instants then have no upper bound, so the steps do not show that every first jump comes by time 10. Over FR-652-AC-11's `Fork`, its first five `A` steps with the `B` jump step at `time` `[4, 5]` are rejected `coverage` at `/certificate/steps/4`, the `A` dwell ending at time 5 without emptying or closing. Over `Drop`, `hybrid Drop using p { initial { mode A when { x = 1 }; } mode A invariant { x >= 0 and x <= 1 } flow { x' = -1; } transition to B when { x = 0 } reset { x = 0 }; mode B invariant { x = 0 } flow { x' = 0; } }`, the steps `{A, time [0, 1], box x [1, 1], B x [0, 1], step 1}`, `{A, time [1, 2], box x [0, 0], B x [0, 0], step 1}` and `{B, from {dwell 0, transition 0}, time [1, 1], box x [0, 0], B x [0, 0], step 1}` are accepted against `always [0, 2] holds(h.x <= 1)` under an entry of `horizon` 2, `jumps` 1 and `exhaustive` `["time", "jumps"]`, the `A` dwell emptying after its last step. | Test (TC-1605) |
-| FR-652-AC-14 | The `claim` rule: over `Hold` (FR-652-AC-8), the one step `{H, time [0, 10], box v [40, 50], B v [40, 50], step 10}` under an entry of `horizon` 10, `jumps` 0 and `exhaustive` `["time"]` is accepted against `always [0, 10] holds(h.v >= 30)`, and rejected `claim` at `/certificate/steps/0` against `always [0, 10] not holds(h.v >= 30)` and against `always [0, 10] (holds(h.v < 45) implies holds(h.v < 30))`, whose readings are false and unknown at every instant (the step-back finding that `not` and `implies` were applied to whole-box results); FR-652-AC-5's certificate is rejected `claim` at `/certificate/steps/0` against `always [0, 10] holds(1 / h.v < 100)`, its atom not definitely defined over `v [0, 20]`; FR-652-AC-13's `Drop` certificate under `clock "model-steps"` with an entry of `horizon` 2, `jumps` 1 and `exhaustive` `["jumps"]` is accepted against `always [0, 1] holds(h.x <= 1)` and rejected `claim` at `/certificate/steps/2` against `always [0, 1] holds(h.x = 1)`, position 1 reading the meet of the initial box `x [1, 1]` and the jump step's box `x [0, 0]`. | Test (TC-1605) |
+| FR-652-AC-14 | The `claim` rule: over `Hold` (FR-652-AC-8), the one step `{H, time [0, 10], box v [40, 50], B v [40, 50], step 10}` under an entry of `horizon` 10, `jumps` 0 and `exhaustive` `["time"]` is accepted against `always [0, 10] holds(h.v >= 30)`, and rejected `claim` at `/certificate/steps/0` against `always [0, 10] not holds(h.v >= 30)` and against `always [0, 10] (holds(h.v < 45) implies holds(h.v < 30))`, whose readings are false and unknown at every instant (the step-back finding that `not` and `implies` were applied to whole-box results); FR-652-AC-5's certificate is rejected `claim` at `/certificate/steps/0` against `always [0, 10] holds(1 / h.v < 100)`, its atom not definitely defined over `v [0, 20]`; FR-652-AC-13's `Drop` certificate under `clock "model-steps"` with an entry of `horizon` 2, `jumps` 1 and `exhaustive` `["jumps"]` is accepted against `always [0, 1] holds(h.x <= 1)` and rejected `claim` at `/certificate/steps/1` against `always [0, 1] holds(h.x = 1)`, position 1 reading the meet of the jump step's box `x [0, 0]` and the `B` `x [0, 0]` of the may-end `A` step `steps/1`; over `Ramp`, `hybrid Ramp using p { initial { mode R when { x = 0 }; } mode R invariant { x >= 0 and x <= 1 } flow { x' = 1; } }`, with no transition, the steps `{R, time [0, 1], box x [0, 0], B x [0, 1], step 1}` and `{R, time [1, 2], box x [1, 1], B x [1, 1], step 1}` under `clock "model-steps"` with an entry of `horizon` 2, `jumps` 1 and `exhaustive` `["jumps"]` are rejected `claim` at `/certificate/steps/1` against `always [0, 1] holds(h.x < 1)`, position 1 reading the state `x = 1` at which the behaviour ends, from the `B` of the may-end step `steps/1`. | Test (TC-1605) |
 | FR-652-AC-15 | `validated-witness` rules over FR-652-AC-3's trace and nine-step witness: with `dwells/0/0` `box` `v [2, 3]` it is rejected `witness-start` at `/certificate/dwells/0/0`; with `dwells/0/3` `apriori` `v [21/2, 15]` it is rejected `witness-picard` at `/certificate/dwells/0/3`; over `GrowLow`, `Grow` with invariant `v >= 1 and v <= 31`, it is rejected `witness-picard` at `/certificate/dwells/0/7`, `Inv` not being definitely true over `v [261/10, 33]`; with the trace carrying `end` `(time [32, 32], v [30, 33])` it is accepted, and with `end` `(time [31, 31], v [30, 33])` it is rejected `witness-violation` at `/certificate/dwells/0/8`. Over `Shift`, `hybrid Shift using p { initial { mode Up when { v = 3 }; } mode Up invariant { v >= 1 and v <= 100 } flow { v' = if v > 2 then 1 else 1/2; } }`, against `always [0, 10] holds(h.v < 5)`, the point trace from `v = 3` with the witness `{time [0, 2], box v [3, 3], B v [3, 5], step 2}`, `{time [2, 3], box v [5, 5], B v [5, 6], step 1}` is accepted, its decisive box `v [5, 5]` at time 2; the same model with initial `v = 1` and the witness `{time [0, 4], box v [1, 1], B v [1, 5], step 4}`, `{time [4, 5], box v [3, 5], B v [3, 6], step 1}` is rejected `witness-unique` at `/certificate/dwells/0/0`, `v > 2` being unknown over `v [1, 5]`. | Test (TC-1605) |
 | FR-652-AC-16 | Over `GrowJump`, `Grow` with the transition `transition to Hold when { v >= 3 } reset { v = 50 }` and the mode `mode Hold invariant { v >= 1 and v <= 100 } flow { v' = 0; }`, against `always [0, 10] holds(h.v < 30)`: the trace from `(Up, time 0, v = 1)` by transition 0 to `(Hold, time [4, 4], v [50, 50])` with the witness whose dwell 0 is `{time [0, 4], box v [1, 1], B v [1, 5], step 4}` and the witness jump step `{time [4, 4], box v [3, 5], B v [3, 5], step 0}`, and whose dwell 1 is `{time [4, 8], box v [50, 50], B v [50, 50], step 4}`, is accepted, its decisive box `v [50, 50]` at time 4 in position 1; the same with the trace's jump state at `time [5, 5]` is rejected `witness-guard` at `/certificate/dwells/0/1`, since the trace's jump time does not contain the witness's jump instant 4 (the step-back finding that the trace's jump time was trusted and shifted later instants); the same with the guard `v >= 4` is rejected `witness-guard` at `/certificate/dwells/0/1`, the guard being unknown over `v [3, 5]`. | Test (TC-1605) |
 | FR-652-AC-17 | Structural refusals over `Braking` without `t`, each `invalid_result` at the analyze path and `invalid_runtime_input` at `/replay/certificate/...` on a replay request, never an internal fault: an `inductive-enclosure` with a `Halted` box (`invalid-value` at `/certificate/boxes/Halted`) or with no `Stopped` box (`missing-member` at `/certificate/boxes/Stopped`); FR-652-AC-5's certificate with `steps/0` `step` `-1/16` (`invalid-value` at `/certificate/steps/0/step`), with `steps/0` `time` `[1, 0]` (`invalid-value` at `/certificate/steps/0/time`), with the jump step's `from` `{"dwell": 1, "transition": 0}` (`invalid-value` at `/certificate/steps/160/from/dwell`), with `{"dwell": 0, "transition": 1}` (`invalid-value` at `/certificate/steps/160/from/transition`), and with the jump step's `mode` `Moving` (`invalid-value` at `/certificate/steps/160/mode`); FR-652-AC-3's witness with a second dwell for its one-state trace (`invalid-value` at `/certificate/dwells`), with a step carrying `from` (`invalid-value` at `/certificate/dwells/0/0/from`), and on a trace with `loop` (`invalid-value` at `/certificate`). | Test (TC-1605) |
 | FR-652-AC-18 | Settlement edges: a `bounded-solver` proof of `always [0, 10] holds(h.v < 30)` over `Braking` without `t` with `horizon` 1, which FR-193 settles `insufficient-horizon`, carrying FR-652-AC-5's certificate records the certificate with its form and no outcome, unchecked; FR-193-AC-17's `Braking` point trace, which exact replay reproduces, as a provider's `refuted` entry carrying a structurally valid witness whose `dwells/0/0` `box` misses its start, settles `refuted` by exact replay with that witness unchecked, and with `before` `v = 1`, which exact replay does not reproduce, settles `inconclusive`, `replay-parity` with the witness unchecked; FR-652-AC-3's provider `refuted` entry with its nine-step witness under a `work_units` bound that stops the witness check settles `incomplete`, `limit-reached{limit: work_units}`, with the witness recorded `rejected{rule: work-limit}`, never `refuted`; FR-652-AC-1's accepted certificate under a work limit of one evaluation is rejected `work-limit` at `/certificate/boxes/Moving`. | Test (TC-1605) |
+| FR-652-AC-19 | Rejections for definedness: over `Recip`, `hybrid Recip using p { initial { mode M when { x = 1 }; } mode M invariant { x >= 0 and x <= 2 } flow { x' = 1 / x; } }`, the step `{M, time [0, 1], box x [1, 1], B x [0, 2], step 1}` under an entry of `horizon` 1, `jumps` 0 and `exhaustive` `["time"]` against `always [0, 1] holds(h.x <= 2)` is rejected `picard` at `/certificate/steps/0`, the rate `1 / x` not being definitely defined over `x [0, 2]`; over `ForkDiv`, FR-652-AC-11's `Fork` with transition 0's reset `x = 100 / (x - 6)`, FR-652-AC-11's accepted certificate is rejected `jump` at `/certificate/steps/5`, the reset not being definitely defined over the guarded part `x [5, 6]` of `steps/5` (from `steps/4` the post image `-100` breaks `B`'s invariant, so the transition cannot fire there); over `GrowJump` (FR-652-AC-16) with the reset `v = 50 / (v - 4)`, FR-652-AC-16's witness is rejected `witness-guard` at `/certificate/dwells/0/1`, the reset not being definitely defined over `v [3, 5]`. | Test (TC-1605) |
 
 ## Dependencies
 
