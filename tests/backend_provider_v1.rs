@@ -21,6 +21,8 @@ mod operand_slots;
 
 const SCHEMA: &str = include_str!("../proposals/backend-provider-v1/schema.json");
 const VECTORS: &str = include_str!("../proposals/backend-provider-v1/vectors.json");
+const FR331: &str =
+    include_str!("../spec/objects/interfaces/FR-331-backend-provider-envelope.md");
 const CHECKED_PACKAGE_SCHEMA: &str = include_str!("../proposals/checked-package-v2/schema.json");
 const PACKAGE_FIXTURE: &str =
     include_str!("../proposals/checked-package-v2/fixtures/positive-all-families.json");
@@ -1786,10 +1788,19 @@ fn tc_431_zone_loci_admit_the_refinement_form_rules_and_the_added_members() {
     // The names are exactly the property names, at any depth, of the two certificates and
     // the certificate-owned definitions they reference (FR-331 "Certificate member").
     let walked = certificate_member_names();
+    let specified = certificate_member_names_from_fr331();
     let enumerated: std::collections::BTreeSet<String> = parsed(SCHEMA)["$defs"]["CertificateRejected"]["oneOf"]
         .as_array().expect("causes").iter()
         .filter_map(|cause| cause["properties"]["at"]["properties"]["member"]["enum"].as_array())
         .flatten().map(|name| name.as_str().expect("name").to_owned()).collect();
+    assert_eq!(
+        specified, enumerated,
+        "FR-331's certificate member row matches the schema enum"
+    );
+    assert_eq!(
+        specified, walked,
+        "FR-331's certificate member row matches the walked property names"
+    );
     assert_eq!(enumerated, walked, "the {{member}} enum is the walked member set");
     assert_eq!(walked.len(), 61, "the reconciled certificate member count");
     for member in &walked {
@@ -2089,6 +2100,32 @@ fn certificate_member_names() -> std::collections::BTreeSet<String> {
     let mut names = std::collections::BTreeSet::new();
     for root in ["ProbabilityCertificate", "ZoneCertificate"] {
         walk(&defs[root], defs, &mut names, &mut vec![root.to_owned()]);
+    }
+    names
+}
+
+fn certificate_member_names_from_fr331() -> BTreeSet<String> {
+    let row = FR331
+        .lines()
+        .find(|line| line.starts_with("| Certificate member |"))
+        .expect("FR-331 has a Certificate member row");
+    let listed_names = row
+        .split_once(" set is `")
+        .expect("FR-331 certificate member row names a closed set")
+        .1
+        .split_once(": exactly the distinct property names")
+        .expect("FR-331 certificate member row describes the schema-derived names")
+        .0;
+    let mut names = BTreeSet::new();
+    for name in listed_names.split(',') {
+        let name = name.trim();
+        let name = name.strip_prefix("and ").unwrap_or(name).trim();
+        let name = name.trim_matches('`');
+        assert!(
+            !name.is_empty(),
+            "FR-331 certificate member names are non-empty"
+        );
+        assert!(names.insert(name.to_owned()), "FR-331 lists {name} only once");
     }
     names
 }
