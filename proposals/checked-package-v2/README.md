@@ -280,6 +280,13 @@ structures, but any external consumer receives only the contract.
   an extra member and of an alias on a non-`type_argument` member, and the
   owner-join, key-spelling, model-resolution and one-key-one-type refusals,
   each with its locus.
+- `integer-containment-vectors.json` carries the twenty complete wire packages
+  IC-01 to IC-20 of FR-322 "Integer containment" (TC-2099; FR-322-AC-495 to
+  FR-322-AC-502), serialized from the packages the contract-ir strict reader's
+  tests build, each with its outcome and locus and the `acme/ledger` domain
+  package document in `domain_documents`. IC-15 is admitted and marked not
+  enforced (`enforced: false`, `pending`): the binder refusal (QSL-2728) waits on a
+  binder id link and no refusal is asserted for it.
 - `collection-population-type-vectors.json` publishes complete structural
   node keys for unbounded and bounded collection forms, including absent and
   present bounds and different bound values, plus unbounded and bounded model

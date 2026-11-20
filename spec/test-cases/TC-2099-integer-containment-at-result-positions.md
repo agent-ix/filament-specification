@@ -27,9 +27,10 @@ call argument still refuse. Scope: FR-322-AC-495 to FR-322-AC-502.
    over the contained term.
 
 Test: `tests/checked_package_v2.rs` `tc_2099_integer_containment`. The
-vector file and the test are delivered with the strict-reader change under
-QSL-2709 (contract-ir strict reader and vectors); until then this procedure
-has no executable test.
+vector file serializes the packages that the contract-ir strict reader's own
+tests build (QSL-2709), so the two cannot drift. IC-15 is carried as
+admitted and not enforced: the contract-ir reader makes no binder refusal
+until a binder id link lands, and the test asserts none for it.
 
 ## Expected Results
 
@@ -50,8 +51,11 @@ has no executable test.
   result `Int[0, 9]` with an `Int[0, 20]` arm) `ill_typed`/`operator-ineligible`
   at the `case` node.
 - IC-14 (`let y: Integer = x in g(y)`) admitted with no `convert` node; IC-15
-  (binder typed `Int[0, 999]` over an `Int[0, 1000]` value)
-  `ill_typed`/`operator-ineligible` at the `let` application; IC-19 (binder
+  (binder typed `Int[0, 999]` over an `Int[0, 1000]` value) is required to
+  refuse `ill_typed`/`operator-ineligible` at the `let` application; pending
+  QSL-2728 (no id-level link from a `let` binding to its binder node) the
+  vector carries it admitted with `enforced: false` and the test asserts no
+  refusal; IC-19 (binder
   typed `Int[0, 1000]`, passed bare to the `Integer` parameter)
   `ill_typed`/`operator-ineligible` at the call application; IC-20 (binder
   typed `Money` over a `TaxedMoney` value) admitted.

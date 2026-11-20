@@ -25565,3 +25565,284 @@ fn tc_2090_function_body_location_rows() {
         ))
     );
 }
+
+const INTEGER_CONTAINMENT_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/integer-containment-vectors.json");
+
+/// The `(min, max)` of an integer type node: `None` bounds for the builtin
+/// `Integer`, `Some` for an `integer_range`, and `None` for any other node.
+fn integer_type_bounds(nodes: &[Value], type_id: &Value) -> Option<Option<(BigInt, BigInt)>> {
+    let node = nodes.iter().find(|node| &node["node_id"] == type_id)?;
+    match node["semantic_form"].as_str()? {
+        "integer" => Some(None),
+        "integer_range" => {
+            let bound = |name: &str| -> Option<BigInt> {
+                node["body"]["members"]
+                    .as_array()?
+                    .iter()
+                    .find(|member| member["name"] == name)?["value"]["value"]
+                    .as_str()?
+                    .parse()
+                    .ok()
+            };
+            Some(Some((bound("min")?, bound("max")?)))
+        }
+        _ => None,
+    }
+}
+
+/// FR-322 "Integer containment" at a function result: the function node's
+/// `semantic_type` accepts its `body` reference's type when it is that node
+/// or an integer type node that integer-contains it (the builtin `Integer`
+/// contains every integer type, `Int[a, b]` contains `Int[c, d]` when
+/// `a <= c` and `d <= b`); no other pair is widened, a constructor over a
+/// contained element included. `None` is an admission, `Some` the cause.
+///
+/// Node-held ids are compared as FR-322 "Following a reference" requires: the
+/// vectors are read through `operand_slots::index_view`, so each operand slot
+/// is the index segment of the node its operand row names and two ids are
+/// equal exactly when they name the same node. Their wire bytes (an operand
+/// slot `{"operand": k}`) are never compared: IC-08's parameter and result
+/// types are byte-identical on the wire and name different nodes.
+fn function_result_refusal(nodes: &[Value], function: &Value) -> Option<&'static str> {
+    let result = &function["semantic_type"];
+    let body = function["body"]["members"]
+        .as_array()
+        .and_then(|members| members.iter().find(|member| member["name"] == "body"))
+        .map(|member| &member["value"])
+        .expect("a function node carries a body binding");
+    if body["term"] != "reference" {
+        return None;
+    }
+    let root = nodes
+        .iter()
+        .find(|node| node["node_id"] == body["target"])
+        .map(|node| &node["semantic_type"])
+        .expect("the body reference resolves to a node");
+    if root == result {
+        return None;
+    }
+    match (integer_type_bounds(nodes, result), integer_type_bounds(nodes, root)) {
+        (Some(None), Some(_)) => None,
+        (Some(Some((low, high))), Some(Some((root_low, root_high))))
+            if low <= root_low && root_high <= high =>
+        {
+            None
+        }
+        _ => Some("type-mismatch"),
+    }
+}
+
+/// FR-322-AC-495 to FR-322-AC-502: the twenty integer-containment vectors
+/// IC-01 to IC-20, serialized from the packages the contract-ir reader tests
+/// build, are valid V2 wire packages; each states its outcome at the locus
+/// FR-322 gives it; an admitted case carries `filament.op.numeric.convert`
+/// only where the rule names one (IC-05); the function-result cases are run
+/// through the containment rule as FR-322 states it; and IC-15, the binder
+/// refusal the contract-ir reader cannot yet make, is admitted and marked
+/// not enforced, with no refusal asserted.
+#[trace(
+    "TC-2099",
+    "FR-322-AC-495",
+    "FR-322-AC-496",
+    "FR-322-AC-497",
+    "FR-322-AC-498",
+    "FR-322-AC-499",
+    "FR-322-AC-500",
+    "FR-322-AC-501",
+    "FR-322-AC-502"
+)]
+#[test]
+fn tc_2099_integer_containment() {
+    let schema = jsonschema::validator_for(&parsed_fixture(SCHEMA)).expect("V2 schema is valid");
+    let vectors = parsed_fixture(INTEGER_CONTAINMENT_VECTORS);
+    let cases = vectors["cases"].as_array().expect("cases");
+    let ids: Vec<String> = (1..=20).map(|n| format!("IC-{n:02}")).collect();
+    assert_eq!(
+        cases.iter().map(|case| case["id"].as_str().expect("id").to_owned()).collect::<Vec<_>>(),
+        ids,
+        "IC-01 to IC-20, once each, in order"
+    );
+    let documents = vectors["domain_documents"].as_object().expect("domain documents");
+    assert_eq!(documents.keys().collect::<Vec<_>>(), ["acme/ledger"]);
+    let (mut admitted, mut mismatch, mut ineligible) = (Vec::new(), Vec::new(), Vec::new());
+    // The refusal locus of each refused case, as FR-322-AC-497 to
+    // FR-322-AC-502 give it: the function node for a result mismatch, the
+    // `if` or `case` node for a control result, the second call argument for
+    // a call argument.
+    let loci: BTreeMap<&str, String> = [
+        ("IC-03", "/semantic_graph/nodes/6"),
+        ("IC-04", "/semantic_graph/nodes/5"),
+        ("IC-06", "/semantic_graph/nodes/10/body/arguments/1"),
+        ("IC-07", "/semantic_graph/nodes/10/body/arguments/1"),
+        ("IC-08", "/semantic_graph/nodes/10"),
+        ("IC-12", "/semantic_graph/nodes/13"),
+        ("IC-13", "/semantic_graph/nodes/9"),
+        ("IC-18", "/semantic_graph/nodes/13"),
+        ("IC-19", "/semantic_graph/nodes/10/body/arguments/1"),
+    ]
+    .into_iter()
+    .map(|(id, locus)| (id, locus.to_owned()))
+    .collect();
+    for case in cases {
+        let id = case["id"].as_str().expect("id");
+        let package = &case["package"];
+        assert!(schema.is_valid(package), "{id}: the package is a valid V2 wire package");
+        let nodes = package["semantic_graph"]["nodes"].as_array().expect("nodes");
+        let node = case["node"].as_u64().expect("node index") as usize;
+        assert!(node < nodes.len(), "{id}: the node under test is in the graph");
+        let converts = nodes
+            .iter()
+            .filter(|node| {
+                node["body"]["operation"]["identity"] == "filament.op.numeric.convert"
+            })
+            .count() as u64;
+        assert_eq!(case["convert_nodes"], converts, "{id}: convert node count");
+        assert_eq!(converts, u64::from(id == "IC-05"), "{id}: only IC-05 converts");
+        match case["outcome"].as_str().expect("outcome") {
+            "admitted" => {
+                assert!(case.get("locus").is_none(), "{id}: an admission has no locus");
+                if id == "IC-15" {
+                    assert_eq!(case["enforced"], false, "{id}: admitted and not enforced");
+                    assert!(case["pending"].as_str().is_some_and(|text| text.contains("FR-038-AC-589")));
+                } else {
+                    assert!(case.get("enforced").is_none(), "{id}: only IC-15 is not enforced");
+                    admitted.push(id);
+                }
+            }
+            outcome @ ("refused:ill_typed/type-mismatch" | "refused:ill_typed/operator-ineligible") => {
+                let locus = case["locus"].as_str().expect("locus");
+                assert_eq!(Some(locus), loci.get(id).map(String::as_str), "{id}: locus");
+                let at = format!("/semantic_graph/nodes/{node}");
+                if outcome.ends_with("type-mismatch") {
+                    assert_eq!(locus, at, "{id}: a mismatch is at the node under test");
+                    mismatch.push(id);
+                } else {
+                    assert!(locus.starts_with(&at), "{id}: below the node under test");
+                    assert!(package.pointer(locus).is_some() || locus == at, "{id}: the locus resolves");
+                    ineligible.push(id);
+                }
+            }
+            other => panic!("{id}: unknown outcome {other}"),
+        }
+        // The function-result cases through the containment rule itself.
+        if matches!(id, "IC-01" | "IC-02" | "IC-03" | "IC-04" | "IC-08") {
+            if id == "IC-08" {
+                let function = &nodes[node];
+                let parameter = nodes
+                    .iter()
+                    .find(|candidate| candidate["node_id"] == function["body"]["members"][1]["value"]["target"])
+                    .expect("the parameter node");
+                assert_ne!(
+                    parameter["semantic_type"], function["semantic_type"],
+                    "IC-08: the parameter and the result name different types"
+                );
+            }
+            let verdict = function_result_refusal(nodes, &nodes[node]);
+            let expected = (case["outcome"] != "admitted").then_some("type-mismatch");
+            assert_eq!(verdict, expected, "{id}: function result containment");
+        }
+    }
+    assert_eq!(
+        admitted,
+        ["IC-01", "IC-02", "IC-05", "IC-09", "IC-10", "IC-11", "IC-14", "IC-16", "IC-17", "IC-20"]
+    );
+    assert_eq!(mismatch, ["IC-03", "IC-04", "IC-08"]);
+    assert_eq!(ineligible, ["IC-06", "IC-07", "IC-12", "IC-13", "IC-18", "IC-19"]);
+}
+
+const TYPE_ARGUMENT_ALIAS_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/type-argument-alias-vectors.json");
+
+/// FR-322-AC-491 to FR-322-AC-493 (Named type arguments): each of TA-01 to
+/// TA-09 patches `positive-operation-identities` with an `alias` member. The
+/// schema verdict of every case is the recorded one (an extra alias member
+/// and an alias on a field member are `malformed_wire` at the member's
+/// `alias`); an admitted case differs from the base in its alias alone; and
+/// every reader-stage refusal names a code, a cause and a locus below the
+/// `alias` it patched.
+#[trace("TC-2098", "FR-322-AC-492")]
+#[test]
+fn tc_2098_named_type_argument_alias() {
+    let schema = jsonschema::validator_for(&parsed_fixture(SCHEMA)).expect("V2 schema is valid");
+    let vectors = parsed_fixture(TYPE_ARGUMENT_ALIAS_VECTORS);
+    assert_eq!(vectors["base"], "fixtures/positive-operation-identities.json");
+    let base = parsed_fixture(POSITIVE_OPERATION_IDENTITIES);
+    assert!(schema.is_valid(&base), "the base package is valid");
+    let cases = vectors["cases"].as_array().expect("cases");
+    let ids: Vec<String> = (1..=9).map(|n| format!("TA-{n:02}")).collect();
+    assert_eq!(
+        cases.iter().map(|case| case["id"].as_str().expect("id").to_owned()).collect::<Vec<_>>(),
+        ids
+    );
+    // FR-322-AC-492: each case's schema verdict, outcome and locus.
+    let table: BTreeMap<&str, (&str, &str, Option<&str>)> = [
+        ("TA-01", ("valid", "admitted", None)),
+        ("TA-02", ("valid", "admitted", None)),
+        ("TA-03", ("invalid", "refused:malformed_wire", Some("/semantic_graph/nodes/7/body/operation/member/alias"))),
+        ("TA-04", ("invalid", "refused:malformed_wire", Some("/semantic_graph/nodes/1/body/operation/member/alias"))),
+        ("TA-05", ("valid", "refused:missing_declaration/missing-selection", Some("/semantic_graph/nodes/7/body/operation/member/alias/package"))),
+        ("TA-06", ("valid", "refused:invalid_package/invalid-value", Some("/semantic_graph/nodes/7/body/operation/member/alias/node"))),
+        ("TA-07", ("valid", "refused:invalid_package/invalid-value", Some("/semantic_graph/nodes/7/body/operation/member/alias/node"))),
+        ("TA-08", ("valid", "refused:missing_declaration/missing-name", Some("/semantic_graph/nodes/7/body/operation/member/alias/node"))),
+        ("TA-09", ("valid", "refused:ill_typed/type-mismatch", Some("/semantic_graph/nodes/7/body/operation/member/alias"))),
+    ]
+    .into_iter()
+    .collect();
+    for case in cases {
+        let id = case["id"].as_str().expect("case id");
+        let (schema_verdict, outcome, locus) = table[id];
+        assert_eq!(case["schema"], schema_verdict, "{id}: recorded schema verdict");
+        assert_eq!(case["outcome"], outcome, "{id}: recorded outcome");
+        assert_eq!(case["locus"].as_str(), locus, "{id}: recorded locus");
+        let mut candidate = base.clone();
+        let mut aliases = Vec::new();
+        for set in case["set"].as_array().expect("set") {
+            let pointer = set["pointer"].as_str().expect("pointer");
+            let (parent, member) = pointer.rsplit_once('/').expect("a member pointer");
+            assert_eq!(member, "alias", "{id}: every patch writes an alias");
+            candidate
+                .pointer_mut(parent)
+                .and_then(Value::as_object_mut)
+                .unwrap_or_else(|| panic!("{id}: {parent} is an object"))
+                .insert(member.to_owned(), set["value"].clone());
+            aliases.push(pointer.to_owned());
+        }
+        assert!(case["remove"].as_array().expect("remove").is_empty(), "{id}: nothing is removed");
+        let valid = schema.is_valid(&candidate);
+        assert_eq!(valid, case["schema"] == "valid", "{id}: schema verdict");
+        let outcome = case["outcome"].as_str().expect("outcome");
+        match outcome {
+            "admitted" => {
+                assert!(valid, "{id}");
+                assert!(case.get("locus").is_none(), "{id}: an admission has no locus");
+                // The alias is the only difference from the base.
+                let mut stripped = candidate.clone();
+                for pointer in &aliases {
+                    let (parent, member) = pointer.rsplit_once('/').expect("member");
+                    stripped.pointer_mut(parent).and_then(Value::as_object_mut).expect("parent").remove(member);
+                }
+                assert_eq!(stripped, base, "{id}: alias is the only difference");
+            }
+            "refused:malformed_wire" => {
+                assert!(!valid, "{id}: the schema refuses it");
+                assert!(case["locus"].as_str().is_some_and(|l| aliases.iter().any(|a| a == l)), "{id}: at the alias");
+            }
+            refusal => {
+                let (code, cause) = refusal
+                    .strip_prefix("refused:")
+                    .and_then(|rest| rest.split_once('/'))
+                    .unwrap_or_else(|| panic!("{id}: outcome {refusal}"));
+                assert!(valid, "{id}: a reader-stage refusal passes the schema");
+                assert!(
+                    ["missing_declaration", "invalid_package", "ill_typed"].contains(&code)
+                        && ["missing-selection", "invalid-value", "missing-name", "type-mismatch"].contains(&cause),
+                    "{id}: {refusal}"
+                );
+                let locus = case["locus"].as_str().expect("locus");
+                assert!(aliases.iter().any(|a| locus.starts_with(a.as_str())), "{id}: below the alias");
+                assert!(candidate.pointer(locus).is_some(), "{id}: the locus resolves");
+            }
+        }
+    }
+}
