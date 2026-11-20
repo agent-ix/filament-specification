@@ -834,7 +834,10 @@ replayed statically only, and its item SHALL NOT
 refute, unless the trace carries an
 [FR-652](FR-652-check-hybrid-enclosure-and-witness-certificates.md)
 `validated-witness` certificate that the reader accepts, which refutes as
-FR-652 "Settlement" states. The reader SHALL record a trace in the item's
+FR-652 "Settlement" states. The reader checks that witness only for a
+trace exact replay cannot decide: a trace exact replay reproduces or does
+not reproduce settles by exact replay alone, and its witness is recorded
+unchecked. The reader SHALL record a trace in the item's
 `counterexamples` only when exact replay reproduces it or its validated
 witness is accepted.
 
@@ -846,6 +849,26 @@ in the names of the source declaration. Its forms, its check and its effect
 on certification and refutation are
 [FR-652](FR-652-check-hybrid-enclosure-and-witness-certificates.md). An entry
 without a certificate is settled by this requirement alone.
+
+- A `flowpipe` certificate is a tree of dwells: each jump step names, in
+  `from`, the dwell it leaves and the transition it takes (FR-331), so a
+  dwell may have several successors, one per transition that can fire from
+  it. Its `coverage` rule reads the entry's `horizon`, `jumps` and
+  `exhaustive` as "Proof coverage" defines them: the dwells, to the depth
+  `jumps`, SHALL enclose the proof region, every state a behaviour reaches
+  by time `horizon` with at most `jumps` jumps, and SHALL establish each
+  dimension `exhaustive` lists. A provider SHALL build its certificate to
+  that region; where a provider's own exploration rule encloses less, this
+  definition of the proof region governs.
+- An invariant, rate, guard, reset or claim atom that is not definitely
+  defined over a box a certificate rule reads is a rejection of the
+  certificate under that rule (FR-652 "Interval reading"), since a state at
+  which it has no value is a violating state of every claim ("Continuous
+  values and expressions").
+- The reader checks a certificate only when the settlement rests on it: a
+  proof that "Proof coverage" settles `insufficient-horizon` keeps its
+  certificate recorded unchecked, and the certificate never turns that
+  cause into `proved`.
 
 ## Acceptance Criteria
 
@@ -879,6 +902,7 @@ without a certificate is settled by this requirement alone.
 | FR-193-AC-26 | A hybrid `undefined-evaluation` counterexample whose `cause` is `division-by-zero`, `outside-parameter-range`, `outside-result-range` or `outside-capture-range` is admitted by the schema and the reader; one whose `cause` is `absent-key` or `undefined` fails the schema and is refused `invalid_result`/`invalid-value` at the kind's `cause`; the native diagnostics catalog's "Undefined reasons" lists the four spellings. | Test (TC-2051) |
 | FR-193-AC-27 | Over `BrakingH`, `Braking` whose `Moving` guard is `half(v) <= 0`, with the pure functions `half` and `spare`, each `(x: Rational[0, 20; 1, 2]): Rational[0, 10; 1, 4]` with body `x / 2`, of which only `half` is called: an `unsupported` entry carrying `unsupported_construct`/`expression-form` with `mode` `Moving`, no `variable`, and a `locus` naming the `/` term node in `half`'s body is read against the checked package into that construct, located in `half`'s declaration; the same entry whose `locus` names the `/` term node in `spare`'s body, or that names `half`'s `/` with `mode` `Stopped` (whose entries call no function) or with `variable` `v` (whose rate in `Moving` calls no function), is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`. Over `BrakingR`, `Braking` whose `Moving` guard is `down(v) <= 0` with `function down using p(x: Rational[0, 20; 1, 2]): Rational[0, 20; 1, 2] pure decreases(x) { if x <= 1 then x else down(x - 1) / 2 }`, a `locus` at the call term `down(v)` with `mode` `Moving` and no `variable` is read into that construct, and a `locus` at the `/` inside `down`'s body is refused `invalid_result`/`invalid-value` at `/diagnostic/detail/locus`, because a recursive call is not expanded. | Test (TC-2051) |
 | FR-193-AC-28 | Over FSL FR-750-AC-12's `Shuttle`, whose point lasso from `(Moving, v = 0)` at time 0 jumps back to `(Moving, v = 0)` at time 1 with `loop_to` 0, under `model-time`: `on each (q: Shuttle) when (q.v > 0) { historically holds(h.v > 0) }` is false on that behaviour, because `historically` reads from time 0, where `v = 0`, and `on each (q: Shuttle) when (q.v > 0) { once holds(h.v = 0) }` is true on it; `on each (q: Shuttle) when (q.v > 0) { capture v0: Rational[0, 1; 1, 2] = q.v + 1/2; eventually [0, 1] holds(h.v + 1/2 >= v0) }`, whose capture value `τ + 1/2` leaves its type's value range `[0, 1]` exactly for the activation instants in `(1/2, 1)` of each period and is `1` at `τ = 1/2`, reproduces with kind `undefined-evaluation` whose decisive instant is the infimum `1/2`, `where.position` 0 and `where.time` `{lower: 1/2, upper: 1/2}`. Over FSL FR-450-AC-12 (d)'s `Phase` lasso (prefix `[0, 1)` on which `w = 1`, period 1 on which `w = 0`), `on each (q: Phase) { once [0, 1] once [0, 1] holds(h.w = 1) }` has past reach 2, its obligations hold at every activation instant at most 3 and fail at every activation instant after 3, and it reproduces with kind `formula` only by deciding the prefix and three periods. | Test (TC-373) |
+| FR-193-AC-29 | Over `Braking` without `t` against `always [0, 10] holds(h.v < 30)`: a `bounded-solver` proof with `horizon` 10, `jumps` 1 and `exhaustive` `["time"]` carrying FR-652-AC-5's certificate, whose `Stopped` jump step names `from` `{"dwell": 0, "transition": 0}`, settles `proved` and `certified`; the same proof with `horizon` 1 settles `insufficient-horizon{horizon: 1, jumps: 1, exhaustive: [time]}` with its certificate recorded unchecked, never `proved`; the same proof with `horizon` 10, `jumps` 0 and `exhaustive` `["time"]`, which "Proof coverage" lets cover the claim, keeps `proved` but is `uncertified` with `certificate-rejected{rule: coverage, at: /certificate/steps/0}`, since `v = 0` can fire from the first `Moving` step and the entry admits no jump. | Test (TC-1605) |
 
 ## Dependencies
 
