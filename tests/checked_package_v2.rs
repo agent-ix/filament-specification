@@ -21572,10 +21572,11 @@ fn tc_233_checked_term_data_vectors_cover_the_shared_carrier() {
                 wire
             })
             .collect::<Vec<_>>(),
+        "body_locations": [],
     });
     assert!(
         carrier.is_valid(&package_carrier),
-        "all four arrays share one closed carrier"
+        "all five arrays share one closed carrier"
     );
 
     let candidates = vectors["positive"]["dispatch_tables"][0]["candidates"]

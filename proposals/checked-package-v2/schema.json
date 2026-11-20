@@ -14520,7 +14520,8 @@
         "equality_decisions",
         "protocol_locations",
         "dispatch_tables",
-        "probabilistic_claims"
+        "probabilistic_claims",
+        "body_locations"
       ],
       "properties": {
         "equality_decisions": {
@@ -14545,6 +14546,12 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/ProbabilisticClaimDeclaration"
+          }
+        },
+        "body_locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BodySemanticLocation"
           }
         }
       },
@@ -14901,6 +14908,77 @@
           "additionalProperties": false
         }
       ]
+    },
+    "BodySemanticLocation": {
+      "type": "object",
+      "required": [
+        "application",
+        "occurrence",
+        "term_ordinal",
+        "location"
+      ],
+      "properties": {
+        "application": {
+          "$ref": "#/$defs/NodeRef"
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Occurrence"
+        },
+        "term_ordinal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "location": {
+          "$ref": "#/$defs/BodyLocation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "BodyLocation": {
+      "type": "object",
+      "required": [
+        "origin",
+        "path"
+      ],
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/BodyLocationOrigin"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/KeyOrdinal"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "BodyLocationOrigin": {
+      "type": "object",
+      "required": [
+        "kind",
+        "function",
+        "name",
+        "index"
+      ],
+      "properties": {
+        "kind": {
+          "const": "function_body"
+        },
+        "function": {
+          "$ref": "#/$defs/NodeRef"
+        },
+        "name": {
+          "$ref": "#/$defs/Nonempty"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "additionalProperties": false
     },
     "ProbabilisticClaimDeclaration": {
       "type": "object",
