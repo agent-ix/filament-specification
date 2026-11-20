@@ -16,7 +16,7 @@ relationships:
 Verify the hybrid certificate forms, their exact check rule by rule with the
 rule name and pointer of every rejection, the structural refusals, and the
 certificate's effect on certification and refutation. Scope: FR-652-AC-1 to
-FR-652-AC-5, FR-652-AC-7 to FR-652-AC-19, FR-193-AC-22, FR-193-AC-29 and FR-193-AC-30.
+FR-652-AC-5, FR-652-AC-7 to FR-652-AC-22, FR-193-AC-22, FR-193-AC-29 and FR-193-AC-30.
 
 ## Test Procedure
 
@@ -25,7 +25,7 @@ FR-652-AC-5, FR-652-AC-7 to FR-652-AC-19, FR-193-AC-22, FR-193-AC-29 and FR-193-
 3. Read the non-polynomial point trace of FR-652-AC-3 with its nine-step witness, with none, with the witness cut after its step at `[28, 32]`, and with the one-step witness whose `B` is `v [1, 41]`.
 4. Check the mismatched, malformed and work-limited certificates FR-652-AC-4 lists.
 5. Check the `Braking` flowpipe with its one jump step (carrying `from`) at the narrowed jump time `[0, 10]`, with a jump-step time omitting time 0, with time `[0, 20]`, and against the violated claim.
-6. Check the `Rise` boxes `v [0, 41/2]`, `v [0, 39/2]` and `v [0, 20]`, and the `Twin` box (FR-652-AC-7).
+6. Check the `Rise` boxes `v [0, 41/2]`, `v [0, 39/2]` and `v [0, 20]`, each with `w [0, 0]`, and the `Twin` box (FR-652-AC-7).
 7. Check the `Braking` and `Hold` inductive certificates of FR-652-AC-8.
 8. Check the `Braking` flowpipes of FR-652-AC-9: the narrow first box, the wrong first time, and the two-initial-mode model with and without its initial `Stopped` dwell.
 9. Check FR-652-AC-10's variants of FR-652-AC-5's certificate and its `Cond` and `Lift` cases.
@@ -37,6 +37,9 @@ FR-652-AC-5, FR-652-AC-7 to FR-652-AC-19, FR-193-AC-22, FR-193-AC-29 and FR-193-
 15. Read each structurally mismatched certificate of FR-652-AC-17 on the analyze path and in a replay request.
 16. Settle the items of FR-652-AC-18 and FR-193-AC-29.
 17. Check the definedness cases of FR-652-AC-19 over `Recip`, `ForkDiv` and `GrowJump`, and read the `Ramp` and `Gate` behaviours of FR-193-AC-30.
+18. Check the zero-length `Z` step of FR-652-AC-20.
+19. Check the `Sw` boxes of FR-652-AC-21 against the claim whose atom reads `q.x` and against the one whose atom reads only `h`.
+20. Check the `Late` flowpipe of FR-652-AC-22, whose jump step omits the later jumps from the closing `A` dwell.
 
 ## Expected Results
 
@@ -57,3 +60,6 @@ FR-652-AC-5, FR-652-AC-7 to FR-652-AC-19, FR-193-AC-22, FR-193-AC-29 and FR-193-
 - Step 15: each refusal at its stated code and pointer, `invalid_result` on the analyze path and `invalid_runtime_input` in the replay request; no internal fault.
 - Step 16: certificate recorded unchecked; `refuted` by exact replay with the witness unchecked; `inconclusive`, `replay-parity` with the witness unchecked; `incomplete`, `limit-reached{limit: work_units}` with the witness rejected `work-limit`; `work-limit` at `/certificate/boxes/Moving`; FR-193-AC-29's `certified`, `insufficient-horizon` with the certificate unchecked, and `uncertified` with `certificate-rejected{rule: coverage, at: /certificate/steps/0}`.
 - Step 17: `picard` at `/certificate/steps/0`; `jump` at `/certificate/steps/5`; `witness-guard` at `/certificate/dwells/0/1`; `Ramp` reads `x = 1` at position 1, `Gate` keeps `x = 0`; `Decay` holds `x = 1` at position 1.
+- Step 18: `coverage` at `/certificate/steps/0`; `uncertified` with `certificate-rejected`.
+- Step 19: `d` at `/certificate`, `uncertified` with `certificate-rejected`; accepted.
+- Step 20: `jump` at `/certificate/steps/1`.
