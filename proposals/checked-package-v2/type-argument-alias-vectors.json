@@ -1,0 +1,106 @@
+{
+  "rule": "FR-322 Named type arguments (FR-322-AC-491, FR-322-AC-492): a type_argument member may carry alias, the original declaration key of the type alias the source wrote; checks read declaration alone; the reader checks shape, owner join, key spelling, model resolution and one key per type",
+  "base": "fixtures/positive-operation-identities.json",
+  "note": "Node 5 is a filament.op.model.lookup and node 7 a filament.op.collection.sum.decimal application, each with a type_argument member naming a different node; node 1 carries a field member. The fixture's SourceOwner identity is example, its model_root identity acme/orders and it selects no dependency.",
+  "cases": [
+    {
+      "id": "TA-01",
+      "note": "a source alias key on the sum's type_argument; admitted with every check and value equal to the base package's",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Money"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "admitted"
+    },
+    {
+      "id": "TA-02",
+      "note": "two applications with two different alias keys",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/5/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Row"}},
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Money"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "admitted"
+    },
+    {
+      "id": "TA-03",
+      "note": "an alias carrying a member beyond package and node",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Money", "name": "Money"}}
+      ],
+      "remove": [],
+      "schema": "invalid",
+      "outcome": "refused:malformed_wire",
+      "locus": "/semantic_graph/nodes/7/body/operation/member/alias"
+    },
+    {
+      "id": "TA-04",
+      "note": "an alias on a field member",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/1/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Money"}}
+      ],
+      "remove": [],
+      "schema": "invalid",
+      "outcome": "refused:malformed_wire",
+      "locus": "/semantic_graph/nodes/1/body/operation/member/alias"
+    },
+    {
+      "id": "TA-05",
+      "note": "a package that joins no lock.sources entry, model_root or dependency selection",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "acme/other", "node": "ix://acme/other/Money"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "refused:missing_declaration/missing-selection",
+      "locus": "/semantic_graph/nodes/7/body/operation/member/alias/package"
+    },
+    {
+      "id": "TA-06",
+      "note": "a source key spelled as the bare qualified name",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "example", "node": "Money"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "refused:invalid_package/invalid-value",
+      "locus": "/semantic_graph/nodes/7/body/operation/member/alias/node"
+    },
+    {
+      "id": "TA-07",
+      "note": "a source key spelled with a check-time ix://source/ package",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "example", "node": "ix://source/example/Money"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "refused:invalid_package/invalid-value",
+      "locus": "/semantic_graph/nodes/7/body/operation/member/alias/node"
+    },
+    {
+      "id": "TA-08",
+      "note": "a model_root key naming no alias type of the acme/orders document",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "acme/orders", "node": "ix://acme/orders/NoSuchAlias"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "refused:missing_declaration/missing-name",
+      "locus": "/semantic_graph/nodes/7/body/operation/member/alias/node"
+    },
+    {
+      "id": "TA-09",
+      "note": "one alias key on two applications whose type_argument members name different nodes; the later member is refused",
+      "set": [
+        {"pointer": "/semantic_graph/nodes/5/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Money"}},
+        {"pointer": "/semantic_graph/nodes/7/body/operation/member/alias", "value": {"package": "example", "node": "ix://example/Money"}}
+      ],
+      "remove": [],
+      "schema": "valid",
+      "outcome": "refused:ill_typed/type-mismatch",
+      "locus": "/semantic_graph/nodes/7/body/operation/member/alias"
+    }
+  ]
+}

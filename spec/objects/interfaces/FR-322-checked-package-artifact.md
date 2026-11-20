@@ -513,7 +513,9 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   equals the single value pinned by the operand and result types, and a
   disagreement is refused rather than resolved in favour of either. `member` is
   `null` or the entry's `field`, `position`, `element`, `relationship_end`,
-  `operation` or `type_argument` member naming its declaring node, so a
+  `operation` or `type_argument` member naming its declaring node (a
+  `type_argument` member also carries the `alias` of "Named type arguments"
+  when the source wrote that argument as a type alias), so a
   projection, navigation or dispatched call resolves its name only in that
   node (for a model-owned member, in its exposed effective members, step 3
   of "Model-owned members"), or
@@ -1403,9 +1405,21 @@ A frame body refusal, meaning-join or canonical-order
   stated over `body_locations` and its own locus
   `/checked_term_data/body_locations`. Its `location.origin` is closed to one
   variant, `{kind: "function_body", function, name, index}`: `function` is the
-  `NodeRef` of the local `function` node whose body holds the term, and `name`
-  and `index` are the function name and zero-based function index the
-  producer's checker gave that body's locations. The reader treats `name` as
+  `NodeRef` of the local `function` node whose body holds the term, `index`
+  is the zero-based function index the producer's checker gave that body's
+  locations, and `name` is the function name the checker gave them, spelled
+  with source identities. A checker may name a function under a check-time
+  package it assigns to the unit's own source model (a clause function of a
+  source object type's operation, for example, named `ix://P/<path>` with `P`
+  that private package); no package reader can resolve `P`, so the bytes never
+  carry it: such a `name` is written `ix://I/<path>`, `I` the `identity` of
+  the `SourceOwner` of the source declarations `P` holds, the spelling
+  FR-610 "Declaration keys" gives those declarations. Every other name (a
+  declared function's `f`, a selected model's `ix://<model identity>/...`) is
+  the checker's unchanged. A consumer reporting a body location reports this
+  `name`, and the source route reports the same spelling (FSL FR-531
+  "Function body locations in the bytes"), so a location names one function
+  alike on both routes. The reader treats `name` as
   an opaque string, as it treats a protocol site name, and derives neither
   value from a declaration, a source-map region or node order.
   `location.path` is the checker's child-index path from the body's root,
@@ -2830,7 +2844,10 @@ anonymous structural nodes: each has `declaration: null`, no `owner`
 and no `recursion_group`. A source type alias
 introduces no node. After resolving an alias, every type annotation and every
 application result type names the resolved type's node, so an alias cannot
-create a second `composite_type`, `bounded_domain` or `scalar_type` identity. A
+create a second `composite_type`, `bounded_domain` or `scalar_type` identity.
+The one place an alias's name survives is the `alias` of a `type_argument`
+member ("Named type arguments" below), a declaration key beside the resolved
+node that names no node and creates no type identity. A
 `Quantity<u>` annotation likewise introduces no node: it names the
 `scalar_type`/`unit` node of `u`, the type of a quantity in that unit (family
 `quantity`), under the `node_id` of that unit's node (FR-142).
@@ -3019,6 +3036,100 @@ admits the `object` operand, and `member_of` then holds exactly as stated
 above. A `Reference<O>` operand has family `reference`, which `field_owner`
 does not admit, so a projection over a reference that is not dereferenced
 refuses `ill_typed`/`operator-ineligible`.
+
+### Named type arguments
+
+A source may write the type argument of an application as the name of a type
+alias: `count<Small>(x in xs: x > 1)` with `type Small = Int[0, 4]`. The
+alias introduces no node ("Derived type forms and forwarding"), so the
+application's `type_argument` member names the resolved node, here the
+`Int[0, 4]` node, and the application `count<Int[0, 4]>(x in xs: x > 1)`
+names the same node. A consumer that prints the application as its source
+named it (FSL FR-931 "Type arguments") needs the alias's name, and the
+package is its only source on a route that has no source text. The
+`type_argument` member therefore MAY carry one more member, `alias`:
+
+```json
+{"kind": "type_argument", "declaration": <NodeId>, "alias": {"package": "<identity>", "node": "<declaration key>"}}
+```
+
+`alias` is the alias declaration's original declaration key, the
+`{package, node}` pair FR-150 keys a declaration by and the shape of an
+`EffectiveId`'s `original`, with no other member:
+
+| The alias is declared by | `package` | `node` |
+| --- | --- | --- |
+| the unit's own source | the `identity` `I` of the unit's `SourceOwner` | `ix://I/<qualified name, segments joined by />` (FR-610 "Declaration keys") |
+| a selected domain package | that package's `model_root` identity `P` | the alias type's IR node identity as the domain package document declares it, `ix://P/<path>` |
+| a dependency package | the dependency's `lock.dependency_selections` identity `D` | `ix://D/<declaration.qualified_name, segments joined by />` |
+
+A producer SHALL write `alias` on the `type_argument` member of an
+application exactly when the type argument the source wrote for that
+application is the name of a type alias, on every application whose catalog
+entry names member kind `type_argument` (collection `count`, `sum.<family>`,
+`fold`, `reduce`, `only`, `seq`, `convert`, `lookup` and `all_instances`
+among them). For a chain of aliases (`type Small = Tiny; type Tiny =
+Int[0, 4];`) it is the key of the alias the source wrote, `Small`. It SHALL
+NOT write `alias` when the source wrote a structural type, a declared
+(non-alias) type, or no type argument; a population form's argument, which the
+source never writes (FSL FR-091), carries none. `declaration` is unchanged by
+`alias`: it names the node the alias resolves to, as it does without it.
+
+`alias` is a label, never a type. Every check of the application (its
+operand groups, its constraints, `member_family`, `bound_is_member`,
+`carried_member`, its `result_type`, its mode) and every evaluation of it reads
+`declaration` alone. A reader or evaluator that needs only the structure
+ignores `alias`, and two packages that differ only in whether a
+`type_argument` member carries an admitted `alias`, or in which admitted key
+it carries, are admitted or refused identically by every check outside the
+rules below and evaluate every application to the same value with the same
+charges. Because one node holds one member, the application with an `alias`
+and the same application without it, or with another alias, are two nodes:
+the producer writes each with its own `node_id`, its path holding the alias's
+`node` text as a string segment after the member's declaration operand, and
+the reader, which does not compare a derived node's path with its body, asks
+only that the ids are unique.
+
+The reader checks `alias`, in the operation stage after the member's
+`declaration` resolves and before the application's constraints, in this
+order:
+
+1. **Shape.** An `alias` that is not an object of exactly the two non-empty
+   string members `package` and `node` fails the V2 schema and refuses
+   `malformed_wire` at `/semantic_graph/nodes/{n}/body/operation/member/alias`
+   (the pointer of the offending member below it); an `alias` on any member
+   kind other than `type_argument` fails the schema the same way.
+2. **Owner join.** A `package` that is the identity of no `lock.sources`
+   entry, no `model_root` owner and no `lock.dependency_selections` entry
+   refuses `missing_declaration`/`missing-selection` at
+   `/semantic_graph/nodes/{n}/body/operation/member/alias/package`, as the
+   owner join refuses a `SourceOwner` or `ModelOwner` that joins nothing
+   (FR-322-AC-52).
+3. **Key spelling.** For a source or dependency `package`, a `node` that is
+   not `ix://` + `package` + `/` + one or more identifier-grammar segments
+   joined by `/` refuses `invalid_package`/`invalid-value` at
+   `.../member/alias/node`; the bare qualified name and a check-time
+   `ix://source/` spelling are refused so (FR-610 "Declaration keys").
+4. **Model resolution.** For a `model_root` `package`, the reader holds the
+   admitted domain package document ("Model-owned members" step 1). A `node`
+   that names no type of kind `alias` in it refuses
+   `missing_declaration`/`missing-name` at `.../member/alias/node`; an alias
+   whose resolution (FR-154, through every alias it reaches) is a type whose
+   step 4 node is not the node `declaration` names refuses
+   `ill_typed`/`type-mismatch` at `.../member/alias`, with `expected` the
+   resolved type's node id and `actual` the `declaration`.
+5. **One key, one type.** After every member passes steps 1 to 4, the reader
+   visits the `type_argument` members carrying an `alias` in graph order; a
+   member whose `alias` equals an earlier member's (byte for byte, both
+   members) while its `declaration` names a different node refuses
+   `ill_typed`/`type-mismatch` at the later member's `.../member/alias`,
+   naming both applications' node ids.
+
+A source or dependency alias has no declaration in the package, so the reader
+cannot resolve it further than steps 2, 3 and 5: that the source alias
+resolves to `declaration` is the producer's obligation, which FSL FR-931's
+route-parity criteria test. The published vectors are
+`proposals/checked-package-v2/type-argument-alias-vectors.json` (FR-322-AC-492).
 
 ### Reference conformance
 
@@ -6063,6 +6174,10 @@ is carried by two `protocol` node forms.
 | FR-322-AC-485 | In every published positive package, each model declaration node (`model`/`object_type`, `relation`/`relationship`, `model`/`tuple_value_type`, `model`/`variant_type` and every other `ModelOwner`-owned `model` or `relation` node) has `occurrences` exactly `[{role: generated, ordinal: 0}]` and exactly one `source_map` entry with that key, whose `regions` equal the `regions` of the `generated` ordinal-zero entry of the `model_root` of its owner identity; in `positive-model-tuple-union.json` the tuple value types `Pair`, `Swap`, `Nest` and `Cell` and the variant types `Shape`, `Color` and `List` each carry the root's region `[0,1)` of `example`, and in `positive-all-families.json` the object type `Order` and the relationship `Order-order-Order` carry the root's region. The reader admits every such entry. The producer side, a `Phase` variant type and `Slot` tuple named only by `clock_place` `resolved_path` rows, is FSL FR-094's. | Test (TC-2085) |
 | FR-322-AC-486 | Over `positive-model-tuple-union.json` (`model-tuple-union-vectors.json` wire cases, each schema-valid and with that one defect), the reader refuses `invalid_package`/`invalid-value`: at `/source_map` when the `Shape` variant type node has no `source_map` entry (`TW-29`, a model declaration node with no located occurrence); at `/source_map/3` when its occurrence and entry take the role `expression` (`TW-30`), the ordinal 1 (`TW-31`), or a region of their own, `[1048,1052)`, instead of the root's (`TW-32`); and at `/source_map/38` for a second entry of the node appended after every other entry (`TW-33`). Moving the root's entry and every model declaration node's entry together to `[5,9)` is admitted (`TW-34`), so the rule is equality with the selecting region, not a fixed value. | Test (TC-2085) |
 | FR-322-AC-490 | `checked-term-data-vectors.json` carries `body_locations` vectors over the package of `function f(p: Float64[nearest-even], q: Float64[nearest-even]): Boolean pure { sqrt(p) <= sqrt(q) }`. BL-01, the positive package, holds one row per term of `f`'s body walk, each with origin `{kind: "function_body", function: <f's NodeRef>, name: "f", index: 0}`, the root composition at path `[]`, the first `sqrt` at `[0]` and the second at `[1]` (not `[1, 0]`, its position in the lowered body), and is admitted, the typed read returning those paths. BL-02 is BL-01 with the second `sqrt`'s `path` changed to `[0]`: it is admitted with node ids and `name` equal to BL-01's, and its typed read returns `[0]` for that row, because the reader keeps the captured path and never recomputes it. BL-03 is the package of `function h(p: Float64[nearest-even], r: Float64[nearest-even]): Boolean pure { (p + r) <= (p + r) }`, whose one `+` application node is reached through both `#ieee_operand` `let`s: it is admitted with two rows for that node, one per lowered position, keyed to its `expression` occurrences 0 and 1 (the checker records one occurrence of the node per position) with `term_ordinal` 0 each and paths `[0]` and `[1]`, and refuses at `/checked_term_data/body_locations` with the occurrence-1 row removed, so a reader that walks `dependencies` or counts a node reached twice once fails it. Each refusal vector refuses `invalid_package`/`invalid-value` at the stated locus: BL-R1 removes the second `sqrt`'s row (`/checked_term_data/body_locations`); BL-R2 names a `value`/`parameter` node as a row's `application` (that row's `application`); BL-R3 sets the last row of the array to `name` `g` (that row's `name`); BL-R4 sets the last row of the array to `index` `1` (that row's `index`); BL-R5 names a `scalar_type` node as a row's `function` (that row's `function`); BL-R6 duplicates the last row with `term_ordinal` one higher (the added row's `application`). A `checked_term_data` object holding the four other arrays and no `body_locations` is `malformed_wire` at the carrier, and BL-01 with the whole carrier removed refuses at `/checked_term_data/body_locations`. The packages of BL-01 and BL-03 carry the `#ieee_operand` binder's `value`/`parameter` node, validate against the root V2 schema and are admitted; the same name on any other node (an `Identifier`, such as a refinement's `name`) and any other `#`-prefixed parameter name are `malformed_wire` (BL-S3, BL-S4). | Test (TC-2090) |
+| FR-322-AC-491 | Named type arguments, producer. A unit declaring `type Small = Int[0, 4]` (its `SourceOwner` identity `I`) and a field `xs: Sequence<Int[0, 9]>[0, 4]` emits for `count<Small>(x in c.xs: x > 1)` a `filament.op.collection.count` application whose `type_argument` member is `{kind: "type_argument", declaration: <the Int[0, 4] node>, alias: {package: "I", node: "ix://I/Small"}}`, and for `count<Int[0, 4]>(x in c.xs: x > 1)` one whose member is `{kind: "type_argument", declaration: <the same node>}` with no `alias`; the two applications have two distinct `node_id`s and the one `Int[0, 4]` node. With `type Small = Tiny; type Tiny = Int[0, 4];` the `alias` is `ix://I/Small`. The same holds for `sum<Small>`, `fold<Small>`, `reduce<Small>` and `convert<Small>`; a population `count`, `sum` or `only` carries no `alias`; no emitted byte spells `ix://source/`. | Test (TC-2098) |
+| FR-322-AC-492 | Named type arguments, reader. Each case of `type-argument-alias-vectors.json` has its outcome and locus: TA-01 and TA-02 admitted; TA-03 (an extra `name` member) and TA-04 (an `alias` on a `field` member) `malformed_wire` at the member's `alias`; TA-05 (`package` `acme/other`) `missing_declaration`/`missing-selection` at `.../member/alias/package`; TA-06 (`node` `Money`) and TA-07 (`node` `ix://source/example/Money`) `invalid_package`/`invalid-value` at `.../member/alias/node`; TA-08 (a `model_root` key naming no alias type) `missing_declaration`/`missing-name` at `.../member/alias/node`; TA-09 (one key on two members naming different nodes) `ill_typed`/`type-mismatch` at node 7's `.../member/alias`, naming nodes 5 and 7. Over a domain package declaring the alias `Small` with target `Int[0, 4]`, a `model_root` key for `Small` on a member whose `declaration` is the `Int[0, 9]` node refuses `ill_typed`/`type-mismatch` at `.../member/alias`. | Test (TC-2098) |
+| FR-322-AC-493 | Named type arguments never change checking. The TA-01 package and the base package are both admitted and every application of each evaluates to the same value with the same charges; removing `alias` from every member of AC-491's package, or replacing each source key with another admitted source key, leaves every admission decision, every refusal of an otherwise defective variant (an operator-ineligible `result_type`, a `bound_is_member` mismatch) and every evaluated value unchanged. | Test (TC-2098) |
+| FR-322-AC-494 | Body location names carry no check-time package. In the package of FSL FR-531-AC-40's unit (a precondition clause function of an operation of a source object type, the unit's `SourceOwner` identity `I`), every `body_locations` row of that clause function has a `name` beginning `ix://I/`, the name the checker gave the body with its check-time source-model package replaced by `I`; no row's `name` begins `ix://source/`; a declared function `f`'s rows keep `name` `f` (BL-01). | Test (TC-2090) |
 
 ## Dependencies
 

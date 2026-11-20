@@ -274,6 +274,12 @@ structures, but any external consumer receives only the contract.
   field projection cases for its "Reference conformance" and model field
   projection rules (TC-281). The document `domain-package-acme-orders.json` is the
   domain package; `domain_package` is derived from it.
+- `type-argument-alias-vectors.json` patches `fixtures/positive-operation-identities.json`
+  with the `alias` member of FR-322 "Named type arguments" (TC-2098;
+  FR-322-AC-491, FR-322-AC-492): admitted source keys, the schema refusals of
+  an extra member and of an alias on a non-`type_argument` member, and the
+  owner-join, key-spelling, model-resolution and one-key-one-type refusals,
+  each with its locus.
 - `collection-population-type-vectors.json` publishes complete structural
   node keys for unbounded and bounded collection forms, including absent and
   present bounds and different bound values, plus unbounded and bounded model

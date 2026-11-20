@@ -5148,6 +5148,23 @@
             },
             "declaration": {
               "$ref": "#/$defs/NodeId"
+            },
+            "alias": {
+              "description": "FR-322 Named type arguments: the original declaration key of the type alias the source wrote as this type argument; a label only, never read by a check of the application.",
+              "type": "object",
+              "required": [
+                "package",
+                "node"
+              ],
+              "properties": {
+                "package": {
+                  "$ref": "#/$defs/Nonempty"
+                },
+                "node": {
+                  "$ref": "#/$defs/Nonempty"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
