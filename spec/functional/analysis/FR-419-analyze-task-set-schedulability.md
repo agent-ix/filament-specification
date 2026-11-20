@@ -443,7 +443,10 @@ For fixed work with a verified closed finite product, settlement distinguishes
 three cases: a reachable miss with a checked finite loop or FR-364
 `queue_growth` witness settles `refuted`; a miss whose continuations are
 time-locked only is reported through FR-417 and does not refute; and no miss on
-any time-divergent behavior settles `proved`. If the declared exact-mode cap
+any time-divergent behavior settles `proved`. A closed task-product search settles `proved` only from an accepted
+FR-418 task-product certificate; without one it settles `incomplete` with
+cause `{"type": "bounded-search-incomplete", "reason":
+"certificate-unchecked"}` (FR-331), which carries no frontier. If the declared exact-mode cap
 overflows, the certificate does not close and that run uses bounded
 exploration; it may settle `incomplete` with replayable FR-331 frontier
 evidence. The exact finite graph constructs checked continuation witnesses

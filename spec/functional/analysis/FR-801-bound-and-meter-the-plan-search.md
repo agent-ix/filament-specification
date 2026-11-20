@@ -113,6 +113,11 @@ The settings are distinct from the verification planner's
 - An `incomplete` result SHALL carry the explored counts (`states`,
   `work`) and, when an admissible plan was found, the best one found so far
   as FR-650 `feasible`; it never claims optimality or infeasibility.
+- A state at which a model invariant cannot be decided is not expanded
+  (FR-650), so an exploration that excluded one is not complete: the run
+  settles `incomplete` with cause `invariant-undetermined` naming the
+  invariant, carries the best plan found that passes through no such state,
+  and feeds no certificate.
 
 ### Search nodes and completeness
 

@@ -13441,8 +13441,75 @@ fn every_positive_fixture_carries_each_required_temporal_clock_binding() {
                 row["clock"]["kind"], kind,
                 "{name} carries the configuration kind selected by {profile}"
             );
+            assert!(
+                package["lock"]["sources"]
+                    .as_array()
+                    .expect("lock sources")
+                    .contains(&row["source_unit"]),
+                "{name}: the clause row names its declaring source unit, a lock source (FR-322 \"Clause source unit\")"
+            );
         }
     }
+}
+
+/// FR-322 "Clause source unit" and FR-778-AC-8..AC-11: the `source_unit_cases`
+/// of the clock-binding vectors, decided by the stated rule. The row's
+/// `source_unit` must be a lock source, and its `timestamp_unit` resolves in
+/// that unit only; the subject's declaring unit is never read.
+#[trace("TC-1890", "FR-778-AC-8", "FR-778-AC-9", "FR-778-AC-10", "FR-778-AC-11", "FR-322-AC-503")]
+#[test]
+fn tc_1890_clause_rows_resolve_unit_names_in_their_source_unit() {
+    let vectors: Value = serde_json::from_str(TEMPORAL_CLOCK_BINDING_VECTORS)
+        .expect("clock binding vectors JSON");
+    let schema = parsed_fixture(SCHEMA);
+    let binding_validator = schema_for_def(&schema, "TemporalBinding");
+    let clause = vectors["compensation_declarations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|declaration| declaration["key"] == "c")
+        .expect("clause declaration c");
+    let (mut admitted, mut refused) = (0, 0);
+    for case in vectors["source_unit_cases"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let mut wire = case["row"].clone();
+        wire["declaration"] = clause["node_id"].clone();
+        assert!(binding_validator.is_valid(&wire), "{id}: the row meets the TemporalBinding schema");
+        let source_unit = &case["row"]["source_unit"];
+        let outcome = if !case["lock_sources"].as_array().unwrap().contains(source_unit) {
+            Some(("invalid_package", "invalid-value", "/temporal_bindings/0/source_unit"))
+        } else {
+            let unit = source_unit["identity"].as_str().unwrap();
+            let declared = case["time_units"][unit]
+                .as_array()
+                .is_some_and(|units| units.contains(&case["row"]["clock"]["timestamp_unit"]));
+            (!declared).then_some((
+                "missing_declaration",
+                "missing-name",
+                "/temporal_bindings/0/clock/timestamp_unit",
+            ))
+        };
+        match case["expected"].as_str().unwrap() {
+            "admitted" => {
+                assert_eq!(outcome, None, "{id}");
+                assert_eq!(case["bound_unit"]["owner"], source_unit["identity"], "{id}: bounds use the clause unit's node");
+                admitted += 1;
+            }
+            "refused" => {
+                let (code, cause, locus) = outcome.unwrap_or_else(|| panic!("{id} is refused"));
+                assert_eq!((case["code"].as_str(), case["cause"].as_str(), case["locus"].as_str()), (Some(code), Some(cause), Some(locus)), "{id}");
+                refused += 1;
+            }
+            other => panic!("{id}: unknown expectation {other}"),
+        }
+    }
+    assert_eq!((admitted, refused), (2, 2));
+    let su03 = &vectors["source_unit_cases"][2];
+    assert_eq!(
+        su03["time_units"].as_object().unwrap().keys().collect::<Vec<_>>(),
+        vec![su03["subject"]["declared_by"].as_str().unwrap()],
+        "SU-03: only the subject's unit declares the clock unit"
+    );
 }
 
 fn model_root_positions(package: &Value) -> Vec<usize> {
@@ -16727,7 +16794,8 @@ fn temporal_clock_package(case: &Value) -> Value {
         "declaration": new_id,
         "occurrence": 0,
         "clock": case["clock"].clone(),
-        "clock_name": case["clock_name"].clone()
+        "clock_name": case["clock_name"].clone(),
+        "source_unit": package["lock"]["sources"][0].clone()
     }]);
     package
 }

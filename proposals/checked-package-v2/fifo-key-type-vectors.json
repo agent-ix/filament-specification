@@ -1,0 +1,41 @@
+{
+  "description": "FR-726 FIFO key types (TC-1770). Each case is the lowered key type of a FIFO channel as a type tree, and, for a model-owned type, the members its selected model document declares. A key is FIFO-key-stable when the structural walk through option, collection, record, tuple and variant members reaches no float32 or float64 leaf and no event_type leaf (FR-322 equality-stable rule plus the IEEE exclusion). A model-owned record_value_type, tuple_value_type or variant_type has no member nodes in the package (its declaration node's body is the empty aggregate), so the walk follows the fields, positions or payloads the model document declares for it. A refused key refuses ill_typed/operator-ineligible at the key, retaining the operator = and the type; every case's channel declared unordered is admitted.",
+  "type_forms": {
+    "scalar": "family is one of boolean, integer, decimal, rational, text, bytes, json_object, float32, float64",
+    "bounded_domain": "a bounded scalar or collection over base",
+    "quantity": "a quantity over the unit named by unit",
+    "option": "Option of of",
+    "collection": "a collection (collection names sequence, set, bag or ordered_set) of element",
+    "record": "a source record with fields in declaration order",
+    "model_type": "a model-owned declaration (form record_value_type, tuple_value_type, variant_type or value_type) whose members are read from model_document.declarations[declaration]",
+    "event_type": "an event type, which makes a type not equality-stable"
+  },
+  "model_document": {
+    "declarations": {
+      "ix://acme/keys/Small": {"form": "value_type", "base": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "integer"}}},
+      "ix://acme/keys/Mode": {"form": "variant_type", "cases": [{"name": "Idle", "payload": null}, {"name": "Busy", "payload": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "integer"}}}]},
+      "ix://acme/keys/Tag": {"form": "record_value_type", "fields": [{"name": "zone", "type": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "text"}}}, {"name": "weight", "type": {"kind": "quantity", "unit": "m"}}]},
+      "ix://acme/keys/Reading": {"form": "record_value_type", "fields": [{"name": "sensor", "type": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "integer"}}}, {"name": "value", "type": {"kind": "scalar", "family": "float64"}}]}
+    }
+  },
+  "cases": [
+    {"id": "FK-01", "criterion": "FR-726-AC-2", "source": "Int[0, 99]", "key": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "integer"}}, "expected": "admitted"},
+    {"id": "FK-02", "criterion": "FR-726-AC-2", "source": "a model value type that is a bounded integer", "key": {"kind": "model_type", "declaration": "ix://acme/keys/Small"}, "expected": "admitted"},
+    {"id": "FK-03", "criterion": "FR-726-AC-2", "source": "Quantity<m>", "key": {"kind": "quantity", "unit": "m"}, "expected": "admitted"},
+    {"id": "FK-04", "criterion": "FR-726-AC-2", "source": "Option<Int[0, 5]>", "key": {"kind": "option", "of": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "integer"}}}, "expected": "admitted"},
+    {"id": "FK-05", "criterion": "FR-726-AC-2", "source": "Sequence<Quantity<m>>", "key": {"kind": "collection", "collection": "sequence", "element": {"kind": "quantity", "unit": "m"}}, "expected": "admitted"},
+    {"id": "FK-06", "criterion": "FR-726-AC-2", "source": "a record with a bounded Decimal field", "key": {"kind": "record", "fields": [{"name": "amount", "type": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "decimal"}}}]}, "expected": "admitted"},
+    {"id": "FK-07", "criterion": "FR-726-AC-2", "source": "a model variant_type whose leaves are FIFO-key-stable", "key": {"kind": "model_type", "declaration": "ix://acme/keys/Mode"}, "expected": "admitted"},
+    {"id": "FK-08", "criterion": "FR-726-AC-2", "source": "a model record_value_type whose leaves are FIFO-key-stable", "key": {"kind": "model_type", "declaration": "ix://acme/keys/Tag"}, "expected": "admitted"},
+    {"id": "FK-09", "criterion": "FR-726-AC-2", "source": "Bytes", "key": {"kind": "scalar", "family": "bytes"}, "expected": "admitted"},
+    {"id": "FK-10", "criterion": "FR-726-AC-2", "source": "JsonObject", "key": {"kind": "scalar", "family": "json_object"}, "expected": "admitted"},
+    {"id": "FK-11", "criterion": "FR-726-AC-3", "source": "Float64", "key": {"kind": "scalar", "family": "float64"}, "expected": "refused", "leaf": "float64"},
+    {"id": "FK-12", "criterion": "FR-726-AC-3", "source": "Option<Float32>", "key": {"kind": "option", "of": {"kind": "scalar", "family": "float32"}}, "expected": "refused", "leaf": "float32"},
+    {"id": "FK-13", "criterion": "FR-726-AC-3", "source": "a source record with a Float64 field", "key": {"kind": "record", "fields": [{"name": "id", "type": {"kind": "bounded_domain", "base": {"kind": "scalar", "family": "integer"}}}, {"name": "x", "type": {"kind": "scalar", "family": "float64"}}]}, "expected": "refused", "leaf": "float64"},
+    {"id": "FK-14", "criterion": "FR-726-AC-3", "source": "a type holding an event_type leaf", "key": {"kind": "option", "of": {"kind": "event_type"}}, "expected": "refused", "leaf": "event_type"},
+    {"id": "FK-15", "criterion": "FR-726-AC-3", "source": "the model-owned record_value_type Reading, whose field value: Float64 is declared in the model document", "key": {"kind": "model_type", "declaration": "ix://acme/keys/Reading"}, "expected": "refused", "leaf": "float64"},
+    {"id": "FK-16", "criterion": "FR-726-AC-3", "source": "Sequence<Option<Reading>>[0, 4], the float leaf three members deep in the model document", "key": {"kind": "bounded_domain", "base": {"kind": "collection", "collection": "sequence", "element": {"kind": "option", "of": {"kind": "model_type", "declaration": "ix://acme/keys/Reading"}}}}, "expected": "refused", "leaf": "float64"},
+    {"id": "FK-17", "criterion": "FR-726-AC-3", "source": "a source record with a Sequence<Float32> field", "key": {"kind": "record", "fields": [{"name": "xs", "type": {"kind": "collection", "collection": "sequence", "element": {"kind": "scalar", "family": "float32"}}}]}, "expected": "refused", "leaf": "float32"}
+  ],
+  "refusal": {"code": "ill_typed", "cause": "operator-ineligible", "locus": "the channel's key", "retains": ["=", "the key type"]}
+}

@@ -715,6 +715,18 @@ never proves that the unsearched product has no deadline miss. It is present on
 every incomplete task-automaton search stopped by a search limit or unresolved
 continuous dynamics; other incomplete results carry no `task_search`.
 
+A task search whose explored graph closed, with no node left open, but whose
+closure no accepted certificate has certified settles `incomplete` with cause
+`{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}`.
+The search left nothing open, so the cause carries no `task_search` evidence
+and no frontier; but a closed search is not a proof until a checker accepts
+its certificate, so no `proved` verdict may be given. A release-backed
+schedulability run on the task-product subject before the FR-418
+task-product certificate is checked settles with this cause (FR-419). The
+rule that `bounded-search-incomplete` carries `task_search` evidence and a
+non-empty `unresolved-choice` frontier applies to reason
+`unresolved-dynamics` only.
+
 | Result | Carries |
 | --- | --- |
 | `proved` | `basis` and `certification`, and `cross_check` when FR-349's cross-check ran; no `cause` or `diagnostic` |
@@ -724,7 +736,7 @@ continuous dynamics; other incomplete results carry no `task_search`.
 | `inconclusive` | `cause` |
 | `unsupported` | exactly one of `cause` and `diagnostic` |
 | `declined` | `cause` (`refused`, `invalid-input` or `incomplete-input`) and `diagnostic` |
-| `incomplete` | `cause` (`limit-reached`, `bounded-search-incomplete{reason: unresolved-dynamics}`, `precision-budget`, `cancelled{source}` or `timed-out`); a bounded task-automaton search additionally carries `task_search` |
+| `incomplete` | `cause` (`limit-reached`, `bounded-search-incomplete{reason: unresolved-dynamics}`, `bounded-search-incomplete{reason: certificate-unchecked}`, `precision-budget`, `cancelled{source}` or `timed-out`); a bounded task-automaton search additionally carries `task_search` |
 | `failed` | exactly one of `cause` (`tool-failure{defect}`, with `limit` and `value` for `frame-length` and `total-bytes`, FR-462; the defect is an FR-462 wire defect, or `oracle-disagreement` or `invalid-shrink` for a model-based test run whose refusal case native admission accepted or whose shrink step left the domain or changed the failing clause, FR-190, which only an FR-190 record carries) and `diagnostic` |
 
 The closed proof bases are those of FR-363 (`exhaustive`,
@@ -1053,6 +1065,7 @@ computed.
 | FR-331-AC-55 | The cause `no-evaluated-case` and the `tool-failure` defects `oracle-disagreement` and `invalid-shrink` are closed spellings of the FR-190 model-based test record only: a provider result entry carrying any of them, as a temporal `inconclusive` cause or a Kani `failed` defect, is refused by the schema before consumption; an in-process provider's entry, and any entry given to the reader directly, is refused by the reader `invalid_result`/`unknown-cause` at `/cause/type` for `no-evaluated-case` and at `/cause/defect` for either defect; a plugin `result` frame carrying any of them fails its FR-331 stage schema before the reader runs, so FR-462 settles each affected item `failed` with `{"type": "tool-failure", "defect": "malformed-body"}`; an FR-190 record whose every generated case was discarded settles `inconclusive` with the bare `{"type": "no-evaluated-case"}` and no basis or counterexample, and one whose refusal case native admission accepted settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`. | Test (TC-431, TC-1600) |
 | FR-331-AC-56 | The positive vectors `global-conformance-open-history-outcome` and `global-conformance-incomplete-closure-scope-outcome`, each a `global-conformance` entry settled `inconclusive` with that bare cause, are admitted; the adverse vectors `open-history-on-realizability` and `incomplete-closure-scope-on-local-projection` (the cause on another kind's entry) and `open-history-with-payload` (a payload member on the bare cause) are each refused by the schema. | Test (TC-431) |
 | FR-331-AC-57 | The schema admits a `bounded-solver` entry's `flowpipe` certificate whose second step is a jump step carrying `from` `{"dwell": 0, "transition": 0}` (vector `hybrid-certificate-outcome`), and refuses that `from` with an added member `mode` (`hybrid-certificate-jump-source-unknown-member`) and with `dwell` written `"0"` (`hybrid-certificate-jump-source-string-dwell`), each at or above the patched member. | Test (TC-431) |
+| FR-331-AC-58 | The schema admits an `incomplete` result entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}` with no `task_search` member, and refuses the same entry with `task_search` added; an entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "unresolved-dynamics"}` with no `task_search` is still refused, and one whose reason is `closed` is refused; a `proved` result entry is never written for a closed task-product search whose FR-418 certificate was not accepted. | Test (TC-431) |
 
 ## Dependencies
 

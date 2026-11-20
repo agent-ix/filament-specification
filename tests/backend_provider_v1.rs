@@ -2339,3 +2339,33 @@ fn tc_318_protocol_relation_failure_vectors() {
         assert_eq!(result, replay["expected"].as_str().expect("expected"), "{}", replay["name"]);
     }
 }
+
+/// FR-331-AC-58: `bounded-search-incomplete` with reason
+/// `certificate-unchecked` is a closed search whose certificate no checker
+/// accepted, so it is admitted without `task_search`; reason
+/// `unresolved-dynamics` still requires the frontier evidence.
+#[trace("TC-431", "FR-331-AC-58")]
+#[test]
+fn certificate_unchecked_incomplete_needs_no_task_search() {
+    let base = positive("task-search-unresolved-dynamics");
+    let stage = definition(stage_definition(base["stage"].as_str().expect("stage")));
+    assert!(stage.is_valid(&base["document"]), "the base vector is admitted");
+
+    let mut unchecked = base["document"].clone();
+    unchecked["results"][0]["cause"]["reason"] = Value::from("certificate-unchecked");
+    let with_search = unchecked.clone();
+    unchecked["results"][0]
+        .as_object_mut()
+        .expect("result entry")
+        .remove("task_search");
+    assert!(stage.is_valid(&unchecked), "certificate-unchecked is admitted without task_search");
+    assert!(!stage.is_valid(&with_search), "certificate-unchecked carries no task_search");
+
+    let mut unresolved = unchecked.clone();
+    unresolved["results"][0]["cause"]["reason"] = Value::from("unresolved-dynamics");
+    assert!(!stage.is_valid(&unresolved), "unresolved-dynamics still requires task_search");
+
+    let mut unknown = unchecked;
+    unknown["results"][0]["cause"]["reason"] = Value::from("closed");
+    assert!(!stage.is_valid(&unknown), "an unregistered reason is refused");
+}

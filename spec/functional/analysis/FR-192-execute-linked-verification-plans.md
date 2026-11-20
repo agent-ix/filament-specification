@@ -87,7 +87,12 @@ verify Release using p {
   `synthesis`). `bound 0` refuses `invalid_model_binding`/`malformed-declaration`
   at the bound. A step with no `bound` requests the method's unbounded extent,
   which FR-290 negotiation settles (a bounded-only candidate gives
-  `requires-bound` or `unbounded-extent`).
+  `requires-bound` or `unbounded-extent`). A step whose method is
+  `model_based_test` and that has no `bound` SHALL settle `unsupported` with
+  `unsupported_projection`/`unbounded-extent`, FR-290's pairing for an
+  unbounded extent. The method is a language method (FR-190) and is never
+  negotiated, so no candidate can supply the unbounded extent the step asks
+  for.
 
 | Method | FR-290 kind and extent | Evidence |
 | --- | --- | --- |
@@ -136,6 +141,7 @@ bound to a changed clause.
 | FR-192-AC-9 | A repeated step name refuses `conflicting_declaration`/`duplicate-declaration` naming both steps; a `claim` naming a type, a `method` named `fuzz`, a `domain` naming nothing and a `depends` naming no step each refuse `missing_declaration`/`missing-name` at the name. | Test (TC-1601) |
 | FR-192-AC-10 | Steps `a depends [b]` and `b depends [a]` refuse `invalid_package`/`definition-cycle` retaining the edges `a -> b -> a`; `bound 0` refuses `invalid_model_binding`/`malformed-declaration`; `method schedulability` on a temporal claim refuses `invalid_capability`/`inapplicable-kind`. | Test (TC-1601) |
 | FR-192-AC-11 | The same unit compiled with and without its `verify` declaration has the same checked package identity; a plan document executed against a package with another identity refuses naming both identities. | Test (TC-1601) |
+| FR-192-AC-12 | The `Release` plan with its `tested` step written `check tested claim Orders::NoDoubleRefund method model_based_test domain M::Order;`, with no `bound`, settles `tested` `unsupported` with `unsupported_projection`/`unbounded-extent`, runs no case and writes no negotiation or provider entry for it; the step is never negotiated, and `safe` and `timely` run as before. | Test (TC-1601) |
 
 ## Dependencies
 

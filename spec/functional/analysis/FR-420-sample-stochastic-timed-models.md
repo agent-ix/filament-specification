@@ -104,8 +104,9 @@ identity races takes the idle tail (FR-161).
 Under the timed profile, an event is a bounded-window formula decided by the
 positions with time stamp up to its time horizon; an `elapsed` measure is a
 time-stamp difference (FR-407), and `weighted by delay` weights each position
-by the delay of the step that leaves it, so a long-run fraction is the
-fraction of time a predicate holds.
+by the delay of the step that leaves it, clipped to the window as FR-407
+states (a leaving step that crosses the horizon `h`, and an idle tail, give
+`h − stamp`), so a long-run fraction is the fraction of time a predicate holds.
 
 ### Sampling timed runs
 

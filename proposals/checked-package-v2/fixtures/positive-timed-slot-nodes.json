@@ -14986,7 +14986,11 @@
         "kind": "event_position",
         "sequence_authority": "order-events"
       },
-      "clock_name": "model-steps"
+      "clock_name": "model-steps",
+      "source_unit": {
+        "authority": "agent-ix",
+        "identity": "example"
+      }
     }
   ],
   "temporal_clause_names": [

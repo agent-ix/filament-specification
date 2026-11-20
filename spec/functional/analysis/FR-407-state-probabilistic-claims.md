@@ -148,7 +148,13 @@ A **measure** is a value computed from one behaviour over a finite window.
   `[0, h]` where `P` holds over `h + 1`. With `weighted by R`, each position
   `i` counts with the reward of the step that leaves it, and the value is the
   weighted count over the total weight. Over a timed subject `weighted by
-  delay` weights each position by the delay of the step that leaves it.
+  delay` weights each position by the delay of the step that leaves it,
+  clipped to the window: a position whose leaving step crosses the horizon
+  `h` is weighted by `h − stamp`, `stamp` being the position's time stamp,
+  and an idle-tail position with no leaving step inside the window is
+  weighted by `h − stamp` as well, the time the trace spends at that
+  position within the window. So the weights of a window sum to the
+  duration it covers.
 
 A window that reaches a terminal state continues on its stutter steps.
 
@@ -296,6 +302,8 @@ carries every member of this identity in the claim's node
 | FR-407-AC-16 | Under a bounded profile, `probability >= 0.99 [always holds(n.healthy)]` and `probability >= 0.99 [eventually[2, *] holds(n.healthy)]` each refuse `unsupported_construct` at the operator or interval span with the owning claim and selected profile, exactly as the same formula in a temporal clause under that profile refuses, and neither refuses `unbounded-event`; under the timed profile `eventually holds(P)` with no interval refuses `unsupported_construct` and `eventually[0 ms, 4 ms] holds(P)` is admitted; under the infinite-trace profile `[eventually[2, *] holds(P)]` refuses `invalid_probabilistic_model`/`unbounded-event`. | Test (TC-1562) |
 | FR-407-AC-17 | On a vector with two objects of `T`, where `g` first holds for the first at position 1 and never for the second, `on each (x: T) when (g)` gives one activated instance, read from position 1 and conditioned on activation, and one instance that never activates and holds vacuously; the same claim over a population with no object settles `inconclusive`, `no-instance`; `on each (k: Integer)` refuses `over-not-object-type`. | Test (TC-1650) |
 | FR-407-AC-18 | A model's initial state `s0` has the action `a`, which reaches with probability `1/4` a state where `g` first holds and the event then holds with probability 1, and with probability `3/4` a state from which `g` is unreachable, and the action `b`, which reaches with probability 1 a state where `g` first holds and the event then holds with probability `1/2`. For `on each (x: T) when (g) { probability >= θ [E] }` over every scheduler, the conditioned minimum is `1/2` and the maximum is 1 (the unconditioned values `1/4` and `1/2` are wrong): `>= rational(1, 2)` holds, `>= rational(3, 5)` fails, and `<= rational(9, 10)` fails. Under a workload choosing `a` and `b` with `1/2` each, `Pr(act) = 5/8`, `Pr(E and act) = 3/8` and the value is `3/5`, so `>= rational(3, 5)` holds and `>= rational(2, 3)` fails. A variant where neither action reaches `g` holds vacuously under both scheduler clauses. | Test (TC-2060) |
+| FR-407-AC-19 | Over a timed trace with three positions at time stamps 0, 1 and 6, where `P` holds only at the second, `fraction holds(P) over [0, 4] weighted by delay` weights the first position 1 (its leaving step ends at 1) and the second `4 − 1 = 3` (its leaving step crosses the horizon 4), counts no weight for the third (stamp 6 is outside the window), and is `3/4`; the weights sum to the window's duration 4. | Test (TC-353) |
+| FR-407-AC-20 | Over a timed trace with two positions at time stamps 0 and 1 followed by the idle tail, where `P` holds only at the first, `fraction holds(P) over [0, 4] weighted by delay` weights the first position 1 and the idle-tail position `4 − 1 = 3`, the time the trace spends there within the window, and is `1/4`. | Test (TC-353) |
 
 ## Dependencies
 

@@ -4396,14 +4396,17 @@ The binding is therefore keyed by occurrence, one row for each occurrence of a
 node, and two occurrences of one node may carry different configurations.
 
 Each row is exactly the closed object below; the selected profile is not
-repeated in the row:
+repeated in the row. A row keyed by a `temporal`/`temporal_clause` node also
+carries `source_unit` ("Clause source unit" below), and a hyper row carries
+`trace` ("Hyper clause rows" below):
 
 ```json
 {
   "declaration": {"package": "<package>", "path": ["<segment>"], "ordinal": 0},
   "occurrence": 0,
   "clock": {"kind": "event_position", "sequence_authority": "<name>"},
-  "clock_name": "<name>"
+  "clock_name": "<name>",
+  "source_unit": {"authority": "<authority>", "identity": "<identity>"}
 }
 ```
 
@@ -4493,6 +4496,28 @@ compared byte-for-byte; no trimming, normalization or alias resolution occurs.
 
 The other three profile kinds retain their existing row requirements unchanged.
 
+**Clause source unit.** A temporal clause's clock row names the source unit
+that declares the clause. A row whose `declaration` is a
+`temporal`/`temporal_clause` node SHALL carry `source_unit`, the source owner
+identity of that unit, in the (`authority`, `identity`) form of a
+`lock.sources` entry. A reader SHALL resolve the row's `timestamp_unit`, and
+every other unit name the clause owns, in that unit (FR-778). It SHALL NOT
+infer the declaring unit from the clause's subject, the source map, the order
+of `lock.sources` or the position of any node. A clause over a `Reference` to
+a model declaration that another unit's selected model declares is still
+declared by its own unit, and resolves its unit names there. A name the
+declaring unit does not declare refuses `missing_declaration`/`missing-name`
+at the unit name (FR-778), even when another unit of the package declares it.
+
+In the row visit, after the occurrence join and before the repeated-key
+check, the reader SHALL check `source_unit`. A `source_unit` that is not one
+of the package's `lock.sources` refuses `invalid_package`/`invalid-value` at
+`/temporal_bindings/{i}/source_unit`. FR-322 uses that cause where a source
+reference disagrees with the lock or the source map (FR-322-AC-52). A clause
+row without `source_unit` refuses `invalid_package`/`timed-node-reference`
+at `/temporal_bindings/{i}`. So does a `source_unit` on a row whose
+`declaration` is a compensation, an await or a `hyperproperty` node.
+
 **Hyper clause rows: one per quantified trace.** A hyper clause relates
 several traces, and each trace's positions are its own: under a `behaviours`
 domain they are the steps of the model the trace's alias selects, and under a
@@ -4579,8 +4604,9 @@ for a clock-configured temporal declaration, a mismatching clock name, or a kind
 inconsistent with its selected profile is refused; no clock, parameter or profile
 is substituted. After aggregate order validation and before per-node joins, the
 reader visits the rows in array order and checks each row in full before the
-next: first its declaration join, then its occurrence join, then whether its key
-repeats an earlier row, then whether it is in order. An absent or wrong-kind
+next: first its declaration join, then its occurrence join, then its
+`source_unit` ("Clause source unit" above), then whether its key repeats an
+earlier row, then whether it is in order. An absent or wrong-kind
 declaration refuses `invalid_package`/`timed-node-reference` at
 `/temporal_bindings/{i}/declaration`; an `occurrence` that is not a `claim`
 occurrence of a clause or a `hyperproperty` node, or the `declaration` occurrence of a compensation or an
@@ -4633,7 +4659,11 @@ refusals of a compensation row; the wrong-kind declaration is a `send` control.
 Its `await_cases` (`AW-01` to `AW-06`, FR-322-AC-305) publish an await beside a
 compensation sharing its model, profile and clock name, an await alone, and the
 missing-row, repeated-row, clock-name and clock-kind refusals of an await row,
-which are `CB-03` to `CB-06` applied to an await. The selected
+which are `CB-03` to `CB-06` applied to an await. Its `source_unit_cases`
+(`SU-01` to `SU-04`, FR-778-AC-8 to FR-778-AC-11) publish a clause over a
+`Reference<Order>` of a selected model and a clause over a source record, both
+resolving `ms` in their own unit, and the refusals of a unit declared only by
+the subject's unit and of a `source_unit` that is no lock source. The selected
 profile, configuration kind, and clause clock name agree in every single- and
 multi-clause positive. `temporal-clock-occurrence-vectors.json` publishes the
 per-occurrence cases `BO-P1` to `BO-R9`: twins of one node with different and
@@ -5436,6 +5466,28 @@ path step: the `resolved_path` row of the field carries the rendered declared
 type `Option<T>`, and the terminal row is the one whose type is `Clock` once
 the wrapper is removed.
 
+**Size.** `size(p)` over a clock collection place is the application of
+`filament.op.collection.size` in the place form `size_read`, parallel to
+`presence_read`. Its arguments are, in order: a reference to the
+`clock_place` template node of the collection `p`; the owner term; and one
+term for each `slot` step of the path to `p` in path order, the slot terms of
+the enclosing collections. Argument order and slot-term rules are those of
+`presence_read` above. A `size_read` is a recorded data predicate of the timed
+model and reads no clock: the number of elements of a collection is data,
+whatever its elements hold. Its result type is the non-negative integer range
+that the collection's bounds give, the `bounded_domain`/`integer_range` node
+whose bounds are the minimum and maximum of the collection's resolved row.
+The reader refuses `ill_typed`/`operator-ineligible` at `/body/arguments` an
+argument count other than two plus the number of slot steps of the path to
+`p`. It refuses `ill_typed`/`type-mismatch` at the argument an owner term not
+of the owner type or a slot term not of the selector's domain, as for
+`presence_read`. A collection whose element holds data is not a clock member
+("Data part of a clock-bearing record, tuple or union"), so its size is an
+ordinary `filament.op.collection.size` over a data read of the field. A
+`field` application that resolves to a clock collection still refuses
+`invalid_timed_model`/`clock-read-outside-constraint` in every value position
+other than these place forms (`presence_read` and `size_read`).
+
 **Clause nodes.** The five clause forms are closed, and every field is
 authored on the wire: no member is derived from another node and no node
 carries a field that only a reader can fill. A `time_invariant` is exactly
@@ -6223,7 +6275,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-356 | Within one name row the repeated key is reported before the order: a third row that repeats a key and descends refuses `conflicting-definition` at that row (CN-R10). | Test (TC-233) |
 | FR-322-AC-357 | A descent in the name rows is reported before an uncovered occurrence: rows (clause, 1), (clause, 0) over three occurrences refuse `invalid-value` at row 1, not at `/temporal_clause_names` (CN-R11). | Test (TC-233) |
 | FR-322-AC-358 | A name row's declaration join is reported before the coverage check: an absent declaration with an uncovered occurrence refuses at the row's `declaration` (CN-R8). | Test (TC-233) |
-| FR-322-AC-359 | A `temporal_bindings` row is the closed `{declaration, occurrence, clock, clock_name}`; the selected temporal profile is read from the clause law and matching lock selection, not repeated in the row. A row without `occurrence` or with any extra member is refused by the schema as `malformed_wire` at the row (BO-S1). | Test (TC-233) |
+| FR-322-AC-359 | A `temporal_bindings` row is the closed `{declaration, occurrence, clock, clock_name}`, with `source_unit` on a clause row and `trace` on a hyper row; the selected temporal profile is read from the clause law and matching lock selection, not repeated in the row. A row without `occurrence` or with any extra member is refused by the schema as `malformed_wire` at the row (BO-S1). | Test (TC-233) |
 | FR-322-AC-360 | A `temporal_bindings` `occurrence` that is negative or not an integer is `malformed_wire` at that member (BO-S2, BO-S3). | Test (TC-233) |
 | FR-322-AC-361 | The clock configuration is per occurrence: one shared node with two `claim` occurrences carries two binding rows, which are admitted with different configurations (BO-P1) and with equal ones (BO-P2), and every published positive package has one row per claim occurrence of each clock-configured clause, each with `occurrence` 0 where the clause has one. | Test (TC-233) |
 | FR-322-AC-362 | A `claim` occurrence of a clock-configured clause with no binding row refuses `invalid_package`/`timed-node-reference` at the node's `/semantic_graph/nodes/{N}/body` (BO-R1). | Test (TC-233) |
@@ -6301,6 +6353,9 @@ is carried by two `protocol` node forms.
 | FR-322-AC-500 | Integer containment at control results. With parameters `c: Boolean` and `x: Int[0, 9]`, each of these is admitted with no `convert` node over `x`: IC-09, `if c then x else 10` as the body of a function of result `Int[0, 10]`, its `filament.op.control.if` application's `result_type` the `Int[0, 10]` node, its then-branch the `reference` to `x` and its else-branch the `filament.op.numeric.narrow` application over the literal `10` with member `type_argument` and `result_type` the `Int[0, 10]` node (FSL FR-093-AC-4); IC-10, a `case` over a union `U { A(Int[0, 9]), B(Int[0, 20]) }` whose arm bodies are the two binder reads, with result type the builtin `Integer` node (FR-146 "Case result type"); IC-11, `let y = x in y`, the `filament.op.control.let` application itself the node under test (no enclosing function node), its `result_type` the `Int[0, 10]` node and its body the `reference` to the binder `y`, an `Int[0, 9]` `value`/`parameter` node. IC-12, IC-09 with the literal `8` and the else-branch narrow's `type_argument` and `result_type`, the `if`'s `result_type` and the function's result all the `Int[0, 8]` node, so that only the then-branch fails, refuses `ill_typed`/`operator-ineligible` at the `if` application; IC-13, IC-10 with result type an `Int[0, 9]` node, refuses `ill_typed`/`operator-ineligible` at the `case` node. | Test (TC-2099) |
 | FR-322-AC-502 | Both branches of an `if` are checked. With parameters `c: Boolean`, `x: Int[0, 9]`, `y: Int[5, 20]` and `w: Int[0, 1000]`: IC-16, `if c then 10 else x` as the body of a function of result `Int[0, 10]`, its then-branch the `filament.op.numeric.narrow` over the literal `10` to the `Int[0, 10]` node, its else-branch the `reference` to `x` and its `result_type` the `Int[0, 10]` node, is admitted; IC-17, `if c then x else y` as the body of a function of result `Int[0, 20]`, its `result_type` the `Int[0, 20]` node, the hull of its branches, which equals neither branch's type node, is admitted with no `convert` node; IC-18, IC-16 with the else-branch the `reference` to `w`, typed by the `Int[0, 1000]` node, and no `narrow` node over it, refuses `ill_typed`/`operator-ineligible` at the `if` application. | Test (TC-2099) |
 | FR-322-AC-501 | Integer containment at an annotated `let`. Over `function g using v(a: Integer): Boolean pure { true }` and a parameter `x: Int[0, 1000]`, IC-14, the package of `let y: Integer = x in g(y)` (FSpec FR-149-AC-30), whose `let` binder `y` is a `value`/`parameter` node typed by the builtin `Integer` node bound to the `reference` to `x`, and whose call argument is the `reference` to `y`, with no `convert` node, is admitted; IC-15, IC-14 with `y` and `g`'s parameter typed by an `Int[0, 999]` node, so that only the binder fails, refuses `ill_typed`/`operator-ineligible` at the `let` application; (pending QSL-2728: the wire has no id-level link from a `let` binding to its binder node, so `integer-containment-vectors.json` carries IC-15 admitted with `enforced: false` and TC-2099 does not verify this clause until that link lands); IC-19, IC-14 with `y` typed by the `Int[0, 1000]` node of its bound value, so that the call argument is a bare `Int[0, 1000]` term at the `Integer` parameter, refuses `ill_typed`/`operator-ineligible` at the `filament.op.function.call` application. IC-20, the package of `let r: Money = mint_taxed(receiver) in r`, the `filament.op.control.let` application itself the node under test (no enclosing function node), bound to a `filament.op.model.dispatch_call` of `mint_taxed` over a `Ledger` receiver parameter whose result is `TaxedMoney`, a record subtype of `Money`, and whose binder (a `value`/`parameter` node named `y`) is typed by the `Money` node, is admitted. | Test (TC-2099) |
+| FR-322-AC-503 | Every `temporal_bindings` row keyed by a `temporal`/`temporal_clause` node carries `source_unit`, a `lock.sources` entry naming the unit that declares the clause, and every published positive fixture's clause row names `{"authority": "agent-ix", "identity": "example"}`. The same row without `source_unit` refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}`; a compensation row (`CB-01`'s `k1`) with a `source_unit` added refuses the same at its row; a clause row whose `source_unit` is `{"authority": "agent-ix", "identity": "other"}`, no lock source, refuses `invalid_package`/`invalid-value` at `/temporal_bindings/{i}/source_unit` (`SU-04`), after the occurrence join and before the repeated-key check. | Test (TC-233, TC-1890) |
+| FR-322-AC-504 | Over a selected timed document whose object type `Call` has a field `ts` typed by the record value type `Rec` with multiplicity `{1, 4, true, false}`, where `Rec` declares a data field `n: Integer` and a field `ys` typed `ix://filament/native/Clock` with multiplicity `{0, 3, true, false}`, the predicate `size(self.ts) >= 1 and size(self.ts[0].ys) >= 2` is admitted. `size(self.ts)` is an ordinary data read: `filament.op.collection.size` over the `field` application of `ts`, whose element holds data. `size(self.ts[0].ys)` is one `size_read` application of `filament.op.collection.size` with the arguments the `clock_place` template node of the path `ts`, `slot`, `ys`, the owner term `self` and one slot term, the Integer literal `0`; its result type is the `integer_range` node `[0, 3]`, it reads no clock, and it is recorded as a data predicate of the timed model. A `field` application over `self.ts[0].ys` used as the operand of an ordinary `filament.op.collection.size` refuses `invalid_timed_model`/`clock-read-outside-constraint` at that application. | Test (TC-367) |
+| FR-322-AC-505 | FR-322-AC-504's `size_read` with no slot term, or with two slot terms, refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with the slot term the Boolean literal `true` it refuses `ill_typed`/`type-mismatch` at `/body/arguments/2`. | Test (TC-367) |
 
 ## Dependencies
 

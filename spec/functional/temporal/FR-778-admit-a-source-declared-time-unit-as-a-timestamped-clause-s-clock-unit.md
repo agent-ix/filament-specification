@@ -28,6 +28,15 @@ is the name of a unit the clause's source unit declares, it is that
 source-owned unit node, whose `node_id.path` is its declaration path `[T]` and
 which carries the source unit's `SourceOwner`.
 
+The clause's source unit is the unit the row's `source_unit` names (FR-322
+"Clause source unit"): the source unit that declares the clause, in the
+identity form of a `lock.sources` entry. A reader SHALL resolve `T`, and every
+other unit name the clause owns, in that unit. It SHALL NOT infer the unit from
+the clause's subject, the source map, the order of `lock.sources` or the
+position of any node. A clause over a `Reference<Order>` whose `Order` is a
+selected model of another unit, or over a parameter of a record type its own unit declares, is
+declared by its own unit either way, and its unit names are that unit's.
+
 A window aggregate is most often written over quantities the author's own unit
 declares, such as a p95 latency bound in milliseconds. A rule that admitted
 only domain-package units would refuse that use although the package already
@@ -54,9 +63,10 @@ bound's `type`.
   such unit.
 - A reader SHALL check, for each timestamped-event clause that holds a
   `duration` window aggregate and before its aggregates, the clause's
-  `temporal_bindings` row: a `timestamp_unit` that names no
-  `scalar_type`/`unit` node of the package or of its admitted domain packages
-  refuses `missing_declaration`/`missing-name`, and one that names a unit of
+  `temporal_bindings` row: a `timestamp_unit` that is neither the FCD identity
+  of a unit of an admitted domain package nor the name of a unit the row's
+  `source_unit` declares refuses `missing_declaration`/`missing-name`, even
+  when another unit of the package declares that name, and one that names a unit of
   another dimension or an affine unit refuses `ill_typed`/`unit-mismatch`,
   each at the row's `timestamp_unit` pointer and retaining the clock name and
   `T`. A clause with no `duration` window needs no clock unit node, so its
@@ -75,7 +85,15 @@ bound's `type`.
 | --- | --- | --- |
 | FR-778-AC-1 | A checked package whose source unit declares `dimension Time`, `s` and `ms` (`1/1000` of `s`), with a timestamped-event clause whose `temporal_bindings` row names `timestamp_unit` `ms` and whose `duration` `count` aggregate has `lower` `0` and `upper` `300000` typed by the source-owned `ms` node (`node_id.path` `["ms"]`, `SourceOwner`), is admitted, and holds no node whose path is `["scalar_type", "unit", "ms"]`; the same clause with `upper` typed by the source `s` node refuses `ill_typed`/`unit-mismatch` at `upper`'s value. | Test (TC-1890) |
 | FR-778-AC-2 | The FR-370-AC-20 package, whose row names `ix://acme/rpc/unit/ms`, stays admitted with its bounds typed by the model-owned node; with its unit of compilation also declaring a source `ms`, a bound typed by that source node refuses `ill_typed`/`unit-mismatch` at the bound's value. | Test (TC-1890) |
-| FR-778-AC-3 | Negative: FR-778-AC-1's package with its row naming `timestamp_unit` `us` (no such unit) refuses `missing_declaration`/`missing-name` at the row's `timestamp_unit`; with the source unit also declaring `dimension Length` and `m`, a row naming `m` refuses `ill_typed`/`unit-mismatch` there, and a row naming an affine unit of `Time` refuses the same; each retains the clock name and `T` and is reported before any aggregate check; a clause with no `duration` window whose row names `RFC3339` (TCB-03) is admitted. | Test (TC-1890) |
+| FR-778-AC-3 | Negative: FR-778-AC-1's package with its row naming `timestamp_unit` `us` (no such unit) refuses `missing_declaration`/`missing-name` at the row's `timestamp_unit`. | Test (TC-1890) |
+| FR-778-AC-4 | Negative: FR-778-AC-1's package with the source unit also declaring `dimension Length` and `m`, and its row naming `timestamp_unit` `m`, refuses `ill_typed`/`unit-mismatch` at the row's `timestamp_unit`. | Test (TC-1890) |
+| FR-778-AC-5 | Negative: FR-778-AC-1's package with the source unit also declaring an affine unit of `Time` (non-zero offset), and its row naming that unit, refuses `ill_typed`/`unit-mismatch` at the row's `timestamp_unit`. | Test (TC-1890) |
+| FR-778-AC-6 | Each refusal of FR-778-AC-3, FR-778-AC-4 and FR-778-AC-5 retains the clock name and `T`, and is reported before any aggregate check: the same package with a `duration` bound also typed by the source `s` node reports only the row refusal. | Test (TC-1890) |
+| FR-778-AC-7 | A clause with no `duration` window whose row names `timestamp_unit` `RFC3339` (TCB-03), a name no unit declares, is admitted. | Test (TC-1890) |
+| FR-778-AC-8 | A clause declared in unit `example` over a `Reference<Order>`, where `Order` is declared by `acme/orders`, a selected model of another unit, with `Time`, `s` and `ms` declared in `example`, a row naming `timestamp_unit` `ms` and `source_unit` `{"authority": "agent-ix", "identity": "example"}`, and a `duration` `count` aggregate typed by `example`'s `ms` node, is admitted (`SU-01`; the clause shape and row of `fixtures/positive-all-families.json`, which carries the member). | Test (TC-1890) |
+| FR-778-AC-9 | A clause `over (p: Pulse)` in unit `example`, where `example` declares `record Pulse` and `Time`, `s` and `ms`, with a row naming `timestamp_unit` `ms` and `source_unit` `example`, and a `duration` aggregate typed by `example`'s `ms` node, is admitted (`SU-02`). | Test (TC-1890) |
+| FR-778-AC-10 | Negative: FR-778-AC-8's package with `Time`, `s` and `ms` declared only by `acme/orders`, the unit that declares the clause's subject, and not by `example`, refuses `missing_declaration`/`missing-name` at the row's `timestamp_unit` (`SU-03`): the reader resolves `ms` in `source_unit` and never in the subject's unit. | Test (TC-1890) |
+| FR-778-AC-11 | Negative: FR-778-AC-8's package with its row's `source_unit` naming `{"authority": "agent-ix", "identity": "other"}`, which is not one of the package's `lock.sources`, refuses `invalid_package`/`invalid-value` at `/temporal_bindings/{i}/source_unit`, before any unit resolution (`SU-04`). | Test (TC-1890) |
 
 ## Dependencies
 

@@ -81,6 +81,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         }
@@ -311,6 +312,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         }
@@ -439,6 +441,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         },
@@ -525,6 +528,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         },
@@ -582,6 +586,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         },
@@ -723,6 +728,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         },
@@ -819,6 +825,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 1
           }
         },
@@ -832,6 +839,7 @@
             },
             "clock_name": "model-steps",
             "declaration": "<clause>",
+            "source_unit": {"authority": "agent-ix", "identity": "example"},
             "occurrence": 2
           }
         },
