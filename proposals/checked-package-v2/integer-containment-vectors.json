@@ -2533,7 +2533,7 @@
     },
     {
       "id": "IC-04",
-      "note": "parameter n: Integer, result Int[0, 10], body references n with no convert node (FR-322-AC-497)",
+      "note": "parameter x: Integer, result Int[0, 10], body references x with no convert node (FR-322-AC-497)",
       "node": 5,
       "outcome": "refused:ill_typed/type-mismatch",
       "locus": "/semantic_graph/nodes/5",
@@ -6195,7 +6195,7 @@
     },
     {
       "id": "IC-08",
-      "note": "parameter s: Sequence<Int[0, 9]>[0, 3], result Sequence<Int[0, 10]>[0, 3]; containment is not applied through a constructor (FR-322-AC-499)",
+      "note": "parameter x: Sequence<Int[0, 9]>[0, 3], result Sequence<Int[0, 10]>[0, 3]; containment is not applied through a constructor (FR-322-AC-499)",
       "node": 10,
       "outcome": "refused:ill_typed/type-mismatch",
       "locus": "/semantic_graph/nodes/10",
@@ -10009,7 +10009,7 @@
     },
     {
       "id": "IC-11",
-      "note": "let z = x in z as the body of a function of result Int[0, 10], x: Int[0, 9]; the let application's result_type is the Int[0, 10] node (FR-322-AC-500)",
+      "note": "let y = x in y over x: Int[0, 9], the let application itself the node under test with result_type Int[0, 10] (FR-322-AC-500)",
       "node": 7,
       "outcome": "admitted",
       "convert_nodes": 0,
@@ -14545,7 +14545,7 @@
       "node": 12,
       "outcome": "admitted",
       "enforced": false,
-      "pending": "FR-322 requires ill_typed/operator-ineligible at the let application for the binder; the contract-ir reader cannot make the refusal until a binder id link lands (arch ticket pending), so its tests pin today's admission as Unenforced (FR-038-AC-589). No refusal is asserted here.",
+      "pending": "QSL-2728: FR-322 requires ill_typed/operator-ineligible at the let application for the binder, but the wire has no id-level link from a let binding to its binder node, so the contract-ir reader cannot make the refusal yet; its tests pin today's admission as Unenforced (filament-contract-ir FR-038-AC-589). No refusal is asserted here.",
       "convert_nodes": 0,
       "package": {
         "capability_report": [
@@ -21464,7 +21464,7 @@
     },
     {
       "id": "IC-20",
-      "note": "function f using v(): Money pure { let r: Money = make_taxed() in r }, TaxedMoney a record subtype of Money (FR-322-AC-501)",
+      "note": "let r: Money = mint_taxed(receiver) in r: a dispatch_call of mint_taxed over a Ledger receiver, result TaxedMoney (a record subtype of Money), binder y typed Money; the let application is the node under test (FR-322-AC-501)",
       "node": 10,
       "outcome": "admitted",
       "convert_nodes": 0,

@@ -285,7 +285,7 @@ structures, but any external consumer receives only the contract.
   FR-322-AC-502), serialized from the packages the contract-ir strict reader's
   tests build, each with its outcome and locus and the `acme/ledger` domain
   package document in `domain_documents`. IC-15 is admitted and marked not
-  enforced (`enforced: false`, `pending`): the binder refusal waits on a
+  enforced (`enforced: false`, `pending`): the binder refusal (QSL-2728) waits on a
   binder id link and no refusal is asserted for it.
 - `collection-population-type-vectors.json` publishes complete structural
   node keys for unbounded and bounded collection forms, including absent and

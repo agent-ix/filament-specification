@@ -36,7 +36,10 @@ value. Scope: FR-322-AC-491 to FR-322-AC-493.
    operator-ineligible `result_type` variant of each.
 
 Test: `tests/checked_package_v2.rs` `tc_2098_named_type_argument_alias`
-(steps 2 to 4) and FSL `fsl-package/src/emit/tests` (step 1).
+(step 2: the schema verdict, outcome and locus of each case) and FSL
+`fsl-package/src/emit/tests` (step 1). Steps 3 and 4 need a reader and an
+evaluator, which this repository does not hold; they have no executable test
+here.
 
 ## Expected Results
 
