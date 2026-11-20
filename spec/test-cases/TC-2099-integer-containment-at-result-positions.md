@@ -27,9 +27,10 @@ call argument still refuse. Scope: FR-322-AC-495 to FR-322-AC-502.
    over the contained term.
 
 Test: `tests/checked_package_v2.rs` `tc_2099_integer_containment`. The
-vector file and the test are delivered with the strict-reader change under
-QSL-2709 (contract-ir strict reader and vectors); until then this procedure
-has no executable test.
+vector file serializes the packages that the contract-ir strict reader's own
+tests build (QSL-2709), so the two cannot drift. IC-15 is carried as
+admitted and not enforced: the contract-ir reader makes no binder refusal
+until a binder id link lands, and the test asserts none for it.
 
 ## Expected Results
 
