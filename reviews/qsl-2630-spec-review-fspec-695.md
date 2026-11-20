@@ -21,3 +21,17 @@ FAIL on FND-001 and FND-002. No file is shared with #767, #766, #765 or #640. FR
 | --- | --- | --- | --- |
 | FND-001 | high | Conflicts with origin/main in FR-331 (main added `no-evaluated-case` to the inconclusive row) and FR-520 (main #696 moved `capacities` into the `subject.protocol` binding); the FR-520 hunk and FR-785's "the `subject` member `capacities`" contradict main | spec/functional/tooling/FR-520-carry-analyze-requests-and-results-as-documents.md:62; spec/functional/protocol/FR-785-bind-symbolic-channel-capacities.md:81 |
 | FND-002 | high | `open-history` is required whenever an obligation is pending or closure is not closed, but FSL FR-990 settles the unknown-population case (closure closed, member obligations pending) `incomplete-closure-scope`, which FR-331 does not admit, so a conforming reader refuses FSL's result | spec/objects/interfaces/FR-331-backend-provider-envelope.md:748-755; spec/functional/protocol/FR-059-assess-finite-global-conformance.md:44-48 |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-003 | medium | FSpec FR-059-AC-6 and FR-331 (like FSL FR-990's text) require `incomplete-closure-scope` for a fan-out recording with no stated population whatever the closure state, but fsl-analyze on filament-spec-language origin/main emits it only when `closure.state` is `closed` and gives `open-history` for an open record | spec/functional/protocol/FR-059-assess-finite-global-conformance.md:73; filament-spec-language fsl-analyze/src/protocol_analysis/recording.rs:543 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | Rebased at 70500128c7: merge-tree with origin/main is clean, FR-331 keeps `no-evaluated-case`, the FR-520 hunk is gone, FR-785 names the `capacities` member of the subject's `protocol` binding |
+| FND-002 | fixed | `incomplete-closure-scope` added to the FR-331 inconclusive row, cause list, exception clause, new paragraph and kind sentence, FR-059 text and AC-6, the schema enum and the global-conformance-only rule, with one positive and one adverse vector |
+| FND-003 | still-open: FSL code divergence at recording.rs:543 (open record gives open-history); needs an FSL code ticket, not a #695 change | - |
