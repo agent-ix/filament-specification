@@ -3469,6 +3469,10 @@ fn selected_model_document(package: &Value, identity: &str) -> Option<Value> {
 enum ReadRefusal {
     /// `invalid_semantic_graph` at the `node_id` of an application-bearing node whose shape is invalid.
     GraphShape(Value),
+    /// `invalid_semantic_graph`, no cause, at the RFC 6901 locus of a
+    /// `semantic_type` member or `dependencies` entry that names no node
+    /// (FR-322 join stage 4, FR-322-AC-275).
+    EdgeExistence(String),
     /// `invalid_package`/`invalid-derived-shape` at the `node_id` of a derived
     /// shape (reference, population, compound unit) whose body is not well
     /// formed (FR-322 "Derived type forms"), or of a model declaration node
@@ -3837,7 +3841,46 @@ fn shape_stages_refusal(package: &Value, nodes: &[Value]) -> Result<(), ReadRefu
     if let Some(node) = derived_shape_semantic_refusal(nodes) {
         return Err(ReadRefusal::DerivedShape(node["node_id"].clone()));
     }
+    if let Some(locus) = edge_existence_refusal(nodes) {
+        return Err(ReadRefusal::EdgeExistence(locus));
+    }
     model_declaration_occurrence_refusal(package, nodes)
+}
+
+/// FR-322 join stage 4 (FR-322-AC-275): a `semantic_type` member or a
+/// `dependencies` entry that names no node, for a node of tag `scalar_type`,
+/// `composite_type`, `bounded_domain`, `value`, `expression`, `function` or
+/// `model`. The `dependencies` entries of a `scalar_type` node of form
+/// `dimension`, `unit` or `dimension_equivalence` are exempt (its
+/// `semantic_type` is not). Returns the locus of the first such edge.
+fn edge_existence_refusal(nodes: &[Value]) -> Option<String> {
+    let known: BTreeSet<String> = nodes.iter().map(|node| node["node_id"].to_string()).collect();
+    for (n, node) in nodes.iter().enumerate() {
+        let tag = node["node_tag"].as_str().unwrap_or("");
+        if !matches!(
+            tag,
+            "scalar_type" | "composite_type" | "bounded_domain" | "value" | "expression" | "function" | "model"
+        ) {
+            continue;
+        }
+        if is_node_id(&node["semantic_type"]) && !known.contains(&node["semantic_type"].to_string()) {
+            return Some(format!("/semantic_graph/nodes/{n}/semantic_type"));
+        }
+        let exempt = tag == "scalar_type"
+            && matches!(
+                node["semantic_form"].as_str(),
+                Some("dimension" | "unit" | "dimension_equivalence")
+            );
+        if exempt {
+            continue;
+        }
+        for (i, dependency) in node["dependencies"].as_array().into_iter().flatten().enumerate() {
+            if is_node_id(dependency) && !known.contains(&dependency.to_string()) {
+                return Some(format!("/semantic_graph/nodes/{n}/dependencies/{i}"));
+            }
+        }
+    }
+    None
 }
 
 /// FR-322 "Model declaration occurrences": a model declaration node (a
@@ -3908,6 +3951,7 @@ impl ReadRefusal {
             Self::Abstraction(id) => Self::Abstraction(wire(id)),
             Self::OptionValue(code, cause, id, member) => Self::OptionValue(code, cause, wire(id), member),
             other @ (Self::PopulationRecord(_)
+            | Self::EdgeExistence(_)
             | Self::InvalidOwnerValue(_)
             | Self::Dependency(..)
             | Self::Operation(_)) => other,
@@ -10504,8 +10548,10 @@ fn tc_233_a_model_population_with_no_max_is_the_unbounded_population() {
 /// `relationship_end` member names a `model_population` node over the type of
 /// its role's end is admitted, for a `max` of `3` and of `0`; the key is part
 /// of the application's key and its dependencies; a `population` that is an
-/// `integer_range` node, an absent node or a population over another model
-/// declaration refuses `ill_typed`/`operator-ineligible`; a dependencies list
+/// `integer_range` node or a population over another model declaration
+/// refuses `ill_typed`/`operator-ineligible`; an absent node (the pinned
+/// `node_id` of the row, last in the dependencies) is refused by join stage 4
+/// as `invalid_semantic_graph` at `expected_locus`; a dependencies list
 /// without the population node is `invalid_semantic_graph`. The application
 /// without the key keeps the member, and the node id, of the published fixture.
 #[trace("TC-233", "FR-322-AC-73")]
@@ -10535,7 +10581,7 @@ fn tc_233_a_reaches_population_link_names_a_population_over_its_role_end_type() 
         let link = if population.is_null() {
             None
         } else if population["absent"] == true {
-            Some(json!({"package": "absent", "path": ["absent"], "ordinal": 0}))
+            Some(population["node_id"].clone())
         } else if let Some(owner_node) = population["model_population_over"].as_str() {
             let order = node_index_where(&candidate, |node| {
                 node["node_tag"] == "model" && node["owner"]["node"] == "ix://acme/orders/Order"
@@ -10601,10 +10647,13 @@ fn tc_233_a_reaches_population_link_names_a_population_over_its_role_end_type() 
         let outcome = read_package_semantics(&candidate, &catalog);
         match case["outcome"].as_str() {
             Some("admitted") => assert_eq!(outcome, Ok(()), "{id}"),
-            _ if case["expected_code"] == "invalid_semantic_graph" => assert!(
-                matches!(outcome, Err(ReadRefusal::GraphShape(_))),
-                "{id}: {outcome:?}"
-            ),
+            _ if case["expected_code"] == "invalid_semantic_graph" => {
+                if let Some(locus) = case["expected_locus"].as_str() {
+                    assert_eq!(outcome, Err(ReadRefusal::EdgeExistence(locus.to_owned())), "{id}");
+                } else {
+                    assert!(matches!(outcome, Err(ReadRefusal::GraphShape(_))), "{id}: {outcome:?}");
+                }
+            }
             _ => {
                 let refusal =
                     OperationRefusal::from_cause(case["expected_cause"].as_str().expect("cause"))
@@ -10641,9 +10690,10 @@ fn model_declaration_for(package: &mut Value, owner_node: &str) -> Value {
 /// field of `Order`, whose `field` member names `population`. A population over
 /// the field's owner is admitted for a `max` of `3`, of `0` and an absent one,
 /// when the member's declaration is `Order` or its subtype `Sub`; a population
-/// over the declaration of a proper subtype, over another type, an
-/// `integer_range` node, an absent node or one missing from `dependencies`
-/// refuses as for a relationship end; a set-typed field edge refuses at the
+/// over the declaration of a proper subtype, over another type or an
+/// `integer_range` node refuses as for a relationship end; an absent node
+/// (the pinned `node_id` of the row) is refused by join stage 4 at
+/// `expected_locus`; one missing from `dependencies` is `invalid_semantic_graph`; a set-typed field edge refuses at the
 /// application; a `population` on a field projection fails the V2 schema.
 #[trace("TC-233", "FR-322-AC-398")]
 #[test]
@@ -10686,7 +10736,7 @@ fn tc_233_a_reaches_field_population_link_names_a_population_over_the_field_owne
         let field = case["field"].as_str().expect("field");
         let population = &case["population"];
         let link = if population["absent"] == true {
-            json!({"package": "absent", "path": ["absent"], "ordinal": 0})
+            population["node_id"].clone()
         } else if let Some(owner_node) = population["model_population_over"].as_str() {
             let object = model_declaration_for(&mut candidate, owner_node);
             append_population_chain(&mut candidate, &object, population["max"].as_str())
@@ -10720,10 +10770,13 @@ fn tc_233_a_reaches_field_population_link_names_a_population_over_the_field_owne
         let outcome = read_package_semantics(&candidate, &catalog);
         match case["outcome"].as_str() {
             Some("admitted") => assert_eq!(outcome, Ok(()), "{id}"),
-            _ if case["expected_code"] == "invalid_semantic_graph" => assert!(
-                matches!(outcome, Err(ReadRefusal::GraphShape(_))),
-                "{id}: {outcome:?}"
-            ),
+            _ if case["expected_code"] == "invalid_semantic_graph" => {
+                if let Some(locus) = case["expected_locus"].as_str() {
+                    assert_eq!(outcome, Err(ReadRefusal::EdgeExistence(locus.to_owned())), "{id}");
+                } else {
+                    assert!(matches!(outcome, Err(ReadRefusal::GraphShape(_))), "{id}: {outcome:?}");
+                }
+            }
             _ => {
                 let refusal =
                     OperationRefusal::from_cause(case["expected_cause"].as_str().expect("cause"))
