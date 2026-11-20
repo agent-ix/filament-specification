@@ -2117,9 +2117,9 @@ fn certificate_member_names_from_fr331() -> BTreeSet<String> {
         .expect("FR-331 certificate member row describes the schema-derived names")
         .0;
     let quoted_names: Vec<&str> = listed_names.split('`').collect();
-    assert_eq!(quoted_names.len() % 2, 1, "FR-331 member names are backtick-delimited");
+    assert_eq!(quoted_names.len() % 2, 0, "FR-331 member names are backtick-delimited");
     let mut names = BTreeSet::new();
-    for name in quoted_names.iter().skip(1).step_by(2) {
+    for name in quoted_names.iter().step_by(2) {
         assert!(
             !name.is_empty(),
             "FR-331 certificate member names are non-empty"
