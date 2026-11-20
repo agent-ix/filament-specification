@@ -21,6 +21,8 @@ mod operand_slots;
 
 const SCHEMA: &str = include_str!("../proposals/backend-provider-v1/schema.json");
 const VECTORS: &str = include_str!("../proposals/backend-provider-v1/vectors.json");
+const FR331: &str =
+    include_str!("../spec/objects/interfaces/FR-331-backend-provider-envelope.md");
 const CHECKED_PACKAGE_SCHEMA: &str = include_str!("../proposals/checked-package-v2/schema.json");
 const PACKAGE_FIXTURE: &str =
     include_str!("../proposals/checked-package-v2/fixtures/positive-all-families.json");
@@ -1113,7 +1115,7 @@ fn tc_431_canonical_key_bindings_are_complete() {
 }
 
 // Normative rule inventory, independent of both schema and vector contents.
-const CERTIFICATE_RULES: [&str; 24] = [
+const CERTIFICATE_RULES: [&str; 25] = [
     "initial-missing",
     "successor-missing",
     "bad-state",
@@ -1138,6 +1140,7 @@ const CERTIFICATE_RULES: [&str; 24] = [
     "count-broken",
     "inequality-fails",
     "threshold-missed",
+    "non-zeno-mismatch",
 ];
 
 /// The closed rule inventory is authored independently of the schema and
@@ -1785,12 +1788,21 @@ fn tc_431_zone_loci_admit_the_refinement_form_rules_and_the_added_members() {
     // The names are exactly the property names, at any depth, of the two certificates and
     // the certificate-owned definitions they reference (FR-331 "Certificate member").
     let walked = certificate_member_names();
-    assert_eq!(walked.len(), 57);
+    let specified = certificate_member_names_from_fr331();
     let enumerated: std::collections::BTreeSet<String> = parsed(SCHEMA)["$defs"]["CertificateRejected"]["oneOf"]
         .as_array().expect("causes").iter()
         .filter_map(|cause| cause["properties"]["at"]["properties"]["member"]["enum"].as_array())
         .flatten().map(|name| name.as_str().expect("name").to_owned()).collect();
+    assert_eq!(
+        specified, enumerated,
+        "FR-331's certificate member row matches the schema enum"
+    );
+    assert_eq!(
+        specified, walked,
+        "FR-331's certificate member row matches the walked property names"
+    );
     assert_eq!(enumerated, walked, "the {{member}} enum is the walked member set");
+    assert_eq!(walked.len(), 61, "the reconciled certificate member count");
     for member in &walked {
         let cause = serde_json::json!({"type": "certificate-rejected", "rule": "malformed", "at": {"member": member}});
         assert!(rejection.is_valid(&cause), "{member} is a member");
@@ -2088,6 +2100,34 @@ fn certificate_member_names() -> std::collections::BTreeSet<String> {
     let mut names = std::collections::BTreeSet::new();
     for root in ["ProbabilityCertificate", "ZoneCertificate"] {
         walk(&defs[root], defs, &mut names, &mut vec![root.to_owned()]);
+    }
+    names
+}
+
+fn certificate_member_names_from_fr331() -> BTreeSet<String> {
+    let row = FR331
+        .lines()
+        .find(|line| line.starts_with("| Certificate member |"))
+        .expect("FR-331 has a Certificate member row");
+    let listed_names = row
+        .split_once(" set is `")
+        .expect("FR-331 certificate member row names a closed set")
+        .1
+        .split_once(": exactly the distinct property names")
+        .expect("FR-331 certificate member row describes the schema-derived names")
+        .0;
+    let quoted_names: Vec<&str> = listed_names.split('`').collect();
+    assert_eq!(quoted_names.len() % 2, 0, "FR-331 member names are backtick-delimited");
+    let mut names = BTreeSet::new();
+    for name in quoted_names.iter().step_by(2) {
+        assert!(
+            !name.is_empty(),
+            "FR-331 certificate member names are non-empty"
+        );
+        assert!(
+            names.insert((*name).to_owned()),
+            "FR-331 lists {name} only once"
+        );
     }
     names
 }

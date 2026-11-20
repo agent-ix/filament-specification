@@ -6607,6 +6607,47 @@
       }
     },
     {
+      "name": "certificate-rejected-non-zeno-mismatch",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause/at": "FR-331"
+      },
+      "description": "FR-331 and FR-418: a non-zeno-mismatch certificate rejection identifies the non_zeno member.",
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-model-check",
+            "kind": "temporal-satisfaction",
+            "result": "inconclusive",
+            "cause": {
+              "type": "certificate-rejected",
+              "rule": "non-zeno-mismatch",
+              "at": {
+                "member": "non_zeno"
+              }
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
+    },
+    {
       "name": "certificate-rejected-refinement-loci",
       "stage": "outcome",
       "owners": {
