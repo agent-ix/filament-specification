@@ -56,15 +56,30 @@ The target bytes and the package's name map.
   | TLA+ obligation theorem | `Th_` + mangled clause name |
   | enum member | `e_` + mangled member name |
   | population bound (language FR-1035) | `b_` + mangled bound name |
-  | monitor variable (FR-813) | `m_` + mangled clause name |
+  | monitor and history variable (FR-813) | `m_` + mangled clause name, optionally followed by `_` and one of the letters `h`, `r`, `c`, `s` and a decimal ordinal (`m_T_r0`) |
+  | step counter (FR-813) | `n_` + mangled clause name + `_` + the decimal ordinal of its interval operator (`n_T_0`) |
+  | clause `over` binder (FR-813) | `o_` + mangled binder name |
+  | Lean clause atom (FR-813) | `at_` + mangled clause name + `_` + the atom's decimal ordinal (`at_T_0`) |
+  | clause definedness predicate (FR-813) | `ok_` + mangled clause name |
+  | population key bound (FR-813) | `Keys_` + mangled object type name |
+  | per-clause composed definition (FR-813) | one of the words `vars`, `TypeOK`, `Init`, `Mon`, `Next`, `Spec`, `accept`, `fair` + `_` + mangled clause name |
+  | identity universe (FR-813) | `Ids_` + mangled object type name |
+  | clock variable (FR-813) | `k_` + mangled object type name + `_` + mangled field name |
+  | protocol subject variable (FR-813) | `pr_` + mangled protocol name + `_` + one of the words `over`, `last`, `control`, `observations`, `bounds`, `queues`, `roles`, `memory`, or the word `universe` + `_` + mangled role name |
+  | protocol step action (FR-813) | `s_` + mangled protocol name + `_` + mangled static declaration path of the step's node, channel, template or role, optionally followed by `_` and a step word (`fork`, `join`, `timeout`, `duplicate`, `lose`) |
+  | protocol binder (FR-813) | `w_` + mangled binder name |
+  | protocol subject definition (FR-813) | one of the words `PState`, `PInit`, `PStep`, `PNext`, `PSpec`, `Pvars`, `PBehaviour`, `PTypeOK` + `_` + mangled protocol name |
   | module and namespace | `M_` + mangled package name |
-  | generated helper | `Q_`, `F_` or `D_` + a fixed helper word of ASCII letters, optionally followed by `_` and a mangled FSL name the helper is generated for |
-  | structural definition | the fixed names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`, `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F`, each written once |
+  | generated helper | `Q_`, `F_`, `D_` or `PK_` (FR-813) + a fixed helper word of ASCII letters, optionally followed by `_` and a mangled FSL name the helper is generated for |
+  | structural definition | the fixed names `State`, `WF`, `Init`, `Step`, `Behaviour`, `Next`, `Spec`, `TypeOK`, `vars`, `Reachable`, `Q` and `F`, and for FR-813 `J`, `Clocks`, `TBehaviour`, `now`, `tick`, `idle`, `Tick`, `Idle`, `Quiescent`, `TNext`, `TimeInv`, `Urgent` and `NZ`, each written once |
   | generated value field | the fixed field and tag names of FR-812's value encodings: `num`, `den`, `tag`, `value`, `bits`, the floating-point `finite` record's fields, the tags `none`, `some`, `finite`, `inf` and `nan`, and the Lean tuple fields `_1`, `_2`, … |
   | generated local binder | one lowercase ASCII letter, optionally followed by decimal digits and then optionally by `'` (`s`, `s'`, `b`, `i`, `j`, `k`, `k2`), bound only inside the definition the mapper generates it in |
 
 - The prefix words `v`, `T`, `Key`, `Rec`, `op`, `f`, `p`, `a`, `r`, `fld`,
-  `x`, `c`, `holds`, `Ob`, `Th`, `e`, `b`, `m`, `M`, `Q`, `F` and `D` SHALL be
+  `x`, `c`, `holds`, `Ob`, `Th`, `e`, `b`, `m`, `M`, `Q`, `F`, `D`, `n`,
+  `vars`, `TypeOK`, `Init`, `Mon`, `Next`, `Spec`, `accept`, `fair`, `Ids`,
+  `k`, `pr`, `s`, `w`, `PK`, `PState`, `PInit`, `PStep`, `PNext`, `PSpec`,
+  `Pvars`, `PBehaviour`, `PTypeOK`, `o`, `at`, `ok` and `Keys` SHALL be
   pairwise distinct words of ASCII letters, each followed by one `_`. Where
   one word is a proper prefix of another (`T` and `Th`, `f` and `fld`), the
   two names differ at the character after the shorter word (`_` against a
@@ -158,6 +173,7 @@ The target bytes and the package's name map.
 | FR-814-AC-7 | A model whose object type has a field `total`, whose operation `add` has a parameter `total`, and which declares a function `total` with a parameter `total`, exports in both targets the field as `fld_total`, the operation parameter as `p_total`, the function as `f_total` and the function parameter as `a_total`; the four names are pairwise distinct and each name-map entry reads back to its own FSL node (field, operation parameter, function, function parameter). Text that writes the field as `f_total`, or either parameter as unprefixed `total`, fails this criterion. | Test (TC-1973) |
 | FR-814-AC-8 | An operation `rename(self: Text)` of object type `Item`, whose declared parameter is spelled `self` (FR-012), exports in TLA+ as `op_rename(r_self, p_self)` bound in `Next` by `\E r_self \in DOMAIN v_Item, p_self \in Dom` and in Lean as `def op_rename (s s' : State) (r_self : Key_Item) (p_self : …)`, with `p_self` mapped to the parameter's node and `r_self`, a fixed name, with no name-map entry, and SANY and Lean parse both files. A mapper that wrote the receiver and the parameter under one name would declare one formal parameter twice, which SANY reports as a multiply-defined symbol and Lean as a duplicate binder, so this criterion fails for it. | Test (TC-1973) |
 | FR-814-AC-9 | An invariant whose quantifier and `let` binders are named `Next`, `instance`, `DOMAIN`, `num` and `tag`, over an object type with fields `num` and `tag`, a `Decimal` field and an `Option` field, exports the binders as `x_Next`, `x_instance`, `x_DOMAIN`, `x_num` and `x_tag` and the fields as `fld_num` and `fld_tag`, distinct from the structural `Next` and the generated rational fields `num` and `tag`; SANY and Lean parse both files. Unprefixed, `DOMAIN` is a TLA+ reserved word and `instance` a Lean keyword, both of which fail to parse, and a binder `Next` redefines the module's `Next`, which SANY rejects, so a mapper that writes any binder unprefixed fails this criterion. | Test (TC-1973) |
+| FR-814-AC-10 | The exports of FR-813-AC-1, FR-813-AC-7, FR-813-AC-12 and FR-813-AC-19 spell the clause binder `o_c` (or `o_l`), the Lean atom `at_T_0`, the definedness predicate `ok_T`, the key bound `Keys_Counter`, the counter `n_T_0` and the protocol type invariant `PTypeOK_Hand`; no clause binder is spelled with `p_`, no Lean atom with `a_`, and every name of those texts belongs to exactly one class of the table. | Test (TC-1973) |
 
 
 ## Dependencies

@@ -38,7 +38,9 @@ FR-298 record per requested obligation, in one FR-299 generated package.
 - `filament.output.tla2/v1` SHALL emit the TLA+2 language as the SANY
   parser accepts it, using only the standard
   modules `Naturals`, `Integers`, `Sequences`, `FiniteSets` and `TLC`, and,
-  for a fairness obligation, the TLA+ `WF_vars` and `SF_vars` operators.
+  for a fairness obligation, the TLA+ `WF_vars` and `SF_vars` operators,
+  and, for a dense-time obligation, the standard module `Reals` (FR-813
+  "Dense time").
 - `filament.output.lean4/v1` SHALL emit the Lean 4 language, using only
   the Lean core library; no Mathlib dependency is required.
 
@@ -74,7 +76,9 @@ Each requested obligation SHALL receive exactly one FR-269 disposition:
   auxiliary counter;
 - `conditional`: the target text has the source meaning only under the
   retained condition the record names: the real-time encoding of a timed
-  clause (condition: non-Zeno behaviours), self-composition of a
+  clause in TLA+ (condition `real-valued-time`, FR-813, which states the
+  non-Zeno premise and the checker limit on real-valued delays; the Lean
+  encoding over rational time stamps is `preserved`), self-composition of a
   hyperproperty with two trace quantifiers of one kind (condition: the
   composition's fairness), and a safety claim over a probabilistic support
   abstraction (condition: the claim holds with probability 1 exactly when it
@@ -101,7 +105,7 @@ after native replay.
 | --- | --- | --- |
 | FR-651-AC-1 | A counter state model with operation `inc` and a state clause `value <= 5` exports under `filament.output.tla2/v1` as a module with `VARIABLES`, `Init`, an `inc` action, `Next` and an invariant theorem, each region carrying its source identity and span, every obligation `preserved`; the module parses under the SANY parser as an observer. | Test (TC-1604) |
 | FR-651-AC-2 | The same package under `filament.output.lean4/v1` exports `structure State`, `Init`, `Step`, `Inv` and the obligation proposition `Ob_Inv` with no `theorem` and no proof, every obligation `preserved`; the file elaborates under Lean 4 as an observer. | Test (TC-1604) |
-| FR-651-AC-3 | A timed clause exports `conditional` naming non-Zeno behaviours; a hybrid claim's flows export `unrepresented`; a probabilistic threshold 0.9 exports `unrepresented` and a probability-1 safety claim `conditional`; no record is `preserved` for these. | Test (TC-1604) |
+| FR-651-AC-3 | A timed clause exports to TLA+ `conditional` naming `real-valued-time`, whose meaning states the non-Zeno premise, and to Lean `preserved`; a hybrid claim's flows export `unrepresented`; a probabilistic threshold 0.9 exports `unrepresented` and a probability-1 safety claim `conditional`; no record is `preserved` for these. | Test (TC-1604) |
 | FR-651-AC-4 | A request for an identity that is no obligation of the package refuses that member; an observer that rejects the text changes no disposition; exporting the same request twice gives byte-equal packages. | Test (TC-1604) |
 | FR-651-AC-5 | On the export conformance corpus of finite models, TLC's reachable state count and invariant verdict over the TLA+ export equal FSL's explicit-state exploration over the same model for every `preserved` model obligation. | Test (TC-1604) |
 

@@ -58,6 +58,12 @@ behaviour (FR-181): under `time dense` the sum of the delays before it; under
 Positions with equal time stamps keep their step order, which is the admitted
 order FR-090 requires of order-sensitive operators.
 
+A behaviour whose discrete steps end at a quiescent state continues with
+FR-161's terminal stutter positions, each stamped after a positive delay of
+any length (one tick period under a tick source), every such choice an
+admitted behaviour; a behaviour that ends at a state that is not quiescent is
+not admitted.
+
 ### Pointwise meaning
 
 This reading applies to the `filament.temporal.timed/v1` profile; the `filament.temporal.timestamped-event.finite-window/v1` profile follows the timestamped rule of [FR-091](FR-091-evaluate-bounded-future.md) and [FR-092](FR-092-evaluate-bounded-past.md); the integer-position profiles, infinite-trace, event-position and fixed-sample, read an interval as position offsets with the meaning of FR-091, FR-092 and [FR-367](FR-367-evaluate-interval-operators-under-infinite-trace.md).
@@ -201,6 +207,7 @@ identity.
 | FR-416-AC-8 | A timed claim that evaluates undefined at a position of an admitted behaviour settles `refuted`, cause `undefined-evaluation` naming the position, time stamp, discrete state key, clock valuation, expression locus and catalogued reason, with a finite prefix of exact rational delays ending there that replays to the same undefined value. | Test (TC-369) |
 | FR-416-AC-9 | A `Blink` model (`time dense`; object `b` with `fired: Bool` and clock `x`; `tick` with guard `x >= 1` and reset `x`; `fire` with guard `x > 0 and x < 1` and postcondition `self.fired = true`; time invariant `when true { x <= 1 }`; initial `fired = false`, `x = 0`), in which `tick` fires exactly at `x = 1`, and `eventually holds(b.fired)` under infinite-trace: under `fair { weak Blink::fire }` it settles `refuted` with a lasso of `tick` steps of loop delay 1; under `fair { strong Blink::fire }` it settles `proved` with an accepted zone certificate, because `fire` is enabled at instants inside every delay of that lasso, though at no position of it. | Test (TC-963) |
 | FR-416-AC-10 | On the zone route over `Rpc` with `T = 4 ms`, the response claim proves with `non_zeno` `not-required`; the variant in which `reply` loops on itself with no reset, under the deadline `x <= 3 ms`, proves with `non_zeno` `assumed`; the variant with an `echo` step that resets `x` refutes with `non_zeno` `checked`; `always eventually holds(true)` over `Stall` settles `inconclusive`, `no-admitted-behaviour`, with `non_zeno` `refuted`; `NoLateReply` (TT-1), the time-lock-freedom item and FR-416-AC-8's `undefined-evaluation` refutation carry no `non_zeno`; the reply-loop proof's FR-418 certificate states `non_zeno` `assumed`, and the same certificate with that member changed to `not-required` is rejected; and the closed MITL claim `Within` proved on the digital-clock route carries the same `non_zeno` as on the zone route. | Test (TC-2041) |
+| FR-416-AC-11 | Over a dense timed model whose initial state is quiescent and enables no operation, the admitted behaviours are the idle tails whose stutter positions follow positive delays, one behaviour per delay choice, so `always[2 ms, 3 ms] P` with `P` false there is refuted by the idle tail with a stutter position at 2 ms; under `time tick O period 1 ms` each stutter position adds 1 ms; a model whose only dead end is urgent, or under an applying time invariant, has no admitted behaviour that ends there. | Test (TC-369) |
 
 ## Dependencies
 

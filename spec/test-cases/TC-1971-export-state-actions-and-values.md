@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify the state, action and value encodings, definedness guards, division laws, exact and floating-point numbers, sets and text. Scope: FR-812-AC-1 to FR-812-AC-5 and FR-812-AC-8.
+Verify the state, action and value encodings, definedness guards, division laws, exact and floating-point numbers, sets and text. Scope: FR-812-AC-1 to FR-812-AC-5, FR-812-AC-8 and FR-812-AC-9 (the key-space conjunct of `TypeOK`).
 
 ## Test Procedure
 

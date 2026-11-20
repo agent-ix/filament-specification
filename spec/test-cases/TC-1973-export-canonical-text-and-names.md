@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7 to FR-814-AC-9.
+Verify keyword-safe and injective names, canonical layout, dependency order and the name map. Scope: FR-814-AC-1 to FR-814-AC-5 and FR-814-AC-7 to FR-814-AC-10.
 
 ## Test Procedure
 
