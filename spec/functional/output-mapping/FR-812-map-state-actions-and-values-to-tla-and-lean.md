@@ -35,7 +35,7 @@ The state, action and value regions of the TLA+ module or Lean file.
 
 | FSL | TLA+ | Lean 4 |
 | --- | --- | --- |
-| population of object type `T` | one variable `v_T`, a function from the population's present keys to field records; its domain is the present key set | one `State` field `v_T : List (Key_T × Rec_T)`, sorted by key, keys distinct |
+| population of object type `T` | one variable `v_T`, a function from the population's present keys to field records; its domain is the present key set, with the `TypeOK` conjunct `DOMAIN v_T \subseteq Seq(Nat)`, each key the sequence of its key components (FR-181), and `DOMAIN v_T \subseteq Keys_T` when FR-813 declares that bound | one `State` field `v_T : List (Key_T × Rec_T)`, sorted by key, keys distinct |
 | population bound | `TypeOK` conjunct `Cardinality(DOMAIN v_T) <= n` | the well-typedness predicate `WF` conjunct `v_T.length <= n` |
 | field type | `TypeOK` conjunct over every present object | `WF` conjunct |
 | initial snapshot or constraint | `Init` | `def Init (s : State) : Prop` |
@@ -148,6 +148,7 @@ reads a NaN through a target's own floating point.
 | FR-812-AC-6 | With `bound B on M::accounts [3]`, the TLA+ `TypeOK` holds the conjunct `Cardinality(DOMAIN v_Account) <= 3` and the Lean `WF` holds `v_Account.length <= 3`. Without the `bound`, neither conjunct appears. | Test (TC-2031) |
 | FR-812-AC-7 | Exported without `initial`, a state model writes `Init == TypeOK` and `def Init (s : State) : Prop := WF s`, and its `constraint` clause appears in neither. `Braking` with no `hybrid-initial` writes an `Init` whose one disjunct is the mode `Moving` with `TRUE`. With `initial` naming a snapshot, `Init` states that snapshot's state. | Test (TC-2031) |
 | FR-812-AC-8 | The `Float64` NaNs `7ff8000000000000`, `7ff8000000000001` and `fff8000000000000` and the `Float32` NaN `7fc00001` export to TLA+ as `[tag \|-> "nan", bits \|-> "7ff8000000000000"]`, `[tag \|-> "nan", bits \|-> "7ff8000000000001"]`, `[tag \|-> "nan", bits \|-> "fff8000000000000"]` and `[tag \|-> "nan", bits \|-> "7fc00001"]`, and to Lean as `F.nan` applied to the same strings; the first three are pairwise unequal in both targets, and two states differing only in a NaN payload export as two distinct states. | Test (TC-1971) |
+| FR-812-AC-9 | The counter export's `TypeOK` holds the conjunct `DOMAIN v_Counter \subseteq Seq(Nat)`, and the counter exported with no snapshot holds `DOMAIN v_Counter \subseteq Keys_Counter` beside it; a state whose `v_Counter` has a key that is not a sequence of naturals is not well typed. | Test (TC-1971) |
 
 ## Dependencies
 

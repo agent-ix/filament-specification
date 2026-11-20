@@ -54,8 +54,10 @@ either represented by an output region (FR-812, FR-813) or named by a cause.
 | Unicode normalization and case-mapping operations on text | `unrepresented` | `unrepresented` |
 | future and past temporal operators, intervals under a step-counting profile, fairness, terminal stutter | `preserved` (FR-813), or `conditional` for a clause that needs a nondeterministic monitor | `preserved` (FR-813) |
 | clauses over supplied traces (observation, finite window) | `preserved` as a predicate over a finite trace (FR-813) | `preserved` (FR-813) |
-| protocols with untimed channels | `preserved` (FR-813) | `preserved` (FR-813) |
-| dense time, timed channels | `conditional` with `real-valued-time` (FR-813) | `preserved` (FR-813) |
+| protocol subjects (FR-425; a protocol subject reads no clock) | `preserved` (FR-813) | `preserved` (FR-813) |
+| dense time (timed models, timed intervals and their idle tails) | `conditional` with `real-valued-time` (FR-813) | `preserved` (FR-813) |
+| channel delivery intervals (step-counted, FR-465) | `preserved` (FR-813) | `preserved` (FR-813) |
+| a temporal clause over an object type whose keys the request does not fix (no snapshot, or an operation that creates keys) | `conditional` with `bounded-identity-universe` (FR-813) | `preserved` (FR-813) |
 | hyperproperties, hybrid, probabilistic | as FR-651 "Fidelity" states | as FR-651 "Fidelity" states |
 
 A construct the table marks `unrepresented` SHALL make its obligation

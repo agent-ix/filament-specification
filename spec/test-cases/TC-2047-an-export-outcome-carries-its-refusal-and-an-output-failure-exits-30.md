@@ -17,7 +17,7 @@ Verify that a `refused` export outcome carries the closed `refusal` member in
 its observer and below-floor shapes, that no other status carries it, and
 that an export whose target file cannot be written is an output failure,
 exit 30, with the catalogued code and cause `output-failure`. Scope:
-FR-817-AC-14, FR-817-AC-15, FR-817-AC-16, FR-817-AC-17 and FR-271-AC-8.
+FR-817-AC-14, FR-817-AC-15, FR-817-AC-16 to FR-817-AC-18 and FR-271-AC-8.
 
 ## Test Procedure
 
@@ -30,6 +30,9 @@ FR-817-AC-14, FR-817-AC-15, FR-817-AC-16, FR-817-AC-17 and FR-271-AC-8.
    not lower protocol subjects; under `any`; under `{"export.nodes": 1}`.
 4. Export a program whose checked package admission refuses
    `invalid_package`, and one with a missing import.
+5. Export a clause required by `Hand` with a `protocols` binding, with the
+   binding malformed, binding a whole-model role, without a binding for a
+   model-type role, and without a universe for a replicated role.
 
 ## Expected Results
 
@@ -40,6 +43,8 @@ FR-817-AC-14, FR-817-AC-15, FR-817-AC-16, FR-817-AC-17 and FR-271-AC-8.
   `last_stage` the stage reached, nothing created; then `invalid-request`,
   exit 20.
 - Step 3: the construct refusal with exactly its seven members, exit 21, no
-  package or file, under every floor; `incomplete` under `export.nodes` 1.
+  package or file, under every floor; `incomplete` under `export.nodes` `N - 1`.
 - Step 4: each program or package refusal keeps its own code, cause and
   exit; none exits 30.
+- Step 5: the fixed `over`, then the FR-520 refusal, `wrong-role-mapping` naming
+  each role, and `unbounded-extent` naming the population.

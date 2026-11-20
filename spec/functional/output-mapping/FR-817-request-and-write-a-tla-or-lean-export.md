@@ -147,6 +147,22 @@ The export request is the `export` member of a `native-run/1` request:
   `export.output_bytes` for its bytes. A node is read and mapped once
   however many obligations read it, so the union is the work done, and two
   conforming implementations stop one request at the same limit.
+- **Protocol subject inputs.** `protocols` (optional) is an array of
+  protocol bindings, each exactly the protocol binding `{protocol, over,
+  roles, capacities}` that FR-520's `subject.protocol` member carries, with
+  FR-520's schema and validation (closed, `over` required, `roles` binding
+  each static role on a model type, `capacities` FR-785's capacity binding),
+  at most one per protocol; and `universes` (optional) is FR-520's `subject`
+  `universes` member, the universe of each replicated role's population.
+  They are the inputs an analyze request carries for a protocol subject and
+  FR-813 "Protocol subjects" binds the exported subject by them; nothing in
+  them is export-specific. A static role on a model type with no binding
+  refuses `invalid_runtime_input`/`wrong-role-mapping` naming the role, and
+  a supplied binding for a role on a whole model refuses the same way, as
+  FR-425 states; a replicated role whose population has no universe refuses
+  `unsupported_projection`/`unbounded-extent` naming the population, the
+  cause FR-272 gives an unbounded extent. Each refusal is at its member's
+  pointer under `/request/export`, before classification.
 - `output` (optional) is a closed record `{"file": P}`, `P` a non-empty path
   of the target file to create, resolved against the request file's
   directory.
@@ -345,8 +361,9 @@ naming both, exit `20`, before any stage runs.
 | FR-817-AC-13 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc` and `output` `{"file": "m.tla"}`, in an implementation with no TLC backend, settles `refused` with `unsupported_projection`/`unsupported-requested-capability` naming `tlc`, exit `21`, with no `target_text`, no `package` and no `m.tla`; the same request with `observer` `tlc` and `limits` `{"export.nodes": 1}` refuses the same way, exit `21`, not `incomplete`; without `observer` it assembles, exit `0`. | Test (TC-2040) |
 | FR-817-AC-14 | `SlowEnough` over `Braking` under `minimum_fidelity` `any` with `observer` `tlc`, where the implementation has no TLC backend, writes `status` `refused` and `refusal` with exactly `code` `unsupported_projection`, `cause` `unsupported-requested-capability`, `capability` `observer`, `observer` `tlc`, a non-empty `reason` and `details` `{"path": "/request/export/observer"}`, exit `21`; `SlowEnough` under the default floor writes `refusal` with exactly `code` `unsupported_projection`, `cause` `below-fidelity-floor` and `failing` the one failing record as `records` carries it, exit `21`; an `assembled` and an `incomplete` outcome have no `refusal` member. | Test (TC-2047) |
 | FR-817-AC-15 | The same export under `any` with `output` `{"file": "missing-directory/m.tla"}`, whose parent directory does not exist, exits `30` with category internal-failure, one diagnostic with `code` and `cause` `output-failure`, `last_stage` the stage the export reached (S4 for an export of a checked package), and no file or directory created; with `m.tla` already present at the path it refuses `invalid-request`, exit `20`. | Test (TC-2047) |
-| FR-817-AC-16 | In an implementation whose mapper does not lower clauses over protocol subjects, exporting a temporal clause that a protocol requires on an `origin` row settles `status` `refused` with `refusal` exactly `{"code": "unimplemented_capability", "cause": "unimplemented-meaning", "capability": C, "target": "tla", "construct": K, "node": N, "locus": L}`, `K` the protocol clause node's `node_tag`/`semantic_form`, `C` the text `export:tla:` followed by `K`, `N` its node id and `L` its region or `null`, exit `21`, with no `target_text`, no `package` and no file; the outcome diagnostic carries the same `code`, `cause` and `capability`. Under `minimum_fidelity` `any` the result is the same, and under `{"export.nodes": 1}` the export stops `incomplete` at the first node, exit `22`. No such export exits `30`. | Test (TC-2047) |
+| FR-817-AC-16 | In an implementation whose mapper does not lower clauses over protocol subjects, exporting a temporal clause that a protocol requires on an `origin` row settles `status` `refused` with `refusal` exactly `{"code": "unimplemented_capability", "cause": "unimplemented-meaning", "capability": C, "target": "tla", "construct": K, "node": N, "locus": L}`, `K` the protocol clause node's `node_tag`/`semantic_form`, `C` the text `export:tla:` followed by `K`, `N` its node id and `L` its region or `null`, exit `21`, with no `target_text`, no `package` and no file; the outcome diagnostic carries the same `code`, `cause` and `capability`. Under `minimum_fidelity` `any` the result is the same, and under `export.nodes` `N - 1`, with `N` the number of nodes classification charges up to and including the protocol clause node, the export stops `incomplete`, exit `22`. No such export exits `30`. | Test (TC-2047) |
 | FR-817-AC-17 | An export whose program compiles to a checked package that admission refuses `invalid_package`, and one whose import is missing (`missing_import`), each write the outcome diagnostic with that code, its own cause, payload and locus, and exit with the exit the same request's compile gives, not `30`; no diagnostic text of either is a generic mapper message in place of the cause. | Test (TC-2047) |
+| FR-817-AC-18 | An export of a clause required by `Hand` (FR-813-AC-12) whose `protocols` member holds `{"protocol": "Hand", "over": O, "roles": {}}` assembles with `pr_Hand_over` fixed to `O`'s key; the same binding with an unknown member, or without `over`, refuses `invalid_runtime_input` at its pointer under `/request/export/protocols`, exit `20`, as FR-520 refuses it; a binding that supplies `a` (a role on a whole model) refuses `wrong-role-mapping` naming `a`; a protocol with a static role on a model type and no binding refuses `wrong-role-mapping` naming that role; a protocol with a replicated role and no `universes` entry for its population refuses `unsupported_projection`/`unbounded-extent` naming the population. | Test (TC-2047) |
 
 ## Dependencies
 

@@ -14,7 +14,7 @@ relationships:
 Verify direct and monitor-based temporal encodings, the constant identity
 universe of quantified clauses, past-operator history encodings, the
 terminal step, step intervals under stuttering, fairness, protocol subjects,
-dense time and proof-free Lean output. Scope: FR-813-AC-1 to FR-813-AC-24.
+dense time and proof-free Lean output. Scope: FR-813-AC-1 to FR-813-AC-28.
 
 ## Test Procedure
 
@@ -36,6 +36,13 @@ dense time and proof-free Lean output. Scope: FR-813-AC-1 to FR-813-AC-24.
 9. In a build that lacks each construct of FR-813 "Constructs not lowered",
    export a clause holding it.
 10. Inspect the Lean files.
+11. Export `always not holds(c.value > 5)` over the counter variant with `drop`,
+    and `always holds(c.value <= 5)` without a snapshot under `Keys_Counter`
+    `{<<1>>, <<2>>}` (FR-813-AC-25, AC-26).
+12. Export `always[2 ms, 3 ms] holds(l.on)` over the quiescent `Lamp`
+    (FR-813-AC-27).
+13. Export the clauses of FR-813-AC-28 over protocol `Two` and trace the
+    register and counter per position.
 
 ## Expected Results
 
@@ -54,3 +61,6 @@ dense time and proof-free Lean output. Scope: FR-813-AC-1 to FR-813-AC-24.
 - Step 9: `unimplemented_capability`/`unimplemented-meaning` naming the
   construct, exit 21, no package; never exit 30.
 - Step 10: no `theorem`, proof or `sorry`.
+- Steps 11 and 12: each clause refuted in both targets (TLC `violated`, Lean
+  `Ob_T` false), as in FSL.
+- Step 13: the stated cells and counter values; the clause holds.
