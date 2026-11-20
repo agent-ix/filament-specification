@@ -101,12 +101,17 @@ A lossless source tree with the productions below, or a located refusal.
    grammar: a name that resolves to no operation refuses
    `missing_declaration`/`missing-name` at the name. The parser's two-segment
    form is therefore the source-object form, not an error.
-8. **Lists that name members are never empty.** The `join` list of a
-   `parallel` names every branch exactly once and a `parallel` has at least two
-   branches, so `join all []` is `invalid_syntax`/`unexpected-token` at `]`.
-   An `align skip` list names at least one operation, so `align skip {}` is
-   `invalid_syntax`/`unexpected-token` at `}`; a clause that skips nothing
-   writes no `align skip`.
+8. **A `join` list is never empty; an empty `align skip` list is the
+   checker's to refuse.** The `join` list of a `parallel` names every branch
+   exactly once and a `parallel` has at least two branches, so `join all []`
+   is `invalid_syntax`/`unexpected-token` at `]`. The `align skip` entry list
+   is optional in the grammar, so `align skip {}` parses; the checker refuses
+   it `unsupported_construct`/`expression-form` at the list
+   ([FR-398](../analysis/FR-398-align-hyperproperty-traces-on-a-projection.md)),
+   and a clause that skips nothing writes no `align skip`. The empty list is
+   a semantic refusal, not a syntax error, because the list's shape is
+   well formed and only its meaning (a projection that removes nothing) is
+   refused.
 
 ## Acceptance Criteria
 
@@ -119,7 +124,8 @@ A lossless source tree with the productions below, or a located refusal.
 | FR-501-AC-5 | `Decimal[0, 9; 0, 2; exact]` and `Decimal[0, 9; 0, 2; nearest-even]` parse as a type reference; `Decimal[0, 9; 0, 2]` as a parameter type, a `convert` target and a `Quantity` carrier each refuse `invalid_syntax`/`unexpected-token` at the closing `]`. | Test (TC-1006) |
 | FR-501-AC-6 | Under the complete facets, `temporal T using v over (o: M::O) on origin { always holds(true) }` parses with no `clock` member and binds the FR-252 default; the same clause with that default written as `clock "model-steps"` over an untimed model gives an equal binding and obligation identity. | Test (TC-1007) |
 | FR-501-AC-7 | `pre P using v on M::T::op { true }` and `pre P using v on T::op { true }` both parse with one `operation-name`; in a unit declaring `object T { operation op(); }` the second binds the source object's operation, and in a unit declaring no `T` it refuses `missing_declaration`/`missing-name` at `T::op`; `pre P using v on T { true }` refuses `invalid_syntax`/`unexpected-token` at the `{`. | Test (TC-1008) |
-| FR-501-AC-8 | `parallel p { branch a sequence s {} branch b sequence t {} } join all [a, b];` parses; the same with `join all []` refuses `invalid_syntax`/`unexpected-token` at `]`; a hyper clause with `align skip { V::Vault::mix }` parses and with `align skip {}` refuses `invalid_syntax`/`unexpected-token` at `}`. | Test (TC-1008) |
+| FR-501-AC-8 | `parallel p { branch a sequence s {} branch b sequence t {} } join all [a, b];` parses; the same with `join all []` refuses `invalid_syntax`/`unexpected-token` at `]`; a hyper clause with `align skip { V::Vault::mix }` parses. | Test (TC-1008) |
+| FR-501-AC-9 | A hyper clause over `behaviours` with `align skip {}` parses with no `invalid_syntax` diagnostic and an `align-skip` node holding zero entries, and the checker refuses it `unsupported_construct`/`expression-form` at the list, stage S3, exit 21 (FR-398); `align skip { V::Vault::mix, }` (a trailing comma) still refuses `invalid_syntax`/`unexpected-token` at the `}`. | Test (TC-1008) |
 
 ## Dependencies
 
