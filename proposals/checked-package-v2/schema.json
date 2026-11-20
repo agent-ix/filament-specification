@@ -2240,7 +2240,14 @@
                       "const": "text"
                     },
                     "value": {
-                      "$ref": "#/$defs/Identifier"
+                      "anyOf": [
+                        {
+                          "$ref": "#/$defs/Identifier"
+                        },
+                        {
+                          "const": "#ieee_operand"
+                        }
+                      ]
                     }
                   }
                 }
