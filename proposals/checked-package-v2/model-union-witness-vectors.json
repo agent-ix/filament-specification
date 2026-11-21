@@ -1,696 +1,118 @@
 {
-  "version": "filament.model-union-witness-vectors/v3",
-  "note": "QSL-2743. Row-contract vectors for FR-830 (selected model-union witness rows). They reuse the declarations of domain-package-acme-shapes.json (Shape Flag(Boolean)/Empty/Both(Pair); List Nil/Cons(Cell); Cell(Integer, List); Nest(Pair, Shape); Holder(pair, shape, pairs)) and the package fixtures/positive-model-tuple-union.json as read by model-tuple-union-vectors.json, and do not restate the declaration semantics (FR-322 'Tuple value types and payload-bearing variant types', FR-440, FR-441). Encodings are the producer sidecar's existing ones, written as JSON values: `structural_node` and each payload `node` are the serde form of CheckedNodeId, which is exactly the `node_id` object of the node in the package; `type_handle`, `settled_key`, `member.declaration` and the composite and unit `node` of `original_type` are OriginalNodeKey values (nested at most 32 keys); `original_type` is a complete OriginalValueType; `original_case` is the DeclarationKey {package, node} of the selected document's variant. The fixture is symbolic: node ids are written here and no vector derives an original key from a name. For model declarations the original key and the emitted node id are written alike because they coincide today; their roles stay distinct and no vector requires the equality. SIDE INPUTS: a case's `witnesses` carries the rows the join reads for the payload nodes: `declarations` rows in the identity file's `declarations` encoding (form record_value_type or declared_unit; exact_identity.value a node reference or a declared UnitId) and `tuples` rows with the members of SelectedTupleDeclarationRow {structural_node, selected_document, original_identity, node_key}; the identity file carries no member for selected model tuples today, so `tuples` is an in-memory adapter input and its absence on the bytes-only route is a named design blocker (FR-830 Status). HOW A CASE IS BUILT: a case builds its input from its `base` (or, for a positive, from the package and projection named here) with, in order, its `extensions` (named patch sets under `extensions`, each with a `document_patch` over the `domain_package` projection of model-tuple-union-vectors.json, a `package_patch` over the package fixture and optional `witnesses`), then its own `document_patch` and `package_patch`, then `witnesses_patch` over the witnesses (the witnesses of the extensions, in extension order, then the case's own, concatenated member by member), then `patch` over `model_unions`; a refusal inherits its base's `scope`, extensions, patches and witnesses and replaces them only with its own `scope_override`. Expected results are typed refusals: `code` is a native ExactTypeProjectionErrorCode spelling (unavailable_identity_witness, incomplete_identity_witness, mismatched_identity_witness, conflicting_identity_witness, unknown_node, exhausted_work, exhausted_storage) or `malformed` for the identity-file reader's closed-format refusal; `locus.pointer` is the sidecar member and the structural locus is the row's `structural_node` (or the payload `node` named by the pointer). Budget cases state relations to a baseline measured on the same input, not static totals, because the native work and storage policy fixes each charge. Published inputs and expected results only: no reader implements FR-830, every patch below is unread, and nothing here is qualified by running it.",
-  "package": "fixtures/positive-model-tuple-union.json",
-  "domain_package": "model-tuple-union-vectors.json#/domain_package",
-  "extensions": {
-    "E-unit": {
-      "description": "A model-owned dimension Time and unit ms, and Shape gains Span(ms). Authored as patches over the projection and the package; a full FCD document extension of domain-package-acme-shapes.json (FCD FR-146 dimensions and units members) is a prerequisite to executing it.",
-      "document_patch": [
-        {
-          "op": "add",
-          "path": "/variant_types/0/cases/-",
-          "value": {
-            "name": "Span",
-            "payloadType": "ix://filament/unit/ms",
-            "identity": "ix://acme/shapes/variant/Shape-Span"
-          }
-        },
-        {
-          "op": "add",
-          "path": "/dimensions",
-          "value": [
-            {
-              "node": "ix://acme/shapes/dimension/Time"
-            }
-          ]
-        },
-        {
-          "op": "add",
-          "path": "/units",
-          "value": [
-            {
-              "node": "ix://acme/shapes/unit/ms"
-            }
-          ]
-        }
-      ],
-      "package_patch": [
-        {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "term": "dimension"
-            },
-            "dependencies": [],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "dimension",
-                "ix://acme/shapes/dimension/Time"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "scalar_type",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
-            ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/dimension/Time"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "dimension",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "dimension",
-                "ix://acme/shapes/dimension/Time"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "term": "unit",
-              "dimension_node_id": {
-                "package": "acme/shapes",
-                "path": [
-                  "scalar_type",
-                  "dimension",
-                  "ix://acme/shapes/dimension/Time"
-                ],
-                "ordinal": 0
-              },
-              "target_unit_node_id": null,
-              "scale": {
-                "numerator": "1",
-                "denominator": "1"
-              },
-              "offset": {
-                "numerator": "0",
-                "denominator": "1"
-              }
-            },
-            "dependencies": [
-              {
-                "package": "acme/shapes",
-                "path": [
-                  "scalar_type",
-                  "dimension",
-                  "ix://acme/shapes/dimension/Time"
-                ],
-                "ordinal": 0
-              }
-            ],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "unit",
-                "ix://acme/shapes/unit/ms"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "scalar_type",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
-            ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/unit/ms"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "unit",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "dimension",
-                "ix://acme/shapes/dimension/Time"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "dimension",
-                "ix://acme/shapes/dimension/Time"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
-            ],
-            "role": "generated"
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "unit",
-                "ix://acme/shapes/unit/ms"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
-            ],
-            "role": "generated"
-          }
-        }
-      ],
-      "witnesses": {
-        "declarations": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "scalar_type",
-                "unit",
-                "ix://acme/shapes/unit/ms"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "form": "declared_unit",
-            "original_identity": "ix://acme/shapes/unit/ms",
-            "exact_identity": {
-              "kind": "declared_unit",
-              "value": {
-                "kind": "declared",
-                "node": {
-                  "package": "acme/shapes",
-                  "path": [
-                    "scalar_type",
-                    "unit",
-                    "ix://acme/shapes/unit/ms"
-                  ],
-                  "ordinal": 0
-                }
-              }
-            }
-          }
-        ]
-      }
+  "version": "filament.model-union-witness-vectors/v4",
+  "fixtures": {
+    "A": {
+      "document": "domain-package-acme-shapes.json",
+      "package": "fixtures/positive-model-tuple-union.json",
+      "note": "The existing Shape, List, Cell, Pair, Swap, Nest, Holder fixtures."
     },
-    "E-records": {
-      "description": "Records Wrapper(shape: Shape, flag: Boolean), Node(next: Link) and Orphan(n: Integer), and the union Link{End, More(Node)}, which makes Node and Link mutually recursive. Authored as patches; the full document extension is a prerequisite to executing it.",
-      "document_patch": [
-        {
-          "op": "add",
-          "path": "/record_types",
-          "value": [
-            {
-              "node": "ix://acme/shapes/Wrapper",
-              "fields": [
-                {
-                  "name": "shape",
-                  "typeRef": "ix://acme/shapes/Shape"
-                },
-                {
-                  "name": "flag",
-                  "typeRef": "ix://filament/native/Boolean"
-                }
-              ]
-            },
-            {
-              "node": "ix://acme/shapes/Node",
-              "fields": [
-                {
-                  "name": "next",
-                  "typeRef": "ix://acme/shapes/Link"
-                }
-              ]
-            },
-            {
-              "node": "ix://acme/shapes/Orphan",
-              "fields": [
-                {
-                  "name": "n",
-                  "typeRef": "ix://filament/native/Integer"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "op": "add",
-          "path": "/variant_types/-",
-          "value": {
-            "node": "ix://acme/shapes/Link",
-            "cases": [
-              {
-                "name": "End",
-                "payloadType": null
-              },
-              {
-                "name": "More",
-                "payloadType": "ix://acme/shapes/Node"
-              }
-            ]
-          }
-        }
-      ],
-      "package_patch": [
-        {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "members": [],
-              "term": "aggregate"
-            },
-            "dependencies": [],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Wrapper"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "model",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
-            ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/Wrapper"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "record_value_type",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Wrapper"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "members": [],
-              "term": "aggregate"
-            },
-            "dependencies": [],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Node"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "model",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
-            ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/Node"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "record_value_type",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Node"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "members": [],
-              "term": "aggregate"
-            },
-            "dependencies": [],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Orphan"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "model",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
-            ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/Orphan"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "record_value_type",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Orphan"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "members": [],
-              "term": "aggregate"
-            },
-            "dependencies": [],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "variant_type",
-                "ix://acme/shapes/Link"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "model",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
-            ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/Link"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "variant_type",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "variant_type",
-                "ix://acme/shapes/Link"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Wrapper"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
-            ],
-            "role": "generated"
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Node"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
-            ],
-            "role": "generated"
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Orphan"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
-            ],
-            "role": "generated"
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "variant_type",
-                "ix://acme/shapes/Link"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
-            ],
-            "role": "generated"
-          }
-        }
-      ],
-      "witnesses": {
-        "declarations": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Wrapper"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "form": "record_value_type",
-            "original_identity": "ix://acme/shapes/Wrapper",
-            "exact_identity": {
-              "kind": "record",
-              "value": {
-                "package": "acme/shapes",
-                "path": [
-                  "model",
-                  "record_value_type",
-                  "ix://acme/shapes/Wrapper"
-                ],
-                "ordinal": 0
-              }
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "record_value_type",
-                "ix://acme/shapes/Node"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "form": "record_value_type",
-            "original_identity": "ix://acme/shapes/Node",
-            "exact_identity": {
-              "kind": "record",
-              "value": {
-                "package": "acme/shapes",
-                "path": [
-                  "model",
-                  "record_value_type",
-                  "ix://acme/shapes/Node"
-                ],
-                "ordinal": 0
-              }
-            }
-          }
-        ]
-      }
+    "B": {
+      "document": "domain-package-acme-shapes-witness.json",
+      "package": "fixtures/witness-model-union-rows.json",
+      "note": "A complete FCD document and checked package: A plus the dimension Time and unit ms, the records Wrapper, Node and Orphan, and the unions Link and Mix, with the Holder object type present in the package."
     }
   },
   "positive": [
     {
       "id": "MUW-01-full-environment",
       "criterion": "FR-830-AC-1",
+      "fixtures": "A",
       "scope": {
         "mode": "full"
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Swap",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -930,11 +352,12 @@
           ]
         }
       ],
-      "note": "Authored order Flag, Empty, Both is carried canonically as Both, Empty, Flag with positions 2, 1, 0; rows sort List before Shape. Pair and Cell are tuples witnessed by their SelectedTupleDeclarationRow; Boolean is a native scalar node and needs no witness."
+      "note": "Authored order Flag, Empty, Both is carried canonically as Both, Empty, Flag with positions 2, 1, 0; union rows sort List before Shape, tuple rows Cell, Nest, Pair, Swap. Every tuple node has a row though Nest and Swap are no payload; every payload tuple is joined to its model_tuples row from the bytes alone."
     },
     {
       "id": "MUW-02-reached-from-shape",
       "criterion": "FR-830-AC-2",
+      "fixtures": "A",
       "scope": {
         "mode": "reached",
         "request": {
@@ -948,54 +371,32 @@
         }
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -1135,11 +536,12 @@
         }
       ],
       "closure_edges": 4,
-      "note": "Shape reaches Boolean and Pair; Pair reaches Boolean and Integer; List is not reached."
+      "note": "Shape reaches Boolean and Pair; Pair reaches Boolean and Integer; List and the other tuples are not reached, and only Pair's tuple row is needed."
     },
     {
       "id": "MUW-03-reached-does-not-inspect-unrelated-row",
       "criterion": "FR-830-AC-2",
+      "fixtures": "A",
       "scope": {
         "mode": "reached",
         "request": {
@@ -1153,54 +555,32 @@
         }
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -1441,11 +821,12 @@
         }
       ],
       "closure_edges": 4,
-      "note": "The List row is wrong but is not in the reached closure, so it is neither inspected, charged nor retained; MUW-R-35 refuses the same rows under full scope."
+      "note": "The List row is wrong and is not reached, so it is neither inspected, charged nor retained; the same rows under full scope refuse (MUW-R-35)."
     },
     {
       "id": "MUW-04-reached-cycle-list",
       "criterion": "FR-830-AC-3",
+      "fixtures": "A",
       "scope": {
         "mode": "reached",
         "request": {
@@ -1459,54 +840,32 @@
         }
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -1616,6 +975,7 @@
     {
       "id": "MUW-05-reached-through-tuple",
       "criterion": "FR-830-AC-3",
+      "fixtures": "A",
       "scope": {
         "mode": "reached",
         "request": {
@@ -1629,54 +989,54 @@
         }
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -1816,11 +1176,12 @@
         }
       ],
       "closure_edges": 6,
-      "note": "Nest is a tuple and needs no row; its Shape position makes Shape reached."
+      "note": "Nest is a tuple whose positions reach Pair and Shape (2 edges); Pair adds 2 and Shape adds 2. The reached tuple rows are Nest and Pair; the union row is Shape's."
     },
     {
       "id": "MUW-06-reached-through-object-fields",
       "criterion": "FR-830-AC-3",
+      "fixtures": "B",
       "scope": {
         "mode": "reached",
         "request": {
@@ -1834,123 +1195,29 @@
         }
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
-      "package_patch": [
+      "model_tuples": [
         {
-          "op": "add",
-          "path": "/semantic_graph/nodes/-",
-          "value": {
-            "body": {
-              "members": [],
-              "term": "aggregate"
-            },
-            "dependencies": [],
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "object_type",
-                "ix://acme/shapes/Holder"
-              ],
-              "ordinal": 0
-            },
-            "node_tag": "model",
-            "occurrences": [
-              {
-                "ordinal": 0,
-                "role": "generated"
-              }
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
             ],
-            "owner": {
-              "identity": "acme/shapes",
-              "kind": "model",
-              "node": "ix://acme/shapes/Holder"
-            },
-            "schema_version": "filament.checked-semantic-graph/v2",
-            "semantic_form": "object_type",
-            "semantic_type": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "object_type",
-                "ix://acme/shapes/Holder"
-              ],
-              "ordinal": 0
-            }
-          }
-        },
-        {
-          "op": "add",
-          "path": "/source_map/-",
-          "value": {
-            "node_id": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "object_type",
-                "ix://acme/shapes/Holder"
-              ],
-              "ordinal": 0
-            },
-            "ordinal": 0,
-            "regions": [
-              {
-                "end": 1,
-                "source": {
-                  "authority": "agent-ix",
-                  "identity": "example"
-                },
-                "start": 0
-              }
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
             ],
-            "role": "generated"
+            "ordinal": 0
           }
         }
       ],
@@ -2093,71 +1360,115 @@
         }
       ],
       "closure_edges": 7,
-      "note": "The Holder object type adds a model/object_type node by the form of Switch in fixtures/positive-state-transition.json. Its fields pair, shape and pairs reach Pair, Shape and Pair (3 edges); Pair adds 2 and Shape adds 2."
+      "note": "The Holder object type is a model/object_type node of fixture B. Its fields pair, shape and pairs reach Pair, Shape and Pair (3 edges); Pair adds 2 and Shape adds 2."
     },
     {
       "id": "MUW-07-clock-payload",
       "criterion": "FR-830-AC-4",
+      "fixtures": "A",
+      "document_patch": [
+        {
+          "op": "replace",
+          "path": "/types/5/variants/0/payloadType",
+          "value": "ix://filament/native/Clock"
+        }
+      ],
       "scope": {
         "mode": "full"
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
-      "document_patch": [
+      "model_tuples": [
         {
-          "op": "replace",
-          "path": "/variant_types/0/cases/0/payloadType",
-          "value": "ix://filament/native/Clock"
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Swap",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          }
         }
       ],
-      "note": "model-tuple-union-vectors.json TK-08: Shape.Flag's payloadType is Clock. The row keeps the authored payload with no node and no original_type; Empty stays nullary.",
       "model_unions": [
         {
           "structural_node": {
@@ -2386,75 +1697,127 @@
             }
           ]
         }
-      ]
+      ],
+      "note": "model-tuple-union-vectors.json TK-08: Shape.Flag's payloadType is Clock. The row keeps the authored payload with no node and no original_type; Empty stays nullary."
     },
     {
       "id": "MUW-08-same-spelled-case-in-two-unions",
       "criterion": "FR-830-AC-5",
+      "fixtures": "A",
+      "document_patch": [
+        {
+          "op": "add",
+          "path": "/types/7/variants/-",
+          "value": {
+            "identity": "ix://acme/shapes/variant/List-Empty",
+            "name": "Empty",
+            "origin": {
+              "source": {
+                "path": "shapes/List.md",
+                "sourceIdentity": "ix://acme/shapes/spec",
+                "startColumn": 1,
+                "startLine": 1
+              }
+            }
+          }
+        }
+      ],
       "scope": {
         "mode": "full"
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
-      "document_patch": [
+      "model_tuples": [
         {
-          "op": "add",
-          "path": "/variant_types/2/cases/-",
-          "value": {
-            "name": "Empty",
-            "payloadType": null,
-            "identity": "ix://acme/shapes/variant/List-Empty"
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Swap",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
           }
         }
       ],
-      "note": "List gains a nullary Empty beside Shape.Empty; the two cases are two members with distinct declarations and distinct original cases.",
       "model_unions": [
         {
           "structural_node": {
@@ -2717,75 +2080,128 @@
             }
           ]
         }
-      ]
+      ],
+      "note": "List gains a nullary Empty beside Shape.Empty; the two cases are two members with distinct declarations and distinct original cases."
     },
     {
       "id": "MUW-09-union-payload-names-the-union-row",
       "criterion": "FR-830-AC-1",
+      "fixtures": "A",
+      "document_patch": [
+        {
+          "op": "add",
+          "path": "/types/5/variants/-",
+          "value": {
+            "identity": "ix://acme/shapes/variant/Shape-Tail",
+            "name": "Tail",
+            "origin": {
+              "source": {
+                "path": "shapes/Shape.md",
+                "sourceIdentity": "ix://acme/shapes/spec",
+                "startColumn": 1,
+                "startLine": 1
+              }
+            },
+            "payloadType": "ix://acme/shapes/List"
+          }
+        }
+      ],
       "scope": {
         "mode": "full"
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
-      "document_patch": [
+      "model_tuples": [
         {
-          "op": "add",
-          "path": "/variant_types/0/cases/-",
-          "value": {
-            "name": "Tail",
-            "payloadType": "ix://acme/shapes/List",
-            "identity": "ix://acme/shapes/variant/Shape-Tail"
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Swap",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
           }
         }
       ],
-      "note": "Shape gains Tail(List). The payload's composite key is List's own row's type_handle, the model-union witness of the payload node.",
       "model_unions": [
         {
           "structural_node": {
@@ -3069,64 +2485,109 @@
             }
           ]
         }
-      ]
+      ],
+      "note": "Shape gains Tail(List). The payload's composite key is List's own row's type_handle, the model-union witness of the payload node."
     },
     {
       "id": "MUW-10-forged-but-consistent",
       "criterion": "FR-830-AC-12",
+      "fixtures": "A",
       "scope": {
         "mode": "full"
       },
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
-      "note": "Every join passes with producer keys the reader cannot authenticate: the rows are admitted and the keys returned byte for byte. Admission is not a claim of provenance.",
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "forger",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://forger/Cell"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "forger",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://forger/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Swap",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -3192,11 +2653,11 @@
                 "original_type": {
                   "kind": "composite",
                   "node": {
-                    "package": "acme/shapes",
+                    "package": "forger",
                     "path": [
                       "model",
                       "tuple_value_type",
-                      "ix://acme/shapes/Cell"
+                      "ix://forger/Cell"
                     ],
                     "ordinal": 0
                   }
@@ -3293,11 +2754,11 @@
                 "original_type": {
                   "kind": "composite",
                   "node": {
-                    "package": "acme/shapes",
+                    "package": "forger",
                     "path": [
                       "model",
                       "tuple_value_type",
-                      "ix://acme/shapes/Pair"
+                      "ix://forger/Pair"
                     ],
                     "ordinal": 0
                   }
@@ -3365,40 +2826,50 @@
             }
           ]
         }
-      ]
+      ],
+      "note": "Every join passes with producer keys the reader cannot authenticate: union and tuple rows carry keys of a producer 'forger' that name no document of this package, and are admitted and returned byte for byte. Admission is not a claim of provenance."
     },
     {
-      "id": "MUW-11-unit-payload",
+      "id": "MUW-11-all-payload-forms",
       "criterion": "FR-830-AC-13",
+      "fixtures": "B",
       "scope": {
-        "mode": "full"
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "variant_type",
+            "ix://acme/shapes/Mix"
+          ],
+          "ordinal": 0
+        }
       },
-      "extensions": [
-        "E-unit"
-      ],
       "witnesses": {
-        "declarations": [],
-        "tuples": [
+        "declarations": [
           {
             "structural_node": {
               "package": "acme/shapes",
               "path": [
                 "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
+                "object_type",
+                "ix://acme/shapes/Holder"
               ],
               "ordinal": 0
             },
             "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
+            "form": "object_type",
+            "original_identity": "ix://acme/shapes/Holder",
+            "exact_identity": {
+              "kind": "object",
+              "value": {
+                "chain": [
+                  {
+                    "package": "acme/shapes",
+                    "node": "ix://acme/shapes/Holder"
+                  }
+                ]
+              }
             }
           },
           {
@@ -3406,25 +2877,108 @@
               "package": "acme/shapes",
               "path": [
                 "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
+                "record_value_type",
+                "ix://acme/shapes/Node"
               ],
               "ordinal": 0
             },
             "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
+            "form": "record_value_type",
+            "original_identity": "ix://acme/shapes/Node",
+            "exact_identity": {
+              "kind": "record",
+              "value": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "record_value_type",
+                  "ix://acme/shapes/Node"
+                ],
+                "ordinal": 0
+              }
+            }
+          },
+          {
+            "structural_node": {
               "package": "acme/shapes",
               "path": [
                 "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
+                "record_value_type",
+                "ix://acme/shapes/Wrapper"
               ],
               "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "form": "record_value_type",
+            "original_identity": "ix://acme/shapes/Wrapper",
+            "exact_identity": {
+              "kind": "record",
+              "value": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "record_value_type",
+                  "ix://acme/shapes/Wrapper"
+                ],
+                "ordinal": 0
+              }
+            }
+          },
+          {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "scalar_type",
+                "unit",
+                "ix://acme/shapes/unit/ms"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "form": "declared_unit",
+            "original_identity": "ix://acme/shapes/unit/ms",
+            "exact_identity": {
+              "kind": "declared_unit",
+              "value": {
+                "kind": "declared",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "scalar_type",
+                    "unit",
+                    "ix://acme/shapes/unit/ms"
+                  ],
+                  "ordinal": 0
+                }
+              }
             }
           }
         ]
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -3432,7 +2986,7 @@
             "path": [
               "model",
               "variant_type",
-              "ix://acme/shapes/List"
+              "ix://acme/shapes/Link"
             ],
             "ordinal": 0
           },
@@ -3442,7 +2996,7 @@
             "path": [
               "model",
               "variant_type",
-              "ix://acme/shapes/List"
+              "ix://acme/shapes/Link"
             ],
             "ordinal": 0
           },
@@ -3451,18 +3005,18 @@
             "path": [
               "model",
               "variant_type",
-              "ix://acme/shapes/List"
+              "ix://acme/shapes/Link"
             ],
             "ordinal": 0
           },
           "cases": [
             {
               "rank": 0,
-              "position": 1,
-              "name": "Cons",
+              "position": 0,
+              "name": "End",
               "original_case": {
                 "package": "acme/shapes",
-                "node": "ix://acme/shapes/variant/List-Cons"
+                "node": "ix://acme/shapes/variant/Link-End"
               },
               "member": {
                 "declaration": {
@@ -3470,11 +3024,35 @@
                   "path": [
                     "model",
                     "variant_type",
-                    "ix://acme/shapes/List"
+                    "ix://acme/shapes/Link"
                   ],
                   "ordinal": 0
                 },
-                "identifier": "Cons"
+                "identifier": "End"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "More",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Link-More"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Link"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "More"
               },
               "payload": {
                 "kind": "data",
@@ -3482,8 +3060,8 @@
                   "package": "acme/shapes",
                   "path": [
                     "model",
-                    "tuple_value_type",
-                    "ix://acme/shapes/Cell"
+                    "record_value_type",
+                    "ix://acme/shapes/Node"
                   ],
                   "ordinal": 0
                 },
@@ -3493,36 +3071,12 @@
                     "package": "acme/shapes",
                     "path": [
                       "model",
-                      "tuple_value_type",
-                      "ix://acme/shapes/Cell"
+                      "record_value_type",
+                      "ix://acme/shapes/Node"
                     ],
                     "ordinal": 0
                   }
                 }
-              }
-            },
-            {
-              "rank": 1,
-              "position": 0,
-              "name": "Nil",
-              "original_case": {
-                "package": "acme/shapes",
-                "node": "ix://acme/shapes/variant/List-Nil"
-              },
-              "member": {
-                "declaration": {
-                  "package": "acme/shapes",
-                  "path": [
-                    "model",
-                    "variant_type",
-                    "ix://acme/shapes/List"
-                  ],
-                  "ordinal": 0
-                },
-                "identifier": "Nil"
-              },
-              "payload": {
-                "kind": "none"
               }
             }
           ]
@@ -3533,7 +3087,7 @@
             "path": [
               "model",
               "variant_type",
-              "ix://acme/shapes/Shape"
+              "ix://acme/shapes/Mix"
             ],
             "ordinal": 0
           },
@@ -3543,7 +3097,7 @@
             "path": [
               "model",
               "variant_type",
-              "ix://acme/shapes/Shape"
+              "ix://acme/shapes/Mix"
             ],
             "ordinal": 0
           },
@@ -3552,18 +3106,18 @@
             "path": [
               "model",
               "variant_type",
-              "ix://acme/shapes/Shape"
+              "ix://acme/shapes/Mix"
             ],
             "ordinal": 0
           },
           "cases": [
             {
               "rank": 0,
-              "position": 2,
-              "name": "Both",
+              "position": 7,
+              "name": "Bool",
               "original_case": {
                 "package": "acme/shapes",
-                "node": "ix://acme/shapes/variant/Shape-Both"
+                "node": "ix://acme/shapes/variant/Mix-Bool"
               },
               "member": {
                 "declaration": {
@@ -3571,11 +3125,194 @@
                   "path": [
                     "model",
                     "variant_type",
-                    "ix://acme/shapes/Shape"
+                    "ix://acme/shapes/Mix"
                   ],
                   "ordinal": 0
                 },
-                "identifier": "Both"
+                "identifier": "Bool"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "boolean"
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 6,
+              "name": "Held",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Held"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Held"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "object_type",
+                    "ix://acme/shapes/Holder"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "reference",
+                  "effective": {
+                    "chain": [
+                      {
+                        "package": "acme/shapes",
+                        "node": "ix://acme/shapes/Holder"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "rank": 2,
+              "position": 5,
+              "name": "Int",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Int"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Int"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "integer"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "integer"
+                }
+              }
+            },
+            {
+              "rank": 3,
+              "position": 4,
+              "name": "Nada",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Nada"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Nada"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 4,
+              "position": 2,
+              "name": "Next",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Next"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Next"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Link"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "variant_type",
+                      "ix://acme/shapes/Link"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 5,
+              "position": 3,
+              "name": "Pairing",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Pairing"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Pairing"
               },
               "payload": {
                 "kind": "data",
@@ -3603,71 +3340,12 @@
               }
             },
             {
-              "rank": 1,
+              "rank": 6,
               "position": 1,
-              "name": "Empty",
-              "original_case": {
-                "package": "acme/shapes",
-                "node": "ix://acme/shapes/variant/Shape-Empty"
-              },
-              "member": {
-                "declaration": {
-                  "package": "acme/shapes",
-                  "path": [
-                    "model",
-                    "variant_type",
-                    "ix://acme/shapes/Shape"
-                  ],
-                  "ordinal": 0
-                },
-                "identifier": "Empty"
-              },
-              "payload": {
-                "kind": "none"
-              }
-            },
-            {
-              "rank": 2,
-              "position": 0,
-              "name": "Flag",
-              "original_case": {
-                "package": "acme/shapes",
-                "node": "ix://acme/shapes/variant/Shape-Flag"
-              },
-              "member": {
-                "declaration": {
-                  "package": "acme/shapes",
-                  "path": [
-                    "model",
-                    "variant_type",
-                    "ix://acme/shapes/Shape"
-                  ],
-                  "ordinal": 0
-                },
-                "identifier": "Flag"
-              },
-              "payload": {
-                "kind": "data",
-                "node": {
-                  "package": "example",
-                  "path": [
-                    "scalar_type",
-                    "boolean"
-                  ],
-                  "ordinal": 0
-                },
-                "original_type": {
-                  "kind": "boolean"
-                }
-              }
-            },
-            {
-              "rank": 3,
-              "position": 3,
               "name": "Span",
               "original_case": {
                 "package": "acme/shapes",
-                "node": "ix://acme/shapes/variant/Shape-Span"
+                "node": "ix://acme/shapes/variant/Mix-Span"
               },
               "member": {
                 "declaration": {
@@ -3675,7 +3353,7 @@
                   "path": [
                     "model",
                     "variant_type",
-                    "ix://acme/shapes/Shape"
+                    "ix://acme/shapes/Mix"
                   ],
                   "ordinal": 0
                 },
@@ -3708,15 +3386,198 @@
                   }
                 }
               }
+            },
+            {
+              "rank": 7,
+              "position": 0,
+              "name": "Wrap",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Wrap"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Wrap"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "record_value_type",
+                    "ix://acme/shapes/Wrapper"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "record_value_type",
+                      "ix://acme/shapes/Wrapper"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Both"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Pair"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Empty"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Flag"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "boolean"
+                }
+              }
             }
           ]
         }
       ],
-      "note": "Span(ms): the payload node is the model-owned unit node, the original type is a quantity of the declared unit, and the unit key equals the declared_unit declaration row's key."
+      "closure_edges": 18,
+      "note": "Mix carries one case of every payload form: native Boolean and Integer, the object type Holder (reference of its effective id), a union Link, a tuple Pair, the declared unit ms (quantity of the declared unit key) and the record Wrapper, authored in the reverse of canonical order so rank and position differ; Nada is nullary. Closure edges: Mix 7, Wrapper 2, Link 1, Node 1, Holder 3, Shape 2, Pair 2. Witnesses: model_tuples for Pair, declarations for Holder (object_type), Node and Wrapper (record_value_type) and ms (declared_unit), and the union rows Link, Mix, Shape."
     },
     {
       "id": "MUW-12-reached-through-record",
       "criterion": "FR-830-AC-3",
+      "fixtures": "B",
       "scope": {
         "mode": "reached",
         "request": {
@@ -3729,58 +3590,33 @@
           "ordinal": 0
         }
       },
-      "extensions": [
-        "E-records"
-      ],
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -3920,11 +3756,12 @@
         }
       ],
       "closure_edges": 6,
-      "note": "Wrapper reaches Shape and Boolean (2); Shape adds 2 and Pair adds 2. Only Shape needs a row."
+      "note": "Wrapper reaches Shape and Boolean (2); Shape adds 2 and Pair adds 2. Only Shape and Pair need rows."
     },
     {
       "id": "MUW-13-recursive-record-union",
       "criterion": "FR-830-AC-3",
+      "fixtures": "B",
       "scope": {
         "mode": "reached",
         "request": {
@@ -3937,58 +3774,37 @@
           "ordinal": 0
         }
       },
-      "extensions": [
-        "E-records"
-      ],
       "witnesses": {
-        "declarations": [],
-        "tuples": [
+        "declarations": [
           {
             "structural_node": {
               "package": "acme/shapes",
               "path": [
                 "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
+                "record_value_type",
+                "ix://acme/shapes/Node"
               ],
               "ordinal": 0
             },
             "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
+            "form": "record_value_type",
+            "original_identity": "ix://acme/shapes/Node",
+            "exact_identity": {
+              "kind": "record",
+              "value": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "record_value_type",
+                  "ix://acme/shapes/Node"
+                ],
+                "ordinal": 0
+              }
             }
           }
         ]
       },
+      "model_tuples": [],
       "model_unions": [
         {
           "structural_node": {
@@ -4098,6 +3914,7 @@
     {
       "id": "MUW-14-unrelated-unwitnessed-record",
       "criterion": "FR-830-AC-3",
+      "fixtures": "B",
       "scope": {
         "mode": "reached",
         "request": {
@@ -4110,58 +3927,33 @@
           "ordinal": 0
         }
       },
-      "extensions": [
-        "E-records"
-      ],
       "witnesses": {
-        "declarations": [],
-        "tuples": [
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Pair",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Pair"
-              ],
-              "ordinal": 0
-            }
-          },
-          {
-            "structural_node": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            },
-            "selected_document": "acme/shapes",
-            "original_identity": "ix://acme/shapes/Cell",
-            "node_key": {
-              "package": "acme/shapes",
-              "path": [
-                "model",
-                "tuple_value_type",
-                "ix://acme/shapes/Cell"
-              ],
-              "ordinal": 0
-            }
-          }
-        ]
+        "declarations": []
       },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
       "model_unions": [
         {
           "structural_node": {
@@ -4301,7 +4093,1115 @@
         }
       ],
       "closure_edges": 4,
-      "note": "Orphan, Wrapper and Node are not reached from Shape and have no declaration witness; they are neither required nor inspected."
+      "note": "Orphan, Wrapper, Node, Holder, Mix, Link and ms are not reached from Shape and have no declaration witness; they are neither required nor inspected."
+    },
+    {
+      "id": "MUW-15-full-environment-complete",
+      "criterion": "FR-830-AC-1",
+      "fixtures": "B",
+      "scope": {
+        "mode": "full"
+      },
+      "witnesses": {
+        "declarations": [
+          {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/shapes/Holder"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "form": "object_type",
+            "original_identity": "ix://acme/shapes/Holder",
+            "exact_identity": {
+              "kind": "object",
+              "value": {
+                "chain": [
+                  {
+                    "package": "acme/shapes",
+                    "node": "ix://acme/shapes/Holder"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "record_value_type",
+                "ix://acme/shapes/Node"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "form": "record_value_type",
+            "original_identity": "ix://acme/shapes/Node",
+            "exact_identity": {
+              "kind": "record",
+              "value": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "record_value_type",
+                  "ix://acme/shapes/Node"
+                ],
+                "ordinal": 0
+              }
+            }
+          },
+          {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "record_value_type",
+                "ix://acme/shapes/Wrapper"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "form": "record_value_type",
+            "original_identity": "ix://acme/shapes/Wrapper",
+            "exact_identity": {
+              "kind": "record",
+              "value": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "record_value_type",
+                  "ix://acme/shapes/Wrapper"
+                ],
+                "ordinal": 0
+              }
+            }
+          },
+          {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "scalar_type",
+                "unit",
+                "ix://acme/shapes/unit/ms"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "form": "declared_unit",
+            "original_identity": "ix://acme/shapes/unit/ms",
+            "exact_identity": {
+              "kind": "declared_unit",
+              "value": {
+                "kind": "declared",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "scalar_type",
+                    "unit",
+                    "ix://acme/shapes/unit/ms"
+                  ],
+                  "ordinal": 0
+                }
+              }
+            }
+          }
+        ]
+      },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Cell",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Cell"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Nest"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Swap",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Link"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Link"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Link"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 0,
+              "name": "End",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Link-End"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Link"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "End"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "More",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Link-More"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Link"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "More"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "record_value_type",
+                    "ix://acme/shapes/Node"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "record_value_type",
+                      "ix://acme/shapes/Node"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/List-Cons"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/List"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Cell"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 0,
+              "name": "Nil",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/List-Nil"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/List"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Mix"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Mix"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Mix"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 7,
+              "name": "Bool",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Bool"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Bool"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "boolean"
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 6,
+              "name": "Held",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Held"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Held"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "object_type",
+                    "ix://acme/shapes/Holder"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "reference",
+                  "effective": {
+                    "chain": [
+                      {
+                        "package": "acme/shapes",
+                        "node": "ix://acme/shapes/Holder"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "rank": 2,
+              "position": 5,
+              "name": "Int",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Int"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Int"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "integer"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "integer"
+                }
+              }
+            },
+            {
+              "rank": 3,
+              "position": 4,
+              "name": "Nada",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Nada"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Nada"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 4,
+              "position": 2,
+              "name": "Next",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Next"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Next"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Link"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "variant_type",
+                      "ix://acme/shapes/Link"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 5,
+              "position": 3,
+              "name": "Pairing",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Pairing"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Pairing"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Pair"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 6,
+              "position": 1,
+              "name": "Span",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Span"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Span"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "scalar_type",
+                    "unit",
+                    "ix://acme/shapes/unit/ms"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "quantity",
+                  "unit": {
+                    "kind": "declared",
+                    "node": {
+                      "package": "acme/shapes",
+                      "path": [
+                        "scalar_type",
+                        "unit",
+                        "ix://acme/shapes/unit/ms"
+                      ],
+                      "ordinal": 0
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "rank": 7,
+              "position": 0,
+              "name": "Wrap",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Mix-Wrap"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Mix"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Wrap"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "record_value_type",
+                    "ix://acme/shapes/Wrapper"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "record_value_type",
+                      "ix://acme/shapes/Wrapper"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Both"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Pair"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Empty"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Flag"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "boolean"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "note": "Fixture B under full scope: every union-family node (Link, List, Mix, Shape; the enum-family Color needs none) and every tuple node (Cell, Nest, Pair, Swap) has a row, and every payload's declaration witness is given. Orphan is no payload and needs no declaration."
+    },
+    {
+      "id": "MUW-16-reached-does-not-inspect-unrelated-tuple-row",
+      "criterion": "FR-830-AC-15",
+      "fixtures": "A",
+      "scope": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "variant_type",
+            "ix://acme/shapes/Shape"
+          ],
+          "ordinal": 0
+        }
+      },
+      "witnesses": {
+        "declarations": []
+      },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Nest",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Both"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Pair"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Empty"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Flag"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "boolean"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "closure_edges": 4,
+      "note": "The Swap tuple row names the wrong original identity and is not reached, so it is neither inspected nor charged; the same rows under full scope refuse (MUW-TR-09)."
     }
   ],
   "schema_refusals": [
@@ -4901,6 +5801,351 @@
         "locus": "/model_unions/1"
       },
       "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-TS-01-missing-tuple-node-key",
+      "description": "tuple row without node_key",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_tuples/2/node_key"
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/2"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-02-extra-tuple-member",
+      "description": "tuple row carrying a source-tuple member",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_tuples/2/source_tuple_id",
+          "value": "s/1"
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/2"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-03-tuple-node-key-not-a-key",
+      "description": "node_key written as text, not an original node key",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/2/node_key",
+          "value": "k/9"
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/2/node_key"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-04-tuple-node-key-too-deep",
+      "description": "node_key nested deeper than the 32-key depth limit",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/2/node_key",
+          "value": {
+            "kind": "option",
+            "element": {
+              "kind": "option",
+              "element": {
+                "kind": "option",
+                "element": {
+                  "kind": "option",
+                  "element": {
+                    "kind": "option",
+                    "element": {
+                      "kind": "option",
+                      "element": {
+                        "kind": "option",
+                        "element": {
+                          "kind": "option",
+                          "element": {
+                            "kind": "option",
+                            "element": {
+                              "kind": "option",
+                              "element": {
+                                "kind": "option",
+                                "element": {
+                                  "kind": "option",
+                                  "element": {
+                                    "kind": "option",
+                                    "element": {
+                                      "kind": "option",
+                                      "element": {
+                                        "kind": "option",
+                                        "element": {
+                                          "kind": "option",
+                                          "element": {
+                                            "kind": "option",
+                                            "element": {
+                                              "kind": "option",
+                                              "element": {
+                                                "kind": "option",
+                                                "element": {
+                                                  "kind": "option",
+                                                  "element": {
+                                                    "kind": "option",
+                                                    "element": {
+                                                      "kind": "option",
+                                                      "element": {
+                                                        "kind": "option",
+                                                        "element": {
+                                                          "kind": "option",
+                                                          "element": {
+                                                            "kind": "option",
+                                                            "element": {
+                                                              "kind": "option",
+                                                              "element": {
+                                                                "kind": "option",
+                                                                "element": {
+                                                                  "kind": "option",
+                                                                  "element": {
+                                                                    "kind": "option",
+                                                                    "element": {
+                                                                      "kind": "option",
+                                                                      "element": {
+                                                                        "kind": "option",
+                                                                        "element": {
+                                                                          "kind": "option",
+                                                                          "element": {
+                                                                            "kind": "option",
+                                                                            "element": {
+                                                                              "kind": "option",
+                                                                              "element": {
+                                                                                "kind": "option",
+                                                                                "element": {
+                                                                                  "kind": "option",
+                                                                                  "element": {
+                                                                                    "kind": "option",
+                                                                                    "element": {
+                                                                                      "kind": "option",
+                                                                                      "element": {
+                                                                                        "kind": "option",
+                                                                                        "element": {
+                                                                                          "kind": "option",
+                                                                                          "element": {
+                                                                                            "kind": "boolean"
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/2/node_key"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-05-tuple-rows-out-of-order",
+      "description": "tuple rows in the order Nest, Cell, Pair, Swap",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": [
+            {
+              "structural_node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Nest"
+                ],
+                "ordinal": 0
+              },
+              "selected_document": "acme/shapes",
+              "original_identity": "ix://acme/shapes/Nest",
+              "node_key": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Nest"
+                ],
+                "ordinal": 0
+              }
+            },
+            {
+              "structural_node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Cell"
+                ],
+                "ordinal": 0
+              },
+              "selected_document": "acme/shapes",
+              "original_identity": "ix://acme/shapes/Cell",
+              "node_key": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Cell"
+                ],
+                "ordinal": 0
+              }
+            },
+            {
+              "structural_node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Pair"
+                ],
+                "ordinal": 0
+              },
+              "selected_document": "acme/shapes",
+              "original_identity": "ix://acme/shapes/Pair",
+              "node_key": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Pair"
+                ],
+                "ordinal": 0
+              }
+            },
+            {
+              "structural_node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Swap"
+                ],
+                "ordinal": 0
+              },
+              "selected_document": "acme/shapes",
+              "original_identity": "ix://acme/shapes/Swap",
+              "node_key": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Swap"
+                ],
+                "ordinal": 0
+              }
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/1"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-06-tuple-original-identity-not-text",
+      "description": "original_identity written as an integer",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/2/original_identity",
+          "value": 7
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/2/original_identity"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-07-tuple-member-absent",
+      "description": "the sidecar without its model_tuples member; an empty list is required, not an absent member",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_tuples"
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-08-tuple-positions-member",
+      "description": "tuple row carrying a positions member; positions are ordinary scope and not part of the row",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_tuples/2/positions",
+          "value": []
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/2"
+      },
+      "criterion": "FR-830-AC-14"
     }
   ],
   "reader_refusals": [
@@ -5928,13 +7173,300 @@
       "criterion": "FR-830-AC-10"
     },
     {
-      "id": "MUW-R-39-unit-wrong-kind",
-      "description": "the unit of Span's quantity written as a compound unit",
-      "base": "MUW-11-unit-payload",
+      "id": "MUW-TR-01-tuple-node-absent",
+      "description": "the last tuple row names no node of the package; the replacement still sorts last so order is not what refuses",
+      "base": "MUW-01-full-environment",
       "patch": [
         {
           "op": "replace",
-          "path": "/model_unions/1/cases/3/payload/original_type/unit",
+          "path": "/model_tuples/3/structural_node/path/2",
+          "value": "ix://acme/shapes/Zhost"
+        }
+      ],
+      "expected": {
+        "code": "unknown_node",
+        "locus": "/model_tuples/3/structural_node"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-02-tuple-node-variant",
+      "description": "the last tuple row names the union Shape; a variant type is not a tuple",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/3/structural_node",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_tuples/3/structural_node"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-03-tuple-node-scalar",
+      "description": "the last tuple row names the Boolean scalar node",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/3/structural_node",
+          "value": {
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_tuples/3/structural_node"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-04-tuple-document-not-owner",
+      "description": "selected_document is another document than the node's owner",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/3/selected_document",
+          "value": "acme/orders"
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_tuples/3/selected_document"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-05-tuple-original-identity",
+      "description": "original_identity is Nest's, not the owner node of Swap",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/3/original_identity",
+          "value": "ix://acme/shapes/Nest"
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_tuples/3/original_identity"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-06-tuple-duplicate-row",
+      "description": "Swap's row repeated",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_tuples/-",
+          "value": {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "tuple_value_type",
+                "ix://acme/shapes/Swap"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "original_identity": "ix://acme/shapes/Swap",
+            "node_key": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "tuple_value_type",
+                "ix://acme/shapes/Swap"
+              ],
+              "ordinal": 0
+            }
+          }
+        }
+      ],
+      "expected": {
+        "code": "conflicting_identity_witness",
+        "locus": "/model_tuples/4/structural_node"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-07-tuple-duplicate-node-key",
+      "description": "Swap's node_key is Pair's",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/3/node_key",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "conflicting_identity_witness",
+        "locus": "/model_tuples/3/node_key"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-08-union-handle-is-a-tuple-key",
+      "description": "Shape's type_handle is Pair's node_key; the handle of every tuple witness is in the uniqueness set",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/type_handle",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "conflicting_identity_witness",
+        "locus": "/model_unions/1/type_handle"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TR-09-full-inspects-unrelated-tuple-row",
+      "description": "the rows of MUW-16 under full scope",
+      "base": "MUW-16-reached-does-not-inspect-unrelated-tuple-row",
+      "patch": [],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_tuples/1/original_identity"
+      },
+      "scope_override": {
+        "mode": "full"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TC-01-full-missing-unused-tuple-row",
+      "description": "full scope without Swap's row, a tuple no payload names",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_tuples/3"
+        }
+      ],
+      "expected": {
+        "code": "incomplete_identity_witness",
+        "locus": "/model_tuples"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-TC-02-full-missing-needed-tuple-row",
+      "description": "full scope without Pair's row; Shape.Both names Pair, so the payload's absent necessary witness refuses before coverage is reached",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_tuples/2"
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/1/cases/0/payload/node"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-TC-03-full-empty-model-tuples",
+      "description": "full scope with an empty model_tuples; the first payload to name a tuple (List.Cons names Cell) refuses",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": []
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/0/cases/0/payload/node"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-TC-04-reached-missing-tuple-row",
+      "description": "reached from Nest without Nest's own row; the reached start is a tuple node with no row",
+      "base": "MUW-05-reached-through-tuple",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_tuples/0"
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_tuples"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-TC-05-source-tuples-do-not-stand-in",
+      "description": "reached from Shape with an empty model_tuples while the file's source_tuples member still carries a row for Pair's node; a source-tuple row is no model-tuple witness",
+      "base": "MUW-02-reached-from-shape",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": []
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/0/cases/0/payload/node"
+      },
+      "file_members": {
+        "source_tuples": "present and unchanged; read by no model-tuple check"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-R-39-unit-wrong-kind",
+      "description": "the unit of Span's quantity written as a compound unit",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/6/payload/original_type/unit",
           "value": {
             "kind": "compound",
             "terms": [
@@ -5956,18 +7488,18 @@
       ],
       "expected": {
         "code": "mismatched_identity_witness",
-        "locus": "/model_unions/1/cases/3/payload/original_type"
+        "locus": "/model_unions/1/cases/6/payload/original_type"
       },
       "criterion": "FR-830-AC-13"
     },
     {
       "id": "MUW-R-40-unit-wrong-key",
       "description": "Span's declared unit key is the dimension's key, not the unit declaration's",
-      "base": "MUW-11-unit-payload",
+      "base": "MUW-11-all-payload-forms",
       "patch": [
         {
           "op": "replace",
-          "path": "/model_unions/1/cases/3/payload/original_type/unit/node",
+          "path": "/model_unions/1/cases/6/payload/original_type/unit/node",
           "value": {
             "package": "acme/shapes",
             "path": [
@@ -5981,18 +7513,18 @@
       ],
       "expected": {
         "code": "mismatched_identity_witness",
-        "locus": "/model_unions/1/cases/3/payload/original_type"
+        "locus": "/model_unions/1/cases/6/payload/original_type"
       },
       "criterion": "FR-830-AC-13"
     },
     {
       "id": "MUW-R-41-unit-wrong-node",
       "description": "Span's payload node is the Integer scalar node, not the unit node",
-      "base": "MUW-11-unit-payload",
+      "base": "MUW-11-all-payload-forms",
       "patch": [
         {
           "op": "replace",
-          "path": "/model_unions/1/cases/3/payload/node",
+          "path": "/model_unions/1/cases/6/payload/node",
           "value": {
             "package": "example",
             "path": [
@@ -6005,18 +7537,18 @@
       ],
       "expected": {
         "code": "mismatched_identity_witness",
-        "locus": "/model_unions/1/cases/3/payload/node"
+        "locus": "/model_unions/1/cases/6/payload/node"
       },
       "criterion": "FR-830-AC-13"
     },
     {
       "id": "MUW-R-42-unit-wrong-type",
       "description": "Span's original type is Integer, not a quantity",
-      "base": "MUW-11-unit-payload",
+      "base": "MUW-11-all-payload-forms",
       "patch": [
         {
           "op": "replace",
-          "path": "/model_unions/1/cases/3/payload/original_type",
+          "path": "/model_unions/1/cases/6/payload/original_type",
           "value": {
             "kind": "integer"
           }
@@ -6024,23 +7556,23 @@
       ],
       "expected": {
         "code": "mismatched_identity_witness",
-        "locus": "/model_unions/1/cases/3/payload/original_type"
+        "locus": "/model_unions/1/cases/6/payload/original_type"
       },
       "criterion": "FR-830-AC-13"
     },
     {
       "id": "MUW-R-43-unit-witness-missing",
       "description": "no declared_unit declaration row names the unit node; the necessary witness is absent, not a successful unwitnessed key",
-      "base": "MUW-11-unit-payload",
+      "base": "MUW-11-all-payload-forms",
       "patch": [],
       "expected": {
         "code": "unavailable_identity_witness",
-        "locus": "/model_unions/1/cases/3/payload/node"
+        "locus": "/model_unions/1/cases/6/payload/node"
       },
       "witnesses_patch": [
         {
           "op": "remove",
-          "path": "/declarations/0"
+          "path": "/declarations/3"
         }
       ],
       "criterion": "FR-830-AC-13"
@@ -6099,37 +7631,45 @@
       "witnesses_patch": [
         {
           "op": "remove",
-          "path": "/declarations/1"
+          "path": "/declarations/0"
         }
       ],
       "criterion": "FR-830-AC-10"
     },
     {
-      "id": "MUW-R-47-tuple-witness-missing",
-      "description": "no SelectedTupleDeclarationRow names Pair; the necessary witness is absent",
-      "base": "MUW-01-full-environment",
-      "patch": [],
-      "expected": {
-        "code": "unavailable_identity_witness",
-        "locus": "/model_unions/1/cases/0/payload/node"
-      },
-      "witnesses_patch": [
+      "id": "MUW-R-47-recursive-union-row-missing",
+      "description": "reached from Node without Link's row",
+      "base": "MUW-13-recursive-record-union",
+      "patch": [
         {
-          "op": "remove",
-          "path": "/tuples/0"
+          "op": "replace",
+          "path": "/model_unions",
+          "value": []
         }
       ],
-      "criterion": "FR-830-AC-9"
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions"
+      },
+      "criterion": "FR-830-AC-10"
     },
     {
       "id": "MUW-R-48-tuple-key-mismatch",
-      "description": "Both's composite key is not the tuple row's node_key",
+      "description": "Both's composite key is Swap's witnessed key, not the node_key of the Pair row its node names",
       "base": "MUW-01-full-environment",
       "patch": [
         {
           "op": "replace",
-          "path": "/model_unions/1/cases/0/payload/original_type/node/path/2",
-          "value": "ix://acme/shapes/Swap"
+          "path": "/model_unions/1/cases/0/payload/original_type/node",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Swap"
+            ],
+            "ordinal": 0
+          }
         }
       ],
       "expected": {
@@ -6137,6 +7677,152 @@
         "locus": "/model_unions/1/cases/0/payload/original_type"
       },
       "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-49-object-wrong-constructor",
+      "description": "Held's original type is a composite of the Holder node, not a reference of its effective id",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/payload/original_type",
+          "value": {
+            "kind": "composite",
+            "node": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "object_type",
+                "ix://acme/shapes/Holder"
+              ],
+              "ordinal": 0
+            }
+          }
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_unions/1/cases/1/payload/original_type"
+      },
+      "criterion": "FR-830-AC-13"
+    },
+    {
+      "id": "MUW-R-50-object-wrong-effective-id",
+      "description": "Held's effective id names another declaration than the Holder row's",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/payload/original_type/effective/chain/0/node",
+          "value": "ix://acme/shapes/Other"
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_unions/1/cases/1/payload/original_type"
+      },
+      "criterion": "FR-830-AC-13"
+    },
+    {
+      "id": "MUW-R-51-object-witness-missing",
+      "description": "no object_type declaration row names Holder; the necessary witness is absent",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/1/cases/1/payload/node"
+      },
+      "witnesses_patch": [
+        {
+          "op": "remove",
+          "path": "/declarations/0"
+        }
+      ],
+      "criterion": "FR-830-AC-13"
+    },
+    {
+      "id": "MUW-R-52-object-wrong-node",
+      "description": "Held's payload node is the Wrapper record node, a node of the package that is not Holder",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/payload/node",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "record_value_type",
+              "ix://acme/shapes/Wrapper"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_unions/1/cases/1/payload/node"
+      },
+      "criterion": "FR-830-AC-13"
+    },
+    {
+      "id": "MUW-R-53-record-wrong-key",
+      "description": "Wrap's composite key is Pair's node_key, not the Wrapper record's witnessed key",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/7/payload/original_type/node",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "mismatched_identity_witness",
+        "locus": "/model_unions/1/cases/7/payload/original_type"
+      },
+      "criterion": "FR-830-AC-13"
+    },
+    {
+      "id": "MUW-R-54-record-witness-missing",
+      "description": "no record_value_type declaration row names Wrapper",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/1/cases/7/payload/node"
+      },
+      "witnesses_patch": [
+        {
+          "op": "remove",
+          "path": "/declarations/2"
+        }
+      ],
+      "criterion": "FR-830-AC-13"
+    },
+    {
+      "id": "MUW-R-55-all-forms-missing-tuple-row",
+      "description": "reached from Mix without Pair's model_tuples row; Mix.Pairing names Pair",
+      "base": "MUW-11-all-payload-forms",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": []
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/1/cases/5/payload/node"
+      },
+      "criterion": "FR-830-AC-15"
     }
   ],
   "budget_cases": [
@@ -6147,7 +7833,7 @@
         {
           "limits": "ample",
           "expect": "admitted",
-          "records": "the baseline delta {work: W, storage: S} and the returned rows"
+          "records": "the baseline delta {work: W, storage: S}, the per-channel consumption and the returned rows"
         },
         {
           "limits": "{work: W, storage: S}",
@@ -6160,7 +7846,7 @@
           "first_unpaid": {
             "kind": "work"
           },
-          "asserts": "amount is the full attempted charge of the baseline's last work charge, the locus is that charge's row index and form, consumed work excludes the denied charge, and no rows are returned"
+          "asserts": "amount is the full attempted charge of the baseline's last work charge, the locus is that charge's channel, row index and form, consumed work excludes the denied charge, and no rows of either channel are returned"
         },
         {
           "limits": "{work: W, storage: S-1}",
@@ -6168,7 +7854,7 @@
           "first_unpaid": {
             "kind": "storage"
           },
-          "asserts": "amount is the full attempted charge of the baseline's last storage charge, charged before its reserve, clone or insertion, and no rows are returned"
+          "asserts": "amount is the full attempted charge of the baseline's last storage charge, charged before its reserve, clone or insertion, and no rows of either channel are returned"
         },
         {
           "limits": "{work: 0, storage: ample}",
@@ -6247,6 +7933,89 @@
         }
       ],
       "criterion": "FR-830-AC-11"
+    },
+    {
+      "id": "MUW-B-05-two-channels-one-budget",
+      "base": "MUW-01-full-environment",
+      "probes": [
+        {
+          "limits": "ample",
+          "expect": "admitted",
+          "records": "the baseline delta {work: W, storage: S} and, from the charge log, {work: Wt, storage: St}, the consumption at the last charge of the model_tuples rows"
+        },
+        {
+          "limits": "{work: Wt-1, storage: ample}",
+          "expect": "exhausted_work",
+          "first_unpaid": {
+            "kind": "work"
+          },
+          "asserts": "the denied charge's locus is in /model_tuples, no row of either channel is returned"
+        },
+        {
+          "limits": "{work: Wt, storage: ample}",
+          "expect": "exhausted_work",
+          "first_unpaid": {
+            "kind": "work"
+          },
+          "asserts": "every model_tuples charge is admitted and stays consumed, the denied charge is the first of the model_unions rows or of their uniqueness preflight, its locus names /model_unions, and no row of either channel is returned"
+        },
+        {
+          "limits": "{work: ample, storage: St-1}",
+          "expect": "exhausted_storage",
+          "first_unpaid": {
+            "kind": "storage"
+          },
+          "asserts": "the denied charge's locus is in /model_tuples"
+        },
+        {
+          "limits": "{work: ample, storage: St}",
+          "expect": "exhausted_storage",
+          "first_unpaid": {
+            "kind": "storage"
+          },
+          "asserts": "the first unpaid storage charge's locus is in /model_unions, so the tuple rows' storage counted against the same limit"
+        }
+      ],
+      "criterion": "FR-830-AC-11"
+    },
+    {
+      "id": "MUW-B-06-tuple-refusal-keeps-charges",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/3/original_identity",
+          "value": "ix://acme/shapes/Nest"
+        }
+      ],
+      "probes": [
+        {
+          "limits": "ample",
+          "expect": "mismatched_identity_witness at /model_tuples/3/original_identity",
+          "asserts": "the charges of the preflight and of the tuple rows before the refusal stay consumed, no model_unions row is charged, and no rows are returned"
+        }
+      ],
+      "criterion": "FR-830-AC-11"
+    },
+    {
+      "id": "MUW-B-07-union-refusal-keeps-tuple-charges",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/rank",
+          "value": 1
+        }
+      ],
+      "probes": [
+        {
+          "limits": "ample",
+          "expect": "mismatched_identity_witness at /model_unions/1/cases/0/rank",
+          "asserts": "cumulative consumption keeps every model_tuples charge and every model_unions charge admitted before the refusal; no rows of either channel are returned"
+        }
+      ],
+      "criterion": "FR-830-AC-11"
     }
-  ]
+  ],
+  "note": "QSL-2743. Row-contract vectors for FR-830 (selected model-union and model-tuple witness rows). INPUTS. Each case names a fixture pair of `fixtures` (A or B): a complete FCD selected document (`document`) and a complete checked package (`package`); a positive's `document_patch` is a JSON Patch over that document's real members (`/types/N/variants/...`), never over a projection. Fixture B is an additive completion of A: domain-package-acme-shapes-witness.json adds the record construct, the dimension Time, the unit ms, the records Wrapper, Node and Orphan and the unions Link and Mix to domain-package-acme-shapes.json, and fixtures/witness-model-union-rows.json adds the matching model nodes (object_type Holder, three record_value_type, two variant_type, the dimension and the unit node, each a model-owned node with the empty aggregate body, one generated occurrence and no declaration, as in the existing model-owned timed fixtures), each with its source_map entry and its empty operand_rows entry, before the model_root. The sidecar of a case is the object `{model_tuples, model_unions}` and its `witnesses.declarations` rows; these are the whole input beside the package, the document and the lock, so no tuple, record, object or unit witness is held in memory by the producer: every join runs from bytes. A refusal's `patch` is a JSON Patch over the sidecar object (pointers `/model_tuples/...` and `/model_unions/...`), its `witnesses_patch` one over `witnesses` (pointers `/declarations/...`), `scope_override` replaces the base's scope, and it inherits the base's fixtures, document_patch, scope, witnesses, model_tuples and model_unions. `file_members` names identity-file members present and unchanged that no check reads. ENCODINGS are the producer sidecar's existing ones written as JSON values: `structural_node` and each payload `node` are the serde form of CheckedNodeId, which is the `node_id` object of the node in the package; `type_handle`, `settled_key`, `node_key`, `member.declaration` and the composite and unit `node` of `original_type` are OriginalNodeKey values (nested at most 32 keys); `original_type` is a complete OriginalValueType (a reference carries `effective: {chain: [{package, node}]}`); `original_case` is the DeclarationKey {package, node} of the selected document's variant. The vectors are symbolic: node ids are written as the node ids of the packages and no vector derives an original key from a name. Declarations rows are written `{structural_node, selected_document, form, original_identity, exact_identity}` with `exact_identity` `{kind: record|object|declared_unit, value}`. Row order, scope and budget follow FR-830: the sidecar rows sort ascending by structural_node, a union's cases by UTF-8 byte order of name, and equal neighbouring structural_nodes are a duplicate (a conflict), not a disorder. The first refusal wins: each mutation is chosen so that no earlier check refuses first. A positive inherits nothing; a refusal inherits its base and a budget case builds its base with an ample budget. Budgets are baseline-relative (W, S, Wt, St are measured on the same input by the same budget), never static totals. STATUS: no harness executes these vectors and nothing is qualified by them. The packages and documents are inputs, not results of any reader."
 }

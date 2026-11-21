@@ -78,13 +78,20 @@ structures, but any external consumer receives only the contract.
   handle is in checked-package-v2; FR-418 `TaskTransitionTemplate` remains in
   the separate backend-provider-v1 certificate, where FSL owns successor
   recomputation.
-- `model-union-witness-vectors.json` publishes the FR-830 `model_unions`
-  producer-witness sidecar rows of selected model unions (cases in UTF-8 order
-  with authored position, sealed member, structured original keys and value types, data or
-  Clock payload correspondence), over the Shape, List, Cell and Nest declarations
-  above (plus Holder, a unit, records and a recursive record and union as patches). `MUW-*` positives, schema and reader refusals and
-  baseline-relative budget cases are published inputs and expected results only; no reader
-  executes them and TC-2112 is not run.
+- `model-union-witness-vectors.json` publishes the FR-830 `model_unions` and
+  `model_tuples` producer-witness sidecar rows of selected model unions and
+  tuples (cases in UTF-8 order with authored position, sealed member,
+  structured original keys and value types, data or Clock payload
+  correspondence, and the tuple row of the typed `SelectedTupleDeclarationRow`),
+  over two complete input pairs: fixture A, the Shape, List, Cell, Nest and
+  Holder declarations above with `fixtures/positive-model-tuple-union.json`, and
+  fixture B, `domain-package-acme-shapes-witness.json` with
+  `fixtures/witness-model-union-rows.json`, a complete FCD document and checked
+  package that add the dimension Time, the unit ms, the records Wrapper, Node and
+  Orphan, the recursive union Link and the all-forms union Mix. `MUW-*`
+  positives, schema and reader refusals and baseline-relative budget cases over
+  both channels on one budget are published inputs and expected results only;
+  no reader executes them and TC-2112 is not run.
 - `operation-effect-vectors.json` publishes the optional `operation_effects`
   carrier of FR-103's per-operation declared effect (modifies, creates, deletes
   and scoped deletes), keyed by selected document, declaring node and original
