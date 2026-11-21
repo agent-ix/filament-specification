@@ -27,6 +27,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-482
     type: references
+  - target: ix://agent-ix/filament-specification/FR-368
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-380
+    type: references
 ---
 
 # FR-364: Carry and replay a temporal counterexample
@@ -41,8 +45,8 @@ kind and member of that wire form.
 
 ## Inputs
 
-A temporal counterexample; the checked package; the item's clause and resolved
-fairness set; for the model arm, the model subject's initial states and
+A temporal counterexample; the checked package; the item's clause, resolved
+fairness set and `stutter_closure` member ([FR-368](FR-368-negotiate-temporal-model-check-items.md), part of the item's obligation identity, never read from the counterexample); for the model arm, the model subject's initial states and
 universes, re-admitted from the request's byte provision; for the observed
 arm, each observed document the counterexample names, held in the request's
 byte provision by its zero-based position in `request.provision`.
@@ -61,7 +65,7 @@ replay refusal; or `inconclusive` with cause `replay-parity`.
 | Refutation | Shape |
 | --- | --- |
 | Reachable-state invariant, safety, bounded | A finite prefix. Under a bounded profile it covers the formula's horizon from every activation it reports, or ends at a terminal state. Under infinite-trace it is a bad prefix: every infinite extension of it violates the formula. |
-| Liveness | A lasso: a prefix, possibly empty, and a non-empty loop that re-enters at its first position. A model behaviour that ends at a terminal state is the lasso whose loop is the one terminal stutter step. |
+| Liveness | A lasso: a prefix, possibly empty, and a non-empty loop that re-enters at its first position. A model behaviour that ends at a terminal state is the lasso whose loop is the one terminal stutter step. A liveness item that selects `stutter_closure` ([FR-368](FR-368-negotiate-temporal-model-check-items.md)) may be refuted by a violating loop that is the stutter closure's own stutter at a non-terminal state, the lasso whose loop is the one closure stutter step. |
 | Deadlock ([FR-366](FR-366-check-deadlock-freedom.md)) | A finite prefix from an initial state to the deadlocked state. Model arm only. |
 | Undefined evaluation ([FR-363](FR-363-settle-every-behaviour-temporal-verdicts.md)) | A finite prefix to the position at which an expression evaluates undefined, for every property form; `loop` is empty. |
 | Task-automaton deadline miss ([FR-419](../analysis/FR-419-analyze-task-set-schedulability.md)) | A prefix that reaches a concrete job-specific missed-deadline state at `trace_position` (the zero-based index of its first `deadline-miss` step), followed by exactly one checked continuation: a finite timed loop with positive total delay, a single positive-delay terminal-stutter loop from a quiescent product-terminal state, or a `queue_growth` induction witness. With a finite loop, the prefix may continue past the miss step to the loop entry. With `queue_growth`, the prefix ends at the miss step. Queue-cap overflow is internal and is never a counterexample state. A prefix without a continuation is not a refutation, whatever the claim's safety shape, and is refused before replay as `malformed_wire` at `/loop`. The Reachable-state invariant row and any replay-time exploration of a finite endpoint do not apply to a deadline-miss counterexample of a task-derived subject: its claim is restricted to time-divergent behaviours, and a prefix alone does not show that the miss lies on one. |
@@ -100,7 +104,7 @@ is a mix of the arms.
 
 A model-arm step is `{transition, post_state}`: `transition` is the step's
 [FR-181](../runtime/FR-181-simulate-finite-executions.md) transition identity,
-or `{"type":"terminal-stutter"}` for the terminal stutter step; `post_state` is
+`{"type":"terminal-stutter"}` for the terminal stutter step, or `{"type":"closure-stutter"}` for the stutter closure's stutter step ("Closure stutter" below); `post_state` is
 the state key of the step's post-state. An
 observed-arm step is `{document}`: the zero-based position in `request.provision` of the observed
 document at that position. An observed trace whose positions are record
@@ -294,6 +298,45 @@ projection holds only source steps, and each of them is enabled in the source
 model alone. Read with the payload's own alphabet, such a trace would replay
 with every scheduler check dropped.
 
+**Closure stutter.** Over an ordinary model subject, neither task-derived, timed (a
+hybrid subject, FR-193, counts as timed here) nor protocol, `closure-stutter` is in the alphabet exactly when the item's obligation
+identity selects `stutter_closure` ([FR-368](FR-368-negotiate-temporal-model-check-items.md)),
+which is a member of the item and so of the identity the replay already
+resolves: the counterexample, the envelope and the request carry no flag of
+their own. The step is `{"transition": {"type": "closure-stutter"},
+"post_state": {"key": K}}`, with no operation, receiver or arguments, and it
+has the closed shape of the `terminal-stutter` step. It is valid only as the
+one step of the `loop` of a `kind: formula` lasso, with no `closure-stutter`
+step in the `prefix` and no step of another kind in the `loop`. A mixed loop is
+therefore never written with it. The loop's state is the prefix's last state,
+the loop's entry, and `K` is that state's key. The state is not terminal:
+a terminal state's stutter is `terminal-stutter`, which this step does not
+replace, and `terminal-stutter` keeps every rule above. The step is the
+stutter step that the stutter closure of [FR-380](../analysis/FR-380-transfer-claims-through-refinement.md) adds at a state with
+model successors. It carries no delay, and a `delay` member on it refuses at that step's own `/delay` (step 2).
+It waives no timed, task or protocol rule: the closure stutter is not in the
+alphabet of a timed, task-derived, hybrid or protocol subject, whose
+alphabets and time-divergence and continuation rules are unchanged: over such
+a subject it refuses at the step's `/transition/type` even for an item that
+selects `stutter_closure`. `ModelStep` is also the step type of the
+`refinement_failure` prefix ([FR-379](../analysis/FR-379-report-and-replay-refinement-counterexamples.md)),
+where the schema alone does not exclude the step; a refinement item never selects
+`stutter_closure`, so replay refuses it there by the same alphabet rule.
+
+**Named limit: closure edges in mixed loops.** An engine that explores the
+stutter closure may find a violating loop of model steps and closure stutters
+together. This wire has no step for a closure stutter among model steps, so
+a writer drops every closure stutter of the engine's lasso, in the prefix and in
+the loop, except the one-step loop of the sole-loop form above, and writes the
+model steps that remain. That is a lasso of the subject without the closure.
+`trace_position` indexes the written lasso, so it is re-indexed past every
+dropped stutter that precedes the position. Replay evaluates the lasso it is
+given. A clause
+whose truth on that lasso differs from its truth with the dropped stutters, a
+stutter-sensitive clause, disagrees and settles `inconclusive`, cause
+`replay-parity`; the item is never refuted by it. Only a clause the dropped
+stutters leave unchanged is refuted, and then by a lasso of the subject itself.
+
 **Synchronized source moves.** A source move that activates jobs is written
 only as its `activate` steps. There is one step per activated job, the steps
 are consecutive, and they are ordered by ascending canonical task name in
@@ -394,7 +437,21 @@ The replayer SHALL, in this order:
    took, since one identity can have several post-states. A step whose
    transition identity is not enabled at its pre-state refuses
    `invalid_runtime_input`/`invalid-value`. A terminal stutter step at a state
-   that is not terminal refuses `invalid_runtime_input`/`invalid-value`.
+   that is not terminal refuses `invalid_runtime_input`/`invalid-value`. Every
+   `closure-stutter` step is checked before any step is re-executed, after the
+   wire-form checks above, each refusal `invalid_runtime_input`/`invalid-value`
+   at the step's own path. The steps are taken in wire order, the `prefix` then
+   the `loop`, and the first step that fails any check is the one refused. For
+   one step the checks run in this order, and the first failing one gives the
+   pointer: (a) alphabet: an item that does not select `stutter_closure`, or a
+   timed, task-derived, hybrid or protocol subject, refuses at the step's
+   `/transition/type`; (b) placement: a step in the `prefix`, or in a `loop` of
+   more than one step, refuses at the step's `/transition/type`; (c) kind: a
+   counterexample whose `kind` is not `formula` refuses at the step's
+   `/transition/type`; (d) a `delay` member refuses at the step's own `/delay`
+   (`/loop/<j>/delay`, or `/prefix/<i>/delay`). After re-execution, at a
+   terminal state the loop refuses at `/loop/0/transition`, and a `post_state`
+   key that is not the loop's entry state refuses at `/loop/0/post_state`.
    For a task-derived subject, use FR-419's product successor relation: replay
    the source transition and its task release/completion feedback, verify the
    selected demand is within the admitted interval, verify policy order and
@@ -467,6 +524,10 @@ The replayer SHALL, in this order:
    [FR-362](FR-362-apply-fairness-constraints.md): weak and strong each by its
    own lasso rule. A loop that fails a constraint is an unfair lasso and
    refuses `invalid_runtime_input`/`invalid-value`, naming the constraint.
+   The `closure-stutter` step belongs to no constraint and satisfies none
+   ([FR-362](FR-362-apply-fairness-constraints.md) "Enabled and taken"), so a
+   constraint of `fairness` that is enabled at the loop's state, weak or
+   strong, makes the lasso unfair: no loop edge takes it.
    Observed arm: a non-empty `fairness` settles `unsupported`, cause
    `unsupported_projection`/`missing-fairness-premise`, naming its first
    constraint, with no formula evaluated, since an observed trace carries no
@@ -475,7 +536,15 @@ The replayer SHALL, in this order:
    clause's formula over the behaviour with the trace evaluator. A lasso
    denotes the infinite trace that repeats its loop forever: a position past
    the represented steps reads the position congruent to it modulo the loop
-   length, and past operators read the denoted trace back to position 0.
+   length, and past operators read the denoted trace back to position 0. A
+   `closure-stutter` loop denotes the trace that repeats the loop's state: each
+   repeated position reads that state's observation, anchored by the
+   closure-stutter step as [FR-361](FR-361-read-model-behaviours-as-temporal-traces.md)
+   anchors a terminal stutter position by its stutter step. Unlike the terminal
+   stutter, the position is not terminal: its enabledness is the model state's
+   own, which step 4 reads. `true` at `trace_position`, or a value undefined
+   there, disagrees and settles `replay-parity`; step 6 reads only the
+   undefined-evaluation envelope.
    Evaluation false at `trace_position` agrees with the engine; any other
    result disagrees.
 6. For the undefined-evaluation envelope, evaluate at `where` the expression
@@ -493,7 +562,9 @@ The replayer SHALL, in this order:
    No enabled identity and `P` false (or no `terminal` declaration) agrees
    with the engine; an enabled identity or `P` true disagrees.
 
-Agreement settles `reproduced-with-evaluated-witness` and the item `refuted`.
+Agreement settles `reproduced-with-evaluated-witness` and the item `refuted`;
+a `closure-stutter` lasso is refuted only through this replay, never from the
+engine's verdict.
 A hybrid trace (FR-193) that exact replay cannot decide, as one through a
 mode whose flow is not polynomial, settles `reproduced-with-validated-witness`
 and the item `refuted` when the FR-652 `validated-witness` it carries is
@@ -517,7 +588,7 @@ counterexamples an engine returned.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-364-AC-1 | A liveness refutation is a lasso with a non-empty loop, a safety refutation a finite prefix with an empty `loop`, a terminated behaviour's refutation a lasso whose loop is the one terminal stutter step, and a deadlock refutation a finite prefix ending at the deadlocked state with `kind: deadlock`. | Test (TC-295, TC-297) |
-| FR-364-AC-2 | A counterexample carries exactly the members `trace`, `kind`, `initial_state`, `prefix`, `loop`, `over_binding`, `fairness` and `trace_position`, plus the required `final_delay` of a `time-lock` counterexample, `refinement_failure` of a refinement item, or `queue_growth` of an unbounded task-miss continuation; each model-arm step carries its FR-181 transition identity or the terminal-stutter identity and its post-state key; each observed-arm step carries its document position; each fairness member carries its kind, operation and granularity. A missing, extra or mistyped member, or an arm or kind the wire-form table does not list, refuses before replay. | Test |
+| FR-364-AC-2 | A counterexample carries exactly the members `trace`, `kind`, `initial_state`, `prefix`, `loop`, `over_binding`, `fairness` and `trace_position`, plus the required `final_delay` of a `time-lock` counterexample, `refinement_failure` of a refinement item, or `queue_growth` of an unbounded task-miss continuation; each model-arm step carries its FR-181 transition identity, the terminal-stutter identity or the closure-stutter identity, and its post-state key; each observed-arm step carries its document position; each fairness member carries its kind, operation and granularity. A missing, extra or mistyped member, or an arm or kind the wire-form table does not list, refuses before replay. | Test |
 | FR-364-AC-3 | A valid formula counterexample replays through the model, passes the fairness check and evaluates false at `trace_position`, settling `reproduced-with-evaluated-witness` and the item `refuted`. | Test (TC-293, TC-295) |
 | FR-364-AC-4 | A loop whose last post-state is not its entry state, a step whose transition is not enabled, and a terminal stutter step at a non-terminal state refuse `invalid_runtime_input`/`invalid-value`. | Test (TC-295) |
 | FR-364-AC-5 | A lasso that fails a weak or a strong constraint of its fairness set, with enabledness recomputed from the model, refuses as an unfair lasso naming the constraint and settles no `refuted`. | Test (TC-295, TC-299) |
@@ -537,6 +608,11 @@ counterexamples an engine returned.
 | FR-364-AC-22 | A model-arm step that carries a `mode` member, and a task-transition identity that carries one, are refused `malformed_wire` at that member's pointer before replay (`task-step-mode-member` at `/counterexamples/0/counterexample/prefix/0/mode`, `task-transition-mode-member` at `.../prefix/0/transition/mode`, over the `task-queue-growth-overload` vector). A `queue_growth` witness over the FR-419-AC-14 package whose `cycle` holds the `go_hi` entry step (entered in `LO`, exiting in `HI`) is refused `invalid_runtime_input`/`invalid-value` at `/queue_growth/cycle/<i>` of that step. | Test (TC-431; the queue-growth case by FSL TC-704) |
 | FR-364-AC-23 | Fixture `B` is FSL FR-249-AC-9's subject: a `time dense` model `M` whose object type `Call` has three always-enabled operations `fire_t1`, `fire_t2` and `fire_t3`; task set `B` in `ms` with `(C, T = D)` of `t1 (1, 4)`, `t2 (2, 6)` and `t3 (4, 10)`, `bcet` = `wcet`, priorities 1 to 3 and criticality `lo`; `release B.t1 on M::Call::fire_t1;`, `release B.t2 on M::Call::fire_t2;` and `release B.t3 on M::Call::fire_t3;`; and the refuted EN-6 item of `schedulable` over `B` under `fixed_priority`. In its counterexample, `<a>` is the index of the `activate t1#0` step. That counterexample with the `activate t1#0` step replaced by the source identity `{"type": "transition", "operation": "M::Call::fire_t1", "receiver": null, "arguments": []}` refuses `invalid_runtime_input`/`invalid-value` at `/prefix/<a>/transition/type`, naming the activation of `t1` job 0. Its source projection (every task step removed, and each activating move written as its `transition` step) refuses at `/prefix/0/transition/type`, the projection's first step, and is never reproduced, although each step is enabled in the source model alone. A plain timed model counterexample with a `task-transition` step inserted refuses at that step's `/transition/type`. Fixture `Tick` is a `time dense` model `M` whose object type `Call` has `fired: Bool`, initially false, and one operation `tick` guarded `not self.fired` with post `self.fired = true`; `taskset Two { task a sporadic 10 ms deadline 2 ms bcet 3 ms wcet 3 ms priority 1 lo; task b sporadic 10 ms deadline 10 ms bcet 1 ms wcet 1 ms priority 2 lo; }`, with `release Two.b on M::Call::tick;` declared before `release Two.a on M::Call::tick;`; and `schedulable TwoFp on Two under fixed_priority;` with `backend` `en-6`, which is refuted. Its counterexample's prefix is `activate a#0` (0) and `activate b#0` (1) at 0, both carrying the post-state key of the whole `tick` move, then `dispatch a#0` at 0 (2), then `deadline-miss a#0` at elapsed 2 (3, the `trace_position`) with `demand` 3 and `deadline` 2. The prefix continues to `complete b#0` at elapsed 4, and `loop` is one `terminal-stutter` step with positive delay. It replays. With steps 0 and 1 swapped it refuses at `/prefix/0/transition/task`. With delay 1 on step 1 it refuses at `/prefix/1/delay`. With step 1 removed it refuses at `/prefix/1/transition`, where `dispatch a#0` stands in place of the expected `activate b#0`. With steps 0 and 1 written as one `transition` step `M::Call::tick`, it refuses at `/prefix/0/transition/type`. | Test (FSL TC-704) |
 | FR-364-AC-24 | Over FR-364-AC-23's fixture `B` counterexample, with `<a>` the index of its `activate t1#0` step, each tamper refuses `invalid_runtime_input`/`invalid-value` at the named member, naming the supplied and the recomputed value: the miss step's `slot` changed (`/prefix/<miss>/transition/slot`); `activate t1#0`'s `release` operation changed to `M::Call::fire_t2` (`/prefix/<a>/transition/release`); its `source_transition` set to null (`/prefix/<a>/transition/source_transition`); its `generation` set to 1 (`/prefix/<a>/transition/generation`); its `task` set to an undeclared `t9` (`/prefix/<a>/transition/task`); its `post_state` set to the key of its pre-state (`/prefix/<a>/post_state`). | Test (FSL TC-704) |
+| FR-364-AC-25 | Over an untimed ordinary model subject, a `kind: formula` counterexample whose `loop` is the one `{"type":"closure-stutter"}` step at a non-terminal state, `post_state` the entry state's key, for an item whose identity selects `stutter_closure` and whose fairness set has no constraint enabled there, settles `reproduced-with-evaluated-witness` when the formula is false at `trace_position` and `inconclusive`, `replay-parity` when it is true or undefined there; the item is `refuted` only through that replay. A `terminal-stutter` loop at a terminal state replays as before, for an item that selects `stutter_closure` too. | Test (TC-295) |
+| FR-364-AC-26 | The schema admits the `closure-stutter` step in `ModelStep.transition` with exactly the `type` member and refuses an extra member, a misspelt type and a missing `post_state`. This is the whole of the schema's check: it does not see the item, the subject, the placement or the delay, and no vector asserts what it admits there; those refusals are AC-27's. | Test (TC-431) |
+| FR-364-AC-27 | A `closure-stutter` step refuses `invalid_runtime_input`/`invalid-value` before any step is re-executed, steps taken in wire order (prefix, then loop) and the first failing step refused, by the first failing check of: (a) at its `/transition/type` for an item that does not select `stutter_closure` or for a timed, task-derived, hybrid or protocol subject (time-divergence and task continuations are not waived); (b) at its `/transition/type` in the `prefix` (`/prefix/<i>/transition/type`) or in a loop of more than one step (`/loop/<j>/transition/type`); (c) at its `/transition/type` in a non-`formula` counterexample; (d) at its own `/delay` with a `delay` member; then, after re-execution, at `/loop/0/transition` at a terminal state and at `/loop/0/post_state` with a key that is not the entry state's. | Test (TC-295) |
+| FR-364-AC-28 | A `closure-stutter` lasso under a fairness set with a weak or a strong constraint enabled at the loop state refuses as an unfair lasso naming that constraint; with no constraint enabled there it is fair. | Test (TC-295) |
+| FR-364-AC-29 | A writer drops every closure stutter of an engine lasso in the prefix and the loop except the sole-loop form and re-indexes `trace_position` onto the written lasso; for a stutter-sensitive clause whose truth differs from its truth with the dropped stutters, replay settles `inconclusive`, `replay-parity`, never `refuted`. | Test (TC-295) |
 
 ## Dependencies
 
@@ -545,6 +621,7 @@ counterexamples an engine returned.
 - [FR-361](FR-361-read-model-behaviours-as-temporal-traces.md) owns the
   successor relation and the terminal stutter step.
 - [FR-362](FR-362-apply-fairness-constraints.md) owns the lasso fairness rules.
+- [FR-368](FR-368-negotiate-temporal-model-check-items.md) owns the `stutter_closure` item member and the obligation identity it belongs to.
 - [FR-365](FR-365-build-canonical-temporal-counterexample.md) owns the
   canonical counterexample of an exhaustive explicit-state analysis.
 

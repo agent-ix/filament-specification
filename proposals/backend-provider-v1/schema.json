@@ -602,7 +602,7 @@
       "type": "object",
       "required": ["transition", "post_state"],
       "properties": {
-        "transition": {"oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"type": "object", "required": ["type"], "properties": {"type": {"const": "terminal-stutter"}}, "additionalProperties": false}]},
+        "transition": {"oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"type": "object", "required": ["type"], "properties": {"type": {"const": "terminal-stutter"}}, "additionalProperties": false}, {"description": "FR-364 \"Closure stutter\": the stutter closure's stutter step. The schema sees neither the item, the subject, the state, the position nor the delay, so replay alone refuses it, for example for an item without stutter_closure, a timed, task-derived, hybrid or protocol subject, outside a sole formula loop (also in the prefix and in the RefinementFailure prefix), with a delay member, at a terminal state, or with another entry key (FR-364-AC-27).", "type": "object", "required": ["type"], "properties": {"type": {"const": "closure-stutter"}}, "additionalProperties": false}]},
         "post_state": {"$ref": "#/$defs/State"},
         "delay": {"description": "FR-181, FR-417: the delay of a timed step.", "$ref": "#/$defs/Rational"}
       },
