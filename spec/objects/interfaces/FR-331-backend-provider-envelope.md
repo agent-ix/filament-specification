@@ -349,7 +349,7 @@ for these items with `invalid_result`/`unknown-cause`.
 
 | FR-331 result | Closed values |
 | --- | --- |
-| `proved` (proof basis) | `exact-value{value, reductions}`, `value-bounds{lower, upper, method, reductions}` with `method` `backward-induction{precision_bits}` or `interval-iteration{precision_bits, sweeps}`, `zone-certified`, `exhaustive`, `closed-form{analysis}` with `analysis` `fixed-priority`, `edf` or `amc-rtb`, `bounded-solver{method, horizon, jumps, exhaustive}` and `inductive-solver{method}`, each `method` from FR-193's closed method table ("Solver methods") |
+| `proved` (proof basis) | `exact-value{value, reductions}`, `value-bounds{lower, upper, method, reductions}`, with `exploration: "partial"` and an `upper` of `"infinity"` for a `lower` proof on a partial product, and with `method` `backward-induction{precision_bits}` or `interval-iteration{precision_bits, sweeps}`, `zone-certified`, `exhaustive`, `closed-form{analysis}` with `analysis` `fixed-priority`, `edf` or `amc-rtb`, `bounded-solver{method, horizon, jumps, exhaustive}` and `inductive-solver{method}`, each `method` from FR-193's closed method table ("Solver methods") |
 | `refuted` (cause) | `undefined-evaluation{where, cause}` |
 | `measured` (FR-409 cause) | `undefined-evaluation{where, cause}` for `rejected`; `indifference-region` and `undecided-successor` for `undecided` |
 | `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `no-evaluated-case` (FR-190): a completed model-based test run whose every generated case was discarded, so the suite evaluated no case; it carries no basis and no counterexample, the FR-190 record's `cases` gives the discard reasons, and it is not `kani_vacuous_proof`, which says no assignment of the declared types satisfies the premises, a fact about the model rather than about the suite. It is written only in an FR-190 record (and so in a plan step's disposition), and no provider entry carries it; `refuted-ignoring-constraints` (FSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample; `open-history` (FR-059), a `global-conformance` result over an open or incomplete history; `incomplete-closure-scope` (FR-059), a `global-conformance` result over a recording whose protocol has a fan-out node and whose activated replicated-role population the request does not state |
@@ -656,8 +656,8 @@ names, FR-462), `kind` and `result`, and:
   `{"type": "value-bounds", "lower": …, "upper": …, "method": …, "reductions": []}`,
   with `"exploration": "partial"` for a `lower` proof found on a partial
   product (FR-411), whose `upper` is then the objective's least upper bound:
-  1 for a probability, `1 − q` for a quantile's shifted reward, and the
-  string `"infinity"`, FR-418's spelling of an absent bound, for an expected
+  1 for a probability or a mean of a fraction, `1 − q` for a quantile's
+  shifted reward, and the string `"infinity"`, FR-418's spelling of an absent bound, for an expected
   reward;
 - `cause` — the closed cause as an object of the same form. The
   undefined-evaluation cause is FR-364's envelope
