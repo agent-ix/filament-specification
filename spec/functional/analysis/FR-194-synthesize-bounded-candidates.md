@@ -104,7 +104,8 @@ synthesis Tariff using p grammar M::Tariff domain M::SmallTariff
   argument beside it, a `.sum` with an argument that is not a `lambda`, and
   `steps.sum` over anything but the declaration's own `steps` each refuse
   `ill_typed`/`operator-ineligible` at the `lambda` or at the argument, and
-  a lambda whose parameter shadows a binder in scope refuses
+  a lambda whose parameter shadows a binder or a declaration name in scope
+  (the synthesis declaration's own name included) refuses
   `ambiguous_declaration`/`ambiguous-name` at the parameter. Every other sum
   over the steps is still written with `sum<T>(s in D.steps : c)`
   (FR-650-AC-2), whose type argument states its result type.

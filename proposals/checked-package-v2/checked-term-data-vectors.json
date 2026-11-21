@@ -13199,10 +13199,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "up": 1,
-              "down": [
-                0
-              ]
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -17030,6 +17028,392 @@
               "up": 2,
               "down": [
                 1
+              ]
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          }
+        ]
+      },
+      {
+        "id": "BL-R10-up-not-least",
+        "mutation": "BL-02 with the second sqrt row written {up: 1, down: [0]} after the path [0], whose least form is {up: 0, down: []}",
+        "package": "f",
+        "expected_code": "invalid_package",
+        "expected_cause": "invalid-value",
+        "locus": "/checked_term_data/body_locations/8/location/up",
+        "rows": [
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 6
+                },
+                {
+                  "node": 11
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 9
+                },
+                {
+                  "node": 8
+                },
+                "filament.op.boolean.or",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 12
+                },
+                {
+                  "node": 10
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 1,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.total_order",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 14
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": [
+                0
+              ]
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 16
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 1,
+              "down": [
+                0
               ]
             },
             "occurrence": {

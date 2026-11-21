@@ -163,7 +163,9 @@ wire as follows.
   that its formula reaches: the `value`/`parameter` nodes in the reserved
   slot form ("Reserved slot names") with tag `slot` that a `temporal`/`formula`
   node of the wrapper, or a term below one, references. The scope lists them
-  in ascending byte order of `name`. A slot's name holds its object
+  in ascending byte order of `name`, and holds one node per name: a second
+  node of a name already in the scope is refused (Reader order, Body step
+  3.5). A slot's name holds its object
   parameter and its trace variable, never a quantifier position, so two
   bodies that differ only in their prefixes have one scope.
 - The slot at position `k` of the scope SHALL have `level` `k`. The levels
@@ -318,7 +320,12 @@ order and the first failing check is its defect:
    4. for a finite domain, a `body` target that is not an `expression` node
       whose `semantic_type` is the `scalar_type`/`boolean` node refuses
       `ill_typed`/`non-boolean-root` at the target;
-   5. for a `behaviours` domain, a slot of the wrapper's slot scope ("Wrapper
+   5. for a `behaviours` domain, a second slot node of the wrapper's slot
+      scope whose `name` equals that of a slot node already seen in scope
+      order (two nodes of one name and another level or type) refuses
+      `invalid_semantic_graph` at that second node's `level` binding,
+      `/semantic_graph/nodes/{s}/body/members/1`, because the scope has
+      one position per name; then a slot of the scope ("Wrapper
       slot scope") whose `level` is not its position in the scope refuses
       `invalid_semantic_graph` at that slot's `level` binding,
       `/semantic_graph/nodes/{s}/body/members/1`, `s` the slot's graph
@@ -368,7 +375,7 @@ order and the first failing check is its defect:
 | FR-402-AC-12 | The checker refuses `ambiguous_declaration`/`ambiguous-name` at the parameter's declaring source region, naming `op_sa` and the tag `op`, for `function f(op_sa: Integer): Integer pure { op_sa }`, and refuses the same, naming `slot_sx_sy` and the tag `slot`, for the clock guard binder of `pre F using v on Config::ConfigVersion::attemptUpdate { forall(slot_sx_sy in self.us: slot_sx_sy.x < 5 ms) }` over a `us: Sequence<Timer>` field; neither unit emits a package. The same function with its parameter named `op_s_x41` is refused the same, naming the tag `op`, and with its parameter named `slot_sv`, `op_sa_sb`, `rcv_s`, `op_sa_x4`, `op_s_xC3`, `op_s_xc3` or `slotted` is admitted. With `Whole`'s body wrapper formula (FR-402-AC-11) edited to read an Integer `value`/`parameter` node, the reader refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0` when that node is named `op_sx`, `op_s_x41` or `arg_sa_sVault_sstep_si`, and admits the package at the temporal and hyperproperty steps when it is named `op_sa_sb`, `slot_sv`, `rcv_s`, `op_s_xC3`, `op_s_xc3` or `slotted`. | Test (TC-2082) |
 | FR-402-AC-13 | Inside the hyperproperty step's Body check, `Whole`'s body wrapper (FR-402-AC-11) with a non-empty `fairness` argument and an `over` naming the `model_root` node of a selected package no `subjects` binding names refuses `invalid_semantic_graph` at `/semantic_graph/nodes/{w}/body/arguments/4`, not at `arguments/0`; with the `fairness` argument emptied it refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`; and with its `body` retargeted to a Boolean `expression` node of the package (a node FR-370's placement check admits there) the node refuses `ill_typed`/`operator-ineligible` at the hyperproperty node, with no wrapper check reported. | Test (TC-2082) |
 | FR-402-AC-14 | `Fwd`, `hyper Fwd using inf over behaviours (v: V::Vault) forall trace a of V forall trace b of V { always holds(v.l @ a = v.l @ b) }`, and `Rev`, the same clause with the quantifiers `forall trace b of V forall trace a of V`, are two `hyperproperty` nodes whose `body` references one wrapper; that wrapper's slot scope is `slot_sv_sa` at `level` 0 then `slot_sv_sb` at `level` 1, and its `over` references `slot_sv_sa`. The package holding both is admitted, and `Rev` alone emits the same wrapper `node_id` as `Fwd` alone. | Test (TC-346) |
-| FR-402-AC-15 | Over AC-14's `Fwd` package, the wrapper with `slot_sv_sa` at `level` 1 and `slot_sv_sb` at `level` 0 refuses `invalid_semantic_graph` at `slot_sv_sa`'s `/semantic_graph/nodes/{s}/body/members/1`; with the levels right and `over` retargeted to `slot_sv_sb` it refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`. The wrapper of `hyper Linked using inf over behaviours (v: V::Vault) forall trace a of V forall trace b of V { always holds((let r = v.next in present(r)) @ a) }`, whose scope is `slot_sv_sa` alone, is admitted, with the `let` binder `r` at `level` 1, the first level after the scope's one slot, and with no `operator-ineligible` refusal at the `let`. | Test (TC-346) |
+| FR-402-AC-15 | Over AC-14's `Fwd` package, the wrapper with `slot_sv_sa` at `level` 1 and `slot_sv_sb` at `level` 0 refuses `invalid_semantic_graph` at `slot_sv_sa`'s `/semantic_graph/nodes/{s}/body/members/1`; a wrapper whose formula also reads a second node named `slot_sv_sb` at `level` 2 refuses `invalid_semantic_graph` at that second node's `body/members/1`; with the levels right and `over` retargeted to `slot_sv_sb` it refuses `invalid_model_binding`/`malformed-declaration` at `/semantic_graph/nodes/{w}/body/arguments/0`. The wrapper of `hyper Linked using inf over behaviours (v: V::Vault) forall trace a of V forall trace b of V { always holds((let r = v.next in present(r)) @ a) }`, whose scope is `slot_sv_sa` alone, is admitted, with the `let` binder `r` at `level` 1, the first level after the scope's one slot, and with no `operator-ineligible` refusal at the `let`. | Test (TC-346) |
 
 ## Dependencies
 

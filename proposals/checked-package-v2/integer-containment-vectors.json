@@ -1,7 +1,7 @@
 {
   "rule": "FR-322 Integer containment (FR-322-AC-495 to FR-322-AC-502, TC-2099): at a function result, each branch of an if, a let body, a case arm body and an annotated let binder the strict reader admits an integer term whose type node a containing integer type node integer-contains, with no convert node; a range that is not contained, Integer at an Int[..], a constructor over a contained element and a bare call argument still refuse",
   "source": "serialized from ic_vectors() in agent-ix/filament-contract-ir tests/it/checked_package_v2_operation_arguments.rs (contract-ir main, #1095): each package is the wire package that case reads, so the vectors and the reader tests cannot drift",
-  "note": "Each case's package is a complete checked-package/v2 wire package. Every case is read with the domain package document in domain_documents as evidence (the document's identity is the selected model root's). node is the index of the node under test in semantic_graph.nodes; locus is the JSON pointer of the refusal. convert_nodes is the count of filament.op.numeric.convert applications in the package. IC-15 is admitted and not enforced: see its pending member.",
+  "note": "Each case's package is a complete checked-package/v2 wire package. Every case is read with the domain package document in domain_documents as evidence (the document's identity is the selected model root's). node is the index of the node under test in semantic_graph.nodes; locus is the JSON pointer of the refusal. convert_nodes is the count of filament.op.numeric.convert applications in the package.",
   "domain_documents": {
     "acme/ledger": {
       "constructs": [
