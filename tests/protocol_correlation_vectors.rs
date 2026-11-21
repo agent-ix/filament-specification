@@ -267,16 +267,20 @@ struct Charge {
     label: String,
 }
 
-fn row_charge(row: &Value) -> u64 {
-    1 + ref_bytes(&row["control"]) + row["alias"].as_str().unwrap().len() as u64
+/// The row charge: one unit, the bytes of this row's control text and alias, and the
+/// bytes of the previous row's control text (0 for row 0; the previous alias is not
+/// part of the key). The key comparison reads the previous control text.
+fn row_charge(rows: &[Value], i: usize) -> u64 {
+    let previous = if i == 0 { 0 } else { ref_bytes(&rows[i - 1]["control"]) };
+    1 + ref_bytes(&rows[i]["control"]) + rows[i]["alias"].as_str().unwrap().len() as u64 + previous
 }
 
 /// The ordered charges of the strict step for a package and an optional member.
 fn charges(pkg: &Value, rows: Option<&[Value]>) -> Vec<Charge> {
     let Some(rows) = rows else { return Vec::new() };
     let mut out = Vec::new();
-    for (i, row) in rows.iter().enumerate() {
-        out.push(Charge { counter: "work", amount: Some(row_charge(row)), locus: format!("{MEMBER}/{i}"), label: format!("row {i}") });
+    for i in 0..rows.len() {
+        out.push(Charge { counter: "work", amount: Some(row_charge(rows, i)), locus: format!("{MEMBER}/{i}"), label: format!("row {i}") });
     }
     let groups = rows
         .iter()
@@ -287,7 +291,7 @@ fn charges(pkg: &Value, rows: Option<&[Value]>) -> Vec<Charge> {
         out.push(Charge { counter: "read_storage", amount: None, locus: MEMBER.to_owned(), label: "view".to_owned() });
     }
     for node in control_nodes(pkg) {
-        let mut amount = 1 + ref_bytes(node_ref(node));
+        let mut amount = 1 + 2 * ref_bytes(node_ref(node));
         if is_eligible(node) {
             amount += declaration_occurrences(node) + related_len(node);
         }
@@ -366,7 +370,7 @@ fn every_case_package_is_complete_and_schema_valid() {
     assert!(defects.is_empty(), "{defects:#?}");
     assert_eq!(cases(&vectors, "positive").len(), 12);
     assert_eq!(cases(&vectors, "reader_refusals").len(), 21);
-    assert_eq!(cases(&vectors["budget"], "cases").len(), 15);
+    assert_eq!(cases(&vectors["budget"], "cases").len(), 16);
     assert_eq!(cases(&vectors["consumer"], "cases").len(), 4);
 }
 
@@ -560,9 +564,9 @@ fn budget_expectations_equal_the_recomputed_charge_model() {
     assert_eq!(b01["storage_units"]["flags_total"].as_u64().unwrap(), flags);
     // The long-alias row and the long control text are paid by their bytes.
     let b07 = case_named(budget, "cases", "CO-B07-alias-payload");
-    let alias_row = &rows_of(b07).unwrap()[0];
-    assert_eq!(alias_row["alias"].as_str().unwrap().len(), 64);
-    assert_eq!(row_charge(alias_row), 1 + ref_bytes(&alias_row["control"]) + 64);
+    let alias_rows = rows_of(b07).unwrap();
+    assert_eq!(alias_rows[0]["alias"].as_str().unwrap().len(), 64);
+    assert_eq!(row_charge(&alias_rows, 0), 1 + ref_bytes(&alias_rows[0]["control"]) + 64, "row 0 has no predecessor");
     let b15 = case_named(budget, "cases", "CO-B15-control-bytes-are-charged");
     let long = &rows_of(b15).unwrap()[1];
     assert!(ref_bytes(&long["control"]) > 200, "the long control text is charged by its bytes");
@@ -617,4 +621,29 @@ fn the_member_is_the_sole_difference_between_invariance_packages() {
         assert_eq!(strip(a.clone()), strip(b.clone()), "{}: only the member differs", case["id"]);
         assert_ne!(a, b, "{}: the packages differ in bytes", case["id"]);
     }
+}
+
+/// FR-831-AC-10: the predecessor's control bytes are charged by the row after it.
+/// CO-B16's rows have control texts of different lengths, so a model that omitted
+/// the predecessor, or charged the current row's length twice, would not give the
+/// recorded amount; the first row has no predecessor and the alias is not charged
+/// twice.
+#[trace("TC-2113", "FR-831-AC-10")]
+#[test]
+fn the_predecessor_control_bytes_are_charged_by_the_following_row() {
+    let vectors = parse(VECTORS);
+    let case = case_named(&vectors["budget"], "cases", "CO-B16-predecessor-bytes-are-charged");
+    let rows = rows_of(case).unwrap();
+    let (first, second) = (ref_bytes(&rows[0]["control"]), ref_bytes(&rows[1]["control"]));
+    assert_ne!(first, second, "the two control texts differ in length");
+    let alias = |i: usize| rows[i]["alias"].as_str().unwrap().len() as u64;
+    assert_eq!(row_charge(&rows, 0), 1 + first + alias(0));
+    assert_eq!(row_charge(&rows, 1), 1 + second + alias(1) + first);
+    assert_ne!(row_charge(&rows, 1), 1 + second + alias(1), "a charge without the predecessor differs");
+    assert_ne!(row_charge(&rows, 1), 1 + 2 * second + alias(1), "a charge of the current length twice differs");
+    assert_eq!(case["expect"]["first_unpaid"]["amount"].as_u64(), Some(row_charge(&rows, 1)));
+    assert_eq!(case["limit_over_baseline"].as_u64(), Some(row_charge(&rows, 0) + row_charge(&rows, 1) - 1));
+    // CO-B15: the predecessor is the 39-byte Requested control and the current text is long.
+    let b15 = rows_of(case_named(&vectors["budget"], "cases", "CO-B15-control-bytes-are-charged")).unwrap();
+    assert_eq!(row_charge(&b15, 1), 1 + ref_bytes(&b15[1]["control"]) + b15[1]["alias"].as_str().unwrap().len() as u64 + ref_bytes(&b15[0]["control"]));
 }

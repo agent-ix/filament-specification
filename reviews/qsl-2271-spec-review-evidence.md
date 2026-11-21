@@ -25,3 +25,13 @@ Ticket: QSL-2271. This checks the declared verification of each FR-831 AC (all `
 ## Verdict
 
 Changes requested on the two medium items.
+
+## Dispositions
+
+Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | AC-8 is now explicitly the producer invariance over real source variants (once, repeated, reversed), with planned TC-2113 step 5 run by the FSL producer. The by-construction static pair is split out as AC-11 and labelled as not the producer step. |
+| FND-002 | fixed | The consumer clause is now AC-12, with planned TC-2113 step 6 and concrete `consumer.cases` CO-K01 to CO-K04 (refuse on absent over nonempty; proceed over empty related; clauses from a complete table; present []). The FSL guard is retained, and AC-1 no longer carries the consumer clause. |
+| FND-003 | fixed | AC-9 now states only observable outcomes: the whole borrowed entry under the full key, the dependency's own member and entry, and a second declaration occurrence refusing at `occurrence`. The no-SourceOwner prose stays in the context section. |

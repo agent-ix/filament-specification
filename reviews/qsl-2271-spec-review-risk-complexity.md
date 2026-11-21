@@ -31,3 +31,18 @@ The remaining risk is reader-landing volatility, already disclosed.
 ## Verdict
 
 Changes requested on one medium item: charge the examined NodeRef bytes, or state why they are bounded and already paid by an earlier admission charge.
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-002 | low | FR-831 step 1 claims the join resolution, key comparison and source_map lookup "examine only this row's `control` text and `alias`". The key comparison also reads the predecessor row's control text, up to the first differing byte, so as many as 2B bytes are examined while only B is charged. FR-358 charges each examined byte, so the statement is inaccurate and the comparison is undercharged by up to a factor of 2. | spec/objects/interfaces/FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md:146-154 |
+
+## Dispositions
+
+Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | The row charge is now `1 + B + L` (B = bytes of control.package plus every path segment, L = alias bytes), and the node charge is `1 + Bn` (+ O + m when eligible), both on the FR-358 work counter and charged before inspection. No new counter, no unmetered preflight, and copied bytes are still charged. The vectors' amounts are regenerated and recomputed by the test. |
+| FND-002 | still-open | New this round. Correct the statement and either charge the predecessor bytes the comparison examines or state why they are already paid (the predecessor's own row charge). |

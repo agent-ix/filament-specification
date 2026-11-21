@@ -58,7 +58,8 @@ refuses the member as `unknown_member`.
    `incomplete` result naming the counter, the first unpaid amount and the locus,
    with no partial typed view. `CO-B13` runs with earlier consumption on the same
    budget and expects no reset; `CO-B15` shows control bytes charged before the
-   join refuses.
+   join refuses and `CO-B16` the previous row's control bytes charged by the row
+   after it (a row costs `1 + B + L + Bp`, a node `1 + 2·Bn` plus `O + m`).
 5. **Producer (planned).** Lower real checked source with an authored clause
    written once, written three times and written in the opposite order (the FSL
    producer, over the checked source inputs of its existing source-invariance

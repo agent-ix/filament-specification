@@ -35,3 +35,11 @@ The scan order, ascending structural node-id order, equals the row key order, so
 ## Verdict
 
 Passes, with one low item.
+
+## Dispositions
+
+Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | The key is now totally defined as (control under FR-322 NodeRef order, occurrence.ordinal numerically, source_ordinal numerically). Role is explicitly not an ordering member because join 3 admits only `declaration`. |

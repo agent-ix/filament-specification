@@ -23,3 +23,18 @@ Ticket: QSL-2271. This applies the EARS conformance check to the new FR-831 stat
 ## Verdict
 
 Passes, with one low item. The statements are testable and unambiguous in trigger and response.
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-002 | low | After the actor split, `quire validate` (rc=0) still warns on the FR-831 Description: `[ears:non-singular]` at line 32 (the receiving-reader bullet holds two SHALLs) and `[quality:mixed-modal]` at line 29 (the producer bullet mixes MAY and SHALL in one statement). Each actor's obligations are still not one requirement per SHALL. | spec/objects/interfaces/FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md:27-40 |
+
+## Dispositions
+
+Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | The Description now states four separately segmented actor obligations (producer, receiving reader, non-receiving reader, consumer) in one FR, with no scope weakened. The producer's capture duty is now a normative SHALL. |
+| FND-002 | still-open | New this round. Split each bullet into single-SHALL statements (for example, the producer MAY publish; when it publishes, it SHALL record ...), or accept the lint warning with a stated reason. |

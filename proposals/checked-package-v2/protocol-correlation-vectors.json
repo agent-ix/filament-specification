@@ -8204,8 +8204,8 @@
     "meter": "one caller-owned NativeJoinBudget, the budget of the strict read (filament-contract-ir FR-358): a work counter and a read-storage counter, cumulative across the strict read, every earlier join and this step, no reset, a denied charge consumes nothing; this contract adds no limit field and no counter",
     "baseline": "B_work and B_storage are the consumption of each counter immediately before the step, measured on the same input; every limit below is stated as B plus an offset, never as a static total, because B depends on the strict read of the whole package",
     "work_policy": {
-      "row": "1 + B + L: one unit, B the UTF-8 byte length of control.package plus the byte length of every segment of control.path (an index segment counts the bytes of its decimal numeral), L the UTF-8 byte length of alias; charged before the row is inspected, rows in array order. The join resolution, the key comparison with the predecessor and the source_map lookup examine only this row's control text and alias, so B and L pay for them.",
-      "scan": "one charge per protocol/control node in ascending structural node-id order: 1 + Bn, Bn the byte length of the node id as B counts a NodeRef, plus O + m when the node is eligible (O its declaration occurrences, m its canonical related records); charged before the node is inspected, so every node-id comparison of the coverage walk is paid by the node it reads",
+      "row": "1 + B + L + Bp, one charge before the row is inspected: B the UTF-8 byte length of control.package plus the byte length of every segment of control.path (an index segment counts the bytes of its decimal numeral), L the UTF-8 byte length of alias, Bp the same byte length for the PREVIOUS row control (0 for row 0; the previous alias is not part of the key and is not charged). The join resolution and the source_map lookup read this row control and alias; the key comparison also reads the previous row control, up to the first differing byte, so Bp bounds those bytes. Borrowing the bytes makes them free in read_storage, not in work.",
+      "scan": "one charge per protocol/control node in ascending structural node-id order: 1 + 2*Bn, Bn the byte length of the node id as B counts a NodeRef (the comparison reads at most Bn bytes of the node and at most Bn bytes of the group control it is compared with), plus O + m when the node is eligible (O its declaration occurrences, m its canonical related records); charged before the node is inspected, so every node-id comparison of the coverage walk is paid by the node it reads",
       "absent_member": "nothing"
     },
     "storage_policy": {
@@ -8368,93 +8368,93 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 1006,
+        "limit_over_baseline": 1884,
         "expect": {
           "decision": "admit"
         },
         "work_units": {
           "rows": [
             44,
-            44,
-            45,
-            44,
-            47,
-            42,
-            53
+            81,
+            82,
+            81,
+            84,
+            80,
+            91
           ],
-          "rows_total": 319,
+          "rows_total": 543,
           "scan": [
             {
               "node": "Example/OrderFlow/run/Main",
-              "amount": 31
+              "amount": 61
             },
             {
               "node": "Example/OrderFlow/run/Main/Advised",
-              "amount": 41
+              "amount": 78
             },
             {
               "node": "Example/OrderFlow/run/Main/Applied",
-              "amount": 40
+              "amount": 77
             },
             {
               "node": "Example/OrderFlow/run/Main/Charged",
-              "amount": 40
+              "amount": 77
             },
             {
               "node": "Example/OrderFlow/run/Main/Finalized",
-              "amount": 40
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Notified",
-              "amount": 41
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Outcome",
-              "amount": 38
+              "amount": 75
             },
             {
               "node": "Example/OrderFlow/run/Main/Outcome/Done",
-              "amount": 42
+              "amount": 83
             },
             {
               "node": "Example/OrderFlow/run/Main/Outcome/Failed",
-              "amount": 44
+              "amount": 87
             },
             {
               "node": "Example/OrderFlow/run/Main/Poll",
-              "amount": 35
+              "amount": 69
             },
             {
               "node": "Example/OrderFlow/run/Main/Poll/Limit",
-              "amount": 40
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Poll/Polled",
-              "amount": 42
+              "amount": 82
             },
             {
               "node": "Example/OrderFlow/run/Main/Received",
-              "amount": 41
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Requested",
-              "amount": 42
+              "amount": 81
             },
             {
               "node": "Example/OrderFlow/run/Main/Shipments",
-              "amount": 40
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Shipments/East",
-              "amount": 45
+              "amount": 88
             },
             {
               "node": "Example/OrderFlow/run/Main/Shipments/West",
-              "amount": 45
+              "amount": 88
             }
           ],
-          "scan_total": 687,
-          "total": 1006
+          "scan_total": 1341,
+          "total": 1884
         },
         "storage_units": {
           "groups": 6,
@@ -8805,13 +8805,13 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 318,
+        "limit_over_baseline": 542,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 53,
+            "amount": 91,
             "locus": "/protocol_correlation_occurrences/6",
             "charge": "row 6, the last row; rows 0 to 5 paid"
           },
@@ -8970,13 +8970,13 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 319,
+        "limit_over_baseline": 543,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 31,
+            "amount": 61,
             "locus": "/protocol_correlation_occurrences",
             "charge": "scan of Example/OrderFlow/run/Main"
           },
@@ -9135,13 +9135,13 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 1005,
+        "limit_over_baseline": 1883,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 45,
+            "amount": 88,
             "locus": "/protocol_correlation_occurrences",
             "charge": "scan of Example/OrderFlow/run/Main/Shipments/West, the last control node"
           },
@@ -9300,7 +9300,7 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 1006,
+        "limit_over_baseline": 1884,
         "expect": {
           "decision": "admit"
         }
@@ -10014,13 +10014,13 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 600,
+        "limit_over_baseline": 1179,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 45,
+            "amount": 88,
             "locus": "/protocol_correlation_occurrences",
             "charge": "scan of Example/OrderFlow/run/Main/Shipments/West"
           },
@@ -10031,70 +10031,70 @@
           "scan": [
             {
               "node": "Example/OrderFlow/run/Main",
-              "amount": 31
+              "amount": 61
             },
             {
               "node": "Example/OrderFlow/run/Main/Applied",
-              "amount": 39
+              "amount": 76
             },
             {
               "node": "Example/OrderFlow/run/Main/Charged",
-              "amount": 39
+              "amount": 76
             },
             {
               "node": "Example/OrderFlow/run/Main/Finalized",
-              "amount": 40
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Outcome",
-              "amount": 38
+              "amount": 75
             },
             {
               "node": "Example/OrderFlow/run/Main/Outcome/Done",
-              "amount": 42
+              "amount": 83
             },
             {
               "node": "Example/OrderFlow/run/Main/Outcome/Failed",
-              "amount": 44
+              "amount": 87
             },
             {
               "node": "Example/OrderFlow/run/Main/Poll",
-              "amount": 35
+              "amount": 69
             },
             {
               "node": "Example/OrderFlow/run/Main/Poll/Limit",
-              "amount": 40
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Poll/Polled",
-              "amount": 42
+              "amount": 82
             },
             {
               "node": "Example/OrderFlow/run/Main/Received",
-              "amount": 40
+              "amount": 78
             },
             {
               "node": "Example/OrderFlow/run/Main/Requested",
-              "amount": 41
+              "amount": 80
             },
             {
               "node": "Example/OrderFlow/run/Main/Shipments",
-              "amount": 40
+              "amount": 79
             },
             {
               "node": "Example/OrderFlow/run/Main/Shipments/East",
-              "amount": 45
+              "amount": 88
             },
             {
               "node": "Example/OrderFlow/run/Main/Shipments/West",
-              "amount": 45
+              "amount": 88
             }
           ],
-          "scan_total": 601,
-          "total": 601
+          "scan_total": 1180,
+          "total": 1180
         },
         "exact": {
-          "limit_over_baseline": 601,
+          "limit_over_baseline": 1180,
           "decision": "admit",
           "storage": "no block is charged: zero groups, no flags"
         }
@@ -10251,13 +10251,13 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 1006,
+        "limit_over_baseline": 1884,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 45,
+            "amount": 88,
             "locus": "/protocol_correlation_occurrences",
             "charge": "scan of Example/OrderFlow/run/Main/Shipments/West"
           },
@@ -10332,19 +10332,85 @@
           }
         ],
         "counter": "work",
-        "limit_over_baseline": 284,
+        "limit_over_baseline": 323,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 232,
+            "amount": 271,
             "locus": "/protocol_correlation_occurrences/1",
             "charge": "row 1: 1 + B + 1 alias byte, B including a 200-byte segment, charged before the join refuses the absent control"
           },
           "partial_view": false
         },
         "rows": "row 0 is Requested; row 1 names a control whose last segment is 200 ASCII x"
+      },
+      {
+        "id": "CO-B16-predecessor-bytes-are-charged",
+        "package": "PC-REL",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "n",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "n",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
+        "counter": "work",
+        "limit_over_baseline": 116,
+        "expect": {
+          "decision": "incomplete",
+          "limit": "work",
+          "first_unpaid": {
+            "kind": "work",
+            "amount": 78,
+            "locus": "/protocol_correlation_occurrences/1",
+            "charge": "row 1: 1 + B + 1 alias byte + Bp, Bp the 37 control bytes of the previous row (Advised) against B of 39 for Requested"
+          },
+          "partial_view": false
+        },
+        "rows": "row 0 is Advised and row 1 is Requested, aliases of one byte: the previous row control has a different length from the current one"
       }
     ]
   },

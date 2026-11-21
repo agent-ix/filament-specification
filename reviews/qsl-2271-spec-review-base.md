@@ -25,3 +25,11 @@ The IDs are new and free: FR-831, TC-2113, FR-322-AC-514 and FR-466-AC-20. The r
 ## Verdict
 
 Changes requested on one medium item: attribute the budget and its units to IR FR-358 and list it in Dependencies. Everything else passes the base checklist.
+
+## Dispositions
+
+Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | FR-831 Budget, AC-7, Dependencies and frontmatter now attribute the NativeJoinBudget and its work and read-storage units to filament-contract-ir FR-358, stating that FR-322 defines neither. FR-322-AC-516 (renumbered from 514 after the merge with #797) says the same. No new counter or limit field is added. |

@@ -56,3 +56,16 @@ Rust runs, one at a time, under `flock /tmp/cargo-slot.lock` with `-j4`, a focus
 - The same test on head a1268905: rc=101.
 
 The author's 14 named passing tests were not rerun (receipts accepted). `quire matrix --scope .` rc=0. No reader for the member exists, so no carrier outcome was executed.
+
+## Dispositions
+
+Round 1. Checked against fix commit 2d7441fa and merge ce96a423 (head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679, local == remote). Merge integrity: against origin/main 73e81dce, the PR's net diff touches only its own files. The schema delta is unchanged (`protocol_correlation_occurrences`, `ProtocolCorrelationOccurrence`, the four related records terms, the recommend rule). Upstream FR-322-AC-514/515 (composition) and the claim_names composition row are preserved. This PR's criterion moved to FR-322-AC-516, and TC-2113 cites it. No stale AC-514 reference remains in FR-831, FR-466, TC-2113, the README, the vectors or the tests. `quire matrix --scope .` (rc=0) tags only FR-831-AC-6, AC-10 and AC-11. The author's receipts are accepted: 8 named `protocol_correlation_vectors` tests plus 5 named layout, manifest and family tests, all rc=0. No new concern required a rerun.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | CO-R17 row 1 now names `acme/orders`, which is not this package (a join defect) and sorts before `example` in UTF-8 byte order (a key defect). The test asserts both defects and the join locus. |
+| FND-002 | fixed | CO-R18 to CO-R21 now carry `expect.retained` {control, occurrence, canonical_index}. The test recomputes the first uncovered position from each package and compares all three. |
+| FND-003 | fixed | CO-B07 is now a concrete one-row edit with a 64-byte alias (104 = 1 + 39 + 64, limit 103). New CO-B15 has a 200-byte control segment, charged 232 before the join would refuse it. The tautology is gone. |
+| FND-004 | fixed | The reader-outcome trace tags are removed. Only AC-6 (schema), AC-10 (vector, package and charge consistency) and AC-11 (member separateness) are tagged. AC-1 to AC-5, AC-7 to AC-9 and AC-12 are untagged and stated as pending in TC-2113 Boundaries and FR-831 Status. |
+| FND-005 | fixed | Every budget case is recomputed from its own package and rows: counter, first unpaid amount, locus, limit and prior work, with G sampled at 6, 96 and 1200. No hard-coded constants remain. I checked the arithmetic by hand (rows 44,44,45,44,47,42,53; Main 31, Advised 41, West 45; B07 104; B15 232). |
+| FND-006 | fixed | The full key is now compared (NodeRef in UTF-8 byte order, then occurrence ordinal, then source_ordinal). source_map is looked up by the actual (node_id, role, ordinal) in the case's package, and O is counted from the node's occurrences. The mutation test shows the check fails on swap, gap, occurrence 1, foreign package, index >= m, repeated key, missing entry and missing row. No ordinal 0, PC-REL or O = 1 is hard-coded. |
