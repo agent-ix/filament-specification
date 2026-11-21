@@ -56,8 +56,9 @@ canonical key order when slot evaluation completes, while a refusal is returned
 alone and an incomplete result from earlier admission is returned unchanged before
 slot evaluation and no relationship slot is evaluated. An unlisted or
 complete-empty extent with no candidate is `missing`; an incomplete extent
-adds `IncompleteRelationshipExtent{required}` with or without a match unless a
-known conflict refuses. Exact replay with the same identity and facts is one
+adds `IncompleteRelationshipExtent{required}` within the existing incomplete
+admission result, with or without a match unless a known conflict refuses.
+Exact replay with the same identity and facts is one
 candidate; identity rebind refuses, and identical facts with different
 identities are distinct candidates.
 A declaration outside the checked package, endpoint reversal/substitution, repeated

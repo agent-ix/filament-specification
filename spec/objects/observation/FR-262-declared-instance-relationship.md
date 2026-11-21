@@ -122,10 +122,11 @@ An unlisted relationship extent is not supplied. A complete empty extent is
 known empty; when it leaves a required slot without a candidate, that slot is
 `missing`. A `complete: false` extent is incomplete. When a required slot uses
 an incomplete extent and no incompatible candidate already proves a conflict,
-the resolver returns an `IncompleteRelationshipExtent` reason for that slot,
-even if one or more matching candidates are present: unseen instances could
-change resolution or ambiguity. A known incompatible candidate still makes the
-slot `conflicting`.
+the resolver returns an `IncompleteRelationshipExtent{required}` reason within
+the existing incomplete admission result for that slot, even if one or more
+matching candidates are present: unseen instances could change resolution or
+ambiguity. This reason is not a fifth correlation outcome. A known incompatible
+candidate still makes the slot `conflicting`.
 
 Workflow instances, messages, receive occurrences, deliveries, attempts,
 effects and receipt observations remain distinct. A receipt is an observation

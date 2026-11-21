@@ -33,8 +33,8 @@ required-slot key: declaration identity, producer authority key
 FR-287 key, then target FR-287 key. Each key component uses its exact identity
 comparison, and source precedes target. When admission reaches slot evaluation,
 an unlisted or complete-empty extent with no candidate adds one
-`MissingRelationship{required}` reason, while an explicitly partial extent
-adds one `IncompleteRelationshipExtent{required}` reason even when a matching
+`MissingRelationship{required}` reason. An explicitly partial extent adds
+one `IncompleteRelationshipExtent{required}` reason even when a matching
 candidate is present, unless an incompatible candidate establishes
 `conflicting`. Both reasons follow canonical slot order. A refusal returns
 alone and drops accumulated incomplete reasons.
