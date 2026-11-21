@@ -59,6 +59,26 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
 
 ### From a schedule to an FR-193 item
 
+For hybrid plans, `delay` and `elapsed` have the existing builtin
+`scalar_type`/`rational` type, in the model's own time coordinates, as
+`dwell_grid` does. This is an explicit hybrid override of FR-800's timed
+quantity typing: FR-481 carries no hybrid time-unit node, so no unit or
+Quantity node is inferred. Non-hybrid timed planning keeps its unit-bearing
+quantity rules. A later language form declaring a hybrid unit would need
+to specify its conversion at this override.
+
+FR-800/FR-322's hybrid-state record types describe a point on each admitted
+trajectory. The translation below binds `initial` to that trajectory's
+initial point and `before`/`after`/`final` to its state at the corresponding
+schedule boundaries. Those typed points are universally quantified over
+the entire initial set and all admitted nondeterministic parameters, as
+the execution rule above requires. They do not materialize the initial
+set or enclosure in a Rational field. The scheduled-model FR-193 item and
+its sound enclosure evidence discharge the universal goal/policy checks;
+a representative or sampled point proves neither. This uses the existing
+FR-193 hybrid state/trajectory semantics and the goal translation below,
+without adding a value form for an enclosure.
+
 - For a candidate schedule `(d_1, t_1), …, (d_n, t_n)` the planner SHALL
   build the *scheduled model*: the hybrid declaration plus a dwell clock `τ`
   (rate 1, reset to 0 by every transition), an elapsed clock `e` (rate 1)
@@ -147,6 +167,7 @@ A `feasible`, `infeasible`, `incomplete` or `unsupported` plan outcome
 | FR-819-AC-3 | With `hybrid.max_solver_steps` 1 the result is `incomplete` with `limit-reached` naming `hybrid.max_solver_steps`; with no hybrid provider registered it is `unsupported` naming `hybrid-dynamics`. | Test (TC-1966) |
 | FR-819-AC-4 | A provider that answers with an `unclassified` method validates no candidate, and the result is never `feasible` on its word; a request without `dwell_grid` refuses at `/dwell_grid`. | Test (TC-1966) |
 | FR-819-AC-5 | No hybrid plan result is `optimal`, and a policy `always holds(h <= 9)` keeps the AC-1 plan, which the enclosure shows never exceeds 8. | Test (TC-1966) |
+| FR-819-AC-6 | TC-1966's interval-initial tank uses Rational trajectory-local fields and builtin Rational delay/elapsed; rate 1 validates dwell 8 by sound enclosure. With rate in `[1,2]`, domain `Int[1,1]` and grid `1/1`, the guard needs dwell at least 8 while the invariant needs at most `9/2`. In the specified candidate-validator fixture, bounded-grid exhaustion with no accepted schedule-space infeasibility certificate gives exactly `incomplete`, cause `grid-exhausted{dwell_grid: {type: rational, numerator: "1", denominator: "1"}}`, and null plan/certificate/bound, with no resource or provider failure. | Test (TC-1966) |
 
 ## Dependencies
 

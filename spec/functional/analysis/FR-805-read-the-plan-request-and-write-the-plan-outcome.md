@@ -111,6 +111,11 @@ refusal naming the first defect by its RFC 6901 pointer.
 
 ### Outcome document
 
+This schematic example uses placeholders for package identities, reference
+node-id components and object identity bytes. A writer substitutes the
+actual checked-package node ids and bound snapshot identity, including the
+actual ordinals; the example reserves no declaration path or ordinal.
+
 ```json
 {
   "format": "filament.plan-outcome/v1",
@@ -120,7 +125,7 @@ refusal naming the first defect by its RFC 6901 pointer.
   "objective": {"direction": "minimize", "expression": "length", "value": {"type": "integer", "value": "3"}},
   "plan": {
     "length": 3,
-    "steps": [ {"index": 0, "operation": "inc", "arguments": []} ],
+    "steps": [ {"index": 0, "operation": "inc", "receiver": {"type": "reference", "universe": {"package": "<model package>", "path": ["<actual universe root path segments>"], "ordinal": 0}, "object_type": {"package": "<model package>", "path": ["<actual Counter path segments>"], "ordinal": 0}, "identity": "<hex identity bytes of c>"}, "arguments": []} ],
     "states": [ {} ]
   },
   "replay": {"outcome": "reproduced", "steps": 3},
@@ -156,6 +161,35 @@ refusal naming the first defect by its RFC 6901 pointer.
   `{parameter, value}` pairs in parameter order and, for a timed model,
   `delay`; `plan.states` holds the `length + 1` states from the initial
   state, each as a `filament.state.snapshot/v1` object world.
+  The schematic counter step above expands `receiver` to `c`'s actual
+  FR-181 reference object from the checked package and bound snapshot,
+  including the actual path arrays, not the placeholder strings. Every counter step is receiver-bearing; its native
+  outcome is single, so it omits `outcome_ordinal`. Its generated source
+  step type includes the receiver union even for this one receiver type,
+  as FR-322 requires; FR-800's `drain` fixture follows the same rule.
+- A native state-model step carries `receiver` exactly when its operation
+  has a receiver, encoded as FR-181's typed object-reference value; a
+  receiverless step omits the member. The reference must select a live receiver of that
+  operation's declared receiver type in the pre-state.
+- A native state-model step carries `outcome_ordinal` exactly when that
+  invocation has more than one distinct `(result, post-state)` outcome
+  under FR-804. It is a zero-based JSON integer selecting that canonical outcome list. A
+  single-outcome invocation omits the member; an ordinal present for it,
+  an ordinal absent for a multiple-outcome invocation, or a negative,
+  non-integer or out-of-range ordinal fails replay as specified by
+  FR-650's plan-substitution library seam, or rejects `closure` under its
+  internal certificate checker and tamper seam. A missing required
+  receiver, an unexpected receiver or a receiver of the wrong operation
+  type has the same respective failure contract. These are library checks,
+  not an outcome-document reader or a new request carrier.
+- Native replay and certificate verification SHALL bind both the exact
+  receiver and the selected outcome ordinal to the step and its post-state,
+  using FR-804's order. An invocation with no admitted outcome supplies no
+  step. The receiver and ordinal members follow the presence rules above,
+  rather than the outcome document's rule for top-level nullable members.
+  Hybrid schedules retain FR-819's enclosure validation and carry neither
+  receiver nor native invocation ordinal; these members do not enumerate
+  continuous trajectories.
 - `replay` records FR-650's native replay: `reproduced` with the step
   count, the only value a reported plan carries.
 - `certificate` carries `type` (`potential` or `closure`, or `enclosure`
@@ -224,7 +258,7 @@ which is a definite negative answer and is never success.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-805-AC-1 | FR-650-AC-1's request writes a `filament.plan-outcome/v1` document with `status` `optimal`, `objective.value` 3, three steps with their arguments, four states, `replay.outcome` `reproduced`, certificate `potential` `accepted`, `certification` `certified`, and exits `0`. | Test (TC-1955) |
+| FR-805-AC-1 | FR-650-AC-1's request writes a `filament.plan-outcome/v1` document with `status` `optimal`, `objective.value` 3, three steps with their arguments and receiver `c` in the exact FR-181 typed reference form, each with its singleton ordinal absent, four states, `replay.outcome` `reproduced`, certificate `potential` `accepted`, `certification` `certified`, and exits `0`. | Test (TC-1955) |
 | FR-805-AC-2 | An `infeasible` result writes `plan` `null`, a `closure` certificate and exits `10`; an `incomplete` result writes its `cause` and exits `22`. | Test (TC-1955) |
 | FR-805-AC-3 | A `Decimal` objective `0.30` is written in the run value form, never as the JSON number `0.3`. | Test (TC-1955) |
 | FR-805-AC-4 | A request with an unknown member, a duplicate policy name, a `policy` given as a string and a limit of 0 each refuse `invalid_runtime_input` (`unknown-member`, `invalid-value`, `wrong-value-kind`, `invalid-value`) at the member's pointer, exit `20`, before any search. | Test (TC-1955) |
@@ -232,6 +266,8 @@ which is a definite negative answer and is never success.
 | FR-805-AC-6 | Over the counter, the goal-21 `infeasible` outcome, a `plan_search.max_states` 2 `incomplete` outcome with no plan, and a hybrid `unsupported` outcome (FR-819-AC-3) each carry every member of the outcome document: `objective` with `direction`, `expression` and `value` `null`, and `plan`, `replay` and `bound` `null`; `certificate` is the accepted closure certificate with `certification` `certified` on `infeasible`, and `null` with `certification` `null` on the other two; no member is absent in any of the three. | Test (TC-1955) |
 | FR-805-AC-7 | FR-650-AC-1's outcome writes `objective.value` `{"type": "integer", "value": "3"}`; FR-810-AC-3's writes it as FR-181's unit-bearing quantity `{"type": "rational", "numerator": "60", "denominator": "1", "unit": "min"}`; FR-809-AC-2's writes `3/4` as `{"type": "rational", "numerator": "3", "denominator": "4"}`; none writes a bare JSON number. | Test (TC-1955) |
 | FR-805-AC-8 | A plan request with `limits` `{"max_steps": 1}` refuses `unknown-member` at `/limits/max_steps` and `accounting` `{"steps": 1}` at `/accounting/steps`, not FR-461-AC-4's setting refusal; carried under a host surface's `synthesis` member the same requests refuse at `/request/synthesis/limits/max_steps` and `/request/synthesis/accounting/steps`; a hybrid request's `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "2"}` is admitted as one half time unit, `dwell_grid` `1` (a JSON number) refuses `wrong-value-kind` and `{"type": "rational", "numerator": "0", "denominator": "1"}` refuses `invalid-value`, each at `/dwell_grid`; a hybrid request carrying `initial` refuses `unknown-member` at `/initial`. | Test (TC-1955) |
+| FR-805-AC-9 | TC-1955's receiver-bearing steps, including the counter's `c`, write the exact FR-181 typed reference; receiverless steps omit it. Missing, unexpected or wrong-operation-type receivers fail FR-650's plan-substitution seam with method failure exit `30` and no outcome document, or reject the internal certificate under `closure` at the tampered entry. | Test (TC-1955) |
+| FR-805-AC-10 | TC-1955's three-outcome steps carry JSON-integer ordinals 0, 1 or 2; omission, `-1`, `3`, a non-integer, or ordinal `0` on a singleton fails the FR-650 library checks with the respective replay method-failure or certificate `closure` contract. A valid changed ordinal selecting an equal post-state replays as a different result/step identity; duplicating that identity in a certificate while losing the original edge rejects `closure`. | Test (TC-1955) |
 
 ## Dependencies
 

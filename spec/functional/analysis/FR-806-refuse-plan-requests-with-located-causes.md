@@ -42,10 +42,15 @@ These are found when the package is checked (S3) and refuse the declaration:
 | `domain` of a plan synthesis is not an integer range type with both bounds | `unsupported_projection`/`unbounded-extent` | the `domain` name |
 | `domain` contains a negative length | `ill_typed`/`type-mismatch` | the `domain` name |
 | an operation parameter of `G`'s model has no finite value set (FR-800) | `unsupported_projection`/`unbounded-extent` | the parameter, naming the first unbounded component |
+| repeated parameter names cannot share FR-322's arguments record after FR-154/FR-151 normalization | `unsupported_construct`/`not-yet-implemented` | the synthesis's `grammar` name; the existing diagnostic message names the parameter and first conflicting pair in operation/parameter declaration order |
 | `satisfies` is not Boolean | `ill_typed`/`non-boolean-root` | the block |
 | the objective is not numeric (FR-802) | `ill_typed`/`type-mismatch` | the objective |
 | the goal or objective reads `elapsed` over an untimed model, or `probability` over a non-probabilistic model | `missing_declaration`/`missing-name` | the member read |
 | the `synthesis` uses a timed or probabilistic model and the unit's profile does not select the layer that model needs | `unsupported_construct` naming the selected and the required layer | the declaration |
+
+[FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md#synthesis-request-nodes)
+owns shared-argument normalization, the support boundary, the diagnostic
+feature name and conflict-pair selection.
 
 ### Request-time refusals
 
@@ -79,6 +84,7 @@ it with the pointer of the member carrying the plan request (FR-805):
 | FR-806-AC-3 | A `filament.plan-request/v1` document whose `declaration` names an ordinary `synthesis` over a value type refuses `missing_declaration`/`missing-name` at `/declaration`; a policy over another model refuses `ill_typed`/`type-mismatch` at `/policy/0`. | Test (TC-1956) |
 | FR-806-AC-4 | A request whose initial snapshot violates the model's population bound refuses with that snapshot's own admission cause located at `/initial`, exit `20`, and writes no plan. | Test (TC-1956) |
 | FR-806-AC-5 | A goal no plan reaches exits `10` as `infeasible`, never `20`. | Test (TC-1956) |
+| FR-806-AC-6 | TC-2037's normalized shared-argument conflicts give `unsupported_construct`/`not-yet-implemented` at S3, exit `20`, at the synthesis grammar name, with the exact feature string defined by FR-322 and the existing declaration/profile cause context and deterministic parameter/operation-pair names in the diagnostic. No checked package or plan request/outcome is produced; optional `X` and required `Option<X>` do not create a conflict merely by their spelling. | Test (TC-2037) |
 
 ## Dependencies
 
