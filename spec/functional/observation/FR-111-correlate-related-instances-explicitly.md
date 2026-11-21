@@ -21,6 +21,22 @@ heuristic matches.
 
 ## Behavior
 
+The caller SHALL supply required relationship slots as a list that the
+correlation service interprets as a set. `max_required_relationships` SHALL
+bound the raw list length before equal entries are collapsed. Equal required
+slots identify one slot.
+The service SHALL evaluate distinct slots in canonical order of the complete
+required-slot key: declaration identity, producer authority key
+(`bundle_identity`, `bundle_revision`, `digest`), `interface_version`, source
+FR-287 key, then target FR-287 key. Each key component uses its exact identity
+comparison, and source precedes target. When admission reaches slot evaluation,
+each missing slot adds one `MissingRelationship{required}` reason in that
+canonical order. A refusal returns alone and drops accumulated incomplete
+reasons. `MissingRelationship{required}` and
+`IncompleteRelationshipExtent{required}` reasons share this canonical order.
+An incomplete result reached before slot evaluation is returned unchanged;
+slot evaluation is reached only when earlier admission is available.
+
 Workflow instances, messages, receive occurrences, deliveries, attempts,
 effects and receipt observations SHALL remain distinct. A receipt refers to a delivery;
 it is not the message, receive occurrence or delivery itself. A duplicate receipt SHALL NOT establish a second business effect. A refund is admitted only with its
@@ -42,6 +58,7 @@ from a foreign key, trace ID, provider name, or ambient configuration.
 | FR-111-AC-5 | Each endpoint retains its complete FR-287 key in authored source/target order; reversing, sorting, emptying, foreign-qualifying or substituting an endpoint refuses. | Test (TC-141) |
 | FR-111-AC-6 | Exact replay of one complete relationship value is idempotent, while multiple distinct admitted values satisfying one required slot are ambiguous. | Test (TC-141) |
 | FR-111-AC-7 | A receipt observation, delivery, receive occurrence and message remain non-interchangeable even when they share transport data. | Test (TC-141) |
+| FR-111-AC-8 | The raw required-slot list is bounded by `max_required_relationships` before duplicates collapse; equal slots are one set member; distinct slots are evaluated in canonical key order (declaration identity, producer authority key, interface version, source FR-287 key, target FR-287 key). When slot evaluation completes without refusal, each missing or incomplete-extent slot contributes one reason in that order; a later refusal returns alone and discards those reasons, and an incomplete result from earlier admission returns unchanged without slot evaluation. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_required_slot_limit_counts_raw_entries`, `filament-observation/tests/admission.rs::tc005_required_slots_are_a_canonical_set`, `filament-observation/tests/admission.rs::tc005_slot_refusal_discards_incomplete_reasons`, `filament-observation/tests/admission.rs::tc005_pre_slot_incomplete_skips_relationship_slots`) |
 
 ## Dependencies
 
