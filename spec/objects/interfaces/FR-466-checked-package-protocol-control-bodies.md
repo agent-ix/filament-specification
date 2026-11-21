@@ -86,6 +86,17 @@ absent optional, not a default
 `contracts` list explicitly requests no extra state clauses; it does not
 bypass the operation's frame.
 
+**Authored correlation clauses.** `related` is canonical: the records of a
+`send`, `receive`, `attempt`, `effect`, `event` or `recommend` are the
+deduplicated, sorted result of every authored clause, so two or more identical
+clauses are one record and the body keeps neither the source order, the
+multiplicity nor the local alias each clause was written under. A producer MAY
+carry those facts in the optional top-level `protocol_correlation_occurrences`
+member of the package ([FR-831](FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md)),
+keyed by the control node, its `declaration` occurrence and the zero-based
+position of the canonical record in the `related` argument above. The member
+changes no layout, order, node id or check of this requirement.
+
 **Per-operator checks.** The reader checks, for one control, in this order:
 
 1. **References.** Every reference is a declared dependency (a node of the graph absent from `dependencies` is refused `invalid_semantic_graph` at the graph stage, FR-464 "Reader order"), else
@@ -382,6 +393,7 @@ checks at FR-464 step 6):
 | FR-466-AC-17 | A pre-test `repeat` (no `test` member, FR-729) whose guard reads a field of a binder introduced in that `repeat`'s own body (an `attempt` or `event` binder `by` the owner, so eligible) refuses `missing_declaration`/`missing-name` as an out-of-scope read, for a `repeat` with no `maximum`, with `maximum` 3 and with `maximum` 0, never `wrong_snapshot`/`wrong-observation` and never `invalid_package`/`invalid-value`; the same `repeat` whose `visible` entry, and not its guard, reads that binder is admitted (a back-edge read, FR-729-AC-5); a guard reading a binder in scope at the `repeat`'s entry is admitted. | Test (TC-948) |
 | FR-466-AC-18 | A `visible` entry is an `expression` node: an entry targeting a `value`/`literal` node and one targeting a record binder's `value`/`parameter` node each refuse `invalid_model_binding`/`malformed-declaration` at the target; an `expression`/`reference` entry to a record binder refuses `ill_typed`/`operator-ineligible` at the read; a `choice` and a `repeat` behave alike; an application over constants only, and one over a capture only, is admitted as a composite entry and lists no fact a guard may read (a guard reading a fact no individual entry lists still refuses `wrong_snapshot`/`wrong-observation`, `reason` `unlisted`). | Test (TC-948) |
 | FR-466-AC-19 | A `recommend` control is admitted with a role, an operation anchor, `contracts` that are the pre- and postconditions of that anchor, a binder, `related` and a constraint, in that order; a `sequence` carrying the last argument `boundary` `observe-only` and holding a `check`, a `receive` and a `recommend` is admitted; the same `sequence` holding an `attempt`, a `send`, an `effect`, a `commit` or an `event` with a `compensation` each refuses `ill_typed`/`operator-ineligible` at that control's node with `boundary` the `sequence` node, a nested `choice` holding the `attempt` in a case refuses at the attempt node, and a `boundary` text other than `observe-only` refuses `malformed_wire`. | Test (TC-2018) |
+| FR-466-AC-20 | The `related` array of each of the six related-bearing controls (`send`, `receive`, `attempt`, `effect`, `event`, `recommend`) keeps its canonical order and its identical authored clauses collapsed whether or not the optional `protocol_correlation_occurrences` member is present, and the member's `canonical_index` is the zero-based position in that array; the reader checks of FR-831 are the only checks that read the member. The schema lays each of the six out with the same `related` records term and admits a `recommend` control with the layout `role`, `operation`, `contracts`, `binder`, `related`, `constraint`. | Test (TC-2113) |
 
 ## Dependencies
 

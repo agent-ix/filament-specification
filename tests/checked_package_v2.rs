@@ -2915,7 +2915,7 @@ fn tc_946_the_schema_admits_a_recursion_group_on_the_protocol_reference_carrier(
 fn protocol_node_vectors_match_the_schema_argument_layouts() {
     let vectors = parsed_fixture(PROTOCOL_NODE_VECTORS);
     let actual = protocol_operators();
-    assert_eq!(actual.len(), 20);
+    assert_eq!(actual.len(), 21);
     let schema = parsed_fixture(SCHEMA);
     let rules = schema["$defs"]["ProtocolControlApplication"]["allOf"]
         .as_array()

@@ -183,6 +183,18 @@
     {
       "arguments": [
         "role",
+        "operation",
+        "contracts",
+        "binder",
+        "related",
+        "constraint"
+      ],
+      "operator": "recommend",
+      "semantic_form": "control"
+    },
+    {
+      "arguments": [
+        "role",
         "binder",
         "constraint"
       ],

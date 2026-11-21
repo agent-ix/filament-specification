@@ -135,6 +135,7 @@ boundary.
 | checked_term_data | JsonObject | 0..1 |  |
 | temporal_clause_names | JsonObject | 0..1 |  |
 | claim_names | JsonObject | 0..1 |  |
+| protocol_correlation_occurrences | JsonObject | 0..1 |  |
 | schedulability_claims | JsonObject | 0..1 |  |
 | operation_effects | JsonObject | 0..1 |  |
 | operation_bodies | JsonObject | 0..1 |  |
@@ -160,6 +161,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | checked_term_data | optional closed carrier; absent means its five arrays are empty |
 | temporal_clause_names | absent exactly when the graph has no temporal/temporal_clause node; see Field sources |
 | claim_names | absent exactly when the graph has no state/state_clause, relation/refinement, correspondence/component_composition or claim node other than a claim/value_validity node; see Field sources |
+| protocol_correlation_occurrences | optional array (FR-831); absent means the authored correlation provenance is unavailable, never empty; present is complete, and `[]` only when every eligible control occurrence has an empty `related`; outside every identity preimage |
 | schedulability_claims | optional; when present a non-empty array of {declaration, occurrence} |
 | operation_effects | optional; absent means effects are unavailable, not empty |
 | operation_bodies | optional; absent means bodies are unavailable, not empty; present is one row per operation member and may be an empty array |
@@ -5444,7 +5446,7 @@ stages" first, so every owner-bearing node, a clause function included, has
 already joined its owner (stage 2); then the `operation_effects` carrier; then
 the `operation_bodies` carrier; then FR-640's `probabilistic` reader
 checks; then FR-825's requirement-record step (`claim`/`value_validity` nodes,
-then `requirement_items`); then the `checked_term_data` records. The owner
+then `requirement_items`); then the `checked_term_data` records; then the `protocol_correlation_occurrences` rows, the last carrier step ([FR-831](FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md)). The owner
 join therefore outranks every carrier check: a clause function whose owner names
 no declared operation member refuses `missing_declaration`/`missing-selection` at
 its `node_id` and is never reached as a body, so the carrier meets only functions
@@ -6695,6 +6697,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-512 | The `let` binder link. In IC-14, the `let` binding term carries `binder`, the `NodeRef` of `y`'s `value`/`parameter` node, which is among the application's `dependencies`, and the package is admitted. Each refuses `invalid_package`/`invalid-value` at the stated place: IC-14 with `binder` removed, at `/semantic_graph/nodes/{n}/body/arguments/0`; with `binder` naming a `value`/`parameter` node named `z`, at `.../arguments/0/binder`; with `binder` naming a node outside the application's `dependencies`, at the same member; with `binder` added to a binding of a node body aggregate, at that `binder`; and with the call argument retargeted to a second `value`/`parameter` node named `y` at the binder's level and another type, at that reference. IC-21, the package of `let y: Int[0, 999] = x in true` over `x: Int[0, 1000]`, whose binder the body never reads, refuses `ill_typed`/`operator-ineligible` at the `let` application, as IC-15 does. | Test (TC-2099) |
 | FR-322-AC-514 | An admitted package for top-level `compose Sys` carries `declaration.qualified_name` `["Sys"]`, `node_id.path` `["Sys"]`, one declaration occurrence at ordinal 0 and one `claim_names` row with `name` `Sys`, `qualified_name` `["Sys"]` and the exact whole declaration region. Strict readback resolves bare `Sys` to that occurrence without source text or expression-origin names. Two compositions whose node-id order reverses their declaration-region source order retain source-order default selection by locked source-unit position and byte interval. Another correspondence form remains ineligible for declaration metadata and a claim-name row. | Test |
 | FR-322-AC-515 | Mutate AC-514's otherwise admitted composition package independently: remove its naming row and omit `claim_names` when no other claim-bearing node remains; give the row a different `qualified_name` with matching last-segment `name`; change its declaration region to a larger containing interval; and introduce a distinct declaration with the same qualified name. The missing row/member refuses `invalid_package`/`invalid-value` at `/claim_names`; the differing path refuses the same at the row's `/qualified_name`; the larger interval refuses the same at its `/declaration_region`; the distinct duplicate name refuses `ambiguous_declaration`/`ambiguous-name` at the later row's `/qualified_name`. Existing source-map and declared-node path checks remain in force. | Test |
+| FR-322-AC-516 | The optional top-level `protocol_correlation_occurrences` member (FR-831) sits beside `claim_names`, is closed to rows `{control, occurrence, canonical_index, alias, source_ordinal}` and is read last among the carriers, after every protocol node and the `checked_term_data` records. Its absence means the authored correlation provenance is unavailable, not empty; its presence is complete. It is outside every identity preimage and adds no node, node id, `source_map` entry, `checked_term_data` row or `protocol_locations` row, and it is not in the identity sidecar; a package that carries it differs in bytes from one that does not, so a whole-package byte comparison (for example FR-322-AC-473's golden comparison) is scoped to packages without it. The `protocol_locations` `related <k>` end sites and the source-map key are unchanged; the member's source context is the whole admitted `source_map` entry of the full key `(control, declaration, ordinal)` with all its regions, never the occurrence alone; a control carries no `owner`, so no owner coherence applies to a row; and a dependency control is read from its own package's member and entry. Its charges are made on the strict read's one `NativeJoinBudget` of filament-contract-ir FR-358 (FR-322 defines no budget counter; FR-831 takes the work and read-storage counters from FR-358), interleaved with a single row pass and a metered coverage pass, with no new limit field. | Test (TC-2113) |
 
 ### FR-322-AC-467
 
