@@ -52,3 +52,15 @@ Checked clean: the declarations-row JSON shape and form spellings (`object_type`
 - FR-830-AC-9, AC-10, AC-13, AC-15 refusal vectors (examined; clean apart from inherited bases)
 - witnesses.declarations encoding vs FSL bare.rs (examined, clean)
 - README.md entry (examined, clean)
+
+## Dispositions
+
+Round 1, against 63a7f10abfdf8e8876bb2fabfb039f443631e93f (fix delta fb65d9db..63a7f10a). Strict-read evidence: verify-disposition1-strict-read.log (rerun of the existing-reader scratch driver, exit 0); the reader is filament-contract-ir origin/main 743b5e5f1. Every remaining fixture B/C refusal is the known `Mix.Held` object-payload engine gap (`/types/12/variants/6/payloadType`), not an FSpec defect; with Held removed every B/C positive is ADMITTED. This is an existing-reader observation, not FR-830 qualification.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | Document B `Mix.Span` `payloadType` is now `ix://filament/unit/acme/shapes/ms` (the FR-322:2550 package-qualified form). No `ix://filament/unit/` spelling without the package remains in the document or fixtures. Rerun: B is no longer refused at `/types/12/variants/1`; with Held removed, MUW-06, MUW-11..MUW-15 and MUW-18 are ADMITTED. |
+| FND-002 | fixed | MUW-09 now adds `Tail(List)` to Link. Its cases are `End` (rank 0, position 1), `More` (1, 0) and `Tail` (2, 2), in UTF-8 order with authored positions kept separate, and no positive has non-sorted case names (jq check over all positives). R-32 now mutates `/model_unions/0/cases/2/payload/original_type/node` (Tail) and expects step 6, with no earlier step pre-empting it. |
+| FND-003 | fixed | MUW-07 now adds `Link.Tick` (Clock) to fixture B's real document, over a union with no package terms. Rerun with Held removed: ADMITTED. S-09, R-23, R-24 and R-26 are rebased to `/model_unions/0/cases/2` (Tick). |
+| FND-004 | fixed | MUW-09 is now on fixture B over Link, so no package `case` or equality lacks an arm. Rerun with Held removed: ADMITTED. |
+| FND-005 | fixed | MUW-17 carries three original node keys of exactly 32 nested keys (Shape `type_handle`/`settled_key`, Pair `node_key`), and they are admitted. MUW-S-11 (an `original_type` key), MUW-S-14 (`settled_key`) and MUW-TS-04 (`node_key`) each carry 33 nested keys. Measured with a jq key-depth count, which agrees with FSL origin/main `equality_file.rs` `ORIGINAL_KEY_NESTING_LIMIT = 32` and its root-counted test. FR-830:69-73 states the bound. |

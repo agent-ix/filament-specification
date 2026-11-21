@@ -45,3 +45,11 @@ Clean:
 - FR-830-AC-9 (examined; FND-001)
 - FR-830 reached closure and cycle rule (examined, clean)
 - FR-441 UnionMember pair (context_only)
+
+## Dispositions
+
+Round 1, against 63a7f10abfdf8e8876bb2fabfb039f443631e93f (fix delta fb65d9db..63a7f10a). Strict-read evidence: verify-disposition1-strict-read.log (rerun of the existing-reader scratch driver, exit 0); the reader is filament-contract-ir origin/main 743b5e5f1. Every remaining fixture B/C refusal is the known `Mix.Held` object-payload engine gap (`/types/12/variants/6/payloadType`), not an FSpec defect; with Held removed every B/C positive is ADMITTED. This is an existing-reader observation, not FR-830 qualification.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | MUW-18 (reached from Mix, fixture B) gives every union row distinct full original keys: `type_handle` `{fsl,[type,<id>],0}` and `settled_key` `{fsl,[settled,<id>],1}`. Every `member.declaration` equals the row's `settled_key` (jq-checked), and `Mix.Next`'s composite names Link's `type_handle`. Wrong-role controls: R-56 (`member.declaration` is the `type_handle`, step 5), R-57 (the payload composite is the `settled_key`, step 6) and R-58 (roles swapped, first refusal step 5 at `cases/0/member/declaration`). AC-7 states the distinction. With Held removed, the strict read admits MUW-18. |

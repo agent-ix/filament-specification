@@ -38,3 +38,13 @@ Clean: closed row shapes, both channels required, step order 1..7 with tuples be
 - FR-830-AC-1, AC-3..AC-10, AC-12..AC-15 (examined, clean for integrity; vector defects in SR-2026112106460400000010)
 - TC-2112 Test Procedure steps 1-3 and Expected Results (examined, clean)
 - /tmp/ir-qsl2743-arch-ruling.txt (context_only)
+
+## Dispositions
+
+Round 1, against 63a7f10abfdf8e8876bb2fabfb039f443631e93f (fix delta fb65d9db..63a7f10a). Strict-read evidence: verify-disposition1-strict-read.log (rerun of the existing-reader scratch driver, exit 0); the reader is filament-contract-ir origin/main 743b5e5f1. Every remaining fixture B/C refusal is the known `Mix.Held` object-payload engine gap (`/types/12/variants/6/payloadType`), not an FSpec defect; with Held removed every B/C positive is ADMITTED. This is an existing-reader observation, not FR-830 qualification.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | FR-830:139-150 splits the common pass (step 1 format and order, row index, preflight handle indexes over every row of both channels, both scopes) from the reached-only work (closure, steps 2-6, payload inspection, retention), and drops the claim that out-of-closure rows are not inspected or charged. AC-2 now says the same. MUW-S-15 (an unreached List row missing `settled_key` under reached is `Malformed` at `/model_unions/0`) and MUW-B-08 (MUW-03 vs MUW-02: the surplus is only that row's common-pass charges, and the retention charges are equal) give the oracles. |
+| FND-002 | fixed | FR-830:278-283 orders the charges: preflight, common pass, closure edges (reached only), row join. A denial is located by the cumulative measured amount, not by a call count. MUW-B-02 now records Wp and Ec from the charge log. `{work: Ec-1}` denies the last closure edge with no row joined, and `{work: Ec}` denies the first reached-only row-join charge. AC-11 states the relation. |
+| FND-003 | fixed | FR-830 step 7 (lines 253-257) gives the locus as the structural node of the package node that has no row, plus the list pointer `/model_tuples` or `/model_unions`. R-33, R-34, R-36..R-38, R-44, R-47, R-59, TC-01 and TC-04 now carry `expected.node`, and TC-2112 step 2 compares it. |

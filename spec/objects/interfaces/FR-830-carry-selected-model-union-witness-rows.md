@@ -52,8 +52,8 @@ and never falls back to an enum representation.
   are unchanged. The strict read of the package never receives them; the join
   runs after the strict read, as the joins over FR-610's identity rows do. An
   empty list witnesses nothing. The sidecar's format version is the producer's;
-  this requirement states no version and no pin. The existing `source_unions` and
-  `source_tuples` members and their order are unchanged; model rows are distinct
+  this requirement states no version and no pin. The identity file's existing `source_unions` and
+  `source_tuples` members (FR-531) and their order are unchanged; model rows are distinct
   members, distinct typed rows and a distinct join, and a source-union or
   source-tuple row never stands for a model union or a model tuple or the
   reverse. No key is derived: a `model_tuples` row carries the producer's key,
@@ -328,8 +328,8 @@ authentic. The carrier adds no digest, signature, pin or catalog.
 | FR-830-AC-11 | On the shared native budget, the baseline delta of a join over both channels admits and returns the same rows; one unit less of work is `exhausted_work` and of storage `exhausted_storage`, each with the first unpaid charge's kind, full attempted amount, channel and row-index locus and no output; the limit that denies the last closure-edge charge is the cumulative work measured at that charge, and the limit one unit above it denies the first charge of the row join (MUW-B-02); the charges of `model_tuples` count against the same limits as those of `model_unions` and stay consumed when either channel later refuses or exhausts; consumption accumulates across joins and refusals on one budget. | Test |
 | FR-830-AC-12 | A row set that passes every join with producer keys the reader cannot authenticate is admitted with its keys returned unchanged, and the contract states the authority boundary in the words of "Authority boundary". | Test |
 | FR-830-AC-13 | A unit payload is the model-owned unit node with a `quantity` original type of the declared unit key its `declared_unit` row carries, a record payload is a `composite` of its `record_value_type` row's key, and an object payload is a `reference` of its `object_type` row's effective id; a compound unit, another key, effective id, node, constructor or type, and an absent unit, record or object witness, refuse with the code and locus of step 6. | Test |
-| FR-830-AC-14 | A `model_tuples` row with a missing, extra or foreign member (a `positions` or source-tuple member), an `original_identity` that is not text, a `node_key` that is not an original node key or is nested beyond 32, a missing `model_tuples` member or rows out of node-id order is `Malformed`; a row whose node is absent, is not a `model`/`tuple_value_type`, whose `selected_document` is not the owner, whose `original_identity` is not the owner's `node`, or that repeats a node, a `node_key` or a union row's `type_handle`, refuses with the code and locus of steps 2 and 3. | Test |
-| FR-830-AC-15 | A tuple payload is witnessed by the `model_tuples` row and by nothing else: a `full` environment without an unused tuple's row is `incomplete_identity_witness`; an absent row that a payload or a `reached` closure needs is `unavailable_identity_witness`, whether the `model_tuples` list is empty or not; the identity file has no `source_tuples` member in the existing codec, so a file that carries one is `Malformed` (MUW-TS-09) and the in-memory `SelectedSourceTupleRow` is no input of any model check (MUW-TC-05); and a `reached` join does not inspect a tuple row outside its closure. | Test |
+| FR-830-AC-14 | A `model_tuples` row with a missing, extra or foreign member (a `positions` member, or a whole source-tuple row written as a model row, MUW-TS-09), an `original_identity` that is not text, a `node_key` that is not an original node key or is nested beyond 32, a missing `model_tuples` member or rows out of node-id order is `Malformed`; a row whose node is absent, is not a `model`/`tuple_value_type`, whose `selected_document` is not the owner, whose `original_identity` is not the owner's `node`, or that repeats a node, a `node_key` or a union row's `type_handle`, refuses with the code and locus of steps 2 and 3. | Test |
+| FR-830-AC-15 | A tuple payload is witnessed by the `model_tuples` row and by nothing else: a `full` environment without an unused tuple's row is `incomplete_identity_witness`; an absent row that a payload or a `reached` closure needs is `unavailable_identity_witness`, whether the `model_tuples` list is empty or not; a valid `source_tuples` row of the identity file (FR-531), for a source tuple whose qualified name overlaps the model tuple's identity or whose `type_handle` equals the model tuple's `node_key`, beside the absent model row never supplies it: the first refusal is `unavailable_identity_witness` at the payload node (MUW-R-60, MUW-R-61) or at the reached tuple node and `/model_tuples` (MUW-R-62), never `Malformed` for the presence of the channel, and with the model row present the same input is admitted and returns only the model rows (MUW-20); and a `reached` join does not inspect a tuple row outside its closure. | Test |
 
 ## Dependencies
 
@@ -344,19 +344,22 @@ authentic. The carrier adds no digest, signature, pin or catalog.
   the Exact value-type projection and the typed identity-witness refusals this
   requirement joins to and reuses; the FSL identity file owns the original-key
   and value-type codecs, the `declarations` rows and the
-  `SelectedTupleDeclarationRow` that `model_tuples` carries. The identity file's
-  members are `format`, `declarations`, `fields`, `source_records`,
-  `source_unions`, `source_objects` and `source_operations`; unknown members are
-  refused, so there is no `source_tuples` file member, and the source tuple clock
-  metadata of the in-memory source rows is not the typed model tuple. None is
-  restated.
+  `SelectedTupleDeclarationRow` that `model_tuples` carries. FSL FR-531 "The
+  identity file" owns the identity file's eight members (`format`,
+  `declarations`, `fields`, `source_records`, `source_tuples`, `source_unions`,
+  `source_operations` and `source_objects`) and the `source_tuples` row form
+  `{structural_node, source_authority, source_identity, qualified_declaration,
+  type_handle, positions}`; the contract here is that normative file, and the
+  sidecar format version that carries the two new channels is FSL's choice, not
+  preselected. The source tuple rows are the source tuples' witnesses and are not
+  the typed model tuple. None is restated.
 - Vectors and inputs: `proposals/checked-package-v2/model-union-witness-vectors.json`
   over three complete input pairs, A (`domain-package-acme-shapes.json` and
   `fixtures/positive-model-tuple-union.json`), B
   (`domain-package-acme-shapes-witness.json` and
   `fixtures/witness-model-union-rows.json`) and C (B's document and
   `fixtures/witness-model-union-source-rows.json`, B plus the source union
-  Route), the vectors being version v5. The unit payload is spelled in the
+  Route and the source tuple Pair), the vectors being version v6. The unit payload is spelled in the
   package-qualified form `ix://filament/unit/acme/shapes/ms` (FR-322).
 
 ## Status
@@ -376,3 +379,12 @@ refuses the `Mix.Held` case, an object type payload that FR-322 already admits a
 `Reference<O>` and whose `object_types` the current read omits. That is an existing
 reader gap to be fixed after this contract is reviewed; the object payload stays in
 the contract and the vectors, and nothing here claims the current reader admits it.
+
+The source-tuple controls (MUW-20, MUW-R-60 to MUW-R-62) publish the normative
+FR-531 `source_tuples` row as input. The existing typed `SelectedSourceTupleRow`
+join of filament-contract-ir admits that row over fixture C and refuses a mutation
+of it, so the row and the strict package are valid on their own; the FSL identity
+writer and reader at its `identities/4` codec (seven members, no `source_tuples`)
+lag the normative `identities/5` file and cannot yet carry that member in a file.
+That lag is an implementation gap, not a narrowing of the contract, and the
+controls stay as published inputs until the codec follows FR-531.

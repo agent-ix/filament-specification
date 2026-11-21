@@ -13,7 +13,7 @@ relationships:
 
 Verify that a reader admits the selected model-union and model-tuple witness rows
 of `model-union-witness-vectors.json` and refuses each mutation with the stated
-code, cause and locus. Scope: FR-830-AC-1 to FR-830-AC-15 (vectors v5). No reader or harness
+code, cause and locus. Scope: FR-830-AC-1 to FR-830-AC-15 (vectors v6). No reader or harness
 implements FR-830 yet, so the vectors are inputs and expected results and this
 case is not executed.
 
@@ -25,7 +25,9 @@ case is not executed.
    `domain-package-acme-shapes-witness.json` with
    `fixtures/witness-model-union-rows.json`; C: the same document with
    `fixtures/witness-model-union-source-rows.json`, which adds the source union
-   Route and is read with a valid `source_unions` row beside the model rows), apply the case's own `document_patch`
+   Route and the source tuple Pair; a case that carries `source_unions` or
+   `source_tuples` rows gives them, as the identity file's FR-531 members, to the
+   existing source joins, and no model check reads them), apply the case's own `document_patch`
    to the FCD document, read the package with the strict read, and join the
    sidecar `{model_tuples, model_unions}` and the case's `witnesses.declarations`
    under the case's `scope` with an ample `NativeJoinBudget`. The sidecar and the
@@ -33,11 +35,11 @@ case is not executed.
    other witness is supplied from memory.
 2. For each `schema_refusals` and `reader_refusals` case, take the input of its
    `base` case exactly as step 1 builds it, including the base's fixtures,
-   `document_patch`, `scope`, `witnesses`, `model_tuples` and `model_unions`;
+   `document_patch`, `scope`, `witnesses`, `model_tuples`, `model_unions`, `source_unions` and
+   `source_tuples`;
    replace the scope only with the case's `scope_override`, apply `witnesses_patch`
    to the witnesses and `patch` to the sidecar object `{model_tuples,
-   model_unions}`, join, and compare the typed refusal's `code`, the `locus.pointer` and, where `expected.node` is given, the structural node with `expected`. The file has no `source_tuples` member in the existing codec, so a `file_members` entry is only the control of MUW-TS-09 and no source-tuple witness is constructible. A `file_members` entry names members of the
-   identity file that stay present and that no check may read.
+   model_unions, source_unions, source_tuples}` (the two source members only where the base carries them), join, and compare the typed refusal's `code`, the `locus.pointer` and, where `expected.node` is given, the structural node with `expected`.
 3. For each `budget_cases` case, build the input of its `base` (or `patch`ed base)
    as step 2 does, then run its probes on one `NativeJoinBudget`: measure the
    baseline work and storage delta and, from the charge log, the cumulative amount

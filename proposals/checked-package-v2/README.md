@@ -83,7 +83,7 @@ structures, but any external consumer receives only the contract.
   tuples (cases in UTF-8 order with authored position, sealed member,
   structured original keys and value types, data or Clock payload
   correspondence, and the tuple row of the typed `SelectedTupleDeclarationRow`),
-  over three complete input pairs (vectors v5): fixture A, the Shape, List, Cell, Nest and
+  over three complete input pairs (vectors v6): fixture A, the Shape, List, Cell, Nest and
   Holder declarations above with `fixtures/positive-model-tuple-union.json`, and
   fixture B, `domain-package-acme-shapes-witness.json` with
   `fixtures/witness-model-union-rows.json`, a complete FCD document and checked
@@ -91,7 +91,9 @@ structures, but any external consumer receives only the contract.
   Orphan, the recursive union Link and the all-forms union Mix, with the unit
   spelled `ix://filament/unit/acme/shapes/ms`; and fixture C,
   `fixtures/witness-model-union-source-rows.json`, which adds the source union
-  Route for the no-source-fallback control. `MUW-*`
+  Route and the source tuple Pair, each with its valid source row (FR-610
+  `source_unions`, FSL FR-531 `source_tuples`), for the no-source-fallback
+  controls. `MUW-*`
   positives, schema and reader refusals and baseline-relative budget cases over
   both channels on one budget are published inputs and expected results only;
   no FR-830 reader executes them and TC-2112 is not run. The existing strict read

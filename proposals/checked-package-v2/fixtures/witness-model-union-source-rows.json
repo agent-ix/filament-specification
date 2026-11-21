@@ -3392,6 +3392,86 @@
       },
       {
         "body": {
+          "members": [
+            {
+              "target": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              },
+              "term": "reference"
+            },
+            {
+              "target": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              },
+              "term": "reference"
+            }
+          ],
+          "term": "aggregate"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Pair"
+          ]
+        },
+        "dependencies": [
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "integer"
+            ]
+          }
+        ],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Pair"
+          ]
+        },
+        "node_tag": "composite_type",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "owner": {
+          "authority": "agent-ix",
+          "identity": "example",
+          "kind": "source"
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "tuple",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Pair"
+          ]
+        }
+      },
+      {
+        "body": {
           "members": [],
           "term": "aggregate"
         },
@@ -3583,6 +3663,7 @@
         22,
         7
       ],
+      [],
       [],
       [],
       [],
@@ -4890,6 +4971,27 @@
             "identity": "example"
           },
           "start": 2
+        }
+      ],
+      "role": "declaration"
+    },
+    {
+      "node_id": {
+        "ordinal": 0,
+        "package": "example",
+        "path": [
+          "Pair"
+        ]
+      },
+      "ordinal": 0,
+      "regions": [
+        {
+          "end": 5,
+          "source": {
+            "authority": "agent-ix",
+            "identity": "example"
+          },
+          "start": 4
         }
       ],
       "role": "declaration"

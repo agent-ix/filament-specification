@@ -1,5 +1,5 @@
 {
-  "version": "filament.model-union-witness-vectors/v5",
+  "version": "filament.model-union-witness-vectors/v6",
   "fixtures": {
     "A": {
       "document": "domain-package-acme-shapes.json",
@@ -14,7 +14,7 @@
     "C": {
       "document": "domain-package-acme-shapes-witness.json",
       "package": "fixtures/witness-model-union-source-rows.json",
-      "note": "B plus the source union Route {End, More(Integer)}, a source-owned composite_type/union node declared in the source unit `example`, whose case names End and More overlap Link's. Used for the source-row non-substitution controls."
+      "note": "B plus the source union Route {End, More(Integer)} and the source tuple Pair (Integer, Boolean), each a source-owned composite_type node declared in the source unit `example`: Route's case names End and More overlap Link's, and Pair's qualified name `Pair` overlaps the model tuple Pair's identity ix://acme/shapes/Pair while its structural node (package example, path [Pair]) and its owner (a source owner, not a ModelOwner) are distinct. Used for the source-row non-substitution controls."
     }
   },
   "positive": [
@@ -7640,6 +7640,248 @@
       ],
       "closure_edges": 2,
       "note": "The package holds the source union Route and the sidecar a valid existing-codec source_unions row for it (FR-610, fsl-package source_unions); the model join admits Link's row and returns it, reads no source row, and the source row stays the source join's."
+    },
+    {
+      "id": "MUW-20-source-tuple-row-beside-model-rows",
+      "criterion": "FR-830-AC-15",
+      "fixtures": "C",
+      "scope": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "variant_type",
+            "ix://acme/shapes/Shape"
+          ],
+          "ordinal": 0
+        }
+      },
+      "witnesses": {
+        "declarations": []
+      },
+      "model_tuples": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_identity": "ix://acme/shapes/Pair",
+          "node_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "type_handle": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "settled_key": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Both"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "composite",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Pair"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Empty"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "original_case": {
+                "package": "acme/shapes",
+                "node": "ix://acme/shapes/variant/Shape-Flag"
+              },
+              "member": {
+                "declaration": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "variant_type",
+                    "ix://acme/shapes/Shape"
+                  ],
+                  "ordinal": 0
+                },
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": {
+                  "kind": "boolean"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "closure_edges": 4,
+      "note": "Reached from Shape over fixture C, which holds the source tuple Pair. The sidecar carries the model tuple row of the model Pair and, beside it, a valid FR-531 source_tuples row for the source tuple Pair (type_handle distinct, qualified name overlapping): the model join admits Shape's and Pair's model rows and returns them, reads no source row, and the source row stays the source tuple join's.",
+      "source_tuples": [
+        {
+          "structural_node": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Pair"
+            ]
+          },
+          "source_authority": "agent-ix",
+          "source_identity": "example",
+          "qualified_declaration": [
+            "Pair"
+          ],
+          "type_handle": {
+            "package": "fsl",
+            "path": [
+              "type",
+              "Pair"
+            ],
+            "ordinal": 0
+          },
+          "positions": [
+            {
+              "ordinal": 0,
+              "type_node": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              },
+              "value_type": {
+                "kind": "integer"
+              },
+              "member_type": null,
+              "collections": []
+            },
+            {
+              "ordinal": 1,
+              "type_node": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              },
+              "value_type": {
+                "kind": "boolean"
+              },
+              "member_type": null,
+              "collections": []
+            }
+          ]
+        }
+      ]
     }
   ],
   "schema_refusals": [
@@ -8615,23 +8857,6 @@
       "criterion": "FR-830-AC-2"
     },
     {
-      "id": "MUW-TS-09-source-tuples-member",
-      "description": "a sidecar with a source_tuples member; the existing identity-file codec has no such member and refuses an unknown member, so no source-tuple row can be a fallback witness",
-      "base": "MUW-01-full-environment",
-      "patch": [
-        {
-          "op": "add",
-          "path": "/source_tuples",
-          "value": []
-        }
-      ],
-      "expected": {
-        "code": "malformed",
-        "locus": "/source_tuples"
-      },
-      "criterion": "FR-830-AC-15"
-    },
-    {
       "id": "MUW-TS-01-missing-tuple-node-key",
       "description": "tuple row without node_key",
       "base": "MUW-01-full-environment",
@@ -9081,6 +9306,78 @@
       "expected": {
         "code": "malformed",
         "locus": "/model_tuples/2"
+      },
+      "criterion": "FR-830-AC-14"
+    },
+    {
+      "id": "MUW-TS-09-source-tuple-row-in-the-model-channel",
+      "description": "a valid FR-531 source tuple row written as a model_tuples row: it lacks selected_document, original_identity and node_key and carries source_authority, source_identity, qualified_declaration, type_handle and positions, so the closed model-tuple row refuses it; a source row is not a model row by shape either",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples/0",
+          "value": {
+            "structural_node": {
+              "ordinal": 0,
+              "package": "example",
+              "path": [
+                "Pair"
+              ]
+            },
+            "source_authority": "agent-ix",
+            "source_identity": "example",
+            "qualified_declaration": [
+              "Pair"
+            ],
+            "type_handle": {
+              "package": "fsl",
+              "path": [
+                "type",
+                "Pair"
+              ],
+              "ordinal": 0
+            },
+            "positions": [
+              {
+                "ordinal": 0,
+                "type_node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "integer"
+                  ]
+                },
+                "value_type": {
+                  "kind": "integer"
+                },
+                "member_type": null,
+                "collections": []
+              },
+              {
+                "ordinal": 1,
+                "type_node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ]
+                },
+                "value_type": {
+                  "kind": "boolean"
+                },
+                "member_type": null,
+                "collections": []
+              }
+            ]
+          }
+        }
+      ],
+      "expected": {
+        "code": "malformed",
+        "locus": "/model_tuples/0"
       },
       "criterion": "FR-830-AC-14"
     }
@@ -10441,7 +10738,7 @@
     },
     {
       "id": "MUW-TC-05-no-source-tuple-fallback",
-      "description": "reached from Shape with an empty model_tuples; no source-tuple witness of any form fills the absent row: the existing identity-file codec has no source_tuples member (MUW-TS-09) and the typed in-memory SelectedSourceTupleRow is another row type that no model check reads",
+      "description": "reached from Shape with an empty model_tuples and no source row of any kind in the sidecar: the absent row is unavailable at its payload node; the same refusal with a valid source_tuples row present is MUW-R-60 to MUW-R-62",
       "base": "MUW-02-reached-from-shape",
       "patch": [
         {
@@ -10948,6 +11245,96 @@
         }
       },
       "criterion": "FR-830-AC-10"
+    },
+    {
+      "id": "MUW-R-60-source-tuple-row-is-no-model-row",
+      "description": "reached from Shape over fixture C with the model tuple row of Pair absent while a valid source_tuples row for the source tuple Pair, whose qualified name overlaps the model tuple's identity, is present; Both's Pair payload is unavailable at its payload node and the source row is not read as the model row",
+      "base": "MUW-20-source-tuple-row-beside-model-rows",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": []
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/0/cases/0/payload/node"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-R-61-source-tuple-handle-is-no-model-key",
+      "description": "as MUW-R-60 with the valid source tuple row's type_handle equal to the model tuple Pair's node_key; the source row's handle does not witness the model tuple",
+      "base": "MUW-20-source-tuple-row-beside-model-rows",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": []
+        },
+        {
+          "op": "replace",
+          "path": "/source_tuples/0/type_handle",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_unions/0/cases/0/payload/node"
+      },
+      "criterion": "FR-830-AC-15"
+    },
+    {
+      "id": "MUW-R-62-reached-tuple-without-model-row-beside-source-tuple-row",
+      "description": "reached from the model tuple Pair itself (no union, so no payload reads the row) with an empty model_tuples beside the valid source tuple row; the closure needs the model row and finds none",
+      "base": "MUW-20-source-tuple-row-beside-model-rows",
+      "scope_override": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "tuple_value_type",
+            "ix://acme/shapes/Pair"
+          ],
+          "ordinal": 0
+        }
+      },
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_tuples",
+          "value": []
+        },
+        {
+          "op": "replace",
+          "path": "/model_unions",
+          "value": []
+        }
+      ],
+      "expected": {
+        "code": "unavailable_identity_witness",
+        "locus": "/model_tuples",
+        "node": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "tuple_value_type",
+            "ix://acme/shapes/Pair"
+          ],
+          "ordinal": 0
+        }
+      },
+      "criterion": "FR-830-AC-15"
     }
   ],
   "budget_cases": [
