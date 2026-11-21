@@ -42,13 +42,16 @@ comparison the search and the tie rule (FR-804) use.
   refuses `ill_typed`/`type-mismatch` (FR-194).
 - A declaration with no objective SHALL minimize `length`.
 
-**Current FSL behavior:** the planner supports `Integer`, `Rational` and
-`Decimal` objectives. A typed floating-point (`Float32` or `Float64`) or
-unit-bearing `Quantity` objective returns a typed `unsupported` result
-before search, naming the numeric family; it does not produce an undefined
-objective or an infeasible result. This implementation boundary does not
-change the admitted objective types or the arithmetic, `totalOrder`, NaN,
-unit-conversion and certificate requirements below.
+**Source-plan adapter implementation boundary:** the adapter wiring is being
+corrected to support `Integer`, `Rational` and `Decimal` objectives and to
+return a typed `unsupported` result before search for a typed floating-point
+(`Float32` or `Float64`) or unit-bearing `Quantity` objective, naming the
+numeric family, rather than an undefined objective or an infeasible result.
+On this route, the quantity boundary includes `Duration` and typed `elapsed`
+objectives; it makes no claim about other timed-planner entrypoints.
+This note describes the wiring correction, not released or runtime-validated
+behavior. The admitted objective types and the arithmetic, `totalOrder`, NaN,
+unit-conversion and certificate requirements below remain applicable.
 
 ### Exact arithmetic
 
