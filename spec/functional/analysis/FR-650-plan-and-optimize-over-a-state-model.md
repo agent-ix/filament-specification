@@ -106,6 +106,15 @@ each with its plan, certificate and provenance as below.
   record naming the step and the index of the successor's entry; the
   checker re-derives every step and rejects `closure` when a re-derived step
   has no record or names the wrong node.
+  For native state-model plans, a successor's step identity includes the
+  exact operation, receiver, arguments and selected outcome ordinal under
+  FR-804/FR-805. The checker rederives the complete native result/post-state
+  list before the simulator's graph-edge coalescing. It requires exactly
+  one record for every distinct enabled, prefix-admissible outcome,
+  including outcomes with equal post-states but different results; a
+  duplicate, missing or malformed identity rejects `closure` at that entry.
+  `max_check_work` charges once per entry read and once per distinct
+  successor outcome rederived, not once per invocation or raw frame trial.
 - An *optimality certificate* SHALL be one of:
   - `potential`: for an objective that is a sum of non-negative per-step costs
     (including `length`), a finite map from search nodes to an exact lower
@@ -145,10 +154,34 @@ and certificate checks can be shown to reject a bad plan or a bad
 certificate, which a correct search never produces:
 
 - a *plan substitution* seam, which replaces the plan the search reports
-  with a caller-given sequence of invocations before native replay; and
-- a *certificate tamper* seam, which removes one named successor from one
-  named entry of the certificate the search wrote before the core checker
-  reads it.
+  before native replay with caller-given invocations, extended to accept
+  step records and separately supplied recorded post-states for negative
+  tests. A recorded post-state is optional test data; when supplied it must
+  match the selected native outcome, otherwise replay advances through
+  that selected outcome's state. For native state-model steps the extended library input uses FR-805's
+  step member/value shapes, including optional `receiver` and
+  `outcome_ordinal`, and can represent malformed member kinds for negative
+  tests. This is test data supplied through the library seam, not a new
+  request or outcome-reader surface. Replay validates presence, kinds and
+  range, resolves the invocation and selected outcome, and compares its
+  rederived identity with the supplied step, and its post-state with any
+  recorded post-state supplied. A defect gives the existing method failure, exit `30`, naming
+  the first failing step, operation and offending supplied member when
+  present; no plan outcome document is written. A valid in-range ordinal
+  selecting another result with the same post-state is another valid step,
+  not a defect merely because its identity differs from the original plan;
+  the substituted plan still has to satisfy its goal and policies; and
+- a *certificate tamper* seam, which removes a named successor or replaces
+  its claimed step identity or successor-entry index in a named entry of
+  the internal certificate before checking. Its library input likewise
+  permits malformed native receiver/ordinal member values. The certificate
+  is the internal entry/successor structure above, not FR-805's wire
+  summary. The checker validates each supplied claim against the rederived
+  outgoing edge set, including ordinal identity even when post-states are
+  equal. A malformed, duplicate, missing or wrong claimed identity or
+  target rejects the existing `closure` rule at the first offending entry.
+  The existing demotion of optimality to `feasible`, or of infeasibility
+  to `incomplete` with `certificate-rejected{rule, entry}`, then applies.
 
 Neither seam SHALL be reachable from a plan request, a host request surface
 or a CLI option: the request member lists of FR-805 stay closed, and a
@@ -174,6 +207,10 @@ Reach.final.value = 8 };` on one line, so a criterion that changes the goal
 or adds an objective edits that one declaration. Unless a criterion says
 otherwise, a run over the counter has the goal `Reach.final.value = 8`,
 `domain Upto5`, the objective `length` and an empty policy list.
+Every counter invocation has receiver `c` and no arguments. Operation-only
+plan names in these criteria abbreviate those full invocations. Each
+invocation has one native outcome, so its wire step carries `c`'s exact
+FR-181 typed reference and omits `outcome_ordinal`.
 
 ### Refusals
 
@@ -201,6 +238,7 @@ otherwise, a run over the counter has the goal `Reach.final.value = 8`,
 | FR-650-AC-7 | Over the counter with goal value 21, the certificate tamper seam removing one successor from entry 0 of the closure certificate makes the core reject it with `rule` `closure` and `entry` 0, and the result is `incomplete` with cause `certificate-rejected{rule: closure, entry: 0}` and plan `null`, never `infeasible`; a plan request carrying a member `replay_plan`, `tamper` or `engines` refuses `invalid_runtime_input`/`unknown-member` at that member's pointer, exit `20`, before any search. | Test (TC-1603) |
 | FR-650-AC-8 | Over the counter with goal value 8 and `minimize sum<Cost>(s in Reach.steps : if s.operation = M::Op::double then 0 else 1)`, the result is `optimal` with objective 0 and the plan `double, double, double` (values 1, 2, 4, 8), the zero-cost step `double` from value 4 entering the goal from a node at which the goal does not hold; its `potential` certificate maps that node and the initial node, at neither of which the goal holds, to `pi` 0, and the core accepts it, certification `certified`. | Test (TC-1603) |
 | FR-650-AC-9 | Over the counter with goal value 8 and a model invariant `Ratio` of `Counter`, `12 / (value - 3) != 5`, which is undefined (a division by zero) at `value = 3` and true at every other value, the state reached by `inc, inc` is not expanded and the result is `incomplete` with cause `{"type": "invariant-undetermined", "invariant": "Ratio"}`, the best plan `inc, double, double` (which passes through no state with `value = 3`), certificate `null` and certification `uncertified`, never `optimal`; with goal value 3 no plan passes through no such state, and the result is `incomplete` with that cause and plan `null`, never `infeasible`. | Test (TC-1603) |
+| FR-650-AC-10 | TC-1603's native seam vectors give method failure exit `30`, the first failing step/operation/member and no outcome document for malformed substituted receivers or ordinals. Two valid ordinals selecting `(0,S0)` and `(1,S0)` both replay as different identities; tampering an internal certificate claim to duplicate one ordinal and omit the other rejects `closure` at its entry even though post-states match, applying the existing certificate demotion. | Test (TC-1603) |
 
 ## Dependencies
 

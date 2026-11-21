@@ -83,8 +83,15 @@ ordinal. FR-805 omits the wire ordinal for a single-outcome invocation,
 whose identity selects its only outcome. Rendered step names include an
 ordinal only when the invocation has more than one distinct outcome.
 Replay and certificate verification SHALL rederive the same ordered
-outcome list from the exact invocation and check the selected outcome;
-changing a receiver or an ordinal cannot silently select another edge.
+outcome list from FR-181's native result/post-state relation and check the
+selected identity under FR-650's library seam and internal checker
+contracts. The ordinal selects the result as well as the post-state;
+there is no additional result member on the wire step. Changing an
+in-range ordinal changes the step identity, even when the post-state is
+equal. It is not by itself an invalid step: replay checks the supplied
+identity and post-state, while certificate checking compares claimed
+identities with the complete rederived edge set. A changed claim that
+duplicates another ordinal and loses the original edge rejects `closure`.
 This invocation outcome list does not enumerate FR-819's continuous hybrid
 trajectories; hybrid schedule steps retain their existing delay/transition
 order and enclosure validation.

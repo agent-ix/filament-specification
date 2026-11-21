@@ -5,13 +5,15 @@ type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-805
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-322-AC-516
+    type: verifies
 ---
 
 # TC-1955: Plan request admission and outcome document
 
 ## Description
 
-Verify the outcome document members, native receiver/outcome identity, exits and the request reader. Scope: FR-805-AC-1 to FR-805-AC-10.
+Verify the outcome document members, native receiver/outcome identity, exits and the request reader. Scope: FR-805-AC-1 to FR-805-AC-10 and FR-322-AC-516.
 
 ## Test Procedure
 
@@ -27,14 +29,23 @@ Verify the outcome document members, native receiver/outcome identity, exits and
    step, a singleton receiver-bearing step and a singleton receiverless
    step. Resolve the receiver's exact reference triple against the supplied
    initial world. Also use TC-2037 step 8's mixed receiver types.
-10. At the existing replay and certificate verification entry surfaces,
+10. Through FR-650's plan-substitution library seam,
     supply the three-outcome step with its ordinal omitted, then with
     ordinals `-1`, `3`, `0.5` and `"0"`, and with another in-range ordinal
     while keeping its original post-state. Supply the singleton with an
     ordinal of `0`. Separately omit a required receiver, add a receiver
     to the receiverless step, or substitute the wrong operation's receiver
-    type. These are edits of supplied verification data, not new plan
-    request members or a new outcome-reader API.
+    type. Repeat the malformed identity values through FR-650's
+    certificate-tamper seam on a named internal successor record. Neither
+    seam is reachable through a plan request, and the wire certificate
+    summary is not the tamper input.
+11. Use TC-1954 step 6's `(0,S0)` and `(1,S0)` pair. Substitute a valid
+    one-step plan choosing each ordinal in turn, with recorded post-state
+    `S0`, true goal, empty policy and length domain `Int[1,1]`. Then tamper
+    the internal potential certificate by replacing the first pair's claimed
+    ordinal with the second, retaining the other record unchanged. This
+    creates a duplicate identity and loses the first edge even though the
+    two target post-states are equal.
 
 ## Expected Results
 
@@ -50,9 +61,13 @@ Verify the outcome document members, native receiver/outcome identity, exits and
   exactly, including universe, object type and object identity. Only the
   three-outcome step has `outcome_ordinal` (2 when it selects `S2`);
   singleton ordinals and receiverless receivers are absent, never null.
-- Step 10: each verification attempt rejects the missing, unexpected,
-  wrongly typed, out-of-range or inconsistent identity member, located at
-  the actual supplied offending member when present. A valid in-range
-  ordinal selecting another post-state is not accepted as the recorded
-  step. Existing entry-surface refusal and certificate-failure contracts
-  apply; the test asserts no new wire carrier or refusal code.
+- Step 10: plan substitution produces method failure, exit `30`, naming
+  step 0, the operation and offending supplied member when present; no
+  plan outcome document is written. The internal certificate edit rejects
+  `closure` at the named entry, with FR-650's existing demotion contract.
+- Step 11: both valid substituted plans replay successfully as different
+  step identities selecting different results; no extra wire result
+  member is needed, and changing a valid ordinal alone is not a defect.
+  The certificate edit rejects `closure` at its entry because the supplied
+  identity claims do not equal the complete rederived outcome-edge set.
+  The result is demoted to `feasible`, `uncertified`, never `optimal`.

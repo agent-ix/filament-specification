@@ -11,12 +11,19 @@ relationships:
 
 ## Description
 
-Verify the planner limits, the evaluation meter, cancellation, node merging and the separation from the verification planner's limit. Scope: FR-801-AC-1 to FR-801-AC-6 and FR-801-AC-8 to FR-801-AC-10.
+Verify the planner limits, the evaluation meter, cancellation, node merging and the separation from the verification planner's limit. Scope: FR-801-AC-1 to FR-801-AC-6 and FR-801-AC-8 to FR-801-AC-11.
 
-The native invocation fixture has one live `Device` receiver `d0` with
-mutable `v: Int[0,2]`, initially 0, and no other changing state or policy.
-In declaration order its operations are `blocked()` (precondition false)
-and `choose(): Int[0,1]` (precondition true, frame only `v`, postcondition
+Construct the native library fixture with domain package identity
+`example/plan-invocation` as follows.
+The selected model alias is `M`, the grammar is `M::Device`, and its
+single complete population `devices` contains exactly the live receiver
+`d0`. Its only direct attribute is required `v: Int[0,2]`, initially 0,
+so FR-322 exposes `Reach.final.v` directly as well as the population's
+object record. There are no supertypes, other attributes or operations,
+creation/deletion effects, invariants, or policy clauses.
+In declaration order its operations are `blocked()` (no result, false
+precondition, empty frame and true postcondition)
+and `choose(): Int[0,1]` (precondition true, frame only `self.v`, postcondition
 `result = 0`). The native frame domain is all three `v` values times both
 result values: six raw trials, three accepted pairs `(0, S0)`, `(0, S1)`,
 `(0, S2)`, where `Si` is the same world with `d0.v = i`. Their full
@@ -39,11 +46,19 @@ certificate checking; the default objective is `length`.
 8. Run the native invocation fixture with sufficient limits, then with
    `plan_search.max_work` 1. Repeat both with reversed raw trial generation
    order, which must not affect the canonical outcome list.
-9. Set the existing evaluation-accounting budget so a named charge during
-   `choose`'s raw trial evaluation is denied, after `blocked` and the
-   invocation charge for `choose` have succeeded but before its complete
-   outcome list is available. Observe the named counter and granted search
-   counts; do not replace the accounting budget with a search-work charge.
+9. Set `accounting.work_units` to 1 with other accounting limits sufficient,
+   and generate raw trials in result-first, then `v` order, beginning with
+   `(0,S0)` (no field write). The constant preconditions add no nested
+   language function call. The next denied evaluation-work charge occurs
+   while evaluating `choose`, before its first complete outcome list:
+   either its native precondition call after the blocked call, or the
+   first scalar equality's two-work-unit plan-form charge, under the
+   existing value-accounting schedule. Both exceed bound 1 at count 2.
+
+10. Check the complete closure certificate of step 8 with
+    `plan_search.max_check_work` 7, then 6. Its four entries include
+    exactly three outgoing outcome records at entry 0; depth-1 entries
+    have no outgoing step within the bound.
 
 ## Expected Results
 
@@ -61,6 +76,16 @@ certificate checking; the default objective is `length`.
   accounting only. With work 1, `incomplete`, `{states: 1, work: 1}`;
   `choose` is not evaluated after its invocation charge is denied. Both
   trial-generation orders give equal outcomes and counts.
-- Step 9: `incomplete` names the denied accounting setting, with
-  `{states: 1, work: 2}` and no admitted depth-1 node or partial ordinal
-  list; the two granted invocation charges remain counted.
+- Step 9: `incomplete` with
+  `limit-reached{limit: work_units, value: 1, setting: accounting.work_units}`,
+  retaining denied count 2 under FR-461, `{states: 1, work: 2}` and no
+  admitted depth-1 node or partial ordinal list. The two granted
+  invocation charges remain counted.
+- Step 10: seven units (four entry reads and three distinct successor
+  rederivations) suffice; six stops the checker on its seventh charge,
+  `incomplete` with `limit-reached{limit: max_check_work, value: 6,
+  setting: plan_search.max_check_work}`, retaining denied count 7 and
+  the completed search's `{states: 4, work: 5}`.
+  Rejected raw frame trials consume evaluation accounting but no check
+  work unit, and the three outcomes do not become one invocation unit on
+  this checker counter.

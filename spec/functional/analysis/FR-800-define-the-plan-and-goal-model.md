@@ -94,9 +94,11 @@ The generated step type represents receivers through FR-322's union of
 the distinct declared `Reference<T>` types, optional exactly when some
 operations are receiverless. An operation selects its receiver's case;
 there is no implicit conversion between receiver types. The shared
-arguments record requires equal static type and declared presence for
-every repeated parameter name; a disagreement reports typed `unsupported`
-before search, naming the parameter and both operations, as FR-322 states.
+arguments record compares normalized parameter types under FR-154/FR-151:
+optional `X` and required `Option<X>` are one record-field type, without
+changing native call omission flags. A disagreement is FR-806's S3
+`unsupported_construct`/`not-yet-implemented` diagnostic before a package
+is produced, naming the parameter and deterministic conflicting pair.
 Missing a parameter on another operation makes the shared field optional.
 This boundary does not change the declared parameter domains.
 
@@ -104,7 +106,14 @@ Hybrid plans retain FR-819's schedules and enclosures. Their step `index`
 is `Integer`, `operation` is the target mode in the generated mode enum,
 `arguments` is an empty record, `before`/`after` share the hybrid-state
 record (`mode` of that enum and the declared variables' types), and
-`delay`/plan `elapsed` are exact model-unit quantities. FR-322 owns the
+`delay`/plan `elapsed` are builtin `Rational` in hybrid time coordinates,
+the same type as `dwell_grid`. This overrides the table's timed quantity
+typing only for hybrid plans: FR-481 declares no hybrid time-unit node.
+The point-valued records are trajectory-local types used by FR-819's
+scheduled-model translation under every admitted initial point and
+nondeterministic parameter. They do not store initial sets or enclosures;
+those remain FR-193 proof evidence, and no sampled representative replaces
+the universal goal/policy check. FR-322 owns the
 existing node forms used for these generated types. Hybrid steps carry
 neither a receiver nor a native invocation ordinal; continuous
 trajectories are not enumerated as native invocation outcomes.
@@ -124,12 +133,12 @@ trajectories are not enumerated as native invocation outcomes.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-800-AC-1 | Over a model with object type `Server` (population `n1`, `n2`) and operation `drain(s: Reference<Server>)`, a plan of length 2 binds `s` to `n1` and then `n2`, and `Reach.steps` reads two records with `index` 0 and 1, `operation` `drain`, `arguments.s` `n1` and `n2`, and `before`/`after` states whose keys equal the runtime's states. | Test (TC-1950) |
+| FR-800-AC-1 | Over a model with object type `Server` (population `n1`, `n2`) and operation `drain(s: Reference<Server>)`, a plan of length 2 binds `s` to `n1` and then `n2`, and `Reach.steps` reads two records with `index` 0 and 1, `operation` `drain`, `arguments.s` `n1` and `n2`, and `before`/`after` states whose keys equal the runtime's states. Every receiver-bearing record also carries that invocation's actual runtime receiver, through the generated source receiver union and FR-805's typed wire reference. | Test (TC-1950) |
 | FR-800-AC-2 | An operation `spawn` that creates a `Server` `n3` makes `n3` a candidate argument of every later step and of no earlier one. | Test (TC-1950) |
 | FR-800-AC-3 | With `domain` `Int[0, 3]` and a goal true in the initial state, the result is the empty plan with `length` 0. | Test (TC-1950) |
 | FR-800-AC-4 | A goal `Reach.final.value / Reach.final.divisor = 2` that is undefined on a plan whose final `divisor` is 0 does not reach the goal on that plan. | Test (TC-1950) |
 | FR-800-AC-5 | An operation parameter of type `Integer` with no bounds refuses as FR-806 states, naming the parameter. | Test (TC-1950) |
-| FR-800-AC-6 | The native invocation vectors of TC-1950 expose the exact receiver and canonical outcome ordinal in each step; a single-outcome invocation has no ordinal, a receiverless invocation has no receiver, and replay/certificate checks reject a receiver or ordinal selecting a different edge. | Test (TC-1950) |
+| FR-800-AC-6 | TC-1950's native vectors expose the exact receiver and canonical ordinal; singleton ordinals and receiverless receivers are absent. FR-650's plan-substitution seam checks the supplied identity and recorded post-state, with method failure exit `30` on a malformed/inconsistent step; its internal certificate checker rejects malformed, duplicated or missing claimed edges under `closure`. A valid alternate ordinal with an equal post-state is another valid step identity, not by itself a replay defect. | Test (TC-1950) |
 
 ## Dependencies
 

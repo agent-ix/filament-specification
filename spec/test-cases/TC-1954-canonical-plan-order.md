@@ -5,13 +5,15 @@ type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-804
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-181-AC-34
+    type: verifies
 ---
 
 # TC-1954: Canonical plan order and deterministic outcomes
 
 ## Description
 
-Verify the tie keys, native invocation/outcome order and byte-identical outcomes across worker counts and limits. Scope: FR-804-AC-1 to FR-804-AC-6.
+Verify the tie keys, native invocation/outcome order and byte-identical outcomes across worker counts and limits. Scope: FR-804-AC-1 to FR-804-AC-6 and FR-181-AC-34.
 
 ## Test Procedure
 
@@ -28,9 +30,13 @@ Verify the tie keys, native invocation/outcome order and byte-identical outcomes
    exactly `(0, S0)`, `(0, S2)`, `(1, S0)` for one invocation. Supply the
    native outcomes in different orders and with a repeated equal pair.
    Re-derive their canonical order for search, replay and certificate
-   checking, comparing full state-key bytes for the second key.
-7. In separate `Float32` and `Float64` result fixtures, keep the post-state
-   fixed and admit exactly the four result bit patterns in the table
+   checking, comparing full state-key bytes for the second key. Read
+   the native typed result/post-state relation before simulation graph
+   coalescing: `(0,S0)` and `(1,S0)` remain two planning outcomes even
+   if the simulator records their one transition/post-state graph edge.
+7. In separate variants of TC-1951's named native model, change `choose`'s
+   result type to `Float32` or `Float64`, fix its frame to the unchanged
+   state `S0`, and admit exactly the four result bit patterns in the table
    below. Select the existing IEEE 754 default floating profile, domain
    `Int[1,1]`, true goal, empty policy and objective `length`. Reorder the
    result generation; do not turn the result into the objective.
@@ -51,7 +57,8 @@ Verify the tie keys, native invocation/outcome order and byte-identical outcomes
   and argument order. Receiver order precedes argument order.
 - Step 6: ordinals 0, 1, 2 select `(0, S0)`, `(0, S2)`, `(1, S0)`;
   a repeated equal pair has no additional ordinal or visited edge.
-  Search, replay and certificate checking derive that same order.
+  Search, replay and certificate checking derive that same order from
+  the uncoalesced native relation, with no serialized trace result member.
 - Step 7: selected-profile `totalOrder` gives the listed ordinals, keeping
   negative zero, positive zero and both NaN payloads distinct. The
   objective remains integer `length`; `explored.nan_objectives` is 0,

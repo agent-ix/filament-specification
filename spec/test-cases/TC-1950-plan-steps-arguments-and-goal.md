@@ -23,12 +23,25 @@ Verify the plan value, reference and created-object arguments, native invocation
 6. Use TC-1951's native invocation fixture with goal `Reach.final.v = 2`
    instead of false. Read the selected step, and replay it from the bound
    initial state; then change its receiver or its ordinal while retaining
-   the originally recorded post-state. Verify the same edits through
-   certificate checking.
+   the originally recorded post-state. Use FR-650's plan-substitution
+   library seam, and its certificate-tamper seam for corresponding claimed
+   successor identities; these are not request or outcome-reader inputs.
 7. Restrict `choose`'s postcondition to `result = 0` and final `v = 2`, so
-   the invocation has one outcome. Separately use a receiverless invocation
-   with one unchanged-state outcome. Read both source plan step values and
+   the invocation has one outcome. Separately use the native library model
+   fixture `example/plan-receiverless`, grammar object type `Switch`, with
+   one complete population containing object `s0`, required direct Boolean
+   attribute `on = false`, and the sole receiverless operation `noop()`
+   (no arguments or result, true precondition, empty frame and true
+   postcondition). No invariants or policy apply; the length domain is
+   `Int[1,1]`, the goal true and objective `length`. Its unique post-state
+   is the unchanged initial world. This is a native library fixture using
+   FR-181's receiverless invocation, not a new source static-operation
+   spelling. Read both source plan step values and
    wire steps under the existing value encodings.
+
+8. Run TC-1955 step 11's equal-post-state/different-result pair through
+   the defined library seams to distinguish a valid alternate step from
+   an internal certificate claim that duplicates one edge and loses another.
 
 ## Expected Results
 
@@ -39,8 +52,13 @@ Verify the plan value, reference and created-object arguments, native invocation
 - Step 5: refused at the parameter as FR-806 states.
 - Step 6: the reported step has receiver `d0` in its FR-181 reference
   identity and ordinal 2, selecting `(0, S2)`. Replay reproduces the
-  unchanged step; changing the receiver or ordinal cannot silently select
-  another outcome and is rejected by replay and certificate verification.
+  unchanged step. A malformed identity or an ordinal selecting another
+  post-state while retaining `S2` gives a method failure at step 0, exit
+  `30`, with no outcome document. A certificate claim losing its original
+  edge or duplicating another identity rejects `closure` at its entry.
 - Step 7: the receiver-bearing singleton retains its receiver and omits
   the ordinal; the receiverless singleton omits both. Neither omission is
   represented by an invented placeholder receiver or explicit ordinal 0.
+- Step 8: both well-formed substituted step identities replay; a malformed
+  claimed edge set rejects `closure`. Equal post-states alone neither make
+  the result identities equal nor make a valid alternate ordinal invalid.
