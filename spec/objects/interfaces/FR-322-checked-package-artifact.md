@@ -430,11 +430,13 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   [FR-376](../../functional/analysis/FR-376-evaluate-population-valued-mapping-expressions.md)
   "Surface syntax") takes its level by this rule. A hyperproperty body
   wrapper ([FR-402](FR-402-hyperproperty-obligation-identity.md) "Body
-  wrapper") does not write its trace-atom slots on the wire as binders in
-  scope, so no level of a binder in its leaves can be checked. A reader SHALL
-  therefore refuse `ill_typed`/`operator-ineligible` at the application node
-  of any binder-introducing form (`seq`, `let`, a quantifier, `fold`,
-  `reduce`) reachable from a body wrapper's leaf.
+  wrapper") has no `over` parameter, trigger or captures of its own: its
+  binders in scope are its slot scope (FR-402 "Wrapper slot scope"), the
+  `n` atom slots its formula reads, at levels 0 to `n - 1` in ascending
+  byte order of their names. A binder-introducing form (`seq`, `let`, a
+  quantifier, `fold`, `reduce`) in a wrapper's leaf takes its level by this
+  rule with those `n` slots in scope, so its first binder is level `n`, and
+  the reader admits it as it admits the same form in a clause leaf.
   The name `#ieee_operand` is reserved for the checker: it names the binder of the `let` that lowering introduces for an IEEE ordering's operands, a source identifier can never spell it (the `Identifier` grammar excludes `#`), and the schema admits it only as the `name` literal of a `value`/`parameter` node's body.
   The node that binds an operation parameter of a state clause is typed by
   the parameter's step 4 type, which reads the parameter's presence: an
@@ -6424,7 +6426,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-505 | FR-322-AC-504's `size_read` with no slot term, or with two slot terms (a term added for the element slot of `ys`), refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with the slot term the Boolean literal `true` it refuses `ill_typed`/`type-mismatch` at `/body/arguments/2`. | Test (TC-367) |
 | FR-322-AC-506 | In a plain clause `over (p: Pulse)` with origin activation, levels follow where a `seq` sits relative to a `let`. In the leaf `holds(let s = seq(i in 0 .. 2: i) in p.w >= 0)` the `seq` is the `let`'s value, typed without the `let` binder: `p` has `level` 0, the `seq` index `i` `level` 1, and `s` `level` 1 for the body. In the leaf `holds(let s = p.w in size(seq(i in 0 .. 2: i)) >= s)` the `seq` is in the `let` body: `p` has `level` 0, `s` `level` 1 and the `seq` index `i` `level` 2. | Test (TC-303) |
 | FR-322-AC-507 | In a clause `over (p: Pulse)` activated `on each (q: Pulse) when (q.w > p.w)` with one capture `n: Int[0, 9] = q.w` and the leaf `holds(let xs = seq(i in 0 .. n: i) in true)`, `p` has `level` 0, the trigger `q` `level` 1 and the capture `n` `level` 2; the guard reads only levels 0 and 1, the capture initializer reads `q` at level 1, and the first leaf binder, the `seq` index `i`, has `level` 3, as does `xs`. | Test (TC-303) |
-| FR-322-AC-508 | A hyperproperty body wrapper whose leaf reaches a `let`, a `forall` quantifier, a `seq` application or a `fold` application refuses `ill_typed`/`operator-ineligible` at that form's application node; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
+| FR-322-AC-508 | A hyperproperty body wrapper whose slot scope holds the two slots `slot_sv_sa` and `slot_sv_sb` (FR-402 "Wrapper slot scope") and whose leaf reaches a `let`, a `forall` quantifier, a `seq` application or a `fold` application is admitted with the first binder of that form at `level` 2 (a `fold` step's accumulator at 2 and its element at 3), and with no `operator-ineligible` refusal at the form; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
 | FR-322-AC-509 | One package holding `always[0,2] holds(p)` and `always[0,3] holds(p)` over the same `p` holds two `temporal`/`formula` nodes for the two `always` applications, with paths that differ in the interval operand after `filament.op.temporal.always` (`steps:0..2` and `steps:0..3`), so both may have `ordinal` 0; the one `holds(p)` node is shared. A timed `eventually[0, 21/2]` has the operand `time:[0..10.5]`, an unbounded `always` has none, and every published fixture and vector whose formula has a bounded operator carries the operand (`steps:0..3` in the seven fixtures, `steps:0..10`, `time:[0..10.5]` and `steps:0..2` in `hybrid-node-vectors.json`). | Test (TC-233) |
 
 ## Dependencies
