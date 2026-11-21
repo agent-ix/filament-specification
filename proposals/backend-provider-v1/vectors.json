@@ -9464,6 +9464,66 @@
           }
         ]
       }
+    },
+    {
+      "name": "exhaustive-vacuous-conditional-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/basis": "FR-331",
+        "/results/0/certificate": "FR-412"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-prob",
+            "kind": "probabilistic-satisfaction",
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "exhaustive"
+            },
+            "certificate": {
+              "identity": {
+                "node_id": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "Safety"
+                  ]
+                },
+                "model": "example",
+                "ordinal": 0
+              },
+              "objective": {
+                "optimisation": "workload"
+              },
+              "kind": "conditional",
+              "values": [],
+              "conditional": {
+                "mode": "vacuous"
+              }
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
     }
   ],
   "adverse": [
@@ -13891,6 +13951,36 @@
           "op": "add",
           "path": "/results/0/cause/state",
           "value": "open"
+        }
+      ]
+    },
+    {
+      "name": "exhaustive-with-nonvacuous-certificate",
+      "base": "exhaustive-vacuous-conditional-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/certificate",
+          "value": {
+            "identity": {
+              "node_id": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "Example",
+                  "Safety"
+                ]
+              },
+              "model": "example",
+              "ordinal": 0
+            },
+            "objective": {
+              "optimisation": "workload"
+            },
+            "kind": "exact",
+            "values": []
+          }
         }
       ]
     }
