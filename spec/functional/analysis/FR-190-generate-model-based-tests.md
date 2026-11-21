@@ -56,7 +56,11 @@ SHALL be requested by a `verify` plan step whose method is `model_based_test`
 direct request carrying the same members. The request names one clause by its
 identity, the generator profile, a seed, `max_cases`, for a clause over a
 state model `max_trace_length`, and, when a generation root or an operation
-result has no finite bound ("Value domains"), `max_value_bits`.
+result has no finite bound ("Value domains"), `max_value_bits`. A plan
+step's `bound` is its `max_cases`, so a plan step whose method is
+`model_based_test` and that has no `bound` settles `unsupported` with
+`unsupported_projection`/`unbounded-extent` and runs no case (FR-192): the
+method is never negotiated, and no engine supplies an unbounded extent.
 
 - For a value clause or a pure Boolean predicate, a *case* SHALL be one typed
   assignment of the clause's parameters drawn from their checked domains.

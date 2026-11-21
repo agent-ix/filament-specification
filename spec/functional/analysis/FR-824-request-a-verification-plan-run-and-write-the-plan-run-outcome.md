@@ -120,6 +120,9 @@ The member list is closed:
   `max_value_bits` are FR-190 inputs that a plan step does not state (its
   `bound` is `max_cases`), so the request supplies them as it supplies
   `seed`, and they change nothing the plan states.
+- No request member changes a step's limits or deadline: a step runs under
+  its own `bound`, its method's FR-461 settings at their published defaults,
+  and cancellation.
 
 ### Selection
 

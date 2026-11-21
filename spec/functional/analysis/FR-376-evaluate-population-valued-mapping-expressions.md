@@ -55,6 +55,12 @@ expression position (a function body, a record-value invariant) has no
 population in scope and refuses a population name
 `missing_declaration`/`missing-name`.
 
+The leaf state predicates of a temporal clause, its activation guard and the
+leaf bodies of its formula, are clause bodies evaluated over one observation,
+so they admit `seq` exactly as a state-clause body does; `seq` reads no
+population. A function body and a record-value invariant are unchanged:
+there `seq` is an ordinary identifier (FR-376-AC-8).
+
 ## Behavior
 
 **Population value.** A concrete population name `C::p` denotes the set of
@@ -112,6 +118,7 @@ sub-expression makes `map` undetermined at that state (FR-377).
 | FR-376-AC-7 | An `only` whose matching set is empty and one whose matching set holds two objects each give an undefined evaluation with the reason `only-not-one` and a payload naming the population binding, the `only` locus and the enclosing row; a counterexample's cause carries that reason. | Test (TC-311) |
 | FR-376-AC-8 | The shared grammar parses `count(x in P)`, `count(x in P where c)`, `sum(x in P where c: e)`, `exists(x in P)`, `all(x in P where c)`, `only(x in P where c: e)` and `seq(i in lo .. hi: e)` inside a refinement row, and scans `0..1` and `0 .. 1` as the same three tokens. In a state-clause body outside a refinement declaration the same seven spellings parse as the forms, `exists(x in P: e)` is the state-clause quantifier, and `only(` and `seq(` followed by `ident in` read as the forms, so a pure function of one of those names cannot be called with such an argument there; in a function body `only` and `seq` are ordinary identifiers. Inside a refinement row `only(`, `seq(` and `Some(` always read as the forms, so a pure function of one of those names cannot be called from a row. | Test (TC-311) |
 | FR-376-AC-9 | In a state-clause invariant over a model whose population `P` has authored maximum 3, `count(x in P where x.v = 2)` has bound `[0, 3]`, `exists(x in P where x.v = 2)` and `all(x in P)` are `Boolean`, `only(x in P where x.v = 2: x.v)` yields the one matching object's `v` and is undefined with `only-not-one` for none or two, and `seq(i in 0 .. 2: i)` yields `[0, 1, 2]`; none refuses `unsupported_construct`, and each evaluates over the clause's observation exactly as in a refinement row. | Test (TC-1401) |
+| FR-376-AC-10 | `seq(i in 0 .. 2: i)` written in a temporal clause leaf, as in `temporal Window using inf over (p: Pulse) clock "model-steps" on origin { always holds(let xs = seq(i in 0 .. 2: i) in p.w >= 0) }`, parses as the `seq` form, not as a call of a function named `seq`; the same text in a function body still reads `seq` as an ordinary identifier. | Test (TC-311) |
 
 ## Dependencies
 

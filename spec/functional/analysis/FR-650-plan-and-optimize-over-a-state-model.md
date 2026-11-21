@@ -59,6 +59,20 @@ each with its plan, certificate and provenance as below.
   temporal clause over the model) holds on the plan's behaviour (its states
   followed by the terminal stutter of the final state) under its profile,
   and the goal holds ([FR-803](FR-803-hold-plans-to-policy-clauses.md)).
+- A state at which a model invariant is violated SHALL be inadmissible. A
+  state at which an invariant cannot be decided (its evaluation is
+  undefined) SHALL NOT be expanded. A run that excluded any state for that
+  reason SHALL settle `incomplete` with cause `invariant-undetermined`
+  naming the invariant, carrying the best plan found that passes through no
+  such state. It SHALL NOT settle `optimal` or `infeasible` and writes no
+  certificate, because the excluded state may begin an admissible plan
+  better than the best one or the only one. A checker SHALL NOT accept a
+  certificate whose derivation rests on an undetermined invariant.
+- An `incomplete` result has one cause. A work limit, the deadline or a
+  cancellation that stopped the search wins: the cause is that stop, even
+  when the search had also excluded an undetermined state.
+  `invariant-undetermined` is the cause only when the search otherwise ran
+  to completion.
 - The objective SHALL be the `minimize` or `maximize` expression; a
   declaration with none minimizes `length`. A sum of per-step costs is
   written as a collection query over `steps`; the final-state value as an
@@ -71,7 +85,7 @@ each with its plan, certificate and provenance as below.
 | `optimal` | an admissible plan whose objective no admissible plan of length in `D` improves | the plan, its objective value, and an optimality certificate the core accepted |
 | `feasible` | an admissible plan whose optimality is not certified | the plan, its objective value, and the best certified bound (`lower` for `minimize`, `upper` for `maximize`) when one exists |
 | `infeasible` | no admissible plan of any length in `D` | a closure certificate the core accepted |
-| `incomplete` | a work, deadline or cancellation limit stopped the search | the FR-461 limit, the explored count and any best plan as `feasible` |
+| `incomplete` | a work, deadline or cancellation limit stopped the search, or the search excluded a state at which an invariant could not be decided | the FR-461 limit or the `invariant-undetermined` cause, the explored count and any best plan as `feasible` |
 
 - Every plan in a result SHALL be replayed natively from the bound initial
   state before it is reported: each invocation enabled, every policy clause
@@ -98,10 +112,13 @@ each with its plan, certificate and provenance as below.
     bound `pi` satisfying four rules: `closure`, every successor node of a
     mapped node under every enabled, prefix-admissible step is mapped;
     `descent`, `pi(n) <= cost(a) + pi(n')` for every such step `a` from `n`
-    to `n'`; `goal`, `pi(n) <= 0` only at a node whose length is in `D` and
+    to `n'`; `goal`, `pi(n) <= 0` at every node whose length is in `D` and
     at which the goal holds and every non-safety policy automaton accepts on
     the terminal stutter; and `initial`, `pi(initial node)` equals the plan's
-    objective value;
+    objective value. The `goal` rule does not require the converse: with
+    zero-cost steps a node at which the goal does not hold may correctly
+    have `pi(n) <= 0`, because a goal node may be reachable from it at no
+    further cost;
   - `closure`: for any other objective, the complete set of admissible-prefix
     search nodes reachable within `max D` steps with each goal node's
     objective value, satisfying `closure` (closed under every enabled step)
@@ -182,6 +199,8 @@ otherwise, a run over the counter has the goal `Reach.final.value = 8`,
 | FR-650-AC-5 | Over the counter with goal value 8, the certificate tamper seam removing the successor reached by `double` from the entry of the initial node makes the core reject the `potential` certificate with `rule` `closure` and `entry` 0, and the result is `feasible` with the plan `inc, double, double`, certification `uncertified`, never `optimal`; a search stopped by its work limit after an admissible plan was found is `incomplete` naming the limit and carrying that best plan. | Test (TC-1603) |
 | FR-650-AC-6 | The plan substitution seam replacing the reported plan of the counter run with `double, double, double, double, double` (the fifth `double` applied at value 16, where its precondition `value <= 10` fails) gives a method failure, exit `30`, naming step index 4 and `double`, and no plan outcome document is written. | Test (TC-1603) |
 | FR-650-AC-7 | Over the counter with goal value 21, the certificate tamper seam removing one successor from entry 0 of the closure certificate makes the core reject it with `rule` `closure` and `entry` 0, and the result is `incomplete` with cause `certificate-rejected{rule: closure, entry: 0}` and plan `null`, never `infeasible`; a plan request carrying a member `replay_plan`, `tamper` or `engines` refuses `invalid_runtime_input`/`unknown-member` at that member's pointer, exit `20`, before any search. | Test (TC-1603) |
+| FR-650-AC-8 | Over the counter with goal value 8 and `minimize sum<Cost>(s in Reach.steps : if s.operation = M::Op::double then 0 else 1)`, the result is `optimal` with objective 0 and the plan `double, double, double` (values 1, 2, 4, 8), the zero-cost step `double` from value 4 entering the goal from a node at which the goal does not hold; its `potential` certificate maps that node and the initial node, at neither of which the goal holds, to `pi` 0, and the core accepts it, certification `certified`. | Test (TC-1603) |
+| FR-650-AC-9 | Over the counter with goal value 8 and a model invariant `Ratio` of `Counter`, `12 / (value - 3) != 5`, which is undefined (a division by zero) at `value = 3` and true at every other value, the state reached by `inc, inc` is not expanded and the result is `incomplete` with cause `{"type": "invariant-undetermined", "invariant": "Ratio"}`, the best plan `inc, double, double` (which passes through no state with `value = 3`), certificate `null` and certification `uncertified`, never `optimal`; with goal value 3 no plan passes through no such state, and the result is `incomplete` with that cause and plan `null`, never `infeasible`. | Test (TC-1603) |
 
 ## Dependencies
 

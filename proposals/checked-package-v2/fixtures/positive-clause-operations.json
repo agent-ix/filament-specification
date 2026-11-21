@@ -439,6 +439,7 @@
                     "operand": 3
                   },
                   "filament.op.temporal.eventually",
+                  "steps:0..3",
                   "temporal_formula",
                   {
                     "operand": 4
@@ -485,6 +486,7 @@
                 "operand": 3
               },
               "filament.op.temporal.eventually",
+              "steps:0..3",
               "temporal_formula",
               {
                 "operand": 4
@@ -1849,6 +1851,7 @@
               "operand": 2
             },
             "filament.op.temporal.eventually",
+            "steps:0..3",
             "temporal_formula",
             {
               "operand": 1
@@ -2939,6 +2942,7 @@
             "node": 17
           },
           "filament.op.temporal.eventually",
+          "steps:0..3",
           "temporal_formula",
           {
             "node": 0
@@ -3590,7 +3594,11 @@
         "kind": "event_position",
         "sequence_authority": "order-events"
       },
-      "clock_name": "model-steps"
+      "clock_name": "model-steps",
+      "source_unit": {
+        "authority": "agent-ix",
+        "identity": "example"
+      }
     }
   ],
   "temporal_clause_names": [

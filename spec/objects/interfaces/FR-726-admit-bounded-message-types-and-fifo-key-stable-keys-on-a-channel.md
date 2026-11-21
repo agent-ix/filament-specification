@@ -58,15 +58,22 @@ so that a key the checker accepts is never refused by the reader.
 - A key's type is decided over the lowered key type node by a structural walk
   through `option`, collection, record, tuple and variant members to every
   leaf. The walk follows FR-322's equality-stable rule and adds the IEEE
-  exclusion.
+  exclusion. A model-owned `record_value_type`, `tuple_value_type` or
+  `variant_type` has no member nodes in the package, so the walk follows the
+  fields, positions and payloads the model document declares for it, and a
+  float field declared there is a float leaf of the key.
+- `proposals/checked-package-v2/fifo-key-type-vectors.json` publishes the
+  key types of FR-726-AC-2 and FR-726-AC-3 as the cases `FK-01` to `FK-17`,
+  each a lowered key type with, for a model-owned type, the members its
+  model document declares.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-726-AC-1 | A channel whose `carries` is each of `Int[0, 5]`, `Text[0, 8; nfc]`, a bounded `Decimal`, a bounded `Rational`, `Float64[nearest-even]` and `Sequence<Boolean>[0, 3]`, lowered to `bounded_domain` nodes, is admitted `unordered`, and the channel body names the `bounded_domain` node as `carries`; a `carries` that names an `expression` node still refuses `invalid_model_binding`/`malformed-declaration` at the target. | Test (TC-1770) |
-| FR-726-AC-2 | A FIFO key of each of these types is admitted: `Int[0, 99]`, a model value type that is a bounded integer, `Quantity<m>`, `Option<Int[0, 5]>`, `Sequence<Quantity<m>>`, a record with a bounded `Decimal` field, a model `variant_type` and a model `record_value_type` whose leaves are FIFO-key-stable. | Test (TC-1770) |
-| FR-726-AC-3 | A FIFO key of type `float64`, `Option<float32>`, a record with a `float64` field, or a type holding an `event_type` leaf refuses `ill_typed`/`operator-ineligible` at the key, retaining `=` and the type; the same channel `unordered` is admitted. | Test (TC-1770) |
+| FR-726-AC-2 | A FIFO key of each of these types is admitted (`FK-01` to `FK-10`): `Int[0, 99]`, a model value type that is a bounded integer, `Quantity<m>`, `Option<Int[0, 5]>`, `Sequence<Quantity<m>>`, a record with a bounded `Decimal` field, a model `variant_type` and a model `record_value_type` whose leaves are FIFO-key-stable, `Bytes` and `JsonObject`. | Test (TC-1770) |
+| FR-726-AC-3 | A FIFO key with a `float32` or `float64` leaf at any depth, or with an `event_type` leaf, refuses `ill_typed`/`operator-ineligible` at the key, retaining `=` and the type (`FK-11` to `FK-17`): `float64`, `Option<float32>`, a record with a `float64` field, a type holding an `event_type` leaf, a record with a `Sequence<float32>` field, and the model-owned `record_value_type` `Reading`, whose field `value: Float64` only the model document declares, alone and inside `Sequence<Option<Reading>>[0, 4]`; the same channels `unordered` are admitted. | Test (TC-1770) |
 
 ## Dependencies
 

@@ -409,6 +409,7 @@
         "max_automaton_states": {"$ref": "#/$defs/PositiveCount"},
         "max_clocks": {"description": "FR-415: the most live clocks a state of the explored graph may hold (setting model_check.max_clocks, default 1024).", "$ref": "#/$defs/PositiveCount"},
         "max_task_product_work": {"description": "FR-415: the maximum task-product nodes expanded (setting zone_check.max_task_product_work, default 1048576).", "$ref": "#/$defs/PositiveCount"},
+        "max_check_work": {"description": "FR-418, FR-461: the work limit of the task-product certificate checker (setting zone_check.max_check_work, default 100000000 work units).", "$ref": "#/$defs/PositiveCount"},
         "max_walk_steps": {"$ref": "#/$defs/PositiveCount"},
         "max_witness_set": {"$ref": "#/$defs/PositiveCount"},
         "max_relation_tuples": {"$ref": "#/$defs/PositiveCount"},
@@ -1079,8 +1080,8 @@
         {"description": "FSL FR-149 SimulationStep{position, edge: None, verdict: None}, as FSL writes it with null edge and verdict, for an initial, successors, undecided-state or certificate-shape rule.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["initial-mismatch", "successors-differ", "bad-state", "malformed"]}, "at": {"type": "object", "required": ["position", "edge", "verdict"], "properties": {"position": {"$ref": "#/$defs/U64String"}, "edge": {"type": "null"}, "verdict": {"type": "null"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FSL FR-149 SimulationStep{position, edge, verdict: None} for post-differs.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "post-differs"}, "at": {"type": "object", "required": ["position", "edge", "verdict"], "properties": {"position": {"$ref": "#/$defs/U64String"}, "edge": {"$ref": "#/$defs/U64String"}, "verdict": {"type": "null"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FSL FR-149 SimulationStep{position, edge, verdict} for step-fails.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "step-fails"}, "at": {"type": "object", "required": ["position", "edge", "verdict"], "properties": {"position": {"$ref": "#/$defs/U64String"}, "edge": {"$ref": "#/$defs/U64String"}, "verdict": {"$ref": "#/$defs/StepVerdict"}}, "additionalProperties": false}}, "additionalProperties": false},
-        {"description": "FR-418: a node, its position in the certificate's nodes.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["successor-missing", "bad-state", "witness-fails", "initial-mismatch"]}, "at": {"type": "object", "required": ["node"], "properties": {"node": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
-        {"description": "FR-418, FSL FR-245 post-differs: an edge, its position in the certificate's edges.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["backward-edge", "post-differs"]}, "at": {"type": "object", "required": ["edge"], "properties": {"edge": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
+        {"description": "FR-418: a node, its position in the certificate's nodes.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["successor-missing", "bad-state", "witness-fails", "initial-mismatch", "unreached-node"]}, "at": {"type": "object", "required": ["node"], "properties": {"node": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
+        {"description": "FR-418, FSL FR-245 post-differs: an edge, its position in the certificate's edges.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["backward-edge", "post-differs", "extra-edge"]}, "at": {"type": "object", "required": ["edge"], "properties": {"edge": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FSL FR-245 step-fails: an edge and the failing step verdict, both present.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "step-fails"}, "at": {"type": "object", "required": ["edge", "verdict"], "properties": {"edge": {"$ref": "#/$defs/Count"}, "verdict": {"$ref": "#/$defs/StepVerdict"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FR-418: a component, its index.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "witness-fails"}, "at": {"type": "object", "required": ["component"], "properties": {"component": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FR-412, FR-418: a malformed certificate member, named as its certificate names it; FSL FR-163 also owns components for absent HP-2/HP-3 structure, including empty closure, before recomputation. The originating checked claim selects the owning member vocabulary; this branch does not authorize borrowing another checker's members.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "malformed"}, "at": {"type": "object", "required": ["member"], "properties": {"member": {"enum": ["identity", "node_id", "model", "ordinal", "objective", "kind", "values", "ranking", "policy", "components", "scale", "bounds", "nodes", "edges", "reasons", "divergence", "non_zeno", "initials", "admitted", "refinement", "refinement_node", "concrete_package", "abstract_package", "positions", "taken", "locked", "start", "nested", "task_product", "abstract_states", "automaton", "bias", "bound", "choice", "clock", "concrete", "conditional", "constraint", "denominator", "ef_nodes", "form", "gain", "history", "lower", "mode", "node", "numerator", "post", "rank", "reset", "set", "state", "state_graph", "strict", "target", "transition", "transitions", "type", "upper", "value", "zone"]}}, "additionalProperties": false}}, "additionalProperties": false},
@@ -1118,9 +1119,10 @@
       "required": ["type"],
       "oneOf": [
         {"$ref": "#/$defs/LimitReached"},
-        {"properties": {"type": {"const": "bounded-search-incomplete"}, "reason": {"const": "unresolved-dynamics"}}, "required": ["type", "reason"], "additionalProperties": false},
+        {"properties": {"type": {"const": "bounded-search-incomplete"}, "reason": {"enum": ["unresolved-dynamics", "certificate-unchecked"]}}, "required": ["type", "reason"], "additionalProperties": false},
         {"properties": {"type": {"const": "precision-budget"}, "lower": {"$ref": "#/$defs/Rational"}, "upper": {"$ref": "#/$defs/Rational"}}, "required": ["type", "lower", "upper"], "additionalProperties": false},
         {"properties": {"type": {"const": "cancelled"}, "source": {"enum": ["requested", "deadline"]}}, "required": ["type", "source"], "additionalProperties": false},
+        {"description": "FR-410: a statistical run that produced no estimate; nothing was exhausted, so it names no limit.", "properties": {"type": {"const": "no-estimate"}, "reason": {"enum": ["no-counted-sample", "no-positive-weight-cycle"]}}, "required": ["type", "reason"], "additionalProperties": false},
         {"properties": {"type": {"const": "timed-out"}}, "required": ["type"], "additionalProperties": false}
       ]
     },
@@ -1163,7 +1165,8 @@
       ]
     },
     "Quantity": {"type": "object", "required": ["value"], "properties": {"value": {"$ref": "#/$defs/Rational"}, "unit": {"$ref": "#/$defs/Nonempty"}}, "additionalProperties": false},
-    "Estimate": {"description": "FR-410 estimate: the probability, mean or ratio its decision reads, and for a quantile claim the empirical nearest-rank quantile with the threshold's unit.", "type": "object", "required": ["value"], "properties": {"value": {"$ref": "#/$defs/Rational"}, "quantile": {"$ref": "#/$defs/Quantity"}}, "additionalProperties": false},
+    "Estimate": {"description": "FR-410 estimate: the probability, mean or ratio its decision reads, and for a quantile claim the empirical nearest-rank quantile with the threshold's unit.", "type": "object", "required": ["value"], "properties": {"value": {"$ref": "#/$defs/Rational"}, "quantile": {"oneOf": [{"$ref": "#/$defs/Quantity"}, {"$ref": "#/$defs/Censored"}]}}, "additionalProperties": false},
+    "Censored": {"description": "FR-410: a measure censored at its horizon: the window ended before the measure's end event, so its value exceeds every finite threshold; horizon is the window bound it exceeded.", "type": "object", "required": ["type", "horizon"], "properties": {"type": {"const": "censored"}, "horizon": {"$ref": "#/$defs/Quantity"}}, "additionalProperties": false},
     "Interval": {"type": "object", "required": ["lower", "upper"], "properties": {"lower": {"$ref": "#/$defs/Rational"}, "upper": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
     "ExhaustiveDimensions": {"description": "FR-193 Proof coverage: the dimensions in which a bounded solver established its proof region complete; time: no behaviour takes more than jumps jumps by horizon; jumps: no behaviour takes one of its first jumps jumps after horizon. Empty when neither.", "type": "array", "uniqueItems": true, "items": {"enum": ["time", "jumps"]}},
     "SolverInconclusive": {
@@ -1276,7 +1279,8 @@
     "StatisticalVerdict": {
       "description": "FR-410 StatisticalVerdict.",
       "type": "object",
-      "required": ["decision", "estimate", "basis", "provenance", "tests", "witnesses"],
+      "required": ["decision", "basis", "provenance", "tests", "witnesses"],
+      "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}],
       "properties": {
         "decision": {"$ref": "#/$defs/MeasuredDecision"},
         "estimate": {"$ref": "#/$defs/Estimate"},
@@ -1305,11 +1309,12 @@
           },
           "additionalProperties": false
         },
-        "tests": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["index", "decision", "estimate", "samples", "draws"], "properties": {"index": {"$ref": "#/$defs/Count"}, "decision": {"$ref": "#/$defs/MeasuredDecision"}, "estimate": {"$ref": "#/$defs/Estimate"}, "interval": {"$ref": "#/$defs/Interval"}, "samples": {"$ref": "#/$defs/Count"}, "draws": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}},
+        "tests": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["index", "decision", "samples", "draws"], "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}], "properties": {"index": {"$ref": "#/$defs/Count"}, "decision": {"$ref": "#/$defs/MeasuredDecision"}, "estimate": {"$ref": "#/$defs/Estimate"}, "interval": {"$ref": "#/$defs/Interval"}, "samples": {"$ref": "#/$defs/Count"}, "draws": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}},
         "witnesses": {"type": "array", "items": {"$ref": "#/$defs/SampledWitness"}}
       },
       "additionalProperties": false
     },
+    "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},
     "SampledWitness": {
       "description": "FR-410 sampled witness.",
       "type": "object",
@@ -1317,11 +1322,12 @@
       "properties": {
         "test": {"$ref": "#/$defs/Count"},
         "trace_index": {"$ref": "#/$defs/Decimal"},
-        "steps": {"type": "array", "items": {"type": "object", "required": ["transition", "post_state", "scheduled", "random"], "properties": {"transition": {"$ref": "#/$defs/TransitionIdentity"}, "post_state": {"$ref": "#/$defs/State"}, "scheduled": {"$ref": "#/$defs/TypedValue"}, "random": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}, "delay": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}},
+        "steps": {"type": "array", "items": {"type": "object", "required": ["transition", "post_state", "scheduled", "random"], "properties": {"transition": {"oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "post_state": {"$ref": "#/$defs/State"}, "scheduled": {"description": "FR-410/FR-405: the scheduled identity, the transition identity carrying only its non-random arguments; the random arguments are the step's random member. A stutter step writes the stutter form here as in transition.", "oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "random": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}, "delay": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}},
         "probability": {"$ref": "#/$defs/Rational"},
         "value": {"oneOf": [
           {"type": "object", "required": ["type", "value"], "properties": {"type": {"const": "event"}, "value": {"type": "boolean"}}, "additionalProperties": false},
           {"type": "object", "required": ["type", "value"], "properties": {"type": {"const": "measure"}, "value": {"$ref": "#/$defs/Quantity"}}, "additionalProperties": false},
+          {"$ref": "#/$defs/Censored"},
           {"$ref": "#/$defs/UndefinedEvaluation"}
         ]}
       },
@@ -1475,8 +1481,8 @@
         {"if": {"properties": {"result": {"const": "incomplete"}}}, "then": {}, "else": {"properties": {"task_search": false}}},
         {"description": "FR-331: task-search-frontier accompanies only an incomplete result stopped by a real limit or unresolved dynamics.", "if": {"required": ["task_search"]}, "then": {"required": ["cause", "result"], "properties": {"result": {"const": "incomplete"}, "cause": {"oneOf": [{"properties": {"type": {"const": "limit-reached"}}, "required": ["type"]}, {"properties": {"type": {"const": "bounded-search-incomplete"}, "reason": {"const": "unresolved-dynamics"}}, "required": ["type", "reason"]}]}}}},
         {"description": "FR-331: a real task-search limit stop carries its limit in the evidence.", "if": {"required": ["task_search", "cause"], "properties": {"cause": {"properties": {"type": {"const": "limit-reached"}}, "required": ["type"]}}}, "then": {"properties": {"task_search": {"required": ["limit"]}}}},
-        {"description": "FR-331: unresolved task-search dynamics carries no claimed limit and has an unresolved-choice frontier.", "if": {"required": ["task_search", "cause"], "properties": {"cause": {"properties": {"type": {"const": "bounded-search-incomplete"}}, "required": ["type"]}}}, "then": {"properties": {"task_search": {"properties": {"limit": false, "frontier": {"contains": {"properties": {"reason": {"const": "unresolved-choice"}}, "required": ["reason"]}}}}}}},
-        {"description": "FR-331: bounded-search-incomplete requires task-search evidence.", "if": {"required": ["cause"], "properties": {"cause": {"properties": {"type": {"const": "bounded-search-incomplete"}}, "required": ["type"]}}}, "then": {"required": ["task_search"]}},
+        {"description": "FR-331: unresolved task-search dynamics carries no claimed limit and has an unresolved-choice frontier; the rule does not apply to reason certificate-unchecked, which carries no frontier.", "if": {"required": ["task_search", "cause"], "properties": {"cause": {"properties": {"type": {"const": "bounded-search-incomplete"}, "reason": {"const": "unresolved-dynamics"}}, "required": ["type", "reason"]}}}, "then": {"properties": {"task_search": {"properties": {"limit": false, "frontier": {"contains": {"properties": {"reason": {"const": "unresolved-choice"}}, "required": ["reason"]}}}}}}},
+        {"description": "FR-331: bounded-search-incomplete with reason unresolved-dynamics requires task-search evidence; reason certificate-unchecked is allowed without it.", "if": {"required": ["cause"], "properties": {"cause": {"properties": {"type": {"const": "bounded-search-incomplete"}, "reason": {"const": "unresolved-dynamics"}}, "required": ["type", "reason"]}}}, "then": {"required": ["task_search"]}},
         {"description": "FR-331/FR-415: the max_task_product_work cause uses a work-limit frontier.", "if": {"required": ["task_search", "cause"], "properties": {"cause": {"properties": {"type": {"const": "limit-reached"}, "limit": {"const": "max_task_product_work"}}, "required": ["type", "limit"]}}}, "then": {"properties": {"task_search": {"properties": {"frontier": {"contains": {"properties": {"reason": {"const": "work-limit"}}, "required": ["reason"]}}}}}}}
       ],
       "additionalProperties": false

@@ -206,7 +206,9 @@ A term is a binding value of FR-322's body grammar: a literal, or a
 the clause's binder scope (its `over` parameter and captures), as a `holds`
 operand is. The bindings are inputs of the node's structural identity, so a
 change of any binding changes the formula node, and an omitted `min_count` and
-`min_count 1` give one node. Source spans stay in the source map.
+`min_count 1` give one node. Source spans stay in the source map. Each
+binder's `level` in a clause leaf follows FR-322 "Binder levels in a temporal
+clause leaf".
 
 The clause's clock unit is the `scalar_type`/`unit` node that `T`, the
 `timestamp_unit` the clause's `timestamped_event` rows of `temporal_bindings`
@@ -214,7 +216,9 @@ name (FR-322 "Temporal clock bindings"), names (FR-778): the model-owned node
 whose `node_id.path` is `["scalar_type", "unit", T]` when `T` is the FCD
 identity of a unit an admitted domain package declares, or the source-owned
 unit node whose `node_id.path` is its declaration path `[T]` when `T` is the
-name of a unit the clause's own source unit declares. A `duration` bound in any other unit, whether another unit of
+name of a unit the clause's own source unit declares. The clause's own source
+unit is the one its row's `source_unit` names (FR-322 "Clause source unit"),
+never one inferred from its subject, the source map or node position. A `duration` bound in any other unit, whether another unit of
 `Time` or a unit of another dimension, has no encoding: `past[0, 300 s]` under
 a clock in `ms` is `lower` `0` and `upper` `300000` of the `ms` node, and one
 window has one node identity.

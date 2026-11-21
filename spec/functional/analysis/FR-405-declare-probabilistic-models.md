@@ -135,7 +135,10 @@ declaration of one operation refuses with
 `invalid_model_binding`/`malformed-declaration` at the second declaration.
 
 A **scheduled identity** is a transition identity without its random
-arguments: (operation, receiver, non-random argument vector).
+arguments: (operation, receiver, non-random argument vector). On the wire it
+has the FR-181 `TransitionIdentity` shape with only the non-random
+arguments in `arguments`; a sampled witness step carries it as `scheduled`
+and its random arguments as `random` (FR-410).
 
 ### Checked-package form
 

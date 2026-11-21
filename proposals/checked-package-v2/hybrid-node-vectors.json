@@ -3100,6 +3100,7 @@
             "operand": 2
           },
           "filament.op.temporal.always",
+          "steps:0..10",
           "temporal_formula",
           {
             "operand": 1
@@ -3205,6 +3206,7 @@
                   "operand": 3
                 },
                 "filament.op.temporal.always",
+                "steps:0..10",
                 "temporal_formula",
                 {
                   "operand": 4
@@ -3251,6 +3253,7 @@
               "operand": 3
             },
             "filament.op.temporal.always",
+            "steps:0..10",
             "temporal_formula",
             {
               "operand": 4
@@ -6745,6 +6748,7 @@
             "operand": 2
           },
           "filament.op.temporal.eventually",
+          "time:[0..10.5]",
           "temporal_formula",
           {
             "operand": 1
@@ -7036,6 +7040,7 @@
                   "operand": 8
                 },
                 "filament.op.temporal.eventually",
+                "time:[0..10.5]",
                 "temporal_formula",
                 {
                   "operand": 5
@@ -7118,6 +7123,7 @@
               "operand": 8
             },
             "filament.op.temporal.eventually",
+            "time:[0..10.5]",
             "temporal_formula",
             {
               "operand": 5
@@ -7421,6 +7427,7 @@
             "operand": 2
           },
           "filament.op.temporal.once",
+          "steps:0..2",
           "temporal_formula",
           {
             "operand": 1
@@ -7526,6 +7533,7 @@
                   "operand": 3
                 },
                 "filament.op.temporal.once",
+                "steps:0..2",
                 "temporal_formula",
                 {
                   "operand": 4
@@ -7572,6 +7580,7 @@
               "operand": 3
             },
             "filament.op.temporal.once",
+            "steps:0..2",
             "temporal_formula",
             {
               "operand": 4

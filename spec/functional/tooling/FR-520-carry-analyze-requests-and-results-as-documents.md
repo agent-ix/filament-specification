@@ -126,7 +126,7 @@ An analysis item has these members:
   `aggregate` (`status` and `gaps`) and `registry` (FSL FR-621, FR-635).
 - **Kinds.** Every category label in the result is one FR-301 lists, and
   every temporal disposition is FR-352's `disposition.temporal` with one of
-  its sixteen kinds and exactly that row's `category`, `truth`, `basis` and
+  its seventeen kinds and exactly that row's `category`, `truth`, `basis` and
   `outcome` (FR-352-AC-10, AC-11, AC-16, AC-17); a writer never emits another
   kind. An item's `axes.settlement` equals its disposition's `basis`.
 - **Values.** Every value in a counterexample, assignment, witness or

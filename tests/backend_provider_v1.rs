@@ -1115,7 +1115,7 @@ fn tc_431_canonical_key_bindings_are_complete() {
 }
 
 // Normative rule inventory, independent of both schema and vector contents.
-const CERTIFICATE_RULES: [&str; 25] = [
+const CERTIFICATE_RULES: [&str; 27] = [
     "initial-missing",
     "successor-missing",
     "bad-state",
@@ -1141,6 +1141,8 @@ const CERTIFICATE_RULES: [&str; 25] = [
     "inequality-fails",
     "threshold-missed",
     "non-zeno-mismatch",
+    "unreached-node",
+    "extra-edge",
 ];
 
 /// The closed rule inventory is authored independently of the schema and
@@ -1773,8 +1775,8 @@ fn tc_431_zone_loci_admit_the_refinement_form_rules_and_the_added_members() {
     let rejection = definition("CertificateRejected");
     let verdict = serde_json::json!({"kind": "NoAbstractMatch", "position": "1"});
     let loci: [(Value, &[&str]); 5] = [
-        (serde_json::json!({"node": 2}), &["successor-missing", "bad-state", "witness-fails", "initial-mismatch"]),
-        (serde_json::json!({"edge": 2}), &["backward-edge", "post-differs"]),
+        (serde_json::json!({"node": 2}), &["successor-missing", "bad-state", "witness-fails", "initial-mismatch", "unreached-node"]),
+        (serde_json::json!({"edge": 2}), &["backward-edge", "post-differs", "extra-edge"]),
         (serde_json::json!({"edge": 2, "verdict": verdict}), &["step-fails"]),
         (serde_json::json!({"edge": 2, "verdict": null}), &[]),
         (serde_json::json!({"component": 2}), &["witness-fails"]),
@@ -2338,4 +2340,176 @@ fn tc_318_protocol_relation_failure_vectors() {
         let result = replay_relation_failure(product, &replay["recorded"], replay["loop_steps"].as_u64().expect("loop_steps"));
         assert_eq!(result, replay["expected"].as_str().expect("expected"), "{}", replay["name"]);
     }
+}
+
+/// FR-331-AC-58: `bounded-search-incomplete` with reason
+/// `certificate-unchecked` is a closed search whose certificate no checker
+/// accepted, so it is admitted without `task_search`; reason
+/// `unresolved-dynamics` still requires the frontier evidence.
+#[trace("TC-431", "FR-331-AC-58")]
+#[test]
+fn certificate_unchecked_incomplete_needs_no_task_search() {
+    let base = positive("task-search-unresolved-dynamics");
+    let stage = definition(stage_definition(base["stage"].as_str().expect("stage")));
+    assert!(stage.is_valid(&base["document"]), "the base vector is admitted");
+
+    let mut unchecked = base["document"].clone();
+    unchecked["results"][0]["cause"]["reason"] = Value::from("certificate-unchecked");
+    let with_search = unchecked.clone();
+    unchecked["results"][0]
+        .as_object_mut()
+        .expect("result entry")
+        .remove("task_search");
+    assert!(stage.is_valid(&unchecked), "certificate-unchecked is admitted without task_search");
+    assert!(!stage.is_valid(&with_search), "certificate-unchecked carries no task_search");
+
+    let mut unresolved = unchecked.clone();
+    unresolved["results"][0]["cause"]["reason"] = Value::from("unresolved-dynamics");
+    assert!(!stage.is_valid(&unresolved), "unresolved-dynamics still requires task_search");
+
+    let mut unknown = unchecked;
+    unknown["results"][0]["cause"]["reason"] = Value::from("closed");
+    assert!(!stage.is_valid(&unknown), "an unregistered reason is refused");
+}
+
+/// The published `probabilistic-outcome` verdict, the base of the FR-410 wire
+/// cases below.
+fn published_statistical_verdict() -> Value {
+    let vectors = parsed(VECTORS);
+    let mut found = None;
+    let mut stack = vec![vectors];
+    while let Some(value) = stack.pop() {
+        match value {
+            Value::Object(map) => {
+                if map.contains_key("witnesses") && map.contains_key("basis") {
+                    found = Some(Value::Object(map));
+                    break;
+                }
+                stack.extend(map.into_iter().map(|(_, v)| v));
+            }
+            Value::Array(items) => stack.extend(items),
+            _ => {}
+        }
+    }
+    found.expect("a published StatisticalVerdict")
+}
+
+/// FR-410-AC-6 to FR-410-AC-11 and FR-331's `no-estimate` cause: the
+/// statistical verdict wire forms, decided by the schema.
+#[trace("TC-355", "TC-358", "TC-359", "FR-410-AC-6", "FR-410-AC-7", "FR-410-AC-8", "FR-410-AC-9", "FR-410-AC-10", "FR-410-AC-11")]
+#[test]
+fn statistical_verdict_wire_forms() {
+    let verdict = definition("StatisticalVerdict");
+    let witness = definition("SampledWitness");
+    let cause = definition("IncompleteCause");
+    let transition = definition("TransitionIdentity");
+    let base = published_statistical_verdict();
+    assert!(verdict.is_valid(&base), "the published verdict is admitted");
+
+    // AC-6: scheduled identity and the witness-local stutter form.
+    let send = serde_json::json!({"type": "transition", "operation": "Server::send", "receiver": null, "arguments": [{"type": "integer", "value": "1"}]});
+    let stutter = serde_json::json!({"type": "stutter"});
+    let step = |transition: &Value, scheduled: &Value, random: Value| serde_json::json!({
+        "transition": transition, "post_state": base["provenance"]["tests"][0]["initial_state"], "scheduled": scheduled, "random": random
+    });
+    let sample = |steps: Vec<Value>, value: Value| serde_json::json!({
+        "test": 0, "trace_index": "0", "steps": steps, "probability": {"numerator": "1", "denominator": "2"}, "value": value
+    });
+    let event_false = serde_json::json!({"type": "event", "value": false});
+    let schema_state = |w: &Value| witness.is_valid(w);
+    let with_state = |mut w: Value| {
+        // A State is whatever the schema's State admits; reuse a published one.
+        let state = parsed(VECTORS)["positive"].as_array().unwrap().iter()
+            .find_map(|v| {
+                let mut stack = vec![v.clone()];
+                while let Some(x) = stack.pop() {
+                    match x {
+                        Value::Object(m) => {
+                            if let Some(s) = m.get("post_state") { return Some(s.clone()); }
+                            stack.extend(m.into_iter().map(|(_, v)| v));
+                        }
+                        Value::Array(a) => stack.extend(a),
+                        _ => {}
+                    }
+                }
+                None
+            })
+            .expect("a published post_state");
+        for s in w["steps"].as_array_mut().unwrap() { s["post_state"] = state.clone(); }
+        w
+    };
+    let admitted = with_state(sample(vec![step(&send, &send, serde_json::json!([{"type": "integer", "value": "3"}])), step(&stutter, &stutter, serde_json::json!([]))], event_false.clone()));
+    assert!(schema_state(&admitted), "AC-6: a scheduled identity and a stutter step are admitted");
+    let mut bare = admitted.clone();
+    bare["steps"][0]["scheduled"] = serde_json::json!({"type": "integer", "value": "1"});
+    assert!(!schema_state(&bare), "AC-6: a bare typed value is no scheduled identity");
+    let mut stutter_op = admitted.clone();
+    stutter_op["steps"][1]["transition"] = serde_json::json!({"type": "stutter", "operation": "Server::send"});
+    assert!(!schema_state(&stutter_op), "AC-6: a stutter names no operation");
+    assert!(!transition.is_valid(&stutter), "the stutter form is local to the witness step");
+
+    // AC-7: censored measure and quantile.
+    let horizon = serde_json::json!({"type": "censored", "horizon": {"value": {"numerator": "10", "denominator": "1"}}});
+    let censored = with_state(sample(vec![], horizon.clone()));
+    assert!(schema_state(&censored), "AC-7: a censored witness value is admitted");
+    assert!(!schema_state(&with_state(sample(vec![], serde_json::json!({"type": "censored"})))), "AC-7: censored needs horizon");
+    let mut quantile = base.clone();
+    quantile["estimate"]["quantile"] = horizon;
+    assert!(verdict.is_valid(&quantile), "AC-7: a censored quantile is admitted");
+
+    // AC-8: no estimate, and the no-estimate cause.
+    let mut no_estimate = base.clone();
+    no_estimate.as_object_mut().unwrap().remove("estimate");
+    assert!(!verdict.is_valid(&no_estimate), "AC-8: an accepted verdict needs an estimate");
+    let mut no_value = base.clone();
+    no_value["estimate"].as_object_mut().unwrap().remove("value");
+    assert!(!verdict.is_valid(&no_value), "AC-8: an estimate carries value");
+    for reason in ["no-counted-sample", "no-positive-weight-cycle"] {
+        assert!(cause.is_valid(&serde_json::json!({"type": "no-estimate", "reason": reason})), "{reason}");
+    }
+    assert!(!cause.is_valid(&serde_json::json!({"type": "no-estimate", "reason": "no-counted-sample", "limit": "max_samples"})), "AC-8: no-estimate names no limit");
+
+    // AC-9: counts are integers.
+    let mut text_count = base.clone();
+    text_count["basis"]["samples"] = Value::from("40");
+    assert!(!verdict.is_valid(&text_count), "AC-9: a count is a JSON integer");
+
+    // AC-10 and AC-11: the two decisions that carry no estimate.
+    let undefined = serde_json::json!({"type": "undefined-evaluation", "where": {"position": 1, "document": "document-3", "locus": {"node": {"ordinal": 0, "package": "example", "path": ["Example", "Tank"]}, "occurrence": {"role": "claim", "ordinal": 0}}}, "cause": "absent-key"});
+    let without = |decision: Value| {
+        let mut v = base.clone();
+        v["decision"] = decision.clone();
+        v.as_object_mut().unwrap().remove("estimate");
+        v["tests"][0]["decision"] = decision;
+        v["tests"][0].as_object_mut().unwrap().remove("estimate");
+        v
+    };
+    for (id, decision) in [
+        ("AC-10", serde_json::json!({"type": "rejected", "cause": undefined})),
+        ("AC-11", serde_json::json!({"type": "undecided", "cause": {"type": "undecided-successor"}})),
+    ] {
+        let absent = without(decision);
+        assert!(verdict.is_valid(&absent), "{id}: no estimate is admitted");
+        let mut present = absent.clone();
+        present["estimate"] = base["estimate"].clone();
+        assert!(!verdict.is_valid(&present), "{id}: an estimate is refused");
+    }
+    let indifference = without(serde_json::json!({"type": "undecided", "cause": {"type": "indifference-region"}}));
+    assert!(!verdict.is_valid(&indifference), "AC-11: indifference-region needs an estimate");
+}
+
+/// FR-418-AC-19: a task-product certificate's unreached node and extra edge
+/// are named rejection rules at the node and edge loci.
+#[trace("TC-371", "FR-418-AC-19")]
+#[test]
+fn task_product_canonical_closure_rules() {
+    let rejected = definition("CertificateRejected");
+    for cause in [
+        serde_json::json!({"type": "certificate-rejected", "rule": "unreached-node", "at": {"node": 3}}),
+        serde_json::json!({"type": "certificate-rejected", "rule": "extra-edge", "at": {"edge": 5}}),
+    ] {
+        assert!(rejected.is_valid(&cause), "{cause}");
+    }
+    assert!(!rejected.is_valid(&serde_json::json!({"type": "certificate-rejected", "rule": "unreached-node", "at": {"edge": 5}})), "unreached-node is a node rule");
+    assert!(!rejected.is_valid(&serde_json::json!({"type": "certificate-rejected", "rule": "extra-edge", "at": {"node": 3}})), "extra-edge is an edge rule");
 }

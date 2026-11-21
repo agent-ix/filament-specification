@@ -249,6 +249,7 @@
         },
         {
           "declaration": "c",
+          "source_unit": {"authority": "agent-ix", "identity": "example"},
           "occurrence": 0,
           "clock_name": "model-steps",
           "clock": {
@@ -472,6 +473,112 @@
       ],
       "rows": [],
       "expected": "admitted"
+    }
+  ],
+  "source_unit_note": "FR-322 \"Clause source unit\", FR-778-AC-8..FR-778-AC-11 (TC-1890): a timestamped-event clause row keyed by declaration c, whose source_unit names the source unit that declares the clause. The reader resolves the row's timestamp_unit in that unit only; subject.declared_by is the unit that declares the clause's subject and is never read. time_units lists, per declaring unit identity, the units of dimension Time it declares (each linear: s, and ms = 1/1000 s). Every case's clause holds one duration count aggregate whose bounds are typed by the unit named in bound_unit.",
+  "source_unit_cases": [
+    {
+      "id": "SU-01",
+      "criterion": "FR-778-AC-8",
+      "note": "the positive-all-families clause shape: declared in example over Reference<Order>, Order declared by the selected model acme/orders; Time, s and ms declared in example",
+      "lock_sources": [{"authority": "agent-ix", "identity": "example"}],
+      "subject": {"type": "Reference<Order>", "declared_by": "acme/orders"},
+      "time_units": {"example": ["s", "ms"]},
+      "row": {
+        "declaration": "c",
+        "occurrence": 0,
+        "clock_name": "ts",
+        "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+        "source_unit": {"authority": "agent-ix", "identity": "example"}
+      },
+      "bound_unit": {"owner": "example", "path": ["ms"]},
+      "expected": "admitted"
+    },
+    {
+      "id": "SU-02",
+      "criterion": "FR-778-AC-9",
+      "note": "over (p: Pulse) with a source record Pulse declared in example",
+      "lock_sources": [{"authority": "agent-ix", "identity": "example"}],
+      "subject": {"type": "Pulse", "declared_by": "example"},
+      "time_units": {"example": ["s", "ms"]},
+      "row": {
+        "declaration": "c",
+        "occurrence": 0,
+        "clock_name": "ts",
+        "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+        "source_unit": {"authority": "agent-ix", "identity": "example"}
+      },
+      "bound_unit": {"owner": "example", "path": ["ms"]},
+      "expected": "admitted"
+    },
+    {
+      "id": "SU-03",
+      "criterion": "FR-778-AC-10",
+      "note": "SU-01 with Time, s and ms declared only by acme/orders, the unit that declares the subject",
+      "lock_sources": [{"authority": "agent-ix", "identity": "example"}],
+      "subject": {"type": "Reference<Order>", "declared_by": "acme/orders"},
+      "time_units": {"acme/orders": ["s", "ms"]},
+      "row": {
+        "declaration": "c",
+        "occurrence": 0,
+        "clock_name": "ts",
+        "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+        "source_unit": {"authority": "agent-ix", "identity": "example"}
+      },
+      "bound_unit": {"owner": "acme/orders", "path": ["ms"]},
+      "expected": "refused",
+      "code": "missing_declaration",
+      "cause": "missing-name",
+      "locus": "/temporal_bindings/0/clock/timestamp_unit"
+    },
+    {
+      "id": "SU-04",
+      "criterion": "FR-778-AC-11",
+      "note": "SU-01 with source_unit naming a unit that is not one of the package's lock.sources",
+      "lock_sources": [{"authority": "agent-ix", "identity": "example"}],
+      "subject": {"type": "Reference<Order>", "declared_by": "acme/orders"},
+      "time_units": {"example": ["s", "ms"]},
+      "row": {
+        "declaration": "c",
+        "occurrence": 0,
+        "clock_name": "ts",
+        "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+        "source_unit": {"authority": "agent-ix", "identity": "other"}
+      },
+      "bound_unit": {"owner": "example", "path": ["ms"]},
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/temporal_bindings/0/source_unit"
+    },
+    {
+      "id": "SU-05",
+      "criterion": "FR-778-AC-12",
+      "note": "SU-01's clause with two claim occurrences whose rows name different source units, both locked: refused at the second row, the first whose unit differs from the clause's first row",
+      "lock_sources": [{"authority": "agent-ix", "identity": "example"}, {"authority": "agent-ix", "identity": "acme/orders"}],
+      "subject": {"type": "Reference<Order>", "declared_by": "acme/orders"},
+      "time_units": {"example": ["s", "ms"], "acme/orders": ["s", "ms"]},
+      "rows": [
+        {
+          "declaration": "c",
+          "occurrence": 0,
+          "clock_name": "ts",
+          "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+          "source_unit": {"authority": "agent-ix", "identity": "example"}
+        },
+        {
+          "declaration": "c",
+          "occurrence": 1,
+          "clock_name": "ts",
+          "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+          "source_unit": {"authority": "agent-ix", "identity": "acme/orders"}
+        }
+      ],
+      "bound_unit": {"owner": "example", "path": ["ms"]},
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "timed-node-reference",
+      "locus": "/temporal_bindings/1"
     }
   ]
 }

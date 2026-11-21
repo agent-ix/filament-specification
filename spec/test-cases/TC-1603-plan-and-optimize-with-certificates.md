@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify plan synthesis over a state model, policy, objectives and the optimality and closure certificates. Scope: FR-650-AC-1 to FR-650-AC-7.
+Verify plan synthesis over a state model, policy, objectives and the optimality and closure certificates. Scope: FR-650-AC-1 to FR-650-AC-9.
 
 ## Test Procedure
 

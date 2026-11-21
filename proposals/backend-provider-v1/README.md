@@ -96,3 +96,10 @@ diagnostic payloads (`detail`), FR-407 bounds, FR-412 objectives, FR-413
 scheduler choices, FR-418 component reasons, FR-419 closed-form evidence (the
 only open `evidence`; under `well-definedness-unchecked` it is the FR-393
 witness arm) and FR-425 protocol-transition identities.
+
+`IncompleteCause` admits `bounded-search-incomplete` with reason
+`certificate-unchecked` without `task_search` (FR-331-AC-58), and the
+statistical verdict wire types a witness step's `scheduled` as a
+`TransitionIdentity` with only its non-random arguments, gives a witness step's `transition` and
+`scheduled` a local `WitnessStutter` alternative, and adds the `Censored` form for a
+witness value and `Estimate.quantile` (FR-410-AC-6 to FR-410-AC-9).

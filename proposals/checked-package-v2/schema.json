@@ -317,6 +317,10 @@
         "clock_name": {
           "$ref": "#/$defs/Nonempty"
         },
+        "source_unit": {
+          "description": "FR-322 \"Clause source unit\": the lock.sources identity of the source unit that declares a temporal_clause; required on a clause row and absent on every other row (reader rule).",
+          "$ref": "#/$defs/DefinitionRef"
+        },
         "trace": {
           "$ref": "#/$defs/Nonempty"
         }
@@ -6380,6 +6384,7 @@
                 "query",
                 "pre_read",
                 "presence_read",
+                "size_read",
                 "place_reference",
                 "value_read",
                 "deref",

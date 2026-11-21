@@ -18,8 +18,8 @@ Scope: FR-726-AC-1, FR-726-AC-2, FR-726-AC-3.
 ## Test Procedure
 
 1. Read packages whose `unordered` channel carries each of `Int[0, 5]`, `Text[0, 8; nfc]`, a bounded `Decimal`, a bounded `Rational`, `Float64[nearest-even]` and `Sequence<Boolean>[0, 3]`, and one whose `carries` names an `expression` node.
-2. Read packages whose FIFO channel is keyed by each FR-726-AC-2 type.
-3. Read packages whose FIFO channel is keyed by `float64`, `Option<float32>`, a record with a `float64` field and a type with an `event_type` leaf, and the same channels `unordered`.
+2. Read packages whose FIFO channel is keyed by each FR-726-AC-2 type (`FK-01` to `FK-10` of `proposals/checked-package-v2/fifo-key-type-vectors.json`).
+3. Read packages whose FIFO channel is keyed by each FR-726-AC-3 type (`FK-11` to `FK-17`), the model-owned `Reading` with its fields read from the model document, and the same channels `unordered`.
 
 ## Expected Results
 
