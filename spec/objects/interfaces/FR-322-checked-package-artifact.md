@@ -1488,7 +1488,10 @@ A frame body refusal, meaning-join or canonical-order
   of entries to remove from the previous path that leaves a prefix of the
   row's path, and `down` the rest, so one sequence of paths has one
   encoding and the bytes are a function of the paths. When consecutive
-  terms of the walk sit close together in the checker's tree, as they do in
+  terms are reached through record fields or tuple positions, the same
+  least-`up` rule applies across those component visits; entering or leaving
+  a composite value never resets the previous path.
+  When consecutive terms of the walk sit close together in the checker's tree, as they do in
   a pre-order walk, `up` and `down` stay short, and the entries of all rows
   together are at most twice the number of edges the walk crosses.
 
@@ -1508,11 +1511,20 @@ A frame body refusal, meaning-join or canonical-order
   clause function that carries one; a function node with no `body` binding
   has no body walk and no rows, and its `decreases` binding is never walked.
   The walk starts at the local node the `body` binding references and visits
-  nodes in pre-order. At each visited node it follows, in the order they
+  nodes in pre-order. The producer and reader SHALL descend through a
+  `value`/`record_value` or `value`/`tuple_value` node, including when the
+  function's body binding references that value directly. At each visited
+  node the walk follows, in the order they
   occur in a pre-order traversal of that node's `body` term (members, then
   arguments, left to right), each `reference` leaf whose target is a local
-  `expression` node of any form, and it visits that node next; it follows no
-  other reference, so a `value` node (a literal or a parameter), a `function`
+  `expression` node of any form or a local `value`/`record_value` or
+  `value`/`tuple_value` node, and visits that node next. For a record value,
+  component references are followed in the node's stored field order; for
+  a tuple value, in ascending position order. Each component reference leaf
+  targeting a local expression is followed just as an expression argument
+  leaf is. Composite values are walked through and are not terms. The walk
+  follows no other reference, so an atomic `value` node (a literal or a
+  parameter), a `function`
   node (the callee of a `function.call`, whose own body is not entered), a
   type node and a node of another package end the branch. A node reached
   along two references is visited twice and walked in full each time. A
@@ -6635,6 +6647,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-508 | A hyperproperty body wrapper whose slot scope holds the two slots `slot_sv_sa` and `slot_sv_sb` (FR-402 "Wrapper slot scope") and whose leaf reaches a `let`, a `forall` quantifier, a `seq` application or a `fold` application is admitted with the first binder of that form at `level` 2 (a `fold` step's accumulator at 2 and its element at 3), and with no `operator-ineligible` refusal at the form; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
 | FR-322-AC-509 | One package holding `always[0,2] holds(p)` and `always[0,3] holds(p)` over the same `p` holds two `temporal`/`formula` nodes for the two `always` applications, with paths that differ in the interval operand after `filament.op.temporal.always` (`steps:0..2` and `steps:0..3`), so both may have `ordinal` 0; the one `holds(p)` node is shared. A timed `eventually[0, 21/2]` has the operand `time:[0..10.5]`, an unbounded `always` has none, and every published fixture and vector whose formula has a bounded operator carries the operand (`steps:0..3` in the seven fixtures, `steps:0..10`, `time:[0..10.5]` and `steps:0..2` in `hybrid-node-vectors.json`). | Test (TC-233) |
 | FR-322-AC-510 | Body locations are relative and linear. In `checked-term-data-vectors.json`, BL-03's rows for the `+` node's occurrences 0 and 1 are `{up: 0, down: [0]}` and `{up: 1, down: [1]}` and its root `and` row `{up: 1, down: []}`; BL-R9, BL-01 with the second `sqrt` row's `up` set to `2` (the previous path `[0]` has one entry), refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/8/location/up`; BL-R10, BL-02 with that row written `{up: 1, down: [0]}`, which rebuilds the same path `[0]` with a larger `up` than its least form, refuses the same at the same member; BL-S5, a row location `{origin, path: []}` in the earlier form, and BL-S6, one with `up` and no `down`, are `malformed_wire` at the location. BL-D1, the package the vector's `deep_body` rule builds for `function d(x: Integer): Integer pure { x + x + ... + x }` with 100,000 `+` applications nested on the left, holds 100,000 rows whose `up` and `down` entries number at most 200,000 together, where whole paths would hold 4,999,950,000, and is admitted, the typed read returning for the `k`-th term of the walk the path of `k` zeros; BL-D2, the body `let x1 = x + 1 in let x2 = x1 + 1 in ... in x100000` of 100,000 nested `let`s, holds one row per `+` with `up` `1` and `down` `[1, 0]` after the first (`{up: 0, down: [0]}`), at most three entries per row, and is admitted with the `k`-th row's path `k` ones then a zero. | Test (TC-2090) |
+| FR-322-AC-513 | Composite values preserve the body walk and compact canonicality. In `checked-term-data-vectors.json`, BL-04 wraps BL-01's body in the first stored field `z` of a record value (followed by atomic field `a`); BL-05 wraps it in tuple position 0 (followed by an atomic position 1). Both are admitted with the two `sqrt` paths `[0, 0]` and `[0, 1]` and composition paths `[0]`; the composite values have no rows. BL-R11 writes BL-04's second `sqrt` row `{up: 2, down: [0, 1]}` instead of its least form `{up: 1, down: [1]}`, rebuilding the same path, and refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/8/location/up`. | Test |
 | FR-322-AC-511 | Hyper clause source unit. A finite-domain hyper clause `Fast` over `t in Pulse bounded 2 forall trace a forall trace b` whose body holds a `duration` bound `5 ms` typed by `example`'s source `ms` node, declared in unit `example`, which declares `Time`, `s` and `ms`, under the timestamped-event profile with the role `t` bound to `{"kind": "timestamped_event", "timestamp_unit": "ms"}`, writes its `hyperproperty` node's `claim_names` row with `source_unit` `{"authority": "agent-ix", "identity": "example"}` and its two `temporal_bindings` rows with no `source_unit`, and the reader resolves `ms` in `example` and admits the package. Each refuses at the stated place: the row without `source_unit`, `invalid_package`/`timed-node-reference` at `/claim_names/{i}`; `source_unit` naming `agent-ix/other`, not a lock source, `invalid_package`/`invalid-value` at `/claim_names/{i}/source_unit`; a `source_unit` added to a state clause's `claim_names` row, `invalid_package`/`timed-node-reference` at that row; a `source_unit` added to one of the clause's `temporal_bindings` rows, `invalid_package`/`timed-node-reference` at that row; two occurrences of the node whose rows name `example` and `acme/orders`, `invalid_package`/`timed-node-reference` at the second row; and, with `Time`, `s` and `ms` declared only by `acme/orders`, `missing_declaration`/`missing-name` at the rows' `timestamp_unit`, the reader never resolving `ms` in another unit or from the source map. | Test (TC-1890) |
 | FR-322-AC-512 | The `let` binder link. In IC-14, the `let` binding term carries `binder`, the `NodeRef` of `y`'s `value`/`parameter` node, which is among the application's `dependencies`, and the package is admitted. Each refuses `invalid_package`/`invalid-value` at the stated place: IC-14 with `binder` removed, at `/semantic_graph/nodes/{n}/body/arguments/0`; with `binder` naming a `value`/`parameter` node named `z`, at `.../arguments/0/binder`; with `binder` naming a node outside the application's `dependencies`, at the same member; with `binder` added to a binding of a node body aggregate, at that `binder`; and with the call argument retargeted to a second `value`/`parameter` node named `y` at the binder's level and another type, at that reference. IC-21, the package of `let y: Int[0, 999] = x in true` over `x: Int[0, 1000]`, whose binder the body never reads, refuses `ill_typed`/`operator-ineligible` at the `let` application, as IC-15 does. | Test (TC-2099) |
 

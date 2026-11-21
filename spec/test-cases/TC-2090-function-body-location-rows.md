@@ -16,7 +16,7 @@ location of every term of a function's body walk, that the strict reader
 admits a complete set of rows and keeps each captured path, and that it
 refuses each defect at its own locus, and that a source-model clause
 function's rows carry no check-time package in their `name`. Scope:
-FR-322-AC-490, FR-322-AC-494, FR-322-AC-510.
+FR-322-AC-490, FR-322-AC-494, FR-322-AC-510, FR-322-AC-513.
 
 ## Test Procedure
 
@@ -34,6 +34,7 @@ FR-322-AC-490, FR-322-AC-494, FR-322-AC-510.
    operation of a source object type, `SourceOwner` identity `I`) and read
    every `body_locations` row of that clause function.
 7. Read BL-01's and BL-03's row locations as `{origin, up, down}`; admit BL-R9 and BL-R10; validate BL-S5 and BL-S6 against `BodyLocation`; build BL-D1 and BL-D2 by the vector's `deep_body` rules, count their location entries, admit them and read the typed paths.
+8. Admit BL-04 and BL-05, read the paths of the applications under the record field and tuple position, and admit BL-R11.
 
 Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`
 (steps 1 to 5 and 7); FSL `tests/it/dispatch_emission.rs` (step 6).
@@ -53,3 +54,4 @@ Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`
   `invalid_package`/`invalid-value` at `/checked_term_data/body_locations`.
 - Step 6: every row's `name` begins `ix://I/`; none begins `ix://source/`.
 - Step 7: the relative locations FR-322-AC-490 and FR-322-AC-510 state, and rebuilt paths equal to the checker's; BL-R9 and BL-R10 refuse `invalid_package`/`invalid-value` at their row's `location/up`; BL-S5 and BL-S6 are `malformed_wire`; BL-D1 and BL-D2 are admitted within the stated entry counts, with the paths stated.
+- Step 8: BL-04 and BL-05 are admitted with the paths of FR-322-AC-513; the record is walked in stored `z`, `a` order and the tuple in position 0, 1 order. Their atomic components and composite values have no rows. BL-R11 refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/8/location/up`.
