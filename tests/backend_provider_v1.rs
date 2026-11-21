@@ -1819,18 +1819,18 @@ fn abstract_subject() -> Value {
     composed(&positive("derived-items-request"))["request"]["items"][2]["temporal"]["abstract_subject"].clone()
 }
 
-/// FR-368-AC-13 and AC-15: the five spellings, and an empty fairness set on a
+/// FR-368-AC-13 and AC-15: the seven spellings, and an empty fairness set on a
 /// derived item, stated independently of the vectors.
 #[trace("TC-431", "FR-368-AC-13")]
 #[trace("TC-431", "FR-368-AC-15")]
 #[trace("TC-431", "FR-368-AC-21")]
 #[test]
-fn tc_431_item_kinds_are_the_five_spellings_and_derived_items_carry_no_fairness() {
+fn tc_431_item_kinds_are_the_seven_spellings_and_derived_items_carry_no_fairness() {
     let temporal = definition("Temporal");
     let base = composed(&positive("derived-items-request"))["request"]["items"][3]["temporal"].clone();
     let fair = serde_json::json!([{"kind": "weak", "operation": "Example::Session::step", "granularity": "whole"}]);
     for (kind, derived) in [("formula", false), ("deadlock-freedom", true), ("time-lock-freedom", true),
-        ("race-freedom", true), ("refinement", false)] {
+        ("race-freedom", true), ("loop-invariant", true), ("loop-termination", true), ("refinement", false)] {
         let mut item = base.clone();
         item["item_kind"] = kind.into();
         if kind == "refinement" {
@@ -1840,7 +1840,8 @@ fn tc_431_item_kinds_are_the_five_spellings_and_derived_items_carry_no_fairness(
         item["fairness"] = fair.clone();
         assert_eq!(temporal.is_valid(&item), !derived, "{kind} with a fairness constraint");
     }
-    for kind in ["time-lock", "race", "deadlock", "refine", "Formula", "", "deadlock_freedom", "transfer"] {
+    for kind in ["time-lock", "race", "deadlock", "refine", "Formula", "", "deadlock_freedom", "transfer",
+        "loop", "loop-variant", "loop_invariant"] {
         let mut item = base.clone();
         item["item_kind"] = kind.into();
         assert!(!temporal.is_valid(&item), "{kind} is no kind");

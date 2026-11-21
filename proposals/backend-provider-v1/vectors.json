@@ -12944,6 +12944,18 @@
       ]
     },
     {
+      "name": "derived-item-kind-loop-variant",
+      "base": "derived-items-request",
+      "owner": "FR-368",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/request/items/5/temporal/item_kind",
+          "value": "loop-variant"
+        }
+      ]
+    },
+    {
       "name": "deadlock-freedom-with-fairness",
       "base": "derived-items-request",
       "owner": "FR-368",

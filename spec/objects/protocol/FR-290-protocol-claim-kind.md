@@ -40,6 +40,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-507
     type: references
+  - target: ix://agent-ix/filament-specification/FR-171
+    type: references
 ---
 # FR-290: Capability kind vocabulary
 
@@ -159,6 +161,7 @@ declaration family of the claim ("Declaration-family applicability").
 | Hybrid-model claim ([FR-193](../../functional/analysis/FR-193-analyze-continuous-hybrid-models.md)) | `temporal-satisfaction` | `temporal-trace` |
 | Derived deadlock-freedom item over a model subject ([FR-366](../../functional/temporal/FR-366-check-deadlock-freedom.md)) or a protocol subject (FR-429), `item_kind` `deadlock-freedom` ([FR-368](../../functional/temporal/FR-368-negotiate-temporal-model-check-items.md)) | `temporal-satisfaction` | `temporal-trace` |
 | Derived race-freedom item over a protocol subject (FR-438), `item_kind` `race-freedom` (FR-368) | `temporal-satisfaction` | `temporal-trace` |
+| Derived loop-invariant and loop-termination items of a protocol `repeat` with a loop proof ([FR-171](../../functional/protocol/FR-171-evaluate-dynamic-control.md)), `item_kind` `loop-invariant` and `loop-termination` (FR-368) | `temporal-satisfaction` | `temporal-trace` |
 
 A scalar operation application is an application in a function body whose
 operation identity has one of the prefixes `filament.op.integer` (FR-044,
@@ -224,11 +227,13 @@ the item's kind. When the item carries an `item_kind` other than `formula`
 | `deadlock-freedom` | `temporal-trace` |
 | `time-lock-freedom` | `temporal-trace` |
 | `race-freedom` | `temporal-trace` |
+| `loop-invariant` | `temporal-trace` |
+| `loop-termination` | `temporal-trace` |
 | `refinement` | `relation-claim` |
 
 This holds whatever the derived item's anchor node is: a deadlock-freedom or
-race-freedom item anchored on a `protocol`/`protocol_clause` node is
-`temporal-trace`.
+race-freedom item anchored on a `protocol`/`protocol_clause` node, and a
+loop item anchored on a `protocol`/`control` node, is `temporal-trace`.
 
 Every other item takes the family of the checked-package node its `claim`
 names, by the node's tag and `semantic_form` (FR-322) and its occurrence role:
