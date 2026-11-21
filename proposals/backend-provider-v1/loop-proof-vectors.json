@@ -1334,6 +1334,184 @@
       "op": "add",
       "path": "/semantic_graph/operand_rows/-",
       "value": []
+    },
+    {
+      "op": "add",
+      "path": "/source_map/-",
+      "value": {
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded"
+          ]
+        },
+        "ordinal": 0,
+        "regions": [
+          {
+            "end": 84,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 83
+          }
+        ],
+        "role": "declaration"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/source_map/-",
+      "value": {
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved"
+          ]
+        },
+        "ordinal": 0,
+        "regions": [
+          {
+            "end": 85,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 84
+          }
+        ],
+        "role": "declaration"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/source_map/-",
+      "value": {
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded",
+            "Step"
+          ]
+        },
+        "ordinal": 0,
+        "regions": [
+          {
+            "end": 86,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 85
+          }
+        ],
+        "role": "declaration"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/source_map/-",
+      "value": {
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded",
+            "Limit"
+          ]
+        },
+        "ordinal": 0,
+        "regions": [
+          {
+            "end": 87,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 86
+          }
+        ],
+        "role": "declaration"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/source_map/-",
+      "value": {
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved",
+            "Step"
+          ]
+        },
+        "ordinal": 0,
+        "regions": [
+          {
+            "end": 88,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 87
+          }
+        ],
+        "role": "declaration"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/source_map/-",
+      "value": {
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved",
+            "Limit"
+          ]
+        },
+        "ordinal": 0,
+        "regions": [
+          {
+            "end": 89,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            },
+            "start": 88
+          }
+        ],
+        "role": "declaration"
+      }
     }
   ],
   "positive": [

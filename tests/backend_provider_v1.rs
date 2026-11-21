@@ -109,6 +109,38 @@ fn loop_package() -> Value {
     package
 }
 
+/// One exact fixture occurrence resolves one mapping with nonempty regions
+/// under the fixture's locked source identity, independently of schema shape.
+fn occurrence_source_regions<'a>(
+    package: &'a Value,
+    node_id: &Value,
+    occurrence: &Value,
+) -> Option<&'a Value> {
+    let mut rows = package.get("source_map")?.as_array()?.iter().filter(|row| {
+        row["node_id"] == *node_id
+            && row["role"] == occurrence["role"]
+            && row["ordinal"] == occurrence["ordinal"]
+    });
+    let row = rows.next()?;
+    if rows.next().is_some() {
+        return None;
+    }
+    let regions = row.get("regions")?;
+    let region_rows = regions.as_array()?;
+    if region_rows.is_empty() {
+        return None;
+    }
+    let sources = package.get("lock")?.get("sources")?.as_array()?;
+    for region in region_rows {
+        if !sources.contains(region.get("source")?)
+            || region.get("start")?.as_u64()? >= region.get("end")?.as_u64()?
+        {
+            return None;
+        }
+    }
+    Some(regions)
+}
+
 fn registry() -> jsonschema::Registry<'static> {
     jsonschema::Registry::new()
         .add(
@@ -1868,6 +1900,7 @@ fn tc_431_item_kinds_are_the_seven_spellings_and_derived_items_carry_no_fairness
 /// Native producer evaluation remains the compiler's qualification obligation.
 #[trace("TC-431", "FR-368-AC-26")]
 #[trace("TC-431", "FR-368-AC-17")]
+#[trace("TC-431", "FR-322-AC-13")]
 #[test]
 fn tc_431_loop_items_follow_their_proof_bearing_repeat_anchors() {
     let package = loop_package();
@@ -1891,6 +1924,22 @@ fn tc_431_loop_items_follow_their_proof_bearing_repeat_anchors() {
     let nodes = package["semantic_graph"]["nodes"]
         .as_array()
         .expect("nodes");
+    let mut occurrence_count = 0;
+    for node in nodes {
+        for occurrence in node["occurrences"].as_array().expect("occurrences") {
+            occurrence_count += 1;
+            assert!(
+                occurrence_source_regions(&package, &node["node_id"], occurrence).is_some(),
+                "fixture occurrence has one mapped source region: {} {occurrence}",
+                node["node_id"]
+            );
+        }
+    }
+    assert_eq!(
+        package["source_map"].as_array().expect("source map").len(),
+        occurrence_count,
+        "the fixture source map covers every occurrence exactly once"
+    );
     let sequence = nodes
         .iter()
         .find(|node| {
@@ -1968,6 +2017,15 @@ fn tc_431_loop_items_follow_their_proof_bearing_repeat_anchors() {
             item["claim"]["occurrence"],
             serde_json::json!({"role": "declaration", "ordinal": 0})
         );
+        assert!(
+            occurrence_source_regions(
+                &package,
+                &item["claim"]["node"],
+                &item["claim"]["occurrence"]
+            )
+            .is_some(),
+            "loop claim {index} resolves its exact occurrence and source region"
+        );
         assert_eq!(item["temporal"]["fairness"], serde_json::json!([]));
         assert!(item["temporal"].get("max_depth").is_none());
         assert_eq!(
@@ -1987,6 +2045,22 @@ fn tc_431_loop_items_follow_their_proof_bearing_repeat_anchors() {
             );
         }
     }
+    let bounded = &items[4]["claim"];
+    let mut missing = package.clone();
+    let rows = missing["source_map"].as_array_mut().expect("source map");
+    let row_index = rows
+        .iter()
+        .position(|row| {
+            row["node_id"] == bounded["node"]
+                && row["role"] == bounded["occurrence"]["role"]
+                && row["ordinal"] == bounded["occurrence"]["ordinal"]
+        })
+        .expect("bounded repeat's mapped occurrence");
+    rows.remove(row_index);
+    assert!(
+        occurrence_source_regions(&missing, &bounded["node"], &bounded["occurrence"]).is_none(),
+        "removing the bounded loop's mapping breaks claim resolution"
+    );
 }
 
 /// Producer-side settlement expectations have no provider request to encode.
