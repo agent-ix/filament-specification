@@ -6052,8 +6052,13 @@ holds:
   - `candidate` — a `reference` to the `value`/`parameter` node the
     declaration's own name binds inside the block and the objective: its
     `name` the declaration's name, its `level` `0`, and its `semantic_type`
-    `D`'s node for a value synthesis and `G`'s node for a plan synthesis,
-    whose members FR-800 lists;
+    `D`'s node for a value synthesis and the generated plan-record type node
+    for a state-model or hybrid plan synthesis, whose members
+    [FR-800](../../functional/analysis/FR-800-define-the-plan-and-goal-model.md)
+    lists. The plan candidate is not typed by `G`; the `grammar` binding
+    still references the actual `G` node (`model`/`object_type` or
+    `hybrid`/`hybrid_model`, respectively). "Plan-record type" below defines
+    the referenced record and its applicable extensions;
   - `objective` — the empty aggregate when the declaration has no objective;
     otherwise `aggregate{[binding "direction" = literal text, binding
     "expression" = reference, binding "text" = literal text]}`: `direction`
@@ -6080,6 +6085,59 @@ holds:
   is how a request names the declaration from the package alone; no other
   carrier table exists for it. FR-290 gives the node no declaration family,
   so it derives no verification item and no premise slot (FR-807).
+
+**Plan-record type.** The producer emits the plan record and its supporting
+state, step and arguments records using the existing `composite_type`/`record`
+form: an aggregate body with one named binding referencing each field's type
+node. These are generated declared records, not model object-type nodes.
+They carry generated `declaration`s, the source unit's `SourceOwner` and
+`declaration` occurrences source-mapped within the generating synthesis
+declaration.
+The ordinary "Structural node identity", "Owner member schema", dependency
+and source-map rules apply, including declaration paths and producer-assigned
+ordinals; this rule reserves no name, path or package literal for a plan
+record. Supporting types are emitted when referenced, under their existing
+node-form rules, with their ordinary declaration identity rows where required.
+
+The candidate's `semantic_type` is the exact reference identifying the plan
+record. A reader resolves that reference and checks the referenced record's
+field bindings and their type references as follows; it never finds a record
+by a display name or substitutes another record with equal fields:
+
+- The required plan fields are `length` of builtin `Integer`, `initial` and
+  `final` referencing the same model-state record type, and `steps` of
+  `Sequence` of the step-record type. These fields have required presence.
+- For a state-model plan, the step record has required fields `index` of
+  builtin `Integer`,
+  `operation` of the model's operation enum, `arguments` of the arguments
+  record type, and `before` and `after` referencing the same state type as
+  the plan's `initial` and `final`. The arguments record's fields carry
+  the declared operation parameter names and types; a field absent for an
+  operation is optional in the shared arguments record.
+- For a state-model plan, the state record represents the whole model state
+  of `G`: one sequence
+  field per model population, named by that population, whose element record
+  carries that population's object-type attributes, and direct attribute
+  fields of `G` with their declared types and presence. A direct attribute
+  already represented by a population field is not repeated. The same state
+  type is used at all four state positions above.
+- These records have exactly the members of
+  [FR-800](../../functional/analysis/FR-800-define-the-plan-and-goal-model.md)
+  for the selected model, with the applicable timed and probabilistic
+  extensions of FR-808 and FR-809. A hybrid plan uses the same record forms
+  with [FR-819](../../functional/analysis/FR-819-plan-over-hybrid-models.md)'s
+  extensions: `elapsed` is the exact sum of dwells in the model's time unit,
+  the step's `delay` carries its dwell and `operation` its transition target
+  mode. The state type represents that hybrid model's state, rather than a
+  state-model object type. Extension field types are those the owning
+  requirement specifies; no field is typed by guessing its name.
+
+The field bindings follow the generated record declarations' order under
+the ordinary record rules; the plan check constrains their names, presence
+and types, without imposing another fixed field order. A plan candidate
+whose referenced type fails these requirements takes the existing
+`invalid_package`/`invalid-value` refusal at the `candidate` binding in
+reader step 3 below. A value-synthesis candidate remains typed by `D`.
 
 The reader visits every `claim`/`synthesis_request` node in ascending
 node-id order as the body step after the schedulability step, and for one
@@ -6539,7 +6597,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-464 | `hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }`, under the lock's event-position selection and with role `t` bound to `{"kind": "event_position", "sequence_authority": "obs"}`, has two rows keyed by its `claim`/`hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t` and that configuration, and is admitted. Removing the `b` row refuses `invalid_package`/`timed-node-reference` at the node's body; a row whose `trace` is `c` refuses at that row's `trace`; a second row whose `clock_name` is `u` refuses at `/temporal_bindings/1/clock_name`; a `fixed_sample` row refuses at that row's `clock/kind`. | Test (TC-2028) |
 | FR-322-AC-465 | FR-322-AC-457's package with a second `claim` occurrence on the `AtMostTwo` node, whose `claim_names` row carries the `NotAboveThree` name, `qualified_name` and `declaration_region` (a derived conjunction node naming a contributing clause), is admitted, and `NotAboveThree` resolves to the row on its own node, the node whose declaration set `{NotAboveThree}` is strictly contained in the other node's `{AtMostTwo, NotAboveThree}`, never to the row on that other node. The same package with a second `claim` occurrence on the `NotAboveThree` node, under the same name and `declaration_region` (one declaration with two occurrences, as a step relation's `declaration` and `claim` occurrences are), is admitted, and `NotAboveThree` resolves to its least `claim` row. That second row renamed `Other` refuses `invalid_package`/`invalid-value` at its `/claim_names/{i}/name`. Two rows of one `qualified_name` with different `declaration_region`s still refuse `ambiguous_declaration`/`ambiguous-name` (FR-322-AC-458). A name whose two nodes have declaration sets that do not nest (`{NotAboveThree, B}` and `{AtMostTwo, NotAboveThree}`) refuses `ambiguous_declaration`/`ambiguous-name` at its last row's `/claim_names/{i}/qualified_name`, naming its first and last rows. | Test (TC-2035) |
 | FR-322-AC-466 | A hyper clause's body wrapper has no `temporal_clause_names` row, and its `claim`/`hyperproperty` node has one `claim_names` row per `claim` occurrence, carrying the clause's name, `qualified_name` and the whole hyper declaration's `declaration_region`. A `temporal_clause_names` row whose `declaration` is a body wrapper refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/{i}/declaration`. A `claim_names` row and a `temporal_clause_names` row with one `name` refuse `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name`, even when their `declaration_region`s are equal. | Test (TC-2036) |
-| FR-322-AC-467 | Over `type Digit = Int[0, 9];`, `synthesis Pick using p grammar Digit domain Digit satisfies { Pick * Pick = 49 };` is one `claim`/`synthesis_request` node whose path is `["Pick"]`, with one `declaration` occurrence, `semantic_type` the `scalar_type`/`boolean` node, and a body of exactly `grammar` and `domain` (both the `Digit` node), `candidate` (a `value`/`parameter` node named `Pick` at level `0` typed `Digit`), `objective` the empty aggregate, `satisfies` (the block's root) and `symmetry` `identity`; its `dependencies` are the three nodes `Digit`, the candidate and the block root, and one `claim_names` row names it `Pick`. With `minimize Pick` the `objective` binding is `direction` `minimize`, `expression` the candidate node and `text` `Pick`. A second declaration `Pick2` with the same grammar, domain and block is a second node. | Test (TC-2037) |
+| FR-322-AC-467 | Over `type Digit = Int[0, 9];`, `synthesis Pick using p grammar Digit domain Digit satisfies { Pick * Pick = 49 };` is one `claim`/`synthesis_request` node whose path is `["Pick"]`, with one `declaration` occurrence, `semantic_type` the `scalar_type`/`boolean` node, and a body of exactly `grammar` and `domain` (both the `Digit` node), `candidate` (a `value`/`parameter` node named `Pick` at level `0` typed `Digit`), `objective` the empty aggregate, `satisfies` (the block's root) and `symmetry` `identity`; its `dependencies` are the three nodes `Digit`, the candidate and the block root, and one `claim_names` row names it `Pick`. With `minimize Pick` the `objective` binding is `direction` `minimize`, `expression` the candidate node and `text` `Pick`. A second declaration `Pick2` with the same grammar, domain and block is a second node. For plan synthesis `Reach` over `Config::ConfigVersion` with domain `Lengths`, `grammar` references the actual `ConfigVersion` `model`/`object_type` node, `domain` references the `Lengths` `bounded_domain`/`integer_range` node, and `candidate` references the `value`/`parameter` node named `Reach` at level `0`, whose `semantic_type` references the generated FR-800 plan-record type node; the reader admits the package and returns that same candidate and plan-record type reference, grammar, domain, objective and block. Retyping the plan candidate to the `ConfigVersion` grammar node refuses `invalid_package`/`invalid-value` at the `candidate` binding. | Test (TC-2037) |
 | FR-322-AC-468 | Fed to the reader, each edit of `Pick`'s node refuses with the code at the locus stated: `domain` and `grammar` swapped in order, `invalid_semantic_graph` at the body; `symmetry` `lexicographic`, `invalid_package`/`invalid-value` at that literal; `direction` `least`, `invalid_package`/`invalid-value` at that literal; `grammar` referencing a `temporal`/`temporal_clause` node, `ill_typed`/`operator-ineligible` at the `grammar` binding; `candidate` named `Other`, `invalid_package`/`invalid-value` at the `candidate` binding; `satisfies` referencing an Integer-typed node, `ill_typed`/`non-boolean-root` at the `satisfies` binding; `domain` and the candidate retyped to the builtin `Integer`, `unsupported_projection`/`unbounded-extent` at the `domain` binding naming `Integer`; the `claim_names` row removed, `invalid_package`/`invalid-value` at `/claim_names`. | Test (TC-2037) |
 | FR-322-AC-469 | Over FR-154-AC-51's package, the fields typed `Flag`, `Count`, `Name`, `Reading` and `Sample` have the element types `Boolean`, `Integer`, `String`, `Float64` and `Float32` with those natives' `scalar_type` nodes and no node of the value type, a value of `Count` and an `Integer` compare under `Integer` equality, and the fields typed `Memo`, `Ratio` and `Amount` have no type, so a read of `memo` refuses `ill_typed`/`operator-ineligible`; a tuple position typed `Ratio` refuses `invalid_model_binding`/`malformed-declaration` at the position as one typed `Rational` does; the field typed `Watch` is a `Clock` member by the Clock row, and a `reference` whose `target` is `Watch` is `Reference<Clock>`. | Test (TC-2048) |
 | FR-322-AC-470 | A consumer that holds a SHA-256 integrity digest of a package's exact bytes for a foreign interface (FSL's evaluator, for its filament-observation package selection) writes it to no document or file FSL writes, uses it as no package identity or version, and never decides package sameness by it: two packages whose JSON values are equal member by member are the same package, and the reader's and the comparison's answers are unchanged when the consumer's digest is removed. | Test (TC-2050) |
@@ -6579,6 +6637,31 @@ is carried by two `protocol` node forms.
 | FR-322-AC-510 | Body locations are relative and linear. In `checked-term-data-vectors.json`, BL-03's rows for the `+` node's occurrences 0 and 1 are `{up: 0, down: [0]}` and `{up: 1, down: [1]}` and its root `and` row `{up: 1, down: []}`; BL-R9, BL-01 with the second `sqrt` row's `up` set to `2` (the previous path `[0]` has one entry), refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/8/location/up`; BL-R10, BL-02 with that row written `{up: 1, down: [0]}`, which rebuilds the same path `[0]` with a larger `up` than its least form, refuses the same at the same member; BL-S5, a row location `{origin, path: []}` in the earlier form, and BL-S6, one with `up` and no `down`, are `malformed_wire` at the location. BL-D1, the package the vector's `deep_body` rule builds for `function d(x: Integer): Integer pure { x + x + ... + x }` with 100,000 `+` applications nested on the left, holds 100,000 rows whose `up` and `down` entries number at most 200,000 together, where whole paths would hold 4,999,950,000, and is admitted, the typed read returning for the `k`-th term of the walk the path of `k` zeros; BL-D2, the body `let x1 = x + 1 in let x2 = x1 + 1 in ... in x100000` of 100,000 nested `let`s, holds one row per `+` with `up` `1` and `down` `[1, 0]` after the first (`{up: 0, down: [0]}`), at most three entries per row, and is admitted with the `k`-th row's path `k` ones then a zero. | Test (TC-2090) |
 | FR-322-AC-511 | Hyper clause source unit. A finite-domain hyper clause `Fast` over `t in Pulse bounded 2 forall trace a forall trace b` whose body holds a `duration` bound `5 ms` typed by `example`'s source `ms` node, declared in unit `example`, which declares `Time`, `s` and `ms`, under the timestamped-event profile with the role `t` bound to `{"kind": "timestamped_event", "timestamp_unit": "ms"}`, writes its `hyperproperty` node's `claim_names` row with `source_unit` `{"authority": "agent-ix", "identity": "example"}` and its two `temporal_bindings` rows with no `source_unit`, and the reader resolves `ms` in `example` and admits the package. Each refuses at the stated place: the row without `source_unit`, `invalid_package`/`timed-node-reference` at `/claim_names/{i}`; `source_unit` naming `agent-ix/other`, not a lock source, `invalid_package`/`invalid-value` at `/claim_names/{i}/source_unit`; a `source_unit` added to a state clause's `claim_names` row, `invalid_package`/`timed-node-reference` at that row; a `source_unit` added to one of the clause's `temporal_bindings` rows, `invalid_package`/`timed-node-reference` at that row; two occurrences of the node whose rows name `example` and `acme/orders`, `invalid_package`/`timed-node-reference` at the second row; and, with `Time`, `s` and `ms` declared only by `acme/orders`, `missing_declaration`/`missing-name` at the rows' `timestamp_unit`, the reader never resolving `ms` in another unit or from the source map. | Test (TC-1890) |
 | FR-322-AC-512 | The `let` binder link. In IC-14, the `let` binding term carries `binder`, the `NodeRef` of `y`'s `value`/`parameter` node, which is among the application's `dependencies`, and the package is admitted. Each refuses `invalid_package`/`invalid-value` at the stated place: IC-14 with `binder` removed, at `/semantic_graph/nodes/{n}/body/arguments/0`; with `binder` naming a `value`/`parameter` node named `z`, at `.../arguments/0/binder`; with `binder` naming a node outside the application's `dependencies`, at the same member; with `binder` added to a binding of a node body aggregate, at that `binder`; and with the call argument retargeted to a second `value`/`parameter` node named `y` at the binder's level and another type, at that reference. IC-21, the package of `let y: Int[0, 999] = x in true` over `x: Int[0, 1000]`, whose binder the body never reads, refuses `ill_typed`/`operator-ineligible` at the `let` application, as IC-15 does. | Test (TC-2099) |
+
+### FR-322-AC-467
+
+The plan-synthesis case uses the admitted `example/config-version` domain
+package and this complete source unit; `Lengths` is the declared finite
+length domain, and the constant goal keeps the negative case independent
+of candidate field-projection typing:
+
+```fsl
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+model Config = "example/config-version";
+type Lengths = Int[0, 3];
+synthesis Reach using p grammar Config::ConfigVersion domain Lengths
+  satisfies { true };
+```
+
+Its objective is the empty aggregate and its block root has Boolean type.
+Read-back preserves the exact candidate reference and its referenced
+`composite_type`/`record` plan type, including the FR-800 field schema and
+the ordinary generated-record identity, ownership and source-map rules of
+"Plan-record type" above. It does not substitute a record with the same
+display name or field list. TC-2037 constructs the wrong-grammar-type
+candidate with valid structural keys and references so the expected defect
+is the synthesis reader's candidate-type check.
 
 ## Dependencies
 
