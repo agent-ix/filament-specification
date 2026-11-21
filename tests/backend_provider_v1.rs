@@ -14,7 +14,7 @@ use std::collections::BTreeSet;
 
 use ix_trace_rs::trace;
 use filament_verification_contracts::jcs_canonicalize;
-use serde_json::Value;
+use serde_json::{Value, json};
 
 #[path = "support/operand_slots.rs"]
 mod operand_slots;
@@ -802,6 +802,179 @@ fn tc_431_adverse_vectors_are_refused() {
             "{name} is refused at {patched}, not elsewhere: {locations:?}"
         );
     }
+}
+
+/// The exhaustive exception admits only a value-free vacuous certificate.
+#[trace("TC-431", "FR-331-AC-60")]
+#[test]
+fn tc_431_exhaustive_certificate_is_only_conditional_vacuous() {
+    let result_schema = definition("Result");
+    let document = composed(&positive("exhaustive-vacuous-conditional-outcome"));
+    let whole = validator();
+    assert!(
+        whole.is_valid(&document),
+        "published vacuous outcome is admitted"
+    );
+    let adverse = parsed(VECTORS)["adverse"]
+        .as_array()
+        .expect("adverse vectors")
+        .iter()
+        .find(|vector| vector["name"] == "exhaustive-with-nonvacuous-certificate")
+        .expect("published non-vacuous certificate adverse vector")
+        .clone();
+    let mut refused = document.clone();
+    assert_eq!(apply(&mut refused, &adverse["patch"][0]), Ok(()));
+    assert!(
+        !whole.is_valid(&refused),
+        "published non-vacuous certificate is refused"
+    );
+    let original = document["results"][0].clone();
+    assert!(
+        result_schema.is_valid(&original),
+        "vacuous certificate is admitted"
+    );
+    let certificate = original["certificate"].clone();
+    let certificate_schema = definition("ProbabilityCertificate");
+    for (member, payload) in [
+        ("ranking", json!([{"state": "AQ", "rank": 1}])),
+        (
+            "policy",
+            json!([{"state": "AQ", "choice": {"type": "reset"}}]),
+        ),
+        (
+            "components",
+            json!([{"value": {"numerator": "1", "denominator": "2"}, "gain": {"numerator": "1", "denominator": "3"}, "bias": []}]),
+        ),
+    ] {
+        for payload in [payload, json!([])] {
+            let mut result = original.clone();
+            result["certificate"][member] = payload;
+            assert!(
+                certificate_schema.is_valid(&result["certificate"]),
+                "{member} is well shaped before the exhaustive restriction"
+            );
+            assert!(
+                !result_schema.is_valid(&result),
+                "vacuous exhaustive certificate forbids {member}, even empty"
+            );
+        }
+    }
+    let mut other_kind = original.clone();
+    other_kind["kind"] = json!("refinement");
+    assert!(
+        !result_schema.is_valid(&other_kind),
+        "vacuous certificate is confined to probabilistic results"
+    );
+    other_kind
+        .as_object_mut()
+        .expect("result object")
+        .remove("certificate");
+    assert!(
+        result_schema.is_valid(&other_kind),
+        "ordinary exhaustive results of another kind remain admitted"
+    );
+    let mut valued = original.clone();
+    valued["certificate"]["values"] =
+        json!([{"state": "AQ", "value": {"numerator": "0", "denominator": "1"}}]);
+    assert!(
+        !result_schema.is_valid(&valued),
+        "vacuous certificate carries no values"
+    );
+    let mut without_certificate = original.clone();
+    without_certificate
+        .as_object_mut()
+        .expect("result object")
+        .remove("certificate");
+    assert!(
+        result_schema.is_valid(&without_certificate),
+        "ordinary exhaustive result needs no certificate"
+    );
+    for mut result in [original.clone(), without_certificate] {
+        result["evidence"] = json!({});
+        assert!(
+            !result_schema.is_valid(&result),
+            "exhaustive evidence is always refused"
+        );
+    }
+    let mut exact = certificate.clone();
+    exact
+        .as_object_mut()
+        .expect("certificate object")
+        .remove("conditional");
+    exact["kind"] = json!("exact");
+    for conditional in [
+        json!({"mode": "ratio", "numerator": exact, "denominator": exact}),
+        json!({"mode": "optimum", "post": exact, "reset": exact}),
+        json!({}),
+        json!({"mode": "unknown"}),
+        json!({"mode": "vacuous", "denominator": exact}),
+    ] {
+        let mut result = original.clone();
+        result["certificate"]["conditional"] = conditional;
+        assert!(
+            !result_schema.is_valid(&result),
+            "non-vacuous or malformed conditional is refused: {result}"
+        );
+    }
+    let mut missing = original.clone();
+    missing["certificate"]
+        .as_object_mut()
+        .expect("certificate object")
+        .remove("conditional");
+    assert!(
+        !result_schema.is_valid(&missing),
+        "conditional member is required"
+    );
+    for basis in [
+        json!({"type": "bounded-complete", "depth": 0}),
+        json!({"type": "inductive", "depth": 0}),
+        json!({"type": "reduced", "reductions": [{"reduction": "copy-swap", "parameters": {"classes": [["t1", "t2"]]}, "row": "HP-2 with swappable variables"}]}),
+        json!({"type": "witnessed", "sources": [{"type": "explored"}]}),
+        json!({"type": "bounded-proof", "checks": 1}),
+    ] {
+        let mut result = original.clone();
+        result["basis"] = basis;
+        let mut bare = result.clone();
+        bare.as_object_mut()
+            .expect("result object")
+            .remove("certificate");
+        assert!(
+            result_schema.is_valid(&bare),
+            "other basis is well shaped: {bare}"
+        );
+        assert!(
+            !result_schema.is_valid(&result),
+            "other basis still forbids certificates: {result}"
+        );
+        bare["evidence"] = json!({});
+        assert!(
+            !result_schema.is_valid(&bare),
+            "other basis still forbids evidence: {bare}"
+        );
+    }
+    let mut result = original;
+    result["certificate"] = exact;
+    result["basis"] = json!({"type": "exact-value", "value": {"numerator": "0", "denominator": "1"}, "reductions": []});
+    assert!(
+        result_schema.is_valid(&result),
+        "ordinary exact value remains admitted"
+    );
+    for value in [
+        json!(null),
+        json!(0),
+        json!({"numerator": "0", "denominator": "0"}),
+    ] {
+        result["basis"]["value"] = value;
+        assert!(
+            !result_schema.is_valid(&result),
+            "exact value requires a Rational: {result}"
+        );
+    }
+    result["basis"]
+        .as_object_mut()
+        .expect("basis object")
+        .remove("value");
+    assert!(!result_schema.is_valid(&result), "exact value is required");
 }
 
 /// The request's `package` is the unpadded base64url of the checked package's

@@ -16,7 +16,8 @@ set only after recomputing the fair end components itself, accepts the
 conditions, and checks a finite-horizon measure certificate against the
 payoff it computes from each decided state's key.
 
-Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15, FR-412-AC-16.
+Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15, FR-412-AC-16,
+FR-412-AC-17, FR-412-AC-18, FR-412-AC-19, FR-412-AC-20.
 
 ## Test Procedure
 
@@ -44,6 +45,35 @@ Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15, FR-412-AC-16.
    holds(delivered) over [0, 2]` certificate.
 8. Over the `fast`/`slow` variant at level 0.5, offer a `lower` shifted
    certificate that names only the initial state, at value 0.
+9. Over an active finite-window fraction measure whose terminal model
+   state satisfies its predicate and whose remaining window is nonzero,
+   offer otherwise valid upper/minimum and lower/maximum certificates at
+   value 1, with remaining-window ranks where required and no policy row.
+   Its undecided continuation has only terminal stutter advancing the monitor.
+10. At a checked undecided state with two PostState choices of one operation whose recomputed
+    action values are `1/4` and `3/4`, offer upper/minimum bounds `1/2`
+    and `1/8` without policy rows. Offer lower/maximum `1/2` without a row,
+    first with rank progress under the `3/4` action, then without it while
+    only the `1/4` action has rank progress.
+    Inspect the selected rebuilt action in the checker-local acceptance
+    report's derived selected policy, defined by
+    [FR-412](../objects/interfaces/FR-412-probability-certificate.md).
+    For lower certificates check only named
+    undecided states, with unnamed successors at their existing least value.
+11. Use distinct operations `low` and `high` with unambiguous
+    TransitionIdentity hints and action values `1/4` and `3/4`. For the
+    upper/minimum bound `1/2`, supply a hint for `high`, then a nonexistent
+    operation. On a variant with both operation values `3/4` and rank
+    progress under only `high`, offer lower/maximum `1/2` with a hint for
+    `low`. Also supply a hint ambiguous between step 10's PostState choices.
+12. In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and
+    finite-horizon measure (FSL FR-1043) profiles, remove the `policy` member
+    or one row from otherwise valid certificates and check the rebuilt
+    satisfying action. Retain step 1's fair-minimum exact no-policy cases.
+    Outside those profiles, offer otherwise valid `exact` certificates under
+    minimum and maximum, including otherwise valid `optimum` `post` parts,
+    with full required coverage, without `policy`, then with one required
+    state's choice removed. Keep older conditional `reset` coverage unchanged.
 
 ## Expected Results
 
@@ -60,3 +90,15 @@ Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15, FR-412-AC-16.
 - Step 7: accepted with initial value `5/12`.
 - Step 8: `inequality-fails` at the initial state (unnamed successors at
   `−1/2`).
+- Step 9: both accepted; the checker-local acceptance report's derived selected policy reports
+  terminal stutter at each checked undecided state, without a fabricated operation.
+- Step 10: accepted with the first satisfying action in canonical
+  product-action order; `inequality-fails`; accepted; `rank-broken`.
+- Step 11: `inequality-fails`; `malformed` at `policy`; `rank-broken`;
+  `malformed` at `policy` for the ambiguous hint.
+  A present hint is never replaced by another satisfying action.
+- Step 12: in the three named profiles, accepted exactly when a rebuilt
+  action meets all profile per-state conditions, with step 1's no-policy
+  outcomes unchanged. Outside those profiles, accepted with full required
+  coverage, then `malformed` at the member-only locus `{"member": "policy"}`
+  without the member or a required choice; even for `post`, no `part` is added.
