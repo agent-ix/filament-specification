@@ -19,7 +19,7 @@ Verify that a reader admits the optional `protocol_correlation_occurrences`
 member of `protocol-correlation-vectors.json` over complete published packages
 and refuses each mutation with the stated code, cause and locus, in the single
 row pass and the coverage pass of FR-831, and that a producer and a consumer meet
-their obligations. Scope: FR-831-AC-1 to FR-831-AC-12, FR-322-AC-514 and
+their obligations. Scope: FR-831-AC-1 to FR-831-AC-12, FR-322-AC-516 and
 FR-466-AC-20. Every case names a complete package of `packages` (the base
 `fixtures/protocol-node-base.json` plus RFC 6902 `ops`, or a complete fixture
 file) and an `edit` that adds the member; no projection stands in for a package.

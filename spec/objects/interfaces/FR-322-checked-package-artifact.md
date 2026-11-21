@@ -4,6 +4,8 @@ title: "Immutable checked-package artifact"
 type: FR
 object: value_object
 relationships:
+  - target: ix://agent-ix/filament-specification/FR-491
+    type: references
   - target: ix://agent-ix/filament-specification/FR-610
     type: references
   - target: ix://agent-ix/filament-specification/interface_004
@@ -158,7 +160,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | refinement_step_rows | absent exactly when no relation/refinement node has a steps entry; else a nonempty array |
 | checked_term_data | optional closed carrier; absent means its five arrays are empty |
 | temporal_clause_names | absent exactly when the graph has no temporal/temporal_clause node; see Field sources |
-| claim_names | absent exactly when the graph has no state/state_clause, relation/refinement or claim node other than a claim/value_validity node; see Field sources |
+| claim_names | absent exactly when the graph has no state/state_clause, relation/refinement, correspondence/component_composition or claim node other than a claim/value_validity node; see Field sources |
 | protocol_correlation_occurrences | optional array (FR-831); absent means the authored correlation provenance is unavailable, never empty; present is complete, and `[]` only when every eligible control occurrence has an empty `related`; outside every identity preimage |
 | schedulability_claims | optional; when present a non-empty array of {declaration, occurrence} |
 | operation_effects | optional; absent means effects are unavailable, not empty |
@@ -1035,7 +1037,8 @@ A frame body refusal, meaning-join or canonical-order
 - `declaration` — `{qualified_name}`, the name a named, source-declared node
   introduces, with the identifier-path grammar. It is carried exactly by
   a `scalar_type`, `composite_type`, `bounded_domain`, `function`, `model`,
-  `protocol`, `claim`, `extension` or `hybrid` node, or a `value` node other than an `enum_value`, that
+  `protocol`, `claim`, `extension` or `hybrid` node, a
+  `correspondence`/`component_composition` node, or a `value` node other than an `enum_value`, that
   has a `declaration` source occurrence. A builtin or anonymous type reached
   only through `type` occurrences, an expression, a let value and every other
   node must not carry it, and a producer never invents a name.
@@ -1147,8 +1150,11 @@ A frame body refusal, meaning-join or canonical-order
   source-document identity. The role `generated` is the role
   of every occurrence of a *compiler-derived node*, a node the compiler adds
   that no source text declares and that derives from exactly one declaration
-  node, its *owner*, and of the per-obligation occurrences a refinement owner
-  carries on its own node ("Refinement step occurrences" below). Its ordinal is the node's position among the derived
+  node, its *owner*, of the per-obligation occurrences a refinement owner
+  carries on its own node ("Refinement step occurrences" below), and of the
+  per-member occurrences a composition declaration carries on its own node
+  ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md),
+  "Composition member occurrences"). For a compiler-derived node, its ordinal is the node's position among the derived
   nodes of that owner, in the owner's total order (for a refinement owner
   deriving one node per step row, FR-375's `steps` declaration order), and its source
   region, when it has one, is the region of the source row it derives from. An occurrence may name
@@ -1651,7 +1657,8 @@ A frame body refusal, meaning-join or canonical-order
 - `claim_names` — the declared name and alias-free qualified path of every
   claim-bearing declaration that is not a temporal clause: each
   `state`/`state_clause` node (an invariant, precondition or postcondition
-  state clause), each `relation`/`refinement` node and each `claim` node (a
+  state clause), each `relation`/`refinement` node, each
+  `correspondence`/`component_composition` node and each `claim` node (a
   state-graph, hyperproperty, probabilistic or other non-temporal claim)
   other than a `claim`/`value_validity` node (FR-825), which no source
   declaration introduces and which has no name. The
@@ -5002,7 +5009,7 @@ filament-contract-ir's.
 
 ### Claim declaration names
 
-A state clause, a refinement and a non-temporal claim are named by the
+A state clause, a refinement, a component composition and a non-temporal claim are named by the
 source that declares them, and an analyze or replay request names the claim
 it asks about by that name. The graph does not carry the name for every such
 node: a `state`/`state_clause` node is an application node identified by its
@@ -5021,7 +5028,7 @@ holds no claim-bearing node is unchanged, and the member is added beside the
 existing rows.
 
 `claim_names` is absent when the graph has no `state`/`state_clause`,
-`relation`/`refinement` or `claim` node other than a `claim`/`value_validity`
+`relation`/`refinement`, `correspondence`/`component_composition` or `claim` node other than a `claim`/`value_validity`
 node (a compiler-derived requirement record that no source declaration
 introduces and no request names, FR-825), and otherwise is a non-empty array
 with one row for every `declaration` or `claim` occurrence through which a
@@ -5055,6 +5062,29 @@ region, a `NodeRef` path, a requirement label or the clause body. Rows are
 unique by (`declaration`, `occurrence`) and sorted by structural `NodeRef` and
 then occurrence key, the order of `temporal_clause_names`. The package writer
 (S8) writes the member from the checked unit's declarations.
+
+**Composition declaration names.** A
+`correspondence`/`component_composition` node SHALL carry its declared
+composition name in `declaration.qualified_name` and exactly one
+`claim_names` row, keyed to its `declaration` occurrence at ordinal 0. The
+row's `qualified_name` SHALL equal the node's
+`declaration.qualified_name`, and its `name` SHALL be that path's last
+segment. Its `declaration_region` SHALL be the whole composition
+declaration, equal to the single region of that declaration occurrence.
+The node's `node_id.path` SHALL equal this declaration path under
+"Structural node identity": a top-level `compose Sys` has path `["Sys"]`,
+not a derived correspondence path. No other `correspondence` form becomes
+eligible for `declaration` or `claim_names` under this rule.
+
+A consumer SHALL resolve a composition by these admitted names. For
+default source-order selection, the consumer SHALL order composition
+declarations by their `declaration_region` source's position in
+`lock.sources`, then start byte, then end byte. The consumer SHALL NOT
+derive a composition name from a structural path, expression-origin label
+or source text. The member coordinates in
+[FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)
+give the source order of the composition's members separately from this
+declaration order.
 
 **Rows of one declaration.** Names are unique per source declaration, not
 per row. One declaration can introduce several occurrences: a step relation
@@ -5094,7 +5124,8 @@ is not a non-negative integer, as `malformed_wire` at that member. The reader
 visits rows in array order and checks each in full before the next:
 
 1. A `declaration` that names no node of the graph, or a node that is not a
-   `state`/`state_clause`, `relation`/`refinement` or `claim` node, or that
+   `state`/`state_clause`, `relation`/`refinement`,
+   `correspondence`/`component_composition` or `claim` node, or that
    is a `claim`/`value_validity` node (FR-825: no source declaration
    introduces it), is *dangling* and refuses `invalid_package`/`invalid-value` at
    `/claim_names/{i}/declaration`.
@@ -5105,7 +5136,10 @@ visits rows in array order and checks each in full before the next:
    `invalid_package`/`invalid-value` at `/claim_names/{i}/qualified_name`; a
    `relation`/`refinement` row whose `name` differs from its node's
    `body.name` (FR-322-AC-200) refuses the same code and cause at
-   `/claim_names/{i}/name`.
+   `/claim_names/{i}/name`. A `correspondence`/`component_composition`
+   row whose `qualified_name` differs from its node's
+   `declaration.qualified_name` refuses the same code and cause at
+   `/claim_names/{i}/qualified_name`.
 4. A key that repeats an earlier row refuses
    `invalid_package`/`conflicting-definition` at the later row; a row out of
    canonical order refuses `invalid_package`/`invalid-value` at the later row.
@@ -5141,7 +5175,11 @@ So every `temporal_clause_names` row and every `claim_names` row SHALL carry
 `declaration_region`: exactly one `SourceRegion`, the half-open UTF-8 byte
 interval of the whole source declaration that introduced that occurrence,
 under the same source-document identity as the occurrence's `source_map`
-region. The package writer (S8) writes it from the checked declaration's span.
+region. A composition row also SHALL equal its declaration occurrence's
+single region, rather than merely contain it; a mismatch refuses
+`invalid_package`/`invalid-value` at
+`/claim_names/{i}/declaration_region` in the same region-check step. The
+package writer (S8) writes it from the checked declaration's span.
 The region is provenance, like `refinement_step_rows`: it is not a
 node-identity input, changes no `node_id` and no node,
 and is no digest or hash input (FR-201). A layout change inside a declaration
@@ -6657,7 +6695,9 @@ is carried by two `protocol` node forms.
 | FR-322-AC-513 | Composite values preserve the body walk and compact canonicality. In `checked-term-data-vectors.json`, BL-04 references BL-01's body in both stored record fields `z`, then `a`; BL-05 references that body in both tuple positions 0, then 1. Both are admitted with eighteen rows: each application's first component visit pairs with occurrence 0, `term_ordinal` 0, and its second with occurrence 0, `term_ordinal` 1. In component `c` (0 or 1), the two `sqrt` paths are `[c, 0]` and `[c, 1]`, followed by composition paths `[c]`; the composite values have no rows. The first `sqrt` of component 1 follows the last composition of component 0, using `{up: 1, down: [1, 0]}` from `[0]`, never resetting the previous path. BL-R11 changes only BL-04's second `sqrt` row in component 0 to `{up: 2, down: [0, 1]}` instead of its least form `{up: 1, down: [1]}`, rebuilding the same path, and refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/16/location/up`. | Test |
 | FR-322-AC-511 | Hyper clause source unit. A finite-domain hyper clause `Fast` over `t in Pulse bounded 2 forall trace a forall trace b` whose body holds a `duration` bound `5 ms` typed by `example`'s source `ms` node, declared in unit `example`, which declares `Time`, `s` and `ms`, under the timestamped-event profile with the role `t` bound to `{"kind": "timestamped_event", "timestamp_unit": "ms"}`, writes its `hyperproperty` node's `claim_names` row with `source_unit` `{"authority": "agent-ix", "identity": "example"}` and its two `temporal_bindings` rows with no `source_unit`, and the reader resolves `ms` in `example` and admits the package. Each refuses at the stated place: the row without `source_unit`, `invalid_package`/`timed-node-reference` at `/claim_names/{i}`; `source_unit` naming `agent-ix/other`, not a lock source, `invalid_package`/`invalid-value` at `/claim_names/{i}/source_unit`; a `source_unit` added to a state clause's `claim_names` row, `invalid_package`/`timed-node-reference` at that row; a `source_unit` added to one of the clause's `temporal_bindings` rows, `invalid_package`/`timed-node-reference` at that row; two occurrences of the node whose rows name `example` and `acme/orders`, `invalid_package`/`timed-node-reference` at the second row; and, with `Time`, `s` and `ms` declared only by `acme/orders`, `missing_declaration`/`missing-name` at the rows' `timestamp_unit`, the reader never resolving `ms` in another unit or from the source map. | Test (TC-1890) |
 | FR-322-AC-512 | The `let` binder link. In IC-14, the `let` binding term carries `binder`, the `NodeRef` of `y`'s `value`/`parameter` node, which is among the application's `dependencies`, and the package is admitted. Each refuses `invalid_package`/`invalid-value` at the stated place: IC-14 with `binder` removed, at `/semantic_graph/nodes/{n}/body/arguments/0`; with `binder` naming a `value`/`parameter` node named `z`, at `.../arguments/0/binder`; with `binder` naming a node outside the application's `dependencies`, at the same member; with `binder` added to a binding of a node body aggregate, at that `binder`; and with the call argument retargeted to a second `value`/`parameter` node named `y` at the binder's level and another type, at that reference. IC-21, the package of `let y: Int[0, 999] = x in true` over `x: Int[0, 1000]`, whose binder the body never reads, refuses `ill_typed`/`operator-ineligible` at the `let` application, as IC-15 does. | Test (TC-2099) |
-| FR-322-AC-514 | The optional top-level `protocol_correlation_occurrences` member (FR-831) sits beside `claim_names`, is closed to rows `{control, occurrence, canonical_index, alias, source_ordinal}` and is read last among the carriers, after every protocol node and the `checked_term_data` records. Its absence means the authored correlation provenance is unavailable, not empty; its presence is complete. It is outside every identity preimage and adds no node, node id, `source_map` entry, `checked_term_data` row or `protocol_locations` row, and it is not in the identity sidecar; a package that carries it differs in bytes from one that does not, so a whole-package byte comparison (for example FR-322-AC-473's golden comparison) is scoped to packages without it. The `protocol_locations` `related <k>` end sites and the source-map key are unchanged; the member's source context is the whole admitted `source_map` entry of the full key `(control, declaration, ordinal)` with all its regions, never the occurrence alone; a control carries no `owner`, so no owner coherence applies to a row; and a dependency control is read from its own package's member and entry. Its charges are made on the strict read's one `NativeJoinBudget` of filament-contract-ir FR-358 (FR-322 defines no budget counter; FR-831 takes the work and read-storage counters from FR-358), interleaved with a single row pass and a metered coverage pass, with no new limit field. | Test (TC-2113) |
+| FR-322-AC-514 | An admitted package for top-level `compose Sys` carries `declaration.qualified_name` `["Sys"]`, `node_id.path` `["Sys"]`, one declaration occurrence at ordinal 0 and one `claim_names` row with `name` `Sys`, `qualified_name` `["Sys"]` and the exact whole declaration region. Strict readback resolves bare `Sys` to that occurrence without source text or expression-origin names. Two compositions whose node-id order reverses their declaration-region source order retain source-order default selection by locked source-unit position and byte interval. Another correspondence form remains ineligible for declaration metadata and a claim-name row. | Test |
+| FR-322-AC-515 | Mutate AC-514's otherwise admitted composition package independently: remove its naming row and omit `claim_names` when no other claim-bearing node remains; give the row a different `qualified_name` with matching last-segment `name`; change its declaration region to a larger containing interval; and introduce a distinct declaration with the same qualified name. The missing row/member refuses `invalid_package`/`invalid-value` at `/claim_names`; the differing path refuses the same at the row's `/qualified_name`; the larger interval refuses the same at its `/declaration_region`; the distinct duplicate name refuses `ambiguous_declaration`/`ambiguous-name` at the later row's `/qualified_name`. Existing source-map and declared-node path checks remain in force. | Test |
+| FR-322-AC-516 | The optional top-level `protocol_correlation_occurrences` member (FR-831) sits beside `claim_names`, is closed to rows `{control, occurrence, canonical_index, alias, source_ordinal}` and is read last among the carriers, after every protocol node and the `checked_term_data` records. Its absence means the authored correlation provenance is unavailable, not empty; its presence is complete. It is outside every identity preimage and adds no node, node id, `source_map` entry, `checked_term_data` row or `protocol_locations` row, and it is not in the identity sidecar; a package that carries it differs in bytes from one that does not, so a whole-package byte comparison (for example FR-322-AC-473's golden comparison) is scoped to packages without it. The `protocol_locations` `related <k>` end sites and the source-map key are unchanged; the member's source context is the whole admitted `source_map` entry of the full key `(control, declaration, ordinal)` with all its regions, never the occurrence alone; a control carries no `owner`, so no owner coherence applies to a row; and a dependency control is read from its own package's member and entry. Its charges are made on the strict read's one `NativeJoinBudget` of filament-contract-ir FR-358 (FR-322 defines no budget counter; FR-831 takes the work and read-storage counters from FR-358), interleaved with a single row pass and a metered coverage pass, with no new limit field. | Test (TC-2113) |
 
 ### FR-322-AC-467
 

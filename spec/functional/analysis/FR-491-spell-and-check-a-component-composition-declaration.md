@@ -174,13 +174,81 @@ admitted cycle. Their items and slot keys (FR-492) are:
   their first `component` name, then `clause` node id, then the second
   member's; `environment` by `name`. Out of order refuses
   `invalid_semantic_graph`.
-- **semantic_type**, **dependencies**, **occurrences** and **node_id** as
-  FR-490's node, the dependencies being every `subject`, `clause`, `context`
-  and `assumption` target. Each member keeps its own source region, so each
-  slot's source correspondence resolves to the member that produced it.
+- **semantic_type** and **dependencies** as FR-490's node, the dependencies
+  being every `subject`, `clause`, `context` and `assumption` target.
+- **declaration** — `{qualified_name}`, the composition's declared
+  package-local name, with the naming row required by
+  [FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md)
+  "Composition declaration names". Its **node_id** uses this declaration
+  path under FR-322's structural-id rule.
+- **occurrences** and **source_map** — the declaration and member
+  occurrences below, replacing FR-490's declaration-only occurrence rule
+  for this node form.
+
+### Composition member occurrences
+
+The composition node SHALL carry one `declaration` occurrence at ordinal 0,
+whose `source_map` entry holds exactly one region: the whole composition
+declaration, from `compose` to its closing byte.
+
+The composition node SHALL carry one `generated` occurrence per body
+member on its own node. The member sequence is the concatenation of the
+body arrays `components`, `guarantees`, `relies`,
+`liveness_dependencies`, `supplies` and `environment`, in that order,
+preserving each array's canonical order. A member's zero-based position
+in that sequence SHALL be its `generated` ordinal. An empty array
+contributes no position. These ordinals identify body members, not their
+source order; a member's ordinal can change when a different member is
+inserted earlier in the canonical sequence.
+
+The package writer SHALL capture each member's exact authored region
+before canonical body ordering. The corresponding `generated` entry's
+`regions` SHALL contain exactly that one region, under the declaration's
+source reference and strictly within its declaration region. Distinct
+member regions SHALL be nonempty and pairwise nonoverlapping. The writer SHALL
+carry no other occurrence on the composition node. The entry is admitted
+producer provenance; a reader SHALL NOT parse source text or an
+expression-origin label to recover or verify it.
+
+Within each member kind, the consumer SHALL recover authored order from
+these member regions, by start byte then end byte, before deriving slots
+or applying source-order static checks. Canonical body-array order SHALL
+NOT substitute for member source order. A component-guarantee, rely,
+liveness-dependency or environment slot SHALL use the region of the
+member that produces it. A fairness slot SHALL reuse the region of the
+first member that derives its premise, visiting guarantees in authored
+order, then relies in authored order, then liveness dependencies in
+authored order; a premise already derived is not derived again. A
+fixed-point slot SHALL use the region of the first cycle edge in
+authored order. Several slots derived from one member reuse its admitted
+coordinate; the declaration region is not a substitute member region.
+
+The V2 schema SHALL admit the generic occurrence-role vocabulary on a
+`component_composition` node; the exact role, ordinal and region constraints
+above are reader checks, so a well-shaped wrong role reaches the located
+semantic refusal below. The schema's declaration-presence rule SHALL apply
+to this form: a declaration occurrence requires its `declaration` metadata.
+Other correspondence forms retain their existing declaration exclusions
+and occurrence-role restrictions.
+
+After FR-322's generic source-map checks, the reader SHALL examine the
+composition node's entries in `source_map` order and refuse the first
+invalid entry as `invalid_package`/`invalid-value` at `/source_map/{i}`:
+a role or ordinal outside the declaration/member pairs above; a
+`regions` array with other than one region; or a member region whose
+source differs from the declaration's, whose interval is empty or not
+strictly within that declaration region, or which overlaps an earlier
+member entry's region. When all entries pass, the reader SHALL refuse a
+missing required declaration or member occurrence as
+`invalid_package`/`invalid-value` at `/source_map`. Generic duplicate-key,
+unknown-node and total-occurrence/source-map checks retain their
+existing refusals and precedence. The member-coordinate check SHALL
+run after the node's identity, dependency, body-term and canonical-order
+checks and before static checks 2 to 5.
 
 The reader runs this step after FR-490's guarantee step, with FR-490's
-order of checks, then static checks 2 to 5 above on the read values; a
+order of checks and the member-coordinate check above, then static checks
+2 to 5 above on the read values; a
 target in another package resolves through FR-322's dependency packages.
 Reading the emitted bytes back yields the same declaration, the same four
 separate lists and the same slots with the same identities.
@@ -195,6 +263,8 @@ separate lists and the same slots with the same identities.
 | FR-491-AC-4 | A mutual `depends` pair, with no selected profile declaring FR-176's lattice, checks; its composition item refuses `invalid_model_binding`/`malformed-declaration` naming both guarantees, and the unit's other items are derived unchanged. Under a profile declaring the lattice, the pair derives one fixed-point slot. | Test (TC-985) |
 | FR-491-AC-5 | Under `interface`, the declaration derives one FR-331 `composition` request item whose `premises` member holds the four lists as FR-492 slots, and no planner-local item. | Test (TC-985) |
 | FR-491-AC-6 | The emitted `correspondence`/`component_composition` node reads back to the same declaration, lists and slot identities; each slot's source correspondence resolves to its member; a node whose `relies` are out of order refuses `invalid_semantic_graph`. | Test (TC-985) |
+| FR-491-AC-7 | A `compose Sys` whose two guarantees are authored in the reverse of their canonical body order carries a declaration occurrence at ordinal 0 and one generated occurrence per member, keyed by the canonical concatenation above, and passes the V2 schema. Each reads back with its own literal authored region, and its component-guarantee slots retain authored guarantee order and those exact regions. A fairness premise derived first by the first authored guarantee reuses that guarantee's coordinate. Reordering the node's source-map entries changes neither member attribution nor slot order. | Test |
+| FR-491-AC-8 | Independently mutate AC-7's otherwise valid package, retaining V2-schema and generic source-map validity: remove a member's occurrence and matching entry together; change both to an ordinal equal to the member count; change a member region to another locked source, outside the declaration interval, equal to the declaration interval, empty, overlapping an earlier member's region, or two nonoverlapping regions; and replace the member's role in both its occurrence and entry with `expression`. The missing pair refuses `invalid_package`/`invalid-value` at `/source_map`; each other mutation refuses the same code and cause at that entry's `/source_map/{i}`. No member inherits the declaration's region, and no source text is recompiled. | Test |
 
 ## Dependencies
 
