@@ -30,7 +30,9 @@ false` extents both without a candidate and containing an exact matching
 candidate. Repeat an equal required
 slot, and supply multiple missing slots in an order different from their
 canonical key order. Also make membership incomplete and remove the selected
-closure before slot evaluation, each with a selected required slot. Reverse relationship endpoints and independently mutate each FR-287
+closure before slot evaluation, each with a selected required slot. Combine
+missing closure with an identity rebind and with a reversed-endpoint candidate.
+Reverse relationship endpoints and independently mutate each FR-287
 endpoint member, relationship kind/declaration key, domain package identity. Offer a relationship declaration key that is not in the
 checked package. Repeat a delivery receipt and substitute its message,
 delivery or receive identity in each other position.
@@ -41,12 +43,20 @@ O1 is selected only by its declared relation. Missing is incomplete;
 conflicting and multiple distinct matches refuse; exact replay is idempotent.
 A matching candidate together with an incompatible endpoint candidate is conflicting;
 ambiguous requires two distinct matching candidates and no incompatible
-candidate. Reversed direction is `InvalidReference` before slot evaluation.
+candidate. An explicitly partial relationship extent contributes an
+`IncompleteRelationshipExtent{required}` reason to the existing incomplete
+admission result, even with a matching candidate unless a known conflict
+refuses; it does not add a fifth correlation outcome. Reversed direction is
+`InvalidReference` during reference construction, before resolver admission. An identity rebind submitted with
+missing closure returns the earlier `MissingClosure` unchanged; the resolver
+does not check the rebind. A reversed-endpoint construction failure submitted
+with missing closure still refuses `InvalidReference` before the resolver.
 Equal required slots are one set member; missing-slot reasons appear in the
 canonical key order when slot evaluation completes, while a refusal is returned
 alone and an incomplete result from earlier admission is returned unchanged before
-slot evaluation and no relationship slot is evaluated. An unlisted or complete-empty extent with no candidate is
-missing; an incomplete extent is incomplete with or without a match unless a
+slot evaluation and no relationship slot is evaluated. An unlisted or
+complete-empty extent with no candidate is `missing`; an incomplete extent
+adds `IncompleteRelationshipExtent{required}` with or without a match unless a
 known conflict refuses. Exact replay with the same identity and facts is one
 candidate; identity rebind refuses, and identical facts with different
 identities are distinct candidates.
