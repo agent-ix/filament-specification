@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify plan synthesis over a state model, policy, objectives and the optimality and closure certificates. Scope: FR-650-AC-1 to FR-650-AC-9.
+Verify plan synthesis over a state model, policy, objectives and the optimality and closure certificates. Scope: FR-650-AC-1 to FR-650-AC-10.
 
 ## Test Procedure
 
@@ -20,6 +20,10 @@ Verify plan synthesis over a state model, policy, objectives and the optimality 
 3. Add the policy `always holds(c.value != 4)`, a policy naming no clause and the policy `eventually holds(c.value = 3)`, which is evaluated on each completed plan.
 4. Through the certificate tamper seam, remove the `double` successor from entry 0 of the goal-8 `potential` certificate; stop a run by its work limit after a plan is found; through the plan substitution seam, report `double` five times.
 5. Through the certificate tamper seam, remove one successor from entry 0 of the goal-21 closure certificate; send plan requests carrying `replay_plan`, `tamper` and `engines`.
+6. Run the malformed identity and equal-post-state/different-result
+   vectors of TC-1955 steps 10 and 11 through the two library seams
+   specified in FR-650, using the supplied step records, recorded
+   post-states and internal certificate successor claims defined there.
 
 ## Expected Results
 
@@ -28,3 +32,8 @@ Verify plan synthesis over a state model, policy, objectives and the optimality 
 - Step 3: the plan avoids value 4 and replays with the policy holding; the missing policy refuses as stated, and the `eventually` policy gives `optimal` `inc, inc, inc, double`.
 - Step 4: the certificate rejected with `rule` `closure`, `entry` 0, result `feasible` `inc, double, double`, `uncertified`; `incomplete` with its best plan; a method failure, exit 30, naming step 4 `double`, no outcome document.
 - Step 5: `incomplete` with `certificate-rejected{rule: closure, entry: 0}` and plan `null`; each seam member refuses `unknown-member` at its pointer, exit 20.
+- Step 6: malformed substituted step data gives method failure exit `30`,
+  the first failing step/operation/member, no outcome document. Both valid
+  equal-post-state ordinals replay as different step/result identities;
+  duplicating one identity in place of the other internal certificate
+  claim rejects `closure` at that entry and applies the existing demotion.

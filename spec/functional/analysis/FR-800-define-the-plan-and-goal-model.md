@@ -80,6 +80,29 @@ invoked operation's name as a value of the model's operation enum),
 (the states around the step) and, for a timed model, `delay` (the exact
 delay before the invocation).
 
+A native state-model step SHALL also carry its operation's receiver when
+the operation has one, absent otherwise, and the selected `outcome_ordinal`
+exactly when the invocation has multiple distinct `(result, post-state)` outcomes. The
+receiver is an identity-preserving FR-181 object reference. The ordinal
+is the zero-based position in FR-804's canonical outcome order, not a raw
+frame-trial index. An invocation with a single admitted outcome has no
+ordinal member; one with no admitted outcome supplies no step. Replay and
+certificate verification bind the receiver and selected outcome as
+FR-805 specifies. Nondeterministic invocations are supported.
+
+The generated step type represents receivers through FR-322's union of
+the distinct declared `Reference<T>` types, optional exactly when some
+operations are receiverless. An operation selects its receiver's case;
+there is no implicit conversion between receiver types.
+[FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md#synthesis-request-nodes)
+owns shared-argument normalization and its support boundary; FR-806 owns
+the refusal catalog.
+
+For hybrid plans,
+[FR-819](FR-819-plan-over-hybrid-models.md#from-a-schedule-to-an-fr-193-item)
+overrides this table's timed quantity typing and owns the trajectory-local
+semantics. FR-322 defines the generated type nodes.
+
 ### The goal
 
 - The goal SHALL be the `satisfies` block, a total Boolean expression over
@@ -95,11 +118,12 @@ delay before the invocation).
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-800-AC-1 | Over a model with object type `Server` (population `n1`, `n2`) and operation `drain(s: Reference<Server>)`, a plan of length 2 binds `s` to `n1` and then `n2`, and `Reach.steps` reads two records with `index` 0 and 1, `operation` `drain`, `arguments.s` `n1` and `n2`, and `before`/`after` states whose keys equal the runtime's states. | Test (TC-1950) |
+| FR-800-AC-1 | Over a model with object type `Server` (population `n1`, `n2`) and operation `drain(s: Reference<Server>)`, a plan of length 2 binds `s` to `n1` and then `n2`, and `Reach.steps` reads two records with `index` 0 and 1, `operation` `drain`, `arguments.s` `n1` and `n2`, and `before`/`after` states whose keys equal the runtime's states. Every receiver-bearing record also carries that invocation's actual runtime receiver, through the generated source receiver union and FR-805's typed wire reference. | Test (TC-1950) |
 | FR-800-AC-2 | An operation `spawn` that creates a `Server` `n3` makes `n3` a candidate argument of every later step and of no earlier one. | Test (TC-1950) |
 | FR-800-AC-3 | With `domain` `Int[0, 3]` and a goal true in the initial state, the result is the empty plan with `length` 0. | Test (TC-1950) |
 | FR-800-AC-4 | A goal `Reach.final.value / Reach.final.divisor = 2` that is undefined on a plan whose final `divisor` is 0 does not reach the goal on that plan. | Test (TC-1950) |
 | FR-800-AC-5 | An operation parameter of type `Integer` with no bounds refuses as FR-806 states, naming the parameter. | Test (TC-1950) |
+| FR-800-AC-6 | TC-1950's native vectors expose the exact receiver and canonical ordinal; singleton ordinals and receiverless receivers are absent. FR-650's plan-substitution seam checks the supplied identity and recorded post-state, with method failure exit `30` on a malformed/inconsistent step; its internal certificate checker rejects malformed, duplicated or missing claimed edges under `closure`. A valid alternate ordinal with an equal post-state is another valid step identity, not by itself a replay defect. | Test (TC-1950) |
 
 ## Dependencies
 

@@ -6168,9 +6168,54 @@ by a display name or substitutes another record with equal fields:
   builtin `Integer`,
   `operation` of the model's operation enum, `arguments` of the arguments
   record type, and `before` and `after` referencing the same state type as
-  the plan's `initial` and `final`. The arguments record's fields carry
-  the declared operation parameter names and types; a field absent for an
-  operation is optional in the shared arguments record.
+  the plan's `initial` and `final`.
+- The shared arguments record compares each repeated parameter name's
+  normalized semantic parameter type under FR-154/FR-151. In this record
+  typing, optional `X` and required `Option<X>` have the same `Option<X>`
+  type; required `X` and optional `X` differ. This does not change whether
+  a native call may omit an argument: the original operation's omission
+  flag remains authoritative. A name missing from another operation makes
+  the shared field optional under the ordinary record rules. If normalized
+  types disagree, S3 reports `unsupported_construct`/`not-yet-implemented`
+  at the synthesis's `grammar` name, exit `20`, before producing a checked
+  package or reading a plan request, as FR-806 states. The diagnostic's
+  existing message names the parameter and both conflicting operations;
+  FR-272's existing cause retains the feature, owning synthesis declaration
+  and selected profile. Scan operations in declaration order and parameters
+  in parameter order; report the first new declaration differing from the
+  first earlier declaration of that name. This fixes the named pair when
+  three or more declarations conflict. The source model remains admitted;
+  no implicit widening, renaming or per-operation union is inferred.
+  The exact unbuilt feature name is
+  `parameter {parameter} has conflicting types or declared presence in operations {first_operation} and {operation}`,
+  replacing the braces with the parameter identifier and the selected
+  operation names byte for byte as declared. This existing unsupported-form
+  string is the feature retained under FR-272's cause-equivalence rule and
+  appears unchanged after the diagnostic message's ordinary prefix; it
+  introduces no additional diagnostic member. TC-2037 pins the concrete
+  feature strings for the collision vectors.
+- A state-model step's `receiver` field, when any operation has a receiver,
+  has a generated `composite_type`/`union` type under
+  [FR-440](FR-440-checked-package-union-and-case-nodes.md), with exactly one
+  single-payload case per distinct declared receiver type `Reference<T>`.
+  Case identifiers are generated unique declaration identifiers; the
+  payload type references, rather than a display name, establish the cases'
+  correspondence to receiver types. Existing generated-declaration,
+  identity, ownership and source-map rules above apply. No fixed case name
+  or union path is reserved. The field is optional exactly when the model
+  also has receiverless operations; if every operation is receiverless,
+  the step record has no receiver field. The operation selects its one
+  permitted case and receiver type, and the field is absent for a
+  receiverless invocation. FR-805's wire receiver is the case payload's
+  typed reference; constructing the source plan value injects that payload
+  into the uniquely selected case. Reader, replay and certificate checks
+  reject an operation/receiver mismatch, including a different union case
+  whose reference would be valid for another operation. Mixed receiver
+  types are supported.
+- A state-model step has an optional builtin `Integer` field
+  `outcome_ordinal`, present in a value only for a native invocation with
+  more than one distinct outcome. Its value and absence obey FR-804 and
+  FR-805; this field is not a new numeric type or a frame-trial counter.
 - For a state-model plan, the state record represents the whole model state
   of `G`: one sequence
   field per model population, named by that population, whose element record
@@ -6183,11 +6228,26 @@ by a display name or substitutes another record with equal fields:
   for the selected model, with the applicable timed and probabilistic
   extensions of FR-808 and FR-809. A hybrid plan uses the same record forms
   with [FR-819](../../functional/analysis/FR-819-plan-over-hybrid-models.md)'s
-  extensions: `elapsed` is the exact sum of dwells in the model's time unit,
-  the step's `delay` carries its dwell and `operation` its transition target
-  mode. The state type represents that hybrid model's state, rather than a
-  state-model object type. Extension field types are those the owning
-  requirement specifies; no field is typed by guessing its name.
+  schedule/enclosure semantics. Its generated `scalar_type`/`enum` of modes
+  has `ordered: false` and lists exactly the source mode identifiers of
+  the selected hybrid model's referenced mode nodes, in their declaration
+  order. The reader joins those exact mode references under FR-481. It
+  uses the existing enum body and generated nominal-node identity/ownership
+  rules. It has no
+  new node form or reserved declaration name. The step has required
+  `index` of builtin `Integer`, `operation` of that mode enum (the target
+  mode), `arguments` of the empty record type, `before` and `after` of
+  the same hybrid-state record type as `initial` and `final`, and `delay`
+  of the builtin `scalar_type`/`rational` node. The hybrid-state record has
+  `mode` of that same enum and one field per declared hybrid variable of
+  its declared type, joined through the selected hybrid model's variable
+  references. Hybrid `elapsed` references that same builtin Rational node,
+  as `dwell_grid` does. FR-819 owns the hybrid time override and
+  trajectory-local execution and proof semantics.
+  Hybrid transitions have neither receivers nor native invocation outcome
+  ordinals. Extension
+  field types are those the owning requirement specifies; no field is
+  typed by guessing its name.
 
 The field bindings follow the generated record declarations' order under
 the ordinary record rules; the plan check constrains their names, presence
@@ -6698,6 +6758,9 @@ is carried by two `protocol` node forms.
 | FR-322-AC-514 | An admitted package for top-level `compose Sys` carries `declaration.qualified_name` `["Sys"]`, `node_id.path` `["Sys"]`, one declaration occurrence at ordinal 0 and one `claim_names` row with `name` `Sys`, `qualified_name` `["Sys"]` and the exact whole declaration region. Strict readback resolves bare `Sys` to that occurrence without source text or expression-origin names. Two compositions whose node-id order reverses their declaration-region source order retain source-order default selection by locked source-unit position and byte interval. Another correspondence form remains ineligible for declaration metadata and a claim-name row. | Test |
 | FR-322-AC-515 | Mutate AC-514's otherwise admitted composition package independently: remove its naming row and omit `claim_names` when no other claim-bearing node remains; give the row a different `qualified_name` with matching last-segment `name`; change its declaration region to a larger containing interval; and introduce a distinct declaration with the same qualified name. The missing row/member refuses `invalid_package`/`invalid-value` at `/claim_names`; the differing path refuses the same at the row's `/qualified_name`; the larger interval refuses the same at its `/declaration_region`; the distinct duplicate name refuses `ambiguous_declaration`/`ambiguous-name` at the later row's `/qualified_name`. Existing source-map and declared-node path checks remain in force. | Test |
 | FR-322-AC-516 | The optional top-level `protocol_correlation_occurrences` member (FR-831) sits beside `claim_names`, is closed to rows `{control, occurrence, canonical_index, alias, source_ordinal}` and is read last among the carriers, after every protocol node and the `checked_term_data` records. Its absence means the authored correlation provenance is unavailable, not empty; its presence is complete. It is outside every identity preimage and adds no node, node id, `source_map` entry, `checked_term_data` row or `protocol_locations` row, and it is not in the identity sidecar; a package that carries it differs in bytes from one that does not, so a whole-package byte comparison (for example FR-322-AC-473's golden comparison) is scoped to packages without it. The `protocol_locations` `related <k>` end sites and the source-map key are unchanged; the member's source context is the whole admitted `source_map` entry of the full key `(control, declaration, ordinal)` with all its regions, never the occurrence alone; a control carries no `owner`, so no owner coherence applies to a row; and a dependency control is read from its own package's member and entry. Its charges are made on the strict read's one `NativeJoinBudget` of filament-contract-ir FR-358 (FR-322 defines no budget counter; FR-831 takes the work and read-storage counters from FR-358), interleaved with a single row pass and a metered coverage pass, with no new limit field. | Test (TC-2113) |
+| FR-322-AC-517 | TC-2037's shared-argument vectors admit equal normalized signatures, including optional `X` versus required `Option<X>`, without changing native argument-omission flags. Different normalized types give S3 `unsupported_construct`/`not-yet-implemented`, exit `20`, at the synthesis grammar name, no checked package or plan request; the existing diagnostic names the parameter and deterministic first conflicting operation pair and retains FR-272's declaration/profile context and the exact instantiated feature string defined above. | Test (TC-2037) |
+| FR-322-AC-518 | FR-819-AC-1's tank generates the mode enum `[Fill, Drain]` in that order; hybrid step `operation` and state `mode` reference that exact enum, `index` is `Integer`, `arguments` is an empty record, and `before`/`after`/`initial`/`final` share the trajectory-local state type with `h` of its declared type. Hybrid `delay` and `elapsed` reference the exact builtin `scalar_type`/`rational` node used by `dwell_grid`; no invented time-unit node, receiver or native invocation ordinal is present. FR-819's universal trajectory semantics and FR-193 enclosure evidence represent initial-set and parameter uncertainty. | Test (TC-2037) |
+| FR-322-AC-519 | Operations whose receivers are `Server` and `Worker` generate a receiver union with one payload case for each distinct `Reference<Server>` and `Reference<Worker>` type; an additional receiverless operation makes the field optional. Both receiver types remain supported. Operation/case mismatches or a receiver on the receiverless operation give FR-650's plan-substitution method failure (exit `30`, no outcome document), or reject the internal certificate's `closure` rule at the tampered entry. | Test (TC-2037, TC-1955) |
 
 ### FR-322-AC-467
 

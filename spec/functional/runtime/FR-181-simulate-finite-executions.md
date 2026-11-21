@@ -294,6 +294,16 @@ protocol subject's steps carry the `protocol-transition` identity of
 [FR-426](../protocol/FR-426-apply-protocol-steps.md) and are visited in the
 same order.
 
+For native state-model planning (FR-800), the runtime SHALL also make the
+admitted typed operation result and post-state pairs available to the
+planner before simulation graph-edge coalescing. A resultless operation
+has an absent result. FR-804 deduplicates and orders those pairs and uses
+their outcome ordinals for planning replay and certificates; different
+results with the same transition identity and post-state remain distinct
+planning outcomes. This is the native relation's library data, not a new
+trace wire member. The simulator's graph-edge coalescing below remains its
+own representation and is not the planner's outcome enumerator.
+
 Two successors of one parent with equal transition identities and different
 post-states are visited in ascending unsigned-lexicographic order of their
 post-states' state-key bytes. Two successors with equal transition identities
@@ -515,6 +525,7 @@ so every timed refutation has a counterexample with exact rational delays.
 | FR-181-AC-31 | A `Map<String, Int[0, 9]>` value with the entries `b` to `2` and `a` to `1`, inserted in either order, encodes as `{"entries":[{"key":{"type":"string","value":"a"},"value":{"type":"integer","value":"1"}},{"key":{"type":"string","value":"b"},"value":{"type":"integer","value":"2"}}],"type":"map"}`, and two states whose map member holds those entries inserted in two orders have equal state keys; a supplied map form with two entries whose keys are both `a` is outside the form. | Test (TC-1720) |
 | FR-181-AC-32 | A `sample` request with no bounds and no `seed` reports `max_states` 10,000,000, `max_steps` 16,777,216, `max_state_key_bytes` 16,777,216, `samples` 1 and `seed` 0, under the settings `explore.states`, `simulation.max_steps`, `identity.input_bytes` and `simulation.samples`; `max_states` 2 stops an enumeration `incomplete` `limit-reached` naming `explore.states` with value 2; `max_steps` 0 refuses `invalid_runtime_input`/`invalid-value` at its pointer, `samples` in `enumerate` mode and an unknown bound `bogus` refuse `invalid_runtime_input`/`unknown-member`, each before any state is explored. | Test (TC-2008) |
 | FR-181-AC-33 | A simulation over a subject whose declared invariant is false at a state that a reported trace reaches reports one finding naming that trace, the state's position on it, the invariant and the object, and the result keeps the outcome, traces and coverage of the same simulation with the invariant removed, with no counterexample or verdict; repeating the sampled request with the same seed gives equal findings, and a subject whose invariant holds at every reached state reports no finding. | Test (TC-2013) |
+| FR-181-AC-34 | TC-1954's `(0,S0)` and `(1,S0)` with equal invocation identity are two typed result/post-state pairs in the native planning relation before graph coalescing; planning replay and certificate checking rederive both. The simulator's existing graph may coalesce their equal transition/post-state edge without changing that planning relation, and no serialized trace result member is introduced. | Test (TC-1954) |
 
 ## Dependencies
 
