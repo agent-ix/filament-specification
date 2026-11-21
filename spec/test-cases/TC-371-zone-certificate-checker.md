@@ -66,6 +66,7 @@ The models below are defined here in full; the citation names the FSL design rec
 | ZC-30 | A schema-valid no-release closure certificate with the exact `TC-372/CtlFp` obligation identity and `Ctl.t1`, `Ctl.t2`, `Ctl.t3` demand rows, used as ZC-28’s base | Wire-valid; the strict reader refuses it when it recomputes the reachable source release |
 | ZC-29 | ZC-26 with `queue_bounds` empty | Not a `ZoneCertificate` |
 | ZC-31 | ZC-10, ZC-11 and ZC-12 each with `admitted` removed | Each is a valid `ZoneCertificate`: the wire does not name the item's form. Run through the checker, a certificate of an item other than a state-graph item without `admitted` settles `inconclusive`, `certificate-rejected` with rule `malformed` at `{member: admitted}`; the state-graph certificates of FR-418-AC-16 carry no `admitted` and are accepted over a Zeno-only graph (FSL TC-3030) |
+| ZC-32 | A no-release source certificate wire shape retaining source LU rows, an operation guard part, an empty horizon fragment, and a delay-only edge with an exact horizon constraint | Schema-valid; a negative or null guard part, an unknown horizon operator, a zero rational denominator, an unknown edge member, or a guard part on the delay edge is refused by the schema. Semantic acceptance additionally requires the independent reader to recompute the source closure, bounds and fragments. |
 
 ## Expected Results
 

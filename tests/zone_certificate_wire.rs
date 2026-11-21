@@ -356,7 +356,7 @@ fn tc_371_source_transport_preserves_fragment_and_delay_shapes() {
         .expect("source transport vectors");
     assert_eq!(cases.len(), 1);
     let document = &cases[0]["document"];
-    assert!(valid.is_valid(document), "ZC-31 source transport: {:?}", valid.iter_errors(document).collect::<Vec<_>>());
+    assert!(valid.is_valid(document), "ZC-32 source transport: {:?}", valid.iter_errors(document).collect::<Vec<_>>());
     assert!(!document["bounds"].as_array().unwrap().is_empty());
     assert_eq!(document["edges"][0]["part"], 0);
     assert_eq!(document["edges"][0]["horizon"], json!([]));
@@ -390,4 +390,3 @@ fn tc_371_source_transport_preserves_fragment_and_delay_shapes() {
         "unknown fragment fields are refused"
     );
 }
-

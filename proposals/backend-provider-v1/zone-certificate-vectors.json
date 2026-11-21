@@ -1438,7 +1438,7 @@
   ],
   "source_transport_vectors": [
     {
-      "id": "ZC-31",
+      "id": "ZC-32",
       "description": "Source-clock no-release wire shape with an original guard part, horizon fragment and delay-only edge; semantic acceptance still requires source recomputation.",
       "document": {
         "identity": {
