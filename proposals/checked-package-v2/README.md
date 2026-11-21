@@ -82,7 +82,7 @@ structures, but any external consumer receives only the contract.
   producer-witness sidecar rows of selected model unions (cases in UTF-8 order
   with authored position, sealed member, structured original keys and value types, data or
   Clock payload correspondence), over the Shape, List, Cell and Nest declarations
-  above (plus Holder). `MUW-*` positives, schema and reader refusals and
+  above (plus Holder, a unit, records and a recursive record and union as patches). `MUW-*` positives, schema and reader refusals and
   baseline-relative budget cases are published inputs and expected results only; no reader
   executes them and TC-2112 is not run.
 - `operation-effect-vectors.json` publishes the optional `operation_effects`
