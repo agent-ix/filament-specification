@@ -156,6 +156,28 @@ refusal naming the first defect by its RFC 6901 pointer.
   `{parameter, value}` pairs in parameter order and, for a timed model,
   `delay`; `plan.states` holds the `length + 1` states from the initial
   state, each as a `filament.state.snapshot/v1` object world.
+- A native state-model step carries `receiver` exactly when its operation
+  has a receiver, encoded as FR-181's typed object-reference value; a
+  receiverless step omits the member. The reference must select a live receiver of that
+  operation's declared receiver type in the pre-state.
+- A native state-model step carries `outcome_ordinal` exactly when that
+  invocation has more than one distinct `(result, post-state)` outcome
+  under FR-804. It is a zero-based JSON integer selecting that canonical outcome list. A
+  single-outcome invocation omits the member; an ordinal present for it,
+  an ordinal absent for a multiple-outcome invocation, or a negative,
+  non-integer or out-of-range ordinal is rejected by replay or certificate
+  verification. A missing required receiver, an unexpected receiver or a
+  receiver of the wrong operation type is likewise rejected. A supplied
+  offending member is the defect's locus on the existing verification
+  entry surface; these rules add no request carrier or refusal code.
+- Native replay and certificate verification SHALL bind both the exact
+  receiver and the selected outcome ordinal to the step and its post-state,
+  using FR-804's order. An invocation with no admitted outcome supplies no
+  step. The receiver and ordinal members follow the presence rules above,
+  rather than the outcome document's rule for top-level nullable members.
+  Hybrid schedules retain FR-819's enclosure validation and carry neither
+  receiver nor native invocation ordinal; these members do not enumerate
+  continuous trajectories.
 - `replay` records FR-650's native replay: `reproduced` with the step
   count, the only value a reported plan carries.
 - `certificate` carries `type` (`potential` or `closure`, or `enclosure`
@@ -232,6 +254,8 @@ which is a definite negative answer and is never success.
 | FR-805-AC-6 | Over the counter, the goal-21 `infeasible` outcome, a `plan_search.max_states` 2 `incomplete` outcome with no plan, and a hybrid `unsupported` outcome (FR-819-AC-3) each carry every member of the outcome document: `objective` with `direction`, `expression` and `value` `null`, and `plan`, `replay` and `bound` `null`; `certificate` is the accepted closure certificate with `certification` `certified` on `infeasible`, and `null` with `certification` `null` on the other two; no member is absent in any of the three. | Test (TC-1955) |
 | FR-805-AC-7 | FR-650-AC-1's outcome writes `objective.value` `{"type": "integer", "value": "3"}`; FR-810-AC-3's writes it as FR-181's unit-bearing quantity `{"type": "rational", "numerator": "60", "denominator": "1", "unit": "min"}`; FR-809-AC-2's writes `3/4` as `{"type": "rational", "numerator": "3", "denominator": "4"}`; none writes a bare JSON number. | Test (TC-1955) |
 | FR-805-AC-8 | A plan request with `limits` `{"max_steps": 1}` refuses `unknown-member` at `/limits/max_steps` and `accounting` `{"steps": 1}` at `/accounting/steps`, not FR-461-AC-4's setting refusal; carried under a host surface's `synthesis` member the same requests refuse at `/request/synthesis/limits/max_steps` and `/request/synthesis/accounting/steps`; a hybrid request's `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "2"}` is admitted as one half time unit, `dwell_grid` `1` (a JSON number) refuses `wrong-value-kind` and `{"type": "rational", "numerator": "0", "denominator": "1"}` refuses `invalid-value`, each at `/dwell_grid`; a hybrid request carrying `initial` refuses `unknown-member` at `/initial`. | Test (TC-1955) |
+| FR-805-AC-9 | TC-1955's receiver-bearing step writes `receiver` as the exact FR-181 typed reference; a receiverless step omits it. Replay and certificate verification reject a missing required receiver, an unexpected receiver, and an operation/receiver-type mismatch, rather than selecting another invocation. | Test (TC-1955) |
+| FR-805-AC-10 | In TC-1955's three-outcome invocation the steps selecting outcomes 0, 1 and 2 carry those JSON-integer `outcome_ordinal` values; omission, `-1`, `3` and a non-integer are rejected. A single-outcome step omits the member and supplying even `0` is rejected. Replay and certificate verification bind the selected ordinal to the recorded post-state. | Test (TC-1955) |
 
 ## Dependencies
 

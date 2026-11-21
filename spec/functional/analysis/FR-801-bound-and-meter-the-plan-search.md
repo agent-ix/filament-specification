@@ -54,7 +54,7 @@ FR-461 Behavior 5 with the engine name `plan_search`:
 | Member | Setting | Charged |
 | --- | --- | --- |
 | `max_states` | `plan_search.max_states` | one per distinct search node admitted (below) |
-| `max_work` | `plan_search.max_work` | one per step applied by the runtime, one per policy-monitor update, one per goal or objective evaluation, one per frontier comparison |
+| `max_work` | `plan_search.max_work` | one per native operation/receiver/arguments invocation attempted (per applied schedule step for hybrid plans), one per policy-monitor update, one per goal or objective evaluation, one per frontier comparison |
 | `max_certificate_entries` | `plan_search.max_certificate_entries` | one per certificate entry the search writes |
 | `max_check_work` | `plan_search.max_check_work` | one per certificate entry the core checker reads and one per successor it re-derives |
 | `max_state_key_bytes` | `plan_search.max_state_key_bytes` | FR-181's state-key byte limit, per key |
@@ -154,15 +154,26 @@ request alone (FR-804):
    accumulated value is strictly better (cost dominance), so equal values
    keep the earlier prefix.
 3. **Expansion.** A node's successors are generated in FR-804's step order:
-   operations in declaration order, then arguments in the canonical value
-   order of their types.
+   operations in declaration order, then receivers, then arguments in the
+   canonical value order of their types, and each invocation's distinct
+   outcomes in FR-804's `(result, post-state)` order.
 4. **Charge order.** The initial node charges one `max_states` on
    admission, then, when 0 is in `D`, one `max_work` for the goal
    evaluation and, when the goal holds, one for the objective evaluation.
-   Each successor of an expanded node then charges, in this order: one
-   `max_work` for applying the step (the precondition, the runtime's
-   post-state and its admission; a disabled step stops here and yields no
-   successor); one `max_work` per policy monitor or automaton update, in the
+   In a native state-model search, each operation/receiver/arguments
+   invocation of an expanded node charges one `max_work` before its
+   precondition or invocation evaluation, including an invocation that is
+   disabled or yields no admitted outcome. Every
+   distinct `(result, post-state)` outcome of that invocation is covered by
+   this one invocation charge; nondeterministic invocations are supported.
+   Raw frame trials rejected by the postcondition or typed state admission charge
+   evaluation accounting, not additional invocation work units. A denied
+   invocation charge performs no invocation evaluation. The complete
+   invocation outcome list is established before any outcome from it is
+   admitted to the search; an evaluation-accounting stop during its
+   enumeration stops `incomplete`, without assigning ordinals from a
+   partial list. For each admitted outcome, in canonical outcome order,
+   charge one `max_work` per policy monitor or automaton update, in the
    request's `policy` order, stopping at the first safety monitor that
    rejects; then, if a node with the same key is already admitted, one
    `max_work` for that frontier comparison and nothing more; otherwise one
@@ -176,6 +187,10 @@ request alone (FR-804):
    nodes and `work` the number of granted `max_work` units.
 
 A parallel search SHALL report the counts and the plan of this order.
+
+The native invocation rule does not enumerate FR-819's continuous hybrid
+trajectories. Hybrid plans retain their schedule/enclosure semantics and
+their per-applied-step search charge.
 
 - The exploration is *complete* when every node reachable from the initial
   node by enabled steps within `max D` steps, and admissible as a prefix
@@ -195,6 +210,8 @@ A parallel search SHALL report the counts and the plan of this order.
 | FR-801-AC-6 | `--limit planner.max_work=1` changes no plan search limit, and `--limit plan_search.max_work=1` stops the search `incomplete` naming `plan_search.max_work`. | Test (TC-1951) |
 | FR-801-AC-7 | FR-650-AC-1's request with no `limits` member writes an outcome whose `limits` is exactly `{plan_search.max_states: 10000000, plan_search.max_work: 100000000, plan_search.max_certificate_entries: 16777216, plan_search.max_check_work: 100000000, plan_search.max_state_key_bytes: 1048576}`; the same request with `limits` `{max_states: 500}` lists `plan_search.max_states` 500 and the four other defaults. `limits.max_work` 0, `-1`, `1.5` and 18446744073709551616 each refuse `invalid_runtime_input`/`invalid-value` at `/limits/max_work`, `"10"` refuses `wrong-value-kind` there, and `limits.max_steps` refuses `unknown-member` at `/limits/max_steps`, each exit `20` before any search. | Test (TC-2003) |
 | FR-801-AC-8 | Over the counter (FR-650 "The counter fixture"), `plan_search.max_states` 2 gives `incomplete` with `explored` `{states: 2, work: 6}` (initial admission and goal evaluation; `inc` applied, node `(2, 1)` admitted and its goal evaluated; `double` applied and compared with node `(2, 1)`; `inc` from `(2, 1)` applied and its admission denied) and plan `null`; `plan_search.max_work` 1 gives `incomplete` with `explored` `{states: 1, work: 1}`, the denied charge being the application of `inc` to the initial node; two runs of each give byte-identical documents. | Test (TC-1951) |
+| FR-801-AC-9 | TC-1951's invocation fixture with domain `Int[1,1]`, false goal and empty policy completes with `explored` `{states: 4, work: 5}`: one disabled invocation, one invocation admitting three distinct outcomes, and three goal evaluations. Rejected raw frame trials charge only evaluation accounting; no extra invocation work is charged per trial or outcome. | Test (TC-1951) |
+| FR-801-AC-10 | With `plan_search.max_work` 1, the same fixture stops `incomplete` with `explored` `{states: 1, work: 1}` before evaluating its second invocation; a denied evaluation-accounting charge while enumerating that invocation's outcomes instead names the accounting setting and admits no partial outcome list. | Test (TC-1951) |
 
 ## Dependencies
 

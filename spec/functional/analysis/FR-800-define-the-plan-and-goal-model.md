@@ -80,6 +80,35 @@ invoked operation's name as a value of the model's operation enum),
 (the states around the step) and, for a timed model, `delay` (the exact
 delay before the invocation).
 
+A native state-model step SHALL also carry its operation's receiver when
+the operation has one, absent otherwise, and the selected `outcome_ordinal`
+exactly when the invocation has multiple distinct `(result, post-state)` outcomes. The
+receiver is an identity-preserving FR-181 object reference. The ordinal
+is the zero-based position in FR-804's canonical outcome order, not a raw
+frame-trial index. An invocation with a single admitted outcome has no
+ordinal member; one with no admitted outcome supplies no step. Replay and
+certificate verification bind the receiver and selected outcome as
+FR-805 specifies. Nondeterministic invocations are supported.
+
+The generated step type represents receivers through FR-322's union of
+the distinct declared `Reference<T>` types, optional exactly when some
+operations are receiverless. An operation selects its receiver's case;
+there is no implicit conversion between receiver types. The shared
+arguments record requires equal static type and declared presence for
+every repeated parameter name; a disagreement reports typed `unsupported`
+before search, naming the parameter and both operations, as FR-322 states.
+Missing a parameter on another operation makes the shared field optional.
+This boundary does not change the declared parameter domains.
+
+Hybrid plans retain FR-819's schedules and enclosures. Their step `index`
+is `Integer`, `operation` is the target mode in the generated mode enum,
+`arguments` is an empty record, `before`/`after` share the hybrid-state
+record (`mode` of that enum and the declared variables' types), and
+`delay`/plan `elapsed` are exact model-unit quantities. FR-322 owns the
+existing node forms used for these generated types. Hybrid steps carry
+neither a receiver nor a native invocation ordinal; continuous
+trajectories are not enumerated as native invocation outcomes.
+
 ### The goal
 
 - The goal SHALL be the `satisfies` block, a total Boolean expression over
@@ -100,6 +129,7 @@ delay before the invocation).
 | FR-800-AC-3 | With `domain` `Int[0, 3]` and a goal true in the initial state, the result is the empty plan with `length` 0. | Test (TC-1950) |
 | FR-800-AC-4 | A goal `Reach.final.value / Reach.final.divisor = 2` that is undefined on a plan whose final `divisor` is 0 does not reach the goal on that plan. | Test (TC-1950) |
 | FR-800-AC-5 | An operation parameter of type `Integer` with no bounds refuses as FR-806 states, naming the parameter. | Test (TC-1950) |
+| FR-800-AC-6 | The native invocation vectors of TC-1950 expose the exact receiver and canonical outcome ordinal in each step; a single-outcome invocation has no ordinal, a receiverless invocation has no receiver, and replay/certificate checks reject a receiver or ordinal selecting a different edge. | Test (TC-1950) |
 
 ## Dependencies
 

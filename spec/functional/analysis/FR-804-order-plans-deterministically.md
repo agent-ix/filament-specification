@@ -41,15 +41,53 @@ Plans SHALL be ordered by these keys, the first differing key deciding:
 3. the steps, compared lexicographically from step 0. Two steps compare by
    - for a timed model, the delay, smaller first (FR-808);
    - the operation, by its declaration order in the model;
+   - the receiver, when the operation has one, by the canonical value order
+     of its object reference;
    - the arguments, parameter by parameter in declaration order, each by the
      canonical value order of its type: integers and exact numbers by value,
      enum values by declaration order, Booleans `false` before `true`, text
      by Unicode scalar sequence, records and tuples field by field, options
      with absent first, collections by their canonical element sequence, and
-     object references by the canonical order of the referenced key.
+     object references by the canonical order of the referenced key;
+   - the selected outcome's zero-based ordinal in the invocation's
+     canonical outcome list below.
 
 This order is total on distinct plans. The step order is the canonical order
 FR-650-AC-1 relies on.
+
+### Invocation outcomes
+
+A native state-model invocation is the operation, receiver (absent for a
+receiverless operation) and argument vector in parameter declaration order.
+Invocation enumeration SHALL order by operation, then receiver, then arguments as
+above. For each invocation the runtime may admit several `(result,
+post-state)` pairs. Equal pairs are coalesced by the result's FR-181
+canonical element encoding and the post-state's full canonical state key.
+The list contains the native type/frame/postcondition-admitted outcomes,
+before planner policy, goal or prefix-admissibility filtering. Those
+filters do not renumber the invocation's outcomes.
+Distinct pairs SHALL be sorted first by result in the canonical value
+order of its declared type, then by ascending unsigned-lexicographic
+post-state-key bytes. This is also their visitation order and the order
+used to assign outcome ordinals. A resultless operation has the same
+absent result for every pair, so only the post-state key orders its outcomes.
+
+At a `Float32` or `Float64` result leaf, the selected floating-point
+profile's `totalOrder` SHALL decide result order, retaining signed zeros
+and distinct NaN payloads. This rule orders invocation results; it does
+not widen supported objective families or change FR-802's NaN-objective
+rules. Other result structures use the recursive type order above.
+
+A step's identity SHALL include its invocation and selected outcome
+ordinal. FR-805 omits the wire ordinal for a single-outcome invocation,
+whose identity selects its only outcome. Rendered step names include an
+ordinal only when the invocation has more than one distinct outcome.
+Replay and certificate verification SHALL rederive the same ordered
+outcome list from the exact invocation and check the selected outcome;
+changing a receiver or an ordinal cannot silently select another edge.
+This invocation outcome list does not enumerate FR-819's continuous hybrid
+trajectories; hybrid schedule steps retain their existing delay/transition
+order and enclosure validation.
 
 ### Determinism
 
@@ -73,6 +111,8 @@ FR-650-AC-1 relies on.
 | FR-804-AC-2 | With an objective on which a 2-step plan and a 3-step plan tie, the 2-step plan is reported. | Test (TC-1954) |
 | FR-804-AC-3 | With a step `move(r: Robot, c: Cell)` the plans `move(a, c1)` and `move(b, c0)` order by `r` first (`a` before `b`), and `move(a, c0)` before `move(a, c1)` by enum declaration order of `Cell`. | Test (TC-1954) |
 | FR-804-AC-4 | The same request run with one worker and with eight gives byte-identical outcome documents, and two runs stopped by the same `plan_search.max_work` give byte-identical `incomplete` documents with the same best plan. | Test (TC-1954) |
+| FR-804-AC-5 | TC-1954's two-operation/two-receiver/Boolean-argument vector orders invocation tuples by operation, then receiver, then argument; one invocation's distinct pairs are visited in ascending result order and then unsigned-lexicographic canonical post-state-key order, irrespective of their generation order, with consecutive ordinals from 0. Equal result/post-state pairs occur once. | Test (TC-1954) |
+| FR-804-AC-6 | Under the selected IEEE profile, TC-1954's `Float32` result bits `80000000`, `00000000`, `7fc00001`, `7fc00002`, and its `Float64` result bits `8000000000000000`, `0000000000000000`, `7ff8000000000001`, `7ff8000000000002`, order as listed for an otherwise equal post-state; all four results remain distinct and NaN results do not increment `explored.nan_objectives` when the objective is `length`. | Test (TC-1954) |
 
 ## Dependencies
 

@@ -6111,9 +6111,37 @@ by a display name or substitutes another record with equal fields:
   builtin `Integer`,
   `operation` of the model's operation enum, `arguments` of the arguments
   record type, and `before` and `after` referencing the same state type as
-  the plan's `initial` and `final`. The arguments record's fields carry
-  the declared operation parameter names and types; a field absent for an
-  operation is optional in the shared arguments record.
+  the plan's `initial` and `final`.
+- The shared arguments record is constructible only when every operation
+  declaring the same parameter name agrees on its static type and declared
+  presence. Missing that name in another operation makes the shared field
+  optional; it does not reconcile two conflicting declarations. On a type
+  or presence disagreement, planning reports typed `unsupported` before
+  search, naming the parameter and both conflicting operations. Neither
+  the model's declarations nor its finite reference or enum domains are
+  changed, and no implicit widening, renaming or union is inferred.
+- A state-model step's `receiver` field, when any operation has a receiver,
+  has a generated `composite_type`/`union` type under
+  [FR-440](FR-440-checked-package-union-and-case-nodes.md), with exactly one
+  single-payload case per distinct declared receiver type `Reference<T>`.
+  Case identifiers are generated unique declaration identifiers; the
+  payload type references, rather than a display name, establish the cases'
+  correspondence to receiver types. Existing generated-declaration,
+  identity, ownership and source-map rules above apply. No fixed case name
+  or union path is reserved. The field is optional exactly when the model
+  also has receiverless operations; if every operation is receiverless,
+  the step record has no receiver field. The operation selects its one
+  permitted case and receiver type, and the field is absent for a
+  receiverless invocation. FR-805's wire receiver is the case payload's
+  typed reference; constructing the source plan value injects that payload
+  into the uniquely selected case. Reader, replay and certificate checks
+  reject an operation/receiver mismatch, including a different union case
+  whose reference would be valid for another operation. Mixed receiver
+  types are supported.
+- A state-model step has an optional builtin `Integer` field
+  `outcome_ordinal`, present in a value only for a native invocation with
+  more than one distinct outcome. Its value and absence obey FR-804 and
+  FR-805; this field is not a new numeric type or a frame-trial counter.
 - For a state-model plan, the state record represents the whole model state
   of `G`: one sequence
   field per model population, named by that population, whose element record
@@ -6126,11 +6154,25 @@ by a display name or substitutes another record with equal fields:
   for the selected model, with the applicable timed and probabilistic
   extensions of FR-808 and FR-809. A hybrid plan uses the same record forms
   with [FR-819](../../functional/analysis/FR-819-plan-over-hybrid-models.md)'s
-  extensions: `elapsed` is the exact sum of dwells in the model's time unit,
-  the step's `delay` carries its dwell and `operation` its transition target
-  mode. The state type represents that hybrid model's state, rather than a
-  state-model object type. Extension field types are those the owning
-  requirement specifies; no field is typed by guessing its name.
+  schedule/enclosure semantics. Its generated `scalar_type`/`enum` of modes
+  has `ordered: false` and lists exactly the source mode identifiers of
+  the selected hybrid model's referenced mode nodes, in their declaration
+  order. The reader joins those exact mode references under FR-481. It
+  uses the existing enum body and generated nominal-node identity/ownership
+  rules. It has no
+  new node form or reserved declaration name. The step has required
+  `index` of builtin `Integer`, `operation` of that mode enum (the target
+  mode), `arguments` of the empty record type, `before` and `after` of
+  the same hybrid-state record type as `initial` and `final`, and `delay`
+  of the exact model-time-unit quantity type. The hybrid-state record has
+  `mode` of that same enum and one field per declared hybrid variable of
+  its declared type, joined through the selected hybrid model's variable
+  references. Plan `elapsed` is the same exact quantity type, the sum of
+  dwells. Hybrid transitions have neither receivers nor native invocation
+  outcome ordinals: these records represent schedules and enclosures,
+  not an enumeration of individual continuous trajectories. Extension
+  field types are those the owning requirement specifies; no field is
+  typed by guessing its name.
 
 The field bindings follow the generated record declarations' order under
 the ordinary record rules; the plan check constrains their names, presence
@@ -6637,6 +6679,9 @@ is carried by two `protocol` node forms.
 | FR-322-AC-510 | Body locations are relative and linear. In `checked-term-data-vectors.json`, BL-03's rows for the `+` node's occurrences 0 and 1 are `{up: 0, down: [0]}` and `{up: 1, down: [1]}` and its root `and` row `{up: 1, down: []}`; BL-R9, BL-01 with the second `sqrt` row's `up` set to `2` (the previous path `[0]` has one entry), refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/8/location/up`; BL-R10, BL-02 with that row written `{up: 1, down: [0]}`, which rebuilds the same path `[0]` with a larger `up` than its least form, refuses the same at the same member; BL-S5, a row location `{origin, path: []}` in the earlier form, and BL-S6, one with `up` and no `down`, are `malformed_wire` at the location. BL-D1, the package the vector's `deep_body` rule builds for `function d(x: Integer): Integer pure { x + x + ... + x }` with 100,000 `+` applications nested on the left, holds 100,000 rows whose `up` and `down` entries number at most 200,000 together, where whole paths would hold 4,999,950,000, and is admitted, the typed read returning for the `k`-th term of the walk the path of `k` zeros; BL-D2, the body `let x1 = x + 1 in let x2 = x1 + 1 in ... in x100000` of 100,000 nested `let`s, holds one row per `+` with `up` `1` and `down` `[1, 0]` after the first (`{up: 0, down: [0]}`), at most three entries per row, and is admitted with the `k`-th row's path `k` ones then a zero. | Test (TC-2090) |
 | FR-322-AC-511 | Hyper clause source unit. A finite-domain hyper clause `Fast` over `t in Pulse bounded 2 forall trace a forall trace b` whose body holds a `duration` bound `5 ms` typed by `example`'s source `ms` node, declared in unit `example`, which declares `Time`, `s` and `ms`, under the timestamped-event profile with the role `t` bound to `{"kind": "timestamped_event", "timestamp_unit": "ms"}`, writes its `hyperproperty` node's `claim_names` row with `source_unit` `{"authority": "agent-ix", "identity": "example"}` and its two `temporal_bindings` rows with no `source_unit`, and the reader resolves `ms` in `example` and admits the package. Each refuses at the stated place: the row without `source_unit`, `invalid_package`/`timed-node-reference` at `/claim_names/{i}`; `source_unit` naming `agent-ix/other`, not a lock source, `invalid_package`/`invalid-value` at `/claim_names/{i}/source_unit`; a `source_unit` added to a state clause's `claim_names` row, `invalid_package`/`timed-node-reference` at that row; a `source_unit` added to one of the clause's `temporal_bindings` rows, `invalid_package`/`timed-node-reference` at that row; two occurrences of the node whose rows name `example` and `acme/orders`, `invalid_package`/`timed-node-reference` at the second row; and, with `Time`, `s` and `ms` declared only by `acme/orders`, `missing_declaration`/`missing-name` at the rows' `timestamp_unit`, the reader never resolving `ms` in another unit or from the source map. | Test (TC-1890) |
 | FR-322-AC-512 | The `let` binder link. In IC-14, the `let` binding term carries `binder`, the `NodeRef` of `y`'s `value`/`parameter` node, which is among the application's `dependencies`, and the package is admitted. Each refuses `invalid_package`/`invalid-value` at the stated place: IC-14 with `binder` removed, at `/semantic_graph/nodes/{n}/body/arguments/0`; with `binder` naming a `value`/`parameter` node named `z`, at `.../arguments/0/binder`; with `binder` naming a node outside the application's `dependencies`, at the same member; with `binder` added to a binding of a node body aggregate, at that `binder`; and with the call argument retargeted to a second `value`/`parameter` node named `y` at the binder's level and another type, at that reference. IC-21, the package of `let y: Int[0, 999] = x in true` over `x: Int[0, 1000]`, whose binder the body never reads, refuses `ill_typed`/`operator-ineligible` at the `let` application, as IC-15 does. | Test (TC-2099) |
+| FR-322-AC-513 | The shared-argument vectors in TC-2037 admit equal same-name type/presence signatures and lift a missing parameter to an optional shared field; a finite `Reference<Server>` versus `Int[0,1]` signature and equal `Int[0,1]` types with required versus optional presence each produce typed `unsupported` before search, naming the parameter and both operations. | Test (TC-2037) |
+| FR-322-AC-514 | FR-819-AC-1's tank generates the mode enum `[Fill, Drain]` in that order; hybrid step `operation` and state `mode` reference that exact enum, `index` is `Integer`, `arguments` is an empty record, `before` and `after` share the plan's hybrid-state record with `h` of its declared type, and `delay` and `elapsed` share its exact model-unit quantity type; there is no receiver or native invocation ordinal. | Test (TC-2037) |
+| FR-322-AC-515 | Operations whose receivers are `Server` and `Worker` generate a receiver union with one payload case for each distinct `Reference<Server>` and `Reference<Worker>` type; an additional receiverless operation makes the field optional. Both receiver types remain supported; selecting the other operation's case or supplying a receiver for the receiverless operation is rejected by the existing replay/certificate verification surface. | Test (TC-2037, TC-1955) |
 
 ### FR-322-AC-467
 

@@ -7,6 +7,12 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-468
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-322-AC-513
+    type: verifies
+  - target: ix://agent-ix/filament-specification/FR-322-AC-514
+    type: verifies
+  - target: ix://agent-ix/filament-specification/FR-322-AC-515
+    type: verifies
 ---
 
 # TC-2037: A synthesis declaration is one synthesis-request node
@@ -15,7 +21,7 @@ relationships:
 
 Verify the `claim`/`synthesis_request` node a `synthesis` declaration
 checks to, its `claim_names` row, and the reader's refusals of edited
-bodies. Scope: FR-322-AC-467 and FR-322-AC-468.
+bodies. Scope: FR-322-AC-467, FR-322-AC-468 and FR-322-AC-513 to FR-322-AC-515.
 
 ## Test Procedure
 
@@ -54,6 +60,36 @@ bodies. Scope: FR-322-AC-467 and FR-322-AC-468.
    source-map, reference or application-type failure does not satisfy this
    test's refusal oracle.
 
+6. Check the shared-arguments signatures in this table. `Server` has a
+   finite live population; all other domains are explicitly bounded. No
+   unbounded-domain defect may mask a signature conflict.
+
+   | Operations and their declared parameter signatures | Expected boundary |
+   | --- | --- |
+   | `read(s: Int[0,1])`, `write(s: Int[0,1])`, both required | one required `s` field of that exact type |
+   | same `read`, and `noop()` with no `s` | optional shared `s` of that exact type |
+   | `drain(s: Reference<Server>)`, `resize(s: Int[0,1])`, both required | unsupported, naming `s`, `drain` and `resize` |
+   | `read` and `maybeRead` both declaring `s: Int[0,1]`, required on `read` and optional on `maybeRead` | unsupported, naming `s`, `read` and `maybeRead` |
+
+   The last row states declared presence, not a new source spelling for
+   an optional operation parameter. Read an admitted shared record for
+   the first two rows, and observe the typed unsupported boundary before
+   search for the last two; do not infer a union or coercion.
+7. Read the generated plan types for FR-819-AC-1's hybrid tank, whose
+   modes are `Fill`, then `Drain`, and whose declared state variable is
+   `h`. Compare exact type references through the plan and step records,
+   the selected hybrid model's mode and variable references, and the
+   declared model-time-unit quantity type. Do not enumerate continuous
+   trajectories or invent native invocation ordinals.
+8. Read generated plan types for an operation with a `Server` receiver,
+   one with a `Worker` receiver, and one receiverless operation, with
+   finite live populations for both types. Resolve the generated receiver
+   union's payload references, not its generated case labels. Construct
+   typed source step values and wire steps for both receiver-bearing
+   operations, then supply the other operation's receiver case and a
+   receiver on the receiverless operation to the existing replay and
+   certificate verification surfaces.
+
 ## Expected Results
 
 - Step 1: one node, path `["Pick"]`, one `declaration` occurrence, body
@@ -78,3 +114,21 @@ bodies. Scope: FR-322-AC-467 and FR-322-AC-468.
   reader step 3 refuses `invalid_package`/`invalid-value` at the
   `candidate` binding. No source compilation or runtime search is used as
   evidence for this edited-package refusal.
+- Step 6: the first two rows have the tabled exact field type/presence;
+  the last two report typed `unsupported` before search with the named
+  parameter and both operations. The source model's declarations remain
+  admitted; no unsupported case is reported as an ill-typed goal or an
+  infeasible search, and no guessed shared record is exposed.
+- Step 7: the generated mode enum has exactly `Fill`, `Drain` in that
+  order. Step `operation` and state `mode` reference it exactly; step
+  `index` is `Integer`, `arguments` is the empty record, `before`/`after`
+  reference the same state record as plan `initial`/`final`, that record's
+  `h` has the hybrid declaration's variable type, and `delay`/`elapsed`
+  reference the exact model-unit quantity type. Receiver and native
+  invocation ordinal are absent. The schedule retains FR-819's enclosure
+  validation semantics.
+- Step 8: one case carries each of the two distinct `Reference<T>` types
+  in the existing union form, with no new tag or key. The receiver field
+  is optional because one operation is receiverless. Both legitimate
+  receiver types are supported, and operation/case mismatches or an
+  unexpected receiver are rejected by the existing verification surface.
