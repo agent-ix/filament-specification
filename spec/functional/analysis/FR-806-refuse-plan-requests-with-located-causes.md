@@ -48,13 +48,9 @@ These are found when the package is checked (S3) and refuse the declaration:
 | the goal or objective reads `elapsed` over an untimed model, or `probability` over a non-probabilistic model | `missing_declaration`/`missing-name` | the member read |
 | the `synthesis` uses a timed or probabilistic model and the unit's profile does not select the layer that model needs | `unsupported_construct` naming the selected and the required layer | the declaration |
 
-For the shared-arguments support boundary, S3 produces no checked package,
-no plan request is read and the exit is `20`. The diagnostic uses the
-existing FR-272 support-set cause and feature/owning-declaration/profile
-context, not FR-805's status-`unsupported` outcome (exit `21`). Optional
-`X` and required `Option<X>` normalize to the same record-field type;
-this does not change native call argument omission flags. A third or
-later conflicting operation does not change the first reported pair.
+[FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md#synthesis-request-nodes)
+owns shared-argument normalization, the support boundary, the diagnostic
+feature name and conflict-pair selection.
 
 ### Request-time refusals
 
@@ -88,7 +84,7 @@ it with the pointer of the member carrying the plan request (FR-805):
 | FR-806-AC-3 | A `filament.plan-request/v1` document whose `declaration` names an ordinary `synthesis` over a value type refuses `missing_declaration`/`missing-name` at `/declaration`; a policy over another model refuses `ill_typed`/`type-mismatch` at `/policy/0`. | Test (TC-1956) |
 | FR-806-AC-4 | A request whose initial snapshot violates the model's population bound refuses with that snapshot's own admission cause located at `/initial`, exit `20`, and writes no plan. | Test (TC-1956) |
 | FR-806-AC-5 | A goal no plan reaches exits `10` as `infeasible`, never `20`. | Test (TC-1956) |
-| FR-806-AC-6 | TC-2037's normalized shared-argument conflicts give `unsupported_construct`/`not-yet-implemented` at S3, exit `20`, at the synthesis grammar name, with the existing feature/declaration/profile cause context and deterministic parameter/operation-pair names in the diagnostic. No checked package or plan request/outcome is produced; optional `X` and required `Option<X>` do not create a conflict merely by their spelling. | Test (TC-2037) |
+| FR-806-AC-6 | TC-2037's normalized shared-argument conflicts give `unsupported_construct`/`not-yet-implemented` at S3, exit `20`, at the synthesis grammar name, with the exact feature string defined by FR-322 and the existing declaration/profile cause context and deterministic parameter/operation-pair names in the diagnostic. No checked package or plan request/outcome is produced; optional `X` and required `Option<X>` do not create a conflict merely by their spelling. | Test (TC-2037) |
 
 ## Dependencies
 

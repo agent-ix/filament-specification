@@ -6146,6 +6146,14 @@ by a display name or substitutes another record with equal fields:
   first earlier declaration of that name. This fixes the named pair when
   three or more declarations conflict. The source model remains admitted;
   no implicit widening, renaming or per-operation union is inferred.
+  The exact unbuilt feature name is
+  `parameter {parameter} has conflicting types or declared presence in operations {first_operation} and {operation}`,
+  replacing the braces with the parameter identifier and the selected
+  operation names byte for byte as declared. This existing unsupported-form
+  string is the feature retained under FR-272's cause-equivalence rule and
+  appears unchanged after the diagnostic message's ordinary prefix; it
+  introduces no additional diagnostic member. TC-2037 pins the concrete
+  feature strings for the collision vectors.
 - A state-model step's `receiver` field, when any operation has a receiver,
   has a generated `composite_type`/`union` type under
   [FR-440](FR-440-checked-package-union-and-case-nodes.md), with exactly one
@@ -6194,17 +6202,10 @@ by a display name or substitutes another record with equal fields:
   `mode` of that same enum and one field per declared hybrid variable of
   its declared type, joined through the selected hybrid model's variable
   references. Hybrid `elapsed` references that same builtin Rational node,
-  as `dwell_grid` does: these exact values are coordinates in the hybrid
-  model's own time, not values of an invented unit node. This is the hybrid
-  override in FR-800/FR-819; non-hybrid timed models keep their quantity
-  types. These state records type a point on each trajectory, not an initial
-  set or a continuous enclosure stored as a scalar. FR-819's scheduled-model
-  translation reads them trajectory by trajectory and proves the goal and
-  policies universally over the entire initial set and nondeterministic
-  parameters; no representative point can discharge that obligation.
-  FR-193's solver/enclosure evidence represents the sets and enclosures.
+  as `dwell_grid` does. FR-819 owns the hybrid time override and
+  trajectory-local execution and proof semantics.
   Hybrid transitions have neither receivers nor native invocation outcome
-  ordinals, and individual continuous trajectories are not enumerated. Extension
+  ordinals. Extension
   field types are those the owning requirement specifies; no field is
   typed by guessing its name.
 
@@ -6714,7 +6715,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-513 | Composite values preserve the body walk and compact canonicality. In `checked-term-data-vectors.json`, BL-04 references BL-01's body in both stored record fields `z`, then `a`; BL-05 references that body in both tuple positions 0, then 1. Both are admitted with eighteen rows: each application's first component visit pairs with occurrence 0, `term_ordinal` 0, and its second with occurrence 0, `term_ordinal` 1. In component `c` (0 or 1), the two `sqrt` paths are `[c, 0]` and `[c, 1]`, followed by composition paths `[c]`; the composite values have no rows. The first `sqrt` of component 1 follows the last composition of component 0, using `{up: 1, down: [1, 0]}` from `[0]`, never resetting the previous path. BL-R11 changes only BL-04's second `sqrt` row in component 0 to `{up: 2, down: [0, 1]}` instead of its least form `{up: 1, down: [1]}`, rebuilding the same path, and refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/16/location/up`. | Test |
 | FR-322-AC-511 | Hyper clause source unit. A finite-domain hyper clause `Fast` over `t in Pulse bounded 2 forall trace a forall trace b` whose body holds a `duration` bound `5 ms` typed by `example`'s source `ms` node, declared in unit `example`, which declares `Time`, `s` and `ms`, under the timestamped-event profile with the role `t` bound to `{"kind": "timestamped_event", "timestamp_unit": "ms"}`, writes its `hyperproperty` node's `claim_names` row with `source_unit` `{"authority": "agent-ix", "identity": "example"}` and its two `temporal_bindings` rows with no `source_unit`, and the reader resolves `ms` in `example` and admits the package. Each refuses at the stated place: the row without `source_unit`, `invalid_package`/`timed-node-reference` at `/claim_names/{i}`; `source_unit` naming `agent-ix/other`, not a lock source, `invalid_package`/`invalid-value` at `/claim_names/{i}/source_unit`; a `source_unit` added to a state clause's `claim_names` row, `invalid_package`/`timed-node-reference` at that row; a `source_unit` added to one of the clause's `temporal_bindings` rows, `invalid_package`/`timed-node-reference` at that row; two occurrences of the node whose rows name `example` and `acme/orders`, `invalid_package`/`timed-node-reference` at the second row; and, with `Time`, `s` and `ms` declared only by `acme/orders`, `missing_declaration`/`missing-name` at the rows' `timestamp_unit`, the reader never resolving `ms` in another unit or from the source map. | Test (TC-1890) |
 | FR-322-AC-512 | The `let` binder link. In IC-14, the `let` binding term carries `binder`, the `NodeRef` of `y`'s `value`/`parameter` node, which is among the application's `dependencies`, and the package is admitted. Each refuses `invalid_package`/`invalid-value` at the stated place: IC-14 with `binder` removed, at `/semantic_graph/nodes/{n}/body/arguments/0`; with `binder` naming a `value`/`parameter` node named `z`, at `.../arguments/0/binder`; with `binder` naming a node outside the application's `dependencies`, at the same member; with `binder` added to a binding of a node body aggregate, at that `binder`; and with the call argument retargeted to a second `value`/`parameter` node named `y` at the binder's level and another type, at that reference. IC-21, the package of `let y: Int[0, 999] = x in true` over `x: Int[0, 1000]`, whose binder the body never reads, refuses `ill_typed`/`operator-ineligible` at the `let` application, as IC-15 does. | Test (TC-2099) |
-| FR-322-AC-514 | TC-2037's shared-argument vectors admit equal normalized signatures, including optional `X` versus required `Option<X>`, without changing native argument-omission flags. Different normalized types give S3 `unsupported_construct`/`not-yet-implemented`, exit `20`, at the synthesis grammar name, no checked package or plan request; the existing diagnostic names the parameter and deterministic first conflicting operation pair and retains FR-272's feature/declaration/profile context. | Test (TC-2037) |
+| FR-322-AC-514 | TC-2037's shared-argument vectors admit equal normalized signatures, including optional `X` versus required `Option<X>`, without changing native argument-omission flags. Different normalized types give S3 `unsupported_construct`/`not-yet-implemented`, exit `20`, at the synthesis grammar name, no checked package or plan request; the existing diagnostic names the parameter and deterministic first conflicting operation pair and retains FR-272's declaration/profile context and the exact instantiated feature string defined above. | Test (TC-2037) |
 | FR-322-AC-515 | FR-819-AC-1's tank generates the mode enum `[Fill, Drain]` in that order; hybrid step `operation` and state `mode` reference that exact enum, `index` is `Integer`, `arguments` is an empty record, and `before`/`after`/`initial`/`final` share the trajectory-local state type with `h` of its declared type. Hybrid `delay` and `elapsed` reference the exact builtin `scalar_type`/`rational` node used by `dwell_grid`; no invented time-unit node, receiver or native invocation ordinal is present. FR-819's universal trajectory semantics and FR-193 enclosure evidence represent initial-set and parameter uncertainty. | Test (TC-2037) |
 | FR-322-AC-516 | Operations whose receivers are `Server` and `Worker` generate a receiver union with one payload case for each distinct `Reference<Server>` and `Reference<Worker>` type; an additional receiverless operation makes the field optional. Both receiver types remain supported. Operation/case mismatches or a receiver on the receiverless operation give FR-650's plan-substitution method failure (exit `30`, no outcome document), or reject the internal certificate's `closure` rule at the tampered entry. | Test (TC-2037, TC-1955) |
 

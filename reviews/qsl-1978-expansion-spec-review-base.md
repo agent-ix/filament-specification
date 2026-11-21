@@ -69,3 +69,27 @@ hunks, so they are pre-existing and were not pursued.
 | FND-006 | medium | Hybrid `initial`, `before`, `after` and `final` are typed as one point-valued hybrid-state record (the mode plus one value per variable). FR-819, however, plans from an initial set, and its execution is every trajectory from that set under every value of a nondeterministic parameter. With an interval initial set or a nondeterministic parameter, a state after a dwell is an enclosure, not a value, so the record cannot hold it. Yet the same paragraph says these records "represent schedules and enclosures". State which value the point fields hold, or restrict this typing to point-initial deterministic models. | spec/objects/interfaces/FR-322-checked-package-artifact.md:6163-6175; spec/functional/analysis/FR-819-plan-over-hybrid-models.md:32-34, :56-58 | missing-requirement |
 | FND-007 | low | The shared-arguments rule requires both "static type and declared presence" to agree. FR-154-AC-52 and FR-151, however, make an `optional` parameter of `X` and a `required` parameter of an option value type over `X` "one type" (`Option<X>`). Two operations spelling one type these two ways would be refused, against the existing equivalence. TC-2037 step 6 also says it introduces "not a new source spelling for an optional operation parameter", although FR-154 already defines `presence: optional`. | spec/objects/interfaces/FR-322-checked-package-artifact.md:6115-6118; spec/functional/type-model/FR-154-admit-domain-package-model.md:987; spec/functional/type-model/FR-151-resolve-conformance-redefinition-dispatch.md:92 | wrong-requirement |
 | FND-008 | low | Certificate-side accounting is not reconciled with multi-outcome invocations. FR-650's successor records "nam[e] the step" without the receiver or ordinal now required for step identity. `max_check_work` still charges "one per successor it re-derives", while search work moved to one per invocation, so it is ambiguous whether the checker charges per invocation or per outcome. No criterion pins the check work. | spec/functional/analysis/FR-801-bound-and-meter-the-plan-search.md:59; spec/functional/analysis/FR-650-plan-and-optimize-over-a-state-model.md:104-107 | missing-requirement |
+
+## New findings (disposition pass 1)
+
+Found while re-checking the fix commit at `2975a1885c64cd1b90d091dc0c432a226f32e5f5` (fix commit `2975a188` over the main merge `c6fb1499`). Numbering continues the `## Findings` sequence.
+
+| ID | Severity | Summary | Refs | Escape Cause |
+| --- | --- | --- | --- | --- |
+| FND-009 | medium | The shared-argument S3 refusal is `unsupported_construct`/`not-yet-implemented`, but no statement names the unbuilt feature. FR-272 requires that cause to retain the unbuilt feature's name, and FR-272-AC-20 makes two such refusals with different feature names compare unequal. FR-322, the FR-806 row, FR-806-AC-6 and TC-2037 step 6 say only that the feature context is retained. Two producers will choose different feature names, their causes will compare unequal, and TC-2037 cannot pin the cause. Name the exact feature string. | spec/functional/analysis/FR-806-refuse-plan-requests-with-located-causes.md:45, :91; spec/objects/interfaces/FR-322-checked-package-artifact.md:6136-6141; spec/objects/foundation/FR-272-typed-diagnostic-cause.md:67, :200 | missing-requirement |
+| FND-010 | low | In the plan-substitution seam, 'when supplied it must match the selected native outcome, otherwise replay advances through that selected outcome's state' lets 'otherwise' read as the mismatch branch: replay would ignore a mismatched recorded post-state and continue. That contradicts the later 'A defect gives the existing method failure' and TC-1950 step 6, where a mismatch exits 30. The intended branch is a post-state that was not supplied. Say 'when none is supplied'. | spec/functional/analysis/FR-650-plan-and-optimize-over-a-state-model.md:159-161, :168; spec/test-cases/TC-1950-plan-steps-arguments-and-goal.md:53-58 | wrong-requirement |
+
+## Dispositions
+
+Disposition pass 1 at frozen head `2975a1885c64cd1b90d091dc0c432a226f32e5f5`. The fixes were inspected in fix commit `2975a188` (`git diff c6fb1499 2975a188`); `c6fb1499` merges main `d1ebfc72`. Each `fixed` row's after-excerpt is in the round-1 Linear dispositions comment.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | - |
+| FND-002 | fixed | - |
+| FND-003 | fixed | - |
+| FND-004 | fixed | - |
+| FND-005 | fixed | - |
+| FND-006 | fixed | - |
+| FND-007 | fixed | - |
+| FND-008 | fixed | - |

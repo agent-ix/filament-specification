@@ -128,6 +128,14 @@ bodies. Scope: FR-322-AC-467, FR-322-AC-468 and FR-322-AC-514 to FR-322-AC-516 a
   admitted but no checked package or plan outcome is emitted. Required
   `Option<X>` still requires a native argument even though optional `X`
   has the same normalized shared-field type.
+  The exact unbuilt feature strings are:
+  `parameter s has conflicting types or declared presence in operations drain and resize`,
+  `parameter s has conflicting types or declared presence in operations read and maybeRead`,
+  and, for the four-operation row,
+  `parameter s has conflicting types or declared presence in operations read and resize`.
+  Compare those byte for byte in FR-272's retained feature context and as
+  the diagnostic message suffix. Changing this feature string while
+  retaining the same code/cause tag is not an equivalent cause.
 - Step 7: the generated mode enum has exactly `Fill`, `Drain` in that
   order. Step `operation` and state `mode` reference it exactly; step
   `index` is `Integer`, `arguments` is the empty record, `before`/`after`

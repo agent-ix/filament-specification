@@ -157,8 +157,8 @@ certificate, which a correct search never produces:
   before native replay with caller-given invocations, extended to accept
   step records and separately supplied recorded post-states for negative
   tests. A recorded post-state is optional test data; when supplied it must
-  match the selected native outcome, otherwise replay advances through
-  that selected outcome's state. For native state-model steps the extended library input uses FR-805's
+  match the selected native outcome. When none is supplied, replay advances
+  through that selected outcome's state. For native state-model steps the extended library input uses FR-805's
   step member/value shapes, including optional `receiver` and
   `outcome_ordinal`, and can represent malformed member kinds for negative
   tests. This is test data supplied through the library seam, not a new

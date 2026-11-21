@@ -93,30 +93,15 @@ FR-805 specifies. Nondeterministic invocations are supported.
 The generated step type represents receivers through FR-322's union of
 the distinct declared `Reference<T>` types, optional exactly when some
 operations are receiverless. An operation selects its receiver's case;
-there is no implicit conversion between receiver types. The shared
-arguments record compares normalized parameter types under FR-154/FR-151:
-optional `X` and required `Option<X>` are one record-field type, without
-changing native call omission flags. A disagreement is FR-806's S3
-`unsupported_construct`/`not-yet-implemented` diagnostic before a package
-is produced, naming the parameter and deterministic conflicting pair.
-Missing a parameter on another operation makes the shared field optional.
-This boundary does not change the declared parameter domains.
+there is no implicit conversion between receiver types.
+[FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md#synthesis-request-nodes)
+owns shared-argument normalization and its support boundary; FR-806 owns
+the refusal catalog.
 
-Hybrid plans retain FR-819's schedules and enclosures. Their step `index`
-is `Integer`, `operation` is the target mode in the generated mode enum,
-`arguments` is an empty record, `before`/`after` share the hybrid-state
-record (`mode` of that enum and the declared variables' types), and
-`delay`/plan `elapsed` are builtin `Rational` in hybrid time coordinates,
-the same type as `dwell_grid`. This overrides the table's timed quantity
-typing only for hybrid plans: FR-481 declares no hybrid time-unit node.
-The point-valued records are trajectory-local types used by FR-819's
-scheduled-model translation under every admitted initial point and
-nondeterministic parameter. They do not store initial sets or enclosures;
-those remain FR-193 proof evidence, and no sampled representative replaces
-the universal goal/policy check. FR-322 owns the
-existing node forms used for these generated types. Hybrid steps carry
-neither a receiver nor a native invocation ordinal; continuous
-trajectories are not enumerated as native invocation outcomes.
+For hybrid plans,
+[FR-819](FR-819-plan-over-hybrid-models.md#from-a-schedule-to-an-fr-193-item)
+overrides this table's timed quantity typing and owns the trajectory-local
+semantics. FR-322 defines the generated type nodes.
 
 ### The goal
 

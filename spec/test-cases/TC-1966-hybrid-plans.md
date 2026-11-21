@@ -25,8 +25,17 @@ Verify enclosure-validated feasible plans, closure-certified infeasibility, inco
    guard `h >= 8`, and the goal of reaching `Drain`. Check the dwell-8
    candidate by the scheduled-model FR-193 item over the entire set.
    Then replace the rate with a nondeterministic parameter in `[1,2]`,
-   fixed along each trajectory, and check that same candidate. Read the
-   generated type nodes and the separate enclosure evidence in both cases.
+   fixed along each trajectory. For both variants declare
+   `type One = Int[1,1];` and use `One` as the synthesis's length domain,
+   with `dwell_grid` the typed Rational `1/1`, empty policy and sufficient
+   limits and deadline. Read the generated nodes and enclosure evidence.
+   For the rate variant, exhaust the candidate grid with the registered
+   `flowpipe-outward-rounded` candidate validator and no accepted FR-652
+   schedule-space infeasibility certificate. No resource stop, cancellation
+   or provider failure occurs. The invariant bounds any possible `Fill`
+   dwell by 10 (even `h=0`, rate 1 cannot remain longer); there are no
+   further transitions before reaching `Drain`, and no other schedule
+   lengths are in `One`. This finite outer bound adds no planner setting.
 
 ## Expected Results
 
@@ -40,6 +49,13 @@ Verify enclosure-validated feasible plans, closure-certified infeasibility, inco
   For rate 1, a sound enclosure has heights `[8,9]` after the dwell and
   validates every initial point. With the nondeterministic rate, some
   trajectories would reach heights above 10 before that dwell ends;
-  the candidate is not validated as feasible from a chosen representative
-  point. The initial set and continuous enclosures remain FR-193 evidence,
-  not scalar field values or a point-initial restriction.
+  the slowest initial trajectory requires dwell at least 8 for the guard,
+  whereas the fastest from `h=1` requires dwell at most `9/2` for the
+  invariant. No one-step grid schedule validates. After the declared
+  bounded grid is exhausted without an accepted schedule-space
+  infeasibility certificate, the exact result is `incomplete` with cause
+  `grid-exhausted{dwell_grid: {type: rational, numerator: "1", denominator: "1"}}`,
+  plan `null`, certificate `null` and bound `null`, never `feasible` or
+  `infeasible` in this provider fixture. The initial set and continuous
+  enclosures remain FR-193 evidence, not scalar field values or a
+  point-initial restriction.
