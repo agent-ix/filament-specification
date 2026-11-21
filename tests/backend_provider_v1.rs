@@ -14,7 +14,7 @@ use std::collections::BTreeSet;
 
 use ix_trace_rs::trace;
 use filament_verification_contracts::jcs_canonicalize;
-use serde_json::Value;
+use serde_json::{Value, json};
 
 #[path = "support/operand_slots.rs"]
 mod operand_slots;
