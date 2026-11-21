@@ -84,10 +84,14 @@ structures, but any external consumer receives only the contract.
   positive rows for zero, one and many clauses, identical, repeated and
   differently named aliases, reversed source order, all six related-bearing
   forms and dependency ownership, schema-valid and schema-invalid rows, reader
-  refusals in FR-831 order, exact and one-short `work` budgets and the
-  invariance comparisons. Cases over `fixtures/protocol-node-base.json` carry an
-  RFC 6902 `edit`; the rest are admitted-graph projections. No reader executes
-  them yet.
+  refusals in FR-831 order, baseline-relative exact and one-short `work` and
+  `read_storage` budgets and the invariance comparisons. Every case is a
+  complete published package: `fixtures/protocol-node-base.json` plus RFC 6902
+  `ops` (`PC-REL`, with real related records on all six forms, and `PC-ROOT`) or
+  the complete `fixtures/protocol-correlation-dependency.json` (`PC-DEP`, the
+  dependency `acme/flow`), each read by the strict reader without the member.
+  No reader consumes the member yet (the existing strict reader refuses it
+  `unknown_member`).
 - `model-union-witness-vectors.json` publishes the FR-830 `model_unions` and
   `model_tuples` producer-witness sidecar rows of selected model unions and
   tuples (cases in UTF-8 order with authored position, sealed member,

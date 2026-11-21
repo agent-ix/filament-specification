@@ -4173,6 +4173,7 @@
                                       "attempt",
                                       "effect",
                                       "event",
+                                      "recommend",
                                       "commit",
                                       "fence"
                                     ]
@@ -13283,7 +13284,165 @@
                         "const": "binding"
                       },
                       "value": {
+                        "$ref": "#/$defs/ProtocolRecordsTerm"
+                      }
+                    },
+                    "required": [
+                      "term",
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "const": "constraint"
+                      },
+                      "term": {
+                        "const": "binding"
+                      },
+                      "value": {
                         "$ref": "#/$defs/MemberTerm"
+                      }
+                    },
+                    "required": [
+                      "term",
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  }
+                ],
+                "type": "array"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "properties": {
+                  "member": {
+                    "properties": {
+                      "operator": {
+                        "const": "recommend",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object",
+                    "required": [
+                      "operator"
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "arguments": {
+                "items": false,
+                "maxItems": 6,
+                "minItems": 6,
+                "prefixItems": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "const": "role"
+                      },
+                      "term": {
+                        "const": "binding"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/MemberTerm"
+                      }
+                    },
+                    "required": [
+                      "term",
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "const": "operation"
+                      },
+                      "term": {
+                        "const": "binding"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/MemberTerm"
+                      }
+                    },
+                    "required": [
+                      "term",
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "const": "contracts"
+                      },
+                      "term": {
+                        "const": "binding"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/MemberTerm"
+                      }
+                    },
+                    "required": [
+                      "term",
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "const": "binder"
+                      },
+                      "term": {
+                        "const": "binding"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/MemberTerm"
+                      }
+                    },
+                    "required": [
+                      "term",
+                      "name",
+                      "value"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "const": "related"
+                      },
+                      "term": {
+                        "const": "binding"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/ProtocolRecordsTerm"
                       }
                     },
                     "required": [
@@ -13504,7 +13663,7 @@
                         "const": "binding"
                       },
                       "value": {
-                        "$ref": "#/$defs/MemberTerm"
+                        "$ref": "#/$defs/ProtocolRecordsTerm"
                       }
                     },
                     "required": [
@@ -13622,7 +13781,7 @@
                         "const": "binding"
                       },
                       "value": {
-                        "$ref": "#/$defs/MemberTerm"
+                        "$ref": "#/$defs/ProtocolRecordsTerm"
                       }
                     },
                     "required": [
@@ -13760,7 +13919,7 @@
                         "const": "binding"
                       },
                       "value": {
-                        "$ref": "#/$defs/MemberTerm"
+                        "$ref": "#/$defs/ProtocolRecordsTerm"
                       }
                     },
                     "required": [
