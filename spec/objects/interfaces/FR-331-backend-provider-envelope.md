@@ -653,7 +653,12 @@ names, FR-462), `kind` and `result`, and:
   `{tool, verdict}` ("Certification" above);
 - `basis` — on `proved` only, the proof basis as an object whose `type` is
   the spelling and whose other members are its payload, for example
-  `{"type": "value-bounds", "lower": …, "upper": …, "method": …, "reductions": []}`;
+  `{"type": "value-bounds", "lower": …, "upper": …, "method": …, "reductions": []}`,
+  with `"exploration": "partial"` for a `lower` proof found on a partial
+  product (FR-411), whose `upper` is then the objective's least upper bound:
+  1 for a probability, `1 − q` for a quantile's shifted reward, and the
+  string `"infinity"`, FR-418's spelling of an absent bound, for an expected
+  reward;
 - `cause` — the closed cause as an object of the same form. The
   undefined-evaluation cause is FR-364's envelope
   `{"type": "undefined-evaluation", "where": …, "cause": <reason>}`; its
@@ -665,8 +670,8 @@ names, FR-462), `kind` and `result`, and:
 - `certificate` (FR-412 for `exact-value` and `value-bounds`, FR-418 for
   `zone-certified`; for `value-bounds` the claim side's certificate), `counterpart`
   (for `value-bounds`, the other side's FR-412 certificate, required except
-  for a `lower` proof found on a partial product, whose basis reports upper
-  1), `evidence` (FR-419 for `closed-form`, the FR-393 witness
+  for a `lower` proof found on a partial product, which carries none and
+  whose basis says `exploration: "partial"`), `evidence` (FR-419 for `closed-form`, the FR-393 witness
   arm for `well-definedness-unchecked`), `verdict` (FR-410 for `measured`) and
   `counterexample` (the position of the item's `counterexamples` entry, for
   `refuted`), and `task_search` (FR-419's replayable bounded-search frontier,
@@ -1069,6 +1074,7 @@ computed.
 | FR-331-AC-56 | The positive vectors `global-conformance-open-history-outcome` and `global-conformance-incomplete-closure-scope-outcome`, each a `global-conformance` entry settled `inconclusive` with that bare cause, are admitted; the adverse vectors `open-history-on-realizability` and `incomplete-closure-scope-on-local-projection` (the cause on another kind's entry) and `open-history-with-payload` (a payload member on the bare cause) are each refused by the schema. | Test (TC-431) |
 | FR-331-AC-57 | The schema admits a `bounded-solver` entry's `flowpipe` certificate whose second step is a jump step carrying `from` `{"dwell": 0, "transition": 0}` (vector `hybrid-certificate-outcome`), and refuses that `from` with an added member `mode` (`hybrid-certificate-jump-source-unknown-member`) and with `dwell` written `"0"` (`hybrid-certificate-jump-source-string-dwell`), each at or above the patched member. | Test (TC-431) |
 | FR-331-AC-58 | The schema admits an `incomplete` result entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}` with no `task_search` member, and refuses the same entry with `task_search` added; an entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "unresolved-dynamics"}` with no `task_search` is still refused, and one whose reason is `closed` is refused. | Test (TC-431) |
+| FR-331-AC-59 | A `proved` `value-bounds` result whose `certificate` is a `lower` certificate with `upper` `{"numerator": "1", "denominator": "1"}` and no `counterpart` fails the result schema; the same result with basis `exploration: "partial"` passes, and with a `counterpart` added beside `exploration: "partial"` fails. A basis with `upper` `"infinity"` passes only with `exploration: "partial"`, and a fully explored `value-bounds` result with both `certificate` and `counterpart` passes. | Test (TC-431) |
 
 ## Dependencies
 

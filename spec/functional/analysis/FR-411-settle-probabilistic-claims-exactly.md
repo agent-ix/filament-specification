@@ -264,8 +264,11 @@ A lower certificate and a path set read only the states they name and those
 states' successors, and an unexplored successor counts as the objective's
 least value (0, or `−q` for a quantile's shifted reward, FR-412). Evidence of
 that kind found before a limit stops exploration therefore settles the item:
-a proof of a `>= θ` bound or a refutation of a `<= θ` bound. Every other
-verdict needs the complete product.
+a proof of a `>= θ` bound or a refutation of a `<= θ` bound. Such a proof
+settles `value-bounds` with `exploration: "partial"`, no `upper` certificate,
+and as `upper` the objective's least upper bound: 1 for a probability,
+`1 − q` for a quantile's shifted reward and `"infinity"` for an expected
+reward (FR-331). Every other verdict needs the complete product.
 
 ### Symmetry
 

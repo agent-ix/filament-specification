@@ -3938,6 +3938,7 @@
                 "numerator": "1",
                 "denominator": "1"
               },
+              "exploration": "partial",
               "method": {
                 "type": "backward-induction",
                 "precision_bits": 64

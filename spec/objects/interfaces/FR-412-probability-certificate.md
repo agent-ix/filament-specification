@@ -242,7 +242,10 @@ certificate is on the claim's side when its certified value is, and a
 `vacuous` one is on the side of a proof. A `value-bounds` proof (FR-411)
 carries a `lower` and an `upper` certificate; the one on the claim's side
 meets this rule, and the other is checked by its conditions alone, so that
-both ends of the reported interval are certified. It refuses a certificate whose
+both ends of the reported interval are certified. A `lower` proof found on a
+partial product (FR-411) is the one exception: it carries no `upper`
+certificate, and its basis says `exploration: "partial"` and reports the
+objective's least upper bound (FR-331). It refuses a certificate whose
 `identity` differs from the item's with `invalid_runtime_input`/`conflicting-identity`.
 A rejected certificate settles the item `inconclusive`,
 `certificate-rejected{rule, at}`, `at` the complete product state key where
