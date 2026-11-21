@@ -20818,8 +20818,15 @@ fn operand_events(package: &Value) -> Vec<OperandEvent> {
 /// checks over a package as published, run after the schema and before every
 /// `semantic_graph` check. Returns the pointer of the first defect of the first
 /// step that has one (rows, placement, range, numbering, cycle), `None` when
-/// the package passes them.
+/// the package passes them. No dependency is supplied.
 fn operand_refusal(package: &Value) -> Option<String> {
+    operand_refusal_with(package, &BTreeMap::new())
+}
+
+/// [`operand_refusal`] with the node count of each supplied direct dependency
+/// by identity, against which a dependency-position row entry
+/// `{"package": P, "node": j}` is range-checked.
+fn operand_refusal_with(package: &Value, dependencies: &BTreeMap<String, u64>) -> Option<String> {
     let nodes = package["semantic_graph"]["nodes"].as_array()?;
     let rows = match package["semantic_graph"]["operand_rows"].as_array() {
         Some(rows) if rows.len() == nodes.len() => rows,
@@ -20827,6 +20834,12 @@ fn operand_refusal(package: &Value) -> Option<String> {
     };
     let events = operand_events(package);
     let row_length = |holder: usize| rows[holder].as_array().map_or(0, Vec::len) as u64;
+    let locked: BTreeSet<&str> = package["lock"]["dependency_selections"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|selection| selection["identity"].as_str())
+        .collect();
     // 2. Placement.
     for event in &events {
         if let OperandEvent::Segment { pointer, segment, holder } = event {
@@ -20841,7 +20854,13 @@ fn operand_refusal(package: &Value) -> Option<String> {
     for event in &events {
         match event {
             OperandEvent::Segment { pointer, segment, holder: Some(holder) } => {
-                if operand_slots::operand_slot(segment).is_some_and(|slot| slot >= row_length(*holder)) {
+                let Some(slot) = operand_slots::operand_slot(segment) else { continue };
+                if slot >= row_length(*holder) {
+                    return Some(format!("{pointer}/operand"));
+                }
+                // A node's own `node_id` names no dependency position.
+                let own = format!("/semantic_graph/nodes/{holder}/node_id/path/");
+                if pointer.starts_with(&own) && rows[*holder][slot as usize].is_object() {
                     return Some(format!("{pointer}/operand"));
                 }
             }
@@ -20851,7 +20870,22 @@ fn operand_refusal(package: &Value) -> Option<String> {
                 }
             }
             OperandEvent::Row { row, entry, value } => {
-                if value.as_u64().is_none_or(|index| index >= nodes.len() as u64) {
+                let in_range = match value {
+                    // Only a composition's row holds a position, and only of
+                    // a locked direct dependency the reader holds.
+                    Value::Object(position) => {
+                        nodes[*row]["semantic_form"] == "component_composition"
+                            && position
+                                .get("package")
+                                .and_then(Value::as_str)
+                                .filter(|package| locked.contains(package))
+                                .and_then(|package| dependencies.get(package))
+                                .zip(position.get("node").and_then(Value::as_u64))
+                                .is_some_and(|(count, node)| node < *count)
+                    }
+                    index => index.as_u64().is_some_and(|index| index < nodes.len() as u64),
+                };
+                if !in_range {
                     return Some(format!("/semantic_graph/operand_rows/{row}/{entry}"));
                 }
             }
@@ -20966,9 +21000,10 @@ fn tc_233_no_published_node_id_nests_an_operand_node_id() {
     assert!(packages > 0, "the published packages carry operand rows");
 }
 
-/// FR-322-AC-36, FR-322-AC-278..AC-280 and FR-322-AC-392..AC-395 (TC-233
-/// `NI-01`..`NI-12`, `NI-15`..`NI-24`): each case patches
-/// `positive-dependency-call.json` as published. A `schema: invalid` case
+/// FR-322-AC-36, FR-322-AC-278..AC-280, FR-322-AC-392..AC-395 and FR-322-AC-521
+/// (TC-233 `NI-01`..`NI-12`, `NI-15`..`NI-24`, `NI-30`..`NI-36`, `NI-38`..`NI-40`): each case
+/// patches `positive-dependency-call.json` as published, read with
+/// `positive-dependency-library.json` supplied as `test/predicates`. A `schema: invalid` case
 /// fails the V2 schema; a `schema: valid` case passes it and the operand
 /// checks refuse it at exactly its locus, or pass it with the outcome named.
 #[trace(
@@ -20980,7 +21015,8 @@ fn tc_233_no_published_node_id_nests_an_operand_node_id() {
     "FR-322-AC-392",
     "FR-322-AC-393",
     "FR-322-AC-394",
-    "FR-322-AC-395"
+    "FR-322-AC-395",
+    "FR-322-AC-521"
 )]
 #[test]
 fn tc_233_node_index_vectors_refuse_at_their_loci() {
@@ -20998,9 +21034,14 @@ fn tc_233_node_index_vectors_refuse_at_their_loci() {
     let viewed = operand_slots::index_view(&base);
     assert_eq!(viewed["semantic_graph"]["nodes"][3]["body"]["arguments"][1]["type"], viewed["semantic_graph"]["nodes"][2]["node_id"]);
     let base_keys = published_keys(&base);
+    // The direct dependency `test/predicates` the dependency positions name.
+    let library: Value = serde_json::from_str(POSITIVE_DEPENDENCY_LIBRARY).expect("fixture is valid JSON");
+    let library_nodes = operand_slots::index_view(&library)["semantic_graph"]["nodes"].as_array().unwrap().clone();
+    assert_eq!(library_nodes.len(), 19);
+    let dependencies = BTreeMap::from([("test/predicates".to_owned(), library_nodes.len() as u64)]);
     let cases = vectors["cases"].as_array().expect("cases");
     let ids: Vec<&str> = cases.iter().map(|case| case["id"].as_str().unwrap()).collect();
-    let expected_ids: Vec<String> = (1..=12).chain(15..=24).map(|n| format!("NI-{n:02}")).collect();
+    let expected_ids: Vec<String> = (1..=12).chain(15..=24).chain(30..=36).chain(38..=40).map(|n| format!("NI-{n:02}")).collect();
     assert_eq!(ids, expected_ids);
     for case in cases {
         let id = case["id"].as_str().unwrap();
@@ -21019,7 +21060,37 @@ fn tc_233_node_index_vectors_refuse_at_their_loci() {
         }
         match case["expected"].as_str().unwrap() {
             "malformed_wire" => {
-                assert_eq!(operand_refusal(&package).as_deref(), case["locus"].as_str(), "{id}");
+                // A case may supply the library under further identities.
+                let mut supplied = dependencies.clone();
+                for identity in case["supplied"].as_array().into_iter().flatten() {
+                    supplied.insert(identity.as_str().unwrap().to_owned(), library_nodes.len() as u64);
+                }
+                assert_eq!(operand_refusal_with(&package, &supplied).as_deref(), case["locus"].as_str(), "{id}");
+            }
+            "passes_operand_checks_with_dependency_position" => {
+                assert_eq!(operand_refusal_with(&package, &dependencies), None, "{id}");
+                // The position is in range only against the supplied dependency.
+                assert_eq!(operand_refusal(&package).as_deref(), Some("/semantic_graph/operand_rows/4/0"), "{id}");
+                let composition = &package["semantic_graph"]["nodes"][4];
+                let entry = &package["semantic_graph"]["operand_rows"][4][0];
+                assert_eq!(entry["package"], "test/predicates", "{id}");
+                assert_eq!(composition["dependencies"], json!([composition["body"]["guarantees"][0]["clause"]]), "{id}");
+                // The clause, its slot read as an index of the dependency's
+                // graph, rebuilds to the named library node's key.
+                let mut clause = composition["body"]["guarantees"][0]["clause"].clone();
+                assert_eq!(clause["path"][2], json!({"operand": 0}), "{id}");
+                clause["path"][2] = json!({"node": entry["node"]});
+                let named = usize::try_from(case["dependency_node"].as_u64().unwrap()).unwrap();
+                let operand = usize::try_from(entry["node"].as_u64().unwrap()).unwrap();
+                let library_key = |at: usize| structural(&library_nodes[at]["node_id"], &library_nodes);
+                assert_eq!(structural(&clause, &library_nodes), library_key(named), "{id}");
+                // The importer's graph holds no copy of either library node.
+                let importer = viewed["semantic_graph"]["nodes"].as_array().unwrap();
+                for node in importer {
+                    let key = structural(&node["node_id"], importer);
+                    assert_ne!(key, library_key(named), "{id}");
+                    assert_ne!(key, library_key(operand), "{id}");
+                }
             }
             "passes_operand_and_duplicate_checks" => {
                 assert_eq!(operand_refusal(&package), None, "{id}");
@@ -21055,6 +21126,47 @@ fn tc_233_node_index_vectors_refuse_at_their_loci() {
             other => panic!("{id}: unknown expectation {other}"),
         }
     }
+}
+
+/// FR-322-AC-521 (TC-233 `NI-37`): a component clause over an operand the
+/// importer also holds is written with the importer's graph index and resolves
+/// by its structural key to the clause node of the component's package. Graph
+/// resolution only; temporal-clause body checks are out of scope.
+#[trace("TC-233", "FR-322-AC-521")]
+#[test]
+fn tc_233_a_component_clause_over_an_importer_operand_resolves_by_key() {
+    let vectors: Value = serde_json::from_str(NODE_INDEX_VECTORS).expect("vectors are valid JSON");
+    let schema = jsonschema::validator_for(&parsed_fixture(SCHEMA)).expect("V2 schema is valid");
+    let library: Value = serde_json::from_str(POSITIVE_DEPENDENCY_LIBRARY).expect("fixture is valid JSON");
+    // The library with a temporal clause node over its Integer node 0.
+    let mut library_nodes = operand_slots::index_view(&library)["semantic_graph"]["nodes"].as_array().unwrap().clone();
+    let path = |operand: Value| json!(["temporal", "temporal_clause", operand]);
+    library_nodes.push(json!({"node_tag": "temporal", "semantic_form": "temporal_clause",
+        "node_id": {"package": "test/predicates", "path": path(json!({"node": 0})), "ordinal": 0}}));
+    let clause_at = library_nodes.len() - 1;
+    // NI-30's composition, its clause that library clause, named through the
+    // importer's own Integer node (graph index 0).
+    let mut package: Value = serde_json::from_str(POSITIVE_DEPENDENCY_CALL).expect("fixture is valid JSON");
+    let ni30 = vectors["cases"].as_array().unwrap().iter().find(|case| case["id"] == "NI-30").unwrap();
+    for operation in ni30["patch"].as_array().unwrap() {
+        apply_json_patch(&mut package, operation);
+    }
+    let clause = json!({"package": "test/predicates", "path": path(json!({"operand": 0})), "ordinal": 0});
+    package["semantic_graph"]["nodes"][4]["body"]["guarantees"][0]["clause"] = clause.clone();
+    package["semantic_graph"]["nodes"][4]["dependencies"] = json!([clause]);
+    package["semantic_graph"]["operand_rows"][4] = json!([0]);
+    assert!(schema.is_valid(&package), "the package passes the V2 schema");
+    let dependencies = BTreeMap::from([("test/predicates".to_owned(), library_nodes.len() as u64)]);
+    assert_eq!(operand_refusal_with(&package, &dependencies), None, "the operand checks admit it");
+    // Rebuilt through the composition's row, the clause has the key of the
+    // library's clause node, which is a temporal clause: no missing-name.
+    let importer = operand_slots::index_view(&package)["semantic_graph"]["nodes"].as_array().unwrap().clone();
+    let rebuilt = structural(&importer[4]["body"]["guarantees"][0]["clause"], &importer);
+    assert_eq!(rebuilt, structural(&library_nodes[clause_at]["node_id"], &library_nodes));
+    assert_eq!(library_nodes[clause_at]["semantic_form"], "temporal_clause");
+    // The importer holds the operand, not the clause.
+    assert_eq!(structural(&importer[0]["node_id"], &importer), structural(&library_nodes[0]["node_id"], &library_nodes));
+    assert!(importer.iter().all(|node| structural(&node["node_id"], &importer) != rebuilt));
 }
 
 /// FR-322-AC-281 (TC-233 `NI-13`): a chain of derived nodes, each naming its

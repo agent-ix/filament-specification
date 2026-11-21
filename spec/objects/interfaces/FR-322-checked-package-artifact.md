@@ -910,7 +910,9 @@ A frame body refusal, meaning-join or canonical-order
   node whose form is not one of the shapes above refuses
   `invalid_package`/`invalid-value` at the node's `node_id`.
 - `dependencies` — the nodes a node's definition is built from: a list of
-  node ids of the node's own graph, unique and ascending by node-id. A reader follows it beside `semantic_type` and the body's
+  node ids of the node's own graph, unique and ascending by node-id. A
+  `component_composition` node also lists its component targets, which can
+  be nodes of a component package's graph ("Component clause targets"). A reader follows it beside `semantic_type` and the body's
   references when it builds a node's closure and checks graph cycles. A node
   that is its own `semantic_type` (a self-typed node, `semantic_type` `null`) adds no edge by that type and is not a cycle; only a path through two or more distinct
   nodes, or through a reference, is a cycle under the cycle rule above. A
@@ -988,7 +990,8 @@ A frame body refusal, meaning-join or canonical-order
   `{term: "dependency_reference", package, node}`, where `package` is a dependency identity string and `node` has the `DeclaredNodeId` shape, a `node_id` whose `path` holds only strings ("Operand index segments"). It stands only as the
   callee, argument 0, of a `filament.op.function.call` application, and names
   a declaration node of the dependency, never a node of the importing
-  graph. A node's `dependencies` list names nodes of its own graph only, so a
+  graph. A node's `dependencies` list names nodes of its own graph and, for a
+  `component_composition` node, its component targets only, so a
   `dependency_reference` target is never listed there; it joins through
   `dependency_selections` instead. A `node` that is not a node carrying a
   `declaration` in the named dependency's admitted package refuses
@@ -1889,9 +1892,31 @@ id is held:
 
 `semantic_graph.operand_rows` is required. It is an array with exactly one
 entry for each node, in graph order: entry `i` is node `i`'s operand row, an
-array of graph indexes (JSON integers from `0` to 9007199254740991), empty for
-a node whose node-held ids hold no operand slot. Operand slot `k` held in node
-`i` names `semantic_graph.nodes[operand_rows[i][k]]`.
+array of row entries, empty for a node whose node-held ids hold no operand
+slot. A row entry is one of two forms:
+
+- a *graph index*, a JSON integer from `0` to 9007199254740991, naming
+  `semantic_graph.nodes[operand_rows[i][k]]`;
+- a *dependency position* `{"package": P, "node": j}`, a closed object whose
+  `package` is the identity string of a direct dependency (an `identity` of
+  `lock.dependency_selections`) and whose `node` is a JSON integer from `0` to
+  9007199254740991, naming node `j` of the `semantic_graph.nodes` of `P`'s
+  admitted package.
+
+Operand slot `k` held in node `i` names the node that entry `k` of row `i`
+names. A dependency position lets a node name, by its own operands, a node
+that only a dependency's graph holds (a component's clause or subject,
+"Component clause targets" below) without a copy of that node in the
+importing graph: the dependency's node is declared and owned in the
+dependency, so the importer never mints it. Only a `component_composition`
+node's row holds one, for its component targets. No operand slot of a node's
+own `node_id` names a dependency position, so that every node's structural
+key is rebuilt from its own graph alone, and uniqueness, order and the cycle
+check stay within one graph. A dependency position is a row entry and never a
+path segment: an id path that holds a `{package, node}` object fails the V2
+schema. A node-held id with a slot that names a dependency position has no
+document-held form in a document about the importer; it is written only where its place resolves against `P`'s graph
+("Following a reference").
 
 Any other segment object (a `node_id` object, an extra member, a missing
 `node` or `operand`, a string, negative, fractional or exponent-form value)
@@ -1923,7 +1948,9 @@ nested ids.
   hold the one operand slot `0`), so node bytes are never identity: identity is the rebuilt structural key
   ("Rebuilding the key").
 - **Scope.** Every operand slot names, through its holding node's operand row,
-  a node of that node's own graph, and every index segment of a document-held
+  a node of that node's own graph, except a slot whose row entry is a
+  dependency position, which names node `j` of the admitted package of the
+  direct dependency `P`; and every index segment of a document-held
   id names a node of the graph of the document the id belongs to. An imported
   node is present in the importing graph (it keeps its own `package`), so its
   operands are local nodes too, and its operand slots name the importing
@@ -1997,9 +2024,17 @@ nested ids.
     `liveness_dependencies` `clause` names. The reader resolves the clause
     in the component's admitted package, whether or not the importer's graph
     holds a node of that key. That `clause` is a node-held id. Its operand
-    slots name nodes of the importer's graph through the composition node's
-    operand row ("Locality"), and the importer's graph holds every operand
-    node the clause's operand slots name. Its rebuilt structural key names a
+    slots name nodes through the composition node's operand row
+    ("Locality"). A row entry is either a graph index of the importer's graph
+    or the dependency position `{"package": P, "node": j}`, which names node
+    `j` of the admitted package of the direct dependency `P`. The importer's
+    graph holds no copy of a node that a dependency position names. A
+    component's `subject` is named the same way. Either entry form resolves
+    by structural key: an operand named by a graph index of the importer's
+    graph, or by a dependency position of a direct dependency other than the
+    component's package, contributes that node's structural key, and the
+    target is the node of the component's package whose key is the rebuilt
+    key. Its rebuilt structural key names a
     node of the admitted package of the component that the enclosing
     `component` member names, where the reader finds it by structural key
     (FR-491 "a target in another package resolves through FR-322's
@@ -2037,10 +2072,23 @@ nested ids.
      at its `operand` member (`/semantic_graph/nodes/{k}/node_id/path/{s}/operand`,
      for example); an index segment not below the length of
      `semantic_graph.nodes`, at its `node` member
-     (`/source_map/{j}/node_id/path/{s}/node`, for example); or a row entry
-     not below that length, at `/semantic_graph/operand_rows/{k}/{r}`; the
-     first in the order of the document's canonical bytes, in which every
-     node precedes `operand_rows`.
+     (`/source_map/{j}/node_id/path/{s}/node`, for example); an operand slot
+     of a node's own `node_id` whose row entry is a dependency position, at
+     its `operand` member; or, at the row entry
+     `/semantic_graph/operand_rows/{k}/{r}`, a graph-index row entry not below
+     that length, a dependency position in the row of a node that is not a
+     `correspondence`/`component_composition` node, or a dependency position
+     whose `package` is not the `identity` of a `lock.dependency_selections`
+     entry whose admitted package the reader holds, or whose `node` is not
+     below that package's node count; the first in the order of the
+     document's canonical bytes, in which every node precedes
+     `operand_rows`. A package reader holds the admitted dependency packages
+     it is supplied with the package (as FR-322-AC-95 supplies
+     `fixtures/positive-dependency-library.json` with
+     `fixtures/positive-dependency-call.json`); a reader of a document outside
+     any package holds the dependency packages "Scope" lists. A package it
+     holds that no `lock.dependency_selections` entry names is not a direct
+     dependency, and no position names it.
   4. Numbering: in the first node, by graph index *k*, whose row is not
      numbered by first occurrence ("Locality"), an operand slot read before a
      smaller slot's first occurrence, at its `operand` member, the first in
@@ -2057,7 +2105,9 @@ nested ids.
   through the node's operand row; the structural key of every other node id
   held in the node is built the same way through the same row, and that of a
   document-held id with each index segment replaced by the structural key of
-  the node it names. A reader rebuilds every key after the reader checks,
+  the node it names. A slot whose row entry is a dependency position is
+  replaced by the structural key of node `j` of `P`'s graph; a node's own
+  `node_id` holds no such slot. A reader rebuilds every key after the reader checks,
   resolving each named node once and sharing its key wherever it is named, so
   the rebuilt keys form a directed acyclic graph of size linear in the
   package and no key is copied into another. Identity, equality, uniqueness,
@@ -2085,15 +2135,31 @@ nested ids.
   writes a node-held id into a document-held place (a diagnostic, a sidecar
   row, a request) writes each operand slot as the index segment of the node
   it names, and one that writes a node into another graph writes that node's
-  bytes unchanged with a row of that graph's indexes. The filament-contract-ir
+  bytes unchanged with a row of that graph's indexes. A slot whose row entry
+  is a dependency position `{"package": P, "node": j}` is written as the
+  index segment `{"node": j}` only into a place that resolves against `P`'s
+  graph ("Scope": a `component-guarantee` key or an `interface` of component
+  package `P`). The filament-contract-ir
   reader (its FR-063) follows these rules; this section is its contract.
-- **Producing.** A producer interns each operand node in the graph before it
-  writes a node that names it, writes each node-held id with operand slots
+- **Producing.** A producer interns each operand node in the graph, except
+  the dependency nodes below, before it writes a node that names it, writes each node-held id with operand slots
   numbered by first occurrence and the node's operand row, and writes each
   document-held id with index segments. Two derived nodes have one structural
   key exactly when they have the same `node_tag`, `semantic_form`, string
   operands and operand keys, in order, so a producer that interns by
-  structural key emits each one once.
+  structural key emits each one once. For a component target of a
+  `component_composition` node, an operand node that the graph does not hold
+  and a direct dependency's admitted graph does is not interned: the producer
+  writes its row entry as that dependency position. An operand node that
+  neither the graph nor any direct dependency's admitted graph holds is
+  interned in the graph. Where several direct dependencies' admitted graphs
+  hold a node of that key, the row entry names the dependency whose
+  `identity` is least in UTF-8 byte order, except in a
+  `component_composition` node's component `subject` or `clause`, where it
+  names the component's own package (the `components` entry's `package`)
+  when that package's graph holds the node. A producer writes no dependency
+  position for a node the importer's graph holds; a reader does not check
+  this.
 - **Notation.** Where this artifact writes an operand of a path as `X's
   node_id`, `X.node_id` or "the `node_id` of `X`", the structural key holds
   `X`'s key and the wire holds the operand reference that names `X` in the
@@ -6528,7 +6594,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-92 | In every published producer-output package (every published positive package except the reader-admission fixture `positive-integer-literal-references.json` of FR-322-AC-93), each operand of a `filament.op.integer.add`, `sub`, `mul`, `negate`, `eq` or `ne` application that is an integer literal typed at the builtin Integer node is an inline `literal` term with `value_kind` `integer` and that type, and no such operand is a `reference` to a `value`/`literal` node of `value_kind` `integer`, whatever the node's type. In `positive-two-owners-a.json` and `-b.json` the `three` `expression`/`binary` application holds the inline operands `1` and `2` and has empty `dependencies`; in `positive-operation-identities.json` the `integer.mul` and `integer.add` hold `7` and `-2` inline, and the `value`/`literal` nodes `7` and `-2` are present for the nodes that reference them. | Test (TC-233) |
 | FR-322-AC-93 | The reader admits the reference form of an integer literal operand under the six operators: `positive-integer-literal-references.json` carries the `three` `expression`/`binary` application of `filament.op.integer.add` over references to two `value`/`literal` nodes, with no `declaration` and one `expression` occurrence; it validates against the V2 schema and passes every reader check, and its `three` node has a different `node_id` from that of `positive-two-owners-a.json`, which holds the inline form. A `value`/`literal` node has only a literal body and no dependencies (FR-322-AC-39), so this application is an expression node. | Test (TC-233) |
 | FR-322-AC-94 | `filament.op.reference.upcast` admits an operand `Reference<S>` with `type_argument` `Reference<T>` exactly when `S` and `T` are selected object types of one document and `S` conforms to `T` along declared supertypes: one type to itself, a subtype to its supertype, a subtype two levels down to its root, and a type with two supertypes to either. A supertype to its subtype (a downcast), two unrelated object types, a systems interface with no declared supertype to an object type, a reference to a relationship at either end and an operand of family `object` refuse `ill_typed`/`operator-ineligible`. An operand or member whose owner is not selected refuses `missing_declaration`/`missing-selection`. | Test |
-| FR-322-AC-95 | The full reader admits each published positive fixture whose graph holds no `recursion_group` (thirteen fixtures, `positive-dependency-call.json` read with `positive-dependency-library.json` supplied; `positive-timed-clause-nodes.json` and `positive-timed-slot-nodes.json` are excluded because their clock-clause and slot nodes are admitted by the timed-model checks of TC-367, not by the shared reader this criterion runs), both as published, where all but `positive-nominal-identities.json` list their nodes out of ascending node-id order, and with its `semantic_graph.nodes` reversed and with them sorted ascending by node-id order, the `operand_rows` reordered with the nodes and each row entry and each document-held index segment rewritten to its node's new graph index. A reversed graph names later nodes through its operand rows, and it is admitted. Each reorder that changes the node sequence yields a structurally unequal package whose nodes have the same structural keys and the same bytes as published, and the reader reports no refusal for the order of the nodes. | Test (TC-233) |
+| FR-322-AC-95 | The full reader admits each published positive fixture whose graph holds no `recursion_group` (thirteen fixtures, `positive-dependency-call.json` read with `positive-dependency-library.json` supplied; `positive-timed-clause-nodes.json` and `positive-timed-slot-nodes.json` are excluded because their clock-clause and slot nodes are admitted by the timed-model checks of TC-367, not by the shared reader this criterion runs), both as published, where all but `positive-nominal-identities.json` list their nodes out of ascending node-id order, and with its `semantic_graph.nodes` reversed and with them sorted ascending by node-id order, the `operand_rows` reordered with the nodes and each row entry and each document-held index segment rewritten to its node's new graph index (a dependency-position entry is unchanged). A reversed graph names later nodes through its operand rows, and it is admitted. Each reorder that changes the node sequence yields a structurally unequal package whose nodes have the same structural keys and the same bytes as published, and the reader reports no refusal for the order of the nodes. | Test (TC-233) |
 | FR-322-AC-96 | Every node of every published positive fixture carries exactly the `dependencies` list that FR-322 `dependencies` rules 1 to 4 rebuild from the node as written, or, for a node form whose body artifact states its own list, that list: in `positive-all-families.json` the `expression`/`reference` node and the `correspondence`/`source_locus` node each list their body target, and the `bounded_domain`/`integer_range` node lists its `semantic_type`; in `positive-operation-identities.json` the `bounded_domain`/`model_population` node lists its `semantic_type` alone, not its `max` literal's `type`. The full reader refuses `invalid_semantic_graph` at the node's `/dependencies` for the `expression`/`reference` node with `[]`, the `integer_range` node with `[]`, the `model_population` node with the Integer node added, and a `value`/`parameter` node listing its `semantic_type`. | Test (TC-233) |
 | FR-322-AC-97 | The V2 schema admits a `value`/`parameter` node whose body binds `name` then `level`, and a `scalar_type`/`compound_unit` node; a parameter body with `level` before `name`, or with a third member, fails the V2 schema (`malformed_wire`). The full reader admits every published positive fixture, and each `value`/`parameter` node of one is distinct by `name` and `level`. | Test (TC-233) |
 | FR-322-AC-98 | Step 1 over a selected document that carries `dimensions` and `units` (FR-154-AC-19's `Time`, `Rate`, `s` and `ms`) and an object type with a clock field reads every dimension and unit node and the clock field into the declarations steps 2 to 4 read, in authored order; the same document with `dimensions` and `units` absent reads as one with both lists empty; a selected document whose `units` holds a unit with `scale` `0` refuses at stage `package_read` with FR-154's `invalid_model_binding`/`malformed-declaration` and its loci. | Test (TC-280) |
@@ -6809,6 +6875,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-518 | FR-819-AC-1's tank generates the mode enum `[Fill, Drain]` in that order; hybrid step `operation` and state `mode` reference that exact enum, `index` is `Integer`, `arguments` is an empty record, and `before`/`after`/`initial`/`final` share the trajectory-local state type with `h` of its declared type. Hybrid `delay` and `elapsed` reference the exact builtin `scalar_type`/`rational` node used by `dwell_grid`; no invented time-unit node, receiver or native invocation ordinal is present. FR-819's universal trajectory semantics and FR-193 enclosure evidence represent initial-set and parameter uncertainty. | Test (TC-2037) |
 | FR-322-AC-519 | Operations whose receivers are `Server` and `Worker` generate a receiver union with one payload case for each distinct `Reference<Server>` and `Reference<Worker>` type; an additional receiverless operation makes the field optional. Both receiver types remain supported. Operation/case mismatches or a receiver on the receiverless operation give FR-650's plan-substitution method failure (exit `30`, no outcome document), or reject the internal certificate's `closure` rule at the tampered entry. | Test (TC-2037, TC-1955) |
 | FR-322-AC-520 | A `composition` item's component ids resolve against the component's graph. In a request-style document about `fixtures/positive-dependency-call.json` (package `example`) carrying `fixtures/positive-dependency-library.json` in `dependencies`, whose `composition` item's slot `0` derives from a guarantee whose `component` names the `components` entry `{name: "B", package: "test/predicates"}`, the `component-guarantee` key's `claim` node `{"package": "test/predicates", "path": ["composite_type", "set", {"node": 6}], "ordinal": 0}` rebuilds, against the library's graph, to the structural key of library node `8` (`Set<Lib::Point>`, operand row `[6]`) (`NI-25`), and an `interface-mismatch` counterexample whose `component` is `B` and whose `interface` is `{"package": "test/predicates", "path": ["composite_type", "reference", {"node": 14}], "ordinal": 0}` rebuilds to the key of library node `15` (`NI-26`). The NI-25 claim written with `{"node": 19}`, not below the library's 19 nodes, refuses `malformed_wire` at `/items/0/premises/0/key/claim/node/path/2/node` (`NI-27`). The NI-25 key whose guarantee `component` names no `components` entry, and the one whose subject identity carries a package other than `test/predicates`, each refuse `invalid_runtime_input`/`invalid-value` at `/items/0/premises/0/key`, before any range check (`NI-28`). `positive-dependency-call.json` with a `correspondence`/`component_composition` node appended at index `4` whose `guarantees[0].clause` is the node-held id of the library's `Int[0, 9]` (operand slot `0`, row `[0]` naming the importer's Integer node), which names no temporal clause node of `test/predicates`, refuses `missing_declaration`/`missing-name` at `/semantic_graph/nodes/4/body/guarantees/0/clause` (`NI-29`). No byte of any published fixture changes. | Test (TC-233; NI-25..NI-29) |
+| FR-322-AC-521 | A `component_composition` node's operand row entry may be a dependency position. `fixtures/positive-dependency-call.json`, read with `fixtures/positive-dependency-library.json` supplied as its direct dependency `test/predicates` (19 nodes), with a `correspondence`/`component_composition` node appended at index `4` whose `guarantees[0].clause` and `dependencies` entry are `{"package": "test/predicates", "path": ["composite_type", "set", {"operand": 0}], "ordinal": 0}` and whose row is `[{"package": "test/predicates", "node": 6}]`, passes the V2 schema and the operand checks; the clause rebuilds to the structural key of library node `8` (`Set<Lib::Point>`), and no node of the importer's graph has that key or library node `6`'s (`NI-30`). A component clause whose operand the importer also holds is written with the importer's graph index and resolves by its rebuilt key to the component package's clause node: a library temporal clause over library node `0` (Integer), named with the row `[0]` (the importer's Integer node), is admitted with no `missing-name` refusal (`NI-37`). Each of these refuses `malformed_wire`, with no cause, at `/semantic_graph/operand_rows/4/0`: the entry's `package` `no/such-package` (`NI-31`); its `node` `19`, not below the library's 19 nodes (`NI-32`); and its `package` `other/lib`, a package the reader is supplied that no `lock.dependency_selections` entry names (`NI-40`). A dependency position in the row of node `3`, a `function` node, refuses at `/semantic_graph/operand_rows/3/0` (`NI-38`). With node `4`'s own `node_id` path extended by `{"operand": 0}`, which names the dependency position, it refuses `malformed_wire` at `/semantic_graph/nodes/4/node_id/path/2/operand` (`NI-33`), also when that position is out of range, because the slot precedes the row entry in canonical bytes (`NI-39`). The V2 schema refuses, as `malformed_wire`, the entry with an extra member (`NI-34`), the entry whose `node` is an object (`NI-35`), and the clause's slot written as the path segment `{"package": "test/predicates", "node": 6}` (`NI-36`). No byte of any published fixture changes. | Test (TC-233; NI-30..NI-40) |
 
 ### FR-322-AC-467
 
