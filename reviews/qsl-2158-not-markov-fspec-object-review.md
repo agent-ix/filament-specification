@@ -1,0 +1,24 @@
+---
+id: SR-202611210022442313144108543
+title: "Domain object review of NotMarkov cause"
+type: SpecReview
+analysis: base
+scope: "agent-ix/filament-specification; QSL-2158; spec/objects/interfaces/FR-331-backend-provider-envelope.md; proposals/backend-provider-v1/schema.json; proposals/backend-provider-v1/vectors.json"
+review_set: subset
+---
+
+## Summary
+
+PASS for the frozen PR793 delta; no defect found. FR-331 already declares object: value_object and owns the envelope. New post_state_count belongs to the existing closed not-markov cause, without creating an orphan object. Count and State definitions and unchanged TransitionIdentity anchor its types. Local FR-406 and external FSL FR-187 anchors exist and agree about zero/several behavior; their older compact cause notations describe semantic context rather than overriding FR-331 wire spelling. No separate object-review enum exists in the installed SpecReview schema, so analysis: base records this method explicitly in the title/body. No unrelated object inventory or ecosystem sweep was performed.
+
+Reviewed head f0fd6c10305a0aab1294338cc0368ee18a2a38a1 against base 9f5b30a525a8729ddb836c8eb9b3821d30d0de4f. Full three-file diff and owning FR-331/TC-431, FR-406 and FSL FR-187 context inspected. Direct Codex review; exact runtime model ID is not exposed (GPT-6 family only). No external judge or subagent used. No active AssuranceProfile was found in the repository spec tree; direct scoped review applies, with no enforced-run acceptance claimed.
+
+## Findings
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-001 | low | No issues found (placeholder) | - |
+
+## Verification limits
+
+No cargo command or runtime execution was performed. Both assigned Rust vector harness runs are pending. Static schema and structural review do not establish producer witness authenticity, capture order, or runtime conformance. No global matrix or advisor sweep was run.
