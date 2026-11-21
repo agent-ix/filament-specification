@@ -741,8 +741,9 @@ never proves that the unsearched product has no deadline miss. It is present on
 every incomplete task-automaton search stopped by a search limit or unresolved
 continuous dynamics; other incomplete results carry no `task_search`.
 
-An exhaustive result whose explored graph closed, with no node left open,
-but whose closure no accepted certificate has certified SHALL settle `incomplete` with cause
+When an exhaustive result's explored graph is closed, with no node left open,
+and its certificate is absent or no core certificate check has been performed,
+the producer SHALL settle the item `incomplete` with cause
 `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}`.
 The search left nothing open, so the cause carries no `task_search` evidence
 and no frontier; but a closed search is not a proof until a checker accepts
@@ -750,7 +751,11 @@ its certificate, so no `proved` verdict may be given. A release-backed
 schedulability run on the task-product subject before the FR-418
 task-product certificate is checked settles with this cause (FR-419), as
 does an exhaustive HP-1 step-relation result closed without an accepted
-core product-closure certificate. The
+core product-closure certificate because the certificate is absent or its
+check has not been performed. A core check that rejected the certificate
+retains `inconclusive` with `certificate-rejected{rule, at}`; a check stopped
+by a limit retains its `incomplete` limit cause, rather than
+`certificate-unchecked`. The
 rule that `bounded-search-incomplete` carries `task_search` evidence and a
 non-empty `unresolved-choice` frontier applies to reason
 `unresolved-dynamics` only.
