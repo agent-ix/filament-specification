@@ -266,6 +266,10 @@
           "items": {
             "$ref": "#/$defs/Identifier"
           }
+        },
+        "source_unit": {
+          "description": "FR-322 \"Hyper clause source unit\": the lock.sources identity of the source unit that declares a hyper clause; required on a row whose declaration is a claim/hyperproperty node and absent on every other row (reader rule).",
+          "$ref": "#/$defs/DefinitionRef"
         }
       },
       "additionalProperties": false
@@ -5622,6 +5626,10 @@
             },
             "name": {
               "$ref": "#/$defs/Nonempty"
+            },
+            "binder": {
+              "description": "FR-322 \"The binder link\": the NodeRef of a let binder's value/parameter node; required on a filament.op.control.let binding term and refused on every other binding (reader rule).",
+              "$ref": "#/$defs/NodeRef"
             },
             "value": {
               "anyOf": [
@@ -14974,13 +14982,19 @@
       "type": "object",
       "required": [
         "origin",
-        "path"
+        "up",
+        "down"
       ],
       "properties": {
         "origin": {
           "$ref": "#/$defs/BodyLocationOrigin"
         },
-        "path": {
+        "up": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "down": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/KeyOrdinal"

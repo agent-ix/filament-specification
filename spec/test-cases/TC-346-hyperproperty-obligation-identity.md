@@ -51,6 +51,8 @@ refusal and location.
 | HI-16 | HI-08 with: (a) the `align_skip` binding removed (six bindings); (b) an added alias `W` in `subjects` that no Group names; HI-09 with (c) a `subjects` binding, (d) an `alias` binding on its Group, (e) a fairness reference in its Group | each `invalid_semantic_graph`: (a) at the first binding that breaks the layout, (b) at `W`'s `subjects` binding, (c) to (e) at the added member (FR-402-AC-6) |
 | HI-17 | HB-01 and HB-01 with trace variable `a` renamed `c` throughout | different node ids and different obligation identities (FR-402-AC-3) |
 | HI-18 | HI-08 with `b`'s Group `variable` set to `a`; HI-09 with a second Group `forall trace a`; HB-02 unchanged | the first two refuse `ambiguous_declaration`/`ambiguous-name` naming `a` at the later Group's `variable` binding, `/semantic_graph/nodes/{n}/body/members/3/value/members/1/members/0`, before the Subjects step; HB-02 is admitted (FR-402-AC-10) |
+| HI-19 | FR-402-AC-14's `Fwd` and `Rev` over HB-01's vault, together and each alone | one body wrapper for both `hyperproperty` nodes, scope `slot_sv_sa` (level 0, `over`) then `slot_sv_sb` (level 1); `Rev` alone emits `Fwd`'s wrapper `node_id`; admitted (FR-402-AC-14) |
+| HI-20 | HI-19's `Fwd` package with (a) the two slot levels swapped; (b) the levels right and `over` on `slot_sv_sb`; (c) a second `slot_sv_sb` node at level 2 also read; FR-402-AC-15's `Linked` | (a) `invalid_semantic_graph` at `slot_sv_sa`'s `body/members/1`; (b) `invalid_model_binding`/`malformed-declaration` at the wrapper's `body/arguments/0`; (c) `invalid_semantic_graph` at the second node's `body/members/1`; `Linked` admitted with `r` at level 1 (FR-402-AC-15) |
 
 ## Expected Results
 

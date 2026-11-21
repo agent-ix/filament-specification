@@ -17,20 +17,20 @@ result positions of FR-322 "Integer containment" (a function result,
 each branch of an `if`, a `let` body, a `case` arm body and a `let`
 binder), and that it widens nothing else: a range that is not contained,
 `Integer` at an `Int[..]`, a constructor over a contained element and a bare
-call argument still refuse. Scope: FR-322-AC-495 to FR-322-AC-502.
+call argument still refuse. Scope: FR-322-AC-495 to FR-322-AC-502 and FR-322-AC-512.
 
 ## Test Procedure
 
-1. Validate and read each case IC-01 to IC-20 of
+1. Validate and read each case IC-01 to IC-21 of
    `proposals/checked-package-v2/integer-containment-vectors.json`.
 2. For each admitted case, confirm that the graph holds no `convert` node
    over the contained term.
+3. Apply each binder-link mutation FR-322-AC-512 lists to IC-14 and read the refusal.
 
 Test: `tests/checked_package_v2.rs` `tc_2099_integer_containment`. The
 vector file serializes the packages that the contract-ir strict reader's own
-tests build (QSL-2709), so the two cannot drift. IC-15 is carried as
-admitted and not enforced: the contract-ir reader makes no binder refusal
-until a binder id link lands, and the test asserts none for it.
+tests build (QSL-2709), so the two cannot drift. Every `let` binding term carries its `binder` link (FR-322 "The binder
+link"), so IC-15 and IC-21 are enforced.
 
 ## Expected Results
 
@@ -51,11 +51,9 @@ until a binder id link lands, and the test asserts none for it.
   result `Int[0, 9]` with an `Int[0, 20]` arm) `ill_typed`/`operator-ineligible`
   at the `case` node.
 - IC-14 (`let y: Integer = x in g(y)`) admitted with no `convert` node; IC-15
-  (binder typed `Int[0, 999]` over an `Int[0, 1000]` value) is required to
-  refuse `ill_typed`/`operator-ineligible` at the `let` application; pending
-  QSL-2728 (no id-level link from a `let` binding to its binder node) the
-  vector carries it admitted with `enforced: false` and the test asserts no
-  refusal; IC-19 (binder
+  (binder typed `Int[0, 999]` over an `Int[0, 1000]` value) refuses
+  `ill_typed`/`operator-ineligible` at the `let` application, and so does
+  IC-21 (the same binder never read by the body); IC-19 (binder
   typed `Int[0, 1000]`, passed bare to the `Integer` parameter)
   `ill_typed`/`operator-ineligible` at the call application; IC-20 (binder
   typed `Money` over a `TaxedMoney` value) admitted.
@@ -63,3 +61,4 @@ until a binder id link lands, and the test asserts none for it.
   `Int[0, 20]` of `Int[0, 9]` and `Int[5, 20]` branches) admitted; IC-18
   (`Int[0, 1000]` else-branch under an `Int[0, 10]` result, no narrow)
   `ill_typed`/`operator-ineligible` at the `if` application.
+- FR-322-AC-512's link mutations of IC-14 (binder removed, misnamed, outside `dependencies`, on another binding, a second same-named parameter read) each refuse `invalid_package`/`invalid-value` at the place that criterion states.

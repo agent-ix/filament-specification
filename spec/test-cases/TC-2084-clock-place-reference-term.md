@@ -15,7 +15,7 @@ Verify that `ref(p)` is carried as the `filament.op.clock_reference.ref`
 application typed by the one `scalar_type`/`clock_reference` node, that it
 and `present(p)` are evaluated per instance under a population binder and
 through a reference, that `Reference<Clock>` is a data member, and that the
-reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-6.
+reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-7.
 
 ## Test Procedure
 
@@ -31,6 +31,7 @@ reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-6.
 5. Emit FR-829-AC-5's `Tag` record and tuple, evaluate `eq` and `ne`, and
    read the catalog and the V2 schema `proposals/checked-package-v2/schema.json`.
 6. Feed the strict reader each malformed variant of FR-829-AC-6.
+7. Admit FR-154-AC-53's `acme/rpc` package, check and emit FR-829-AC-7's postcondition, read the type node of `r` and the postcondition's nodes, admit the package strictly, and read a post-state's key.
 
 ## Expected Results
 
@@ -38,3 +39,4 @@ reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-6.
   FR-829-AC-5 state.
 - Step 6: each variant refuses with the code, cause and pointer FR-829-AC-6
   states.
+- Step 7: `r` is typed by the `clock_reference` node with no node for `ClockRef`; the postcondition is the `eq` over the read of `r` and the place reference; the package is admitted; the key holds the place id.

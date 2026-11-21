@@ -85,7 +85,8 @@ type or any of that type's coefficient bounds, scale bounds or rounding mode.
 ### Classification
 
 - An objective is a *per-step sum* when it is `length`, `elapsed` under tick time (FR-808), or an
-  expression `Reach.steps.sum(s => c)` (optionally plus a constant) whose
+  expression `Reach.steps.sum(s => c)` (the step-sum form of FR-194
+  "Source form", optionally plus a constant) whose
   term `c` reads only the step record `s`, and the objective's type is an
   exact type. Its value is the sum of the per-step costs.
 - A per-step sum is *non-negative* when every step cost is `>= 0`: either

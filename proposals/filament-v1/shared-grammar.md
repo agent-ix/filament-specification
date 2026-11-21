@@ -476,8 +476,10 @@ record-value  = qualified-name, '{', field-value, { ',', field-value }, '}' ;
 field-value   = ident, ':', expr ;
 
 postfix       = primary, { '.', member-name,
-                           [ '(', [ expr, { ',', expr } ], ')' ]
+                           [ '(', [ call-argument, { ',', call-argument } ], ')' ]
                          | '[', expr, ']' } ;
+call-argument = lambda | expr ;
+lambda        = ident, '=>', expr ;
 product       = unary, { ('*' | '/' | 'div' | 'rem' | 'mod'), unary } ;
 unary         = ('not' | '-'), unary | power ;
 power         = postfix, [ '^', signed-int ] ;
@@ -586,6 +588,20 @@ literal, the position read of a tuple (FR-143 "Tuple position read"); a tuple
 position is never read as `p.0`. `Map<K, V>[a, b]` is the source map type of
 FR-144 "Map values". `Map` is matched as a type constructor only in `type-ref`
 and stays an identifier elsewhere.
+
+A `lambda` `s => e` binds the identifier `s` over the body `e`. `=>` is one
+two-character punctuation token, scanned by longest match, so `s=>e` and
+`s => e` scan alike and `=` followed by `>` is never read as two operators;
+it is a token of this production alone. The body extends as far as an
+`expr` does, to the closing `)` of the call. A `lambda` is admitted in
+exactly one position: the sole argument of the member call
+`D.steps.sum(s => e)` over the `steps` of a plan-synthesis declaration
+`D` (FR-650), where `s` ranges over the plan's step records in step order.
+[FR-194](../../spec/functional/analysis/FR-194-synthesize-bounded-candidates.md)
+"Source form" fixes its meaning and its refusals; a `lambda` written
+anywhere else is refused there, not by the grammar. The grammar admits it
+inside every member call so that this one form needs no production of its
+own and its refusal is located at the lambda.
 
 The complete-V1 `power` production is the integer power of a quantity
 (FR-142, lowered to `filament.op.quantity.pow` by FR-322 "Quantity integer

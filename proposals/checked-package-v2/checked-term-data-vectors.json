@@ -6840,6 +6840,27 @@
               "body": {
                 "arguments": [
                   {
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "fixture",
+                      "path": [
+                        "value",
+                        "parameter",
+                        "name",
+                        {
+                          "operand": 0
+                        },
+                        "#ieee_operand",
+                        "level",
+                        {
+                          "operand": 1
+                        },
+                        "4",
+                        {
+                          "operand": 2
+                        }
+                      ]
+                    },
                     "name": "#ieee_operand",
                     "term": "binding",
                     "value": {
@@ -6850,13 +6871,13 @@
                           "expression",
                           "call",
                           {
-                            "operand": 0
+                            "operand": 3
                           },
                           "filament.op.ieee.float64.sqrt",
                           "filament.value.ieee754-2019-default/v1",
                           "call",
                           {
-                            "operand": 1
+                            "operand": 2
                           }
                         ]
                       },
@@ -6871,15 +6892,15 @@
                         "expression",
                         "binary",
                         {
-                          "operand": 2
+                          "operand": 4
                         },
                         {
-                          "operand": 3
+                          "operand": 5
                         },
                         "filament.op.boolean.and",
                         "binary",
                         {
-                          "operand": 4
+                          "operand": 6
                         }
                       ]
                     },
@@ -6912,15 +6933,15 @@
                     "expression",
                     "binary",
                     {
-                      "operand": 2
+                      "operand": 4
                     },
                     {
-                      "operand": 3
+                      "operand": 5
                     },
                     "filament.op.boolean.and",
                     "binary",
                     {
-                      "operand": 4
+                      "operand": 6
                     }
                   ]
                 },
@@ -6931,13 +6952,34 @@
                     "expression",
                     "call",
                     {
-                      "operand": 0
+                      "operand": 3
                     },
                     "filament.op.ieee.float64.sqrt",
                     "filament.value.ieee754-2019-default/v1",
                     "call",
                     {
+                      "operand": 2
+                    }
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "value",
+                    "parameter",
+                    "name",
+                    {
+                      "operand": 0
+                    },
+                    "#ieee_operand",
+                    "level",
+                    {
                       "operand": 1
+                    },
+                    "4",
+                    {
+                      "operand": 2
                     }
                   ]
                 }
@@ -6948,17 +6990,20 @@
                 "path": [
                   "expression",
                   "let",
+                  {
+                    "operand": 7
+                  },
                   "#ieee_operand",
                   {
-                    "operand": 5
+                    "operand": 8
                   },
                   {
-                    "operand": 6
+                    "operand": 9
                   },
                   "filament.op.control.let",
                   "let",
                   {
-                    "operand": 4
+                    "operand": 6
                   }
                 ]
               },
@@ -6984,6 +7029,27 @@
               "body": {
                 "arguments": [
                   {
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "fixture",
+                      "path": [
+                        "value",
+                        "parameter",
+                        "name",
+                        {
+                          "operand": 0
+                        },
+                        "#ieee_operand",
+                        "level",
+                        {
+                          "operand": 1
+                        },
+                        "3",
+                        {
+                          "operand": 2
+                        }
+                      ]
+                    },
                     "name": "#ieee_operand",
                     "term": "binding",
                     "value": {
@@ -6994,13 +7060,13 @@
                           "expression",
                           "call",
                           {
-                            "operand": 0
+                            "operand": 3
                           },
                           "filament.op.ieee.float64.sqrt",
                           "filament.value.ieee754-2019-default/v1",
                           "call",
                           {
-                            "operand": 1
+                            "operand": 2
                           }
                         ]
                       },
@@ -7014,17 +7080,20 @@
                       "path": [
                         "expression",
                         "let",
+                        {
+                          "operand": 4
+                        },
                         "#ieee_operand",
                         {
-                          "operand": 2
+                          "operand": 5
                         },
                         {
-                          "operand": 3
+                          "operand": 6
                         },
                         "filament.op.control.let",
                         "let",
                         {
-                          "operand": 4
+                          "operand": 7
                         }
                       ]
                     },
@@ -7057,13 +7126,13 @@
                     "expression",
                     "call",
                     {
-                      "operand": 0
+                      "operand": 3
                     },
                     "filament.op.ieee.float64.sqrt",
                     "filament.value.ieee754-2019-default/v1",
                     "call",
                     {
-                      "operand": 1
+                      "operand": 2
                     }
                   ]
                 },
@@ -7073,17 +7142,41 @@
                   "path": [
                     "expression",
                     "let",
+                    {
+                      "operand": 4
+                    },
                     "#ieee_operand",
                     {
-                      "operand": 2
+                      "operand": 5
                     },
                     {
-                      "operand": 3
+                      "operand": 6
                     },
                     "filament.op.control.let",
                     "let",
                     {
-                      "operand": 4
+                      "operand": 7
+                    }
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "value",
+                    "parameter",
+                    "name",
+                    {
+                      "operand": 0
+                    },
+                    "#ieee_operand",
+                    "level",
+                    {
+                      "operand": 1
+                    },
+                    "3",
+                    {
+                      "operand": 2
                     }
                   ]
                 }
@@ -7094,17 +7187,20 @@
                 "path": [
                   "expression",
                   "let",
+                  {
+                    "operand": 8
+                  },
                   "#ieee_operand",
                   {
-                    "operand": 5
+                    "operand": 9
                   },
                   {
-                    "operand": 6
+                    "operand": 10
                   },
                   "filament.op.control.let",
                   "let",
                   {
-                    "operand": 4
+                    "operand": 7
                   }
                 ]
               },
@@ -7316,17 +7412,20 @@
                         "path": [
                           "expression",
                           "let",
-                          "#ieee_operand",
                           {
                             "operand": 3
                           },
+                          "#ieee_operand",
                           {
                             "operand": 4
+                          },
+                          {
+                            "operand": 5
                           },
                           "filament.op.control.let",
                           "let",
                           {
-                            "operand": 5
+                            "operand": 6
                           }
                         ]
                       },
@@ -7349,17 +7448,20 @@
                   "path": [
                     "expression",
                     "let",
-                    "#ieee_operand",
                     {
                       "operand": 3
                     },
+                    "#ieee_operand",
                     {
                       "operand": 4
+                    },
+                    {
+                      "operand": 5
                     },
                     "filament.op.control.let",
                     "let",
                     {
-                      "operand": 5
+                      "operand": 6
                     }
                   ]
                 },
@@ -7559,20 +7661,27 @@
               16
             ],
             [
-              16,
+              3,
+              2,
               4,
+              16,
               12,
               10,
               0,
+              7,
               17,
               13
             ],
             [
-              14,
+              3,
+              2,
               4,
+              14,
+              7,
               17,
               13,
               0,
+              5,
               15,
               18
             ],
@@ -7586,6 +7695,7 @@
               3,
               2,
               4,
+              5,
               15,
               18,
               0
@@ -8559,6 +8669,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 7
+                },
                 "#ieee_operand",
                 {
                   "node": 17
@@ -8593,6 +8706,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 5
+                },
                 "#ieee_operand",
                 {
                   "node": 15
@@ -8627,6 +8743,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 5
+                },
                 "#ieee_operand",
                 {
                   "node": 15
@@ -8661,6 +8780,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 5
+                },
                 "#ieee_operand",
                 {
                   "node": 15
@@ -10661,6 +10783,27 @@
               "body": {
                 "arguments": [
                   {
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "fixture",
+                      "path": [
+                        "value",
+                        "parameter",
+                        "name",
+                        {
+                          "operand": 0
+                        },
+                        "#ieee_operand",
+                        "level",
+                        {
+                          "operand": 1
+                        },
+                        "3",
+                        {
+                          "operand": 2
+                        }
+                      ]
+                    },
                     "name": "#ieee_operand",
                     "term": "binding",
                     "value": {
@@ -10671,10 +10814,10 @@
                           "expression",
                           "binary",
                           {
-                            "operand": 0
+                            "operand": 3
                           },
                           {
-                            "operand": 1
+                            "operand": 4
                           },
                           "filament.op.ieee.float64.add",
                           "filament.value.ieee754-2019-default/v1",
@@ -10695,15 +10838,15 @@
                         "expression",
                         "binary",
                         {
-                          "operand": 3
+                          "operand": 5
                         },
                         {
-                          "operand": 4
+                          "operand": 6
                         },
                         "filament.op.boolean.and",
                         "binary",
                         {
-                          "operand": 5
+                          "operand": 7
                         }
                       ]
                     },
@@ -10736,15 +10879,15 @@
                     "expression",
                     "binary",
                     {
-                      "operand": 3
+                      "operand": 5
                     },
                     {
-                      "operand": 4
+                      "operand": 6
                     },
                     "filament.op.boolean.and",
                     "binary",
                     {
-                      "operand": 5
+                      "operand": 7
                     }
                   ]
                 },
@@ -10755,14 +10898,35 @@
                     "expression",
                     "binary",
                     {
-                      "operand": 0
+                      "operand": 3
                     },
                     {
-                      "operand": 1
+                      "operand": 4
                     },
                     "filament.op.ieee.float64.add",
                     "filament.value.ieee754-2019-default/v1",
                     "binary",
+                    {
+                      "operand": 2
+                    }
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "value",
+                    "parameter",
+                    "name",
+                    {
+                      "operand": 0
+                    },
+                    "#ieee_operand",
+                    "level",
+                    {
+                      "operand": 1
+                    },
+                    "3",
                     {
                       "operand": 2
                     }
@@ -10775,17 +10939,20 @@
                 "path": [
                   "expression",
                   "let",
+                  {
+                    "operand": 8
+                  },
                   "#ieee_operand",
                   {
-                    "operand": 6
+                    "operand": 9
                   },
                   {
-                    "operand": 7
+                    "operand": 10
                   },
                   "filament.op.control.let",
                   "let",
                   {
-                    "operand": 5
+                    "operand": 7
                   }
                 ]
               },
@@ -10811,6 +10978,27 @@
               "body": {
                 "arguments": [
                   {
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "fixture",
+                      "path": [
+                        "value",
+                        "parameter",
+                        "name",
+                        {
+                          "operand": 0
+                        },
+                        "#ieee_operand",
+                        "level",
+                        {
+                          "operand": 1
+                        },
+                        "2",
+                        {
+                          "operand": 2
+                        }
+                      ]
+                    },
                     "name": "#ieee_operand",
                     "term": "binding",
                     "value": {
@@ -10821,10 +11009,10 @@
                           "expression",
                           "binary",
                           {
-                            "operand": 0
+                            "operand": 3
                           },
                           {
-                            "operand": 1
+                            "operand": 4
                           },
                           "filament.op.ieee.float64.add",
                           "filament.value.ieee754-2019-default/v1",
@@ -10844,17 +11032,20 @@
                       "path": [
                         "expression",
                         "let",
+                        {
+                          "operand": 5
+                        },
                         "#ieee_operand",
                         {
-                          "operand": 3
+                          "operand": 6
                         },
                         {
-                          "operand": 4
+                          "operand": 7
                         },
                         "filament.op.control.let",
                         "let",
                         {
-                          "operand": 5
+                          "operand": 8
                         }
                       ]
                     },
@@ -10887,10 +11078,10 @@
                     "expression",
                     "binary",
                     {
-                      "operand": 0
+                      "operand": 3
                     },
                     {
-                      "operand": 1
+                      "operand": 4
                     },
                     "filament.op.ieee.float64.add",
                     "filament.value.ieee754-2019-default/v1",
@@ -10906,17 +11097,41 @@
                   "path": [
                     "expression",
                     "let",
+                    {
+                      "operand": 5
+                    },
                     "#ieee_operand",
                     {
-                      "operand": 3
+                      "operand": 6
                     },
                     {
-                      "operand": 4
+                      "operand": 7
                     },
                     "filament.op.control.let",
                     "let",
                     {
-                      "operand": 5
+                      "operand": 8
+                    }
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "value",
+                    "parameter",
+                    "name",
+                    {
+                      "operand": 0
+                    },
+                    "#ieee_operand",
+                    "level",
+                    {
+                      "operand": 1
+                    },
+                    "2",
+                    {
+                      "operand": 2
                     }
                   ]
                 }
@@ -10927,17 +11142,20 @@
                 "path": [
                   "expression",
                   "let",
+                  {
+                    "operand": 9
+                  },
                   "#ieee_operand",
                   {
-                    "operand": 3
+                    "operand": 6
                   },
                   {
-                    "operand": 6
+                    "operand": 10
                   },
                   "filament.op.control.let",
                   "let",
                   {
-                    "operand": 5
+                    "operand": 8
                   }
                 ]
               },
@@ -11037,17 +11255,20 @@
                         "path": [
                           "expression",
                           "let",
-                          "#ieee_operand",
                           {
                             "operand": 3
                           },
+                          "#ieee_operand",
                           {
                             "operand": 4
+                          },
+                          {
+                            "operand": 5
                           },
                           "filament.op.control.let",
                           "let",
                           {
-                            "operand": 5
+                            "operand": 6
                           }
                         ]
                       },
@@ -11070,17 +11291,20 @@
                   "path": [
                     "expression",
                     "let",
-                    "#ieee_operand",
                     {
                       "operand": 3
                     },
+                    "#ieee_operand",
                     {
                       "operand": 4
+                    },
+                    {
+                      "operand": 5
                     },
                     "filament.op.control.let",
                     "let",
                     {
-                      "operand": 5
+                      "operand": 6
                     }
                   ]
                 },
@@ -11253,28 +11477,36 @@
               15
             ],
             [
+              3,
+              2,
+              4,
               14,
               15,
-              4,
               12,
               10,
               0,
+              7,
               16,
               13
             ],
             [
+              3,
+              2,
+              4,
               14,
               15,
-              4,
+              7,
               16,
               13,
               0,
+              5,
               17
             ],
             [
               3,
               2,
               4,
+              5,
               16,
               17,
               0
@@ -12294,6 +12526,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 7
+                },
                 "#ieee_operand",
                 {
                   "node": 16
@@ -12328,6 +12563,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 5
+                },
                 "#ieee_operand",
                 {
                   "node": 16
@@ -12362,6 +12600,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 5
+                },
                 "#ieee_operand",
                 {
                   "node": 16
@@ -12396,6 +12637,9 @@
               "path": [
                 "expression",
                 "let",
+                {
+                  "node": 5
+                },
                 "#ieee_operand",
                 {
                   "node": 16
@@ -12485,7 +12729,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12526,7 +12771,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12567,7 +12813,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12606,7 +12853,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12648,7 +12896,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12690,7 +12939,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12729,7 +12979,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12768,7 +13019,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -12809,7 +13061,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -12858,7 +13111,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12899,7 +13153,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12940,7 +13195,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12979,7 +13235,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13021,7 +13278,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13063,7 +13321,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13102,7 +13361,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13141,7 +13401,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -13182,9 +13443,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
-                0
-              ]
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13231,7 +13491,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13272,7 +13533,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13313,7 +13575,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13355,7 +13618,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -13399,7 +13663,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -13440,7 +13705,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13482,7 +13748,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13524,7 +13791,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13563,7 +13831,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13616,7 +13885,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13657,7 +13927,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13698,7 +13969,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13737,7 +14009,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13779,7 +14052,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13821,7 +14095,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13860,7 +14135,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13899,7 +14175,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -13954,7 +14231,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13995,7 +14273,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14036,7 +14315,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14075,7 +14355,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14117,7 +14398,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14159,7 +14441,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14198,7 +14481,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14237,7 +14521,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -14278,7 +14563,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -14331,7 +14617,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14372,7 +14659,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14413,7 +14701,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14452,7 +14741,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14494,7 +14784,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14536,7 +14827,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14575,7 +14867,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14614,7 +14907,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -14655,7 +14949,8 @@
                 "kind": "function_body",
                 "name": "g"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -14708,7 +15003,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14749,7 +15045,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14790,7 +15087,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14829,7 +15127,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14871,7 +15170,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14913,7 +15213,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14952,7 +15253,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14991,7 +15293,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -15032,7 +15335,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15086,7 +15390,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15127,7 +15432,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15168,7 +15474,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15207,7 +15514,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15249,7 +15557,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15291,7 +15600,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15330,7 +15640,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15369,7 +15680,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -15410,7 +15722,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15463,7 +15776,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15504,7 +15818,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15545,7 +15860,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15584,7 +15900,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15626,7 +15943,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15668,7 +15986,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15707,7 +16026,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15746,7 +16066,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -15787,7 +16108,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15828,7 +16150,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15881,7 +16204,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "role": "expression",
@@ -15922,7 +16246,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15963,7 +16288,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16002,7 +16328,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16044,7 +16371,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16086,7 +16414,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16125,7 +16454,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16164,7 +16494,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -16205,7 +16536,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -16258,7 +16590,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16299,7 +16632,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16340,7 +16674,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16382,7 +16717,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -16423,7 +16759,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16465,7 +16802,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16507,7 +16845,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16546,7 +16885,780 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          }
+        ]
+      },
+      {
+        "id": "BL-R9-up-beyond-previous-path",
+        "mutation": "the second sqrt row of BL-01 has up 2 where the previous path [0] has one entry",
+        "package": "f",
+        "expected_code": "invalid_package",
+        "expected_cause": "invalid-value",
+        "locus": "/checked_term_data/body_locations/8/location/up",
+        "rows": [
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 6
+                },
+                {
+                  "node": 11
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 9
+                },
+                {
+                  "node": 8
+                },
+                "filament.op.boolean.or",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 12
+                },
+                {
+                  "node": 10
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 1,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.total_order",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 14
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": [
+                0
+              ]
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 16
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 2,
+              "down": [
+                1
+              ]
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          }
+        ]
+      },
+      {
+        "id": "BL-R10-up-not-least",
+        "mutation": "BL-02 with the second sqrt row written {up: 1, down: [0]} after the path [0], whose least form is {up: 0, down: []}",
+        "package": "f",
+        "expected_code": "invalid_package",
+        "expected_cause": "invalid-value",
+        "locus": "/checked_term_data/body_locations/8/location/up",
+        "rows": [
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 6
+                },
+                {
+                  "node": 11
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 9
+                },
+                {
+                  "node": 8
+                },
+                "filament.op.boolean.or",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 12
+                },
+                {
+                  "node": 10
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 1,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.total_order",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 14
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": [
+                0
+              ]
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 16
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 1,
+              "down": [
+                0
+              ]
             },
             "occurrence": {
               "ordinal": 0,
@@ -16627,6 +17739,48 @@
         "target": "Identifier",
         "expected_code": "malformed_wire",
         "value": "#ieee_operand"
+      },
+      {
+        "id": "BL-S5-whole-path-form",
+        "target": "BodyLocation",
+        "expected_code": "malformed_wire",
+        "value": {
+          "origin": {
+            "function": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "f"
+              ]
+            },
+            "index": 0,
+            "kind": "function_body",
+            "name": "f"
+          },
+          "path": [
+            1
+          ]
+        }
+      },
+      {
+        "id": "BL-S6-up-without-down",
+        "target": "BodyLocation",
+        "expected_code": "malformed_wire",
+        "value": {
+          "origin": {
+            "function": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "f"
+              ]
+            },
+            "index": 0,
+            "kind": "function_body",
+            "name": "f"
+          },
+          "up": 1
+        }
       }
     ],
     "carrierless": {
@@ -16635,6 +17789,27 @@
       "expected_code": "invalid_package",
       "expected_cause": "invalid-value",
       "locus": "/checked_term_data/body_locations"
-    }
+    },
+    "deep_body": [
+      {
+        "id": "BL-D1-left-nested-sum",
+        "function": "function d(x: Integer): Integer pure { x + x + ... + x }",
+        "additions": 100000,
+        "rule": "The body is 100,000 filament.op.integer.add applications nested on the left over the parameter x. The body walk visits the outermost application first and each left operand next. The row of the k-th term (k from 0) has path k zeros: the first row is {up: 0, down: []} and every later row {up: 0, down: [0]}. One row per application, each with term_ordinal 0 and origin {kind: function_body, function: <d NodeRef>, name: d, index: 0}.",
+        "rows": 100000,
+        "max_location_entries": 200000,
+        "whole_path_entries": 4999950000,
+        "expected": "admitted"
+      },
+      {
+        "id": "BL-D2-nested-lets",
+        "function": "function e(x: Integer): Integer pure { let x1 = x + 1 in let x2 = x1 + 1 in ... in x100000 }",
+        "lets": 100000,
+        "rule": "Each let binds one filament.op.integer.add application of the previous binder and 1, and the innermost body reads x100000. The walk visits each let value and then its body. The first row is {up: 0, down: [0]}; the row of the k-th term has path k ones then a zero and is written {up: 1, down: [1, 0]}.",
+        "rows": 100000,
+        "max_location_entries_per_row": 3,
+        "expected": "admitted"
+      }
+    ]
   }
 }
