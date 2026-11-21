@@ -25884,7 +25884,7 @@ fn tc_2090_deep_body_vectors() {
         }
         assert!(entries <= 2 * full + full, "{shape}: linear entries");
         if shape == "add" {
-            assert!(entries - full <= 200_000, "BL-D1: at most 200,000 up/down entries");
+            assert!(entries <= 200_000, "BL-D1: at most 200,000 up and down entries together");
         }
     }
 }
