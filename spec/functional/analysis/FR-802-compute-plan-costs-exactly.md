@@ -68,11 +68,19 @@ A sum over `steps` SHALL add its terms in step order, from step 0. Exact
 types make the order immaterial to the value; floating-point types make it
 part of the definition.
 
-Within a step sum, the type checker SHALL use the summand family at the
-objective's scale as a `decimal(c,s)` literal's unique expected type under
-[FR-140](../type-model/FR-140-evaluate-exact-decimals.md), refusing
-`refused { code: ill_typed, cause: ambiguous-literal }` when no unique
-expected type exists.
+The type checker SHALL determine a step sum's summand type from the summand
+expression without reference to the objective, and derive the total's type
+from that complete summand type, including its coefficient bounds, scale
+bounds and rounding mode for a decimal type.
+A decimal literal within the summand takes its unique expected type only
+from the typed operand, declared or annotated position, `convert` target or
+enclosing typed decimal operation specified by
+[FR-140](../type-model/FR-140-evaluate-exact-decimals.md); that complete type
+passes through the position's conditional branches and decimal operands.
+When no such unique expected type exists, type checking SHALL refuse
+`refused { code: ill_typed, cause: ambiguous-literal }`.
+Neither literal spelling nor the objective supplies the summand's decimal
+type or any of that type's coefficient bounds, scale bounds or rounding mode.
 
 ### Classification
 
@@ -103,12 +111,14 @@ by FR-804.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-802-AC-1 | `minimize Reach.steps.sum(s => if s.operation = M::Op::charge then 0.10 else 0.05)` over three steps evaluates to exactly `0.25` (`Decimal`), with no binary rounding, and the certificate is `potential`. | Test (TC-1952) |
+| FR-802-AC-1 | `minimize Reach.steps.sum(s => let cost: Decimal[0,10000;2,2;exact] = if s.operation = M::Op::charge then 0.10 else 0.05 in cost)` over three steps, two `M::Op::charge` and one other, evaluates to exactly `0.25` of type `Decimal[0,10000;2,2;exact]`, with no binary rounding, and the certificate is `potential`. | Test (TC-1952) |
 | FR-802-AC-2 | An objective summing `1/3` over three steps is exactly `1` as a `Rational`; an objective whose intermediate value exceeds `accounting.integer_bits` stops the search `incomplete` naming that setting. | Test (TC-1952) |
 | FR-802-AC-3 | An objective adding `30 s` and `1 min` per step compares in seconds, so a plan of one `1 min` step and one of two `30 s` steps tie at `60 s`. | Test (TC-1952) |
 | FR-802-AC-4 | A step cost `s.after.value - s.before.value` that is negative on some step reclassifies the objective as general, the certificate is `closure`, and `objective.negative_step` names that step. | Test (TC-1952) |
 | FR-802-AC-5 | A `Float64` objective that is NaN on one plan excludes that plan, counts it in `explored.nan_objectives`, and ranks the remaining plans by `totalOrder`; an objective undefined on a plan excludes it and counts it in `explored.undefined_objectives`. | Test (TC-1952) |
 | FR-802-AC-6 | `maximize Reach.final.value` is general and settles with a `closure` certificate; with no objective the plan minimizes `length`. | Test (TC-1952) |
+| FR-802-AC-7 | With `type Cost = Decimal[0,10000;2,2;exact];`, `minimize Reach.steps.sum(s => convert<Cost>(0.10))` over three steps evaluates to exactly `0.30`; the literal and total have the complete `Cost` type, including coefficient bounds `[0,10000]`, scale bounds `[2,2]` and mode `exact`, and the non-negative per-step sum takes a `potential` certificate. | Test |
+| FR-802-AC-8 | `minimize Reach.steps.sum(s => if s.operation = M::Op::charge then 0.10 else 0.05)` and the same objective with `decimal(10,2)` and `decimal(5,2)` in place of its decimal primaries both refuse at type checking with `refused { code: ill_typed, cause: ambiguous-literal }`: neither summand has an FR-140 source of a unique expected decimal type, and neither the objective nor the literal spellings supplies one. | Test |
 
 ## Dependencies
 
