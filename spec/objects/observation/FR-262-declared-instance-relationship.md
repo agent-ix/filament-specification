@@ -94,32 +94,39 @@ infrastructure."
 - **Absence** — every key component of an offered relationship is required;
   missing/empty, wrong-kind, foreign-authority, reversed or incompatible values
   refuse. Absence of any admitted candidate for a required slot is the distinct
-  `missing` incomplete outcome, never a default relationship. A conflicting or
+  `missing` outcome with incomplete admission status, never a default
+  relationship. A conflicting or
   ambiguous candidate refuses.
 
 ## Correlation outcomes and distinct subjects
 
 The closed outcome set is `resolved`, `missing`, `conflicting`, `ambiguous`.
 `missing` means no admitted candidate exists for a required slot and is
-incomplete. `conflicting` means a candidate with the required declaration,
+incomplete. An explicitly partial relationship extent contributes an
+`IncompleteRelationshipExtent{required}` reason to the existing incomplete
+admission result; it is not another correlation outcome. It contributes that
+reason even if one or more matching candidates are present, unless a known
+incompatible candidate establishes `conflicting`. `conflicting` means a
+candidate with the required declaration,
 producer authority and interface version, and the required source endpoint,
 asserts a different target endpoint; it refuses. Reversing the declared
-source/target direction fails relationship-reference validation and is an
-`InvalidReference`, before slot evaluation. `ambiguous` means at least two
+source/target direction fails relationship-reference construction and is an
+`InvalidReference` before resolver admission. `ambiguous` means at least two
 distinct admitted candidates match one required slot and refuses. For one
 required slot, any conflicting candidate makes the result `conflicting`, even
 when another candidate matches; conflict takes precedence over match count.
 A relationship declaration or kind outside the checked package or a foreign
-authority is an admission refusal, not a fifth correlation outcome.
+authority is an admission refusal, not another correlation outcome.
 
 An unlisted relationship extent is not supplied. A complete empty extent is
 known empty; when it leaves a required slot without a candidate, that slot is
 `missing`. A `complete: false` extent is incomplete. When a required slot uses
 an incomplete extent and no incompatible candidate already proves a conflict,
-the resolver returns an `IncompleteRelationshipExtent` reason for that slot,
-even if one or more matching candidates are present: unseen instances could
-change resolution or ambiguity. A known incompatible candidate still makes the
-slot `conflicting`.
+the resolver returns an `IncompleteRelationshipExtent{required}` reason within
+the existing incomplete admission result for that slot, even if one or more
+matching candidates are present: unseen instances could change resolution or
+ambiguity. This reason is not a fifth correlation outcome. A known incompatible
+candidate still makes the slot `conflicting`.
 
 Workflow instances, messages, receive occurrences, deliveries, attempts,
 effects and receipt observations remain distinct. A receipt is an observation
@@ -132,14 +139,14 @@ the receive occurrence.
 | --- | --- | --- |
 | FR-262-AC-1 | A relationship declared between O1 and its refund does not resolve for O2 sharing a provider or trace infrastructure. | Analysis |
 | FR-262-AC-2 | A missing, foreign or identity-or-version-mismatched relationship declaration key does not resolve and is not reconstructed from a foreign key, trace ID, provider name or ambient configuration. | Analysis |
-| FR-262-AC-3 | `resolved`, `missing`, `conflicting` and `ambiguous` are the complete unequal outcome set; missing is incomplete, conflicting/ambiguous refuse, and a declaration outside the checked package is an admission refusal rather than another relationship outcome. | Test (TC-141) |
+| FR-262-AC-3 | `resolved`, `missing`, `conflicting` and `ambiguous` are the complete unequal outcome set; missing is incomplete, conflicting/ambiguous refuse, and a declaration outside the checked package is an admission refusal rather than another relationship outcome. `IncompleteRelationshipExtent{required}` is a reason in the existing incomplete admission result, not a fifth correlation outcome. | Test (TC-141) |
 | FR-262-AC-4 | Exact replay of one complete relationship value is idempotent and adds no causal edge; two distinct admitted values satisfying one required slot are ambiguous. | Test (TC-141) |
 | FR-262-AC-5 | Source and target each retain a complete FR-287 key in authored order; empty, wrong-kind, foreign, reversed or statically incompatible endpoints refuse. | Test (TC-141) |
 | FR-262-AC-6 | Message, receive occurrence, delivery and receipt observation remain non-interchangeable even when transport or display data match. | Test (TC-141) |
 | FR-262-AC-7 | Withdrawn: it existed only for the declaration digest and its domain, which the relationship no longer carries. | Withdrawn |
-| FR-262-AC-8 | For one required slot, a matching candidate together with a candidate that asserts an incompatible endpoint returns `conflicting`; two distinct matching candidates with no incompatible candidate return `ambiguous`. Reversed direction is `InvalidReference` before slot evaluation. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_relationship_conflict_precedes_match_count`, `filament-observation/tests/admission.rs::tc005_relationship_reversal_is_invalid_reference`) |
-| FR-262-AC-9 | Exact replay of one producer identity and complete relationship value is one candidate; reusing one producer identity with different relationship facts refuses as an identity contradiction before slot evaluation; equal facts with distinct producer identities are distinct candidates. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_same_relationship_identity_cannot_rebind`, `filament-observation/tests/admission.rs::tc005_distinct_identities_are_distinct_candidates`) |
-| FR-262-AC-10 | An unlisted extent and a complete-empty extent yield `missing` for a required slot with no candidate; an incomplete extent yields `IncompleteRelationshipExtent` with or without a matching candidate, unless an incompatible candidate establishes `conflicting`. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_relationship_extent_completeness_controls_resolution`) |
+| FR-262-AC-8 | For one required slot, a matching candidate together with a candidate that asserts an incompatible endpoint returns `conflicting`; two distinct matching candidates with no incompatible candidate return `ambiguous`. Reversed direction is `InvalidReference` during reference construction, before resolver admission. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_relationship_conflict_precedes_match_count`, `filament-observation/tests/admission.rs::tc005_relationship_reversal_is_invalid_reference`) |
+| FR-262-AC-9 | Exact replay of one producer identity and complete relationship value is one candidate; reusing one producer identity with different relationship facts refuses as `RelationshipIdentityContradiction` when resolver identity validation is reached, before slot evaluation; equal facts with distinct producer identities are distinct candidates. An incomplete result reached earlier returns unchanged without identity-rebind checking. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_same_relationship_identity_cannot_rebind`, `filament-observation/tests/admission.rs::tc005_distinct_identities_are_distinct_candidates`, `filament-observation/tests/admission.rs::tc005_pre_slot_incomplete_precedes_identity_rebind`) |
+| FR-262-AC-10 | An unlisted or complete-empty extent with no candidate yields `missing`; an explicitly partial extent yields the existing incomplete admission result with an `IncompleteRelationshipExtent{required}` reason, with or without a matching candidate, unless an incompatible candidate establishes `conflicting`. The reason does not add a correlation outcome. | Test (TC-141, `filament-observation/tests/admission.rs::tc005_relationship_extent_completeness_controls_resolution`) |
 
 ## Dependencies
 
