@@ -230,7 +230,7 @@
         "trace_index": {"$ref": "#/$defs/Decimal"},
         "initial_state": {"$ref": "#/$defs/Count"},
         "binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/TypedValue"}]},
-        "product_state": {"$ref": "#/$defs/State"},
+        "product_state": {"description": "FR-411, FR-413: the state of an exact undefined read; its key is the complete FR-411 product key (ProbabilityProductKey octets) before the read.", "$ref": "#/$defs/State"},
         "row": {"$ref": "#/$defs/Nonempty"}
       },
       "required": ["locus"],
@@ -875,7 +875,7 @@
           "oneOf": [
             {"properties": {"type": {"const": "path-set"}, "paths": {"type": "array", "minItems": 1, "items": {"type": "array", "items": {"$ref": "#/$defs/ProbabilisticStep"}}}}, "required": ["type", "paths"], "additionalProperties": false},
             {"properties": {"type": {"const": "subsystem"}, "certificates": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/ProbabilityCertificate"}}}, "required": ["type", "certificates"], "additionalProperties": false},
-            {"properties": {"type": {"const": "undefined-path"}, "path": {"type": "array", "items": {"$ref": "#/$defs/ProbabilisticStep"}}}, "required": ["type", "path"], "additionalProperties": false}
+            {"description": "FR-413 undefined path: the steps to the first undefined read and the undefined-evaluation it produced, equal to the item cause.", "properties": {"type": {"const": "undefined-path"}, "path": {"type": "array", "items": {"$ref": "#/$defs/ProbabilisticStep"}}, "undefined": {"$ref": "#/$defs/UndefinedEvaluation"}}, "required": ["type", "path", "undefined"], "additionalProperties": false}
           ]
         }
       },

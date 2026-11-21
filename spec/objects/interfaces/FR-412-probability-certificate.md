@@ -61,7 +61,7 @@ components, conditional}`:
 | `objective` | The target or decided states, the reward, the optimisation, and the claim's fairness set when it states one. The optimisation is `minimum` or `maximum` over every scheduler; `workload` under a workload that leaves no choice; or `workload-minimum` or `workload-maximum` under a workload over a timed subject with free delays, the minimum or maximum over those delays' choices. |
 | `kind` | `lower`, `upper`, `exact`, `long-run` or `conditional`. |
 | `values` | One exact rational per product state the certificate names (a dyadic value is an exact rational), keyed by product state key (FR-411). |
-| `ranking` | For `lower` and `exact`: one natural number per named state. |
+| `ranking` | For `lower` and `exact`, and for `upper` under a fairness set with the optimisation `minimum`: one natural number per named state. A `lower` certificate under a fairness set with the optimisation `minimum` carries none ("Fair minimum"). |
 | `policy` | For a lower bound on a maximum or an upper bound on a minimum, including `workload-maximum` and `workload-minimum`: one choice per named state, a memoryless deterministic scheduler. For the `reset` part of an `optimum` certificate: one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
 | `components` | For `long-run`: per component, its value `ρ_C` and a gain–bias pair. |
 | `conditional` | For `conditional`, the certificate of a conditioned reading (FR-407 "Conditioned values"): `{mode: "ratio", numerator, denominator}`, `{mode: "optimum", post, reset}` or `{mode: "vacuous"}`, each part an `exact` certificate of this form. |
@@ -121,8 +121,40 @@ decided, target and `Prob0` states:
 - **Exact**: both conditions, with equality.
 - **Finite horizon**: the ranking is the remaining horizon, which the checker
   reads from the monitor state.
+- **Finite-horizon measure**: over the product of an accumulate, steps or
+  fraction measure (FR-407 "Bounded measures"), the decided states take the
+  payoff of the form, which the checker computes from the measure's control
+  and accumulator in the state's key: 1 or 0 for a comparison event;
+  `[activated and M <= c]` (`M < c` for the `>= c` form) for the numerator
+  and `[activated]` for the denominator of a quantile's `ratio` under a
+  workload; FR-411's shifted reward `[activated] · ([M <= c] − q)` (or
+  `[M < c]`) for a quantile under every scheduler; the completed fraction
+  for a mean. Censored counts as above every threshold and an unactivated
+  measure as not activated. The ranking is the remaining window. A quantile
+  under every scheduler is on the claim's side when the shifted value at the
+  initial state is at least 0 for `<= c` (an `exact` or `lower`
+  certificate), or below 0 for `>= c` (an `exact` or `upper` certificate),
+  or 0 with no activated state reachable from the initial state through
+  tight actions, those whose `Q(y, a)` equals `y`.
 - **Expected reward**: the same conditions with the reward added to `F`, and
   the states whose value exceeds every finite threshold recomputed by graph.
+- **Fair minimum**: with a fairness set and the optimisation `minimum`, let
+  `U` be the union of the maximal fair end components of the product
+  restricted to the states where the target does not hold (FR-411
+  "Reachability"). Values are 1 at target states and 0 at every state of
+  `U`. The value is `1 − max Pr(not target until U)`, so the conditions are
+  those of that maximum read for its complement. `exact`: at every other
+  state `x = min_a Q_a(x)` over every action, and every such state with
+  `x < 1` has a tight action (`Q_a(x) = x`) with a successor of positive
+  probability and a smaller rank, the states of `U` and the states with
+  value 1 having rank 0. `lower`: `x <= Q_a(x)` under every action, with no
+  ranking, since a pre-fixed point of the maximum dominates it. `upper`:
+  `Q_σ(y) <= y` under the policy and the same progress under the policy
+  toward `U` and the states with value 1, so the policy reaches them almost
+  surely and a fair continuation exists from each. With a fairness set and
+  the optimisation `maximum` the conditions are those without a fairness
+  set, because the supremum over fair schedulers is the maximum and a
+  scheduler attaining it continues fairly once its value is decided.
 - **Long-run**: per component, the gain–bias pair satisfies the multichain
   optimality equations for the reward `R · ([P] − ρ_C)` with gain 0, as
   equalities under the component's policy and as inequalities over every
@@ -195,7 +227,10 @@ initial state's value on the claim's side of the threshold: `lower` for a
 proof of `>= θ` or a refutation of `<= θ`; `upper` for a proof of `<= θ` or a
 refutation of `>= θ`; `exact` and `conditional` for either. A `conditional`
 certificate is on the claim's side when its certified value is, and a
-`vacuous` one is on the side of a proof. It refuses a certificate whose
+`vacuous` one is on the side of a proof. A `value-bounds` proof (FR-411)
+carries a `lower` and an `upper` certificate; the one on the claim's side
+meets this rule, and the other is checked by its conditions alone, so that
+both ends of the reported interval are certified. It refuses a certificate whose
 `identity` differs from the item's with `invalid_runtime_input`/`conflicting-identity`.
 A rejected certificate settles the item `inconclusive`,
 `certificate-rejected{rule, at}`, `at` the complete product state key where
@@ -221,8 +256,9 @@ re-enumeration plus one pass over the edges.
 
 - **Identity kind** — *value*, compared componentwise.
 - **Key** — every member above.
-- **Absence** — a `lower` or `exact` certificate without `ranking`, a lower
-  bound on a maximum without `policy`, or a `long-run` certificate without
+- **Absence** — a `lower` or `exact` certificate without `ranking` (except a
+  fair-minimum `lower`), a fair-minimum `upper` without `ranking`, a lower
+  bound on a maximum or an upper bound on a minimum without `policy`, or a `long-run` certificate without
   `components`, a `conditional` certificate without `conditional`, with a
   `mode` other than `ratio`, `optimum` and `vacuous`, with a `ratio` under
   an objective other than `workload`, without a part its mode requires
@@ -248,6 +284,9 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-10 | A `vacuous` certificate is accepted over FR-407-AC-18's variant where `g` is unreachable and rejected `inequality-fails` at the initial state over the model itself; a `conditional` certificate without `conditional` is rejected `malformed` at `conditional`, a `ratio` one without `denominator` `malformed` at `denominator`, a `ratio` one under the objective `minimum` `malformed` at `mode`, and one with mode `"workload"` `malformed` at `mode`. Two states that differ only in `instance` or only in `activation` keep distinct keys after serialization and reading. | Test (TC-2061) |
 | FR-412-AC-11 | Over FR-407-AC-18's model with a further action `stay` that loops at `s0` without activating, for `>= rational(1, 2)` under every scheduler: the `optimum` certificate whose `reset` has value `1/2` at `s0` and at the state after `a` from which `g` is unreachable, policy `b` at `s0` and ranks 1 and 2 is accepted (`1/2 <= 1/2` under `stay`, the reset choice and `b`, `1/2 <= 1/4 + (3/4)(1/2) = 5/8` under `a`). A `reset` with value 0 at both states is rejected: with policy `stay` or the reset choice `rank-broken` at `{s0, part: reset}`, with policy `b` `inequality-fails` there (`F_b = 1/2`). The minimum over all schedulers, 0, is therefore never certified. | Test (TC-2061) |
 | FR-412-AC-12 | On FR-412-AC-11's model, a maximum `reset` certificate for `<= rational(9, 10)` with `y(s0) = 1/2`, policy `b` and no row for the state `u` after `a` from which `g` is unreachable is rejected `malformed` at `values`, and does not prove the claim. Read with `u` counted as 0, it would pass `F_a(y) = 1/4 + (3/4)(0) = 1/4 <= 1/2`, although the true maximum is 1. With `u` at `1/2` it is rejected `inequality-fails` at `{s0, part: reset}`, since `F_a(y) = 1/4 + (3/4)(1/2) = 5/8 > 1/2`. Without a fairness set, a `reset` policy entry that is randomized is rejected `malformed` at `policy`. | Test (TC-2061) |
+| FR-412-AC-13 | A model `W` whose live state `s` has the actions `wait`, back to `s` with probability 1, and `go`, to the target `g` and the non-target terminal `f` with `1/2` each, under `fair strong go`, minimum: the `exact` certificate with values `s` `1/2`, `g` 1, `f` 0 and ranks 1, 0, 0 is accepted for `>= 1/2` (`f`'s terminal stutter is a fair end component, so it lies in `U`); with `s` at 0 or `1/4`, which satisfy the minimum through `wait`, it is rejected `rank-broken` at `s`, and with its fairness set removed the `1/2` certificate is rejected `rank-broken` at `s`. The `lower` certificate `s` `2/5` with no ranking is accepted for `>= 2/5`, and `s` `3/5` is rejected `inequality-fails` at `s` (`Q_go = 1/2`). The `upper` certificate `s` `3/5` with policy `go` and rank 1 is accepted as the upper side of a value-bounds proof; `s` `1/4` with policy `wait` is rejected `rank-broken` at `s`. Over the variant whose `s` has a further action `drift` to a state `u` whose only action loops at `u`, `u` lies in `U` and the minimum at `s` is 0: values `s` 0, `u` 0 with ranks 1, 0 are accepted, and `u` at `1/2` is rejected `inequality-fails` at `u`. | Test (TC-2110) |
+| FR-412-AC-14 | A workload chain whose state `s` goes to itself, to the target `g` and to the non-target terminal `f` with `1/3` each (value `1/2`): the `lower` certificate `s` `7/16`, rank 1, is accepted for `>= 2/5` and the `upper` certificate `s` `9/16` for `<= 3/5`; `lower` `5/8` and `upper` `7/16` are rejected `inequality-fails` at `s`, `lower` `7/16` for `>= 1/2` `threshold-missed` at `s`, and `lower` `7/16` without `ranking` `malformed` at `ranking`. Over `W` with no fairness set, maximum `1/2`: `upper` `s` `3/5` is accepted for `<= 3/5` (every action satisfies `Q_a(y) <= y`); `lower` `s` 1 with policy `wait` and rank 1 is rejected `rank-broken` at `s`, and `lower` `7/16` with policy `go` and rank 1 is accepted as the lower side of a value-bounds proof. | Test (TC-2110) |
+| FR-412-AC-15 | `Retry`'s undelivered state has the action `try`, delivering with `1/2` and otherwise staying; delivered is terminal. For `quantile 0.5 of (steps from holds(true) until holds(delivered) within 4) <= 2` under its workload, the `ratio` certificate whose numerator has values `3/4`, `1/2`, 0, 0 at the active undelivered states of amounts 0, 1, 2 and above the bound, ranked by the remaining window 4, 3, 2, 1, and whose denominator is 1 there, is accepted. With `try` split into `fast` (`1/2`) and `slow` (`1/4`), for `quantile 0.4 of (…) <= 2` under every scheduler the `exact` shifted-reward certificate with values `3/80`, `−3/20`, `−2/5`, `−2/5` is accepted with side `AtLeast`; for `quantile 0.5` its values `−1/16`, `−1/4`, `−1/2`, `−1/2` are rejected `threshold-missed` at the initial state, and the level-0.4 certificate with `3/80` replaced by `fast`'s `9/40` is rejected `inequality-fails` there. `mean of fraction holds(delivered) over [0, 2]` under the workload has the exact initial value `5/12`. | Test (TC-2110) |
 
 ## Dependencies
 
@@ -266,4 +305,5 @@ re-enumeration plus one pass over the edges.
 - C. Baier, J. Klein, S. Klüppelholz and S. Märcker, conditional
   probabilities in Markovian models, TACAS 2014: the reset process of a
   `conditional` certificate.
-- Ticket: STD-137 (paired with QSL-371).
+- Ticket: STD-137 (paired with QSL-371); the fair-minimum, value-bounds and
+  finite-horizon measure conditions: QSL-2158.

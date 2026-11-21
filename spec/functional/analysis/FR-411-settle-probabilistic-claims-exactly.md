@@ -230,7 +230,7 @@ certificate the provider has first checked with the FR-412 checker.
 | Outcome | FR-331 value | FR-243 basis | Proof basis or cause |
 | --- | --- | --- | --- |
 | Exact value on the claim's side of the threshold, equality meeting a non-strict bound and failing the strict reduced bound of `quantile q of M >= c` | `proved` | `closed-scope` | `exact-value{value, reductions}` with an `exact` certificate |
-| Sound interval on the claim's side | `proved` | `closed-scope` | `value-bounds{lower, upper, method, reductions}`, `method` one of `backward-induction{precision_bits}` and `interval-iteration{precision_bits, sweeps}`, with a `lower` or `upper` certificate |
+| Sound interval on the claim's side | `proved` | `closed-scope` | `value-bounds{lower, upper, method, reductions}`, `method` one of `backward-induction{precision_bits}` and `interval-iteration{precision_bits, sweeps}`, with a `lower` and an `upper` certificate, the one on the claim's side meeting the threshold (FR-412) |
 | Bound fails (every scheduler or a workload) | `refuted` | `decisive-counterexample` | an FR-413 counterexample that replays |
 | The claim evaluates undefined at a product state reached with positive probability, under some scheduler or the workload | `refuted` | `decisive-counterexample` | cause `undefined-evaluation`, with `where` and `cause`, and an FR-413 undefined path that replays |
 | Interval straddles the threshold at the budget | `incomplete`, execution `resource-incomplete` | `unavailable` | `precision-budget{lower, upper}` |
