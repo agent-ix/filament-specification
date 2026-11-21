@@ -46,3 +46,11 @@ Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
 | --- | --- | --- |
 | FND-001 | fixed | The row charge is now `1 + B + L` (B = bytes of control.package plus every path segment, L = alias bytes), and the node charge is `1 + Bn` (+ O + m when eligible), both on the FR-358 work counter and charged before inspection. No new counter, no unmetered preflight, and copied bytes are still charged. The vectors' amounts are regenerated and recomputed by the test. |
 | FND-002 | still-open | New this round. Correct the statement and either charge the predecessor bytes the comparison examines or state why they are already paid (the predecessor's own row charge). |
+
+## Dispositions (round 2)
+
+Round 2. Head 7e8fcaf566cd05bb24068b0e26403816a8034086 (fix 7e8fcaf5 on top of a merge of origin/main 9add8a0f), local == remote.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-002 | fixed | The row charge is now one charge, `1 + B + L + Bp`, before inspection, where Bp is the previous row's control text (0 for row 0; the previous alias is not charged), and the false "only this row" wording is gone. Coverage is now `1 + 2·Bn (+ O + m)`, paying for both sides of each node-id comparison. The key, join order, roles, FR-358 counters, G and flag read_storage are unchanged. I recomputed by hand from the data: PC-REL rows 44,81,82,81,84,80,91 = 543 and scan 1341, total 1884; B03 91@542, B04 61@543, B05 88@1883, B12 88@1179, B15 271@323, B16 78@116. The test's Rust model matches, and CO-B16's differing predecessor and current lengths rule out both the "no predecessor" and the "2× current" variants. |

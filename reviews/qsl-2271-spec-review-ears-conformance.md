@@ -38,3 +38,11 @@ Round 1, head ce96a4235251d09d6b4c58d1e13e9c2a4d9ed679.
 | --- | --- | --- |
 | FND-001 | fixed | The Description now states four separately segmented actor obligations (producer, receiving reader, non-receiving reader, consumer) in one FR, with no scope weakened. The producer's capture duty is now a normative SHALL. |
 | FND-002 | still-open | New this round. Split each bullet into single-SHALL statements (for example, the producer MAY publish; when it publishes, it SHALL record ...), or accept the lint warning with a stated reason. |
+
+## Dispositions (round 2)
+
+Round 2. Head 7e8fcaf566cd05bb24068b0e26403816a8034086 (fix 7e8fcaf5 on top of a merge of origin/main 9add8a0f), local == remote.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-002 | fixed | The FR-831 Description is now nine statements, each with one actor, one condition and one modal. They keep the optional wire availability (MAY), the producer's complete pre-deduplication capture with exact Identifier alias and canonical position (SHALL), reader validation and typed read, reader absence reporting and no empty-absence treatment, and the consumer refusal with no empty or guessed premises. `quire validate --scope .` on FR-831 and TC-2113 gives rc=0 and 0 ears/quality warnings. Nothing was weakened. |
