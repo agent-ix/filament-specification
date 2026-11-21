@@ -5627,6 +5627,10 @@
             "name": {
               "$ref": "#/$defs/Nonempty"
             },
+            "binder": {
+              "description": "FR-322 \"The binder link\": the NodeRef of a let binder's value/parameter node; required on a filament.op.control.let binding term and refused on every other binding (reader rule).",
+              "$ref": "#/$defs/NodeRef"
+            },
             "value": {
               "anyOf": [
                 {

@@ -10490,6 +10490,13 @@
                         ]
                       },
                       "term": "reference"
+                    },
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/parameter/y/bounded_domain/integer_range/0/9"
+                      ]
                     }
                   },
                   {
@@ -14181,6 +14188,13 @@
                         ]
                       },
                       "term": "reference"
+                    },
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/parameter/y/scalar_type/integer"
+                      ]
                     }
                   },
                   {
@@ -14225,6 +14239,13 @@
                   "package": "test/families",
                   "path": [
                     "value/parameter/x/bounded_domain/integer_range/0/1000"
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/parameter/y/scalar_type/integer"
                   ]
                 }
               ],
@@ -14545,9 +14566,7 @@
       "id": "IC-15",
       "note": "IC-14 with y and g's parameter typed Int[0, 999], so that only the let binder fails (FR-322-AC-501)",
       "node": 12,
-      "outcome": "admitted",
-      "enforced": false,
-      "pending": "QSL-2728: FR-322 requires ill_typed/operator-ineligible at the let application for the binder, but the wire has no id-level link from a let binding to its binder node, so the contract-ir reader cannot make the refusal yet; its tests pin today's admission as Unenforced (filament-contract-ir FR-038-AC-589). No refusal is asserted here.",
+      "outcome": "refused:ill_typed/operator-ineligible",
       "convert_nodes": 0,
       "package": {
         "capability_report": [
@@ -15344,6 +15363,13 @@
                         ]
                       },
                       "term": "reference"
+                    },
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/parameter/y/bounded_domain/integer_range/0/999"
+                      ]
                     }
                   },
                   {
@@ -15388,6 +15414,13 @@
                   "package": "test/families",
                   "path": [
                     "value/parameter/x/bounded_domain/integer_range/0/1000"
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/parameter/y/bounded_domain/integer_range/0/999"
                   ]
                 }
               ],
@@ -15738,7 +15771,8 @@
             "role": "expression"
           }
         ]
-      }
+      },
+      "locus": "/semantic_graph/nodes/12"
     },
     {
       "id": "IC-16",
@@ -21104,6 +21138,13 @@
                         ]
                       },
                       "term": "reference"
+                    },
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/parameter/y/bounded_domain/integer_range/0/1000"
+                      ]
                     }
                   },
                   {
@@ -21148,6 +21189,13 @@
                   "package": "test/families",
                   "path": [
                     "value/parameter/x/bounded_domain/integer_range/0/1000"
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/parameter/y/bounded_domain/integer_range/0/1000"
                   ]
                 }
               ],
@@ -22039,6 +22087,13 @@
                         ]
                       },
                       "term": "reference"
+                    },
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/parameter/y/model:acme/ledger:record_value_type:ix://acme/ledger/Money"
+                      ]
                     }
                   },
                   {
@@ -22379,6 +22434,1114 @@
           }
         ]
       }
+    },
+    {
+      "id": "IC-21",
+      "note": "IC-15 with the let body the literal true, so the binder y: Int[0, 999] bound to an Int[0, 1000] value is never read; the binder link still checks it (FR-322-AC-512)",
+      "node": 11,
+      "outcome": "refused:ill_typed/operator-ineligible",
+      "convert_nodes": 0,
+      "package": {
+        "capability_report": [
+          {
+            "disposition": "available",
+            "feature": "filament.value.complete/v1"
+          }
+        ],
+        "contract_version": "filament.checked-package/v2",
+        "diagnostics": {
+          "catalog": {
+            "authority": "agent-ix",
+            "identity": "filament.fixture.diagnostics-catalog/v1"
+          },
+          "entries": []
+        },
+        "lock": {
+          "definition_selections": [
+            {
+              "authority": "agent-ix",
+              "identity": "filament.fixture.definition.selection/v1"
+            }
+          ],
+          "dependency_selections": [],
+          "edition": {
+            "definition": {
+              "authority": "agent-ix",
+              "identity": "filament.fixture.edition/v1"
+            },
+            "role": "edition"
+          },
+          "profile_selections": [],
+          "required_features": [
+            "filament.value.complete/v1"
+          ],
+          "sources": [
+            {
+              "authority": "agent-ix",
+              "identity": "filament.fixture.source/v1"
+            },
+            {
+              "authority": "agent-ix",
+              "identity": "filament.fixture.source.secondary/v1"
+            }
+          ]
+        },
+        "name": "test/families",
+        "semantic_graph": {
+          "graph_version": "filament.checked-semantic-graph/v2",
+          "nodes": [
+            {
+              "body": {
+                "members": [],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "acme/ledger",
+                "path": [
+                  "model",
+                  "model_root"
+                ]
+              },
+              "node_tag": "model",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "generated"
+                }
+              ],
+              "owner": {
+                "identity": "acme/ledger",
+                "kind": "model_root"
+              },
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "model_root",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "acme/ledger",
+                "path": [
+                  "model",
+                  "model_root"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              },
+              "node_tag": "scalar_type",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "type"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "integer",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [
+                  {
+                    "name": "min",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "0",
+                      "value_kind": "integer"
+                    }
+                  },
+                  {
+                    "name": "max",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "1000",
+                      "value_kind": "integer"
+                    }
+                  }
+                ],
+                "term": "aggregate"
+              },
+              "dependencies": [
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "scalar_type",
+                    "integer"
+                  ]
+                }
+              ],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "bounded_domain",
+                  "integer_range",
+                  "min",
+                  {
+                    "operand": 0
+                  },
+                  "0",
+                  "max",
+                  "1000"
+                ]
+              },
+              "node_tag": "bounded_domain",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "type"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "integer_range",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "text"
+                ]
+              },
+              "node_tag": "scalar_type",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "type"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "text",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "text"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [
+                  {
+                    "name": "name",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "text"
+                        ]
+                      },
+                      "value": "x",
+                      "value_kind": "text"
+                    }
+                  },
+                  {
+                    "name": "level",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "0",
+                      "value_kind": "integer"
+                    }
+                  }
+                ],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "value/parameter/x/bounded_domain/integer_range/0/1000"
+                ]
+              },
+              "node_tag": "value",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "expression"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "parameter",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "bounded_domain",
+                  "integer_range",
+                  "min",
+                  {
+                    "operand": 0
+                  },
+                  "0",
+                  "max",
+                  "1000"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [
+                  {
+                    "name": "min",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "0",
+                      "value_kind": "integer"
+                    }
+                  },
+                  {
+                    "name": "max",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "999",
+                      "value_kind": "integer"
+                    }
+                  }
+                ],
+                "term": "aggregate"
+              },
+              "dependencies": [
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "scalar_type",
+                    "integer"
+                  ]
+                }
+              ],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "bounded_domain",
+                  "integer_range",
+                  "min",
+                  {
+                    "operand": 0
+                  },
+                  "0",
+                  "max",
+                  "999"
+                ]
+              },
+              "node_tag": "bounded_domain",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "type"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "integer_range",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [
+                  {
+                    "name": "name",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "text"
+                        ]
+                      },
+                      "value": "y",
+                      "value_kind": "text"
+                    }
+                  },
+                  {
+                    "name": "level",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "0",
+                      "value_kind": "integer"
+                    }
+                  }
+                ],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "value/parameter/y/bounded_domain/integer_range/0/999"
+                ]
+              },
+              "node_tag": "value",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "expression"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "parameter",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "bounded_domain",
+                  "integer_range",
+                  "min",
+                  {
+                    "operand": 0
+                  },
+                  "0",
+                  "max",
+                  "999"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              },
+              "node_tag": "scalar_type",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "type"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "boolean",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [
+                  {
+                    "name": "name",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "text"
+                        ]
+                      },
+                      "value": "a",
+                      "value_kind": "text"
+                    }
+                  },
+                  {
+                    "name": "level",
+                    "term": "binding",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value": "0",
+                      "value_kind": "integer"
+                    }
+                  }
+                ],
+                "term": "aggregate"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "value/parameter/a/bounded_domain/integer_range/0/999"
+                ]
+              },
+              "node_tag": "value",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "expression"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "parameter",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "bounded_domain",
+                  "integer_range",
+                  "min",
+                  {
+                    "operand": 0
+                  },
+                  "0",
+                  "max",
+                  "999"
+                ]
+              }
+            },
+            {
+              "body": {
+                "term": "literal",
+                "type": {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ]
+                },
+                "value": "true",
+                "value_kind": "boolean"
+              },
+              "dependencies": [],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "value/literal/true"
+                ]
+              },
+              "node_tag": "value",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "expression"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "literal",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              }
+            },
+            {
+              "body": {
+                "members": [
+                  {
+                    "name": "parameters",
+                    "term": "binding",
+                    "value": {
+                      "members": [
+                        {
+                          "target": {
+                            "ordinal": 0,
+                            "package": "test/families",
+                            "path": [
+                              "value/parameter/a/bounded_domain/integer_range/0/999"
+                            ]
+                          },
+                          "term": "reference"
+                        }
+                      ],
+                      "term": "aggregate"
+                    }
+                  },
+                  {
+                    "name": "body",
+                    "term": "binding",
+                    "value": {
+                      "target": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "value/literal/true"
+                        ]
+                      },
+                      "term": "reference"
+                    }
+                  }
+                ],
+                "term": "aggregate"
+              },
+              "check_mode": "linked",
+              "declaration": {
+                "qualified_name": [
+                  "g"
+                ]
+              },
+              "dependencies": [
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/literal/true"
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/parameter/a/bounded_domain/integer_range/0/999"
+                  ]
+                }
+              ],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "g"
+                ]
+              },
+              "node_tag": "function",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "declaration"
+                }
+              ],
+              "owner": {
+                "authority": "agent-ix",
+                "identity": "filament.fixture.source/v1",
+                "kind": "source"
+              },
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "pure_function",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              }
+            },
+            {
+              "body": {
+                "arguments": [
+                  {
+                    "name": "y",
+                    "term": "binding",
+                    "value": {
+                      "target": {
+                        "ordinal": 0,
+                        "package": "test/families",
+                        "path": [
+                          "value/parameter/x/bounded_domain/integer_range/0/1000"
+                        ]
+                      },
+                      "term": "reference"
+                    },
+                    "binder": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/parameter/y/bounded_domain/integer_range/0/999"
+                      ]
+                    }
+                  },
+                  {
+                    "target": {
+                      "ordinal": 0,
+                      "package": "test/families",
+                      "path": [
+                        "value/literal/true"
+                      ]
+                    },
+                    "term": "reference"
+                  }
+                ],
+                "operation": {
+                  "identity": "filament.op.control.let",
+                  "laws": [],
+                  "leaves": [],
+                  "member": null,
+                  "mode": null
+                },
+                "operator": "let",
+                "result_type": {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ]
+                },
+                "term": "application"
+              },
+              "dependencies": [
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/literal/true"
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/parameter/x/bounded_domain/integer_range/0/1000"
+                  ]
+                },
+                {
+                  "ordinal": 0,
+                  "package": "test/families",
+                  "path": [
+                    "value/parameter/y/bounded_domain/integer_range/0/999"
+                  ]
+                }
+              ],
+              "node_id": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "application/expression/let/11"
+                ]
+              },
+              "node_tag": "expression",
+              "occurrences": [
+                {
+                  "ordinal": 0,
+                  "role": "expression"
+                }
+              ],
+              "schema_version": "filament.checked-semantic-graph/v2",
+              "semantic_form": "let",
+              "semantic_type": {
+                "ordinal": 0,
+                "package": "test/families",
+                "path": [
+                  "scalar_type",
+                  "boolean"
+                ]
+              }
+            }
+          ],
+          "operand_rows": [
+            [],
+            [],
+            [
+              1
+            ],
+            [],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [],
+            [
+              1
+            ],
+            [],
+            [],
+            [],
+            []
+          ]
+        },
+        "source_map": [
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "acme/ledger",
+              "path": [
+                "model",
+                "model_root"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 1,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 0
+              }
+            ],
+            "role": "generated"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "scalar_type",
+                "integer"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 2,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 1
+              }
+            ],
+            "role": "type"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "bounded_domain",
+                "integer_range",
+                "min",
+                {
+                  "node": 1
+                },
+                "0",
+                "max",
+                "1000"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 3,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 2
+              }
+            ],
+            "role": "type"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "scalar_type",
+                "text"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 4,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 3
+              }
+            ],
+            "role": "type"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "value/parameter/x/bounded_domain/integer_range/0/1000"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 5,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 4
+              }
+            ],
+            "role": "expression"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "bounded_domain",
+                "integer_range",
+                "min",
+                {
+                  "node": 1
+                },
+                "0",
+                "max",
+                "999"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 6,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 5
+              }
+            ],
+            "role": "type"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "value/parameter/y/bounded_domain/integer_range/0/999"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 7,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 6
+              }
+            ],
+            "role": "expression"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "scalar_type",
+                "boolean"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 8,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 7
+              }
+            ],
+            "role": "type"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "value/parameter/a/bounded_domain/integer_range/0/999"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 9,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 8
+              }
+            ],
+            "role": "expression"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "value/literal/true"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 10,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 9
+              }
+            ],
+            "role": "expression"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "g"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 11,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 10
+              }
+            ],
+            "role": "declaration"
+          },
+          {
+            "node_id": {
+              "ordinal": 0,
+              "package": "test/families",
+              "path": [
+                "application/expression/let/11"
+              ]
+            },
+            "ordinal": 0,
+            "regions": [
+              {
+                "end": 13,
+                "source": {
+                  "authority": "agent-ix",
+                  "identity": "filament.fixture.source/v1"
+                },
+                "start": 12
+              }
+            ],
+            "role": "expression"
+          }
+        ]
+      },
+      "locus": "/semantic_graph/nodes/11"
     }
   ]
 }
