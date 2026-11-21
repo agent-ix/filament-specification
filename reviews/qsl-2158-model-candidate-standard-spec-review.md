@@ -117,4 +117,3 @@ The explicit N-work branch covers candidate vectors, states and actual result pa
 ## Tracker publication
 
 Published one method comment privately to QSL-2158: ac0e1ff7-0c5e-439c-93fc-e26a0a6072c8. Read-back passed: returned body exactly matches the draft; the YAML block parses as its JSON subset; clean=true, findings=[] and complete scope/excerpt parity match this artifact. The source-repository marker visibility=public is distinct from the explicit destination=private-linear. Initial automatic review rejected the ambiguous destination wording; a single clarified attempt succeeded. No GitHub finding, public share, branch change or label mutation occurred. The brief prohibited label polling, so existing has-review state was not independently queried.
-
