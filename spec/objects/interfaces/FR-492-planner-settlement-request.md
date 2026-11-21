@@ -42,6 +42,10 @@ drawn from FR-331's closed inconclusive causes.
 ## Inputs
 
 - The checked package that carries the declaration.
+- The admitted packages of that checked package's dependency closure
+  ([FR-322](FR-322-checked-package-artifact.md) `dependency_selections`),
+  against whose graphs the node ids of a composition's component slots
+  resolve (FR-322 "Scope").
 - A `filament.planner-settlement/v1` request (below).
 
 ## Outputs
