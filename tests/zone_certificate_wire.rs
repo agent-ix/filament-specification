@@ -344,3 +344,50 @@ fn tc_371_zc_31_a_certificate_without_admitted_is_a_zone_certificate() {
         assert!(valid.is_valid(&document), "{id} without admitted is wire-valid");
     }
 }
+/// Source fragments keep their owning transition identity and exact horizon
+/// data, while a delay edge cannot claim an operation's convex guard part.
+#[trace("TC-371", "FR-418-AC-14")]
+#[test]
+fn tc_371_source_transport_preserves_fragment_and_delay_shapes() {
+    let valid = validator();
+    let file = parsed(VECTORS);
+    let cases = file["source_transport_vectors"]
+        .as_array()
+        .expect("source transport vectors");
+    assert_eq!(cases.len(), 1);
+    let document = &cases[0]["document"];
+    assert!(valid.is_valid(document), "ZC-31 source transport: {:?}", valid.iter_errors(document).collect::<Vec<_>>());
+    assert!(!document["bounds"].as_array().unwrap().is_empty());
+    assert_eq!(document["edges"][0]["part"], 0);
+    assert_eq!(document["edges"][0]["horizon"], json!([]));
+    assert_eq!(document["edges"][1]["transition"], Value::Null);
+    assert_eq!(
+        document["edges"][1]["horizon"][0]["bound"],
+        json!({"numerator":"1","denominator":"1"})
+    );
+    let bytes = jcs_canonicalize(document).expect("source transport canonicalizes");
+    assert_eq!(parsed(std::str::from_utf8(&bytes).unwrap()), *document);
+    for (pointer, value) in [
+        ("/edges/0/part", json!(-1)),
+        ("/edges/0/part", Value::Null),
+        ("/edges/1/horizon/0/operator", json!("unknown")),
+        ("/edges/1/horizon/0/bound/denominator", json!("0")),
+    ] {
+        let mut changed = document.clone();
+        *changed.pointer_mut(pointer).expect("mutation exists") = value;
+        assert!(!valid.is_valid(&changed), "reject {pointer}");
+    }
+    let mut delay_part = document.clone();
+    delay_part["edges"][1]["part"] = json!(0);
+    assert!(
+        !valid.is_valid(&delay_part),
+        "delay has no operation guard part"
+    );
+    let mut extra = document.clone();
+    extra["edges"][0]["extra"] = json!(true);
+    assert!(
+        !valid.is_valid(&extra),
+        "unknown fragment fields are refused"
+    );
+}
+
