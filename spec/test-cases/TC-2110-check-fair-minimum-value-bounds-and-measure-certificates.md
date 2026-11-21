@@ -17,7 +17,7 @@ conditions, and checks a finite-horizon measure certificate against the
 payoff it computes from each decided state's key.
 
 Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15, FR-412-AC-16,
-FR-412-AC-17, FR-412-AC-18, FR-412-AC-19.
+FR-412-AC-17, FR-412-AC-18, FR-412-AC-19, FR-412-AC-20.
 
 ## Test Procedure
 
@@ -55,8 +55,10 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19.
     and `1/8` without policy rows. Offer lower/maximum `1/2` without a row,
     first with rank progress under the `3/4` action, then without it while
     only the `1/4` action has rank progress.
-    Inspect the selected rebuilt action in the existing checked outcome's
-    reconstructed policy. For lower certificates check only named
+    Inspect the selected rebuilt action in the checker-local acceptance
+    report's derived selected policy, defined by
+    [FR-412](../objects/interfaces/FR-412-probability-certificate.md).
+    For lower certificates check only named
     undecided states, with unnamed successors at their existing least value.
 11. Use distinct operations `low` and `high` with unambiguous
     TransitionIdentity hints and action values `1/4` and `3/4`. For the
@@ -64,6 +66,10 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19.
     operation. On a variant with both operation values `3/4` and rank
     progress under only `high`, offer lower/maximum `1/2` with a hint for
     `low`. Also supply a hint ambiguous between step 10's PostState choices.
+12. Offer otherwise valid `exact` certificates under minimum and maximum,
+    including otherwise valid `optimum` `post` parts under those objectives,
+    first with their required policy coverage, then without the `policy`
+    member, then with one checked undecided state's choice removed.
 
 ## Expected Results
 
@@ -80,10 +86,13 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19.
 - Step 7: accepted with initial value `5/12`.
 - Step 8: `inequality-fails` at the initial state (unnamed successors at
   `−1/2`).
-- Step 9: both accepted; the checked outcome's reconstructed policy reports
+- Step 9: both accepted; the checker-local acceptance report's derived selected policy reports
   terminal stutter at each checked undecided state, without a fabricated operation.
 - Step 10: accepted with the first satisfying action in canonical
   product-action order; `inequality-fails`; accepted; `rank-broken`.
 - Step 11: `inequality-fails`; `malformed` at `policy`; `rank-broken`;
   `malformed` at `policy` for the ambiguous hint.
   A present hint is never replaced by another satisfying action.
+- Step 12: accepted with full coverage; `malformed` at `policy` without
+  the member or a required state's choice. A `post` failure retains its
+  conditional part attribution; no optional-hint reconstruction repairs it.

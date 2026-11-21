@@ -41,3 +41,12 @@ Reproduction script and output: /tmp/qsl2158-fspec787-review/check.py, /tmp/qsl2
 | ------- | -------- | ------- | ---- |
 | FND-001 | high | The exhaustive rule constrains only `kind`, `values` and `conditional`. A proved `exhaustive` result whose vacuous certificate also carries nonempty `ranking`, `components` with rational `value`/`gain`, or `policy` is schema-admitted, so the "value-free" result can carry arbitrary numerical data. The harness has no negative for these members. | proposals/backend-provider-v1/schema.json:1465 |
 | FND-002 | medium | The exhaustive certificate exception is not tied to a probabilistic result `kind`. The vacuous certificate is admitted on an `exhaustive` result of kind `refinement`, although FR-331 permits it only for a conditional claim. | proposals/backend-provider-v1/schema.json:1465 |
+
+## Dispositions
+
+Round 1, against b9757e34a96b3f2a4612a8e9450d71784b8d79b6 (delta 0f3375a6..b9757e34). Re-verified independently with jsonschema 4.26 over the fix-head schema and vectors (/tmp/qsl2158-fspec787-review/disposition1/check2.py, check2-out.json: 27/27 expectations met). The new harness hunk (tests/backend_provider_v1.rs:810 onward) is rustfmt-clean under edition 2024; rustfmt drift elsewhere in the file predates this PR. Rust test not run here. The fix-head rerun is pending, so no runtime-green claim for b9757e34; the 0f3375a6 focused test was reported green by the parent, not observed by this reviewer.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | The exhaustive certificate branch now sets `"ranking": false, "policy": false, "components": false`. Nonempty and empty `ranking`, `policy` and `components` are each refused on the exhaustive result, while the same certificate passes the `ProbabilityCertificate` shape (positive control). The harness adds the same paired control/negative loop. |
+| FND-002 | fixed | `dependentSchemas: {certificate: {properties: {kind: {const: "probabilistic-satisfaction"}}}}` in the exhaustive branch. The vacuous certificate is refused on `refinement` and `temporal-satisfaction` results, and both kinds remain admitted bare. The harness asserts both refinement cases. |

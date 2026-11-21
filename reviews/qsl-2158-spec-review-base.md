@@ -58,3 +58,27 @@ The review did not ask for a duplicate probability engine in the standards harne
 | FND-007 | medium | FR-412-AC-17's only state is a terminal target, which is decided with a fixed value, and the hint rule applies only at undecided states. The AC can fail only on the deleted mandatory-policy Absence rule, never on the terminal-stutter rebuild it names. | spec/objects/interfaces/FR-412-probability-certificate.md:328 |
 | FND-008 | low | In TC-431, the BP-65 row is separated from the BP table by a blank line, so it renders as a paragraph, not a table row. | spec/test-cases/TC-431-backend-provider-wire-vectors.md:106 |
 | FND-009 | low | The Verification cells of FR-331-AC-60 and FR-412-AC-17..19 read `Test` without their TC (TC-431, TC-2110), unlike every sibling AC, which reads `Test (TC-…)`. | spec/objects/interfaces/FR-331-backend-provider-envelope.md:1093 |
+
+## New findings (disposition pass 1)
+
+Round 1 covers b9757e34a96b3f2a4612a8e9450d71784b8d79b6 (FR-412 lines 124-157).
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-010 | medium | The fix says "the existing checked-acceptance outcome SHALL expose the reconstructed policy to its consumer". No such outcome is defined or cited in FR-412 or elsewhere in spec/ (the phrase occurs only here and in TC-2110). The selection's observable channel therefore rests on an undefined object, and FR-412-AC-17/AC-18 and TC-2110 steps 9-10 inspect it. Fix: cite the owning FSL requirement for the checker's accepted outcome, or define its policy member here as checker output, not wire. | spec/objects/interfaces/FR-412-probability-certificate.md:137-141 |
+
+## Dispositions
+
+Round 1, against b9757e34a96b3f2a4612a8e9450d71784b8d79b6 (delta 0f3375a6..b9757e34). `quire validate --scope` on an exported fix-head tree passed for FR-331, FR-412, TC-431, TC-2110 and both committed SR copies. It showed only the three pre-existing FR-331 warnings. Both committed SR copies are byte-identical to the original review files.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | still-open | The hint rule is now limited to `upper`/`lower`, and says `exact` certificates "including the optimum conditional certificate's exact post and reset parts, retain their existing required policy coverage, equality, ranking and properness conditions". But apart from `reset`, no such requirement exists any more. This PR removed the Absence clause ("a lower bound on a maximum or an upper bound on a minimum without `policy`"), and the `policy` member row now lists only optional hints plus `reset` coverage. The Lower condition still takes rank progress "under the policy" for a maximum. So an `exact` (or `post`) certificate on a maximum without `policy` has no stated coverage or `malformed` outcome. Restore an explicit `exact`/`post` policy requirement (member row and Absence) or state the rule here. |
+| FND-002 | fixed | The rule now says "all reachable undecided states for `upper`, and only named undecided states for `lower`, retaining the lower rule's least-value treatment of unnamed successors". AC-18 and TC-2110 step 10 add the named-state clause. |
+| FND-003 | fixed | Explicit precedence: "if no action satisfies the inequality the checker SHALL reject `inequality-fails` at that state; if some action satisfies the inequality but none of those satisfies the required rank progress, it SHALL reject `rank-broken` there", after the shape and missing-rank checks. This matches AC-18. |
+| FND-004 | fixed | The selection now has a named consumer channel: "The existing checked-acceptance outcome SHALL expose the reconstructed policy ... with each selected complete product key and rebuilt action ... not a new certificate or wire member". AC-18 now says "reports ... in the existing checked outcome's reconstructed policy". That outcome is itself undefined, which is recorded separately as FND-010. |
+| FND-005 | fixed | A present row's `TransitionIdentity` must "identify exactly one current rebuilt action"; "A nonexistent or ambiguous choice is rejected `malformed` at `policy`". AC-19 now uses distinct operations `low`/`high` and adds the ambiguous-PostState hint → `malformed`. TC-2110 step 11 matches. |
+| FND-006 | fixed | The AC-19 reset/randomized sentence was removed. The rule now says "Reset and randomized choices remain confined to the existing conditional `reset` rules". |
+| FND-007 | fixed | AC-17 now uses "an active finite-window fraction measure over a terminal model state ... with nonzero remaining window, the product continuation is undecided and its only action is terminal stutter advancing the monitor". That makes the state genuinely undecided, with terminal stutter as the rebuilt action. TC-2110 step 9 matches. |
+| FND-008 | fixed | The blank line before BP-65 is removed. TC-431:105 now directly follows BP-64 inside the table. |
+| FND-009 | fixed | FR-331-AC-60 reads `Test (TC-431)` and FR-412-AC-17, -18 and -19 read `Test (TC-2110)`. |
