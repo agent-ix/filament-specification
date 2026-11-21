@@ -21,6 +21,9 @@ mod operand_slots;
 
 const SCHEMA: &str = include_str!("../proposals/backend-provider-v1/schema.json");
 const VECTORS: &str = include_str!("../proposals/backend-provider-v1/vectors.json");
+const LOOP_VECTORS: &str = include_str!("../proposals/backend-provider-v1/loop-proof-vectors.json");
+const LOOP_PACKAGE: &str =
+    include_str!("../proposals/checked-package-v2/fixtures/protocol-node-base.json");
 const FR331: &str =
     include_str!("../spec/objects/interfaces/FR-331-backend-provider-envelope.md");
 const CHECKED_PACKAGE_SCHEMA: &str = include_str!("../proposals/checked-package-v2/schema.json");
@@ -98,6 +101,14 @@ fn package_bytes() -> Vec<u8> {
     jcs_canonicalize(&parsed(PACKAGE_FIXTURE)).expect("fixture canonicalizes")
 }
 
+fn loop_package() -> Value {
+    let mut package = parsed(LOOP_PACKAGE);
+    for patch in parsed(LOOP_VECTORS)["package_patch"].as_array().expect("package patches") {
+        apply(&mut package, patch).expect("authored loop package patch applies");
+    }
+    package
+}
+
 fn registry() -> jsonschema::Registry<'static> {
     jsonschema::Registry::new()
         .add(
@@ -172,7 +183,12 @@ fn composed(vector: &Value) -> Value {
         let request = document["request"]
             .as_object_mut()
             .expect("request stage carries request");
-        request.insert("package".into(), Value::String(encode(&package_bytes())));
+        let bytes = if vector["name"] == "loop-proof-items-request" {
+            jcs_canonicalize(&loop_package()).expect("loop package canonicalizes")
+        } else {
+            package_bytes()
+        };
+        request.insert("package".into(), Value::String(encode(&bytes)));
         if vector["name"] == "derived-items-request" {
             // The refinement item's abstract package is a dependency, with its own identity and v2 bytes.
             let dependency = parsed(DEPENDENCY_FIXTURE);
@@ -189,10 +205,12 @@ fn composed(vector: &Value) -> Value {
 }
 
 fn positives() -> Vec<Value> {
-    parsed(VECTORS)["positive"]
+    let mut vectors = parsed(VECTORS)["positive"]
         .as_array()
         .expect("positive vectors")
-        .clone()
+        .clone();
+    vectors.extend(parsed(LOOP_VECTORS)["positive"].as_array().expect("loop positive vectors").iter().cloned());
+    vectors
 }
 
 fn positive(name: &str) -> Value {
@@ -495,25 +513,23 @@ fn tc_431_positive_vectors_are_admitted_with_owned_members() {
         if let (Some(dispositions), Some(accounting)) = (
             document["dispositions"].as_array(),
             document["accounting"].as_array(),
-        ) {
-            if !dispositions.is_empty() && !accounting.is_empty() {
-                let indices = |records: &[Value]| -> Vec<u64> {
-                    let mut found: Vec<u64> = records
-                        .iter()
-                        .map(|record| record["request_index"].as_u64().expect("request index"))
-                        .collect();
-                    found.sort_unstable();
-                    found
-                };
-                let (dispositions, accounting) = (indices(dispositions), indices(accounting));
-                let mut unique = accounting.clone();
-                unique.dedup();
-                assert_eq!(unique, accounting, "{name}: one accounting record per item");
-                assert_eq!(
-                    accounting, dispositions,
-                    "{name}: accounting covers exactly the dispositions' items"
-                );
-            }
+        ) && !dispositions.is_empty() && !accounting.is_empty() {
+            let indices = |records: &[Value]| -> Vec<u64> {
+                let mut found: Vec<u64> = records
+                    .iter()
+                    .map(|record| record["request_index"].as_u64().expect("request index"))
+                    .collect();
+                found.sort_unstable();
+                found
+            };
+            let (dispositions, accounting) = (indices(dispositions), indices(accounting));
+            let mut unique = accounting.clone();
+            unique.dedup();
+            assert_eq!(unique, accounting, "{name}: one accounting record per item");
+            assert_eq!(
+                accounting, dispositions,
+                "{name}: accounting covers exactly the dispositions' items"
+            );
         }
         let owners = vector["owners"].as_object().expect("owners map");
         assert!(!owners.is_empty(), "{name} names member owners");
@@ -1848,6 +1864,179 @@ fn tc_431_item_kinds_are_the_seven_spellings_and_derived_items_carry_no_fairness
     }
 }
 
+/// Authored wire/package qualification of the three repeat cases in AC-26.
+/// Native producer evaluation remains the compiler's qualification obligation.
+#[trace("TC-431", "FR-368-AC-26")]
+#[trace("TC-431", "FR-368-AC-17")]
+#[test]
+fn tc_431_loop_items_follow_their_proof_bearing_repeat_anchors() {
+    let package = loop_package();
+    let package_validator = jsonschema::options()
+        .build(&parsed(CHECKED_PACKAGE_SCHEMA))
+        .expect("package schema compiles");
+    assert_eq!(errors(&package_validator, &package), Vec::<String>::new());
+    let document = composed(&positive("loop-proof-items-request"));
+    assert_eq!(errors(&validator(), &document), Vec::<String>::new());
+    let bytes = decode(
+        document["request"]["package"]
+            .as_str()
+            .expect("package bytes"),
+    )
+    .expect("canonical base64url");
+    assert_eq!(
+        bytes,
+        jcs_canonicalize(&package).expect("package canonicalizes")
+    );
+    let package = operand_slots::index_view(&package);
+    let nodes = package["semantic_graph"]["nodes"]
+        .as_array()
+        .expect("nodes");
+    let sequence = nodes
+        .iter()
+        .find(|node| {
+            node["declaration"]["qualified_name"]
+                == serde_json::json!(["Example", "OrderFlow", "run", "Main"])
+        })
+        .expect("root sequence");
+    let children = sequence["body"]["arguments"][0]["value"]["members"]
+        .as_array()
+        .expect("sequence children in execution order");
+    let repeats: Vec<&Value> = children
+        .iter()
+        .filter_map(|child| nodes.iter().find(|node| node["node_id"] == child["target"]))
+        .filter(|node| node["body"]["operation"]["member"]["operator"] == "repeat")
+        .collect();
+    assert_eq!(repeats.len(), 3, "the package has the three AC-26 repeats");
+    let proof = |node: &Value| {
+        node["body"]["arguments"][3]["value"]["members"]
+            .as_array()
+            .expect("proof members")
+            .len()
+    };
+    let maximum = |node: &Value| {
+        node["body"]["arguments"][2]["value"]["members"]
+            .as_array()
+            .expect("maximum members")
+            .len()
+    };
+    assert_eq!((proof(repeats[0]), maximum(repeats[0])), (2, 0));
+    assert_eq!((proof(repeats[1]), maximum(repeats[1])), (2, 1));
+    assert_eq!(
+        repeats[1]["body"]["arguments"][2]["value"]["members"][0]["value"],
+        "3"
+    );
+    assert_eq!(proof(repeats[2]), 0);
+    let expected = serde_json::json!([
+        {"node": repeats[0]["node_id"], "kind": "loop-invariant"},
+        {"node": repeats[0]["node_id"], "kind": "loop-termination"},
+        {"node": repeats[1]["node_id"], "kind": "loop-invariant"}
+    ]);
+    let items = document["request"]["items"].as_array().expect("items");
+    assert_eq!(
+        items.len(),
+        5,
+        "caller, deadlock freedom and three loop items only"
+    );
+    assert_eq!(items[0]["temporal"]["item_kind"], "formula");
+    assert_eq!(items[1]["temporal"]["item_kind"], "deadlock-freedom");
+    let actual: Vec<Value> = items[2..]
+        .iter()
+        .map(|item| {
+            serde_json::json!({
+                "node": item["claim"]["node"], "kind": item["temporal"]["item_kind"]
+            })
+        })
+        .collect();
+    assert_eq!(
+        Value::Array(actual.clone()),
+        expected,
+        "repeat tree order, invariant before termination"
+    );
+    let mut exchanged = actual;
+    exchanged.swap(0, 1);
+    assert_ne!(
+        Value::Array(exchanged),
+        expected,
+        "exchanging the first repeat's two items breaks order"
+    );
+    for (index, item) in items.iter().enumerate() {
+        assert_eq!(item["request_index"], index);
+        if index < 2 {
+            continue;
+        }
+        assert_eq!(
+            item["claim"]["occurrence"],
+            serde_json::json!({"role": "declaration", "ordinal": 0})
+        );
+        assert_eq!(item["temporal"]["fairness"], serde_json::json!([]));
+        assert!(item["temporal"].get("max_depth").is_none());
+        assert_eq!(
+            item["extent"]["domains"][0]["domain"]["node"],
+            item["claim"]["node"]
+        );
+        for name in ["max_depth", "fairness"] {
+            let mut bad = document.clone();
+            bad["request"]["items"][index]["temporal"][name] = if name == "max_depth" {
+                serde_json::json!(40)
+            } else {
+                serde_json::json!([{"kind": "weak", "operation": "Example::Session::step", "granularity": "whole"}])
+            };
+            assert!(
+                !validator().is_valid(&bad),
+                "loop item {index} refuses {name}"
+            );
+        }
+    }
+}
+
+/// Producer-side settlement expectations have no provider request to encode.
+/// This checks the published AC-27 oracle and anchor absence, not a native compiler.
+#[trace("TC-431", "FR-368-AC-27")]
+#[test]
+fn tc_431_loop_items_without_a_protocol_profile_have_no_wire_request() {
+    let package = parsed(DEPENDENCY_FIXTURE);
+    assert!(
+        package["lock"]["profile_selections"]
+            .as_array()
+            .expect("profiles")
+            .is_empty()
+    );
+    assert!(
+        !package["semantic_graph"]["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .any(|node| node["node_tag"] == "protocol")
+    );
+    let cases = parsed(LOOP_VECTORS);
+    let absent = &cases["without_profile"];
+    assert!(
+        !absent["source"]
+            .as_str()
+            .expect("authored source")
+            .contains("profile ")
+    );
+    assert_eq!(absent["request_items"], serde_json::json!([]));
+    let settlements = absent["settlements"].as_array().expect("settlements");
+    assert_eq!(settlements.len(), 2);
+    for (settlement, kind) in settlements
+        .iter()
+        .zip(["loop-invariant", "loop-termination"])
+    {
+        assert_eq!(settlement["item_kind"], kind);
+        assert_eq!(settlement["status"], "unsupported");
+        assert_eq!(settlement["cause"]["type"], "unsupported_projection");
+        assert_eq!(
+            settlement["cause"]["category"],
+            "unsupported-requested-capability"
+        );
+        assert_eq!(
+            settlement["cause"]["detail"],
+            format!("{kind}: the unit selects no protocol profile")
+        );
+    }
+}
+
 /// FR-368-AC-19, FR-377-AC-17 and FR-331-AC-47: `abstract_subject` is present
 /// exactly on a refinement item and has exactly its two members.
 #[trace("TC-431", "FR-368-AC-19")]
@@ -1958,11 +2147,11 @@ fn tc_431_a_derived_item_is_keyed_by_its_anchor_node_and_kind() {
     assert_eq!(errors(&validator(), &document), Vec::<String>::new());
     let items = document["request"]["items"].as_array().expect("items");
     let kind = |index: usize| items[index]["temporal"]["item_kind"].as_str().expect("kind").to_owned();
-    for index in 3..=6 {
+    for (index, item) in items.iter().enumerate().take(7).skip(3) {
         assert!(DERIVED.contains(&kind(index).as_str()), "item {index} is derived");
         assert!(anchor_of(&document, index).is_some(), "item {index} resolves through its anchor");
         assert_eq!(
-            item_nodes(nodes, &kind(index), &items[index]["claim"]["node"]),
+            item_nodes(nodes, &kind(index), &item["claim"]["node"]),
             Vec::<Value>::new(),
             "item {index}: the package holds no node of its own for it"
         );
@@ -2009,7 +2198,8 @@ fn tc_431_a_derived_item_is_keyed_by_its_anchor_node_and_kind() {
             }
         }
     };
-    let retargets: Vec<(&str, Box<dyn Fn(&mut Value)>)> = vec![
+    type Retarget = (&'static str, Box<dyn Fn(&mut Value)>);
+    let retargets: Vec<Retarget> = vec![
         ("the protocol clause node", Box::new(retarget_node(items[5]["claim"]["node"].clone()))),
         ("item 0's temporal formula node", Box::new(retarget_node(items[0]["claim"]["node"].clone()))),
         ("an absent node id", Box::new(retarget_node(absent))),
@@ -2077,11 +2267,10 @@ fn certificate_member_names() -> std::collections::BTreeSet<String> {
     fn walk(node: &Value, defs: &Value, names: &mut std::collections::BTreeSet<String>, seen: &mut Vec<String>) {
         match node {
             Value::Object(map) => {
-                if let Some(target) = map.get("$ref").and_then(Value::as_str).and_then(|r| r.strip_prefix("#/$defs/")) {
-                    if OWNED.contains(&target) && !seen.iter().any(|s| s == target) {
+                if let Some(target) = map.get("$ref").and_then(Value::as_str).and_then(|r| r.strip_prefix("#/$defs/"))
+                    && OWNED.contains(&target) && !seen.iter().any(|s| s == target) {
                         seen.push(target.to_owned());
                         walk(&defs[target], defs, names, seen);
-                    }
                 }
                 for (key, value) in map {
                     if key == "properties" {

@@ -1,0 +1,1768 @@
+{
+  "package_fixture": "../checked-package-v2/fixtures/protocol-node-base.json",
+  "package_patch": [
+    {
+      "op": "replace",
+      "path": "/semantic_graph/nodes/76/body/arguments/2/value/members",
+      "value": []
+    },
+    {
+      "op": "replace",
+      "path": "/semantic_graph/nodes/76/body/arguments/6/value/members",
+      "value": []
+    },
+    {
+      "op": "remove",
+      "path": "/semantic_graph/nodes/76/dependencies/1"
+    },
+    {
+      "op": "replace",
+      "path": "/semantic_graph/nodes/76/body/arguments/3/value",
+      "value": {
+        "term": "aggregate",
+        "members": [
+          {
+            "term": "binding",
+            "name": "invariant",
+            "value": {
+              "target": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "expression",
+                  "query",
+                  {
+                    "operand": 0
+                  },
+                  "filament.op.record.project",
+                  {
+                    "operand": 1
+                  },
+                  "ok",
+                  "query",
+                  {
+                    "operand": 2
+                  }
+                ]
+              },
+              "term": "reference"
+            }
+          },
+          {
+            "term": "binding",
+            "name": "variant",
+            "value": {
+              "term": "literal",
+              "type": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "scalar_type",
+                  "integer"
+                ]
+              },
+              "value_kind": "integer",
+              "value": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/nodes/-",
+      "value": {
+        "body": {
+          "arguments": [
+            {
+              "name": "owner",
+              "term": "binding",
+              "value": {
+                "target": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "role",
+                    "Fulfillment"
+                  ]
+                },
+                "term": "reference"
+              }
+            },
+            {
+              "name": "visible",
+              "term": "binding",
+              "value": {
+                "members": [
+                  {
+                    "target": {
+                      "ordinal": 0,
+                      "package": "example",
+                      "path": [
+                        "expression",
+                        "query",
+                        {
+                          "operand": 0
+                        },
+                        "filament.op.record.project",
+                        {
+                          "operand": 1
+                        },
+                        "ok",
+                        "query",
+                        {
+                          "operand": 2
+                        }
+                      ]
+                    },
+                    "term": "reference"
+                  }
+                ],
+                "term": "aggregate"
+              }
+            },
+            {
+              "name": "maximum",
+              "term": "binding",
+              "value": {
+                "members": [
+                  {
+                    "term": "literal",
+                    "type": {
+                      "ordinal": 0,
+                      "package": "example",
+                      "path": [
+                        "scalar_type",
+                        "integer"
+                      ]
+                    },
+                    "value": "3",
+                    "value_kind": "integer"
+                  }
+                ],
+                "term": "aggregate"
+              }
+            },
+            {
+              "name": "proof",
+              "term": "binding",
+              "value": {
+                "term": "aggregate",
+                "members": [
+                  {
+                    "term": "binding",
+                    "name": "invariant",
+                    "value": {
+                      "target": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "expression",
+                          "query",
+                          {
+                            "operand": 0
+                          },
+                          "filament.op.record.project",
+                          {
+                            "operand": 1
+                          },
+                          "ok",
+                          "query",
+                          {
+                            "operand": 2
+                          }
+                        ]
+                      },
+                      "term": "reference"
+                    }
+                  },
+                  {
+                    "term": "binding",
+                    "name": "variant",
+                    "value": {
+                      "term": "literal",
+                      "type": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "scalar_type",
+                          "integer"
+                        ]
+                      },
+                      "value_kind": "integer",
+                      "value": "1"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "guard",
+              "term": "binding",
+              "value": {
+                "target": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "expression",
+                    "query",
+                    {
+                      "operand": 0
+                    },
+                    "filament.op.record.project",
+                    {
+                      "operand": 1
+                    },
+                    "ok",
+                    "query",
+                    {
+                      "operand": 2
+                    }
+                  ]
+                },
+                "term": "reference"
+              }
+            },
+            {
+              "name": "body",
+              "term": "binding",
+              "value": {
+                "term": "reference",
+                "target": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Bounded",
+                    "Step"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "exhausted",
+              "term": "binding",
+              "value": {
+                "term": "aggregate",
+                "members": [
+                  {
+                    "term": "reference",
+                    "target": {
+                      "ordinal": 0,
+                      "package": "example",
+                      "path": [
+                        "Example",
+                        "OrderFlow",
+                        "run",
+                        "Main",
+                        "Bounded",
+                        "Limit"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "operation": {
+            "identity": "filament.op.protocol.control",
+            "laws": [
+              {
+                "definition": {
+                  "authority": "agent-ix",
+                  "identity": "filament.protocol.finite-global/v1"
+                },
+                "role": "protocol_profile"
+              }
+            ],
+            "leaves": [],
+            "member": {
+              "kind": "profile_operator",
+              "operator": "repeat"
+            },
+            "mode": null
+          },
+          "operator": "protocol_control",
+          "result_type": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          "term": "application"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded"
+          ]
+        },
+        "dependencies": [
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "role",
+              "Fulfillment"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Bounded",
+              "Limit"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Bounded",
+              "Step"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "expression",
+              "query",
+              {
+                "operand": 0
+              },
+              "filament.op.record.project",
+              {
+                "operand": 1
+              },
+              "ok",
+              "query",
+              {
+                "operand": 2
+              }
+            ]
+          }
+        ],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded"
+          ]
+        },
+        "node_tag": "protocol",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "control",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "scalar_type",
+            "boolean"
+          ]
+        }
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/operand_rows/-",
+      "value": [
+        27,
+        12,
+        0
+      ]
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/nodes/-",
+      "value": {
+        "body": {
+          "arguments": [
+            {
+              "name": "owner",
+              "term": "binding",
+              "value": {
+                "target": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "role",
+                    "Fulfillment"
+                  ]
+                },
+                "term": "reference"
+              }
+            },
+            {
+              "name": "visible",
+              "term": "binding",
+              "value": {
+                "members": [
+                  {
+                    "target": {
+                      "ordinal": 0,
+                      "package": "example",
+                      "path": [
+                        "expression",
+                        "query",
+                        {
+                          "operand": 0
+                        },
+                        "filament.op.record.project",
+                        {
+                          "operand": 1
+                        },
+                        "ok",
+                        "query",
+                        {
+                          "operand": 2
+                        }
+                      ]
+                    },
+                    "term": "reference"
+                  }
+                ],
+                "term": "aggregate"
+              }
+            },
+            {
+              "name": "maximum",
+              "term": "binding",
+              "value": {
+                "members": [
+                  {
+                    "term": "literal",
+                    "type": {
+                      "ordinal": 0,
+                      "package": "example",
+                      "path": [
+                        "scalar_type",
+                        "integer"
+                      ]
+                    },
+                    "value": "3",
+                    "value_kind": "integer"
+                  }
+                ],
+                "term": "aggregate"
+              }
+            },
+            {
+              "name": "proof",
+              "term": "binding",
+              "value": {
+                "members": [],
+                "term": "aggregate"
+              }
+            },
+            {
+              "name": "guard",
+              "term": "binding",
+              "value": {
+                "target": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "expression",
+                    "query",
+                    {
+                      "operand": 0
+                    },
+                    "filament.op.record.project",
+                    {
+                      "operand": 1
+                    },
+                    "ok",
+                    "query",
+                    {
+                      "operand": 2
+                    }
+                  ]
+                },
+                "term": "reference"
+              }
+            },
+            {
+              "name": "body",
+              "term": "binding",
+              "value": {
+                "term": "reference",
+                "target": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Unproved",
+                    "Step"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "exhausted",
+              "term": "binding",
+              "value": {
+                "term": "aggregate",
+                "members": [
+                  {
+                    "term": "reference",
+                    "target": {
+                      "ordinal": 0,
+                      "package": "example",
+                      "path": [
+                        "Example",
+                        "OrderFlow",
+                        "run",
+                        "Main",
+                        "Unproved",
+                        "Limit"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "operation": {
+            "identity": "filament.op.protocol.control",
+            "laws": [
+              {
+                "definition": {
+                  "authority": "agent-ix",
+                  "identity": "filament.protocol.finite-global/v1"
+                },
+                "role": "protocol_profile"
+              }
+            ],
+            "leaves": [],
+            "member": {
+              "kind": "profile_operator",
+              "operator": "repeat"
+            },
+            "mode": null
+          },
+          "operator": "protocol_control",
+          "result_type": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          "term": "application"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved"
+          ]
+        },
+        "dependencies": [
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "role",
+              "Fulfillment"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Unproved",
+              "Limit"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Unproved",
+              "Step"
+            ]
+          },
+          {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "expression",
+              "query",
+              {
+                "operand": 0
+              },
+              "filament.op.record.project",
+              {
+                "operand": 1
+              },
+              "ok",
+              "query",
+              {
+                "operand": 2
+              }
+            ]
+          }
+        ],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved"
+          ]
+        },
+        "node_tag": "protocol",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "control",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "scalar_type",
+            "boolean"
+          ]
+        }
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/operand_rows/-",
+      "value": [
+        27,
+        12,
+        0
+      ]
+    },
+    {
+      "op": "replace",
+      "path": "/semantic_graph/nodes/78/body/arguments/0/value/members",
+      "value": [
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Received"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Charged"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Applied"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Shipments"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Outcome"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Poll"
+            ]
+          },
+          "term": "reference"
+        },
+        {
+          "term": "reference",
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Bounded"
+            ]
+          }
+        },
+        {
+          "term": "reference",
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Unproved"
+            ]
+          }
+        },
+        {
+          "target": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Finalized"
+            ]
+          },
+          "term": "reference"
+        }
+      ]
+    },
+    {
+      "op": "replace",
+      "path": "/semantic_graph/nodes/78/dependencies",
+      "value": [
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Applied"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Charged"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Finalized"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Outcome"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Poll"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Received"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Requested"
+          ]
+        },
+        {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Shipments"
+          ]
+        }
+      ]
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/nodes/-",
+      "value": {
+        "body": {
+          "arguments": [
+            {
+              "term": "binding",
+              "name": "condition",
+              "value": {
+                "term": "literal",
+                "type": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ]
+                },
+                "value_kind": "boolean",
+                "value": true
+              }
+            }
+          ],
+          "operation": {
+            "identity": "filament.op.protocol.control",
+            "laws": [
+              {
+                "definition": {
+                  "authority": "agent-ix",
+                  "identity": "filament.protocol.finite-global/v1"
+                },
+                "role": "protocol_profile"
+              }
+            ],
+            "leaves": [],
+            "member": {
+              "kind": "profile_operator",
+              "operator": "check"
+            },
+            "mode": null
+          },
+          "operator": "protocol_control",
+          "result_type": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          "term": "application"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded",
+            "Step"
+          ]
+        },
+        "dependencies": [],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded",
+            "Step"
+          ]
+        },
+        "node_tag": "protocol",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "control",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "scalar_type",
+            "boolean"
+          ]
+        }
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/operand_rows/-",
+      "value": []
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/nodes/-",
+      "value": {
+        "body": {
+          "arguments": [
+            {
+              "term": "binding",
+              "name": "children",
+              "value": {
+                "term": "aggregate",
+                "members": []
+              }
+            }
+          ],
+          "operation": {
+            "identity": "filament.op.protocol.control",
+            "laws": [
+              {
+                "definition": {
+                  "authority": "agent-ix",
+                  "identity": "filament.protocol.finite-global/v1"
+                },
+                "role": "protocol_profile"
+              }
+            ],
+            "leaves": [],
+            "member": {
+              "kind": "profile_operator",
+              "operator": "sequence"
+            },
+            "mode": null
+          },
+          "operator": "protocol_control",
+          "result_type": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          "term": "application"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded",
+            "Limit"
+          ]
+        },
+        "dependencies": [],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Bounded",
+            "Limit"
+          ]
+        },
+        "node_tag": "protocol",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "control",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "scalar_type",
+            "boolean"
+          ]
+        }
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/operand_rows/-",
+      "value": []
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/nodes/-",
+      "value": {
+        "body": {
+          "arguments": [
+            {
+              "term": "binding",
+              "name": "condition",
+              "value": {
+                "term": "literal",
+                "type": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ]
+                },
+                "value_kind": "boolean",
+                "value": true
+              }
+            }
+          ],
+          "operation": {
+            "identity": "filament.op.protocol.control",
+            "laws": [
+              {
+                "definition": {
+                  "authority": "agent-ix",
+                  "identity": "filament.protocol.finite-global/v1"
+                },
+                "role": "protocol_profile"
+              }
+            ],
+            "leaves": [],
+            "member": {
+              "kind": "profile_operator",
+              "operator": "check"
+            },
+            "mode": null
+          },
+          "operator": "protocol_control",
+          "result_type": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          "term": "application"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved",
+            "Step"
+          ]
+        },
+        "dependencies": [],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved",
+            "Step"
+          ]
+        },
+        "node_tag": "protocol",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "control",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "scalar_type",
+            "boolean"
+          ]
+        }
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/operand_rows/-",
+      "value": []
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/nodes/-",
+      "value": {
+        "body": {
+          "arguments": [
+            {
+              "term": "binding",
+              "name": "children",
+              "value": {
+                "term": "aggregate",
+                "members": []
+              }
+            }
+          ],
+          "operation": {
+            "identity": "filament.op.protocol.control",
+            "laws": [
+              {
+                "definition": {
+                  "authority": "agent-ix",
+                  "identity": "filament.protocol.finite-global/v1"
+                },
+                "role": "protocol_profile"
+              }
+            ],
+            "leaves": [],
+            "member": {
+              "kind": "profile_operator",
+              "operator": "sequence"
+            },
+            "mode": null
+          },
+          "operator": "protocol_control",
+          "result_type": {
+            "ordinal": 0,
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ]
+          },
+          "term": "application"
+        },
+        "declaration": {
+          "qualified_name": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved",
+            "Limit"
+          ]
+        },
+        "dependencies": [],
+        "node_id": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "Example",
+            "OrderFlow",
+            "run",
+            "Main",
+            "Unproved",
+            "Limit"
+          ]
+        },
+        "node_tag": "protocol",
+        "occurrences": [
+          {
+            "ordinal": 0,
+            "role": "declaration"
+          }
+        ],
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "semantic_form": "control",
+        "semantic_type": {
+          "ordinal": 0,
+          "package": "example",
+          "path": [
+            "scalar_type",
+            "boolean"
+          ]
+        }
+      }
+    },
+    {
+      "op": "add",
+      "path": "/semantic_graph/operand_rows/-",
+      "value": []
+    }
+  ],
+  "positive": [
+    {
+      "name": "loop-proof-items-request",
+      "stage": "request",
+      "description": "FR-368-AC-26. Protocol-node-base with authored loop-proof package patches: Poll has a proof and no maximum, Bounded has a proof and maximum 3, Unproved has empty proof. Caller formula, deadlock-freedom, Poll invariant, Poll termination, Bounded invariant; no derived max_depth or fairness.",
+      "owners": {
+        "/request/items/1/claim": "FR-368",
+        "/request/items/1/extent": "FR-368",
+        "/request/items/1/temporal": "FR-368",
+        "/request/items/2/claim": "FR-368",
+        "/request/items/2/extent": "FR-368",
+        "/request/items/2/temporal": "FR-368",
+        "/request/items/3/claim": "FR-368",
+        "/request/items/3/extent": "FR-368",
+        "/request/items/3/temporal": "FR-368",
+        "/request/items/4/claim": "FR-368",
+        "/request/items/4/extent": "FR-368",
+        "/request/items/4/temporal": "FR-368"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "manifest": [
+          {
+            "backend": "fsl-model-check",
+            "tool": {
+              "name": "fsl-analyze",
+              "version": "0.1.0"
+            },
+            "advertises": [
+              {
+                "kind": "temporal-satisfaction",
+                "mode": "bounded"
+              },
+              {
+                "kind": "temporal-satisfaction",
+                "mode": "unbounded"
+              }
+            ],
+            "fairness_kinds": [
+              "strong",
+              "weak"
+            ],
+            "reductions": [
+              "constraint",
+              "partial-order",
+              "symmetry"
+            ],
+            "bounds": {
+              "max_automaton_states": 100000,
+              "max_states": 1000000,
+              "max_transitions": 10000000
+            },
+            "domains": [
+              "collection",
+              "integer",
+              "population",
+              "recursive"
+            ]
+          }
+        ],
+        "request": {
+          "deadline_ms": 600000,
+          "provision": [
+            {
+              "identity": "initial-states-4",
+              "bytes": "W10"
+            }
+          ],
+          "items": [
+            {
+              "request_index": 0,
+              "kind": "temporal-satisfaction",
+              "claim": {
+                "node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "temporal",
+                    "formula",
+                    {
+                      "node": 28
+                    },
+                    "filament.op.temporal.eventually",
+                    "steps:0..3",
+                    "temporal_formula",
+                    {
+                      "node": 0
+                    }
+                  ]
+                },
+                "occurrence": {
+                  "role": "expression",
+                  "ordinal": 0
+                }
+              },
+              "extent": {
+                "classification": "unbounded",
+                "domains": [
+                  {
+                    "domain": {
+                      "type": "node",
+                      "node": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "temporal",
+                          "formula",
+                          {
+                            "node": 28
+                          },
+                          "filament.op.temporal.eventually",
+                          "steps:0..3",
+                          "temporal_formula",
+                          {
+                            "node": 0
+                          }
+                        ]
+                      },
+                      "path": []
+                    },
+                    "kind": "infinite-trace"
+                  }
+                ],
+                "finite_bound_available": false
+              },
+              "candidates": {
+                "type": "set",
+                "backends": [
+                  "fsl-model-check"
+                ]
+              },
+              "temporal": {
+                "subject": {
+                  "initial_states": [
+                    {
+                      "identity": "initial-states-4"
+                    }
+                  ],
+                  "universes": [],
+                  "proof_bounds": []
+                },
+                "item_kind": "formula",
+                "fairness": [],
+                "max_depth": 40,
+                "limits": {
+                  "max_states": 250000
+                }
+              }
+            },
+            {
+              "request_index": 1,
+              "kind": "temporal-satisfaction",
+              "claim": {
+                "node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "Handshake"
+                  ]
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                }
+              },
+              "extent": {
+                "classification": "unbounded",
+                "domains": [
+                  {
+                    "domain": {
+                      "type": "node",
+                      "node": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "Example",
+                          "Handshake"
+                        ]
+                      },
+                      "path": []
+                    },
+                    "kind": "infinite-trace"
+                  }
+                ],
+                "finite_bound_available": false
+              },
+              "candidates": {
+                "type": "set",
+                "backends": [
+                  "fsl-model-check"
+                ]
+              },
+              "temporal": {
+                "subject": {
+                  "initial_states": [
+                    {
+                      "identity": "initial-states-4"
+                    }
+                  ],
+                  "universes": [],
+                  "proof_bounds": []
+                },
+                "item_kind": "deadlock-freedom",
+                "fairness": []
+              }
+            },
+            {
+              "request_index": 2,
+              "kind": "temporal-satisfaction",
+              "claim": {
+                "node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Poll"
+                  ]
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                }
+              },
+              "extent": {
+                "classification": "unbounded",
+                "domains": [
+                  {
+                    "domain": {
+                      "type": "node",
+                      "node": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "Example",
+                          "OrderFlow",
+                          "run",
+                          "Main",
+                          "Poll"
+                        ]
+                      },
+                      "path": []
+                    },
+                    "kind": "infinite-trace"
+                  }
+                ],
+                "finite_bound_available": false
+              },
+              "candidates": {
+                "type": "set",
+                "backends": [
+                  "fsl-model-check"
+                ]
+              },
+              "temporal": {
+                "subject": {
+                  "initial_states": [
+                    {
+                      "identity": "initial-states-4"
+                    }
+                  ],
+                  "universes": [],
+                  "proof_bounds": []
+                },
+                "item_kind": "loop-invariant",
+                "fairness": []
+              }
+            },
+            {
+              "request_index": 3,
+              "kind": "temporal-satisfaction",
+              "claim": {
+                "node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Poll"
+                  ]
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                }
+              },
+              "extent": {
+                "classification": "unbounded",
+                "domains": [
+                  {
+                    "domain": {
+                      "type": "node",
+                      "node": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "Example",
+                          "OrderFlow",
+                          "run",
+                          "Main",
+                          "Poll"
+                        ]
+                      },
+                      "path": []
+                    },
+                    "kind": "infinite-trace"
+                  }
+                ],
+                "finite_bound_available": false
+              },
+              "candidates": {
+                "type": "set",
+                "backends": [
+                  "fsl-model-check"
+                ]
+              },
+              "temporal": {
+                "subject": {
+                  "initial_states": [
+                    {
+                      "identity": "initial-states-4"
+                    }
+                  ],
+                  "universes": [],
+                  "proof_bounds": []
+                },
+                "item_kind": "loop-termination",
+                "fairness": []
+              }
+            },
+            {
+              "request_index": 4,
+              "kind": "temporal-satisfaction",
+              "claim": {
+                "node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Bounded"
+                  ]
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                }
+              },
+              "extent": {
+                "classification": "unbounded",
+                "domains": [
+                  {
+                    "domain": {
+                      "type": "node",
+                      "node": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "Example",
+                          "OrderFlow",
+                          "run",
+                          "Main",
+                          "Bounded"
+                        ]
+                      },
+                      "path": []
+                    },
+                    "kind": "infinite-trace"
+                  }
+                ],
+                "finite_bound_available": false
+              },
+              "candidates": {
+                "type": "set",
+                "backends": [
+                  "fsl-model-check"
+                ]
+              },
+              "temporal": {
+                "subject": {
+                  "initial_states": [
+                    {
+                      "identity": "initial-states-4"
+                    }
+                  ],
+                  "universes": [],
+                  "proof_bounds": []
+                },
+                "item_kind": "loop-invariant",
+                "fairness": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "without_profile": {
+    "source": "protocol Handshake { run { repeat Poll owner Fulfillment while ok invariant { true } variant { 1 } { check Ready { true }; } } finish Closed { true }; }",
+    "settlements": [
+      {
+        "item_kind": "loop-invariant",
+        "status": "unsupported",
+        "cause": {
+          "type": "unsupported_projection",
+          "category": "unsupported-requested-capability",
+          "detail": "loop-invariant: the unit selects no protocol profile"
+        }
+      },
+      {
+        "item_kind": "loop-termination",
+        "status": "unsupported",
+        "cause": {
+          "type": "unsupported_projection",
+          "category": "unsupported-requested-capability",
+          "detail": "loop-termination: the unit selects no protocol profile"
+        }
+      }
+    ],
+    "request_items": []
+  }
+}
