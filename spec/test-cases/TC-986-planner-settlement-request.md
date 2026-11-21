@@ -13,7 +13,7 @@ relationships:
 
 Admit, refuse and settle FR-492 requests for TC-984 case 1's guarantee item.
 
-Scope: FR-492-AC-1 to FR-492-AC-12.
+Scope: FR-492-AC-1 to FR-492-AC-14 and FR-331-AC-64 to FR-331-AC-65.
 
 ## Test Procedure
 
@@ -48,6 +48,30 @@ local Rust boundary:
 13. Fill the model-claim slot with a result checked without
     `stutter_closure`, then under `fair strong each inc`; fill the
     transition-simulation slot with the frame item's result.
+14. Read a provider's `composition` result entry carrying
+    `provider-answer-unconfirmed`, plugin and in-process; then the same cause
+    on a `value-validity` entry.
+15. Answer TC-985 case 7's `composition` item `proved` by a provider, with the
+    request's `component-guarantee` items all `proved`; then with the second
+    one `inconclusive`; then with it absent from the request; then with the
+    request holding none of the component items; then with the second held
+    item replaced by one over the same clause node with another fairness set;
+    then with the second entry's key `assumptions` altered from the derived
+    array; then with the matching item held and `proved` under the derived
+    context.
+16. Build `assumptions` with a wrong length, an out-of-range index, an index
+    of a `rely` entry, a self index, a descending entry, and a well-formed
+    array that adds one peer index the declaration does not derive, then one
+    that drops a derived index, each on a `composition` item.
+17. Build TC-985 case 1's composition request with a `rely` whose peer clause
+    no declared guarantee covers at slot 4 and a `rely` whose peer guarantee
+    is declared but conditional on an unsupplied fairness constraint at slot 3;
+    then only the second; then two absent rely slots.
+18. Build a composition request whose peer interfaces are all declared and not
+    weaker, and fill the peer guarantee's slot with a result `inconclusive`,
+    then `tested`, then leave it unfilled, then supply in `guarantees` only a guarantee over
+    another subject; then fill every slot `proved` except that one `rely`
+    slot's peer clause has a stronger but different supplied guarantee.
 
 ## Expected Results
 
@@ -72,3 +96,20 @@ local Rust boundary:
 12. `inconclusive`, `premise-unproved` naming the model-claim slot; then
     `premise-unproved` naming the rely slot with `result` `assumption`.
 13. Each `invalid_runtime_input`/`invalid-value` at `/slots/<i>/result`.
+14. Each refused `invalid_result`/`unknown-cause` at `/cause/type`.
+15. `proved` stands; then `inconclusive`, `provider-answer-unconfirmed` naming
+    the second `component-guarantee` premise; then naming the first
+    `component-guarantee` premise the request does not hold, for the absent
+    item and for a request holding none; then naming the second premise for
+    the replaced item and for the altered context, a held item never matching
+    by clause node alone; the last case stands `proved`; never `replay-refused`.
+16. Each refused `invalid_runtime_input`/`invalid-value` at
+    `/request/items/<i>/assumptions`.
+17. `refuted`, `decisive-counterexample`, `mismatch` naming slot 4's peer
+    component, clause node and `reason` `absent` (the absent slot, though slot
+    3 is `weaker`); then slot 3 with `weaker`; then the lower absent slot; each
+    result's `slots` lists every slot outcome in slot order.
+18. Each `inconclusive`, `premise-unproved` naming the slot with its result
+    (`inconclusive`, `tested`, `absent`, and `absent` for the pool entry over
+    another subject), never `refuted`; the last case `inconclusive`,
+    `premise-unproved`.

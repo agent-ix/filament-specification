@@ -50,7 +50,13 @@ re-discharging the composed whole. An interface mismatch — a component's
 proved obligation weaker than what the composition requires of it, or an
 undeclared interface — refutes with the mismatching interface and component
 identified. Composition is lowered as a target-neutral obligation per
-AD-009/AD-010 and negotiated with a registered composition-capable backend. A
+AD-009/AD-010 and negotiated with a registered composition-capable backend.
+For an `assume-guarantee` composition the mismatch is decided from the declared
+interfaces alone, and a premise whose component result merely did not settle
+or is not the declared one stays `premise-unproved`
+([FR-489](FR-489-carry-liveness-and-fairness-premises-through-composition.md)
+"Declared interface", [FR-492](../../objects/interfaces/FR-492-planner-settlement-request.md)
+"Interface mismatch"). A
 claim no registered composition-capable backend can discharge settles
 `unsupported` with a warning naming the required capability.
 

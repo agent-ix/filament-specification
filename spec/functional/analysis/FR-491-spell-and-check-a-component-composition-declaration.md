@@ -108,16 +108,13 @@ The compiler SHALL refuse, in source order, naming the member:
 The **dependency graph** has a node per declared guarantee and an edge
 `C::G → D::H` per `rely` and `depends` member. A strongly connected
 component of more than one node, or a node with an edge to itself, is a
-**cycle**. A cycle is not a static refusal: it is settled by FR-489 "Cycles"
-for the composition item alone, so the unit's other items are unaffected. A
-cycle is admitted for settlement only when a profile the unit selects
-declares FR-176's monotone complete lattice, initial element and
-convergence rule; it then derives one `fixed-point` premise slot, filled by
-the FR-176 composition result over the cycle's guarantees, which carries
-every iteration (FR-176-AC-4). Otherwise the composition item refuses
-`invalid_model_binding`/`malformed-declaration`, naming the cycle's
-guarantees in edge order, and no guarantee of the cycle is available as an
-assumption.
+**cycle**. A cycle is not a static refusal and does not make the declaration
+ill formed: the declaration checks, and under every rule its
+composition item settles `unsupported`, form `fixed-point`, as FR-489 "Cycles"
+states, for that item alone, so the unit's other items are unaffected. No
+guarantee of the cycle is available as an assumption. FR-176's lattice, initial
+element and convergence rule are declared by no requirement yet, so this
+requirement derives no `fixed-point` slot.
 
 ### Derived item and slots
 
@@ -125,21 +122,21 @@ A checked declaration `S` derives:
 
 | Rule | Item | Settled by |
 | --- | --- | --- |
-| `assume-guarantee` | one planner-local composition item (FR-368 "Item kinds"), whose obligation identity binds `S`'s node id, the package identity and every component subject identity | the planner, from [FR-492](../../objects/interfaces/FR-492-planner-settlement-request.md)'s settlement request |
+| `assume-guarantee` | one planner-local composition item (FR-368 "Item kinds"), whose obligation identity binds `S`'s node id, the package identity and every component subject identity | the planner, from [FR-492](../../objects/interfaces/FR-492-planner-settlement-request.md)'s settlement request; when the declaration is selected by name as an item of an analyze request, the same item is also written as one FR-331 `composition` request item whose `premises` and `assumptions` ("Assumption binding") answer to the registered assume-guarantee route, no new verb or request family |
 | `protocol-refinement`, `refinement-transfer`, `interface` | one FR-331 `composition` request item over the component subjects, negotiated as [FR-348](FR-348-admit-compositional-verification.md) states; FR-489's four lists are its `premises` member, spelled as FR-492's `slots` | the routed composition-capable provider; with none registered, `unsupported` (FR-348-AC-4) |
 
 The premise slots are, in this order: one `component-guarantee` slot per
 declared guarantee, one `rely` slot per `rely`, one `liveness-dependency`
-slot per `depends`, one `fairness` slot per derived fairness premise, one
-`environment` slot per `environment` member, and one `fixed-point` slot per
-admitted cycle. Their items and slot keys (FR-492) are:
+slot per `depends`, one `fairness` slot per derived fairness premise and one
+`environment` slot per `environment` member. Their items and slot keys (FR-492) are:
 
 - **component-guarantee** — item-backed: the item of `G` over `C`'s
   subject, checked under exactly the assumptions FR-176 gives `G` from its
   declared `rely` and `depends` members (the peer guarantees `G` may assume,
   each restricted to the shared interface), produced by `C`'s provider. The
   assumption set is part of the slot key, so a result for `G` checked under
-  other assumptions, or under none, is another key. This is what makes the
+  other assumptions, or under none, is another key ("Assumption binding"
+  states how the wire carries it). This is what makes the
   conjunction sound: each `G` holds of the composition once every
   assumption it was proved under is itself discharged (FR-176 "Discharge
   fixed point").
@@ -147,11 +144,35 @@ admitted cycle. Their items and slot keys (FR-492) are:
   the `guarantees` pool or a `discharges` entry (FR-489 "Implication").
 - **fairness** and **environment** — not item-backed: discharged by a
   `supplies` constraint, and filled by an environment record.
-- **fixed-point** — item-backed: one FR-331 `composition` item anchored at
-  `S`'s node, whose `premises` member names the cycle's component-guarantee
-  slot keys and whose `options` name the declaring profile; its slot key
-  binds those, so only FR-176's result over exactly this cycle under this
-  profile fills it.
+
+### Assumption binding
+
+The assumption set of a component guarantee `G` is derived from the declaration:
+the peer guarantees `H` that `G`'s `rely C::G on D::H` and
+`depends C::G on D::H` members name, as `premises`/`slots` indices of the
+`component-guarantee` entries over `D`'s subject at `H`'s clause, strictly
+ascending; an `H` that is not a declared `guarantee` has no entry to name and
+contributes no index (FR-492 "Interface mismatch" settles it). Under
+`protocol-refinement`, `refinement-transfer` and `interface`, which derive no
+assumption sets, every set is empty. Two routes carry the same derived set, and
+the set is part of the identity on each; a caller supplies no other:
+
+- **FR-331 route.** The FR-331 `composition` request item (selected by name as an
+  item of an analyze request, no new verb or request family) carries them as its
+  ordered `assumptions` member beside `premises` (FR-331 "Items"): one strictly
+  ascending array of `premises` indices per `component-guarantee` entry, in
+  `premises` order. It is request identity, and FR-331 refuses a request whose
+  array is not the derived one.
+- **FR-492 route.** A planner-local item has no FR-331 `composition` item, and
+  `G`'s own item carries no assumptions. The `component-guarantee` slot key
+  therefore carries the set itself: FR-492 "Request" adds to that slot's key the
+  member `assumptions`, the strictly ascending array of the `slots` indices of
+  the peer `component-guarantee` slots (the same indices as `premises`, since
+  `slots` and `premises` follow the one derived order). A result for `G` checked
+  under other assumptions, or under none, is therefore another key.
+
+No assumption is a proof: it names the peer guarantee whose own settlement the
+composition still needs (FR-489 "Discharge").
 
 ### Checked-package node
 
@@ -260,11 +281,12 @@ separate lists and the same slots with the same identities.
 | FR-491-AC-1 | A `Producer`/`Consumer` declaration with three guarantees, one `rely`, one `depends` and one `supplies` member checks and derives the composition item and, in order, three component-guarantee slots (each keyed with its FR-176 assumption set), one rely slot, one liveness-dependency slot and one fairness slot per resolved constraint, the four lists kept separate. | Test (TC-985) |
 | FR-491-AC-2 | One `component` member, an unknown rule spelling and a member of another form refuse `invalid_syntax`; an unknown import alias, subject or clause refuses `missing_declaration`/`missing-name`; two components of one name refuse `invalid_model_binding`/`conflicting-binding`. | Test (TC-985) |
 | FR-491-AC-3 | A `rely` on a liveness guarantee, a `depends` on a safety guarantee, a `rely` whose guarantee is undeclared, and a `rely` of a component on itself each refuse `invalid_model_binding`/`malformed-declaration` naming the member. | Test (TC-985) |
-| FR-491-AC-4 | A mutual `depends` pair, with no selected profile declaring FR-176's lattice, checks; its composition item refuses `invalid_model_binding`/`malformed-declaration` naming both guarantees, and the unit's other items are derived unchanged. Under a profile declaring the lattice, the pair derives one fixed-point slot. | Test (TC-985) |
+| FR-491-AC-4 | A mutual `depends` pair checks, under each of the four rules; its composition item settles `unsupported` (`unsupported-requested-capability`, form `fixed-point`, naming both guarantees), and the unit's other items are derived unchanged. | Test (TC-985) |
 | FR-491-AC-5 | Under `interface`, the declaration derives one FR-331 `composition` request item whose `premises` member holds the four lists as FR-492 slots, and no planner-local item. | Test (TC-985) |
 | FR-491-AC-6 | The emitted `correspondence`/`component_composition` node reads back to the same declaration, lists and slot identities; each slot's source correspondence resolves to its member; a node whose `relies` are out of order refuses `invalid_semantic_graph`. | Test (TC-985) |
 | FR-491-AC-7 | A `compose Sys` whose two guarantees are authored in the reverse of their canonical body order carries a declaration occurrence at ordinal 0 and one generated occurrence per member, keyed by the canonical concatenation above, and passes the V2 schema. Each reads back with its own literal authored region, and its component-guarantee slots retain authored guarantee order and those exact regions. A fairness premise derived first by the first authored guarantee reuses that guarantee's coordinate. Reordering the node's source-map entries changes neither member attribution nor slot order. | Test |
 | FR-491-AC-8 | Independently mutate AC-7's otherwise valid package, retaining V2-schema and generic source-map validity: remove a member's occurrence and matching entry together; change both to an ordinal equal to the member count; change a member region to another locked source, outside the declaration interval, equal to the declaration interval, overlapping an earlier member's region, or two nonoverlapping regions; and replace the member's role in both its occurrence and entry with `expression`. The missing pair refuses `invalid_package`/`invalid-value` at `/source_map`; each other mutation refuses the same code and cause at that entry's `/source_map/{i}`. Separately, a region whose `start >= end` fails the preceding generic source-map check as `invalid_source_map` at `/source_map/{i}/regions/{j}`, before any composition member-coordinate check. No member inherits the declaration's region, and no source text is recompiled. | Test |
+| FR-491-AC-9 | Two `assume-guarantee` composition request items equal except that one component guarantee is checked under one more peer guarantee have different request identities, and the `component-guarantee` slot keys of the FR-492 route differ in `assumptions` the same way; an `assumptions` array that is not the one the declaration's `rely` and `depends` members derive is refused `invalid_runtime_input`/`invalid-value` (FR-331-AC-64). | Test (TC-985) |
 
 ## Dependencies
 

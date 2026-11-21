@@ -14,7 +14,7 @@ relationships:
 Check, emit and read back a `composition-decl` over TC-983's `Producer` and
 `Consumer` packages, and show its slots, cycles and refusals.
 
-Scope: FR-491-AC-1 to FR-491-AC-6.
+Scope: FR-491-AC-1 to FR-491-AC-6 and FR-491-AC-9.
 
 ## Test Procedure
 
@@ -36,10 +36,13 @@ case through the real local Rust boundary:
 3. `rely Consumer::Done on Producer::Sends` (a liveness peer); `depends
    Consumer::Done on Producer::Counted` (a safety peer); a `rely` whose
    guarantee is not declared; `rely Producer::Sends on Producer::Counted`.
-4. Add `depends Producer::Sends on Consumer::Done`; then select a profile
-   that declares FR-176's lattice, initial element and convergence rule.
+4. Add `depends Producer::Sends on Consumer::Done`; then the same under
+   `rule interface`, `rule protocol-refinement` and `rule refinement-transfer`.
 5. Case 1 with `rule interface`.
 6. Emit case 1, read back and compare; swap two `relies` entries.
+7. Emit case 1 as an FR-331 `composition` request item and as an FR-492
+   settlement request, then the same with `Consumer::Done` checked under one
+   more peer guarantee.
 
 ## Expected Results
 
@@ -49,11 +52,16 @@ case through the real local Rust boundary:
 2. `invalid_syntax` twice; `missing_declaration`/`missing-name` twice;
    `invalid_model_binding`/`conflicting-binding`.
 3. Each `invalid_model_binding`/`malformed-declaration` naming the member.
-4. The unit checks; the composition item refuses `invalid_model_binding`/
-   `malformed-declaration` naming `Producer::Sends` and `Consumer::Done`, and
-   the unit's other items are unchanged; with the profile, one fixed-point
-   slot.
+4. The unit checks; under each rule the composition item settles `unsupported`,
+   `unsupported-requested-capability` naming the kind `composition`, the form
+   `fixed-point` and `Producer::Sends` and `Consumer::Done`, and the unit's
+   other items are unchanged.
 5. One FR-331 `composition` request item whose `premises` holds the slots;
    no planner-local item.
 6. The same declaration, lists and slot identities, each slot's source span
    its member; `invalid_semantic_graph`.
+7. The FR-331 item carries `assumptions` of one array per component-guarantee
+   entry, the `Consumer::Done` entry holding the `Producer::Sends` and
+   `Producer::Counted` premises indices; the FR-492 `Consumer::Done` slot key
+   carries the same indices as its `assumptions`. The two variants have
+   different request identities and different slot keys.

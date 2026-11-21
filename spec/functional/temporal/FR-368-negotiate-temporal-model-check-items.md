@@ -170,11 +170,14 @@ negotiated for it, and no exploration of the concrete subject runs", so it
 never reaches a provider and no eighth spelling exists. Its two premises are
 request items of kind `formula` and `refinement`. An implementation-guarantee
 item ([FR-488](../ir-proof/FR-488-attach-a-temporal-guarantee-to-implementation-rust.md))
-and an `assume-guarantee` composition item
+and the FR-492 settlement of an `assume-guarantee` composition
 ([FR-489](../analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md))
 are planner-local in the same way and have no `item_kind`; their premises
 that are request items are the items their declarations derive (FR-490,
-FR-491), and the planner reads them through FR-492.
+FR-491), and the planner reads them through FR-492. The same `assume-guarantee`
+declaration selected by name as an item of an analyze request is instead an
+FR-331 `composition` request item, which has no `item_kind` and whose FR-290
+family is `protocol` (FR-491 "Derived item and slots").
 
 ### Claim and anchor of a derived or refinement item
 

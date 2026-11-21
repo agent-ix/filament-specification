@@ -84,7 +84,12 @@ first defect's member by its RFC 6901 pointer.
   item's FR-331 request identity without its limits and wall-clock members:
   its FR-201 obligation identity together with its subject, claim node,
   FR-290 kind, `item_kind`, fairness set, `stutter_closure`,
-  `correspondence`, `premises` and extent classification. It is wider than
+  `correspondence`, `premises` and extent classification; and, for a
+  `component-guarantee` slot only, the `assumptions` member: the strictly
+  ascending array of the `slots` indices of the peer `component-guarantee`
+  slots the declaration derives for that guarantee ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)
+  "Assumption binding"). The guarantee's own item carries no assumptions, so
+  they are carried by the key and nowhere else on this route. It is wider than
   the FR-201 obligation identity on purpose: two derived items that share an
   anchor node (the four `operation-contract` roles of one guarantee) or that
   differ only in fairness or `stutter_closure` have different slot keys. For
@@ -146,7 +151,8 @@ cause given, at the first defect in this order:
    slot carrying either: `invalid-value` at the slot (a premise identity
    that names no settled result, FR-488-AC-7, FR-488-AC-9).
 5. A `result` that FR-331's request or result reader refuses: that refusal,
-   at the slot. A `result` whose request item's slot key is not the slot's
+   at the slot. A `result` whose request item's slot key, computed with the
+   declaration-derived `assumptions` of that slot, is not the slot's
    `identity`: `invalid-value` at `/slots/<i>/result`. The key binds the
    subject's package and so the relation revision, the fairness set,
    `stutter_closure` and the `correspondence` role, so a premise over
@@ -170,7 +176,9 @@ stuttering-invariant fragment (an interval operator nested under an
 unbounded one, a previous or strong previous operator) settles
 `inconclusive`, cause `transfer-not-preserving{reason: fragment,
 operator}`, naming the first such operator in clause order: an allowed
-stutter changes its truth. Otherwise each slot settles one outcome, in slot
+stutter changes its truth. A composition item whose declaration holds a
+dependency cycle settles `unsupported` before any slot is read, with FR-489
+"Cycles"'s diagnostic. Otherwise each slot settles one outcome, in slot
 order:
 
 | Slot | Outcome |
@@ -181,7 +189,7 @@ order:
 | `environment`, filled | `supplied`, listed in the result as an assumption |
 | unfilled | `absent` |
 | composition `rely` or `liveness-dependency` whose only discharger is a `{slot, environment}` entry | `assumption`: not discharged (FR-489-AC-11) |
-| composition `rely`, `liveness-dependency`, `fairness` and `fixed-point` otherwise | settled by FR-489 "Discharge" and "Cycles" from the pool and `discharges` |
+| composition `rely`, `liveness-dependency` and `fairness` otherwise | settled by FR-489 "Discharge" and "Cycles" from the pool and `discharges` |
 
 ### Planner result
 
@@ -199,7 +207,9 @@ order:
 - `value` and `basis` — the FR-360 label and FR-243 basis of the item:
   `proved`/`decisive-witness`, `inconclusive`/`unsettled`,
   `unsupported`/`unavailable` or `incomplete`/`unavailable`; never
-  `refuted`.
+  `refuted`, except the one case of "Interface mismatch": a composition item
+  whose declared interface is absent from or weaker than what a premise needs
+  settles `refuted`/`decisive-counterexample` ([FR-243](../protocol/FR-243-settlement-basis.md): the declaration is fixed, so the mismatch holds under every continuation).
 - `cause` — on `inconclusive`, `premise-unproved{premise, result}`, where
   `premise` is the slot index and `result` its outcome (an FR-331 result
   value, `absent` for an unfilled slot, or `assumption` for a premise
@@ -208,6 +218,8 @@ order:
   deciding slot's incomplete cause, or `limit-reached` with `limit`
   `max_work`, its `value` and `setting` `planner.max_work` when the
   planner's own budget stops it.
+- `mismatch` — on `refuted` only, and then exactly: `{component, interface,
+  premise, reason}` ("Interface mismatch"); `refuted` carries no `cause`.
 - `certification` — on `proved` only: `trusted` when any deciding premise
   is `trusted`, else `uncertified` when any is, else `certified` (FR-354).
 - `slots` — every slot's outcome, with its certification and extent.
@@ -219,7 +231,8 @@ order:
   each premise's certification.
 - `discharge` (a composition item) — FR-489's premise discharge record.
 
-**Decision order.** The item's outcome is decided by the first slot, in
+**Decision order.** For a composition item, "Interface mismatch" runs first.
+Otherwise, or when it finds none, the item's outcome is decided by the first slot, in
 slot order, whose outcome is not `proved` or `supplied`: an `unsupported` outcome settles the item
 `unsupported` with its cause; an `incomplete` outcome settles it
 `incomplete` with its cause; any other outcome (`refuted`, `inconclusive`,
@@ -227,6 +240,47 @@ slot order, whose outcome is not `proved` or `supplied`: an `unsupported` outcom
 `inconclusive`, `premise-unproved` naming that slot. Only when every needed
 slot is `proved` or `supplied` is the item `proved`. A `tested` premise, a
 finite trace, is never `proved` (FR-488-AC-11).
+
+### Interface mismatch
+
+FR-348-AC-2 stands for a composition item: a **declared** interface that is
+weaker than or absent from what a premise needs refutes the composition,
+naming the component and the interface. This is the only way a planner result
+is `refuted`. It is decided from the declaration alone, never from a result
+the request supplies, in **one order**, reason-major: first every `absent`
+mismatch, over the item's `rely` and `liveness-dependency` slots in ascending
+slot order; and only when there is none, every `weaker` mismatch over the same
+slots in ascending slot order. The first mismatch found in that order settles
+the item, so an `absent` slot is reported even when a lower-numbered slot is
+`weaker`:
+
+1. **Absent.** The slot names a peer `D::H` (FR-491 `rely` or `depends`), and no
+   `component-guarantee` slot of the item is over `D`'s subject at `H`'s clause:
+   `D` declares no guarantee `H`.
+2. **Weaker.** A `component-guarantee` slot is over `D`'s subject at `H`'s
+   clause, but the peer's declared guarantee is conditional on a fairness
+   constraint (a `fairness` slot FR-491 derives from that guarantee's
+   resolved fairness set) that no constraint the composition supplies implies
+   under FR-380 "Fairness implication": FR-489's "Implication" cannot hold for
+   it, whatever result is supplied.
+
+The refutation names the peer component `D` and the interface, `H`'s clause
+node, and carries them, the slot index and `reason` `absent` or `weaker` as its
+`mismatch` member in the planner result, and as the FR-331 `interface-mismatch`
+counterexample when the item is answered on the wire. It has no certification and no
+conclusion record; its `slots` member is the complete slot outcome list of "Slot outcome", in slot order, which the mismatch does not shorten or reorder.
+
+It is **not** a premise whose proof did not settle. A premise whose declared
+interface exists and is not weaker, but whose own result is absent, `tested`,
+`inconclusive`, `unsupported`, `incomplete`, or of a supplied guarantee that is
+over another subject, of another kind, of another clause or not `proved`
+(FR-489 "Discharge"), is not an interface mismatch: it keeps its slot outcome
+and the item settles by "Decision order" `premise-unproved` or the slot's own
+`unsupported`/`incomplete`. A provider's `proved` answer the request's own
+settlements do not confirm is neither: it is FR-331's
+`provider-answer-unconfirmed`. No other relation, such as one clause being
+stronger than another, is decided here, and this section relaxes none of
+admission, replay, certification, trust, extent or limits.
 
 `premise-unproved` and `transfer-not-preserving` here are the FR-331
 closed causes, written only by the planner: a provider's result entry never
@@ -242,12 +296,14 @@ carries them (FR-331 "Result entries").
 | FR-492-AC-4 | A filled item-backed slot with no result, and a listed environment slot with no record, refuse `invalid_runtime_input`/`invalid-value` at the slot; an unfilled slot settles `absent` and the item `inconclusive`, `premise-unproved` naming it with `result` `absent`. | Test (TC-986) |
 | FR-492-AC-5 | A premise result whose request item's slot key differs from the slot's (one over another relation revision, a model claim without `stutter_closure` or under another fairness set, and a frame result in a transition-simulation slot) refuses `invalid_runtime_input`/`invalid-value` at `/slots/<i>/result`; a result entry FR-331's reader refuses keeps that refusal at the slot. | Test (TC-986) |
 | FR-492-AC-6 | With slot results `unsupported`, `incomplete` and `inconclusive` seeded one per run, the item settles `unsupported`, `incomplete` and `inconclusive`/`premise-unproved` respectively, each naming its slot; with two non-proved slots the earlier slot decides. | Test (TC-986) |
-| FR-492-AC-7 | A slot result `tested` settles the item `inconclusive`, `premise-unproved` naming the slot; no planner result is `refuted`. | Test (TC-986) |
+| FR-492-AC-7 | A slot result `tested` settles the item `inconclusive`, `premise-unproved` naming the slot; no planner result is `refuted` for it. | Test (TC-986) |
 | FR-492-AC-8 | A proved item whose premises include one `trusted` plugin result is `proved` with certification `trusted`; with only `certified` entries read from the request it is `uncertified`, never `certified`. | Test (TC-986) |
 | FR-492-AC-11 | A guarantee item whose clause nests an interval operator under an unbounded one, and one whose clause uses previous, each settle `inconclusive`, `transfer-not-preserving{reason: fragment}` naming the operator, with every slot proved. | Test (TC-986) |
 | FR-492-AC-12 | A model-claim result naming an assumption no environment record supplies settles the item `inconclusive`, `premise-unproved` naming the model-claim slot; a `rely` slot whose only discharger is an environment record settles `premise-unproved` with `result` `assumption`. | Test (TC-986) |
 | FR-492-AC-9 | A `max_work` budget smaller than the slot count settles the item `incomplete`, `limit-reached` naming `max_work`. | Test (TC-986) |
-| FR-492-AC-10 | A provider result entry carrying `premise-unproved` or `transfer-not-preserving` is refused by FR-331's reader (`unknown-cause`), so no premise result carries a planner-only cause from a provider. | Test (TC-986) |
+| FR-492-AC-10 | A provider result entry carrying `premise-unproved`, `transfer-not-preserving` or `provider-answer-unconfirmed` is refused by FR-331's reader (`unknown-cause`), so no premise result carries a planner-only or core-guard cause from a provider. | Test (TC-986) |
+| FR-492-AC-13 | A composition with an `absent` mismatch at slot 4 and a `weaker` mismatch at slot 3 settles `refuted`, `decisive-counterexample`, `mismatch` naming the slot 4 peer component, its clause node, the slot and `reason` `absent`; with only the `weaker` slot it names that slot with `reason` `weaker`; with two `absent` slots, the lower slot. The `slots` member lists every slot outcome in slot order. | Test (TC-986) |
+| FR-492-AC-14 | A composition whose peer interface is declared and not weaker, with the peer guarantee's result absent, `tested`, `inconclusive` or over another subject, or supplied by a stronger but different clause, settles `inconclusive`, `premise-unproved` and never `refuted`; no other planner item kind is ever `refuted`. | Test (TC-986) |
 
 ## Dependencies
 
@@ -266,4 +322,4 @@ carries them (FR-331 "Result entries").
 
 ## References
 
-- Tickets: Linear QSL-1541, QSL-1542.
+- Tickets: Linear QSL-1541, QSL-1542, QSL-2739.

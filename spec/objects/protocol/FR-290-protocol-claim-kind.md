@@ -151,8 +151,9 @@ declaration family of the claim ("Declaration-family applicability").
 | Claim transferred through a model refinement ([FR-380](../../functional/analysis/FR-380-transfer-claims-through-refinement.md)) | `temporal-satisfaction` | none; a transfer item is planner-local and is not a request item (FR-380) |
 | Implementation guarantee of a temporal claim ([FR-488](../../functional/ir-proof/FR-488-attach-a-temporal-guarantee-to-implementation-rust.md), [FR-490](../../functional/ir-proof/FR-490-spell-and-check-an-implementation-guarantee-declaration.md)) and its fairness-correspondence items | `temporal-satisfaction` | none; planner-local, not a request item |
 | Initialization, transition-simulation, frame or no-divergence obligation of an implementation guarantee (FR-490) | `operation-contract`, carrying `correspondence` | `relation-claim` |
-| `assume-guarantee` composition of component guarantees ([FR-489](../../functional/analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md), [FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) | `composition` | none; planner-local, not a request item |
-| Composition of component guarantees under `protocol-refinement`, `refinement-transfer` or `interface` (FR-491), and FR-176's fixed point over an accepted cycle | `composition` | `protocol` |
+| Planner settlement of an `assume-guarantee` composition of component guarantees ([FR-489](../../functional/analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md), [FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) through its FR-492 settlement request | `composition` | none; planner-local, not a request item |
+| An `assume-guarantee` composition declaration selected by name as an item of an analyze request ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md) "Derived item and slots") | `composition` | `protocol` |
+| Composition of component guarantees under `protocol-refinement`, `refinement-transfer` or `interface` (FR-491) | `composition` | `protocol` |
 | FR-353 abstraction relation | none; it is a premise of the `operation-contract` claim it binds | none |
 | Other protocol analysis claim ([FR-060](../../functional/protocol/FR-060-separate-protocol-claims.md)) | its `protocol`-family member | `protocol` |
 | Probabilistic claim of any FR-407 form | `probabilistic-satisfaction` | `probabilistic` |
@@ -251,9 +252,10 @@ names, by the node's tag and `semantic_form` (FR-322) and its occurrence role:
 | `relation`/`refinement` | `relation-claim` |
 | `claim`/`probabilistic_claim` | `probabilistic` |
 | `claim`/`schedulability` | `real-time` |
-| `correspondence`/`component_composition`, whose rule is `protocol-refinement`, `refinement-transfer` or `interface` ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) | `protocol` |
-| `correspondence`/`component_composition` of any rule, including `assume-guarantee`, for the `fixed-point` `composition` item an accepted cycle derives ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md), [FR-489](../../functional/analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md)); an `assume-guarantee` declaration's main item stays planner-local and has no family | `protocol` |
+| `correspondence`/`component_composition` of any rule ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) | `protocol` |
 | any `protocol` node | `protocol` |
+
+A `component_composition` node read for the planner's FR-492 settlement request is not a request item and has no family; the family applies only to a `composition` request item an analyze request names. A cycle in a composition declaration derives no `fixed-point` item; its composition item settles `unsupported` (FR-489 "Cycles").
 
 A claim that names a node of no row has no declaration family. Examples are
 any other `expression` occurrence, a `claim`/`verification_claim`,

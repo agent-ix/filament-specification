@@ -311,11 +311,14 @@
         "check": {"$ref": "#/$defs/Check"},
         "correspondence": {"description": "FR-490 Derived items: the correspondence or progress role of an operation-contract item an implementation guarantee derives; operation absent for initialization. Part of request identity.", "type": "object", "required": ["role"], "properties": {"role": {"enum": ["initialization", "transition-simulation", "frame", "no-divergence"]}, "operation": {"type": "object", "required": ["context", "operation"], "properties": {"context": {"$ref": "#/$defs/NodeId"}, "operation": {"$ref": "#/$defs/Nonempty"}}, "additionalProperties": false}}, "additionalProperties": false},
         "premises": {"description": "FR-491, FR-492: the premise slots of a composition item a composition declaration derives, in derived order. Part of request identity.", "type": "array", "items": {"type": "object", "required": ["role", "key"], "properties": {"role": {"enum": ["component-guarantee", "rely", "liveness-dependency", "fairness", "environment"]}, "key": {"type": "object"}}, "additionalProperties": false}},
+        "assumptions": {"description": "FR-491 Assumption binding, FR-331 Items: for each component-guarantee entry of premises, in premises order, the strictly ascending premises indices of the component-guarantee entries it is checked under. Part of request identity; length, range, role and order are reader obligations.", "type": "array", "items": {"type": "array", "items": {"$ref": "#/$defs/Count"}}},
         "assessed_root": {"description": "FR-331 Items, FR-351 Assessed subject's root: the claim's assessed-subject root of a local-projection or realizability item, an FR-207 root with an object subject. Part of request identity. No member is required here: the provider declines an item whose root, observation, subject or FR-207 subject member is absent (invalid_runtime_input/missing-member), so the subject's FR-207 members are checked by the provider, not by this schema.", "type": "object", "properties": {"observation": {}, "subject": {"type": "object", "properties": {"tag": {"const": "object"}}}}, "additionalProperties": false}
       },
       "allOf": [
         {"description": "FR-331 Items: assessed_root belongs to a local-projection or realizability item only.", "if": {"required": ["assessed_root"]}, "then": {"required": ["kind"], "properties": {"kind": {"enum": ["local-projection", "realizability"]}}}},
         {"description": "FR-491: premises belongs to a composition item only.", "if": {"required": ["premises"]}, "then": {"required": ["kind"], "properties": {"kind": {"const": "composition"}}}},
+        {"description": "FR-491: assumptions requires premises; the premises rule above confines both to a composition item.", "if": {"required": ["assumptions"]}, "then": {"required": ["premises"]}},
+        {"description": "FR-491: a composition item that carries premises carries assumptions.", "if": {"required": ["premises"]}, "then": {"required": ["assumptions"]}},
         {"description": "FR-490: correspondence belongs to an operation-contract item only, and names an operation exactly when its role is not initialization.", "if": {"required": ["correspondence"]}, "then": {"required": ["kind"], "properties": {"kind": {"const": "operation-contract"}, "correspondence": {"if": {"properties": {"role": {"const": "initialization"}}}, "then": {"not": {"required": ["operation"]}}, "else": {"required": ["operation"]}}}}},
         {"description": "FR-368 Extent and domains of a derived or refinement item: unbounded, with an infinite-trace domain. That the domain's node is the claim's node is a producer obligation.", "if": {"properties": {"temporal": {"properties": {"item_kind": {"enum": ["deadlock-freedom", "time-lock-freedom", "race-freedom", "loop-invariant", "loop-termination", "refinement"]}}, "required": ["item_kind"]}}, "required": ["temporal"]}, "then": {"properties": {"extent": {"properties": {"classification": {"const": "unbounded"}, "domains": {"contains": {"properties": {"kind": {"const": "infinite-trace"}}, "required": ["kind"]}}}}}}},
         {"description": "FR-193: requirements belong to a temporal-satisfaction item only.", "if": {"required": ["requirements"]}, "then": {"required": ["kind"], "properties": {"kind": {"const": "temporal-satisfaction"}}}},
@@ -912,8 +915,22 @@
         {"$ref": "#/$defs/HyperCounterexample"},
         {"$ref": "#/$defs/HybridCounterexample"},
         {"$ref": "#/$defs/ContractCounterexample"},
-        {"$ref": "#/$defs/ProtocolAnalysisCounterexample"}
+        {"$ref": "#/$defs/ProtocolAnalysisCounterexample"},
+        {"$ref": "#/$defs/InterfaceMismatch"}
       ]
+    },
+    "InterfaceMismatch": {
+      "description": "FR-492 Interface mismatch: a composition item's declared peer interface absent from or weaker than what a rely or liveness-dependency premise needs.",
+      "type": "object",
+      "required": ["type", "component", "interface", "premise", "reason"],
+      "properties": {
+        "type": {"const": "interface-mismatch"},
+        "component": {"$ref": "#/$defs/Nonempty"},
+        "interface": {"$ref": "#/$defs/NodeId"},
+        "premise": {"$ref": "#/$defs/Count"},
+        "reason": {"enum": ["absent", "weaker"]}
+      },
+      "additionalProperties": false
     },
     "ContractCounterexample": {
       "description": "FR-485 Counterexample: an operation-contract refutation; per execution its pre-state, arguments, result and post-state, replayed with no reachability prefix.",
@@ -1119,6 +1136,7 @@
         {"properties": {"type": {"const": "reduction-horizon"}, "max_depth": {"$ref": "#/$defs/Count"}}, "required": ["type", "max_depth"], "additionalProperties": false},
         {"properties": {"type": {"const": "mapping-undetermined"}, "row": {"$ref": "#/$defs/Nonempty"}, "state_key": {"$ref": "#/$defs/State"}, "prefix": {"type": "array", "items": {"$ref": "#/$defs/ModelStep"}}}, "required": ["type", "row", "state_key", "prefix"], "additionalProperties": false},
         {"properties": {"type": {"const": "transfer-not-preserving"}, "reason": {"enum": ["fragment", "fairness", "stutter-closure"]}, "operator": {"$ref": "#/$defs/Nonempty"}, "constraint": {"$ref": "#/$defs/Fairness"}}, "required": ["type", "reason"], "additionalProperties": false},
+        {"description": "FR-331 core-guard cause: a composition answer the producer's proof guard did not confirm from the request's own component-guarantee settlements; premise is the premises index of the first unconfirmed component-guarantee entry. Written by the producer, never by a provider.", "properties": {"type": {"const": "provider-answer-unconfirmed"}, "premise": {"$ref": "#/$defs/Count"}}, "required": ["type", "premise"], "additionalProperties": false},
         {"properties": {"type": {"const": "premise-unproved"}, "premise": {"$ref": "#/$defs/Count"}, "result": {"$ref": "#/$defs/ResultValue"}}, "required": ["type", "premise", "result"], "additionalProperties": false},
         {"description": "FR-468: hypothesis is the invariant clause's checked-package node; result is the result of its unproved item.", "properties": {"type": {"const": "hypotheses-not-established"}, "hypothesis": {"$ref": "#/$defs/NodeId"}, "result": {"$ref": "#/$defs/ResultValue"}}, "required": ["type", "hypothesis", "result"], "additionalProperties": false},
         {"description": "FR-439: limit is the request member that raises the budget.", "properties": {"type": {"const": "memory-bound-reached"}, "limit": {"enum": ["max_store_buffer", "max_messages"]}, "value": {"$ref": "#/$defs/PositiveCount"}, "states": {"$ref": "#/$defs/PositiveCount"}}, "required": ["type", "limit", "value", "states"], "additionalProperties": false},
