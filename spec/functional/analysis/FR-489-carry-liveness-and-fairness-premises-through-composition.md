@@ -55,10 +55,14 @@ And the obligation identity of each supplied component guarantee.
 
 The request is authored as an FR-491 `composition-decl`, which fixes the
 components, the rule and the premises and derives the four lists as premise
-slots. Under the rule `assume-guarantee` the composition item is
-planner-local, and the planner reads the slots, the supplied guarantees and
-any discharge records from one FR-492 settlement request; under any other
-rule it is FR-348's `composition` request item, unchanged.
+slots. Under the rule `assume-guarantee` the planner reads the slots, the
+supplied guarantees and any discharge records from one FR-492 settlement
+request, and that library settlement is planner-local; the same declaration
+selected by name as an item of an analyze request is instead an FR-331
+`composition` request item of the existing `protocol` family
+([FR-491](FR-491-spell-and-check-a-component-composition-declaration.md)
+"Derived item and slots"). Under any other rule it is FR-348's `composition`
+request item, unchanged.
 
 ## Outputs
 

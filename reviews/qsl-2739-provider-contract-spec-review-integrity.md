@@ -57,6 +57,13 @@ Round 2, against b3c66f3554a142998bd211782bd6626b71fa7784 (fix diff bec3059e..b3
 | --- | --- | --- |
 | FND-005 | fixed | The input is now named: a well-formed `assume-guarantee` declaration whose dependency graph holds a cycle, for example TC-983 and TC-985 step 4's mutual `depends`. It settles typed `unsupported`, form `fixed-point`, before any slot, planner or provider step (FR-492 pre-slot step). FR-489-AC-4, FR-491-AC-4, the settlement row and TC-983/985 step and expected 4 are aligned. AC-7 is back to the plain unsupported rule. The constructibility gap and the 'every cycle refuses' contradiction are gone. |
 
+Round 3, against 2f400c8b0c106768c2875b315e9a180d38227cfb (contained completion 430945dd, routing 9d89b90b, integration 20032191 and 2f400c8b).
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-006 | fixed | FR-489 "Cycles" states that the typed `unsupported` is FR-176's refusal of an unsupported circular dependency for a composition item, never self-justifying, with no guarantee available as an assumption (FR-176-AC-3). The library normative stays coherent, with no new category or wire code. |
+| FND-007 | fixed | The same early typed `unsupported` covers a well-formed cycle under all four rules, before any slot, planner or provider call (before writing the item to a provider for the three routed rules). The AG-only and "no other route" wording is removed. FR-489-AC-4, FR-491-AC-4 and TC-983/TC-985 step and expected 4 are parameterised over the four rules. |
+
 ## New findings (disposition pass 1)
 
 | ID | Severity | Summary | Refs |
@@ -69,3 +76,26 @@ Round 2, against b3c66f3554a142998bd211782bd6626b71fa7784 (fix diff bec3059e..b3
 | --- | --- | --- | --- |
 | FND-006 | medium | The library normative FR-176 "Behavior" still says "A dependency cycle is accepted only with an explicit sound fixed-point rule supported by the selected profile; otherwise it refuses as circular reasoning" (FR-176-AC-3: "refuses"). FR-489 "Cycles" and FR-491 now settle that same cycle with an FR-360 `unsupported` result, `unsupported-requested-capability`. That is a settled result, not a refusal. The text drops the earlier "refused exactly as FR-176-AC-3 refuses it" link and states no reconciliation. Two implementers of FR-176 and FR-489 would emit different outcomes for the same mutual-`depends` unit. Ruling 3 (typed unsupported) stands. Add one sentence, in FR-489 "Cycles" or as an FR-176 note, saying the typed `unsupported` is FR-176's refusal of an unsupported circular dependency for composition items (never self-justifying, no guarantee available as an assumption), so the library rule stays coherent. | spec/functional/analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md:119-138 |
 | FND-007 | medium | At base 9f5b30a5, FR-491's cycle rule applied under every rule: without a lattice the composition item refused `malformed-declaration`. Now FR-491 says only that "for an `assume-guarantee` rule its composition item settles `unsupported`", and FR-489 "Cycles" names only an `assume-guarantee` declaration as the input, then says "this requirement defines no other route for a cycle". A well-formed `protocol-refinement`, `refinement-transfer` or `interface` declaration whose `rely`/`depends` members form a cycle now checks and is routed to the provider as an FR-331 `composition` item with no stated cycle outcome. The core guard checks only component settlements, so a provider's circular `proved` is not excluded. State the cycle outcome for every rule: the same typed `unsupported`, or keep the base refusal for non-AG rules. | spec/functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md:111-117 |
+
+## New findings (disposition pass 3)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-008 | medium | The approved routing exception (ruling A) was applied to FR-290, FR-368, TC-271 and TC-302 but not to FR-489 "Inputs". FR-489 still says "Under the rule `assume-guarantee` the composition item is planner-local, and the planner reads ... from one FR-492 settlement request; under any other rule it is FR-348's `composition` request item". FR-368 now says the same AG declaration selected by name on an analyze request "is instead an FR-331 `composition` request item" with family `protocol`, and FR-290 has a row for it. A reader of FR-489 alone would treat an analyze-selected AG composition as planner-local only. Add the analyze-selected FR-331 route, citing FR-491 "Derived item and slots". | spec/functional/analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md:56-61 |
+| FND-009 | low | FR-290's new note "A cycle in a composition declaration derives no item (FR-489 Cycles)" can be read as "a cycle-bearing declaration derives no request item". That contradicts FR-489/FR-491, where the declaration's composition item exists and settles typed `unsupported`, form `fixed-point`. It means that no `fixed-point` item or slot is derived. Say "derives no `fixed-point` item; its composition item settles `unsupported` (FR-489 Cycles)". | spec/objects/protocol/FR-290-protocol-claim-kind.md:258 |
+
+## Routing and integration (disposition pass 3)
+
+Routing and integration verification (disposition pass 3, against 2f400c8b0c106768c2875b315e9a180d38227cfb):
+
+- **Ruling A delta (9d89b90b vs b3c66f35):**
+  - FR-290's claim-form table splits AG into an FR-492 planner settlement (family none) and an analyze-selected `composition` item (family `protocol`).
+  - The node-family table has one `component_composition` row "of any rule" with family `protocol`; the obsolete accepted-cycle fixed-point row is removed.
+  - FR-368 "Item kinds" is conditional: FR-492 stays planner-local, while an analyze-selected item is an FR-331 `composition` item with no `item_kind`.
+  - TC-271 NG-23 adds the AG item under `protocol` (`unsupported-requested-capability` with no provider, never `inapplicable-kind`). TC-302 adds the selected item with its own index and identity.
+  - No new family, verb, schema or code. The FR-492 library alternative remains.
+- **Integration:** this PR's own patch is preserved.
+  - The `-U0` added and removed lines of `9f5b30a5..9d89b90b` and `73e81dce..2f400c8b` differ only in: the neighbouring oneOf entry (main's `ProtocolAnalysisCounterexample` precedes our `InterfaceMismatch`; both are present); JSON trailing commas next to main's appended vectors; the renumberings FR-491-AC-7 to AC-9 and FR-331-AC-61/62/63 to 64/65/66, with their references (TC-985 and TC-986 scope, FR-491-AC-9 citing AC-64, AC-66 citing AC-64/65, BP-66 description, the two `#[trace]` attributes); and one missed cell (gap FND-002).
+  - Main's FR-331-AC-61/62/63 and FR-491-AC-7/8 are present and unchanged, and the TC-985 scope excludes main's AC-7/8 exactly as on main.
+  - No live reference to the old IDs remains in spec/ or tests/.
+- **Mergeability:** GitHub reports PR 792 `isDraft: true`, `mergeable: CONFLICTING`, `mergeStateStatus: DIRTY`. Yet `baseRefOid` is 73e81dce and `git merge-base HEAD 73e81dce` is 73e81dce: the head strictly descends from the base, so no content conflict is possible. The state looks stale and must be refreshed, and the PR undrafted, before an admin merge.

@@ -45,3 +45,9 @@ Round 1, against bec3059e731621e5cfb63144c37a3eed3da851cc (fix diff 35b3b0e0..be
 | FND | outcome | reason |
 | --- | --- | --- |
 | FND-001 | fixed | FR-331-AC-63 (Test TC-431), BP-66, 3 positive and 9 adverse vectors in vectors.json, and `#[trace("TC-431","FR-331-AC-63")]` on the two generic TC-431 loops. `quire matrix` now reports FR-331-AC-63 `tagged` by both tests. Runtime result is pending (Draco). |
+
+## New findings (disposition pass 3)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-002 | low | The integration ID correction renamed the BP-66 description to "FR-331-AC-66: ...", but BP-66's last, criteria column still reads `FR-331-AC-63`. After the merge that is main's protocol-analysis criterion. So TC-431's table traces this PR's composition schema vectors to the wrong criterion, and no TC-431 row's criteria column names FR-331-AC-66. The Rust `#[trace]` attributes are correct (AC-66), so the computed matrix is unaffected. Change the cell to FR-331-AC-66. | spec/test-cases/TC-431-backend-provider-wire-vectors.md:106 |

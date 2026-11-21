@@ -51,6 +51,12 @@ Round 2, against b3c66f3554a142998bd211782bd6626b71fa7784 (fix diff bec3059e..b3
 | --- | --- | --- |
 | FND-002 | fixed | Masked vector removed and redundant kind clause dropped. The accepted language is unchanged: old `assumptions => kind=composition AND premises`; new `assumptions => premises`, and the existing rule gives `premises => kind=composition`. The diff to vectors.json is only that removal. tests/backend_provider_v1.rs is unchanged since bec3059e (git diff --stat empty). |
 
+Round 3, against 2f400c8b0c106768c2875b315e9a180d38227cfb (contained completion 430945dd, routing 9d89b90b, integration 20032191 and 2f400c8b).
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-003 | fixed | The phrase is scoped to its clause: "`premises` or `assumptions` on another kind (by the existing `premises` rule alone)". After the integration ID correction the row is FR-331-AC-66 (formerly AC-63) and the two `#[trace]` attributes read FR-331-AC-66; the test bodies are unchanged. |
+
 ## New findings (disposition pass 2)
 
 | ID | Severity | Summary | Refs |

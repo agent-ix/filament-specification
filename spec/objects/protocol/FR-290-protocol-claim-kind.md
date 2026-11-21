@@ -255,7 +255,7 @@ names, by the node's tag and `semantic_form` (FR-322) and its occurrence role:
 | `correspondence`/`component_composition` of any rule ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) | `protocol` |
 | any `protocol` node | `protocol` |
 
-A `component_composition` node read for the planner's FR-492 settlement request is not a request item and has no family; the family applies only to a `composition` request item an analyze request names. A cycle in a composition declaration derives no item (FR-489 "Cycles").
+A `component_composition` node read for the planner's FR-492 settlement request is not a request item and has no family; the family applies only to a `composition` request item an analyze request names. A cycle in a composition declaration derives no `fixed-point` item; its composition item settles `unsupported` (FR-489 "Cycles").
 
 A claim that names a node of no row has no declaration family. Examples are
 any other `expression` occurrence, a `claim`/`verification_claim`,
