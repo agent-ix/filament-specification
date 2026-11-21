@@ -13,7 +13,7 @@ relationships:
 
 Admit, refuse and settle FR-492 requests for TC-984 case 1's guarantee item.
 
-Scope: FR-492-AC-1 to FR-492-AC-14 and FR-331-AC-61 to FR-331-AC-62.
+Scope: FR-492-AC-1 to FR-492-AC-14 and FR-331-AC-64 to FR-331-AC-65.
 
 ## Test Procedure
 
