@@ -183,7 +183,10 @@ checked-package `NodeId` shape: the corpus schema's `$defs.NodeId` is
 an index segment `{"node": i}` and never a nested node id. Every such id is
 document-held (FR-322 "Operand index segments"): an operand slot
 `{"operand": k}`, which the shared shape admits, is misplaced there and
-refuses `malformed_wire` at its `operand` member. A corpus document
+refuses `malformed_wire` at its `operand` member. A dependency index segment
+`{"dependency": d, "node": i}`, which the shared shape also admits, is
+misplaced there too and refuses `malformed_wire` at its `dependency` member,
+because a corpus document resolves against its one package only. A corpus document
 holds no semantic graph, so each index segment of a corpus node id resolves
 against the `semantic_graph.nodes` of the checked package the document is
 about, written as a document-held id of that package (FR-322 "Operand index

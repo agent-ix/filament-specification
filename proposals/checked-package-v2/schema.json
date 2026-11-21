@@ -14515,6 +14515,9 @@
         },
         {
           "$ref": "#/$defs/OperandSlot"
+        },
+        {
+          "$ref": "#/$defs/DependencyNodeIndex"
         }
       ]
     },
@@ -14538,6 +14541,25 @@
         "node"
       ],
       "properties": {
+        "node": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "additionalProperties": false
+    },
+    "DependencyNodeIndex": {
+      "description": "FR-322 Dependency index segments: in a document outside any package, an operand naming semantic_graph.nodes[node] of the direct dependency whose lock.dependency_selections identity is dependency. Misplaced in a checked-package document (reader check, not schema).",
+      "type": "object",
+      "required": [
+        "dependency",
+        "node"
+      ],
+      "properties": {
+        "dependency": {
+          "$ref": "#/$defs/Nonempty"
+        },
         "node": {
           "type": "integer",
           "minimum": 0,
