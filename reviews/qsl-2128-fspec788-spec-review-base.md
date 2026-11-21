@@ -30,3 +30,21 @@ No applicable AssuranceProfile was found under spec/. Direct review selected cod
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | high | The broadened closed-result rule includes an HP-1 certificate checked and rejected (no accepted certificate certified its closure), requiring incomplete/certificate-unchecked while FR-331 lines 173-175 require inconclusive/certificate-rejected. Restrict the unchecked condition to absent/not-performed checks and preserve rejection and checker-limit precedence explicitly. | spec/objects/interfaces/FR-331-backend-provider-envelope.md:744-756 |
+
+## Disposition pass 1
+
+**PASS; mergeable** at 342cd6c62678c6f3f4d8791524e1f6d24fd8bb78. Rechecked the bounded wording fix and surrounding rejection, stop and existing cause rules. Absent or unperformed checks now use CertificateUnchecked; rejected certificates remain inconclusive/certificate-rejected, and limit-stopped checks retain their incomplete limit cause. No new finding. Scoped FR-331 validation still reports the same baseline module issue; grammar remains clean. No Cargo or branch edits.
+
+## Dispositions
+
+Round 1.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | The condition now requires an absent certificate or an unperformed core check; explicit rejected and limit-stopped precedence is retained. |
+
+Fixed excerpt:
+
+> When an exhaustive result's explored graph is closed, with no node left open,
+> and its certificate is absent or no core certificate check has been performed,
+> the producer SHALL settle the item `incomplete` with cause

@@ -30,3 +30,7 @@ No applicable AssuranceProfile was found under spec/. Direct review selected cod
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | No findings (placeholder) | - |
+
+## Disposition pass 1
+
+**PASS; mergeable** at 342cd6c62678c6f3f4d8791524e1f6d24fd8bb78. Rechecked the bounded wording fix and surrounding rejection, stop and existing cause rules. Absent or unperformed checks now use CertificateUnchecked; rejected certificates remain inconclusive/certificate-rejected, and limit-stopped checks retain their incomplete limit cause. No new finding. Scoped FR-331 validation still reports the same baseline module issue; grammar remains clean. No Cargo or branch edits.
