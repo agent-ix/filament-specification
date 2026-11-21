@@ -46,6 +46,12 @@ Round 1, against bec3059e731621e5cfb63144c37a3eed3da851cc (fix diff 35b3b0e0..be
 | --- | --- | --- |
 | FND-001 | fixed | FR-331-AC-63 (Test TC-431), BP-66, 3 positive and 9 adverse vectors in vectors.json, and `#[trace("TC-431","FR-331-AC-63")]` on the two generic TC-431 loops. `quire matrix` now reports FR-331-AC-63 `tagged` by both tests. Runtime result is pending (Draco). |
 
+Round 4, against 58f4a4df0c0e718af61468b5bec7482709936dc9 (routing completion and #798 integration).
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-002 | fixed | TC-431 BP-66's criteria cell now reads FR-331-AC-66, matching its description and the two #[trace] attributes; main's FR-331-AC-63 is no longer cited by this row. |
+
 ## New findings (disposition pass 3)
 
 | ID | Severity | Summary | Refs |

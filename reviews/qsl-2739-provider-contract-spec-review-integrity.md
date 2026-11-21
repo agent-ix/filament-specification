@@ -64,6 +64,13 @@ Round 3, against 2f400c8b0c106768c2875b315e9a180d38227cfb (contained completion 
 | FND-006 | fixed | FR-489 "Cycles" states that the typed `unsupported` is FR-176's refusal of an unsupported circular dependency for a composition item, never self-justifying, with no guarantee available as an assumption (FR-176-AC-3). The library normative stays coherent, with no new category or wire code. |
 | FND-007 | fixed | The same early typed `unsupported` covers a well-formed cycle under all four rules, before any slot, planner or provider call (before writing the item to a provider for the three routed rules). The AG-only and "no other route" wording is removed. FR-489-AC-4, FR-491-AC-4 and TC-983/TC-985 step and expected 4 are parameterised over the four rules. |
 
+Round 4, against 58f4a4df0c0e718af61468b5bec7482709936dc9 (routing completion and #798 integration).
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-008 | fixed | FR-489 Inputs is conditional: the FR-492 library settlement stays planner-local, and the same declaration selected by name on an analyze request is an FR-331 `composition` request item of the existing `protocol` family (citing FR-491 "Derived item and slots"). This matches FR-290, FR-368, TC-271 and TC-302. No new family, verb or semantics. |
+| FND-009 | fixed | The FR-290 note now says a cycle derives no `fixed-point` item and that its composition item settles `unsupported`, consistent with FR-489 and FR-491. |
+
 ## New findings (disposition pass 1)
 
 | ID | Severity | Summary | Refs |
@@ -99,3 +106,12 @@ Routing and integration verification (disposition pass 3, against 2f400c8b0c1067
   - Main's FR-331-AC-61/62/63 and FR-491-AC-7/8 are present and unchanged, and the TC-985 scope excludes main's AC-7/8 exactly as on main.
   - No live reference to the old IDs remains in spec/ or tests/.
 - **Mergeability:** GitHub reports PR 792 `isDraft: true`, `mergeable: CONFLICTING`, `mergeStateStatus: DIRTY`. Yet `baseRefOid` is 73e81dce and `git merge-base HEAD 73e81dce` is 73e81dce: the head strictly descends from the base, so no content conflict is possible. The state looks stale and must be refreshed, and the PR undrafted, before an admin merge.
+
+## Integration (disposition pass 4)
+
+Against 58f4a4df0c0e718af61468b5bec7482709936dc9, rebased onto main 9add8a0f (#798); base = merge-base = PR baseRefOid 9add8a0f.
+
+- The `-U0` added and removed lines of `9add8a0f..58f4a4df` equal those of `73e81dce..2f400c8b`, except for the disposition-3 SR copies and the three fixed cells. No other owned hunk changed.
+- Main's #798 FR-491-AC-7/8 rows are byte-identical to 9add8a0f, and our FR-491-AC-9 is retained, citing FR-331-AC-64.
+- `git diff 2f400c8b..58f4a4df -- tests proposals src build.rs` is empty, and main's `73e81dce..9add8a0f` touches only FR-491-AC-8 and four historical SR files.
+- GitHub now reports `mergeable: MERGEABLE`, `mergeStateStatus: BLOCKED`, `isDraft: true`. The #798 conflict was real and is resolved. BLOCKED/draft is left for the root (undraft) at merge.
