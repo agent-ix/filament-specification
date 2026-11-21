@@ -29,6 +29,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-417
     type: references
+  - target: ix://agent-ix/filament-specification/FR-171
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-466
+    type: references
 ---
 
 # FR-368: Request and negotiate temporal items over a model subject
@@ -63,8 +67,9 @@ request:
   population the subject reads; and `proof_bounds`, any substituted proof
   bounds ([FR-361](FR-361-read-model-behaviours-as-temporal-traces.md));
 - `item_kind` — one of `formula`, `deadlock-freedom`, `time-lock-freedom`,
-  `race-freedom` and `refinement` ("Item kinds" below); no other spelling is a
-  kind, and one refuses before consumption;
+  `race-freedom`, `loop-invariant`, `loop-termination` and `refinement`
+  ("Item kinds" below); no other spelling is a kind, and one refuses before
+  consumption;
 - `abstract_subject` — present exactly on a `refinement` item: `identity`, the
   identity of the abstract subject's package (a package of the request's
   `dependencies`), and `initial_states`, the ordered list of the abstract
@@ -81,7 +86,8 @@ request:
   settles the item `unsupported` naming `stutter_closure`;
 - `fairness` — the resolved fairness set
   ([FR-362](FR-362-apply-fairness-constraints.md)), empty for a
-  `deadlock-freedom`, `time-lock-freedom` or `race-freedom` item;
+  `deadlock-freedom`, `time-lock-freedom`, `race-freedom`, `loop-invariant`
+  or `loop-termination` item;
 - `max_depth` — the bounded-search horizon `k`, a method parameter of a
   bounded search that the result states
   ([FR-363](FR-363-settle-every-behaviour-temporal-verdicts.md)); absent for
@@ -110,7 +116,7 @@ for a request with the same request identity, and a result produced under one
 ### Item kinds
 
 The `item_kind` of a `temporal-satisfaction` item over a model subject is
-exactly one of these five spellings, each owned by the requirement that
+exactly one of these seven spellings, each owned by the requirement that
 defines the item:
 
 | `item_kind` | Item | Owner | Subject | Anchor (`claim.node`) | `fairness` |
@@ -119,19 +125,38 @@ defines the item:
 | `deadlock-freedom` | derived | [FR-366](FR-366-check-deadlock-freedom.md) for a model subject, [FR-429](../protocol/FR-429-report-protocol-deadlocks.md) for a protocol subject | that subject | the subject's anchor | empty |
 | `time-lock-freedom` | derived | [FR-417](FR-417-settle-time-lock-freedom.md) | a timed model subject | the subject's anchor | empty |
 | `race-freedom` | derived | [FR-438](../memory/FR-438-report-data-races.md) | a protocol subject with a weak `parallel` | the subject's anchor | empty |
+| `loop-invariant` | derived from an authored loop proof, one per `repeat` whose `proof` is not empty | [FR-171](../protocol/FR-171-evaluate-dynamic-control.md) "Control and population rules" | the explored protocol subject whose protocol holds the `repeat` | the `repeat`'s `protocol`/`control` node ([FR-466](../../objects/interfaces/FR-466-checked-package-protocol-control-bodies.md)) | empty |
+| `loop-termination` | derived from an authored loop proof, one per `repeat` whose `proof` is not empty and that has no `maximum` | [FR-171](../protocol/FR-171-evaluate-dynamic-control.md) "Control and population rules" | the explored protocol subject whose protocol holds the `repeat` | the `repeat`'s `protocol`/`control` node (FR-466) | empty |
 | `refinement` | requested, one per refinement declaration checked | [FR-377](../analysis/FR-377-decide-model-refinement.md) | the concrete subject | the refinement node | the concrete fairness set `F_C` (the `assume` rows, [FR-375](../analysis/FR-375-declare-model-refinement.md) "Fairness rows"); `F_A` is read from the refinement node |
 
-The three derived kinds have no authored clause, so no `fair` constraint
-resolves for them ([FR-362](FR-362-apply-fairness-constraints.md)
+Five kinds are derived. `deadlock-freedom`, `time-lock-freedom` and
+`race-freedom` are derived from the subject alone. `loop-invariant` and
+`loop-termination` are derived from an authored loop proof, the `invariant`
+and `variant` of a `repeat`'s `proof` (FR-466): the author writes the proof,
+and the request writer derives the items from it, so no author writes the
+items themselves and no caller requests them. The loop proof is not a
+temporal clause. None of the five derived kinds has an authored clause, so no
+`fair` constraint resolves for them ([FR-362](FR-362-apply-fairness-constraints.md)
 "Syntax and resolution"): their fairness set is the empty set, which admits
-every behaviour. A `deadlock-freedom` item over a protocol subject and one
-over a model subject are the same kind; the subject tells them apart. Each
-kind is part of the obligation identity (above), so the five never share a
-verdict.
+every behaviour. A loop obligation is stated over every decision and every
+back edge of every reachable behaviour of the subject (FR-171), which is the
+reading the empty set gives. A `deadlock-freedom` item over a protocol subject
+and one over a model subject are the same kind; the subject tells them apart.
+Each kind is part of the obligation identity (above), so the seven never
+share a verdict.
+
+A protocol subject derives, for each `repeat` of its protocol whose `proof`
+is not empty, one `loop-invariant` item, and, when that `repeat` has no
+`maximum`, one `loop-termination` item. A `repeat` with a `maximum`
+terminates by that maximum and has no termination obligation (FR-171), and a
+`repeat` with an empty `proof` derives neither item. The `loop-invariant` and
+`loop-termination` items of one `repeat` share their anchor and differ only in
+`item_kind`; two loop items of one kind over one subject differ in their
+anchor, the node of their `repeat`.
 
 A protocol subject is never a timed subject, so it derives a `deadlock-freedom`
-item and, where it has a weak `parallel`, a `race-freedom` item, and no
-`time-lock-freedom` item, even when its model selection reads a timed model
+item, where it has a weak `parallel` a `race-freedom` item, and the loop items
+of its `repeat`s, and no `time-lock-freedom` item, even when its model selection reads a timed model
 ([FR-425](../protocol/FR-425-define-protocol-subjects-and-state-keys.md)
 "Protocol subject", [FR-417](FR-417-settle-time-lock-freedom.md) "Protocol
 subjects"). The item order of "Position of derived items in the request" is
@@ -142,7 +167,7 @@ has no `item_kind` and is not a request item. FR-380 classifies it as an item
 of kind `temporal-satisfaction` only as the verification planner's own
 classification; the planner evaluates it from its two premises, "no backend is
 negotiated for it, and no exploration of the concrete subject runs", so it
-never reaches a provider and no sixth spelling exists. Its two premises are
+never reaches a provider and no eighth spelling exists. Its two premises are
 request items of kind `formula` and `refinement`. An implementation-guarantee
 item ([FR-488](../ir-proof/FR-488-attach-a-temporal-guarantee-to-implementation-rust.md))
 and an `assume-guarantee` composition item
@@ -161,7 +186,10 @@ not `formula` is `{node, occurrence}` as follows, with nothing left to the
 reader's choice:
 
 - **Anchor node.** For a `refinement` item, the refinement node (FR-375). For a
-  derived item over a protocol subject, except as stated under "Protocol
+  `loop-invariant` or `loop-termination` item, the `protocol`/`control` node
+  of its `repeat` ([FR-466](../../objects/interfaces/FR-466-checked-package-protocol-control-bodies.md)),
+  except as stated under "Protocol subject without a clause node" below. For
+  any other derived item over a protocol subject, except as stated under "Protocol
   subject without a clause node" below, the subject's checked protocol clause
   node ([FR-425](../protocol/FR-425-define-protocol-subjects-and-state-keys.md)
   "Protocol subject"). For a derived item over any other model subject, the
@@ -190,25 +218,30 @@ reader's choice:
   profile writes no node for its protocol clause, which is still checked
   ([FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md)
   "Properties", the `protocol`/`protocol_clause` application node), so a protocol
-  subject over it has no anchor.
+  subject over it has no anchor. A control is written as a
+  `protocol`/`control` node only under a selected protocol profile, as its
+  clause is (FR-464 "Operator catalog", FR-466), so the `repeat`s of such a
+  unit have no node either, and its loop items have no anchor.
   The subject still exists, because
   [FR-425](../protocol/FR-425-define-protocol-subjects-and-state-keys.md)
   "Protocol subject" defines it from the checked clause and not from a node,
   so it still derives the `deadlock-freedom` item
-  ([FR-429](../protocol/FR-429-report-protocol-deadlocks.md)) and the
+  ([FR-429](../protocol/FR-429-report-protocol-deadlocks.md)), the
   `race-freedom` item exactly where
-  [FR-438](../memory/FR-438-report-data-races.md) derives it, and no
-  `time-lock-freedom` item. The producer SHALL settle each of those items
+  [FR-438](../memory/FR-438-report-data-races.md) derives it and the loop
+  items of its `repeat`s, and no `time-lock-freedom` item. The producer SHALL settle each of those items
   `unsupported` with the diagnostic
   `unsupported_projection`/`unsupported-requested-capability`, whose `detail`
   names the item kind and that the unit selects no protocol profile, and SHALL
   write no request item for it, exactly as for a model subject that has no
-  anchor above. It does not settle them as a deadlock, a race or a pass.
+  anchor above. It does not settle them as a deadlock, a race, a loop
+  violation or a pass.
 - **Occurrence.** The anchor node's occurrence of role `declaration` and
   ordinal 0 when it has one, otherwise its occurrence of role `expression` and
   ordinal 0, otherwise its occurrence of role `generated` and ordinal 0, as
   FR-322 "Occurrence roles" gives the node kind its role: a protocol clause
-  node and a refinement node carry a `declaration` occurrence, and the
+  node, a control node (FR-466 "Control layouts") and a refinement node carry
+  a `declaration` occurrence, and the
   `model_root` node's one occurrence has role `generated`
   (FR-322-AC-132). The anchor node of every anchored kind above has one of the three, so
   the pair always names a `source_map` entry. The choice depends on the node
@@ -216,22 +249,27 @@ reader's choice:
 
 A derived item has no node of its own. It is keyed by its `subject`, its
 anchor node's `node_id` and its `item_kind`. Two derived items of one subject
-that share an anchor differ only in `item_kind`, and two items of one kind
+that share an anchor differ only in `item_kind`, two loop items of one kind
+over one subject differ in their anchor's `node_id`, and two items of one kind
 over two subjects that share an anchor differ only in `subject`
 ([FR-322](../../objects/interfaces/FR-322-checked-package-artifact.md)
 "Derived request items").
 
 The pair is the `locus` of every `where` and payload that names the item
 (FR-331), and the package source map gives its regions, so a derived item's
-result is located at the model, protocol or refinement declaration that it
-reports on. The claim enters the request identity with the item's other
+result is located at the model, protocol, `repeat` or refinement declaration
+that it reports on. The claim enters the request identity with the item's other
 members (FR-331 "Identity and validation").
 
 ### Extent and domains of a derived or refinement item
 
-A derived item is the reachable-state invariant `always holds(I)` of
+A `deadlock-freedom`, `time-lock-freedom` or `race-freedom` item is the
+reachable-state invariant `always holds(I)` of
 [FR-363](FR-363-settle-every-behaviour-temporal-verdicts.md) "Property forms",
 which that table puts under `filament.temporal.infinite-trace/v1`; a
+`loop-invariant` or `loop-termination` item is an invariant over the same
+reachable behaviours, read at every decision and every back edge of its
+`repeat` (FR-171); a
 `refinement` item reads its behaviours as FR-377 "Model subjects and
 behaviours" does, maximal paths with a terminal stutter step, which is the
 infinite-trace reading. So each classifies `unbounded` by "Extent" above,
@@ -264,23 +302,34 @@ structure alone, never by a map's iteration order:
 2. Then the derived items, grouped by subject in the order in which each
    subject first occurs among the subjects of the items in step 1, and,
    within one subject, in the order `deadlock-freedom`, `time-lock-freedom`,
-   `race-freedom`. A model subject and a protocol subject over the same model
-   are two subjects. The time-lock-freedom item thus stands beside the
-   deadlock-freedom item of its subject ([FR-417](FR-417-settle-time-lock-freedom.md)
+   `race-freedom`, then the loop items. A model subject and a protocol subject
+   over the same model are two subjects. The time-lock-freedom item thus
+   stands beside the deadlock-freedom item of its subject ([FR-417](FR-417-settle-time-lock-freedom.md)
    "The derived item").
+3. The loop items of one subject are grouped by `repeat`, the `repeat`s in
+   tree order, and, within one `repeat`, the `loop-invariant` item comes
+   before the `loop-termination` item. Tree order is the pre-order walk
+   of the protocol's controls that visits a control before the controls its
+   arguments reference, in the order of its arguments (FR-466: a `sequence`'s
+   children in execution order, `choice` cases and `parallel` branches in
+   label order, a `repeat`'s `body` before its `exhausted` control), the order
+   in which FR-464 finds "the first such `repeat` in tree order".
 
-Each subject has at most one item of each derived kind, so the order is total.
-A subject with no item in step 1 has no derived item.
+Each subject has at most one item of each of `deadlock-freedom`,
+`time-lock-freedom` and `race-freedom`, and at most one `loop-invariant` and
+one `loop-termination` item for each of its `repeat`s, and tree order is
+total over the `repeat`s, so the order is total. A subject with no item in
+step 1 has no derived item.
 
 The order depends on the caller's order of items: the same items in another
 caller order are another request, with other `request_index` values and
 another request identity. That is accepted and deterministic for a given
 request. No canonical sort key is introduced, since the order is fixed by the
-caller's own order and the kind order above.
+caller's own order, the kind order and the tree order above.
 
 ### Negotiation of a derived or refinement item
 
-Each item of the five kinds is one item of kind `temporal-satisfaction`
+Each item of the seven kinds is one item of kind `temporal-satisfaction`
 ([FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md)). It carries
 neither `hybrid` nor `requirements`, since its dynamics are `discrete`
 (FR-331 `manifest`: a descriptor with no `dynamics` decides `discrete` only),
@@ -470,19 +519,21 @@ infinite-trace formula that no registered candidate decides.
 | FR-368-AC-10 | A manifest descriptor on the wire whose temporal `fairness_kinds` is absent, not a list, holds an unknown label or repeats a label fails the FR-331 schema, and so does a `fairness_kinds` member on a descriptor advertising no `temporal-satisfaction`. | Test (TC-431) |
 | FR-368-AC-11 | A temporal item whose `limits` carry `max_solver_steps` 1000 and `max_solver_time` 5 is admitted, and its solver stops settle as FR-363-AC-11 states; two requests that differ only in `max_solver_time` have equal request identity, two that differ only in `max_solver_steps` differ, and a result stopped by `max_solver_time` is reused by neither request; a `max_solver_time` of 1.5 on the wire, and either member at 0, is refused before consumption. | Test (TC-302) |
 | FR-368-AC-12 | A temporal item carrying `smt_encoding` `{max_constants: 7}` is admitted, and its encoder stop settles as FR-363-AC-11 states; two requests that differ only in `smt_encoding.max_constants` (7 and 8) have different request identities; an empty `smt_encoding`, an unknown member, a `max_constants` of 0 and one of 1.5 are each refused before consumption. A completed result produced under `max_solver_time` 5 and reused for a request that sets 10 states 5. | Test (TC-302) |
-| FR-368-AC-13 | The `item_kind` of a temporal item is one of `formula`, `deadlock-freedom`, `time-lock-freedom`, `race-freedom` and `refinement`; each of the five is admitted, and `time-lock`, `race`, `deadlock`, `refine` and `Formula` are each refused before consumption. | Test (TC-431) |
+| FR-368-AC-13 | The `item_kind` of a temporal item is one of `formula`, `deadlock-freedom`, `time-lock-freedom`, `race-freedom`, `loop-invariant`, `loop-termination` and `refinement`; each of the seven is admitted, and `time-lock`, `race`, `deadlock`, `refine`, `Formula`, `loop`, `loop-variant` and `loop_invariant` are each refused before consumption. | Test (TC-431) |
 | FR-368-AC-14 | The claim of a `deadlock-freedom`, `time-lock-freedom` or `race-freedom` item names its subject's anchor node and that node's `declaration` occurrence at ordinal 0, else its `expression` occurrence at ordinal 0, else its `generated` occurrence at ordinal 0: the protocol clause node (`declaration`) for a protocol subject, the `model_root` node (`generated`) for any other model subject, and the refinement node for a `refinement` item, except that a protocol subject of a unit that selects no protocol profile has no anchor (FR-368-AC-24). The deadlock-freedom and time-lock-freedom items of one model subject name the same node and occurrence. | Test (TC-431) |
-| FR-368-AC-15 | A `deadlock-freedom`, `time-lock-freedom` or `race-freedom` item whose `fairness` holds a constraint is refused before consumption; a `refinement` item carries the concrete fairness set. | Test (TC-431) |
+| FR-368-AC-15 | A `deadlock-freedom`, `time-lock-freedom`, `race-freedom`, `loop-invariant` or `loop-termination` item whose `fairness` holds a constraint is refused before consumption; a `refinement` item carries the concrete fairness set. | Test (TC-431) |
 | FR-368-AC-16 | A derived or `refinement` item classifies `unbounded` with `finite_bound_available` false, an `infinite-trace` domain keyed by the claim's node with the empty path, and no `extent.bounds`; the same item with a `bounded` extent, or with no `infinite-trace` domain, is refused. | Test (TC-431) |
-| FR-368-AC-17 | In a request, the caller's items come first in the caller's order and the derived items follow, grouped by subject in order of the subject's first occurrence among the caller's items and, within a subject, as `deadlock-freedom`, `time-lock-freedom`, `race-freedom`; `request_index` is the position; the order depends on the caller's order of items and adds no sort key. Exchanging two derived items of one subject, or moving a derived item before a caller's item, breaks the order. | Test (TC-302, TC-431) |
+| FR-368-AC-17 | In a request, the caller's items come first in the caller's order and the derived items follow, grouped by subject in order of the subject's first occurrence among the caller's items and, within a subject, as `deadlock-freedom`, `time-lock-freedom`, `race-freedom`, then the loop items grouped by `repeat` in tree order with each `repeat`'s `loop-invariant` item before its `loop-termination` item; `request_index` is the position; the order depends on the caller's order of items and adds no sort key. Exchanging two derived items of one subject, or moving a derived item before a caller's item, breaks the order. | Test (TC-302, TC-431) |
 | FR-368-AC-18 | A derived or `refinement` item is a `temporal-satisfaction` item with no `hybrid` and no `requirements`, routed by FR-290's tables; a request that gains a derived item changes no caller's item's `request_index`. | Test (TC-302) |
 | FR-368-AC-19 | A `refinement` item carries `abstract_subject` (`identity`, `initial_states`) beside its concrete `subject`, and an item of any other kind carrying one is refused; a refinement item without one, one whose `abstract_subject` has an extra member such as `universes` or `proof_bounds`, and one whose `identity` is not a package identity are refused, and an `identity` that no entry of `request.dependencies` carries is refused by the reader (the schema cannot relate the two members); two refinement items that differ only in `abstract_subject` have different obligation identities. | Test (TC-431) |
 | FR-368-AC-20 | A derived item carries no `max_depth` (a derived item with one is refused) and takes the provider defaults for `limits` it has no caller setting for; it may carry `limits` only of `max_states`, `max_transitions`, `max_clocks`, `max_task_product_work`, `max_store_buffer`, `max_messages`, `max_live_instances`, `max_solver_steps` and `max_solver_time`, for a caller's FR-461 setting, and `max_automaton_states`, `max_walk_steps`, `max_witness_set` or `max_relation_tuples` in a derived item's `limits` is refused as an unknown member; no item inherits `limits`, `max_depth` or `smt_encoding` from another, so an authored item's `max_depth` and `limits` are absent from the request's derived items. | Test (TC-431) |
-| FR-368-AC-21 | `transfer` is not an `item_kind` and a transfer item is not a request item: it is evaluated by the planner and never reaches a provider. | Test (TC-431) |
+| FR-368-AC-21 | `transfer` is not one of the seven `item_kind` spellings, and a transfer item is not a request item: it is evaluated by the planner and never reaches a provider. | Test (TC-431) |
 | FR-368-AC-22 | A derived item over a model subject whose package has one `model_root` is anchored at it; one over a subject that reads several `model_root` nodes, or none, is settled `unsupported`, `unsupported_projection`/`unsupported-requested-capability`, by the producer, which writes no request item for it. | Test (TC-431 BP-47 for several; TC-290 step 10 for none) |
 | FR-368-AC-23 | A protocol subject whose model selection reads a timed model gains no `time-lock-freedom` item. | Test (TC-370) |
 | FR-368-AC-24 | A protocol subject over a protocol clause of a unit that selects no protocol profile (the clause is checked and has no node, FR-322) has no anchor: its `deadlock-freedom` item, and its `race-freedom` item exactly where FR-438 derives it, are each settled `unsupported`, `unsupported_projection`/`unsupported-requested-capability`, with a `detail` naming the item kind and that the unit selects no protocol profile, by the producer, which writes no request item for it. | Test (TC-431 BP-49) |
 | FR-368-AC-25 | A protocol subject over a protocol clause of a unit that selects no protocol profile gains no `time-lock-freedom` item, settled or written. | Test (TC-431 BP-50) |
+| FR-368-AC-26 | A protocol subject whose protocol holds `repeat A` with the proof `invariant { left >= 0 } variant { left }` and no `maximum`, `repeat B` with a proof and a `maximum` of 3, and `repeat C` with an empty `proof` derives a `loop-invariant` and a `loop-termination` item for `A`, a `loop-invariant` item only for `B` and no item for `C`, each with an empty `fairness`; each claim names its `repeat`'s `protocol`/`control` node at occurrence `declaration` 0, the two items of `A` share that claim and differ only in `item_kind`, and the `loop-invariant` items of `A` and `B` differ in their claim node. With `A` before `B` in tree order, the loop items follow the subject's `deadlock-freedom` item as `A` `loop-invariant`, `A` `loop-termination`, `B` `loop-invariant`; exchanging the two items of `A` breaks the order. | Test (TC-431) |
+| FR-368-AC-27 | A protocol subject over a protocol clause of a unit that selects no protocol profile, whose protocol holds a `repeat` with a non-empty `proof`, has no anchor for the `repeat`'s loop items: each is settled `unsupported`, `unsupported_projection`/`unsupported-requested-capability`, with a `detail` naming the item kind and that the unit selects no protocol profile, by the producer, which writes no request item for it. | Test (TC-431) |
 
 ## Dependencies
 

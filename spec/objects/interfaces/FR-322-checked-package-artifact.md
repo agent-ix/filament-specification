@@ -100,6 +100,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-433
     type: references
+  - target: ix://agent-ix/filament-specification/FR-171
+    type: references
 ---
 
 # FR-322: Immutable checked-package artifact
@@ -2022,15 +2024,20 @@ model subject,
 protocol subject), the time-lock-freedom item
 ([FR-417](../../functional/temporal/FR-417-settle-time-lock-freedom.md)) and
 the race-freedom item
-([FR-438](../../functional/memory/FR-438-report-data-races.md)) are request
-items that the request writer derives
+([FR-438](../../functional/memory/FR-438-report-data-races.md)) and the
+loop-invariant and loop-termination items of a `repeat` with a loop proof
+([FR-171](../../functional/protocol/FR-171-evaluate-dynamic-control.md)) are
+request items that the request writer derives
 ([FR-368](../../functional/temporal/FR-368-negotiate-temporal-model-check-items.md)).
 They are not package content, so none of them has a node. `semantic_graph`
-holds no node for any of them. They have no `node_tag`, no `semantic_form` and
-no derived path, and a producer mints no `node_id` for them. This is
-checkable: no `semantic_form` of any `node_tag` names a derived item kind,
-neither `deadlock-freedom`, `time-lock-freedom` and `race-freedom` nor
-`deadlock_freedom`, `time_lock_freedom` and `race_freedom`. The closed V2
+holds no node for any of them; the loop proof they come from is the `proof`
+argument of the `repeat`'s control node (FR-466), not a node of the item.
+They have no `node_tag`, no `semantic_form` and no derived path, and a
+producer mints no `node_id` for them. This is checkable: no `semantic_form`
+of any `node_tag` names a derived item kind, neither `deadlock-freedom`,
+`time-lock-freedom`, `race-freedom`, `loop-invariant` and `loop-termination`
+nor `deadlock_freedom`, `time_lock_freedom`, `race_freedom`, `loop_invariant`
+and `loop_termination`. The closed V2
 schema therefore refuses a node of such a form, and the only node a derived
 item's claim names is its anchor. A string in a node's `path` is an identity
 label ("Structural node identity" above) and does not make that node a node of
@@ -2049,12 +2056,16 @@ item" writes, and it is an ordinary node of the graph:
 | `time-lock-freedom` | timed model subject | the same `model_root` node | `model`/`model_root` | as above | `generated`, 0 |
 | `deadlock-freedom` | protocol subject | the subject's protocol clause node | `protocol`/`protocol_clause` | its declaration path, the protocol's qualified name, at the ordinal the producer gave the node | `declaration`, 0 |
 | `race-freedom` | protocol subject with a weak `parallel` | the same protocol clause node | `protocol`/`protocol_clause` | as above | `declaration`, 0 |
+| `loop-invariant` | protocol subject whose protocol holds a `repeat` with a non-empty `proof` | the `repeat`'s control node | `protocol`/`control` | its declaration path, `P` followed by `run` and the control names from the root control down to the `repeat` (FR-464 "Operator catalog"), at the ordinal the producer gave the node | `declaration`, 0 |
+| `loop-termination` | the same, when the `repeat` has no `maximum` | the same `repeat` control node | `protocol`/`control` | as above | `declaration`, 0 |
 
 The anchor is never embedded as an operand of a derived path, because no
 derived path exists for these items. Two derived items of one subject share
 an anchor and are told apart by `item_kind`: the deadlock-freedom and
-time-lock-freedom items of one model subject, and the deadlock-freedom and
-race-freedom items of one protocol subject. Items of one kind over two
+time-lock-freedom items of one model subject, the deadlock-freedom and
+race-freedom items of one protocol subject, and the loop-invariant and
+loop-termination items of one `repeat`. The loop items of two `repeat`s of
+one subject are told apart by their anchor `node_id`. Items of one kind over two
 subjects with one anchor, for example two sets of initial states over one
 model, share the anchor `node_id` and the `item_kind` and are told apart by
 `subject`. The anchor and kind alone are therefore not a key; the triple is. No key
@@ -2066,7 +2077,10 @@ A reader admits a derived item by resolving its `claim.node` by exact
 item over a model subject, that must be the `model`/`model_root` node of the
 model selection that the subject reads. For a `deadlock-freedom` or
 `race-freedom` item over a protocol subject, it must be the subject's
-`protocol`/`protocol_clause` node. The reader also checks that
+`protocol`/`protocol_clause` node. For a `loop-invariant` or
+`loop-termination` item, it must be a `protocol`/`control` node of a `repeat`
+of the subject's protocol whose `proof` is not empty and, for
+`loop-termination`, that has no `maximum`. The reader also checks that
 `claim.occurrence` is the occurrence FR-368 chooses: the anchor's
 `declaration` occurrence at ordinal 0, else its `expression` occurrence at
 ordinal 0, else its `generated` occurrence at ordinal 0. A claim node that the

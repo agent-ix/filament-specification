@@ -33,6 +33,11 @@ consumer holds a copy of this schema.
   `RefinementFailure` definition (the seven model kinds and the protocol
   relation kinds `RefusalNotPermitted` and `TerminalSuccessMismatch`) and the
   product and replay cases of those two kinds (TC-318, TC-431 BP-55).
+- `loop-proof-vectors.json` holds the loop-item request and the explicit
+  patches of `protocol-node-base.json` that supply its checked package. It
+  also records the producer-side no-profile settlement expectation; that
+  expectation writes no provider request and does not qualify native producer
+  evaluation (FR-368-AC-26/27).
 - `task-priority-vectors.json` holds the optional-priority identity and
   policy-order vectors for FR-419/FR-364. The Rust qualification test checks
   each carrier against the wire schema, checks priority against the declared
@@ -70,8 +75,9 @@ spelling and the frame keeps one RFC 8785 encoding. A reader decodes
 `package` and admits it with the v2 reader.
 
 A request-stage vector omits `package`; the test fills it
-from `../checked-package-v2/fixtures/positive-all-families.json`, so the vector
-carries no second copy of that fixture.
+from `../checked-package-v2/fixtures/positive-all-families.json`, except for
+`loop-proof-items-request`, which uses the explicitly patched protocol fixture
+above. The vectors carry no second copy of either base fixture.
 
 ## Schema and reader
 

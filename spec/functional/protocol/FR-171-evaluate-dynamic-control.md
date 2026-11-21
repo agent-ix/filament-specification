@@ -9,6 +9,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/AD-007
     type: references
+  - target: ix://agent-ix/filament-specification/FR-368
+    type: references
 ---
 
 # FR-171: Evaluate joins, proved loops and dynamic roles
@@ -59,7 +61,11 @@ counterexample to the violating decision or back edge, including an undefined
 invariant or variant; and `incomplete`, naming what stopped exploration,
 otherwise. A proved result claims the invariant or termination for the
 explored subject and nothing beyond it. A loop with a maximum terminates by
-that maximum and has no termination obligation.
+that maximum and has no termination obligation. Each obligation is one derived
+request item over the protocol subject, of `item_kind` `loop-invariant` or
+`loop-termination`, anchored at the loop's `repeat` node
+([FR-368](../temporal/FR-368-negotiate-temporal-model-check-items.md) "Item
+kinds").
 
 A spawn allocates a fresh `(protocol_instance, role_declaration, ordinal)`
 identity within its closed population. Lifetime is lexical, explicit-until or
