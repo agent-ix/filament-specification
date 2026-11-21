@@ -66,6 +66,11 @@ and never falls back to an enum representation.
   An **original node key** is the shared node-key codec's structural JSON of a
   producer's original `NodeKey`, nested at most 32 keys deep and checked
   iteratively; it is a JSON value, not text, and need not name any emitted node.
+  The limit counts nested original node keys, the root key as the first: a key of
+  exactly 32 is admitted (MUW-17) and a key of 33 is `Malformed` at any position
+  a key may occupy (a `settled_key`, a `type_handle`, a `node_key`, a
+  `member.declaration` or a key inside an `original_type`). A reader that checks no
+  depth admits the 33-key vectors, so they fail it.
   An **original value type** is the complete Exact value-type grammar with
   original node keys (`{"kind":"boolean"}`, `{"kind":"integer"}`,
   `{"kind":"composite","node":<original node key>}`,
@@ -131,10 +136,18 @@ and never falls back to an enum representation.
   `typeRef`s, and a record's or object type's field `typeRef`s (FR-322 "Model-owned
   members"). Each node is expanded once and each edge is examined once, so a
   record that reaches a union that reaches the record terminates. A row is needed
-  exactly for each union-family node and each tuple node in the closure; a row
-  outside the closure is not inspected, charged or retained, and a declaration
-  outside the closure (a record with no identity witness, for example) neither
-  refuses nor is required.
+  exactly for each union-family node and each tuple node in the closure.
+  The scopes differ only in the **reached-only work**, which is the closure walk,
+  the semantic join of a row (steps 2 to 6 below), the inspection of its payloads,
+  and its retention. A row outside the closure gets none of it: it is not joined,
+  its payloads are not inspected and it is not retained, and a declaration outside
+  the closure (a record with no identity witness, for example) neither refuses nor
+  is required. The **common pass** is the same under both scopes and reads every
+  row of both channels: the closed format of step 1, the ascending order of
+  `structural_node`, the row index, and the preflight handle indexes. So a row
+  outside the closure that is malformed or out of order still refuses `Malformed`
+  (MUW-S-15), and its common work is charged, not free (MUW-B-08); a reached join
+  does not claim that no row outside the closure is read.
   There is no `full` fallback for a `reached` request and no `reached` fallback
   for a `full` one.
 
@@ -175,7 +188,8 @@ identity-file reader's `Malformed`. It checks in this order and stops at the fir
 refusal; nothing is returned for a refused or exhausted join. The tuple rows are
 checked before the union rows because a union payload reads its tuple's witness.
 
-1. **Format** (`Malformed`). A missing or extra member of either row, an unknown
+1. **Format** (`Malformed`), the common pass over every row of both channels
+   under either scope. A missing or extra member of either row, an unknown
    `payload.kind`, a payload member foreign to its kind (a `node` on `none` or
    `clock`), a `settled_key`, `type_handle`, `node_key` or `member.declaration`
    that is not an original node key (or is deeper than 32 keys), an
@@ -185,7 +199,8 @@ checked before the union rows because a union payload reads its tuple's witness.
    rows not ascending in `structural_node` order in either list (equal
    neighbours are a duplicate, refused later, not a disorder). There is no enum,
    `VariantId`, `source_tuple` or fabricated case-node member.
-2. **Tuple row identity**, in row order. `structural_node` equal to an earlier
+2. **Tuple row identity**, in row order, for each row joined (every row under
+   `full`, a row of the closure under `reached`). `structural_node` equal to an earlier
    row's is `conflicting_identity_witness` at `structural_node`. It names a node of
    the package (`unknown_node`) that is a `model`/`tuple_value_type`
    (`mismatched_identity_witness`; a source tuple composite, a variant type, a
@@ -194,7 +209,7 @@ checked before the union rows because a union payload reads its tuple's witness.
    (`mismatched_identity_witness`, at the member). `node_key` differs from every
    earlier tuple row's `node_key` and from the handle of every supplied declaration
    witness (`conflicting_identity_witness` at `node_key`).
-3. **Union row identity**, in row order. `structural_node` equal to an earlier row's is
+3. **Union row identity**, in row order, for each row joined. `structural_node` equal to an earlier row's is
    `conflicting_identity_witness` at `structural_node`. It names a node of the
    package (`unknown_node`) that is a `model`/`variant_type` of family `union`
    (`mismatched_identity_witness`; a `composite_type`/`union` node, an enum-family
@@ -235,7 +250,11 @@ checked before the union rows because a union payload reads its tuple's witness.
    `model_tuples` row is `incomplete_identity_witness` at `/model_tuples` and a
    union-family node with no row is `incomplete_identity_witness` at
    `/model_unions`; under `reached`, a reached tuple or union-family node with no
-   row is `unavailable_identity_witness` at its node. A tuple row that a payload
+   row is `unavailable_identity_witness` at its node. The refusal's locus is the
+   structural node of the package node that has no row (the node reference the
+   closure reached, the same locus a refusal at that node carries) together with
+   the list pointer of the channel that lacks the row, `/model_tuples` or
+   `/model_unions`, since a missing row has no row index of its own. A tuple row that a payload
    needs and does not find is refused by step 6 before this step, as the payload's
    absent necessary witness. A `source_unions` or `source_tuples` row never
    supplies the missing row and no enum representation stands in.
@@ -256,8 +275,12 @@ text (a text of length n charges n + 1 to work and to storage), its containers
 prior-copy charge when the retained map is shared by handle; a shared node
 handle costs one handle unit and no recursive copy, a borrowed row no storage,
 and every charge is admitted before the inspection, reserve, clone or insertion
-it pays for. Under `reached`, each closure edge examined is a work charge before
-any row. Admitted charges are cumulative across the strict read, this join and
+it pays for. The charges are made in this order: preflight; then the common pass, which
+charges every row of both channels for its format, order and index work; then,
+under `reached` only, each closure edge examined, a work charge before any row is
+joined; then the row join with its retention, for the rows of the scope only.
+An amount a limit denies is therefore located by the cumulative measured amount
+at the charge that crosses it, never by a count of charge calls (MUW-B-02). Admitted charges are cumulative across the strict read, this join and
 every other join on the budget, including those of a refused call; a denied
 charge consumes nothing, nothing is refunded, the original limits are reported,
 and the refusal is `exhausted_work` or `exhausted_storage` with its configured
@@ -265,15 +288,21 @@ bound and the first unpaid charge, whose kind and full attempted amount are
 those of the denied charge. The two channels share the one budget and the one
 atomic result: a denial in either channel leaves the charges of the other that were
 already admitted consumed and publishes no row of either. The denial's compact
-locus names the channel, the sidecar row index and the form of the charge; which native locus source carries it is the
-budget owner's choice and is not preselected here. The retained rows are staged
+locus names the channel, the sidecar row index and the form of the charge, the
+first unpaid coordinate in the native policy's compact form; which native locus
+source carries it is the budget owner's choice and is not preselected here. The retained rows are staged
 and published only when the whole join succeeds; no partial carrier or
 projection is returned.
 
 The per-item amounts are fixed by that policy, not by this requirement; the
 published vectors therefore assert relations to a baseline measured on the same
 input (the baseline delta admits; one unit less of either counter exhausts that
-counter with its first unpaid charge), never a static total.
+counter with its first unpaid charge), never a static total. The common pass and the reached-only work are charged on the
+same two counters under the same policy: this requirement defines no formula, no
+reset and no JSON-byte proxy. The relation between the scopes is measured, not
+assumed: a reached join over a sidecar with an unreached row (MUW-03) has a
+baseline delta of at least that of the join without it (MUW-02), the surplus being
+only that row's common-pass charges (MUW-B-08).
 
 ### Authority boundary
 
@@ -286,21 +315,21 @@ authentic. The carrier adds no digest, signature, pin or catalog.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-830-AC-1 | Over `fixtures/positive-model-tuple-union.json`, a `full`-scope sidecar of the four tuple rows Cell, Nest, Pair and Swap and the two union rows List then Shape, with Shape's cases Both (position 2, declared Pair), Empty (position 1, nullary) and Flag (position 0, native Boolean) in canonical order though authored Flag, Empty, Both, each case's `original_case` the document variant's declaration key and each tuple payload joined to its `model_tuples` row from the bytes alone, is admitted and its rows returned byte for byte; a Shape that also holds `Tail(List)` joins that payload to List's own `type_handle`; and over `fixtures/witness-model-union-rows.json` a `full` sidecar of every union and tuple node and every payload's declaration witness is admitted. | Test |
-| FR-830-AC-2 | Under `reached` scope from Shape, a sidecar holding only Shape's union row and Pair's tuple row is admitted; a List row or a Swap tuple row that would refuse is neither inspected nor charged, and under `full` the same rows refuse. | Test |
+| FR-830-AC-1 | Over `fixtures/positive-model-tuple-union.json`, a `full`-scope sidecar of the four tuple rows Cell, Nest, Pair and Swap and the two union rows List then Shape, with Shape's cases Both (position 2, declared Pair), Empty (position 1, nullary) and Flag (position 0, native Boolean) in canonical order though authored Flag, Empty, Both, each case's `original_case` the document variant's declaration key and each tuple payload joined to its `model_tuples` row from the bytes alone, is admitted and its rows returned byte for byte; over `fixtures/witness-model-union-rows.json` a Link that also holds `Tail(List)` (MUW-09) joins that payload to List's own `type_handle`; and over `fixtures/witness-model-union-rows.json` a `full` sidecar of every union and tuple node and every payload's declaration witness is admitted. | Test |
+| FR-830-AC-2 | Under `reached` scope from Shape, a sidecar holding only Shape's union row and Pair's tuple row is admitted; a List row or a Swap tuple row that would refuse at steps 2 to 6 is not joined, inspected or retained, but is still read by the common pass (a malformed one is `Malformed`, MUW-S-15) and its common work is charged on the same budget (MUW-B-08); and under `full` the same rows refuse. | Test |
 | FR-830-AC-3 | The `reached` closure over List (List, Cell, List), the tuple Nest, the object type Holder, the record Wrapper that reaches Shape, and the record Node and union Link that reach each other terminates, expands each node once, follows case-payload, tuple-position and record or object field edges, requires a row exactly for the union and tuple nodes it reaches, and does not require the witness of an unreached record. | Test |
 | FR-830-AC-4 | A case whose payload is Clock is carried as `{kind: "clock", payload_type}` with no node and no original value type, and a nullary case, a Clock case and a data case are never substituted for one another. | Test |
 | FR-830-AC-5 | Two unions with a case of one spelling are two rows with two members distinguished by their declarations and two original cases. | Test |
-| FR-830-AC-6 | A sidecar union row with a missing, extra or foreign member, a key, declaration key or original value type that is not of its codec, a key nested beyond 32, a non-integer `position`, an unknown payload kind or rows out of node-id order is `Malformed`. | Test |
-| FR-830-AC-7 | A union row whose node, selected document, `type_handle` or `settled_key` is wrong, absent, duplicated or of another node form refuses with the code and locus of "Checks" step 3, each mutation chosen so that no earlier check refuses first. | Test |
+| FR-830-AC-6 | A sidecar union row with a missing, extra or foreign member, a key, declaration key or original value type that is not of its codec, a key of 33 nested keys (a key of 32 is admitted, MUW-17), a non-integer `position`, an unknown payload kind or rows out of node-id order is `Malformed`. | Test |
+| FR-830-AC-7 | A union row whose node, selected document, `type_handle` or `settled_key` is wrong, absent, duplicated or of another node form refuses with the code and locus of "Checks" step 3, each mutation chosen so that no earlier check refuses first; a union whose `type_handle` and `settled_key` are distinct full original node keys is admitted with each returned in its own role (MUW-18), and a `member.declaration` or a payload composite that names the other role's key is `mismatched_identity_witness` (MUW-R-56 to MUW-R-58). | Test |
 | FR-830-AC-8 | A missing, extra, repeated or non-canonically ordered case, and a wrong `rank`, `position`, `original_case` or sealed member, refuses with the code and locus of steps 4 and 5. | Test |
 | FR-830-AC-9 | A payload whose kind, Clock identity, node, original value type or key differs from the case's resolved payload or from its node's witness, and a tuple key that disagrees with its `model_tuples` row, refuses with the code and locus of step 6 and "Side-input witnesses". | Test |
-| FR-830-AC-10 | A `full` environment without the row of an unused union, an empty `model_unions`, and a `reached` request without a reached union's row (through a tuple, an object, a record or a recursive record and union) refuse `incomplete_identity_witness` or `unavailable_identity_witness`, with no enum or source-union fallback and no partial result. | Test |
-| FR-830-AC-11 | On the shared native budget, the baseline delta of a join over both channels admits and returns the same rows; one unit less of work is `exhausted_work` and of storage `exhausted_storage`, each with the first unpaid charge's kind, full attempted amount, channel and row-index locus and no output; the charges of `model_tuples` count against the same limits as those of `model_unions` and stay consumed when either channel later refuses or exhausts; consumption accumulates across joins and refusals on one budget. | Test |
+| FR-830-AC-10 | A `full` environment without the row of an unused union, an empty `model_unions`, and a `reached` request without a reached union's row (through a tuple, an object, a record or a recursive record and union) refuse `incomplete_identity_witness` or `unavailable_identity_witness`, with no enum or source-union fallback and no partial result. A valid existing `source_unions` row for the source union Route, whose case names overlap Link's, in a package that holds Route, does not supply Link's missing model row (MUW-19 admits it beside Link's model row and returns only the model row; MUW-R-59 refuses without it at the Link node and `/model_unions`). | Test |
+| FR-830-AC-11 | On the shared native budget, the baseline delta of a join over both channels admits and returns the same rows; one unit less of work is `exhausted_work` and of storage `exhausted_storage`, each with the first unpaid charge's kind, full attempted amount, channel and row-index locus and no output; the limit that denies the last closure-edge charge is the cumulative work measured at that charge, and the limit one unit above it denies the first charge of the row join (MUW-B-02); the charges of `model_tuples` count against the same limits as those of `model_unions` and stay consumed when either channel later refuses or exhausts; consumption accumulates across joins and refusals on one budget. | Test |
 | FR-830-AC-12 | A row set that passes every join with producer keys the reader cannot authenticate is admitted with its keys returned unchanged, and the contract states the authority boundary in the words of "Authority boundary". | Test |
 | FR-830-AC-13 | A unit payload is the model-owned unit node with a `quantity` original type of the declared unit key its `declared_unit` row carries, a record payload is a `composite` of its `record_value_type` row's key, and an object payload is a `reference` of its `object_type` row's effective id; a compound unit, another key, effective id, node, constructor or type, and an absent unit, record or object witness, refuse with the code and locus of step 6. | Test |
 | FR-830-AC-14 | A `model_tuples` row with a missing, extra or foreign member (a `positions` or source-tuple member), an `original_identity` that is not text, a `node_key` that is not an original node key or is nested beyond 32, a missing `model_tuples` member or rows out of node-id order is `Malformed`; a row whose node is absent, is not a `model`/`tuple_value_type`, whose `selected_document` is not the owner, whose `original_identity` is not the owner's `node`, or that repeats a node, a `node_key` or a union row's `type_handle`, refuses with the code and locus of steps 2 and 3. | Test |
-| FR-830-AC-15 | A tuple payload is witnessed by the `model_tuples` row and by nothing else: a `full` environment without an unused tuple's row is `incomplete_identity_witness`; an absent row that a payload or a `reached` closure needs is `unavailable_identity_witness`, whether the `model_tuples` list is empty or the file's `source_tuples` member carries a row for the node; and a `reached` join does not inspect a tuple row outside its closure. | Test |
+| FR-830-AC-15 | A tuple payload is witnessed by the `model_tuples` row and by nothing else: a `full` environment without an unused tuple's row is `incomplete_identity_witness`; an absent row that a payload or a `reached` closure needs is `unavailable_identity_witness`, whether the `model_tuples` list is empty or not; the identity file has no `source_tuples` member in the existing codec, so a file that carries one is `Malformed` (MUW-TS-09) and the in-memory `SelectedSourceTupleRow` is no input of any model check (MUW-TC-05); and a `reached` join does not inspect a tuple row outside its closure. | Test |
 
 ## Dependencies
 
@@ -315,12 +344,20 @@ authentic. The carrier adds no digest, signature, pin or catalog.
   the Exact value-type projection and the typed identity-witness refusals this
   requirement joins to and reuses; the FSL identity file owns the original-key
   and value-type codecs, the `declarations` rows and the
-  `SelectedTupleDeclarationRow` that `model_tuples` carries. None is restated.
+  `SelectedTupleDeclarationRow` that `model_tuples` carries. The identity file's
+  members are `format`, `declarations`, `fields`, `source_records`,
+  `source_unions`, `source_objects` and `source_operations`; unknown members are
+  refused, so there is no `source_tuples` file member, and the source tuple clock
+  metadata of the in-memory source rows is not the typed model tuple. None is
+  restated.
 - Vectors and inputs: `proposals/checked-package-v2/model-union-witness-vectors.json`
-  over two complete input pairs, A (`domain-package-acme-shapes.json` and
-  `fixtures/positive-model-tuple-union.json`) and B
+  over three complete input pairs, A (`domain-package-acme-shapes.json` and
+  `fixtures/positive-model-tuple-union.json`), B
   (`domain-package-acme-shapes-witness.json` and
-  `fixtures/witness-model-union-rows.json`).
+  `fixtures/witness-model-union-rows.json`) and C (B's document and
+  `fixtures/witness-model-union-source-rows.json`, B plus the source union
+  Route), the vectors being version v5. The unit payload is spelled in the
+  package-qualified form `ix://filament/unit/acme/shapes/ms` (FR-322).
 
 ## Status
 
@@ -332,3 +369,10 @@ vectors, so nothing is qualified; the vectors are expected results for a carrier
 that does not exist yet. Where this contract needs a native amount, locus source or
 sidecar format version, the owner of that policy chooses it and this requirement
 does not.
+
+The existing strict read of the checked package at filament-contract-ir
+`origin/main` admits every positive input once the one known gap is removed: it
+refuses the `Mix.Held` case, an object type payload that FR-322 already admits as
+`Reference<O>` and whose `object_types` the current read omits. That is an existing
+reader gap to be fixed after this contract is reviewed; the object payload stays in
+the contract and the vectors, and nothing here claims the current reader admits it.
