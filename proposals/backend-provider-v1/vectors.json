@@ -9524,6 +9524,158 @@
           }
         ]
       }
+    },
+    {
+      "name": "not-markov-no-post-state",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause": "FR-331"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-prob",
+            "kind": "probabilistic-satisfaction",
+            "result": "unsupported",
+            "cause": {
+              "type": "not-markov",
+              "state": {
+                "key": "AQ"
+              },
+              "transition": {
+                "type": "transition",
+                "operation": "Health::tick",
+                "receiver": null,
+                "arguments": [
+                  {
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
+              },
+              "post_state_count": 0,
+              "post_states": []
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
+    },
+    {
+      "name": "not-markov-several-post-states",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause": "FR-331",
+        "/results/1/cause": "FR-331"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          },
+          {
+            "request_index": 1,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-prob",
+            "kind": "probabilistic-satisfaction",
+            "result": "unsupported",
+            "cause": {
+              "type": "not-markov",
+              "state": {
+                "key": "AQ"
+              },
+              "transition": {
+                "type": "transition",
+                "operation": "Health::tick",
+                "receiver": null,
+                "arguments": [
+                  {
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
+              },
+              "post_state_count": 2,
+              "post_states": [
+                {
+                  "key": "Ag"
+                },
+                {
+                  "key": "Aw"
+                }
+              ]
+            }
+          },
+          {
+            "request_index": 1,
+            "backend": "fsl-prob",
+            "kind": "probabilistic-satisfaction",
+            "result": "unsupported",
+            "cause": {
+              "type": "not-markov",
+              "state": {
+                "key": "AQ"
+              },
+              "transition": {
+                "type": "transition",
+                "operation": "Health::tick",
+                "receiver": null,
+                "arguments": [
+                  {
+                    "type": "boolean",
+                    "value": false
+                  }
+                ]
+              },
+              "post_state_count": 3,
+              "post_states": [
+                {
+                  "key": "Ag"
+                },
+                {
+                  "key": "Aw"
+                }
+              ]
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          },
+          {
+            "request_index": 1,
+            "settled_by": "result"
+          }
+        ]
+      }
     }
   ],
   "adverse": [
@@ -13981,6 +14133,30 @@
             "kind": "exact",
             "values": []
           }
+        }
+      ]
+    },
+    {
+      "name": "not-markov-count-one",
+      "base": "not-markov-several-post-states",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/cause/post_state_count",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "not-markov-zero-count-with-post-states",
+      "base": "not-markov-several-post-states",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/cause/post_state_count",
+          "value": 0
         }
       ]
     }
