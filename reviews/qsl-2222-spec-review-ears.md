@@ -90,3 +90,6 @@ Every changed file was examined. Scope data below records clean as well as defec
 }
 ```
 
+## Dispositions
+
+Disposition round 1 inspected both original findings. Every new control has one explicit source-map row under the locked example identity; the test checks all graph occurrences and exact loop claim pairs, then removes Bounded's row and confirms resolution fails. No new finding. Lead evidence: 42 provider tests pass and focused Clippy/Quire pass; the regression failed on the original unmapped fixture before the repair. No build or source edit by this reviewer. The normative spec and the explicit limitation that AC-27 qualifies authored settlement expectations are unchanged.

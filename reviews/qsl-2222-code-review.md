@@ -15,7 +15,7 @@ Ticket: QSL-2222. Independent code-review at the frozen head. No applicable Assu
 
 ## Verdict
 
-FAIL — not mergeable until the positive package is conforming.
+PASS for the scoped PR after disposition round 1 at 211129c994d82430d8c682bfc3615efe6219a3a5. The original finding remains unchanged below.
 
 ## Findings
 
@@ -90,3 +90,10 @@ Every changed file was examined. Scope data below records clean as well as defec
 }
 ```
 
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | Round 1: inspected 211129c994d82430d8c682bfc3615efe6219a3a5; six explicit declaration/0 mappings and exact occurrence/claim resolution assertions are present. |
+
+Disposition round 1 inspected both original findings. Every new control has one explicit source-map row under the locked example identity; the test checks all graph occurrences and exact loop claim pairs, then removes Bounded's row and confirms resolution fails. No new finding. Lead evidence: 42 provider tests pass and focused Clippy/Quire pass; the regression failed on the original unmapped fixture before the repair. No build or source edit by this reviewer. The normative spec and the explicit limitation that AC-27 qualifies authored settlement expectations are unchanged.
