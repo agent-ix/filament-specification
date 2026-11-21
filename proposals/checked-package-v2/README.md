@@ -78,6 +78,16 @@ structures, but any external consumer receives only the contract.
   handle is in checked-package-v2; FR-418 `TaskTransitionTemplate` remains in
   the separate backend-provider-v1 certificate, where FSL owns successor
   recomputation.
+- `protocol-correlation-vectors.json` publishes the FR-831 optional top-level
+  `protocol_correlation_occurrences` member (rows `{control, occurrence,
+  canonical_index, alias, source_ordinal}`): absent and present-empty results,
+  positive rows for zero, one and many clauses, identical, repeated and
+  differently named aliases, reversed source order, all six related-bearing
+  forms and dependency ownership, schema-valid and schema-invalid rows, reader
+  refusals in FR-831 order, exact and one-short `work` budgets and the
+  invariance comparisons. Cases over `fixtures/protocol-node-base.json` carry an
+  RFC 6902 `edit`; the rest are admitted-graph projections. No reader executes
+  them yet.
 - `model-union-witness-vectors.json` publishes the FR-830 `model_unions` and
   `model_tuples` producer-witness sidecar rows of selected model unions and
   tuples (cases in UTF-8 order with authored position, sealed member,

@@ -1,0 +1,3623 @@
+{
+  "version": "filament.protocol-correlation-vectors/v1",
+  "note": "FR-831 / TC-2113. Static inputs and expected reader results for the optional top-level protocol_correlation_occurrences member; no reader or harness executes them and no existing reader is qualified against them. A case with a non-null `edit` is executable over fixtures/protocol-node-base.json (RFC 6902 `add` on the published-form package; every eligible control of the base has an empty related array, so the base is projection P-BASE). A case with a null `edit` is an admitted-graph projection input: the carrier check reads, per eligible control occurrence, only its control NodeRef, operator, declaration occurrences, the source_map entry of the full key and that entry's regions' sources, and the length m of its emitted related array (`related_len` overrides the base's 0 by control id). Controls with in_base false (event, recommend and the two-occurrence send) are not in the base package; a full-package embodiment of those cases is the producer's own fixture. Rows follow FR-322 ascending structural NodeRef order (package, path segments by UTF-8 bytes, ordinal), then occurrence, then source_ordinal. The expected `read` is the typed read; its source_units are the sources of the regions of the admitted source_map entry of the full key (control, declaration, ordinal), here the base's one lock source. Aliases show only the Identifier lexical form: the relationship's model name (base: ix://acme/orders/relationship/Order-order-Order) is never compared with an alias. Expected refusals state the first defect in FR-831 order only.",
+  "base": "fixtures/protocol-node-base.json",
+  "member": "protocol_correlation_occurrences",
+  "controls": {
+    "SEND": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Requested"
+      ],
+      "operator": "send",
+      "in_base": true
+    },
+    "RECV": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Received"
+      ],
+      "operator": "receive",
+      "in_base": true
+    },
+    "ATT": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Charged"
+      ],
+      "operator": "attempt",
+      "in_base": true
+    },
+    "EFF": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Applied"
+      ],
+      "operator": "effect",
+      "in_base": true
+    },
+    "EAST": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Shipments",
+        "East"
+      ],
+      "operator": "attempt",
+      "in_base": true
+    },
+    "WEST": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Shipments",
+        "West"
+      ],
+      "operator": "attempt",
+      "in_base": true
+    },
+    "POLL": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Poll",
+        "Polled"
+      ],
+      "operator": "attempt",
+      "in_base": true
+    },
+    "EVT": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Notified"
+      ],
+      "operator": "event",
+      "in_base": false
+    },
+    "REC": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Advised"
+      ],
+      "operator": "recommend",
+      "in_base": false
+    },
+    "SH": {
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Shared"
+      ],
+      "operator": "send",
+      "in_base": false,
+      "occurrences": [
+        0,
+        1
+      ]
+    }
+  },
+  "ineligible_controls": {
+    "role": {
+      "package": "example",
+      "path": [
+        "Example",
+        "OrderFlow",
+        "role",
+        "Orders"
+      ],
+      "ordinal": 0
+    },
+    "check": {
+      "package": "example",
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Outcome",
+        "Done"
+      ],
+      "ordinal": 0
+    },
+    "commit": {
+      "package": "example",
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Finalized"
+      ],
+      "ordinal": 0
+    },
+    "absent": {
+      "package": "example",
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Missing"
+      ],
+      "ordinal": 0
+    },
+    "foreign": {
+      "package": "other",
+      "path": [
+        "Example",
+        "OrderFlow",
+        "run",
+        "Main",
+        "Requested"
+      ],
+      "ordinal": 0
+    }
+  },
+  "projections": {
+    "P-BASE": {
+      "description": "the unmodified base: seven eligible controls (SEND RECV ATT EFF EAST WEST POLL), each with one declaration occurrence 0 and related_len 0; check Outcome/Done, commit Finalized and role Orders are ineligible",
+      "eligible": [
+        "SEND",
+        "RECV",
+        "ATT",
+        "EFF",
+        "EAST",
+        "WEST",
+        "POLL"
+      ]
+    },
+    "P-REL": {
+      "description": "P-BASE plus the in_base false controls EVT, REC and SH (two declaration occurrences); related_len states each control's m",
+      "eligible": [
+        "SEND",
+        "RECV",
+        "ATT",
+        "EFF",
+        "EAST",
+        "WEST",
+        "POLL",
+        "EVT",
+        "REC",
+        "SH"
+      ]
+    }
+  },
+  "absence": [
+    {
+      "id": "CO-A1-absent-empty-related",
+      "projection": "P-BASE",
+      "related_len": {},
+      "edit": [],
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "unavailable_correlation_provenance"
+        }
+      },
+      "why": "absent is unavailable, not empty, although every related is empty"
+    },
+    {
+      "id": "CO-A2-absent-nonempty-related",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "unavailable_correlation_provenance"
+        },
+        "consumer_need": {
+          "control": "SEND",
+          "refusal": "unavailable_correlation_provenance",
+          "never": "success with empty premises"
+        }
+      },
+      "why": "canonical related nonempty and member absent: the package is admitted, a consumer needing clause order refuses by that name"
+    }
+  ],
+  "positive": [
+    {
+      "id": "CO-P1-present-empty",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": []
+        }
+      ],
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": []
+        }
+      },
+      "why": "present [] is a complete empty provenance, valid because every eligible related is empty"
+    },
+    {
+      "id": "CO-P2-one",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "charge",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "charge"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "one authored clause"
+    },
+    {
+      "id": "CO-P3-multiple",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "owner_of",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "holder_of",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "owner_of"
+                },
+                {
+                  "source_ordinal": 1,
+                  "canonical_index": 1,
+                  "alias": "holder_of"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "two distinct canonical records, two clauses"
+    },
+    {
+      "id": "CO-P4-identical-x3",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "owns",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "owns",
+          "source_ordinal": 1
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "owns",
+          "source_ordinal": 2
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "owns"
+                },
+                {
+                  "source_ordinal": 1,
+                  "canonical_index": 0,
+                  "alias": "owns"
+                },
+                {
+                  "source_ordinal": 2,
+                  "canonical_index": 0,
+                  "alias": "owns"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "three identical authored clauses are one canonical record: three rows of one canonical_index"
+    },
+    {
+      "id": "CO-P5-repeated-alias",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "owns",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "owns",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "owns"
+                },
+                {
+                  "source_ordinal": 1,
+                  "canonical_index": 1,
+                  "alias": "owns"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "one alias over two canonical records with different ends"
+    },
+    {
+      "id": "CO-P6-two-aliases-one-canonical",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "owns",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "holds",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "owns"
+                },
+                {
+                  "source_ordinal": 1,
+                  "canonical_index": 0,
+                  "alias": "holds"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "two aliases of one relationship with equal ends; neither equals the model name Order-order-Order"
+    },
+    {
+      "id": "CO-P7a-source-order-forward",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "first",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "second",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "first"
+                },
+                {
+                  "source_ordinal": 1,
+                  "canonical_index": 1,
+                  "alias": "second"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "two clauses written in canonical order"
+    },
+    {
+      "id": "CO-P7b-source-order-reversed",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "second",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "first",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 1,
+                  "alias": "second"
+                },
+                {
+                  "source_ordinal": 1,
+                  "canonical_index": 0,
+                  "alias": "first"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "the same two clauses written in the opposite source order",
+      "same_canonical_graph_as": "CO-P7a-source-order-forward",
+      "differs_only_in": "the source_ordinal to canonical_index mapping"
+    },
+    {
+      "id": "CO-P8-every-form",
+      "projection": "P-REL",
+      "related_len": {
+        "REC": 1,
+        "ATT": 1,
+        "EFF": 1,
+        "EVT": 1,
+        "RECV": 1,
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Advised"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "advice",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Applied"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "applied",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Charged"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "charge",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Notified"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "notified",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Received"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "got",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "sent",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Advised"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "advice"
+                }
+              ]
+            },
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Applied"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "applied"
+                }
+              ]
+            },
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Charged"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "charge"
+                }
+              ]
+            },
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Notified"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "notified"
+                }
+              ]
+            },
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Received"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "got"
+                }
+              ]
+            },
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "sent"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "recommend, effect, attempt, event, receive and send, rows in structural control order (Advised, Applied, Charged, Notified, Received, Requested)"
+    },
+    {
+      "id": "CO-P9-two-occurrences",
+      "projection": "P-REL",
+      "related_len": {
+        "SH": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Shared"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "shared",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Shared"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 1
+          },
+          "canonical_index": 0,
+          "alias": "shared",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "admit",
+        "read": {
+          "outcome": "complete",
+          "groups": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Shared"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "shared"
+                }
+              ]
+            },
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Shared"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 1
+              },
+              "source_units": [
+                {
+                  "authority": "agent-ix",
+                  "identity": "example"
+                }
+              ],
+              "clauses": [
+                {
+                  "source_ordinal": 0,
+                  "canonical_index": 0,
+                  "alias": "shared"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "why": "one control node with declaration occurrences 0 and 1: one group per occurrence, each keyed to its own source_map entry"
+    },
+    {
+      "id": "CO-P10-dependency-own-table",
+      "edit": null,
+      "packages": {
+        "root": {
+          "name": "example",
+          "member": null
+        },
+        "dependency": {
+          "name": "acme/orders",
+          "related_len": {
+            "Orders/Flow/run/Main/Sent": 1
+          },
+          "member": [
+            {
+              "control": {
+                "package": "acme/orders",
+                "path": [
+                  "Orders",
+                  "Flow",
+                  "run",
+                  "Main",
+                  "Sent"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "placed",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      },
+      "expect": {
+        "decision": "admit",
+        "reads": [
+          {
+            "package": "acme/orders",
+            "control": "Orders/Flow/run/Main/Sent",
+            "outcome": "complete"
+          },
+          {
+            "package": "example",
+            "control": "Example/OrderFlow/run/Main/Requested",
+            "outcome": "unavailable_correlation_provenance"
+          }
+        ]
+      },
+      "why": "a dependency control is read through its own package's member and source_map only; the root's absent member does not make it available and a root member is never consulted for it"
+    }
+  ],
+  "reader_refusals": [
+    {
+      "id": "CO-R01-absent-control",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Missing"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Missing"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "control names no node of the package"
+    },
+    {
+      "id": "CO-R02-foreign-package-control",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "other",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "other",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "control names a node key of another package"
+    },
+    {
+      "id": "CO-R03-role-control",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "role",
+              "Orders"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "role",
+                  "Orders"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "ill_typed",
+        "cause": "operator-ineligible",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "a protocol/role node is not a control"
+    },
+    {
+      "id": "CO-R04-check-control",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Outcome",
+              "Done"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Outcome",
+                  "Done"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "ill_typed",
+        "cause": "operator-ineligible",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "check carries no related"
+    },
+    {
+      "id": "CO-R05-commit-control",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Finalized"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Finalized"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "ill_typed",
+        "cause": "operator-ineligible",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "commit carries no related"
+    },
+    {
+      "id": "CO-R06-missing-occurrence",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 1
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 1
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/occurrence"
+      },
+      "why": "declaration ordinal 1 is not an occurrence of the control"
+    },
+    {
+      "id": "CO-R07-wrong-role-occurrence",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "expression",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "expression",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/occurrence"
+      },
+      "why": "role expression names no declaration occurrence of the control"
+    },
+    {
+      "id": "CO-R08-index-out-of-range-empty-related",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Applied"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Applied"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/canonical_index"
+      },
+      "why": "effect Applied has an empty related array: index 0 is out of range"
+    },
+    {
+      "id": "CO-R09-index-out-of-range",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/canonical_index"
+      },
+      "why": "index 1 of a one-record related array"
+    },
+    {
+      "id": "CO-R10-repeated-key",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "conflicting-definition",
+        "locus": "/protocol_correlation_occurrences/1"
+      },
+      "why": "the full key (control, occurrence, source_ordinal) repeats"
+    },
+    {
+      "id": "CO-R11-rows-out-of-order",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1,
+        "RECV": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Received"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "b",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/1"
+      },
+      "why": "Received sorts before Requested"
+    },
+    {
+      "id": "CO-R12-ordinal-gap",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "b",
+          "source_ordinal": 2
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/1/source_ordinal"
+      },
+      "why": "source ordinals 0 then 2"
+    },
+    {
+      "id": "CO-R13-ordinal-nonzero-start",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/source_ordinal"
+      },
+      "why": "the first ordinal of a group is 1"
+    },
+    {
+      "id": "CO-R14-uncovered-canonical-row",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences"
+      },
+      "why": "canonical position 1 of Requested is named by no row"
+    },
+    {
+      "id": "CO-R15-uncovered-owner-occurrence",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1,
+        "RECV": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Received"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences"
+      },
+      "why": "eligible occurrence Requested has related and no group"
+    },
+    {
+      "id": "CO-R16-uncovered-second-occurrence",
+      "projection": "P-REL",
+      "related_len": {
+        "SH": 1
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Shared"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences"
+      },
+      "why": "occurrence 1 of Shared has no group"
+    },
+    {
+      "id": "CO-R17-empty-over-nonempty-related",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 1
+      },
+      "rows": [],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences"
+      },
+      "why": "present [] is a complete claim and Requested has a related record"
+    },
+    {
+      "id": "CO-R18-dependency-control-in-root-member",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "acme/orders",
+            "path": [
+              "Orders",
+              "Flow",
+              "run",
+              "Main",
+              "Sent"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "acme/orders",
+                "path": [
+                  "Orders",
+                  "Flow",
+                  "run",
+                  "Main",
+                  "Sent"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "the root member names a dependency package's control: no root fallback, no foreign row"
+    },
+    {
+      "id": "CO-R19-join-before-order-and-coverage",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Applied"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "b",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/1/canonical_index"
+      },
+      "why": "row 1 names Applied, whose related array is empty, so its index is out of range; Requested position 1 is also uncovered, and the row join is reported first"
+    },
+    {
+      "id": "CO-R20-occurrence-before-index",
+      "projection": "P-BASE",
+      "related_len": {},
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Applied"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 1
+          },
+          "canonical_index": 5,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "edit": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Applied"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 1
+              },
+              "canonical_index": 5,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "invalid-value",
+        "locus": "/protocol_correlation_occurrences/0/occurrence"
+      },
+      "why": "both occurrence and index are wrong: the occurrence join is first"
+    },
+    {
+      "id": "CO-R21-repeated-key-before-order",
+      "projection": "P-REL",
+      "related_len": {
+        "SEND": 2
+      },
+      "rows": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1,
+          "alias": "b",
+          "source_ordinal": 1
+        }
+      ],
+      "edit": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "reader",
+        "code": "invalid_package",
+        "cause": "conflicting-definition",
+        "locus": "/protocol_correlation_occurrences/1"
+      },
+      "why": "the repeated pair is reported before the later ordinal defect"
+    },
+    {
+      "id": "CO-R22-dependency-no-root-fallback",
+      "edit": null,
+      "packages": {
+        "root": {
+          "name": "example",
+          "member": [
+            {
+              "control": {
+                "package": "example",
+                "path": [
+                  "Example",
+                  "OrderFlow",
+                  "run",
+                  "Main",
+                  "Requested"
+                ],
+                "ordinal": 0
+              },
+              "occurrence": {
+                "role": "declaration",
+                "ordinal": 0
+              },
+              "canonical_index": 0,
+              "alias": "a",
+              "source_ordinal": 0
+            }
+          ],
+          "related_len": {
+            "SEND": 1
+          }
+        },
+        "dependency": {
+          "name": "acme/orders",
+          "related_len": {
+            "Orders/Flow/run/Main/Sent": 1
+          },
+          "member": null
+        }
+      },
+      "expect": {
+        "decision": "admit",
+        "reads": [
+          {
+            "package": "acme/orders",
+            "control": "Orders/Flow/run/Main/Sent",
+            "outcome": "unavailable_correlation_provenance"
+          }
+        ]
+      },
+      "why": "the dependency package has no member: its control is unavailable although the root carries a member; a root member is never read for it"
+    }
+  ],
+  "schema_valid": [
+    {
+      "id": "CO-S01-valid-row",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "why": "all five members"
+    },
+    {
+      "id": "CO-S02-empty-array",
+      "value": [],
+      "why": "[] is schema-valid; the reader decides coverage"
+    },
+    {
+      "id": "CO-S03-identifier-forms",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "_x9",
+          "source_ordinal": 0
+        },
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "A",
+          "source_ordinal": 0
+        }
+      ],
+      "why": "the Identifier pattern ^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    {
+      "id": "CO-S04-max-safe-integers",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 9007199254740991,
+          "alias": "a",
+          "source_ordinal": 9007199254740991
+        }
+      ],
+      "why": "schema-valid; the reader refuses canonical_index range"
+    }
+  ],
+  "schema_invalid": [
+    {
+      "id": "CO-W01-null",
+      "value": null,
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences"
+      },
+      "why": "member is null"
+    },
+    {
+      "id": "CO-W02-object",
+      "value": {},
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences"
+      },
+      "why": "member is an object"
+    },
+    {
+      "id": "CO-W03-row-not-object",
+      "value": [
+        "x"
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0"
+      },
+      "why": "row is not an object"
+    },
+    {
+      "id": "CO-W04-missing-alias",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0"
+      },
+      "why": "missing member"
+    },
+    {
+      "id": "CO-W05-missing-source-ordinal",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a"
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0"
+      },
+      "why": "missing member"
+    },
+    {
+      "id": "CO-W06-extra-region",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0,
+          "region": {
+            "start": 0,
+            "end": 1
+          }
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0"
+      },
+      "why": "no extra source region: the closed row has five members"
+    },
+    {
+      "id": "CO-W07-superseded-member",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0,
+          "related_index": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0"
+      },
+      "why": "an earlier proposal's member name is unknown"
+    },
+    {
+      "id": "CO-W08-empty-alias",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/alias"
+      },
+      "why": "alias is not an Identifier"
+    },
+    {
+      "id": "CO-W09-digit-alias",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "1a",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/alias"
+      },
+      "why": "leading digit"
+    },
+    {
+      "id": "CO-W10-punctuated-alias",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a-b",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/alias"
+      },
+      "why": "character outside [A-Za-z0-9_]"
+    },
+    {
+      "id": "CO-W11-number-alias",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": 7,
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/alias"
+      },
+      "why": "alias is not a string"
+    },
+    {
+      "id": "CO-W12-negative-index",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": -1,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/canonical_index"
+      },
+      "why": "negative"
+    },
+    {
+      "id": "CO-W13-fractional-index",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1.5,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/canonical_index"
+      },
+      "why": "fractional"
+    },
+    {
+      "id": "CO-W14-beyond-safe-ordinal",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 9007199254740992
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/source_ordinal"
+      },
+      "why": "above 9007199254740991"
+    },
+    {
+      "id": "CO-W15-unknown-occurrence-role",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "related",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/occurrence/role"
+      },
+      "why": "role outside the six Occurrence roles"
+    },
+    {
+      "id": "CO-W16-occurrence-extra-member",
+      "value": [
+        {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0,
+            "source": {
+              "authority": "agent-ix",
+              "identity": "example"
+            }
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/occurrence"
+      },
+      "why": "no source property on the occurrence"
+    },
+    {
+      "id": "CO-W17-control-not-noderef",
+      "value": [
+        {
+          "control": "Example/OrderFlow/run/Main/Requested",
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0,
+          "alias": "a",
+          "source_ordinal": 0
+        }
+      ],
+      "expect": {
+        "decision": "refuse",
+        "stage": "schema",
+        "code": "malformed_wire",
+        "locus": "/protocol_correlation_occurrences/0/control"
+      },
+      "why": "control is not a NodeRef object"
+    }
+  ],
+  "budget": {
+    "meter": "work",
+    "unit": "per row: 1 + UTF-8 byte length of alias, in array order; then per eligible control occurrence in ascending structural order: 1 + m (its related records); all charged before any key index, group table or view is allocated; an absent member charges nothing",
+    "cases": [
+      {
+        "id": "CO-B1-rows-and-scan",
+        "projection": "P-BASE",
+        "related_len": {
+          "SEND": 2,
+          "RECV": 1
+        },
+        "rows": [
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Received"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 0,
+            "alias": "r",
+            "source_ordinal": 0
+          },
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Requested"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 0,
+            "alias": "ab",
+            "source_ordinal": 0
+          },
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Requested"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 1,
+            "alias": "cde",
+            "source_ordinal": 1
+          }
+        ],
+        "charged_in_order": [
+          "row 0 (Received r): 2",
+          "row 1 (Requested ab): 3",
+          "row 2 (Requested cde): 4",
+          "scan: 7 eligible occurrences of P-BASE, one unit each",
+          "scan: 3 related records (Requested 2, Received 1)"
+        ],
+        "equation": "(3 rows + 6 alias bytes) + (7 occurrences + 3 related records) = 19",
+        "exact_limit": 19,
+        "exact_result": {
+          "decision": "admit",
+          "read": {
+            "outcome": "complete",
+            "groups": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "source_units": [
+                  {
+                    "authority": "agent-ix",
+                    "identity": "example"
+                  }
+                ],
+                "clauses": [
+                  {
+                    "source_ordinal": 0,
+                    "canonical_index": 0,
+                    "alias": "r"
+                  }
+                ]
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "source_units": [
+                  {
+                    "authority": "agent-ix",
+                    "identity": "example"
+                  }
+                ],
+                "clauses": [
+                  {
+                    "source_ordinal": 0,
+                    "canonical_index": 0,
+                    "alias": "ab"
+                  },
+                  {
+                    "source_ordinal": 1,
+                    "canonical_index": 1,
+                    "alias": "cde"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "one_less_limit": 18,
+        "one_less_result": {
+          "decision": "incomplete",
+          "limit": "work",
+          "locus": "/protocol_correlation_occurrences",
+          "note": "the final scan charge; no partial view"
+        }
+      },
+      {
+        "id": "CO-B2-limit-9-first-scan-charge",
+        "limit_value": 9,
+        "projection": "P-BASE",
+        "related_len": {
+          "SEND": 2,
+          "RECV": 1
+        },
+        "rows": [
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Received"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 0,
+            "alias": "r",
+            "source_ordinal": 0
+          },
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Requested"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 0,
+            "alias": "ab",
+            "source_ordinal": 0
+          },
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Requested"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 1,
+            "alias": "cde",
+            "source_ordinal": 1
+          }
+        ],
+        "edit": null,
+        "expect": {
+          "decision": "incomplete",
+          "limit": "work",
+          "locus": "/protocol_correlation_occurrences"
+        },
+        "why": "limit 9: the three rows charge exactly 9 and the first scan charge fails; locus is the array"
+      },
+      {
+        "id": "CO-B3-limit-8-last-row",
+        "limit_value": 8,
+        "projection": "P-BASE",
+        "related_len": {
+          "SEND": 2,
+          "RECV": 1
+        },
+        "rows": [
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Received"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 0,
+            "alias": "r",
+            "source_ordinal": 0
+          },
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Requested"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 0,
+            "alias": "ab",
+            "source_ordinal": 0
+          },
+          {
+            "control": {
+              "package": "example",
+              "path": [
+                "Example",
+                "OrderFlow",
+                "run",
+                "Main",
+                "Requested"
+              ],
+              "ordinal": 0
+            },
+            "occurrence": {
+              "role": "declaration",
+              "ordinal": 0
+            },
+            "canonical_index": 1,
+            "alias": "cde",
+            "source_ordinal": 1
+          }
+        ],
+        "edit": null,
+        "expect": {
+          "decision": "incomplete",
+          "limit": "work",
+          "locus": "/protocol_correlation_occurrences/2"
+        },
+        "why": "limit 8: cumulative 2, 5, then 9 passes the limit at row 2"
+      },
+      {
+        "id": "CO-B4-empty-scan",
+        "projection": "P-BASE",
+        "related_len": {},
+        "rows": [],
+        "charged_in_order": [
+          "scan: 7 eligible occurrences, no related records"
+        ],
+        "equation": "0 rows + 7 occurrences + 0 related = 7",
+        "exact_limit": 7,
+        "exact_result": {
+          "decision": "admit",
+          "read": {
+            "outcome": "complete",
+            "groups": []
+          }
+        },
+        "one_less_limit": 6,
+        "one_less_result": {
+          "decision": "incomplete",
+          "limit": "work",
+          "locus": "/protocol_correlation_occurrences"
+        }
+      },
+      {
+        "id": "CO-B5-absent-charges-nothing",
+        "projection": "P-BASE",
+        "related_len": {},
+        "rows": null,
+        "exact_limit": 0,
+        "exact_result": {
+          "decision": "admit",
+          "read": {
+            "outcome": "unavailable_correlation_provenance"
+          }
+        }
+      }
+    ]
+  },
+  "invariance": [
+    {
+      "id": "CO-I1-duplicate-clauses",
+      "compare": [
+        "CO-P2-one",
+        "CO-P4-identical-x3"
+      ],
+      "related_len": {
+        "SEND": 1
+      },
+      "assert_equal": [
+        "semantic_graph (every node, node_id, body, dependencies, semantic_type)",
+        "canonical related triples",
+        "identityRef",
+        "source_map",
+        "checked_term_data.protocol_locations",
+        "checked_term_data"
+      ],
+      "assert_differ": [
+        "protocol_correlation_occurrences",
+        "whole package bytes"
+      ],
+      "why": "one authored clause and three identical ones are the same canonical graph; only the member differs"
+    },
+    {
+      "id": "CO-I2-absent-versus-empty",
+      "edit_a": [],
+      "edit_b": [
+        {
+          "op": "add",
+          "path": "/protocol_correlation_occurrences",
+          "value": []
+        }
+      ],
+      "assert_equal": [
+        "every member except protocol_correlation_occurrences"
+      ],
+      "assert_differ": [
+        "whole package bytes"
+      ],
+      "why": "executable over the base: the member adds nothing else; whole-package byte comparisons are scoped to packages without it"
+    }
+  ],
+  "producer_conformance": [
+    "every checked authored clause before deduplication has a row, in source order",
+    "alias is the exact checked Identifier spelling",
+    "canonical_index is the clause's actual position in the emitted related array, never found by looking up the alias or the relationship key",
+    "an omitted trailing duplicate clause is not detectable by a reader"
+  ]
+}
