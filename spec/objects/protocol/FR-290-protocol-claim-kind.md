@@ -251,6 +251,8 @@ names, by the node's tag and `semantic_form` (FR-322) and its occurrence role:
 | `relation`/`refinement` | `relation-claim` |
 | `claim`/`probabilistic_claim` | `probabilistic` |
 | `claim`/`schedulability` | `real-time` |
+| `correspondence`/`component_composition`, whose rule is `protocol-refinement`, `refinement-transfer` or `interface` ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) | `protocol` |
+| `correspondence`/`component_composition` of any rule, including `assume-guarantee`, for the `fixed-point` `composition` item an accepted cycle derives ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md), [FR-489](../../functional/analysis/FR-489-carry-liveness-and-fairness-premises-through-composition.md)); an `assume-guarantee` declaration's main item stays planner-local and has no family | `protocol` |
 | any `protocol` node | `protocol` |
 
 A claim that names a node of no row has no declaration family. Examples are
