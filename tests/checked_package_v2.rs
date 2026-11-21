@@ -25333,7 +25333,14 @@ type BodyLocationRefusal = (String, String, String);
 /// the order the rule states them. The repository has no production reader;
 /// this decider is the executable statement of the body walk, the row checks
 /// and the missing-row check over a vector's package.
-fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<(), BodyLocationRefusal> {
+///
+/// On admission it returns each row's rebuilt path (FR-322 "Body locations",
+/// the typed read), indexed like `rows`: a row's `location` is `{origin, up,
+/// down}`, its path the previous walk term's path with its last `up` entries
+/// removed and `down` appended, and the `k`-th walk visit at an application
+/// pairs with that application's row of rank `k` in (`occurrence`,
+/// `term_ordinal`) order (FSL FR-397 "Operand binders" for the walk).
+fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<Vec<Vec<u64>>, BodyLocationRefusal> {
     let nodes = package["semantic_graph"]["nodes"].as_array().unwrap();
     let local = package["name"].as_str().unwrap();
     let invalid = |locus: String| -> BodyLocationRefusal {
@@ -25384,17 +25391,17 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<(), BodyLoca
                 ]
                 .contains(&node["body"]["operation"]["identity"].as_str().unwrap_or("")))
     };
-    // The terms of each application along `function`'s body walk.
-    let walk = |function: usize| -> BTreeMap<usize, u64> {
-        let mut counts = BTreeMap::new();
+    // The terms `function`'s body walk visits, in walk order.
+    let walk_order = |function: usize| -> Vec<usize> {
+        let mut visits = Vec::new();
         let Some(Some(start)) = body_binding(&nodes[function]) else {
-            return counts;
+            return visits;
         };
         let mut pending: Vec<usize> = position(&start).into_iter().collect();
         while let Some(at) = pending.pop() {
             let node = &nodes[at];
             if is_term(node) {
-                *counts.entry(at).or_default() += 1;
+                visits.push(at);
             }
             let mut found = Vec::new();
             references(&node["body"], &mut found);
@@ -25406,11 +25413,21 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<(), BodyLoca
             next.reverse();
             pending.extend(next);
         }
+        visits
+    };
+    // The terms of each application along `function`'s body walk.
+    let walk = |function: usize| -> BTreeMap<usize, u64> {
+        let mut counts = BTreeMap::new();
+        for at in walk_order(function) {
+            *counts.entry(at).or_default() += 1;
+        }
         counts
     };
     let mut names: BTreeMap<usize, (Value, Value)> = BTreeMap::new();
     let mut owners: BTreeMap<String, usize> = BTreeMap::new();
     let mut held: BTreeMap<(usize, usize), u64> = BTreeMap::new();
+    // Each row's (function, application) group, for the walk pairing.
+    let mut groups: Vec<(usize, usize)> = Vec::new();
     let mut walks: BTreeMap<usize, BTreeMap<usize, u64>> = BTreeMap::new();
     let mut previous: Option<(&Value, &Value, u64)> = None;
     let mut gap = false;
@@ -25467,6 +25484,7 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<(), BodyLoca
                 owners.insert(function_index.to_string(), function);
             }
         }
+        groups.push((function, application));
         let count = held.entry((function, application)).or_default();
         *count += 1;
         let terms = walks
@@ -25492,7 +25510,49 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<(), BodyLoca
             }
         }
     }
-    Ok(())
+    // The rebuild, in walk order: the `k`-th visit at an application pairs
+    // with that application's row of rank `k` in (`occurrence`,
+    // `term_ordinal`) order, and a row's path is the previous visit's path
+    // less its last `up` entries, then `down`.
+    let mut paths: Vec<Vec<u64>> = vec![Vec::new(); rows.len()];
+    let mut refusals: Vec<(usize, usize)> = Vec::new();
+    for function in 0..nodes.len() {
+        if nodes[function]["node_tag"] != "function" || body_binding(&nodes[function]).is_none() {
+            continue;
+        }
+        let mut ranked: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
+        for (row, group) in groups.iter().enumerate().filter(|(_, group)| group.0 == function) {
+            ranked.entry(group.1).or_default().push(row);
+        }
+        for held_rows in ranked.values_mut() {
+            held_rows.sort_by_key(|row| {
+                (rows[*row]["occurrence"]["ordinal"].as_u64(), rows[*row]["term_ordinal"].as_u64())
+            });
+        }
+        let mut visited: BTreeMap<usize, usize> = BTreeMap::new();
+        let mut previous: Vec<u64> = Vec::new();
+        for application in walk_order(function) {
+            let rank = visited.entry(application).or_default();
+            let row = ranked[&application][*rank];
+            *rank += 1;
+            let location = &rows[row]["location"];
+            let up = usize::try_from(location["up"].as_u64().unwrap()).unwrap();
+            let down: Vec<u64> = location["down"].as_array().unwrap().iter().map(|k| k.as_u64().unwrap()).collect();
+            if up > previous.len() || (up > 0 && down.first() == Some(&previous[previous.len() - up])) {
+                refusals.push((row, 0));
+                break;
+            }
+            previous.truncate(previous.len() - up);
+            previous.extend(down);
+            paths[row] = previous.clone();
+        }
+    }
+    // The first refusing row in walk order is reported; with one function
+    // body per vector the walk order is the order the refusals were found in.
+    if let Some((row, _)) = refusals.first() {
+        return Err(invalid(format!("/checked_term_data/body_locations/{row}/location/up")));
+    }
+    Ok(paths)
 }
 
 /// FR-322-AC-490 (TC-2090): the `body_locations` vectors over the packages of
@@ -25543,31 +25603,47 @@ fn tc_2090_function_body_location_rows() {
             assert!(row_schema.is_valid(row), "{id} row is closed: {row}");
             assert_eq!(row["location"]["origin"]["kind"], "function_body", "{id}");
         }
-        assert_eq!(decide_body_locations(&package, &rows_of(case)), Ok(()), "{id}");
+        assert!(decide_body_locations(&package, &rows_of(case)).is_ok(), "{id}");
     }
 
     // BL-01: one row per term of f's body walk; the `let`s lowering introduces
     // have none, the two `sqrt` rows hold the checker's paths, and every other
-    // term of the ordering's composition sits at the ordering's own path.
+    // term of the ordering's composition sits at the ordering's own path. The
+    // paths are rebuilt in walk order from `{up, down}`, never read from a row.
+    let package_of = |id: &str| package_with(positive(id));
+    let rebuilt = |id: &str| -> Vec<Vec<u64>> {
+        decide_body_locations(&package_of(id), &rows_of(positive(id))).unwrap_or_else(|refusal| panic!("{id}: {refusal:?}"))
+    };
     let bl01 = positive("BL-01");
     let rows = rows_of(bl01);
-    let paths: Vec<&Value> = rows.iter().map(|row| &row["location"]["path"]).collect();
+    assert!(rows.iter().all(|row| row["location"].get("path").is_none()), "no row holds a whole path");
+    let encoded = |rows: &[Value]| -> Vec<(u64, Vec<u64>)> {
+        rows.iter()
+            .map(|row| {
+                (
+                    row["location"]["up"].as_u64().unwrap(),
+                    row["location"]["down"].as_array().unwrap().iter().map(|k| k.as_u64().unwrap()).collect(),
+                )
+            })
+            .collect()
+    };
     assert_eq!(
-        paths.iter().filter(|path| ***path == json!([])).count(),
-        rows.len() - 2
+        encoded(&rows),
+        [(0, vec![]), (0, vec![]), (1, vec![]), (0, vec![]), (0, vec![]), (0, vec![]), (0, vec![]), (0, vec![0]), (1, vec![1])]
     );
-    assert_eq!(paths[rows.len() - 2], &json!([0]));
-    assert_eq!(paths[rows.len() - 1], &json!([1]));
+    let paths = rebuilt("BL-01");
+    assert_eq!(paths.iter().filter(|path| path.is_empty()).count(), rows.len() - 2);
+    assert_eq!(paths[rows.len() - 2], [0]);
+    assert_eq!(paths[rows.len() - 1], [1]);
     let origin = &rows[0]["location"]["origin"];
     assert_eq!(origin["name"], "f");
     assert_eq!(origin["index"], 0);
     assert!(rows.iter().all(|row| row["location"]["origin"] == *origin));
-    assert!(
-        !paths.contains(&&json!([1, 0])),
-        "the second sqrt is at [1], not its lowered position"
-    );
+    assert!(!paths.contains(&vec![1, 0]), "the second sqrt is at [1], not its lowered position");
 
-    // BL-02: only the second sqrt's path differs, and the node ids are BL-01's.
+    // BL-02: only the second sqrt's row differs, written in its least form
+    // `{up: 0, down: []}`, the node ids are BL-01's, and the typed read keeps
+    // the captured path `[0]` for it.
     let bl02 = rows_of(positive("BL-02"));
     assert_eq!(bl02.len(), rows.len());
     for (left, right) in rows.iter().zip(&bl02) {
@@ -25575,26 +25651,29 @@ fn tc_2090_function_body_location_rows() {
         assert_eq!(left["location"]["origin"], right["location"]["origin"]);
     }
     let last = rows.len() - 1;
-    assert_eq!(bl02[last]["location"]["path"], json!([0]));
-    assert_ne!(bl02[last]["location"]["path"], rows[last]["location"]["path"]);
+    assert_eq!((bl02[last]["location"]["up"].clone(), bl02[last]["location"]["down"].clone()), (json!(0), json!([])));
+    let paths02 = rebuilt("BL-02");
+    assert_eq!(paths02[last], [0]);
+    assert_ne!(paths02[last], paths[last]);
 
     // BL-03: the one `+` node is reached through both `let`s and has a row per
-    // position, at its two `expression` occurrences.
+    // position, at its two `expression` occurrences: `{up: 0, down: [0]}` and
+    // `{up: 1, down: [1]}`, the root `and` row `{up: 1, down: []}`.
     let bl03 = rows_of(positive("BL-03"));
-    let first_plus = bl03
-        .iter()
-        .find(|row| row["location"]["path"] == json!([0]))
-        .expect("a row at path [0]");
-    let plus: Vec<&Value> = bl03
-        .iter()
-        .filter(|row| row["application"] == first_plus["application"])
+    let paths03 = rebuilt("BL-03");
+    let first_plus = (0..bl03.len()).find(|row| paths03[*row] == [0]).expect("a row at path [0]");
+    let plus: Vec<usize> = (0..bl03.len())
+        .filter(|row| bl03[*row]["application"] == bl03[first_plus]["application"])
         .collect();
     assert_eq!(plus.len(), 2);
-    assert_eq!(plus[0]["occurrence"], json!({"role": "expression", "ordinal": 0}));
-    assert_eq!(plus[1]["occurrence"], json!({"role": "expression", "ordinal": 1}));
-    assert!(plus.iter().all(|row| row["term_ordinal"] == 0));
-    assert_eq!(plus[0]["location"]["path"], json!([0]));
-    assert_eq!(plus[1]["location"]["path"], json!([1]));
+    assert_eq!(bl03[plus[0]]["occurrence"], json!({"role": "expression", "ordinal": 0}));
+    assert_eq!(bl03[plus[1]]["occurrence"], json!({"role": "expression", "ordinal": 1}));
+    assert!(plus.iter().all(|row| bl03[*row]["term_ordinal"] == 0));
+    assert_eq!(encoded(&bl03)[plus[0]], (0, vec![0]));
+    assert_eq!(encoded(&bl03)[plus[1]], (1, vec![1]));
+    assert_eq!(paths03[plus[0]], [0]);
+    assert_eq!(paths03[plus[1]], [1]);
+    assert_eq!(encoded(&bl03)[2], (1, vec![]), "the root `and` row");
 
     for case in cases["reader_refusals"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
@@ -25631,16 +25710,28 @@ fn tc_2090_function_body_location_rows() {
             "BL-R5",
             "BL-R6",
             "BL-R7-no-occurrence-1",
-            "BL-R8-bl03-without-occurrence-1-row"
+            "BL-R8-bl03-without-occurrence-1-row",
+            "BL-R9-up-beyond-previous-path",
+            "BL-R10-up-not-least"
         ]
     );
+    assert_eq!(cases["reader_refusals"].as_array().unwrap().len(), 10);
+    for (id, locus) in [
+        ("BL-R9-up-beyond-previous-path", "/checked_term_data/body_locations/8/location/up"),
+        ("BL-R10-up-not-least", "/checked_term_data/body_locations/8/location/up"),
+    ] {
+        let case = cases["reader_refusals"].as_array().unwrap().iter().find(|case| case["id"] == id).unwrap();
+        assert_eq!(case["locus"], locus, "{id}");
+    }
 
     // A carrier with the four other arrays and no `body_locations` is not
     // closed, and BL-01 without its carrier has no row for any term.
+    assert_eq!(cases["schema_invalid"].as_array().unwrap().len(), 6);
     for case in cases["schema_invalid"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
         let validator = match case["target"].as_str().unwrap() {
             "CheckedTermData" => &carrier,
+            "BodyLocation" => &schema_for_def(&schema, "BodyLocation"),
             "BodyLocationOrigin" => &schema_for_def(&schema, "BodyLocationOrigin"),
             "ParameterBody" => &schema_for_def(&schema, "ParameterBody"),
             "Identifier" => &schema_for_def(&schema, "Identifier"),
@@ -25729,14 +25820,133 @@ fn function_result_refusal(nodes: &[Value], function: &Value) -> Option<&'static
     }
 }
 
-/// FR-322-AC-495 to FR-322-AC-502: the twenty integer-containment vectors
-/// IC-01 to IC-20, serialized from the packages the contract-ir reader tests
-/// build, are valid V2 wire packages; each states its outcome at the locus
-/// FR-322 gives it; an admitted case carries `filament.op.numeric.convert`
-/// only where the rule names one (IC-05); the function-result cases are run
-/// through the containment rule as FR-322 states it; and IC-15, the binder
-/// refusal the contract-ir reader cannot yet make, is admitted and marked
-/// not enforced, with no refusal asserted.
+/// The `name` and `level` literals of a `value`/`parameter` node.
+fn parameter_name_and_level(node: &Value) -> Option<(String, String)> {
+    if node["node_tag"] != "value" || node["semantic_form"] != "parameter" {
+        return None;
+    }
+    let member = |name: &str| -> Option<String> {
+        node["body"]["members"]
+            .as_array()?
+            .iter()
+            .find(|member| member["name"] == name)?["value"]["value"]
+            .as_str()
+            .map(str::to_owned)
+    };
+    Some((member("name")?, member("level")?))
+}
+
+/// FR-322 "The binder link", the reader rules at each `filament.op.control.let`
+/// application, in the order the rule states them, as the JSON pointer of the
+/// first refusal (`invalid_package`/`invalid-value`): a `binder` absent on the
+/// binding term (at `arguments/0`), one that names no `value`/`parameter` node
+/// of the graph, is not among the application's `dependencies` or has a
+/// `name` other than the binding's (at `arguments/0/binder`), a reference in
+/// the `let` body to a `value`/`parameter` node of the binder's `name` and
+/// `level` that is not the `binder` node (at that reference), and a `binder`
+/// on any other binding term (at that `binder`).
+fn let_binder_link_refusal(nodes: &[Value]) -> Option<String> {
+    fn stray_binders(value: &Value, pointer: &str, allowed: &str, found: &mut Vec<String>) {
+        match value {
+            Value::Object(members) => {
+                if value["term"] == "binding" && members.contains_key("binder") && pointer != allowed {
+                    found.push(format!("{pointer}/binder"));
+                }
+                for (key, member) in members {
+                    stray_binders(member, &format!("{pointer}/{key}"), allowed, found);
+                }
+            }
+            Value::Array(items) => {
+                for (at, item) in items.iter().enumerate() {
+                    stray_binders(item, &format!("{pointer}/{at}"), allowed, found);
+                }
+            }
+            _ => {}
+        }
+    }
+    let by_id = |id: &Value| nodes.iter().position(|node| node["node_id"] == *id);
+    for (at, node) in nodes.iter().enumerate() {
+        let base = format!("/semantic_graph/nodes/{at}");
+        let is_let = node["body"]["term"] == "application"
+            && node["body"]["operation"]["identity"] == "filament.op.control.let";
+        let mut allowed = String::new();
+        if is_let {
+            let binding = &node["body"]["arguments"][0];
+            let here = format!("{base}/body/arguments/0");
+            let Some(binder_id) = binding.get("binder") else {
+                return Some(here);
+            };
+            allowed = here.clone();
+            let binder = by_id(binder_id).map(|index| &nodes[index]);
+            let named = binder.and_then(parameter_name_and_level);
+            let linked = node["dependencies"].as_array().is_some_and(|deps| deps.contains(binder_id));
+            let Some((name, level)) = named.filter(|(name, _)| linked && binding["name"] == *name) else {
+                return Some(format!("{here}/binder"));
+            };
+            let mut pending: Vec<(usize, String)> = by_id(&node["body"]["arguments"][1]["target"])
+                .map(|index| (index, format!("/semantic_graph/nodes/{index}/body")))
+                .into_iter()
+                .collect();
+            while let Some((index, _)) = pending.pop() {
+                let body = &nodes[index]["body"];
+                for (position, argument) in body["arguments"].as_array().into_iter().flatten().enumerate() {
+                    let Some(target) = by_id(&argument["target"]) else { continue };
+                    match parameter_name_and_level(&nodes[target]) {
+                        Some((other, other_level))
+                            if other == name && other_level == level && nodes[target]["node_id"] != *binder_id =>
+                        {
+                            return Some(format!("/semantic_graph/nodes/{index}/body/arguments/{position}"));
+                        }
+                        _ if nodes[target]["node_tag"] == "expression" => pending.push((target, String::new())),
+                        _ => {}
+                    }
+                }
+            }
+        }
+        let mut found = Vec::new();
+        stray_binders(&node["body"], &format!("{base}/body"), &allowed, &mut found);
+        if let Some(first) = found.into_iter().next() {
+            return Some(first);
+        }
+    }
+    None
+}
+
+/// FR-322 "The `let` binder check" over the integer types: a `let` binder's
+/// `semantic_type` is the bound value's type node or an integer type node that
+/// integer-contains it, read through the `binder` link whether or not the body
+/// reads the binder. `Some(locus)` is the `let` application, refused
+/// `ill_typed`/`operator-ineligible`.
+fn let_binder_containment_refusal(nodes: &[Value]) -> Option<String> {
+    for (at, node) in nodes.iter().enumerate() {
+        if node["body"]["operation"]["identity"] != "filament.op.control.let" {
+            continue;
+        }
+        let find = |id: &Value| nodes.iter().find(|candidate| candidate["node_id"] == *id);
+        let binder = find(&node["body"]["arguments"][0]["binder"])?;
+        let value = find(&node["body"]["arguments"][0]["value"]["target"])?;
+        let (binder_type, value_type) = (&binder["semantic_type"], &value["semantic_type"]);
+        let admitted = binder_type == value_type
+            || match (integer_type_bounds(nodes, binder_type), integer_type_bounds(nodes, value_type)) {
+                (Some(None), Some(_)) => true,
+                (Some(Some((low, high))), Some(Some((value_low, value_high)))) => low <= value_low && value_high <= high,
+                _ => false,
+            };
+        if !admitted {
+            return Some(format!("/semantic_graph/nodes/{at}"));
+        }
+    }
+    None
+}
+
+/// FR-322-AC-495 to FR-322-AC-502 and AC-512: the twenty-one integer-containment
+/// vectors IC-01 to IC-21 are valid V2 wire packages; each states its outcome
+/// at the locus FR-322 gives it; an admitted case carries
+/// `filament.op.numeric.convert` only where the rule names one (IC-05); the
+/// function-result cases are run through the containment rule as FR-322 states
+/// it; IC-15 and IC-21 (a binder the body never reads) are refused
+/// `ill_typed`/`operator-ineligible` at the `let` application through the
+/// binder link; and the AC-512 mutations of IC-14 refuse at their places.
 #[trace(
     "TC-2099",
     "FR-322-AC-495",
@@ -25746,18 +25956,19 @@ fn function_result_refusal(nodes: &[Value], function: &Value) -> Option<&'static
     "FR-322-AC-499",
     "FR-322-AC-500",
     "FR-322-AC-501",
-    "FR-322-AC-502"
+    "FR-322-AC-502",
+    "FR-322-AC-512"
 )]
 #[test]
 fn tc_2099_integer_containment() {
     let schema = jsonschema::validator_for(&parsed_fixture(SCHEMA)).expect("V2 schema is valid");
     let vectors = parsed_fixture(INTEGER_CONTAINMENT_VECTORS);
     let cases = vectors["cases"].as_array().expect("cases");
-    let ids: Vec<String> = (1..=20).map(|n| format!("IC-{n:02}")).collect();
+    let ids: Vec<String> = (1..=21).map(|n| format!("IC-{n:02}")).collect();
     assert_eq!(
         cases.iter().map(|case| case["id"].as_str().expect("id").to_owned()).collect::<Vec<_>>(),
         ids,
-        "IC-01 to IC-20, once each, in order"
+        "IC-01 to IC-21, once each, in order"
     );
     let documents = vectors["domain_documents"].as_object().expect("domain documents");
     assert_eq!(documents.keys().collect::<Vec<_>>(), ["acme/ledger"]);
@@ -25774,8 +25985,10 @@ fn tc_2099_integer_containment() {
         ("IC-08", "/semantic_graph/nodes/10"),
         ("IC-12", "/semantic_graph/nodes/13"),
         ("IC-13", "/semantic_graph/nodes/9"),
+        ("IC-15", "/semantic_graph/nodes/12"),
         ("IC-18", "/semantic_graph/nodes/13"),
         ("IC-19", "/semantic_graph/nodes/10/body/arguments/1"),
+        ("IC-21", "/semantic_graph/nodes/11"),
     ]
     .into_iter()
     .map(|(id, locus)| (id, locus.to_owned()))
@@ -25798,13 +26011,8 @@ fn tc_2099_integer_containment() {
         match case["outcome"].as_str().expect("outcome") {
             "admitted" => {
                 assert!(case.get("locus").is_none(), "{id}: an admission has no locus");
-                if id == "IC-15" {
-                    assert_eq!(case["enforced"], false, "{id}: admitted and not enforced");
-                    assert!(case["pending"].as_str().is_some_and(|text| text.contains("FR-038-AC-589")));
-                } else {
-                    assert!(case.get("enforced").is_none(), "{id}: only IC-15 is not enforced");
-                    admitted.push(id);
-                }
+                assert!(case.get("enforced").is_none(), "{id}: every case is enforced");
+                admitted.push(id);
             }
             outcome @ ("refused:ill_typed/type-mismatch" | "refused:ill_typed/operator-ineligible") => {
                 let locus = case["locus"].as_str().expect("locus");
@@ -25820,6 +26028,13 @@ fn tc_2099_integer_containment() {
                 }
             }
             other => panic!("{id}: unknown outcome {other}"),
+        }
+        // The binder link, then the binder check, over every `let` package.
+        if matches!(id, "IC-14" | "IC-15" | "IC-21") {
+            assert_eq!(let_binder_link_refusal(nodes), None, "{id}: the binder link holds");
+            let verdict = let_binder_containment_refusal(nodes);
+            let expected = (case["outcome"] != "admitted").then(|| case["locus"].as_str().unwrap().to_owned());
+            assert_eq!(verdict, expected, "{id}: let binder containment");
         }
         // The function-result cases through the containment rule itself.
         if matches!(id, "IC-01" | "IC-02" | "IC-03" | "IC-04" | "IC-08") {
@@ -25844,7 +26059,78 @@ fn tc_2099_integer_containment() {
         ["IC-01", "IC-02", "IC-05", "IC-09", "IC-10", "IC-11", "IC-14", "IC-16", "IC-17", "IC-20"]
     );
     assert_eq!(mismatch, ["IC-03", "IC-04", "IC-08"]);
-    assert_eq!(ineligible, ["IC-06", "IC-07", "IC-12", "IC-13", "IC-18", "IC-19"]);
+    assert_eq!(ineligible, ["IC-06", "IC-07", "IC-12", "IC-13", "IC-15", "IC-18", "IC-19", "IC-21"]);
+
+    // FR-322-AC-512: IC-14's `let` carries `binder`, among its `dependencies`,
+    // and each mutation refuses `invalid_package`/`invalid-value` at its place.
+    let ic14 = cases.iter().find(|case| case["id"] == "IC-14").expect("IC-14");
+    let base = ic14["package"]["semantic_graph"]["nodes"].as_array().expect("nodes").clone();
+    assert_eq!(let_binder_link_refusal(&base), None, "IC-14 is admitted");
+    let (let_at, call_at) = (11, 10);
+    let binder_id = base[let_at]["body"]["arguments"][0]["binder"].clone();
+    let binder_at = base.iter().position(|node| node["node_id"] == binder_id).expect("binder node");
+    assert_eq!(parameter_name_and_level(&base[binder_at]).expect("a parameter").0, "y");
+    assert!(base[let_at]["dependencies"].as_array().unwrap().contains(&binder_id));
+    // A second `value`/`parameter` node derived from `y`, named and typed as given.
+    let sibling = |name: &str, path: &str, semantic_type: &Value| -> Value {
+        let mut node = base[binder_at].clone();
+        node["body"]["members"][0]["value"]["value"] = json!(name);
+        node["node_id"]["path"] = json!([path]);
+        node["semantic_type"] = semantic_type.clone();
+        node
+    };
+    let link = |mutate: &dyn Fn(&mut Vec<Value>)| -> Option<String> {
+        let mut nodes = base.clone();
+        mutate(&mut nodes);
+        let_binder_link_refusal(&nodes)
+    };
+    let base_path = format!("/semantic_graph/nodes/{let_at}/body/arguments/0");
+    // `binder` removed.
+    assert_eq!(
+        link(&|nodes| {
+            nodes[let_at]["body"]["arguments"][0].as_object_mut().unwrap().remove("binder");
+        }),
+        Some(base_path.clone())
+    );
+    // `binder` naming a `value`/`parameter` node named `z`, even in `dependencies`.
+    let z = sibling("z", "value/parameter/z/scalar_type/integer", &base[binder_at]["semantic_type"]);
+    assert_eq!(
+        link(&|nodes| {
+            nodes[let_at]["body"]["arguments"][0]["binder"] = z["node_id"].clone();
+            nodes[let_at]["dependencies"].as_array_mut().unwrap().push(z["node_id"].clone());
+            nodes.push(z.clone());
+        }),
+        Some(format!("{base_path}/binder"))
+    );
+    // `binder` naming a node outside the application's `dependencies`.
+    let outside = sibling("y", "value/parameter/y/outside", &base[binder_at]["semantic_type"]);
+    assert_eq!(
+        link(&|nodes| {
+            nodes[let_at]["body"]["arguments"][0]["binder"] = outside["node_id"].clone();
+            nodes.push(outside.clone());
+        }),
+        Some(format!("{base_path}/binder"))
+    );
+    // `binder` added to a binding of a node body aggregate.
+    let aggregate = base
+        .iter()
+        .position(|node| node["body"]["term"] == "aggregate" && node["body"]["members"][0]["term"] == "binding")
+        .expect("a node body aggregate with a binding");
+    assert_eq!(
+        link(&|nodes| {
+            nodes[aggregate]["body"]["members"][0]["binder"] = binder_id.clone();
+        }),
+        Some(format!("/semantic_graph/nodes/{aggregate}/body/members/0/binder"))
+    );
+    // The call argument retargeted to a second `y` at the binder's level and another type.
+    let other = sibling("y", "value/parameter/y/other", &base[4]["semantic_type"]);
+    assert_eq!(
+        link(&|nodes| {
+            nodes[call_at]["body"]["arguments"][1]["target"] = other["node_id"].clone();
+            nodes.push(other.clone());
+        }),
+        Some(format!("/semantic_graph/nodes/{call_at}/body/arguments/1"))
+    );
 }
 
 const TYPE_ARGUMENT_ALIAS_VECTORS: &str =
