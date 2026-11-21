@@ -352,7 +352,7 @@ for these items with `invalid_result`/`unknown-cause`.
 | `proved` (proof basis) | `exact-value{value, reductions}`, `value-bounds{lower, upper, method, reductions}`, with `exploration: "partial"` and an `upper` of `"infinity"` for a `lower` proof on a partial product, and with `method` `backward-induction{precision_bits}` or `interval-iteration{precision_bits, sweeps}`, `zone-certified`, `exhaustive`, `closed-form{analysis}` with `analysis` `fixed-priority`, `edf` or `amc-rtb`, `bounded-solver{method, horizon, jumps, exhaustive}` and `inductive-solver{method}`, each `method` from FR-193's closed method table ("Solver methods") |
 | `refuted` (cause) | `undefined-evaluation{where, cause}` |
 | `measured` (FR-409 cause) | `undefined-evaluation{where, cause}` for `rejected`; `indifference-region` and `undecided-successor` for `undecided` |
-| `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `no-evaluated-case` (FR-190): a completed model-based test run whose every generated case was discarded, so the suite evaluated no case; it carries no basis and no counterexample, the FR-190 record's `cases` gives the discard reasons, and it is not `kani_vacuous_proof`, which says no assignment of the declared types satisfies the premises, a fact about the model rather than about the suite. It is written only in an FR-190 record (and so in a plan step's disposition), and no provider entry carries it; `refuted-ignoring-constraints` (FSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample; `open-history` (FR-059), a `global-conformance` result over an open or incomplete history; `incomplete-closure-scope` (FR-059), a `global-conformance` result over a recording whose protocol has a fan-out node and whose activated replicated-role population the request does not state |
+| `inconclusive` (cause) | `certificate-rejected{rule, at}`, `cross-check-disagreement{tool, primary, cross_check}` (FR-349), `replay-parity`, `undecided-successor`, `no-initial-state`, `no-instance`, `sufficient-test-failed`, `solver-inconclusive{trace}`, whose `trace` is the optional FR-193 `HybridTrace`, `insufficient-horizon{horizon, jumps, exhaustive}` (FR-193 "Proof coverage"), `lasso-not-concretized`, `no-admitted-behaviour`, `well-definedness-unchecked`, `no-evaluated-case` (FR-190): a completed model-based test run whose every generated case was discarded, so the suite evaluated no case; it carries no basis and no counterexample, the FR-190 record's `cases` gives the discard reasons, and it is not `kani_vacuous_proof`, which says no assignment of the declared types satisfies the premises, a fact about the model rather than about the suite. It is written only in an FR-190 record (and so in a plan step's disposition), and no provider entry carries it; `refuted-ignoring-constraints` (FSL FR-127): a liveness lasso found only after the request explicitly omitted memory fairness constraints; it carries no proof basis and is not a `refuted` result or a standard counterexample; `open-history` (FR-059), a `global-conformance` result over an open or incomplete history; `incomplete-closure-scope` (FR-059), a `global-conformance` result over a recording whose protocol has a fan-out node and whose activated replicated-role population the request does not state; `provider-answer-unconfirmed{premise}`, a `composition` result a provider answered `proved` that the request's own `component-guarantee` settlements do not confirm; written only by the producer's proof guard ("Result entries"), never by a provider |
 | `incomplete` (cause) | `limit-reached{limit, value, setting}`, naming the limit, its value and the request setting that raises it, the one limit-stop cause of every engine; `timed-out`, the backend's own wall-clock limit, as a hybrid solver's `max_solver_time` or a provider's overrun of `deadline_ms` ("Hybrid solver budgets" below); `precision-budget{lower, upper}`; `no-estimate{reason}`, `reason` `no-counted-sample` or `no-positive-weight-cycle`, a statistical run that produced no estimate (FR-410), which names no limit because nothing was exhausted; `cancelled{source}` for a cancelled run, `source` the cancellation cause, `requested` when the caller cancels and `deadline` when the caller's deadline ends the run |
 | `unsupported` (cause) | `missing-confidence`, `every-scheduler`, `exact-only-form`, `confidence-beyond-precision`, `not-markov{state, transition, post_state_count, post_states}`, `not-stochastic{state, identity}`, `time-locked-sample{state}`, `total-above-draw-range{total}`, `zero-weight-component{component}`, `delay-distribution{operation}`, `strict-clock-constraint{locus}`, `zero-delay-cycle{states}`, `timed-form-shape{locus}`, `punctual-interval{locus}`, `stopwatch-required` |
 
@@ -608,6 +608,26 @@ in milliseconds (FR-462).
   `environment`, and `key` the slot key of [FR-492](FR-492-planner-settlement-request.md);
   it is part of request identity, and an item of another kind that carries
   it refuses before consumption.
+- `assumptions` is carried by every `composition` item that carries `premises`
+  and by no other item: the ordered array holding, for each
+  `component-guarantee` entry of `premises` in `premises` order, one array of
+  the `premises` indices of the `component-guarantee` entries it is checked
+  under (FR-176's assumptions: the peer guarantees named by its `rely` and
+  `depends` members), strictly ascending, empty when it assumes none. The outer
+  position is the binding: entry `k` belongs to the `k`th `component-guarantee`
+  entry of `premises`. The schema requires an array of arrays of `Count` and
+  refuses an item that carries one of `premises` and `assumptions` without the
+  other. A producer or reader holding the checked package derives the array from
+  the declaration ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)
+  "Assumption binding") and refuses the request `invalid_runtime_input`/
+  `invalid-value` at `/request/items/<i>/assumptions` unless the member is
+  exactly the derived array: a wrong length, an out-of-range index, an index of
+  another role or of the guarantee's own entry, an entry that is not strictly
+  ascending, and a well-formed array that adds, drops or moves a peer index are
+  each this refusal. The member is part of request identity, so two
+  `composition` items that differ only in a valid `assumptions` (a peer added to
+  or dropped from one guarantee's entry, or bound to another guarantee) are
+  different items on the wire.
 - `assessed_root` is carried by a `local-projection` or `realizability` item
   and by no other kind. It is the claim's assessed-subject root
   ([FR-351](../protocol/FR-351-separating-witness-record.md) "Assessed
@@ -805,7 +825,7 @@ clause's node and `result` the result of its unproved item), FR-380
 (`transfer-not-preserving{reason}` with `reason` `fragment` and its
 `operator`, `fairness` and its `constraint`, or `stutter-closure`;
 `premise-unproved{premise, result}`, `premise` the premise item's
-`request_index`), FR-439 (`memory-bound-reached{limit, value, states}`, `limit` the request
+`request_index`), `provider-answer-unconfirmed{premise}` (below), FR-439 (`memory-bound-reached{limit, value, states}`, `limit` the request
 member that raises the budget, `max_store_buffer` or `max_messages`), FR-428
 (`instance-bound-reached{limit, value, states}`, `limit` always
 `max_live_instances`, the member that raises it), FR-174 and FR-175
@@ -890,6 +910,42 @@ certificate checker and makes its counterexample canonical assignments, so:
   the slot's result value, `absent` for an unfilled slot, or `assumption`
   for a premise supplied only as an assumption). No provider's
   entry, plugin or in-process, carries one.
+- A **core-guard cause** is an inconclusive cause that only the producing
+  core's own proof guard writes, over a provider's answer it will not accept
+  on the provider's word: `provider-answer-unconfirmed{premise}`. The producer
+  SHALL apply the guard to every `proved` answer of a `composition` item that
+  carries `premises`, whether or not the request holds that item's component
+  items. Before it reports the answer it reads, in the same request, the
+  settlement of the request item that matches each `component-guarantee` entry.
+  The `k`th such entry's `key` is a slot key
+  ([FR-492](FR-492-planner-settlement-request.md) "Request"): item members plus
+  `assumptions`. A held item matches the entry only when its own request
+  identity members equal the key's item members and the key's `assumptions`
+  equal the `k`th array of the composition item's declaration-derived
+  `assumptions` (the same computation as FR-492 admission step 5, over the
+  array the reader has already required to be the derived one). The assumption
+  context is never taken from the held item, which carries none, and a held item
+  is never matched by its clause node alone: an item over the same clause node
+  with other identity members, or an entry whose `assumptions` differ from the
+  derived `k`th array, does not match, so one proven context is never relabelled
+  as another. When every entry has a matching held item settled
+  `proved`, the answer stands. Otherwise the guard replaces it with
+  `inconclusive`, cause `provider-answer-unconfirmed`, `premise` the `premises`
+  index of the first `component-guarantee` entry, in `premises` order, whose
+  matching item the request does not hold or does not settle `proved`; so a `proved`
+  composition answer with a component item missing from the request is never
+  reported `proved`. The cause carries no member other than `premise`, belongs
+  to a `composition` item's entry only and states only that the request's own
+  settlements do not confirm the provider's `proved`: it is not
+  `replay-refused`, which stays the core's replay or Kani meaning (FR-399,
+  FR-485), and it is not `premise-unproved`, which the planner writes about a
+  premise whose own settlement is not `proved`. No provider's entry, plugin or
+  in-process, carries it; a reader refuses it there
+  `invalid_result`/`unknown-cause`, and on the entry of an item that is not a
+  `composition` item. The schema admits the spelling on a result entry, because
+  the schema cannot tell the writer; the refusal is the reader's. The guard
+  confirms and adds no proof: it neither certifies, checks a certificate nor
+  changes an answer other than `proved`.
 - A *method-record-only spelling* is a closed spelling that only the FR-190
   model-based test record carries, because that method is not negotiated and
   no provider runs it: the inconclusive cause `no-evaluated-case` and the
@@ -920,7 +976,7 @@ This table lists the same closed causes as FR-272's `invalid_result` row:
 | `wrong-value-kind` | A member's JSON kind is not the kind its domain takes, such as a `certification` that is not a string, or an entry that is not an object | The member |
 | `invalid-value` | A member of the right JSON kind lies outside its domain here, such as a `certification` other than `certified`, `uncertified` and `trusted`, a count outside 0 to 2^53 − 1, or a plugin's counterexample `type` other than `assignments` and, on a hybrid item, `hybrid-counterexample` | The member |
 | `certification-mismatch` | A `proved` entry's `certification` is one of the three values but not the one the Certification table fixes for that proof | `/certification`; `expected` the fixed value, when there is one, and `actual` the received one |
-| `unknown-cause` | A result cause or proof basis spelling outside the closed set ("Wire spellings of result causes and proof bases"), or outside the subset its backend may send: a core-only basis or core-only cause in a plugin's entry, or a planner-only cause or method-record-only spelling in any provider's entry | The `type` member, or `defect` for a method-record-only defect; the received spelling |
+| `unknown-cause` | A result cause or proof basis spelling outside the closed set ("Wire spellings of result causes and proof bases"), or outside the subset its backend may send: a core-only basis or core-only cause in a plugin's entry, or a planner-only cause, core-guard cause or method-record-only spelling in any provider's entry | The `type` member, or `defect` for a method-record-only defect; the received spelling |
 | `measured-with-truth` | A `measured` entry carries a truth or a basis (FR-409) | The truth or `basis` member |
 
 The reader reads an entry in this order and reports the first defect:
@@ -1010,7 +1066,12 @@ probabilistic engine's is `exact_prob`.
   `delay` and which carries `final_delay` for kind `time-lock` (FR-417) and
   `refinement_failure` for a refinement item (FR-379: the seven model kinds, and on a protocol abstract subject also `RefusalNotPermitted{position, label}` and `TerminalSuccessMismatch{position, direction}`, with `label` an `ObservationLabel`; none of these is a step verdict); a task-automaton deadline-miss witness is this same model-arm `TemporalCounterexample`: its `prefix` and time-divergent `loop` use source `TransitionIdentity` steps and/or typed `TaskTransitionIdentity` steps, with each task step's exact delay, and FR-364 replays the concrete miss and checked continuation before the result can be `refuted`; an FR-413
   `ProbabilisticCounterexample`; an FR-393 `GraphEvidence`; an FR-400
-  `HyperCounterexample`; an FR-419 `schedulability-miss` for a refuted `schedulability` item (FR-419 "Miss counterexample"); or, on an `operation-contract` item, a
+  `HyperCounterexample`; an FR-419 `schedulability-miss` for a refuted `schedulability` item (FR-419 "Miss counterexample"); or, on a `composition` item, an `interface-mismatch`
+  ([FR-492](FR-492-planner-settlement-request.md) "Interface mismatch"):
+  `{type, component, interface, premise, reason}`, `component` the peer
+  component's name, `interface` the node of the peer guarantee's temporal clause,
+  `premise` the `premises` index of the `rely` or `liveness-dependency` entry
+  that needs it and `reason` `absent` or `weaker`; or, on an `operation-contract` item, a
   `contract-counterexample` ([FR-485](../../functional/ir-proof/FR-485-check-operation-contract-items.md)
   "Counterexample"): `{type, obligation, violated, bound, executions}`. `backend` and `request_index` are the originating
   run identity.
@@ -1042,7 +1103,7 @@ probabilistic engine's is `exact_prob`.
 
 ## Identity and validation
 
-Request identity includes the capability vocabulary, manifest, package, the request's `memory` selections ([FR-434](../../functional/memory/FR-434-select-memory-models-for-parallel.md)), each item's claim, extent with its proof bounds, options and limits (a `value-validity` or `operation-contract` item's `check.limits`, FR-483), each item's kind, extent classification, `requirements`, named backend and candidates, each `operation-contract` item's `correspondence` (FR-490), each `composition` item's `premises` (FR-491), each temporal item's subject, `abstract_subject`, item kind, `stutter_closure`, fairness set, `max_depth`, `limits` and `smt_encoding` (FR-368), the `witness_samples` and `seed` of a state-graph item, and each item's symmetry declarations, partial-order selection and state constraint; the state constraint is also recorded in the item's terminal record. A different temporal horizon or deterministic budget can produce a different result, so a result belongs to exactly one request identity; a wall-clock setting, a hybrid item's `hybrid.limits.max_solver_time` or a temporal item's `temporal.limits.max_solver_time` (FR-368 "SMT solver budgets"), is outside it. Result identity includes artifacts and results.
+Request identity includes the capability vocabulary, manifest, package, the request's `memory` selections ([FR-434](../../functional/memory/FR-434-select-memory-models-for-parallel.md)), each item's claim, extent with its proof bounds, options and limits (a `value-validity` or `operation-contract` item's `check.limits`, FR-483), each item's kind, extent classification, `requirements`, named backend and candidates, each `operation-contract` item's `correspondence` (FR-490), each `composition` item's `premises` and `assumptions` (FR-491), each temporal item's subject, `abstract_subject`, item kind, `stutter_closure`, fairness set, `max_depth`, `limits` and `smt_encoding` (FR-368), the `witness_samples` and `seed` of a state-graph item, and each item's symmetry declarations, partial-order selection and state constraint; the state constraint is also recorded in the item's terminal record. A different temporal horizon or deterministic budget can produce a different result, so a result belongs to exactly one request identity; a wall-clock setting, a hybrid item's `hybrid.limits.max_solver_time` or a temporal item's `temporal.limits.max_solver_time` (FR-368 "SMT solver budgets"), is outside it. Result identity includes artifacts and results.
 Unknown contract versions, missing required properties, duplicate keys,
 out-of-domain values and non-canonical encodings refuse before consumption; in a result entry or a `counterexamples` entry, a missing or unknown member and a value of the wrong kind or outside its domain refuse with the `invalid_result` causes of "Result entries". A `capability_vocabulary` other than `filament.capability-kind/v1`, or none, refuses the envelope as `invalid_capability`/`unknown-vocabulary`.
 
@@ -1244,6 +1305,9 @@ and never yields a decisive refutation from unchecked evidence.
 | FR-331-AC-58 | The schema admits an `incomplete` result entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}` with no `task_search` member, and refuses the same entry with `task_search` added; an entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "unresolved-dynamics"}` with no `task_search` is still refused, and one whose reason is `closed` is refused. | Test (TC-431) |
 | FR-331-AC-59 | A `proved` `value-bounds` result whose `certificate` is a `lower` certificate with `upper` `{"numerator": "1", "denominator": "1"}` and no `counterpart` fails the result schema; the same result with basis `exploration: "partial"` passes, and with a `counterpart` added beside `exploration: "partial"` fails. A basis with `upper` `"infinity"` passes only with `exploration: "partial"`, and a fully explored `value-bounds` result with both `certificate` and `counterpart` passes. | Test (TC-431) |
 | FR-331-AC-60 | The schema admits `exhaustive-vacuous-conditional-outcome`, a value-free `proved` `exhaustive` probabilistic-satisfaction result carrying an FR-412 certificate with `kind` `conditional`, `conditional` exactly `{"mode": "vacuous"}` and empty `values`; it also admits that result without `certificate`. Adding `ranking`, `policy` or `components`, even an empty array, or changing the result kind to `refinement` with that certificate is refused; the refinement result without a certificate is admitted. The adverse vector `exhaustive-with-nonvacuous-certificate`, whose replacement is an otherwise well-shaped `exact` certificate, is refused. A certificate with `ratio` or `optimum` mode, missing `conditional`, missing `mode`, an unknown mode or another conditional member is refused on `exhaustive`, as is `evidence` with or without the permitted certificate. The same certificate remains forbidden on `bounded-complete`, `inductive`, `reduced`, `witnessed` and `bounded-proof`. An `exact-value` basis without its `Rational` value, with a scalar zero or with a zero denominator is refused; an ordinary exact certificate with a valid `Rational` value is admitted. | Test (TC-431) |
+| FR-331-AC-61 | A `composition` item whose `assumptions` is exactly the array the declaration derives is admitted; two items equal except that one guarantee is checked under one more peer, or under another peer, have different request identities. A well-formed `assumptions` that adds, drops or moves a peer index, and one with the wrong length, an out-of-range, wrong-role or self index, or an entry not strictly ascending, each refuse `invalid_runtime_input`/`invalid-value` at `/request/items/<i>/assumptions`. | Test (TC-986) |
+| FR-331-AC-62 | A provider's `composition` result entry carrying `provider-answer-unconfirmed`, plugin or in-process, is refused `invalid_result`/`unknown-cause` at `/cause/type`; the producer's guard settles a provider's `proved` `composition` answer `inconclusive`, `provider-answer-unconfirmed` naming the first `component-guarantee` premise the same request does not hold or does not settle `proved` (including a request that holds none of them, and one whose held item over the same clause node has other identity members or an entry whose `assumptions` differ from the derived array), and leaves it `proved` when every one is held and `proved`. | Test (TC-986) |
+| FR-331-AC-63 | The schema admits a `composition` request item carrying `premises` and `assumptions`, a `refuted` `composition` result entry with an `interface-mismatch` counterexample, and an `inconclusive` entry with cause `provider-answer-unconfirmed{premise}`; it refuses `premises` without `assumptions`, `assumptions` without `premises`, `premises` or `assumptions` on another kind (by the existing `premises` rule alone), a non-integer inner index, an `interface-mismatch` missing a member, with another `reason` or with an extra member, and the cause without `premise` or with an extra member. The schema decides neither cross-item facts (derivation, ordering, which writer) nor provider-origin refusal; AC-61 and AC-62 own those. | Test (TC-431) |
 
 | FR-331-AC-61 | A refuted local-projection or realizability result carries the complete `ProtocolAnalysisCounterexample` in its indexed canonical entry, with both realizability kinds and both projection decisions preserved, and never the FR-352 result record in place of the body. Writing and strict reading preserve every typed member including ordered plays, send records, actions, premises and separating witness. | Test |
 | FR-331-AC-62 | The schema admits the protocol-analysis positive vectors and refuses their structural adverse vectors: unknown body, action or decision kinds; unknown, missing or wrongly null members; malformed node ids and index spellings; numeric key bounds or channel quantities, leading-zero decimal strings or values above u64; wrong key kind; empty branch defeats; and malformed projection pair lengths or duplicate case/instance identifiers. | Test |

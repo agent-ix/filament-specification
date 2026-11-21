@@ -9680,7 +9680,196 @@
     {"name": "protocol-analysis-histories-outcome", "stage": "outcome", "owners": {"/counterexamples/0/counterexample": "FR-331"}, "document": {"contract_version": "filament.backend-provider/v1", "capability_vocabulary": "filament.capability-kind/v1", "dispositions": [{"request_index": 0, "disposition": "supported"}], "artifacts": [], "results": [{"request_index": 0, "backend": "fsl-native", "kind": "realizability", "result": "refuted", "counterexample": 0}], "counterexamples": [{"request_index": 0, "backend": "fsl-native", "counterexample": {"type": "protocol-analysis-counterexample", "key": {"kind": "realizability", "definition_key": "pkg/Def", "strategy_profile": "bounded-static", "channels": [{"channel": {"package": "pkg", "path": ["C"], "ordinal": 0}, "sender": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "receiver": {"package": "pkg", "path": ["seller"], "ordinal": 0}, "message_type": {"package": "pkg", "path": ["MessageA"], "ordinal": 0}, "ordering": {"kind": "unordered"}, "delivery": {"kind": "between", "lower": "0", "upper": "18446744073709551615"}, "capacity": {"kind": "literal", "value": "18446744073709551615"}, "overflow": {"kind": "reject"}}], "choices": [], "role_knowledge": null, "environment": [], "bounds": {"max_depth": "18446744073709551615", "max_history": "3"}, "analyzer": {"identity": "fsl-analyze::protocol_analysis", "version": "0.1.0"}}, "separating_witness": {"deciding_element": "{\"ordinal\":0,\"package\":\"pkg\",\"path\":[\"obligation\"]}", "value_path": {"kind": "runtime_value", "root": {"observation": {"authority": "native", "identity": "run-1"}, "subject": {"tag": "object", "universe": "u", "type": "Buyer", "object_identity": "buyer-1"}}, "steps": []}, "trace_position": "0"}, "kind": "indistinguishable-histories", "role": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "history_a": {"initial": "0", "steps": [{"successor": "0", "transition": {"type": "protocol-transition", "step": "send", "thread": {"type": "thread-path", "instance": "0", "steps": []}, "node": "SendA", "record": {"type": "boolean", "value": true}}, "send_record": {"type": "send-record", "channel": "pkg/C", "payload": {"type": "boolean", "value": true}, "outcome": "accepted", "displaced": null}}]}, "history_b": {"initial": "1", "steps": [{"successor": "0", "transition": {"type": "protocol-transition", "step": "send", "thread": {"type": "thread-path", "instance": "0", "steps": []}, "node": "SendA", "record": {"type": "boolean", "value": true}}, "send_record": {"type": "send-record", "channel": "pkg/C", "payload": {"type": "boolean", "value": true}, "outcome": "accepted", "displaced": null}}]}, "action_a": {"kind": "send", "node": {"package": "pkg", "path": ["SendA"], "ordinal": 0}}, "action_b": {"kind": "send", "node": {"package": "pkg", "path": ["SendB"], "ordinal": 0}}, "obligation": {"package": "pkg", "path": ["obligation"], "ordinal": 0}}}], "accounting": [{"request_index": 0, "settled_by": "result", "tool": {"name": "fsl-analyze", "version": "0.1.0"}}]}},
     {"name": "protocol-analysis-environment-outcome", "stage": "outcome", "owners": {"/counterexamples/0/counterexample": "FR-331"}, "document": {"contract_version": "filament.backend-provider/v1", "capability_vocabulary": "filament.capability-kind/v1", "dispositions": [{"request_index": 0, "disposition": "supported"}], "artifacts": [], "results": [{"request_index": 0, "backend": "fsl-native", "kind": "realizability", "result": "refuted", "counterexample": 0}], "counterexamples": [{"request_index": 0, "backend": "fsl-native", "counterexample": {"type": "protocol-analysis-counterexample", "key": {"kind": "realizability", "definition_key": "pkg/Def", "strategy_profile": "bounded-static", "channels": [{"channel": {"package": "pkg", "path": ["C"], "ordinal": 0}, "sender": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "receiver": {"package": "pkg", "path": ["seller"], "ordinal": 0}, "message_type": {"package": "pkg", "path": ["MessageA"], "ordinal": 0}, "ordering": {"kind": "unordered"}, "delivery": {"kind": "between", "lower": "0", "upper": "18446744073709551615"}, "capacity": {"kind": "symbolic", "name": "capacity", "value": "18446744073709551615"}, "overflow": {"kind": "reject"}}], "choices": [], "role_knowledge": null, "environment": [], "bounds": {"max_depth": "18446744073709551615", "max_history": "3"}, "analyzer": {"identity": "fsl-analyze::protocol_analysis", "version": "0.1.0"}}, "separating_witness": {"deciding_element": "{\"ordinal\":0,\"package\":\"pkg\",\"path\":[\"obligation\"]}", "value_path": {"kind": "runtime_value", "root": {"observation": {"authority": "native", "identity": "run-1"}, "subject": {"tag": "object", "universe": "u", "type": "Buyer", "object_identity": "buyer-1"}}, "steps": []}, "trace_position": "0"}, "kind": "environment-defeat", "defeats_per_branch": [{"play": {"initial": "0", "steps": [{"successor": "0", "transition": {"type": "protocol-transition", "step": "send", "thread": {"type": "thread-path", "instance": "0", "steps": []}, "node": "SendA", "record": {"type": "boolean", "value": true}}, "send_record": {"type": "send-record", "channel": "pkg/C", "payload": {"type": "boolean", "value": true}, "outcome": "accepted", "displaced": null}}]}}], "obligation": {"package": "pkg", "path": ["obligation"], "ordinal": 0}}}], "accounting": [{"request_index": 0, "settled_by": "result", "tool": {"name": "fsl-analyze", "version": "0.1.0"}}]}},
     {"name": "protocol-analysis-projection-choice-outcome", "stage": "outcome", "owners": {"/counterexamples/0/counterexample": "FR-331"}, "document": {"contract_version": "filament.backend-provider/v1", "capability_vocabulary": "filament.capability-kind/v1", "dispositions": [{"request_index": 0, "disposition": "supported"}], "artifacts": [], "results": [{"request_index": 0, "backend": "fsl-native", "kind": "local-projection", "result": "refuted", "counterexample": 0}], "counterexamples": [{"request_index": 0, "backend": "fsl-native", "counterexample": {"type": "protocol-analysis-counterexample", "key": {"kind": "projection", "definition_key": "pkg/Def", "role": "buyer", "profile": "bounded-static", "channels": [{"channel": {"package": "pkg", "path": ["C"], "ordinal": 0}, "sender": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "receiver": {"package": "pkg", "path": ["seller"], "ordinal": 0}, "message_type": {"package": "pkg", "path": ["MessageA"], "ordinal": 0}, "ordering": {"kind": "unordered"}, "delivery": {"kind": "between", "lower": "0", "upper": "18446744073709551615"}, "capacity": {"kind": "symbolic", "name": "capacity", "value": null}, "overflow": {"kind": "reject"}}], "choices": [], "bounds": {"max_depth": "18446744073709551615"}}, "separating_witness": {"deciding_element": "{\"ordinal\":0,\"package\":\"pkg\",\"path\":[\"obligation\"]}", "value_path": {"kind": "runtime_value", "root": {"observation": {"authority": "native", "identity": "run-1"}, "subject": {"tag": "object", "universe": "u", "type": "Buyer", "object_identity": "buyer-1"}}, "steps": []}, "trace_position": "0"}, "kind": "projection", "role": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "decision": {"kind": "choice", "choice": {"package": "pkg", "path": ["Choice"], "ordinal": 0}, "owner": {"kind": "environment"}, "cases": [{"package": "pkg", "path": ["CaseA"], "ordinal": 0}, {"package": "pkg", "path": ["CaseB"], "ordinal": 0}], "paths": [[{"node": {"package": "pkg", "path": ["SendA"], "ordinal": 0}, "port": "enter"}], []], "actions": [{"direction": "send", "peer": {"package": "pkg", "path": ["seller"], "ordinal": 0}, "message_type": {"package": "pkg", "path": ["MessageA"], "ordinal": 0}, "at": {"node": {"package": "pkg", "path": ["SendA"], "ordinal": 0}, "port": "enter"}}, null]}}}], "accounting": [{"request_index": 0, "settled_by": "result", "tool": {"name": "fsl-analyze", "version": "0.1.0"}}]}},
-    {"name": "protocol-analysis-projection-instance-outcome", "stage": "outcome", "owners": {"/counterexamples/0/counterexample": "FR-331"}, "document": {"contract_version": "filament.backend-provider/v1", "capability_vocabulary": "filament.capability-kind/v1", "dispositions": [{"request_index": 0, "disposition": "supported"}], "artifacts": [], "results": [{"request_index": 0, "backend": "fsl-native", "kind": "local-projection", "result": "refuted", "counterexample": 0}], "counterexamples": [{"request_index": 0, "backend": "fsl-native", "counterexample": {"type": "protocol-analysis-counterexample", "key": {"kind": "projection", "definition_key": "pkg/Def", "role": "buyer", "profile": "bounded-static", "channels": [{"channel": {"package": "pkg", "path": ["C"], "ordinal": 0}, "sender": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "receiver": {"package": "pkg", "path": ["seller"], "ordinal": 0}, "message_type": {"package": "pkg", "path": ["MessageA"], "ordinal": 0}, "ordering": {"kind": "unordered"}, "delivery": {"kind": "between", "lower": "0", "upper": "18446744073709551615"}, "capacity": {"kind": "literal", "value": "18446744073709551615"}, "overflow": {"kind": "reject"}}], "choices": [], "bounds": {"max_depth": "18446744073709551615"}}, "separating_witness": {"deciding_element": "{\"ordinal\":0,\"package\":\"pkg\",\"path\":[\"obligation\"]}", "value_path": {"kind": "runtime_value", "root": {"observation": {"authority": "native", "identity": "run-1"}, "subject": {"tag": "object", "universe": "u", "type": "Buyer", "object_identity": "buyer-1"}}, "steps": []}, "trace_position": "0"}, "kind": "projection", "role": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "decision": {"kind": "acting-instance", "event": {"node": {"package": "pkg", "path": ["SendA"], "ordinal": 0}, "port": "enter"}, "owner": {"kind": "environment"}, "instances": ["0", "1"], "maximum": "2"}}}], "accounting": [{"request_index": 0, "settled_by": "result", "tool": {"name": "fsl-analyze", "version": "0.1.0"}}]}}
+    {"name": "protocol-analysis-projection-instance-outcome", "stage": "outcome", "owners": {"/counterexamples/0/counterexample": "FR-331"}, "document": {"contract_version": "filament.backend-provider/v1", "capability_vocabulary": "filament.capability-kind/v1", "dispositions": [{"request_index": 0, "disposition": "supported"}], "artifacts": [], "results": [{"request_index": 0, "backend": "fsl-native", "kind": "local-projection", "result": "refuted", "counterexample": 0}], "counterexamples": [{"request_index": 0, "backend": "fsl-native", "counterexample": {"type": "protocol-analysis-counterexample", "key": {"kind": "projection", "definition_key": "pkg/Def", "role": "buyer", "profile": "bounded-static", "channels": [{"channel": {"package": "pkg", "path": ["C"], "ordinal": 0}, "sender": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "receiver": {"package": "pkg", "path": ["seller"], "ordinal": 0}, "message_type": {"package": "pkg", "path": ["MessageA"], "ordinal": 0}, "ordering": {"kind": "unordered"}, "delivery": {"kind": "between", "lower": "0", "upper": "18446744073709551615"}, "capacity": {"kind": "literal", "value": "18446744073709551615"}, "overflow": {"kind": "reject"}}], "choices": [], "bounds": {"max_depth": "18446744073709551615"}}, "separating_witness": {"deciding_element": "{\"ordinal\":0,\"package\":\"pkg\",\"path\":[\"obligation\"]}", "value_path": {"kind": "runtime_value", "root": {"observation": {"authority": "native", "identity": "run-1"}, "subject": {"tag": "object", "universe": "u", "type": "Buyer", "object_identity": "buyer-1"}}, "steps": []}, "trace_position": "0"}, "kind": "projection", "role": {"package": "pkg", "path": ["buyer"], "ordinal": 0}, "decision": {"kind": "acting-instance", "event": {"node": {"package": "pkg", "path": ["SendA"], "ordinal": 0}, "port": "enter"}, "owner": {"kind": "environment"}, "instances": ["0", "1"], "maximum": "2"}}}], "accounting": [{"request_index": 0, "settled_by": "result", "tool": {"name": "fsl-analyze", "version": "0.1.0"}}]}},
+    {
+      "name": "composition-premises-assumptions-request",
+      "stage": "request",
+      "owners": {
+        "/request/items/0/premises": "FR-491",
+        "/request/items/0/assumptions": "FR-491"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "manifest": [
+          {
+            "backend": "fsl-composition",
+            "tool": {
+              "name": "fsl-analyze",
+              "version": "0.1.0"
+            },
+            "advertises": [
+              {
+                "kind": "composition",
+                "mode": "unbounded"
+              }
+            ]
+          }
+        ],
+        "request": {
+          "deadline_ms": 600000,
+          "items": [
+            {
+              "request_index": 0,
+              "kind": "composition",
+              "claim": {
+                "node": {
+                  "ordinal": 0,
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "Sys"
+                  ]
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                }
+              },
+              "extent": {
+                "classification": "unbounded",
+                "domains": [
+                  {
+                    "domain": {
+                      "type": "node",
+                      "node": {
+                        "ordinal": 0,
+                        "package": "example",
+                        "path": [
+                          "Example",
+                          "Flag"
+                        ]
+                      },
+                      "path": []
+                    },
+                    "kind": "integer"
+                  }
+                ],
+                "finite_bound_available": true
+              },
+              "backend": "fsl-composition",
+              "candidates": {
+                "type": "set",
+                "backends": [
+                  "fsl-composition"
+                ]
+              },
+              "premises": [
+                {
+                  "role": "component-guarantee",
+                  "key": {}
+                },
+                {
+                  "role": "component-guarantee",
+                  "key": {}
+                },
+                {
+                  "role": "rely",
+                  "key": {}
+                }
+              ],
+              "assumptions": [
+                [
+                  1
+                ],
+                []
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "composition-interface-mismatch-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/counterexamples/0/counterexample": "FR-492"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-composition",
+            "kind": "composition",
+            "result": "refuted",
+            "counterexample": 0
+          }
+        ],
+        "counterexamples": [
+          {
+            "request_index": 0,
+            "backend": "fsl-composition",
+            "counterexample": {
+              "type": "interface-mismatch",
+              "component": "Producer",
+              "interface": {
+                "ordinal": 0,
+                "package": "example",
+                "path": [
+                  "Example",
+                  "Producer",
+                  "Counted"
+                ]
+              },
+              "premise": 2,
+              "reason": "absent"
+            }
+          }
+        ],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
+    },
+    {
+      "name": "composition-provider-answer-unconfirmed-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause": "FR-331"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-composition",
+            "kind": "composition",
+            "result": "inconclusive",
+            "cause": {
+              "type": "provider-answer-unconfirmed",
+              "premise": 1
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
+    }
   ],
   "adverse": [
     {
@@ -14235,6 +14424,98 @@
     {"name": "protocol-analysis-key-literal-capacity-overflow", "base": "protocol-analysis-histories-outcome", "owner": "FR-331", "patch": [{"op": "replace", "path": "/counterexamples/0/counterexample/key/channels/0/capacity/value", "value": "18446744073709551616"}]},
     {"name": "protocol-analysis-key-symbolic-capacity-number", "base": "protocol-analysis-environment-outcome", "owner": "FR-331", "patch": [{"op": "replace", "path": "/counterexamples/0/counterexample/key/channels/0/capacity/value", "value": 2}]},
     {"name": "protocol-analysis-key-symbolic-capacity-leading-zero", "base": "protocol-analysis-environment-outcome", "owner": "FR-331", "patch": [{"op": "replace", "path": "/counterexamples/0/counterexample/key/channels/0/capacity/value", "value": "02"}]},
-    {"name": "protocol-analysis-key-symbolic-capacity-overflow", "base": "protocol-analysis-environment-outcome", "owner": "FR-331", "patch": [{"op": "replace", "path": "/counterexamples/0/counterexample/key/channels/0/capacity/value", "value": "18446744073709551616"}]}
+    {"name": "protocol-analysis-key-symbolic-capacity-overflow", "base": "protocol-analysis-environment-outcome", "owner": "FR-331", "patch": [{"op": "replace", "path": "/counterexamples/0/counterexample/key/channels/0/capacity/value", "value": "18446744073709551616"}]},
+    {
+      "name": "composition-premises-without-assumptions",
+      "base": "composition-premises-assumptions-request",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/request/items/0/assumptions"
+        }
+      ]
+    },
+    {
+      "name": "assumptions-without-premises",
+      "base": "composition-premises-assumptions-request",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/request/items/0/premises"
+        }
+      ]
+    },
+    {
+      "name": "assumptions-non-integer-index",
+      "base": "composition-premises-assumptions-request",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/request/items/0/assumptions/0/0",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "name": "interface-mismatch-without-component",
+      "base": "composition-interface-mismatch-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/counterexamples/0/counterexample/component"
+        }
+      ]
+    },
+    {
+      "name": "interface-mismatch-unknown-reason",
+      "base": "composition-interface-mismatch-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/counterexamples/0/counterexample/reason",
+          "value": "stronger"
+        }
+      ]
+    },
+    {
+      "name": "interface-mismatch-extra-member",
+      "base": "composition-interface-mismatch-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/counterexamples/0/counterexample/slot",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "name": "provider-answer-unconfirmed-without-premise",
+      "base": "composition-provider-answer-unconfirmed-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/results/0/cause/premise"
+        }
+      ]
+    },
+    {
+      "name": "provider-answer-unconfirmed-extra-member",
+      "base": "composition-provider-answer-unconfirmed-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/0/cause/state",
+          "value": "open"
+        }
+      ]
+    }
   ]
 }

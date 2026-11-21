@@ -13,7 +13,7 @@ relationships:
 
 Compose two components and settle each premise, mismatch and cycle separately.
 
-Scope: FR-489-AC-1 to FR-489-AC-11.
+Scope: FR-489-AC-1 to FR-489-AC-12.
 
 ## Test Procedure
 
@@ -30,20 +30,33 @@ boundary:
 3. Supply the liveness dependency's guarantee over `Consumer` instead of
    `Producer`, then a weaker liveness claim, then a safety guarantee, each as
    a supplied guarantee that does not name a discharge record.
-4. Make `Producer`'s guarantee depend on `Consumer`'s progress under a rule
-   with no declared lattice; then under a profile declaring FR-176's monotone
-   lattice, initial element and convergence rule.
+4. Declare `compose Sys rule assume-guarantee` over `Producer` and `Consumer`
+   with `depends Producer::Sends on Consumer::Done` and
+   `depends Consumer::Done on Producer::Sends` (a mutual progress cycle), with
+   every guarantee proved and supplied, once through the planner route and once
+   as an FR-331 composition item with a provider registered; then the same
+   declaration under `rule interface`, `rule protocol-refinement` and
+   `rule refinement-transfer`, each with a provider registered that answers
+   `proved`.
 5. Supply a premise discharged by an accepted plugin result carrying certification `trusted`; then a premise supplied only as an assumption with no plugin result; select an
    unsupported rule; fail a component check; deny a work-unit bound.
 6. Supply a discharge record whose guarantee subject differs from its premise's
    subject; one whose identity names no settled result; one whose referenced
    result is `inconclusive`; add an unrelated supported claim to each request.
+7. Give a `rely` a peer clause `Producer` declares no guarantee for; then give
+   `Consumer`'s `rely` a declared peer guarantee conditional on a fairness
+   constraint no `supplies` constraint implies; then, with both peer
+   interfaces declared and not weaker, leave the peer guarantee's result
+   absent, `tested`, `inconclusive`, and over `Consumer`'s subject.
 
 ## Expected Results
 
 1. `proved`, `decisive-witness`, with the premise discharge record.
 2. The flag refused `invalid_runtime_input`/`wrong-value-kind`; the four lists accepted.
 3. Each `inconclusive`/`premise-unproved` naming the premise, premise undischarged.
-4. Refused as FR-176-AC-3 refuses circular reasoning; with the lattice accepted and every iteration recorded.
+4. Each `unsupported`, `unsupported-requested-capability` naming the kind `composition`, the form `fixed-point` and both guarantees, before any slot is read or any provider is called, never `proved`, under each rule.
 5. `proved` with certification `trusted` citing the plugin result; `inconclusive`/`premise-unproved` naming the premise and the assumption; `unsupported` naming the capability; `inconclusive`/`premise-unproved`; FR-360 `failed` with FR-241 `resource-incomplete` (FR-331 `incomplete`) naming the limit; the outcomes stay distinct.
 6. The first two refused `invalid_runtime_input`/`invalid-value` naming the member; the third leaves the premise undischarged (`inconclusive`/`premise-unproved`); the unrelated claim settles in each.
+7. The first two `refuted`, `decisive-counterexample`, `mismatch` naming
+   `Producer`, the clause and `absent`, then `weaker`; each of the four others
+   `inconclusive`/`premise-unproved`, never `refuted`.

@@ -529,6 +529,7 @@ fn hp3_array_removal_is_refused_and_restoration_is_admitted() {
 #[trace("TC-431", "FR-331-AC-40")]
 #[trace("TC-431", "FR-331-AC-41")]
 #[trace("TC-431", "FR-415-AC-26")]
+#[trace("TC-431", "FR-331-AC-63")]
 #[test]
 fn tc_431_positive_vectors_are_admitted_with_owned_members() {
     let validator = validator();
@@ -747,6 +748,7 @@ fn located_at_patch(error: &str, patched: &str) -> bool {
 /// Every adverse vector is one patch of one positive vector and is refused
 /// by its stage's schema at the patched member, including each Kani row whose
 /// cause leaves its result's closed set.
+#[trace("TC-431", "FR-331-AC-63")]
 #[trace("TC-431", "FR-331-AC-19")]
 #[trace("TC-431", "FR-331-AC-20")]
 #[trace("TC-431", "FR-331-AC-23")]
