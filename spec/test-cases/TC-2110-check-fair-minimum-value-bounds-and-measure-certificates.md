@@ -66,10 +66,14 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19, FR-412-AC-20.
     operation. On a variant with both operation values `3/4` and rank
     progress under only `high`, offer lower/maximum `1/2` with a hint for
     `low`. Also supply a hint ambiguous between step 10's PostState choices.
-12. Offer otherwise valid `exact` certificates under minimum and maximum,
-    including otherwise valid `optimum` `post` parts under those objectives,
-    first with their required policy coverage, then without the `policy`
-    member, then with one checked undecided state's choice removed.
+12. In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and
+    finite-horizon measure (FSL FR-1043) profiles, remove the `policy` member
+    or one row from otherwise valid certificates and check the rebuilt
+    satisfying action. Retain step 1's fair-minimum exact no-policy cases.
+    Outside those profiles, offer otherwise valid `exact` certificates under
+    minimum and maximum, including otherwise valid `optimum` `post` parts,
+    with full required coverage, without `policy`, then with one required
+    state's choice removed. Keep older conditional `reset` coverage unchanged.
 
 ## Expected Results
 
@@ -93,6 +97,8 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19, FR-412-AC-20.
 - Step 11: `inequality-fails`; `malformed` at `policy`; `rank-broken`;
   `malformed` at `policy` for the ambiguous hint.
   A present hint is never replaced by another satisfying action.
-- Step 12: accepted with full coverage; `malformed` at `policy` without
-  the member or a required state's choice. A `post` failure retains its
-  conditional part attribution; no optional-hint reconstruction repairs it.
+- Step 12: in the three named profiles, accepted exactly when a rebuilt
+  action meets all profile per-state conditions, with step 1's no-policy
+  outcomes unchanged. Outside those profiles, accepted with full required
+  coverage, then `malformed` at the member-only locus `{"member": "policy"}`
+  without the member or a required choice; even for `post`, no `part` is added.
