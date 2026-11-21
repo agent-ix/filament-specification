@@ -123,9 +123,8 @@ each task edge and bounded-subtraction row. It carries `action`, `taskset`,
 `task`, `job_rank`, `slot`, the source `release` transition, the optional
 `source_transition`, and `priority` exactly when the checked task declares
 one. `job_rank` is the zero-based position of that job among the task's live
-jobs, ordered within the quotient node by deadline-clock age, oldest first;
-a tie between jobs of different tasks breaks by task declaration order, and a
-tie between jobs of the same task by generation, lower generation first. A quotient node holds no path
+jobs, ordered within the quotient node by deadline-clock age, oldest first, ties
+broken by generation, lower generation first. A quotient node holds no path
 occurrence, so no occurrence orders its jobs. `slot` binds that rank
 to one of the task's finite candidate slots. On an activation edge, rank and
 slot name the newly live job in the target node; on every other edge they name
@@ -166,9 +165,10 @@ region, scheduler control, release/jitter phase and queue state within the
 declared finite cap. It recomputes periodic/sporadic activation, jitter,
 service, completion and feedback successors, and accepts exact mode only if
 every reachable successor is represented and no attempted allocation
-exceeds the cap. This exploration runs under the checker work limit
-`max_check_work` (FR-461); exhausting it settles `incomplete` with
-`limit-reached` naming `max_check_work`, never `proved`. The method
+exceeds the cap. This exploration runs under the checker work limit `max_check_work`,
+setting `zone_check.max_check_work` (FR-461); exhausting it settles
+`incomplete` with `limit-reached` naming `max_check_work` and that setting,
+never `proved`. The method
 `closed-finite-product/v1` does not certify a dual-WCET task set with mode
 switches: such a set settles `incomplete` with
 `bounded-search-incomplete{reason: certificate-unchecked}` (FR-331). It requires `live_job_cap` to equal the sum of per-task
@@ -388,7 +388,7 @@ budget. Its cost is linear in the certificate's edges times the DBM operations.
 | FR-418-AC-17 | The `filament.backend-provider/v1` schema's zone certificate admits the `state_graph` part `{"form": "always-possible", "ef_nodes": [0, 2]}` on FR-712-AC-2's `always possible` proof certificate, and refuses a `state_graph` with `form` `possible`, with an extra member, or without `ef_nodes`; a certificate carrying no `state_graph` is still admitted by the schema. | Test (TC-2052) |
 | FR-418-AC-18 | In a fixed-work task-product certificate whose target node has the same task product state key as a successor and a `Z` that is the union of two whole refined regions, a successor whose zone, closed under the refined-region relation, is one of those regions is covered and the certificate is accepted; the same target with `Z` reduced to the other region alone settles `inconclusive`, `certificate-rejected` with rule `successor-missing` at the source node. | Test (TC-371) |
 | FR-418-AC-19 | A fixed-work task-product certificate with one extra node that the checker's recomputation does not reach from `initials` settles `inconclusive`, `certificate-rejected` with rule `unreached-node` at that node's position; one with an extra edge the recomputation does not produce settles the same with rule `extra-edge` at that edge's position; without either it is accepted. | Test (TC-371) |
-| FR-418-AC-20 | Checking an accepted fixed-work task-product certificate with `max_check_work` set below the work its exhaustive exploration needs settles `incomplete` with `limit-reached` naming `max_check_work`, never `proved`; with the limit at its published default the same certificate settles `proved`. | Test (TC-371) |
+| FR-418-AC-20 | Checking an accepted fixed-work task-product certificate with `zone_check.max_check_work` set below the work its exhaustive exploration needs settles `incomplete` with `limit-reached` naming `max_check_work` and the setting `zone_check.max_check_work`, never `proved`; with the setting at its published default, 100000000 work units (FR-461), the same certificate settles `proved`. | Test (TC-371) |
 | FR-418-AC-21 | A dual-WCET task set with a mode switch whose product closes under `closed-finite-product/v1` settles `incomplete` with cause `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}`, never `proved`. | Test (TC-371) |
 
 ## Dependencies

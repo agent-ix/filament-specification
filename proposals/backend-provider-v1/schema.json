@@ -409,6 +409,7 @@
         "max_automaton_states": {"$ref": "#/$defs/PositiveCount"},
         "max_clocks": {"description": "FR-415: the most live clocks a state of the explored graph may hold (setting model_check.max_clocks, default 1024).", "$ref": "#/$defs/PositiveCount"},
         "max_task_product_work": {"description": "FR-415: the maximum task-product nodes expanded (setting zone_check.max_task_product_work, default 1048576).", "$ref": "#/$defs/PositiveCount"},
+        "max_check_work": {"description": "FR-418, FR-461: the work limit of the task-product certificate checker (setting zone_check.max_check_work, default 100000000 work units).", "$ref": "#/$defs/PositiveCount"},
         "max_walk_steps": {"$ref": "#/$defs/PositiveCount"},
         "max_witness_set": {"$ref": "#/$defs/PositiveCount"},
         "max_relation_tuples": {"$ref": "#/$defs/PositiveCount"},
