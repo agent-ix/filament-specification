@@ -1078,15 +1078,25 @@ are omitted from the field column):
 | `environment-defeat` | `key`, nonempty `defeats_per_branch` (each entry exactly `{play}`), `obligation`, `separating_witness` |
 | `projection` | `key`, `role`, `decision`, `separating_witness` |
 
-`key` is the complete existing plain-JSON structural key of FR-352
-"Protocol-analysis result" and FSL FR-572, not a digest, typed-value wrapper
-or reduced copy. Its `kind` is `realizability` on the first two alternatives
-and `projection` on the third. Its existing numeric members retain their
-exact unsigned 64-bit integer values; a reader uses an exact JSON number
-representation and refuses a value outside that range rather than rounding.
-Premise order, absent versus stated-empty premises and explicit `null`
-values retain the existing key contract. `role`, `obligation` and all node
-members below use the existing `NodeId` object form.
+`key` carries the complete structural key of FR-352 "Protocol-analysis
+result" and FSL FR-572, not a digest, typed-value wrapper or reduced copy.
+Its `kind` is `realizability` on the first two alternatives and `projection`
+on the third. Inside this new counterexample member, every unsigned 64-bit
+quantity whose domain can exceed 2^53-1 SHALL use `U64String`: a canonical
+decimal string from `"0"` to `"18446744073709551615"`, with no sign and no
+leading zero except `"0"` itself. This includes the key's
+`bounds.max_depth`, `bounds.max_history` when present, each channel's
+`delivery.lower` and `delivery.upper` when `kind` is `between`, and
+`capacity.value` for `literal` or a bound `symbolic` capacity. An unbound
+symbolic capacity still has `value: null`. The strict reader SHALL refuse
+a JSON number in any such position, a noncanonical string or a value above
+the unsigned 64-bit maximum. The same string rule covers play indices,
+instance ordinals and maxima below. Existing structural keys outside this
+new member retain their existing number spelling; no general numeric
+policy changes. Premise order, absent versus stated-empty premises and
+explicit `null` values retain the existing key contract. `role`,
+`obligation` and all node members below use the existing `NodeId` object
+form; its bounded ordinal keeps its existing spelling.
 
 A play is exactly `{initial, steps}`. `initial` names the initial state in
 the native system's canonical initial order. Each ordered step has exactly
@@ -1236,7 +1246,7 @@ and never yields a decisive refutation from unchecked evidence.
 | FR-331-AC-60 | The schema admits `exhaustive-vacuous-conditional-outcome`, a value-free `proved` `exhaustive` probabilistic-satisfaction result carrying an FR-412 certificate with `kind` `conditional`, `conditional` exactly `{"mode": "vacuous"}` and empty `values`; it also admits that result without `certificate`. Adding `ranking`, `policy` or `components`, even an empty array, or changing the result kind to `refinement` with that certificate is refused; the refinement result without a certificate is admitted. The adverse vector `exhaustive-with-nonvacuous-certificate`, whose replacement is an otherwise well-shaped `exact` certificate, is refused. A certificate with `ratio` or `optimum` mode, missing `conditional`, missing `mode`, an unknown mode or another conditional member is refused on `exhaustive`, as is `evidence` with or without the permitted certificate. The same certificate remains forbidden on `bounded-complete`, `inductive`, `reduced`, `witnessed` and `bounded-proof`. An `exact-value` basis without its `Rational` value, with a scalar zero or with a zero denominator is refused; an ordinary exact certificate with a valid `Rational` value is admitted. | Test (TC-431) |
 
 | FR-331-AC-61 | A refuted local-projection or realizability result carries the complete `ProtocolAnalysisCounterexample` in its indexed canonical entry, with both realizability kinds and both projection decisions preserved, and never the FR-352 result record in place of the body. Writing and strict reading preserve every typed member including ordered plays, send records, actions, premises and separating witness. | Test |
-| FR-331-AC-62 | The schema admits the protocol-analysis positive vectors and refuses their structural adverse vectors: unknown body, action or decision kinds; unknown, missing or wrongly null members; malformed node ids and index spellings; wrong key kind; empty branch defeats; and malformed projection pair lengths or duplicate case/instance identifiers. | Test |
+| FR-331-AC-62 | The schema admits the protocol-analysis positive vectors and refuses their structural adverse vectors: unknown body, action or decision kinds; unknown, missing or wrongly null members; malformed node ids and index spellings; numeric key bounds or channel quantities, leading-zero decimal strings or values above u64; wrong key kind; empty branch defeats; and malformed projection pair lengths or duplicate case/instance identifiers. | Test |
 | FR-331-AC-63 | In-process and frame readers refuse a body whose requested item, backend, key, selected role, witness root, deciding node or event position disagrees; out-of-range play indices; altered transition or send-record data; indistinguishable histories with unequal observations or actions that are not disjoint and required; omitted, duplicate or misordered defeated branches; nondivergent projection actions; and acting instances outside the live authored bound. Native replay reproduces each admitted refutation under its original analysis key and work limits; structural schema admission alone never settles refuted. | Test |
 
 ## Dependencies
