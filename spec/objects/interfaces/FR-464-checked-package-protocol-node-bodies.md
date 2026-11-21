@@ -186,7 +186,7 @@ names a node of the stated tag and form by node id.
 | **Boolean term** | a `literal` with `value_kind: "boolean"`, or a `reference` to a node whose `semantic_type` is the `scalar_type`/`boolean` node |
 | **term** | any Leaf |
 | **ordered list** | a Group `aggregate` whose members are `reference` terms in an order that carries meaning: execution order |
-| **set** | a Group `aggregate` whose members are `reference` terms in strictly ascending node-id order; the list means a set, so one set has one encoding |
+| **set** | a Group `aggregate` whose members are `reference` terms in strictly ascending order of the resolved graph rank of the nodes they reference, the order the graph lists its nodes in, as for a node's `dependencies` and a `related` record's `relationship`; the list means a set, so one set has one encoding |
 | **optional** | a Group `aggregate` with no member (absent) or exactly one member (present) |
 | **interval** | a Group `aggregate` of the bindings `lower` and `upper`, two non-negative integers with `lower <= upper`; the upper bound is always present |
 | **ordered records** | a Tuple `aggregate` of Groups, one Group per entry, in an order that carries meaning (capture evaluation order) |
@@ -199,7 +199,12 @@ refuses `malformed_wire` at the schema stage, and the recorded locus is the node
 **Canonical order.** A set or a sorted-records list that is not in its
 canonical order, or that repeats an entry, refuses `invalid_semantic_graph`
 at the node, as FR-322-AC-10 refuses every noncanonical order (a repeated
-declaration node is the Single listing case, at that node). An ordered
+declaration node is the Single listing case, at that node). The canonical
+order of a reference set is the resolved graph rank of its targets, not the
+order of the wire ids the set holds: a wire id holds a graph index and a
+node's operand slots are numbered by first appearance in its own bytes, so a
+producer cannot know the wire-id order when it builds the set, and the reader
+compares ranks, as it does for `related`. An ordered
 list is in the order its layout states, and reordering it changes the node
 key. So the sets of one protocol (roles, relationships, channels, queues,
 requirements, compensations, `visible`, `contracts`, `related`, cases, branches)
@@ -220,7 +225,7 @@ with thirteen arguments, in this order:
 | 4 | `roles` | a set of `protocol`/`role` nodes |
 | 5 | `relationships` | a set of `relation`/`relationship` nodes: the model relationship each `relationship` declaration of the protocol names; a target of another tag or form refuses `invalid_model_binding`/`wrong-export` |
 | 6 | `channels` | a set of `protocol`/`channel` nodes |
-| 7 | `queues` | a set of `protocol`/`queue` nodes, one per channel; the queues are generated and have no source order, so the set is ascending by each queue's own node id like every other set |
+| 7 | `queues` | a set of `protocol`/`queue` nodes, one per channel; the queues are generated and have no source order, so the set is ascending by the graph rank of each queue's node like every other set |
 | 8 | `requirements` | a set of `temporal`/`temporal_clause` nodes: the temporal clauses the protocol requires |
 | 9 | `compensations` | a set of `protocol`/`compensation` nodes |
 | 10 | `terminal` | optional: a reference to the protocol's `terminal` `obligation` node |
@@ -263,7 +268,7 @@ derive it from the protocol's admitted `protocol_clause` node, from its
 `activation` and `requirements` arguments and from nothing else:
 
 - The relation holds one row for each `temporal`/`temporal_clause` node in
-  the `requirements` set, in that set's order (ascending node-id).
+  the `requirements` set, in that set's order (ascending graph rank).
   A row is the clause node's key, the activation (`origin`, or `each` with
   the key of its `trigger` node) and the temporal clause node's key.
 - A protocol whose `requirements` set is empty has no row. A temporal
