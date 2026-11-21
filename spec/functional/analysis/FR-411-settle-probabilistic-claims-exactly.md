@@ -261,7 +261,8 @@ stops exploration settles the item.
 ### Evidence on a partial product
 
 A lower certificate and a path set read only the states they name and those
-states' successors, and an unexplored successor counts as value 0. Evidence of
+states' successors, and an unexplored successor counts as the objective's
+least value (0, or `−q` for a quantile's shifted reward, FR-412). Evidence of
 that kind found before a limit stops exploration therefore settles the item:
 a proof of a `>= θ` bound or a refutation of a `<= θ` bound. Every other
 verdict needs the complete product.

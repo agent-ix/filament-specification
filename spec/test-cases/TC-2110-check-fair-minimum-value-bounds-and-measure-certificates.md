@@ -16,7 +16,7 @@ set only after recomputing the fair end components itself, accepts the
 conditions, and checks a finite-horizon measure certificate against the
 payoff it computes from each decided state's key.
 
-Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15.
+Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15, FR-412-AC-16.
 
 ## Test Procedure
 
@@ -42,6 +42,8 @@ Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15.
    level-0.4 one with its initial value replaced by `9/40`.
 7. Over `Retry` under its workload, check the `mean of fraction
    holds(delivered) over [0, 2]` certificate.
+8. Over the `fast`/`slow` variant at level 0.5, offer a `lower` shifted
+   certificate that names only the initial state, at value 0.
 
 ## Expected Results
 
@@ -56,3 +58,5 @@ Scope: FR-412-AC-13, FR-412-AC-14, FR-412-AC-15.
   `AtLeast` (`3/80`); `threshold-missed` at the initial state (`−1/16`);
   `inequality-fails` at the initial state.
 - Step 7: accepted with initial value `5/12`.
+- Step 8: `inequality-fails` at the initial state (unnamed successors at
+  `−1/2`).

@@ -663,7 +663,10 @@ names, FR-462), `kind` and `result`, and:
   typed cause `{code, cause, detail}`, `detail` keyed by FR-272 payload
   names;
 - `certificate` (FR-412 for `exact-value` and `value-bounds`, FR-418 for
-  `zone-certified`), `evidence` (FR-419 for `closed-form`, the FR-393 witness
+  `zone-certified`; for `value-bounds` the claim side's certificate), `counterpart`
+  (for `value-bounds`, the other side's FR-412 certificate, required except
+  for a `lower` proof found on a partial product, whose basis reports upper
+  1), `evidence` (FR-419 for `closed-form`, the FR-393 witness
   arm for `well-definedness-unchecked`), `verdict` (FR-410 for `measured`) and
   `counterexample` (the position of the item's `counterexamples` entry, for
   `refuted`), and `task_search` (FR-419's replayable bounded-search frontier,
