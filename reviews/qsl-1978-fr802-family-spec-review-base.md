@@ -87,6 +87,9 @@ no implementation or runtime behavior was inspected or claimed.
 | --- | --- | --- |
 | FND-001 | fixed | The note now says: "On this route, the quantity boundary includes `Duration` and typed `elapsed` objectives; it makes no claim about other timed-planner entrypoints." The timed-objective question is answered explicitly, and the note no longer reads as marking all timed planning unsupported. The normative family list, FR-808, FR-810-AC-3 and FR-805-AC-7 are unchanged and still apply. |
 | FND-002 | fixed | The note is now titled "Source-plan adapter implementation boundary". It says "the adapter wiring is being corrected to support ..." and "This note describes the wiring correction, not released or runtime-validated behavior." It no longer asserts current or released behavior. The admitted objective types and the arithmetic, `totalOrder`, NaN, unit-conversion and certificate requirements "remain applicable". |
+| FND-003 | fixed | Disposition pass 2, fix head `4739bf3bc942b765d90fbd6fbb0f9100d02bc9af`. The new "Plan-record type" rule says the producer emits the plan record and its state, step and arguments records "using the existing `composite_type`/`record` form" (the declared-record form that FR-322 already lists in its dependency and family rules), as generated declared records with the source unit's `SourceOwner` and `declaration` occurrences. The ordinary structural-identity, owner, dependency and source-map rules apply, and the rule reserves no name, path or literal. The candidate's `semantic_type` "is the exact reference identifying the plan record"; the reader resolves it and checks the field names, presence and types against FR-800, and "never finds a record by a display name or substitutes another record with equal fields". The comparison target of reader step 3 is now defined. No new tag, form or key is added. |
+| FND-004 | fixed | Disposition pass 2. The `candidate` bullet now reads "the generated plan-record type node for a state-model or hybrid plan synthesis", and `grammar` stays "`model`/`object_type` or `hybrid`/`hybrid_model`, respectively". "Plan-record type" says a hybrid plan uses the same record forms with FR-819's extensions. A hybrid candidate's type is now stated: it is the plan record, not `G`. The residual hybrid step-field typing is recorded separately as FND-007. |
+| FND-005 | fixed | Disposition pass 2. The new "FR-322-AC-467" subsection gives the complete source unit (`model Config = "example/config-version"; type Lengths = Int[0, 3]; synthesis Reach using p grammar Config::ConfigVersion domain Lengths satisfies { true };`), so `Lengths` is declared. TC-2037 adds step 4 (the plan-synthesis read-back of `grammar`, `domain`, `candidate` and the referenced plan record's node, body, declaration and owner) and step 5 (the `ConfigVersion`-retyped candidate with a rebuilt parameter key and references, so that only synthesis-reader step 3 can refuse, `invalid_package`/`invalid-value` at `candidate`), with expected results for each. |
 
 ## New findings (disposition pass 1)
 
@@ -125,3 +128,47 @@ What is right in the new FR-322 scope:
 
 The FR-1036 writer patch belongs to another repository and is not reviewed
 here.
+
+## New findings (disposition pass 2)
+
+Scope added in this pass: only the fix-round-2 text, which is the FR-322
+"Plan-record type" rule, the changed `candidate` bullet, the
+"FR-322-AC-467" subsection, and TC-2037 steps 4 and 5 with their expected
+results. These were read against the FR-322 declared-record and object-type
+field-binding rules, FR-800 "The plan value", FR-808, FR-809 and FR-819. FR-802
+is byte-identical to fix head `dc3092b7`. This is not a full FR-322 audit.
+
+| ID      | Severity | Summary | Refs | Escape Cause |
+| ------- | -------- | ------- | ---- | ------------ |
+| FND-006 | medium | "Plan-record type" introduces one shared arguments record for all operations: "The arguments record's fields carry the declared operation parameter names and types; a field absent for an operation is optional in the shared arguments record." It does not cover two operations that declare a parameter with the same name and different types or presence, for example `drain(s: Reference<Server>)` and `resize(s: Integer)`. One record field `s` cannot carry both types. One reader could refuse such a package, another could accept either type, and a producer has no rule to emit. FR-800 says only "a record with one field per parameter", so the collision comes from the shared-record choice. The rule should state the collision case: a per-operation arguments record (for example a union keyed by `operation`), a defined merged type, or an explicit refusal or `unsupported` outcome. | spec/objects/interfaces/FR-322-checked-package-artifact.md:5974-5980; spec/functional/analysis/FR-800-define-the-plan-and-goal-model.md:76-80 | wrong-requirement |
+| FND-007 | low | The step-record base fields (`index`, `operation` of the model's operation enum, `arguments`, `before`/`after`) are stated only "For a state-model plan". For a hybrid plan, the rule says the step's `operation` carries "its transition target mode" and that "Extension field types are those the owning requirement specifies". FR-819 gives no type for that `operation` field (a mode value), no `arguments` shape, and no `index` or `before`/`after` for hybrid steps. Under "no field is typed by guessing its name", a reader cannot check a hybrid step record's `operation` type or its base field set. AC-467 and TC-2037 exercise only the state-model case. | spec/objects/interfaces/FR-322-checked-package-artifact.md:5974-5998; spec/functional/analysis/FR-819-plan-over-hybrid-models.md:44-55 | wrong-requirement |
+
+### Disposition pass 2 verdict
+
+**FAIL as written (one medium, one low new finding); FND-001 to FND-005 are
+fixed.** This was the last fix round allowed, so no third review cycle is
+opened here. The outcome of FND-006 and FND-007 is left to the dispatching
+lead: either another fix, or `deferred` to a named follow-up ticket. This
+review does not assign that outcome.
+
+What is sound and can stand on its own:
+
+- The plan candidate is an exact reference to a generated `composite_type`/`record`
+  node under the ordinary declared-record identity, owner, dependency and
+  source-map rules, with no reserved name or path and no new tag, form, key,
+  request member or refusal code. `grammar` references the actual `G` node,
+  and `domain` references `D`.
+- The plan fields `length`, `initial`, `final` and `steps`, and the
+  state-model step fields `index`, `operation`, `before` and `after`, match FR-800,
+  as do the timed and probabilistic extensions.
+- The value-synthesis case is unchanged.
+- The AC-467 plan fixture uses the existing `example/config-version`
+  package. Its source is complete, and its true goal and absent objective
+  keep the refusal oracle away from field-projection typing.
+- TC-2037 step 5 isolates the synthesis reader's candidate-type refusal and
+  claims no source-compilation or runtime evidence.
+
+The finding-free path is the state-model plan record over a model where no
+two operations share a parameter name with different types. The AC-467
+fixture is on that path. A follow-up must specify the arguments-record
+collision rule (FND-006) and the hybrid step-record field types (FND-007).
