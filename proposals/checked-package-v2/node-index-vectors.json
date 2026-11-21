@@ -1,6 +1,6 @@
 {
   "version": "filament.checked-node-index-vectors/v1",
-  "note": "TC-233 NI-01..NI-12, NI-15..NI-24 and NI-30..NI-36 (FR-322 \"Operand index segments\"). Each case is an RFC 6902 patch over the base package, whose operand rows are [[], [], [0], [0]]. NI-30..NI-36 are read with fixtures/positive-dependency-library.json supplied as the direct dependency test/predicates (19 nodes). A schema of invalid fails the V2 schema and is malformed_wire at the patched member (locus); a schema of valid passes it and the reader's operand checks refuse malformed_wire, with no cause, at locus, before every semantic_graph check, unless expected names another outcome: passes_operand_checks (NI-24), passes_operand_and_duplicate_checks (NI-22), passes_operand_checks_with_dependency_position (NI-30), or a later refusal at locus (NI-23). NI-13 (the deep chain), NI-14 (the copied id) and NI-25..NI-29 (request-style documents and the composition clause check) are built by the test, not published.",
+  "note": "TC-233 NI-01..NI-12, NI-15..NI-24, NI-30..NI-36 and NI-38..NI-40 (FR-322 \"Operand index segments\"). Each case is an RFC 6902 patch over the base package, whose operand rows are [[], [], [0], [0]]. NI-30..NI-36 and NI-38..NI-40 are read with fixtures/positive-dependency-library.json supplied as the direct dependency test/predicates (19 nodes); a case with supplied also supplies it under each identity listed there. A schema of invalid fails the V2 schema and is malformed_wire at the patched member (locus); a schema of valid passes it and the reader's operand checks refuse malformed_wire, with no cause, at locus, before every semantic_graph check, unless expected names another outcome: passes_operand_checks (NI-24), passes_operand_and_duplicate_checks (NI-22), passes_operand_checks_with_dependency_position (NI-30), or a later refusal at locus (NI-23). NI-13 (the deep chain), NI-14 (the copied id), NI-25..NI-29 (request-style documents and the composition clause check) and NI-37 (a library clause node added) are built by the test, not published.",
   "base": "fixtures/positive-dependency-call.json",
   "cases": [
     {
@@ -1610,6 +1610,284 @@
       "expected": "malformed_wire",
       "locus": "/semantic_graph/nodes/4/body/guarantees/0/clause/path/2",
       "note": "a dependency position written as a path segment"
+    },
+    {
+      "id": "NI-38",
+      "criterion": "FR-322-AC-521",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/semantic_graph/operand_rows/3/0",
+          "value": {
+            "package": "test/predicates",
+            "node": 0
+          }
+        }
+      ],
+      "schema": "valid",
+      "expected": "malformed_wire",
+      "locus": "/semantic_graph/operand_rows/3/0",
+      "note": "a dependency position in the row of a node that is not a component_composition node"
+    },
+    {
+      "id": "NI-39",
+      "criterion": "FR-322-AC-521",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/-",
+          "value": {
+            "body": {
+              "components": [
+                {
+                  "name": "A",
+                  "package": "test/predicates",
+                  "subject": {
+                    "package": "test/predicates",
+                    "path": [
+                      "model",
+                      "model_root"
+                    ],
+                    "ordinal": 0
+                  }
+                },
+                {
+                  "name": "B",
+                  "package": "test/predicates",
+                  "subject": {
+                    "package": "test/predicates",
+                    "path": [
+                      "model",
+                      "model_root"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              ],
+              "environment": [],
+              "guarantees": [
+                {
+                  "clause": {
+                    "package": "test/predicates",
+                    "path": [
+                      "composite_type",
+                      "set",
+                      {
+                        "operand": 0
+                      }
+                    ],
+                    "ordinal": 0
+                  },
+                  "component": "B"
+                }
+              ],
+              "liveness_dependencies": [],
+              "relies": [],
+              "rule": "assume-guarantee",
+              "supplies": [],
+              "term": "component_composition"
+            },
+            "owner": {
+              "authority": "agent-ix",
+              "identity": "example",
+              "kind": "source"
+            },
+            "declaration": {
+              "qualified_name": [
+                "App",
+                "composed"
+              ]
+            },
+            "dependencies": [
+              {
+                "package": "test/predicates",
+                "path": [
+                  "composite_type",
+                  "set",
+                  {
+                    "operand": 0
+                  }
+                ],
+                "ordinal": 0
+              }
+            ],
+            "node_id": {
+              "ordinal": 0,
+              "package": "example",
+              "path": [
+                "App",
+                "composed"
+              ]
+            },
+            "node_tag": "correspondence",
+            "occurrences": [
+              {
+                "ordinal": 0,
+                "role": "declaration"
+              }
+            ],
+            "schema_version": "filament.checked-semantic-graph/v2",
+            "semantic_form": "component_composition",
+            "semantic_type": {
+              "ordinal": 0,
+              "package": "test/predicates",
+              "path": [
+                "scalar_type",
+                "boolean"
+              ]
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/semantic_graph/operand_rows/-",
+          "value": [
+            {
+              "package": "test/predicates",
+              "node": 19
+            }
+          ]
+        },
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/4/node_id/path/-",
+          "value": {
+            "operand": 0
+          }
+        }
+      ],
+      "schema": "valid",
+      "expected": "malformed_wire",
+      "locus": "/semantic_graph/nodes/4/node_id/path/2/operand",
+      "note": "an own node_id slot naming a dependency position and that position out of range: the slot, earlier in canonical bytes, is the refusal"
+    },
+    {
+      "id": "NI-40",
+      "criterion": "FR-322-AC-521",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/semantic_graph/nodes/-",
+          "value": {
+            "body": {
+              "components": [
+                {
+                  "name": "A",
+                  "package": "test/predicates",
+                  "subject": {
+                    "package": "test/predicates",
+                    "path": [
+                      "model",
+                      "model_root"
+                    ],
+                    "ordinal": 0
+                  }
+                },
+                {
+                  "name": "B",
+                  "package": "test/predicates",
+                  "subject": {
+                    "package": "test/predicates",
+                    "path": [
+                      "model",
+                      "model_root"
+                    ],
+                    "ordinal": 0
+                  }
+                }
+              ],
+              "environment": [],
+              "guarantees": [
+                {
+                  "clause": {
+                    "package": "test/predicates",
+                    "path": [
+                      "composite_type",
+                      "set",
+                      {
+                        "operand": 0
+                      }
+                    ],
+                    "ordinal": 0
+                  },
+                  "component": "B"
+                }
+              ],
+              "liveness_dependencies": [],
+              "relies": [],
+              "rule": "assume-guarantee",
+              "supplies": [],
+              "term": "component_composition"
+            },
+            "owner": {
+              "authority": "agent-ix",
+              "identity": "example",
+              "kind": "source"
+            },
+            "declaration": {
+              "qualified_name": [
+                "App",
+                "composed"
+              ]
+            },
+            "dependencies": [
+              {
+                "package": "test/predicates",
+                "path": [
+                  "composite_type",
+                  "set",
+                  {
+                    "operand": 0
+                  }
+                ],
+                "ordinal": 0
+              }
+            ],
+            "node_id": {
+              "ordinal": 0,
+              "package": "example",
+              "path": [
+                "App",
+                "composed"
+              ]
+            },
+            "node_tag": "correspondence",
+            "occurrences": [
+              {
+                "ordinal": 0,
+                "role": "declaration"
+              }
+            ],
+            "schema_version": "filament.checked-semantic-graph/v2",
+            "semantic_form": "component_composition",
+            "semantic_type": {
+              "ordinal": 0,
+              "package": "test/predicates",
+              "path": [
+                "scalar_type",
+                "boolean"
+              ]
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/semantic_graph/operand_rows/-",
+          "value": [
+            {
+              "package": "other/lib",
+              "node": 6
+            }
+          ]
+        }
+      ],
+      "schema": "valid",
+      "supplied": [
+        "other/lib"
+      ],
+      "expected": "malformed_wire",
+      "locus": "/semantic_graph/operand_rows/4/0",
+      "note": "the library is also supplied as other/lib, which no lock.dependency_selections entry names: not a direct dependency"
     }
   ]
 }
