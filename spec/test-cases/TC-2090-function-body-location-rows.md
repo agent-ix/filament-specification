@@ -21,7 +21,7 @@ FR-322-AC-490, FR-322-AC-494, FR-322-AC-510.
 ## Test Procedure
 
 1. Validate the BL-01 vector of `checked-term-data-vectors.json`
-   (`function f(p: Float64[nearest-even], q: Float64[nearest-even]): Boolean pure { sqrt(p) <= sqrt(q) }`)
+   (`function f(p: Float64[nearest-even], q: Float64[nearest-even], r: Float64[nearest-even]): Boolean pure { sqrt(p) <= sqrt(q) }`)
    against the schema, admit it with the strict reader, and read the rows of
    the two `sqrt` applications through the typed read.
 2. Admit BL-02 (BL-01 with the second `sqrt`'s path `[0]`, written `{up: 0, down: []}`) and

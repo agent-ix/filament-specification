@@ -25558,7 +25558,7 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<Vec<Vec<u64>
 /// FR-322-AC-490 (TC-2090): the `body_locations` vectors over the packages of
 /// `f` and `h`. The rows keep the checker's paths, a node reached twice has one
 /// row per position, and each refusal vector refuses at its own locus.
-#[trace("TC-2090", "FR-322-AC-490")]
+#[trace("TC-2090", "FR-322-AC-490", "FR-322-AC-510")]
 #[test]
 fn tc_2090_function_body_location_rows() {
     let vectors = parsed_fixture(CHECKED_TERM_DATA_VECTORS);
@@ -25675,6 +25675,32 @@ fn tc_2090_function_body_location_rows() {
     assert_eq!(paths03[plus[1]], [1]);
     assert_eq!(encoded(&bl03)[2], (1, vec![]), "the root `and` row");
 
+    // FR-322-AC-490: each of the four `#ieee_operand` `let`s carries its
+    // binding term's `binder`, the `#ieee_operand` parameter of its level, the
+    // binder is among its `dependencies` and an operand of its path, and the
+    // package passes the binder-link rules (outer let first, then inner).
+    for (name, lets, binders) in [("f", [19usize, 18], [5usize, 7]), ("h", [18, 17], [5, 7])] {
+        let nodes = cases["packages"][name]["semantic_graph"]["nodes"].as_array().unwrap();
+        assert_eq!(let_binder_link_refusal(nodes), None, "package {name}: the binder link holds");
+        let mut levels = Vec::new();
+        for (at, binder_at) in lets.into_iter().zip(binders) {
+            let node = &nodes[at];
+            assert_eq!(node["body"]["operation"]["identity"], "filament.op.control.let", "{name} node {at}");
+            let binder = &node["body"]["arguments"][0]["binder"];
+            assert_eq!(*binder, nodes[binder_at]["node_id"], "{name} node {at}: binder names node {binder_at}");
+            let (parameter, level) = parameter_name_and_level(&nodes[binder_at]).expect("a parameter");
+            assert_eq!(parameter, "#ieee_operand", "{name} node {at}");
+            assert_eq!(node["body"]["arguments"][0]["name"], parameter, "{name} node {at}");
+            levels.push(level.parse::<u64>().unwrap());
+            assert!(node["dependencies"].as_array().unwrap().contains(binder), "{name} node {at}: binder is a dependency");
+            assert!(
+                node["node_id"]["path"].as_array().unwrap().contains(&json!({"node": binder_at})),
+                "{name} node {at}: the binder is an operand of the let's path"
+            );
+        }
+        assert_eq!(levels[1], levels[0] + 1, "{name}: the inner let binds the next level");
+    }
+
     for case in cases["reader_refusals"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
         let package = package_with(case);
@@ -25751,6 +25777,116 @@ fn tc_2090_function_body_location_rows() {
             carrierless["locus"].as_str().unwrap().to_owned()
         ))
     );
+}
+
+/// The package of one deep-body vector at `count` terms, built here and read
+/// through the same decider as BL-01..03: `d_add` (BL-D1, `count` additions
+/// nested on the left over the parameter `x`) or `d_let` (BL-D2, `count`
+/// nested `let`s, each binding one addition). Each term's row is `{up, down}`
+/// from the vector's rule, in key order.
+fn deep_body_package(shape: &str, count: usize) -> (Value, Vec<Value>) {
+    let id = |path: Vec<String>| json!({"ordinal": 0, "package": "fixture", "path": path});
+    let reference = |target: &Value| json!({"term": "reference", "target": target});
+    let application = |operator: &str, arguments: Vec<Value>| {
+        json!({"term": "application", "operator": operator, "arguments": arguments,
+               "operation": {"identity": format!("filament.op.{operator}"), "laws": [], "leaves": [], "member": null, "mode": null}})
+    };
+    let node = |tag: &str, form: &str, node_id: &Value, body: Value| {
+        json!({"node_tag": tag, "semantic_form": form, "node_id": node_id, "body": body, "dependencies": [],
+               "occurrences": [{"ordinal": 0, "role": if tag == "expression" { "expression" } else { "declaration" }}]})
+    };
+    let x = id(vec!["x".to_owned()]);
+    let one = id(vec!["one".to_owned()]);
+    let function_id = id(vec!["d".to_owned()]);
+    let mut nodes = vec![
+        node("value", "parameter", &x, json!({"members": [], "term": "aggregate"})),
+        node("value", "literal", &one, json!({"members": [], "term": "aggregate"})),
+    ];
+    let add_id = |k: usize| id(vec!["add".to_owned(), k.to_string()]);
+    let let_id = |k: usize| id(vec!["let".to_owned(), k.to_string()]);
+    let body_root;
+    let mut rows = Vec::new();
+    let row = |k: usize, up: u64, down: Vec<u64>| {
+        json!({"application": add_id(k), "occurrence": {"ordinal": 0, "role": "expression"}, "term_ordinal": 0,
+               "location": {"origin": {"function": function_id, "index": 0, "kind": "function_body", "name": "d"}, "up": up, "down": down}})
+    };
+    if shape == "add" {
+        body_root = add_id(0);
+        for k in 0..count {
+            let left = if k + 1 < count { add_id(k + 1) } else { x.clone() };
+            nodes.push(node("expression", "call", &add_id(k), application("integer.add", vec![reference(&left), reference(&x)])));
+            rows.push(row(k, 0, if k == 0 { vec![] } else { vec![0] }));
+        }
+    } else {
+        body_root = let_id(0);
+        for k in 0..count {
+            let value = application("integer.add", vec![reference(&if k == 0 { x.clone() } else { id(vec!["binder".to_owned(), (k - 1).to_string()]) }), reference(&one)]);
+            nodes.push(node("expression", "call", &add_id(k), value));
+            let binder = id(vec!["binder".to_owned(), k.to_string()]);
+            nodes.push(node("value", "parameter", &binder, json!({"members": [], "term": "aggregate"})));
+            let inner = if k + 1 < count { let_id(k + 1) } else { binder.clone() };
+            let binding = json!({"term": "binding", "name": format!("x{k}"), "value": reference(&add_id(k))});
+            nodes.push(node("expression", "let", &let_id(k), application("control.let", vec![binding, reference(&inner)])));
+            rows.push(row(k, if k == 0 { 0 } else { 1 }, if k == 0 { vec![0] } else { vec![1, 0] }));
+        }
+    }
+    nodes.push(node(
+        "function",
+        "pure_function",
+        &function_id,
+        json!({"members": [{"name": "body", "term": "binding", "value": reference(&body_root)}], "term": "aggregate"}),
+    ));
+    (json!({"name": "fixture", "semantic_graph": {"nodes": nodes}}), rows)
+}
+
+/// FR-322-AC-510 (TC-2090): BL-D1 and BL-D2, the deep-body vectors, are built
+/// and run. The reader rule rebuilds each path in walk order over a generated
+/// package of the vector's shape (1,000 terms, so the decider's linear id
+/// lookups stay fast), and the encoding's size is checked at the vector's
+/// own 100,000 terms by rebuilding incrementally: the entry counts are
+/// linear, where whole paths hold `n(n-1)/2` entries.
+#[trace("TC-2090", "FR-322-AC-510")]
+#[test]
+fn tc_2090_deep_body_vectors() {
+    let vectors = parsed_fixture(CHECKED_TERM_DATA_VECTORS);
+    let deep = vectors["body_locations"]["deep_body"].as_array().unwrap();
+    assert_eq!(deep.iter().map(|case| case["id"].as_str().unwrap()).collect::<Vec<_>>(), ["BL-D1-left-nested-sum", "BL-D2-nested-lets"]);
+    assert_eq!(deep[0]["whole_path_entries"], 4_999_950_000u64);
+    assert_eq!(deep[0]["max_location_entries"], 200_000);
+    assert_eq!(deep[1]["max_location_entries_per_row"], 3);
+    for (case, shape, count_key) in [(&deep[0], "add", "additions"), (&deep[1], "let", "lets")] {
+        let full = case[count_key].as_u64().unwrap() as usize;
+        assert_eq!(case["rows"], full as u64);
+        assert_eq!(case["expected"], "admitted");
+        // The decider over the generated package.
+        let (package, rows) = deep_body_package(shape, 1_000);
+        let paths = decide_body_locations(&package, &rows).expect("the deep body is admitted");
+        for (k, path) in paths.iter().enumerate() {
+            let expected: Vec<u64> = if shape == "add" { vec![0; k] } else { [vec![1; k], vec![0]].concat() };
+            assert_eq!(*path, expected, "{shape}: row {k}");
+        }
+        // The vector's own size, rebuilt incrementally from the rule.
+        let (mut previous, mut entries) = (Vec::<u64>::new(), 0usize);
+        for k in 0..full {
+            let (up, down): (usize, Vec<u64>) = match (shape, k) {
+                ("add", 0) => (0, vec![]),
+                ("add", _) => (0, vec![0]),
+                (_, 0) => (0, vec![0]),
+                _ => (1, vec![1, 0]),
+            };
+            entries += 1 + down.len();
+            assert!(1 + down.len() <= 3);
+            previous.truncate(previous.len() - up);
+            previous.extend(down);
+            let expected_len = if shape == "add" { k } else { k + 1 };
+            assert_eq!(previous.len(), expected_len, "{shape}: row {k} length");
+            assert_eq!(previous.last().copied(), Some(0).filter(|_| expected_len > 0), "{shape}: row {k} ends at 0");
+        }
+        assert!(entries <= 2 * full + full, "{shape}: linear entries");
+        if shape == "add" {
+            assert!(entries - full <= 200_000, "BL-D1: at most 200,000 up/down entries");
+        }
+    }
 }
 
 const INTEGER_CONTAINMENT_VECTORS: &str =
@@ -25845,6 +25981,13 @@ fn parameter_name_and_level(node: &Value) -> Option<(String, String)> {
 /// the `let` body to a `value`/`parameter` node of the binder's `name` and
 /// `level` that is not the `binder` node (at that reference), and a `binder`
 /// on any other binding term (at that `binder`).
+///
+/// `nodes` must be in index view ([`parsed_fixture`] reads every vector so):
+/// node ids are then compared as the nodes they name, never as wire bytes,
+/// because an operand slot `{"operand": k}` of one node and of another can
+/// name the same operand (FR-322 "Node bytes are not identity"). The same
+/// holds for [`let_binder_containment_refusal`]; the slot-form packages `f`
+/// and `h` are checked through [`parsed_fixture`] in TC-2090.
 fn let_binder_link_refusal(nodes: &[Value]) -> Option<String> {
     fn stray_binders(value: &Value, pointer: &str, allowed: &str, found: &mut Vec<String>) {
         match value {
@@ -25883,21 +26026,39 @@ fn let_binder_link_refusal(nodes: &[Value]) -> Option<String> {
             let Some((name, level)) = named.filter(|(name, _)| linked && binding["name"] == *name) else {
                 return Some(format!("{here}/binder"));
             };
-            let mut pending: Vec<(usize, String)> = by_id(&node["body"]["arguments"][1]["target"])
-                .map(|index| (index, format!("/semantic_graph/nodes/{index}/body")))
-                .into_iter()
-                .collect();
-            while let Some((index, _)) = pending.pop() {
-                let body = &nodes[index]["body"];
-                for (position, argument) in body["arguments"].as_array().into_iter().flatten().enumerate() {
-                    let Some(target) = by_id(&argument["target"]) else { continue };
+            // Every reference anywhere in the body of a node the `let` body
+            // reaches: call arguments, nested binding values, aggregate members.
+            fn references(value: &Value, pointer: &str, found: &mut Vec<(String, Value)>) {
+                match value {
+                    Value::Object(members) => {
+                        if value["term"] == "reference" {
+                            found.push((pointer.to_owned(), value["target"].clone()));
+                        }
+                        for (key, member) in members {
+                            references(member, &format!("{pointer}/{key}"), found);
+                        }
+                    }
+                    Value::Array(items) => {
+                        for (position, item) in items.iter().enumerate() {
+                            references(item, &format!("{pointer}/{position}"), found);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            let mut pending: Vec<usize> = by_id(&node["body"]["arguments"][1]["target"]).into_iter().collect();
+            while let Some(index) = pending.pop() {
+                let mut found = Vec::new();
+                references(&nodes[index]["body"], &format!("/semantic_graph/nodes/{index}/body"), &mut found);
+                for (pointer, target_id) in found {
+                    let Some(target) = by_id(&target_id) else { continue };
                     match parameter_name_and_level(&nodes[target]) {
                         Some((other, other_level))
                             if other == name && other_level == level && nodes[target]["node_id"] != *binder_id =>
                         {
-                            return Some(format!("/semantic_graph/nodes/{index}/body/arguments/{position}"));
+                            return Some(pointer);
                         }
-                        _ if nodes[target]["node_tag"] == "expression" => pending.push((target, String::new())),
+                        _ if nodes[target]["node_tag"] == "expression" => pending.push(target),
                         _ => {}
                     }
                 }
@@ -26122,6 +26283,21 @@ fn tc_2099_integer_containment() {
         }),
         Some(format!("/semantic_graph/nodes/{aggregate}/body/members/0/binder"))
     );
+    // The same stray read inside a nested binding value and an aggregate member of a body node.
+    let other_ref = json!({"term": "reference", "target": sibling("y", "value/parameter/y/nested", &base[4]["semantic_type"])["node_id"].clone()});
+    let nested = sibling("y", "value/parameter/y/nested", &base[4]["semantic_type"]);
+    for (extra, locus) in [
+        (json!({"name": "w", "term": "binding", "value": other_ref.clone()}), "value"),
+        (json!({"members": [other_ref.clone()], "term": "aggregate"}), "members/0"),
+    ] {
+        assert_eq!(
+            link(&|nodes| {
+                nodes[call_at]["body"]["arguments"].as_array_mut().unwrap().push(extra.clone());
+                nodes.push(nested.clone());
+            }),
+            Some(format!("/semantic_graph/nodes/{call_at}/body/arguments/2/{locus}"))
+        );
+    }
     // The call argument retargeted to a second `y` at the binder's level and another type.
     let other = sibling("y", "value/parameter/y/other", &base[4]["semantic_type"]);
     assert_eq!(
