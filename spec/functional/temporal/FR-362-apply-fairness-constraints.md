@@ -96,10 +96,11 @@ the infinite-trace profile.
   `Op`, over every receiver in the universe and every argument vector of the
   finite parameter domains; each is enabled when its identity is.
 - A constraint is **taken** at a step when the step's transition identity
-  belongs to it. The terminal stutter step takes no constraint.
+  belongs to it. The terminal stutter step takes no constraint, and neither does the closure stutter step ([FR-364](FR-364-replay-temporal-counterexamples.md) "Closure stutter"), which also satisfies none.
 
 Enabledness is a property of the model state at a position. A terminal state
-enables no constraint.
+enables no constraint; the state of a closure stutter step is not terminal, so
+its enabledness is the model state's own.
 
 ### Weak and strong fairness
 

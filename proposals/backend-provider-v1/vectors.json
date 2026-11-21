@@ -1441,6 +1441,85 @@
       }
     },
     {
+      "name": "temporal-outcome-closure-stutter",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/counterexample": "FR-364",
+        "/counterexamples/0/counterexample": "FR-364"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-model-check",
+            "kind": "temporal-satisfaction",
+            "result": "refuted",
+            "counterexample": 0
+          }
+        ],
+        "counterexamples": [
+          {
+            "request_index": 0,
+            "backend": "fsl-model-check",
+            "counterexample": {
+              "trace": "model",
+              "kind": "formula",
+              "initial_state": 0,
+              "prefix": [
+                {
+                  "transition": {
+                    "type": "transition",
+                    "operation": "Example::Session::open",
+                    "receiver": null,
+                    "arguments": []
+                  },
+                  "post_state": {
+                    "key": "eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0"
+                  }
+                }
+              ],
+              "loop": [
+                {
+                  "transition": {
+                    "type": "closure-stutter"
+                  },
+                  "post_state": {
+                    "key": "eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0"
+                  }
+                }
+              ],
+              "over_binding": null,
+              "fairness": [],
+              "interval": null,
+              "trace_position": 0
+            }
+          }
+        ],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result",
+            "method": "exploration",
+            "seed": "42",
+            "witness_samples": 4,
+            "limits": {
+              "max_states": 250000,
+              "max_walk_steps": 64
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "certification-outcome",
       "stage": "outcome",
       "owners": {
@@ -14514,6 +14593,41 @@
           "op": "add",
           "path": "/results/0/cause/state",
           "value": "open"
+        }
+      ]
+    },
+    {
+      "name": "closure-stutter-with-an-operation-member",
+      "base": "temporal-outcome-closure-stutter",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/counterexamples/0/counterexample/loop/0/transition/operation",
+          "value": "Example::Session::open"
+        }
+      ]
+    },
+    {
+      "name": "closure-stutter-spelled-with-an-underscore",
+      "base": "temporal-outcome-closure-stutter",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/counterexamples/0/counterexample/loop/0/transition/type",
+          "value": "closure_stutter"
+        }
+      ]
+    },
+    {
+      "name": "closure-stutter-without-a-post-state",
+      "base": "temporal-outcome-closure-stutter",
+      "owner": "FR-364",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/counterexamples/0/counterexample/loop/0/post_state"
         }
       ]
     }
