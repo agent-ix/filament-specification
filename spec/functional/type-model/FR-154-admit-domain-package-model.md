@@ -282,6 +282,33 @@ Intake does not check which construct owns an admitted clock member or whether
 the model declares a time source; FSL FR-230 and FR-415 check those where the
 clock is used.
 
+**Clock reference types.** A member that holds a place id, such as a field
+`r: Reference<Clock>` that an operation sets with `self.r = ref(self.x)`
+(FR-415 "Clock places"), is typed by a package type, as every typed form
+with a type argument is ("Option value types" below): its `typeRef` is
+`ix://<package identity>/<artifact id>` of a type definition of `kind`
+`reference` whose `target` is `ix://filament/native/Clock`, an alias of it
+or a value type bound to it by `target`. No other spelling exists.
+`ix://filament/native/Clock` names a clock place, not a reference to one;
+`Reference<...>` is not a `typeRef`; and the native set holds no
+clock-reference name, so `ix://filament/native/ClockReference` refuses
+`invalid_model_binding`/`malformed-declaration` at the member's `typeRef`,
+as every other name outside the native set does. Intake SHALL admit the
+reference type as one type definition node that builds one original
+declaration, keyed by its package identity and IR node identity like any
+package type, and SHALL read a member typed by it as a **data member** of
+type `Reference<Clock>`: the member does not take the clock member shape
+above, contributes no clock place, and its multiplicity, presence,
+nullability and constraints are read as for any data member of a
+reference type, so a multiplicity `{0, 3, true, false}` gives
+`Sequence<Reference<Clock>>[0, 3]` and presence `optional` gives
+`Option<Reference<Clock>>`. The type is admitted at every position a
+package type is (a field, parameter or result `typeRef`, an alias
+`target`, a sequence `items`, a map `values`, an option `inner`, a tuple
+position `typeRef` and a variant case `payloadType`), and refused as a map
+`keys` as every `reference` type is ("Map types" below). FR-322 types it by
+the package's one `scalar_type`/`clock_reference` node (FR-829).
+
 **Value types bound to a native by `target`.** A value type (FR-208
 `filament.meaning.model.value-type/v1`) binds its native in one of two ways:
 by `scalar` and constraints, as the bounded Integer, Text and Rational value
@@ -958,6 +985,7 @@ Admission checks are decided before the first charge.
 | FR-154-AC-50 | A collection-typed field names its collection through a package type: the published `acme/orders` document types `Order.clock` by `ix://acme/orders/ClockMap`, a map type definition with `keys` `ix://filament/native/Text` and `values` `ix://filament/native/Clock`, and it is admitted and read as `Map<Text, Clock>`. The same field typed by the rendered type text `Map<Text, ix://filament/native/Clock>`, and a field typed `Sequence<ix://filament/native/Integer>`, each refuse `invalid_model_binding`/`malformed-declaration` at the field node and `Field.typeRef`, because a `typeRef` is one reference of the three forms and never embeds a second one; no published document carries a rendered type text in a `typeRef`. | Test (TC-1481) |
 | FR-154-AC-51 | A domain package declaring value types `Flag`, `Count`, `Name`, `Reading` and `Sample` with `target` `ix://filament/native/Boolean`, `Integer`, `String`, `Float64` and `Float32`, and `Memo`, `Ratio` and `Amount` with `target` `Text`, `Rational` and `Decimal`, each typing one field of an object type, is admitted with no refusal; a value type `Watch` with `target` `ix://filament/native/Clock` typing a required field and an optional field is admitted as two clock members, a `max` constraint whose `appliesTo` is `Watch` is admitted, `maxLength` on it refuses `invalid_model_binding`/`malformed-declaration` at `Constraint.keyword`, and an option value type whose `inner` is `Watch` refuses as one whose `inner` is `Clock`; a `min` constraint on `Count` refuses `malformed-declaration` at `Constraint.keyword`; a value type with `target` `ix://filament/native/Int64` refuses `malformed-declaration` at `TypeDefinition.target`, and one with both `target` and `scalar` at `TypeDefinition.scalar`. | Test (TC-2048) |
 | FR-154-AC-52 | Over TC-2054's `test/refunds` package, intake admits `Order/note` with parameter `firstApprover` (`required`) and `secondApprover` (`optional`), and the admitted parameters carry those presences one to one; FR-322 types `secondApprover` `Option<Reference<Staff>>` and `firstApprover` `Reference<Staff>`. The same package with `secondApprover`'s `presence` absent, `null` or `"maybe"` refuses `invalid_model_binding`/`malformed-declaration` at the `Order/note` node, path `Operation.params[1].presence`, naming the value; with `secondApprover` typed by the option value type `OptStaff` (over `Staff`) and presence `optional` it refuses the same pair at `Operation.params[1].presence` (no `Option<Option<..>>`); with `OptStaff` and presence `required` it is admitted with the same type `Option<Reference<Staff>>` as the `optional` spelling. | Test (TC-2054) |
+| FR-154-AC-53 | A domain package `acme/rpc` whose object type `Call` has clock fields `x` and `y` and a field `r` typed `ix://acme/rpc/ClockRef`, a type definition of `kind` `reference` with `target` `ix://filament/native/Clock`, is admitted with one declaration for `ClockRef`, and `r` is a data member of type `Reference<Clock>` with no clock member shape: `r` with presence `optional` is `Option<Reference<Clock>>` and with multiplicity `{0, 3, true, false}` is `Sequence<Reference<Clock>>[0, 3]`; the same holds with `target` an alias of `Clock` or a value type bound to it by `target`. The field typed `ix://filament/native/ClockReference` refuses `invalid_model_binding`/`malformed-declaration` at `Field.typeRef`; a map type whose `keys` is `ClockRef` refuses `ill_typed`/`operator-ineligible` at `TypeDefinition.keys`; and the field typed `ix://filament/native/Clock` stays a clock member. | Test (TC-234) |
 
 ## Dependencies
 
