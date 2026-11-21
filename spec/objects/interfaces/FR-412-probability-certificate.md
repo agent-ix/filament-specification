@@ -124,25 +124,37 @@ decided, target and `Prob0` states:
 - **Policy hints**: for an `upper` bound on a minimum or a `lower` bound
   on a maximum, including `workload-minimum` and `workload-maximum`, the
   checker SHALL independently rebuild the current actions at every
-  undecided state. When that state's `policy` row is absent, the checker
+  undecided state it checks: all reachable undecided states for `upper`,
+  and only named undecided states for `lower`, retaining the lower rule's
+  least-value treatment of unnamed successors. This hint rule applies
+  only to certificate `kind` `upper` or `lower`; `exact` certificates,
+  including the `optimum` conditional certificate's exact `post` and
+  `reset` parts, retain their existing required policy coverage, equality,
+  ranking and properness conditions. When a checked state's `policy` row is absent, the checker
   SHALL accept the per-state conditions exactly when some rebuilt action
   satisfies every applicable condition at that state, including the
   inequality and the ranking condition when required, and SHALL select
-  the first such action in canonical product-action order. One action
+  the first such action in canonical product-action order. The existing
+  checked-acceptance outcome SHALL expose the reconstructed policy to its
+  consumer, with each selected complete product key and rebuilt action,
+  including its existing `PostState` or terminal-stutter form. This is the
+  checked outcome's policy, not a new certificate or wire member. One action
   SHALL satisfy all those conditions together; separate actions satisfying
-  only the inequality or only the ranking do not suffice. When a row is
-  present, the checker SHALL require its choice to name an existing current
+  only the inequality or only the ranking do not suffice. After the
+  existing shape and missing-rank checks, if no action satisfies the
+  inequality the checker SHALL reject `inequality-fails` at that state;
+  if some action satisfies the inequality but none of those satisfies the
+  required rank progress, it SHALL reject `rank-broken` there. When a row is
+  present, the checker SHALL require its existing `TransitionIdentity`
+  choice to identify exactly one current rebuilt
   action and SHALL check that action against every applicable per-state
-  condition. A nonexistent choice is rejected `malformed` at `policy`;
+  condition. A nonexistent or ambiguous choice is rejected `malformed` at `policy`;
   a choice failing an inequality or ranking is rejected by the existing
   `inequality-fails` or `rank-broken` rule, even if another action would
-  satisfy every condition. The action may be an existing
-  `TransitionIdentity`, reset choice or admitted randomized choice where
-  the objective permits that form. The rebuilt action set includes
+  satisfy every condition. Reset and randomized choices remain confined to
+  the existing conditional `reset` rules. The rebuilt action set includes
   terminal stutter and distinct `PostState` choices; an absent hint
-  requires no fabricated operation or new wire choice form. The `optimum`
-  conditional certificate's exact `reset` part retains its full policy
-  coverage and properness conditions below.
+  requires no fabricated operation or new wire choice form.
 - **Exact**: both conditions, with equality.
 - **Finite horizon**: the ranking is the remaining horizon, which the checker
   reads from the monitor state.
@@ -325,9 +337,9 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-14 | A workload chain whose state `s` goes to itself, to the target `g` and to the non-target terminal `f` with `1/3` each (value `1/2`): the `lower` certificate `s` `7/16`, rank 1, is accepted for `>= 2/5` and the `upper` certificate `s` `9/16` for `<= 3/5`; `lower` `5/8` and `upper` `7/16` are rejected `inequality-fails` at `s`, `lower` `7/16` for `>= 1/2` `threshold-missed` at `s`, and `lower` `7/16` without `ranking` `malformed` at `ranking`. Over `W` with no fairness set, maximum `1/2`: `upper` `s` `3/5` is accepted for `<= 3/5` (every action satisfies `Q_a(y) <= y`); `lower` `s` 1 with policy `wait` and rank 1 is rejected `rank-broken` at `s`, and `lower` `7/16` with policy `go` and rank 1 is accepted as the lower side of a value-bounds proof. | Test (TC-2110) |
 | FR-412-AC-15 | `Retry`'s undelivered state has the action `try`, delivering with `1/2` and otherwise staying; delivered is terminal. For `quantile 0.5 of (steps from holds(true) until holds(delivered) within 4) <= 2` under its workload, the `ratio` certificate whose numerator has values `3/4`, `1/2`, 0, 0 at the active undelivered states of amounts 0, 1, 2 and above the bound, ranked by the remaining window 4, 3, 2, 1, and whose denominator is 1 there, is accepted. With `try` split into `fast` (`1/2`) and `slow` (`1/4`), for `quantile 0.4 of (…) <= 2` under every scheduler the `exact` shifted-reward certificate with values `3/80`, `−3/20`, `−2/5`, `−2/5` is accepted with side `AtLeast`; for `quantile 0.5` its values `−1/16`, `−1/4`, `−1/2`, `−1/2` are rejected `threshold-missed` at the initial state, and the level-0.4 certificate with `3/80` replaced by `fast`'s `9/40` is rejected `inequality-fails` there. `mean of fraction holds(delivered) over [0, 2]` under the workload has the exact initial value `5/12`. | Test (TC-2110) |
 | FR-412-AC-16 | Over FR-412-AC-15's `fast`/`slow` model at level 0.5 (minimum `Pr(M <= 2) = 7/16`, shifted minimum `−1/16`), a `lower` certificate that names only the initial state, at value 0, is rejected `inequality-fails` there: each unnamed successor counts as `−1/2`, so `Q_fast = Q_slow = −1/2 < 0`. Counted as 0 instead, it would pass (`Q_fast = 1/4`, `Q_slow = 1/8`) and prove a claim that fails. | Test (TC-2110) |
-| FR-412-AC-17 | For a product containing only a terminal target state and its terminal stutter, an otherwise valid upper/minimum certificate at value 1 and lower/maximum certificate at value 1, each without any policy row, are accepted. The checker rebuilds terminal stutter and requires no invented TransitionIdentity or policy row for it. | Test |
-| FR-412-AC-18 | At an undecided state with two PostState choices whose independently recomputed action values are `1/4` and `3/4`, an upper/minimum bound `1/2` with no policy row selects the first action satisfying all per-state conditions in canonical product-action order; the bound `1/8` is rejected `inequality-fails` because neither action satisfies it. For a lower/maximum bound `1/2`, no row is needed when the `3/4` action also satisfies the required rank progress; if the only action satisfying the inequality fails rank progress, the bound is rejected `rank-broken`, even when the other action satisfies rank progress. | Test |
-| FR-412-AC-19 | On AC-18's product, an upper/minimum bound `1/2` whose hint selects the `3/4` action is rejected `inequality-fails` even though the `1/4` action would pass. On a variant with two actions whose values are both `3/4`, a lower/maximum bound `1/2` whose hint satisfies the inequality but fails rank progress is rejected `rank-broken` even if the other action satisfies both. A hint naming a nonexistent current action is rejected `malformed` at `policy`, rather than replaced by a satisfying action. An admitted reset or randomized hint is checked by the same existing-action and all-conditions rule wherever its objective permits that form. | Test |
+| FR-412-AC-17 | For an active finite-window fraction measure over a terminal model state satisfying its predicate, with nonzero remaining window, the product continuation is undecided and its only action is terminal stutter advancing the monitor. With every completed payoff 1 and otherwise valid rows at value 1 and ranks equal to the remaining window where required, upper/minimum and lower/maximum certificates without policy rows are accepted. The checked outcome's reconstructed policy names the existing terminal-stutter action at each checked undecided state, without an invented TransitionIdentity. | Test (TC-2110) |
+| FR-412-AC-18 | At a checked undecided state with two PostState choices of one operation whose independently recomputed action values are `1/4` and `3/4`, an upper/minimum bound `1/2` with no policy row reports the first action satisfying all per-state conditions in canonical product-action order in the existing checked outcome's reconstructed policy; the bound `1/8` is rejected `inequality-fails` because neither action satisfies it. For a lower/maximum bound `1/2`, no row is needed when the `3/4` action also satisfies required rank progress; if only that action satisfies the inequality but fails rank progress, the bound is rejected `rank-broken`, even when the other action satisfies rank progress. A lower certificate checks only named undecided states and uses the existing least value for unnamed successors. | Test (TC-2110) |
+| FR-412-AC-19 | For distinct operations `low` and `high` with unambiguous TransitionIdentity hints and action values `1/4` and `3/4`, an upper/minimum bound `1/2` whose hint names `high` is rejected `inequality-fails` even though `low` would pass. On a variant where both operations have action value `3/4`, a lower/maximum bound `1/2` whose hint names an operation failing rank progress is rejected `rank-broken` even if the other operation satisfies both conditions. A nonexistent hint, or an identity ambiguous between AC-18's PostState choices, is rejected `malformed` at `policy` rather than replaced by another action. | Test (TC-2110) |
 
 ## Dependencies
 

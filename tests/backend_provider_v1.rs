@@ -834,6 +834,45 @@ fn tc_431_exhaustive_certificate_is_only_conditional_vacuous() {
         "vacuous certificate is admitted"
     );
     let certificate = original["certificate"].clone();
+    let certificate_schema = definition("ProbabilityCertificate");
+    for (member, payload) in [
+        ("ranking", json!([{"state": "AQ", "rank": 1}])),
+        (
+            "policy",
+            json!([{"state": "AQ", "choice": {"type": "reset"}}]),
+        ),
+        (
+            "components",
+            json!([{"value": {"numerator": "1", "denominator": "2"}, "gain": {"numerator": "1", "denominator": "3"}, "bias": []}]),
+        ),
+    ] {
+        for payload in [payload, json!([])] {
+            let mut result = original.clone();
+            result["certificate"][member] = payload;
+            assert!(
+                certificate_schema.is_valid(&result["certificate"]),
+                "{member} is well shaped before the exhaustive restriction"
+            );
+            assert!(
+                !result_schema.is_valid(&result),
+                "vacuous exhaustive certificate forbids {member}, even empty"
+            );
+        }
+    }
+    let mut other_kind = original.clone();
+    other_kind["kind"] = json!("refinement");
+    assert!(
+        !result_schema.is_valid(&other_kind),
+        "vacuous certificate is confined to probabilistic results"
+    );
+    other_kind
+        .as_object_mut()
+        .expect("result object")
+        .remove("certificate");
+    assert!(
+        result_schema.is_valid(&other_kind),
+        "ordinary exhaustive results of another kind remain admitted"
+    );
     let mut valued = original.clone();
     valued["certificate"]["values"] =
         json!([{"state": "AQ", "value": {"numerator": "0", "denominator": "1"}}]);

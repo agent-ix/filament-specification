@@ -1,0 +1,60 @@
+---
+id: SR-2026112106460400000006
+title: "Base specification review — FR-331 vacuous exhaustive carrier and FR-412 policy hints"
+type: SpecReview
+analysis: base
+scope: "agent-ix/filament-specification; spec/objects/interfaces/FR-331-backend-provider-envelope.md (exhaustive paragraph, FR-331-AC-60); spec/objects/interfaces/FR-412-probability-certificate.md (policy member row, Policy hints rule, Absence, FR-412-AC-17..19); spec/test-cases/TC-2110-check-fair-minimum-value-bounds-and-measure-certificates.md (steps 9-11); spec/test-cases/TC-431-backend-provider-wire-vectors.md (BP-65)"
+review_set: base
+---
+
+## Summary
+
+Ticket: QSL-2158. PR: filament-specification#787 at 0f3375a68372bc7db8bfe6b9933215d969a2f023, base f73bd9f3fe5091ab8b459126808d7149cdb02b08. This is one BASE checklist review, as the architecture brief requires; no sub-analyses ran. No AssuranceProfile applies to the reviewed scope.
+
+`quire validate --scope .` passed on the four changed spec files (quire 0.52.0, engine 0.62.2). It reported only three warnings, all pre-existing and outside the diff: FR-331 unresolved type `ProtocolClaimKind`, and the `verifies` edge type twice.
+
+FR-331's exhaustive paragraph matches the architecture ruling. Basis `exhaustive` stays value-free, the only certificate it may carry is the conditional/vacuous one, `exact-value` keeps its `Rational`, and no zero-value or new basis is introduced. The FR-412 hint rule reads correctly for its core cases:
+- an absent row means some single action must satisfy every condition;
+- a present row is checked as written, with no fallback;
+- nonexistent → `malformed` at `policy`.
+
+The defects are in the rule's boundaries with the `exact`/`post` certificates, lower-certificate scope, observability, wire identity and test layout.
+
+## Verdict
+
+**FAIL** — medium ambiguities in the FR-412 hint rule must be fixed before acceptance.
+
+## Review notes
+
+The review did not ask for a duplicate probability engine in the standards harness. FR-412-AC-17..19 semantics are owned downstream by FSL (PR 3285). The reset part's full coverage and properness rule (FR-412-AC-9, -11, -12) is explicitly preserved by the hint bullet, which is consistent.
+
+## Scope
+
+| ID | Role | Excerpt |
+| --- | --- | --- |
+| FR-331 exhaustive paragraph | examined | `A proved result with basis exhaustive SHALL remain value-free. ... MAY carry its FR-412 certificate with kind conditional, conditional exactly {"mode": "vacuous"} and empty values ... Every other exhaustive result SHALL omit certificate.` |
+| FR-331-AC-60 | examined | `The schema admits exhaustive-vacuous-conditional-outcome ... The same certificate remains forbidden on bounded-complete, inductive, reduced, witnessed and bounded-proof. An exact-value basis without its Rational value ... is refused` |
+| FR-412 Policy hints rule | examined | `for an upper bound on a minimum or a lower bound on a maximum ... the checker SHALL independently rebuild the current actions at every undecided state. When that state's policy row is absent ... SHALL select the first such action in canonical product-action order.` |
+| FR-412 policy member row | examined | `optional per-state action hints, checked by the policy rule below.` |
+| FR-412 Absence | examined | policy no longer listed as a required member for lower/maximum or upper/minimum |
+| FR-412-AC-17 | examined | `For a product containing only a terminal target state and its terminal stutter ... each without any policy row, are accepted.` |
+| FR-412-AC-18 | examined | `At an undecided state with two PostState choices ... 1/4 and 3/4, an upper/minimum bound 1/2 with no policy row selects the first action ...` |
+| FR-412-AC-19 | examined | `... whose hint selects the 3/4 action is rejected inequality-fails ... An admitted reset or randomized hint is checked by the same existing-action and all-conditions rule wherever its objective permits that form.` |
+| FR-412-AC-9 | context_only | optimum reset policy b accepted |
+| FR-412-AC-14 | context_only | lower 1 with policy wait rank-broken; lower 7/16 with policy go accepted |
+| TC-2110 steps 9-11 | examined | terminal stutter, PostState pair, hint cases |
+| TC-431 BP-65 | examined | `exhaustive-vacuous-conditional-outcome ... tc_431_exhaustive_certificate_is_only_conditional_vacuous` |
+
+## Findings
+
+| ID      | Severity | Summary | Refs |
+| ------- | -------- | ------- | ---- |
+| FND-001 | medium | The hint rule covers `upper` on a minimum and `lower` on a maximum, but `exact` certificates on a minimum or maximum also need a policy for rank progress ("Exact: both conditions"). That includes the `optimum` `post` part. The rule excludes only the reset part, so it is ambiguous whether hint or mandatory-policy semantics apply to `exact` and `post`. | spec/objects/interfaces/FR-412-probability-certificate.md:124 |
+| FND-002 | medium | The hint rule rebuilds actions "at every undecided state", while a `lower` certificate is checked only over its named states and their successors. A partial-product lower proof cannot enumerate every undecided state, so the two scopes conflict. | spec/objects/interfaces/FR-412-probability-certificate.md:127 |
+| FND-003 | medium | For an absent row, the normative rule does not say which rejection applies when no single action satisfies all conditions. In particular it is silent when one action meets only the inequality and another only the rank. FR-412-AC-18 asserts `rank-broken` there, a precedence the rule body never states. | spec/objects/interfaces/FR-412-probability-certificate.md:128 |
+| FND-004 | medium | "SHALL select the first such action in canonical product-action order" names no consumer or report channel. No wire member or rejection carries the selection, so FR-412-AC-18's "selects the first action" clause is not observable. | spec/objects/interfaces/FR-412-probability-certificate.md:329 |
+| FND-005 | medium | A present hint is a `TransitionIdentity` (operation, receiver, arguments), which cannot distinguish two `PostState` choices of one operation. FR-412 does not say how such a row resolves to one rebuilt action, so FR-412-AC-19's hint for "the 3/4 action" on AC-18's PostState product cannot be authored unambiguously. | spec/objects/interfaces/FR-412-probability-certificate.md:330 |
+| FND-006 | medium | FR-412-AC-19's last sentence is vacuous. Within the hint rule's scope, no objective permits a reset or randomized choice: those forms exist only in the excluded `reset` part. No test can fail that clause. | spec/objects/interfaces/FR-412-probability-certificate.md:330 |
+| FND-007 | medium | FR-412-AC-17's only state is a terminal target, which is decided with a fixed value, and the hint rule applies only at undecided states. The AC can fail only on the deleted mandatory-policy Absence rule, never on the terminal-stutter rebuild it names. | spec/objects/interfaces/FR-412-probability-certificate.md:328 |
+| FND-008 | low | In TC-431, the BP-65 row is separated from the BP table by a blank line, so it renders as a paragraph, not a table row. | spec/test-cases/TC-431-backend-provider-wire-vectors.md:106 |
+| FND-009 | low | The Verification cells of FR-331-AC-60 and FR-412-AC-17..19 read `Test` without their TC (TC-431, TC-2110), unlike every sibling AC, which reads `Test (TC-…)`. | spec/objects/interfaces/FR-331-backend-provider-envelope.md:1093 |

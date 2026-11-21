@@ -45,18 +45,25 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19.
    holds(delivered) over [0, 2]` certificate.
 8. Over the `fast`/`slow` variant at level 0.5, offer a `lower` shifted
    certificate that names only the initial state, at value 0.
-9. Over a product containing only a terminal target state and its stutter,
+9. Over an active finite-window fraction measure whose terminal model
+   state satisfies its predicate and whose remaining window is nonzero,
    offer otherwise valid upper/minimum and lower/maximum certificates at
-   value 1 with no policy row.
-10. At an undecided state with two PostState choices whose recomputed
+   value 1, with remaining-window ranks where required and no policy row.
+   Its undecided continuation has only terminal stutter advancing the monitor.
+10. At a checked undecided state with two PostState choices of one operation whose recomputed
     action values are `1/4` and `3/4`, offer upper/minimum bounds `1/2`
     and `1/8` without policy rows. Offer lower/maximum `1/2` without a row,
     first with rank progress under the `3/4` action, then without it while
     only the `1/4` action has rank progress.
-11. For step 10's upper/minimum bound `1/2`, supply a hint for the `3/4`
-    action, then a nonexistent action. On a variant with both action
-    values `3/4` and rank progress under only the second action, offer
-    lower/maximum `1/2` with a hint for the first action.
+    Inspect the selected rebuilt action in the existing checked outcome's
+    reconstructed policy. For lower certificates check only named
+    undecided states, with unnamed successors at their existing least value.
+11. Use distinct operations `low` and `high` with unambiguous
+    TransitionIdentity hints and action values `1/4` and `3/4`. For the
+    upper/minimum bound `1/2`, supply a hint for `high`, then a nonexistent
+    operation. On a variant with both operation values `3/4` and rank
+    progress under only `high`, offer lower/maximum `1/2` with a hint for
+    `low`. Also supply a hint ambiguous between step 10's PostState choices.
 
 ## Expected Results
 
@@ -73,8 +80,10 @@ FR-412-AC-17, FR-412-AC-18, FR-412-AC-19.
 - Step 7: accepted with initial value `5/12`.
 - Step 8: `inequality-fails` at the initial state (unnamed successors at
   `−1/2`).
-- Step 9: both accepted without a fabricated operation or policy row.
+- Step 9: both accepted; the checked outcome's reconstructed policy reports
+  terminal stutter at each checked undecided state, without a fabricated operation.
 - Step 10: accepted with the first satisfying action in canonical
   product-action order; `inequality-fails`; accepted; `rank-broken`.
-- Step 11: `inequality-fails`; `malformed` at `policy`; `rank-broken`.
+- Step 11: `inequality-fails`; `malformed` at `policy`; `rank-broken`;
+  `malformed` at `policy` for the ambiguous hint.
   A present hint is never replaced by another satisfying action.
