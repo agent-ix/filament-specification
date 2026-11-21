@@ -84,6 +84,30 @@ synthesis Tariff using p grammar M::Tariff domain M::SmallTariff
   by the canonical value order. A non-numeric objective refuses
   `ill_typed`/`type-mismatch`. `minimize` and `maximize` are keywords only in
   this position.
+- **Step sums.** In plan synthesis the objective and the `satisfies` block
+  MAY write the sum of a per-step term as `D.steps.sum(s => c)`, `D` the
+  declaration's own name, with the shared grammar's `lambda` as the call's
+  one argument (FR-802 "Classification"). The checker SHALL read it as the
+  same sum as `sum(s in D.steps : c)`: `s` is bound to each step record of
+  the plan in step order, `c` is checked with `s` in scope and no other
+  binder added, and the value is the sum of the terms, added in step order
+  (FR-802 "Evaluation order"), 0 for a plan of length 0. `c` SHALL be of
+  family `integer`, `rational`, `decimal`, `float32`, `float64` or
+  `quantity`, and the sum has that family's unbounded type in `c`'s unit;
+  another family refuses `ill_typed`/`type-mismatch` at `c`. FR-802
+  classifies the result: a sum whose `c` reads only `s` and constants, of an
+  exact type, optionally plus a constant, is a per-step sum, and every other
+  objective is general.
+- **Only that shape.** A `lambda` SHALL be admitted only as the sole
+  argument of `.sum` on `D.steps` in a plan-synthesis declaration, and FSL
+  admits no other lambda form. A `lambda` in any other call, a second
+  argument beside it, a `.sum` with an argument that is not a `lambda`, and
+  `steps.sum` over anything but the declaration's own `steps` each refuse
+  `ill_typed`/`operator-ineligible` at the `lambda` or at the argument, and
+  a lambda whose parameter shadows a binder in scope refuses
+  `ambiguous_declaration`/`ambiguous-name` at the parameter. Every other sum
+  over the steps is still written with `sum<T>(s in D.steps : c)`
+  (FR-650-AC-2), whose type argument states its result type.
 - The symmetry rule of a source-written synthesis SHALL be the identity: no
   two distinct values are merged.
 
@@ -125,6 +149,8 @@ only as FR-322's `claim`/`synthesis_request` node.
 | FR-194-AC-8 | A `domain` naming `Integer` with no bounds, a record with an unbounded `Text` field, and a recursive union with no finite bound each refuse `unsupported_projection`/`unbounded-extent` at the `domain` name naming the unbounded component. | Test (TC-1602) |
 | FR-194-AC-9 | A `grammar` naming nothing refuses `missing_declaration`/`missing-name`; a `domain` whose values do not convert to the grammar refuses `ill_typed`/`type-mismatch`; a `satisfies` block of type `Integer` refuses `ill_typed`/`non-boolean-root`; a `Text` objective refuses `ill_typed`/`type-mismatch`. | Test (TC-1602) |
 | FR-194-AC-10 | A search stopped by its work limit returns `incomplete` naming the limit and the visited count, never `no-candidate`, and any best candidate it carries makes no optimality claim. | Test (TC-1602) |
+| FR-194-AC-11 | Over FR-650-AC-1's counter, `synthesis Reach using p grammar M::Counter domain Upto5 minimize Reach.steps.sum(s => if s.operation = M::Op::double then 5 else 1) satisfies { Reach.final.value = 8 };` checks with the objective an integer per-step sum and returns the plan `inc, inc, inc, double` with objective 8, the value FR-650-AC-2's `sum<Cost>(s in Reach.steps : if s.operation = M::Op::double then 5 else 1)` gives; `s=>1` and `s => 1` parse alike, and `Reach.steps.sum(s => s.operation)` refuses `ill_typed`/`type-mismatch` at the body. | Test (TC-1602) |
+| FR-194-AC-12 | Each refuses `ill_typed`/`operator-ineligible` at the named place: `Reach.steps.map(s => 1)` at the lambda; `Reach.steps.sum(s => 1, 2)` at the second argument; `Reach.steps.sum(1)` at `1`; `Pick.steps.sum(s => 1)` in FR-194-AC-6's non-plan synthesis at the lambda; and a lambda in a function body, `f().sum(s => 1)`, at the lambda. `Reach.steps.sum(Reach => 1)` refuses `ambiguous_declaration`/`ambiguous-name` at the parameter. | Test (TC-1602) |
 
 ## Dependencies
 
