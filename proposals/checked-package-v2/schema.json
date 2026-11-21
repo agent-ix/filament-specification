@@ -266,6 +266,10 @@
           "items": {
             "$ref": "#/$defs/Identifier"
           }
+        },
+        "source_unit": {
+          "description": "FR-322 \"Hyper clause source unit\": the lock.sources identity of the source unit that declares a hyper clause; required on a row whose declaration is a claim/hyperproperty node and absent on every other row (reader rule).",
+          "$ref": "#/$defs/DefinitionRef"
         }
       },
       "additionalProperties": false

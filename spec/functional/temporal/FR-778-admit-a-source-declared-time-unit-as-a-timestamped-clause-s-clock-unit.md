@@ -33,7 +33,10 @@ The clause's source unit is the unit the row's `source_unit` names (FR-322
 identity form of a `lock.sources` entry. A reader SHALL resolve `T`, and every
 other unit name the clause owns, in that unit. It SHALL NOT infer the unit from
 the clause's subject, the source map, the order of `lock.sources` or the
-position of any node. A clause over a `Reference<Order>` whose `Order` is a
+position of any node. A hyper clause's source unit is the unit its
+`hyperproperty` node's `claim_names` row's `source_unit` names (FR-322 "Hyper
+clause source unit"), and its rows' `timestamp_unit` and duration bounds
+resolve there by the same rules; its `temporal_bindings` rows carry none. A clause over a `Reference<Order>` whose `Order` is a
 selected model of another unit, or over a parameter of a record type its own unit declares, is
 declared by its own unit either way, and its unit names are that unit's.
 
@@ -95,6 +98,7 @@ bound's `type`.
 | FR-778-AC-10 | Negative: FR-778-AC-8's package with `Time`, `s` and `ms` declared only by `acme/orders`, the unit that declares the clause's subject, and not by `example`, refuses `missing_declaration`/`missing-name` at the row's `timestamp_unit` (`SU-03`): the reader resolves `ms` in `source_unit` and never in the subject's unit. | Test (TC-1890) |
 | FR-778-AC-11 | Negative: FR-778-AC-8's package with its row's `source_unit` naming `{"authority": "agent-ix", "identity": "other"}`, which is not one of the package's `lock.sources`, refuses `invalid_package`/`invalid-value` at `/temporal_bindings/{i}/source_unit`, before any unit resolution (`SU-04`). | Test (TC-1890) |
 | FR-778-AC-12 | Negative: FR-778-AC-8's clause with two `claim` occurrences in a package whose `lock.sources` are `example` and `acme/orders`, written with two rows whose `source_unit` is `example` for occurrence 0 and `acme/orders` for occurrence 1, refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/1`, the first row whose unit differs from the clause's first row (`SU-05`); with both rows naming `example` it is admitted. | Test (TC-1890) |
+| FR-778-AC-13 | FR-322-AC-511's hyper clause `Fast`, declared in `example` with a `duration` bound typed by `example`'s `ms` node, its `claim_names` row naming `source_unit` `example` and its two trace rows naming `timestamp_unit` `ms`, is admitted with both rows' clock unit the source-owned `ms` node; with `Time`, `s` and `ms` declared only by `acme/orders`, it refuses `missing_declaration`/`missing-name` at the first row's `timestamp_unit`; and the row with `source_unit` removed refuses `invalid_package`/`timed-node-reference` at `/claim_names/{i}` before any unit resolution. | Test (TC-1890) |
 
 ## Dependencies
 

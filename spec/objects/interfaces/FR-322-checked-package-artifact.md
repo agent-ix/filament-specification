@@ -4619,6 +4619,40 @@ differs from that of the clause node's first row, in the rows' ascending
 `invalid_package`/`timed-node-reference` at that row, `/temporal_bindings/{i}`. The clause's aggregate bounds and every other unit name
 the clause owns resolve in that one unit.
 
+**Hyper clause source unit.** A hyper clause may carry duration bounds and
+other unit names of its own, under a finite domain as under `behaviours`, so
+it has a unit scope like a temporal clause: one source unit declares it, and
+every unit name it owns resolves there. Its clock rows are per trace and are
+keyed by the `hyperproperty` node, and they carry no `source_unit`: the
+unit belongs to the clause, not to a trace, and one unit per clause is
+written once. The carrier is the clause's own occurrence record, its
+`claim_names` row ("Claim declaration names"): a `claim_names` row whose
+`declaration` is a `claim`/`hyperproperty` node SHALL carry `source_unit`,
+the source owner identity of the declaring unit in the (`authority`,
+`identity`) form of a `lock.sources` entry, and a row of any other
+declaration SHALL NOT carry it. A reader SHALL resolve each unit name the
+hyper clause owns, the `timestamp_unit` of each of its `temporal_bindings`
+rows and the unit of every duration bound in its body wrapper or its
+finite-domain body, in that unit, exactly as "Clause source unit" and FR-778
+resolve a clause's, and SHALL NOT infer the unit from the clause's subjects,
+the source map, its `declaration_region`, the order of `lock.sources` or
+the position of any node. A `source_unit` that is not one of the package's
+`lock.sources` refuses `invalid_package`/`invalid-value` at
+`/claim_names/{i}/source_unit`; a hyper row without it refuses
+`invalid_package`/`timed-node-reference` at `/claim_names/{i}`, and a
+`source_unit` on a row of any other declaration refuses the same at that
+row. Every `claim_names` row of one `hyperproperty` node SHALL name the same
+`source_unit`; a later row that differs refuses
+`invalid_package`/`timed-node-reference` at `/claim_names/{i}`. These checks
+run in the `claim_names` row visit, after the occurrence join and before the
+repeated-key check. A hyper clause whose body or rows read a unit name the
+declaring unit does not declare, and that is not the FCD identity of a unit
+of an admitted domain package, refuses `missing_declaration`/`missing-name`
+at the unit name (FR-778), even when another unit of the package declares
+it. A unit name of a `behaviours` row derived from a model (`step`,
+FSL FR-640) is a non-empty name checked as FR-778 checks a row with no
+duration window, unless the clause holds a duration bound.
+
 **Hyper clause rows: one per quantified trace.** A hyper clause relates
 several traces, and each trace's positions are its own: under a `behaviours`
 domain they are the steps of the model the trace's alias selects, and under a
@@ -4913,6 +4947,11 @@ source declaration introduces such a node. Each row is exactly:
 }
 ```
 
+A row whose `declaration` is a `claim`/`hyperproperty` node also carries
+`source_unit`, `{"authority": "<authority>", "identity": "<identity>"}`, the
+unit that declares the hyper clause ("Hyper clause source unit"); no other
+row carries it.
+
 `declaration` is the local structural `NodeRef` of the claim-bearing node;
 `occurrence` is the `{role, ordinal}` key of one of that node's `declaration`
 or `claim` occurrences; `name` is the identifier the source writes at the
@@ -4957,7 +4996,8 @@ its own node of least occurrence key whose role is `claim`, or else its least
 row there.
 
 The closed schema refuses a row with a missing or extra member as
-`malformed_wire` at the row, a `name` that is not an identifier, a
+`malformed_wire` at the row (`source_unit` is a member the schema admits;
+the reader decides on which rows it is required), a `name` that is not an identifier, a
 `qualified_name` that is empty or holds a non-identifier segment, and an
 `occurrence` whose `role` is not `declaration` or `claim` or whose `ordinal`
 is not a non-negative integer, as `malformed_wire` at that member. The reader
@@ -6466,6 +6506,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-508 | A hyperproperty body wrapper whose slot scope holds the two slots `slot_sv_sa` and `slot_sv_sb` (FR-402 "Wrapper slot scope") and whose leaf reaches a `let`, a `forall` quantifier, a `seq` application or a `fold` application is admitted with the first binder of that form at `level` 2 (a `fold` step's accumulator at 2 and its element at 3), and with no `operator-ineligible` refusal at the form; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
 | FR-322-AC-509 | One package holding `always[0,2] holds(p)` and `always[0,3] holds(p)` over the same `p` holds two `temporal`/`formula` nodes for the two `always` applications, with paths that differ in the interval operand after `filament.op.temporal.always` (`steps:0..2` and `steps:0..3`), so both may have `ordinal` 0; the one `holds(p)` node is shared. A timed `eventually[0, 21/2]` has the operand `time:[0..10.5]`, an unbounded `always` has none, and every published fixture and vector whose formula has a bounded operator carries the operand (`steps:0..3` in the seven fixtures, `steps:0..10`, `time:[0..10.5]` and `steps:0..2` in `hybrid-node-vectors.json`). | Test (TC-233) |
 | FR-322-AC-510 | Body locations are relative and linear. In `checked-term-data-vectors.json`, BL-03's rows for the `+` node's occurrences 0 and 1 are `{up: 0, down: [0]}` and `{up: 1, down: [1]}` and its root `and` row `{up: 1, down: []}`; BL-R9, BL-01 with the second `sqrt` row's `up` set to `2` (the previous path `[0]` has one entry), refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations/8/location/up`; BL-S5, a row location `{origin, path: []}` in the earlier form, and BL-S6, one with `up` and no `down`, are `malformed_wire` at the location. BL-D1, the package the vector's `deep_body` rule builds for `function d(x: Integer): Integer pure { x + x + ... + x }` with 100,000 `+` applications nested on the left, holds 100,000 rows whose `up` and `down` entries number at most 200,000 together, where whole paths would hold 4,999,950,000, and is admitted, the typed read returning for the `k`-th term of the walk the path of `k` zeros; BL-D2, the body `let x1 = x + 1 in let x2 = x1 + 1 in ... in x100000` of 100,000 nested `let`s, holds one row per `+` with `up` `1` and `down` `[1, 0]` after the first (`{up: 0, down: [0]}`), at most three entries per row, and is admitted with the `k`-th row's path `k` ones then a zero. | Test (TC-2090) |
+| FR-322-AC-511 | Hyper clause source unit. A finite-domain hyper clause `Fast` over `t in Pulse bounded 2 forall trace a forall trace b` whose body holds a `duration` bound `5 ms` typed by `example`'s source `ms` node, declared in unit `example`, which declares `Time`, `s` and `ms`, under the timestamped-event profile with the role `t` bound to `{"kind": "timestamped_event", "timestamp_unit": "ms"}`, writes its `hyperproperty` node's `claim_names` row with `source_unit` `{"authority": "agent-ix", "identity": "example"}` and its two `temporal_bindings` rows with no `source_unit`, and the reader resolves `ms` in `example` and admits the package. Each refuses at the stated place: the row without `source_unit`, `invalid_package`/`timed-node-reference` at `/claim_names/{i}`; `source_unit` naming `agent-ix/other`, not a lock source, `invalid_package`/`invalid-value` at `/claim_names/{i}/source_unit`; a `source_unit` added to a state clause's `claim_names` row, `invalid_package`/`timed-node-reference` at that row; a `source_unit` added to one of the clause's `temporal_bindings` rows, `invalid_package`/`timed-node-reference` at that row; two occurrences of the node whose rows name `example` and `acme/orders`, `invalid_package`/`timed-node-reference` at the second row; and, with `Time`, `s` and `ms` declared only by `acme/orders`, `missing_declaration`/`missing-name` at the rows' `timestamp_unit`, the reader never resolving `ms` in another unit or from the source map. | Test (TC-1890) |
 
 ## Dependencies
 
