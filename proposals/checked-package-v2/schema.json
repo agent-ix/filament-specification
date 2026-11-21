@@ -3295,21 +3295,10 @@
                 "then": {
                   "description": "FR-451, FR-490, FR-491: each semantic_form takes its own body.",
                   "allOf": [
-                    {"if": {"properties": {"semantic_form": {"const": "abstraction_relation"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/AbstractionRelationBody"}}}},
-                    {"if": {"properties": {"semantic_form": {"const": "implementation_guarantee"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ImplementationGuaranteeBody"}}}},
+                    {"if": {"properties": {"semantic_form": {"const": "abstraction_relation"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/AbstractionRelationBody"}, "occurrences": {"items": {"properties": {"role": {"const": "declaration"}}}}}}},
+                    {"if": {"properties": {"semantic_form": {"const": "implementation_guarantee"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ImplementationGuaranteeBody"}, "occurrences": {"items": {"properties": {"role": {"const": "declaration"}}}}}}},
                     {"if": {"properties": {"semantic_form": {"const": "component_composition"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ComponentCompositionBody"}}}}
-                  ],
-                  "properties": {
-                    "occurrences": {
-                      "items": {
-                        "properties": {
-                          "role": {
-                            "const": "declaration"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  ]
                 },
                 "else": {
                   "if": {
@@ -4231,13 +4220,28 @@
                 "enum": [
                   "expression",
                   "state",
-                  "temporal",
-                  "correspondence"
+                  "temporal"
                 ]
               }
             },
             "required": [
               "node_tag"
+            ]
+          },
+          {
+            "properties": {
+              "node_tag": {
+                "const": "correspondence"
+              },
+              "semantic_form": {
+                "not": {
+                  "const": "component_composition"
+                }
+              }
+            },
+            "required": [
+              "node_tag",
+              "semantic_form"
             ]
           },
           {
@@ -4295,31 +4299,49 @@
     },
     "DeclarationOccurrenceRule": {
       "if": {
-        "properties": {
-          "node_tag": {
-            "enum": [
-              "scalar_type",
-              "composite_type",
-              "bounded_domain",
-              "value",
-              "function",
-              "model",
-              "protocol",
-              "claim",
-              "extension",
-              "hybrid",
-              "timed_model"
+        "anyOf": [
+          {
+            "properties": {
+              "node_tag": {
+                "enum": [
+                  "scalar_type",
+                  "composite_type",
+                  "bounded_domain",
+                  "value",
+                  "function",
+                  "model",
+                  "protocol",
+                  "claim",
+                  "extension",
+                  "hybrid",
+                  "timed_model"
+                ]
+              },
+              "semantic_form": {
+                "not": {
+                  "const": "enum_value"
+                }
+              }
+            },
+            "required": [
+              "node_tag",
+              "semantic_form"
             ]
           },
-          "semantic_form": {
-            "not": {
-              "const": "enum_value"
-            }
+          {
+            "properties": {
+              "node_tag": {
+                "const": "correspondence"
+              },
+              "semantic_form": {
+                "const": "component_composition"
+              }
+            },
+            "required": [
+              "node_tag",
+              "semantic_form"
+            ]
           }
-        },
-        "required": [
-          "node_tag",
-          "semantic_form"
         ]
       },
       "then": {
