@@ -76,3 +76,52 @@ review and gap analysis do not apply because the diff touches only `spec/`.
 | ------- | -------- | ------- | ---- | ------------ |
 | FND-001 | medium | The note refuses every "unit-bearing `Quantity`" objective, which also covers `elapsed` and `Duration`. FR-808 makes `elapsed` an exact quantity of the model's unit, FR-149 makes `Duration` a quantity in `s`, and FR-802 Classification, FR-808-AC-2, FR-810-AC-3 (O3 makespan `60 min`) and FR-805-AC-7 all use a timed `elapsed` objective. Read literally, the note says timed makespan planning currently returns `unsupported`. If the planner handles `elapsed`, the note overclaims a refusal. If it does not, it silently marks the timed planning criteria unsupported. The note should say explicitly whether `elapsed`/`Duration` objectives fall inside the refused family. | spec/functional/analysis/FR-802-compute-plan-costs-exactly.md:45-51, :95-96; spec/functional/analysis/FR-808-plan-over-timed-models.md:40-52; spec/functional/analysis/FR-810-plan-and-optimize-the-six-reference-cases.md:74, :85; spec/functional/type-model/FR-149-apply-complete-equality-matrix.md:80 | wrong-requirement |
 | FND-002 | medium | The note states present-tense current behavior ("the planner supports ...", "returns a typed `unsupported` result before search"). The PR description says this change does not claim runtime validation of the `unsupported` mapping and that the corresponding wiring correction is separate. If this paragraph merges before that implementation lands, the spec describes a current behavior that does not yet exist, for both the exact families and the float/quantity refusal. Merge it after the implementation that produces the behavior has merged, or narrow the wording so that it does not assert behavior not yet in place. Either way, do not change the normative family list. | spec/functional/analysis/FR-802-compute-plan-costs-exactly.md:45-49 | wrong-requirement |
+
+## Dispositions
+
+Disposition pass 1, against fix head `dc3092b7a4994e3ab203b23f35dac450f959afd2`
+("Correct plan candidate typing and scope adapter boundary"). Spec text only;
+no implementation or runtime behavior was inspected or claimed.
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | The note now says: "On this route, the quantity boundary includes `Duration` and typed `elapsed` objectives; it makes no claim about other timed-planner entrypoints." The timed-objective question is answered explicitly, and the note no longer reads as marking all timed planning unsupported. The normative family list, FR-808, FR-810-AC-3 and FR-805-AC-7 are unchanged and still apply. |
+| FND-002 | fixed | The note is now titled "Source-plan adapter implementation boundary". It says "the adapter wiring is being corrected to support ..." and "This note describes the wiring correction, not released or runtime-validated behavior." It no longer asserts current or released behavior. The admitted objective types and the arithmetic, `totalOrder`, NaN, unit-conversion and certificate requirements "remain applicable". |
+
+## New findings (disposition pass 1)
+
+Scope added in this pass: the authorized FR-322 "Synthesis-request nodes"
+`candidate` clause and the plan-synthesis sentences of FR-322-AC-467, read
+against FR-322 reader step 3 (Joins), FR-800 "The plan value", FR-650,
+FR-819 and TC-2037. This is not a full FR-322 audit.
+
+| ID      | Severity | Summary | Refs | Escape Cause |
+| ------- | -------- | ------- | ---- | ------------ |
+| FND-003 | medium | The changed `candidate` clause types a plan candidate by "the generated plan-record type node ... whose members FR-800 lists", but nothing in this repository defines that node. No node form, `node_id` path, owner, occurrence, emission rule or member schema is given (FR-800's `length`/`final`/`initial`/`steps`, plus the conditional `elapsed`/`probability` and the step record). "plan-record" appears nowhere else in `spec/`. Reader step 3 requires the candidate's `semantic_type` to be "the node this list requires", so for a plan synthesis the reader has no definition of the node to compare against. Two readers could admit different packages: one could accept any record type node with FR-800's fields, another only a node at a fixed path. AC-467's refusal oracle exercises only retyping to the `ConfigVersion` grammar node, so the exact-readback claim has no defined target. The clause should name how the plan-record type node is identified, using the existing record type node form and no new tag or key, or reference the owning FR that defines it. | spec/objects/interfaces/FR-322-checked-package-artifact.md:5916-5923, :5965-5967, :6409; spec/functional/analysis/FR-800-define-the-plan-and-goal-model.md:63-81 | wrong-requirement |
+| FND-004 | low | The `grammar` bullet separates "a plan synthesis (FR-650)" from "a hybrid plan synthesis (FR-819)". The changed `candidate` bullet types only "a value synthesis" and "a plan synthesis", and adds "The plan candidate is not typed by `G`". A hybrid plan synthesis's candidate type is now unstated: either the plan-record type node or the `hybrid`/`hybrid_model` `G` node. Reader step 3 gives no answer. | spec/objects/interfaces/FR-322-checked-package-artifact.md:5908-5923; spec/functional/analysis/FR-819-plan-over-hybrid-models.md | wrong-requirement |
+| FND-005 | low | FR-322-AC-467's new plan case names its fixture ("plan synthesis `Reach` over `Config::ConfigVersion` with domain `Lengths`") without source text. `Lengths` is declared nowhere in `spec/`, unlike the value case, which spells out `type Digit = Int[0, 9];` and the declaration. The AC still cites TC-2037, and TC-2037's procedure and expected results cover only `Pick`/`Pick2` and the AC-468 edits: no step reads the plan synthesis, checks the plan-record candidate readback, or feeds the `ConfigVersion`-retyped candidate. | spec/objects/interfaces/FR-322-checked-package-artifact.md:6409; spec/test-cases/TC-2037-a-synthesis-declaration-is-one-synthesis-request-node.md | wrong-requirement |
+
+### Disposition pass 1 verdict
+
+**FAIL (needs fix round 2).** FND-001 and FND-002 are fixed. The new FR-322
+plan-candidate scope adds one medium finding (FND-003) and two low findings
+(FND-004, FND-005).
+
+What is right in the new FR-322 scope:
+
+- The architectural direction is consistent. `grammar` still references the
+  actual `G` node and `domain` still references `D`. The plan candidate is no
+  longer typed by `G`, which matches FR-800, where the declaration's name
+  denotes the plan value inside the block and the objective, not a model
+  object. This removes the earlier `G`-typed contradiction.
+- Body shape, binding order, literals, `dependencies` and the `claim_names`
+  row are unchanged. The change adds no node tag, `semantic_form`, key, request
+  member, source grammar or refusal code. The wrong-type refusal reuses the
+  existing reader step 3 code and locus (`invalid_package`/`invalid-value` at
+  the `candidate` binding).
+- The value-synthesis case and FR-322-AC-468 are byte-identical to `main`.
+- No implemented-reader evidence is claimed. The AC remains a Test criterion
+  with no result attached.
+
+The FR-1036 writer patch belongs to another repository and is not reviewed
+here.

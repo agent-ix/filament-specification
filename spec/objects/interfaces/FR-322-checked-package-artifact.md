@@ -5917,10 +5917,12 @@ holds:
     declaration's own name binds inside the block and the objective: its
     `name` the declaration's name, its `level` `0`, and its `semantic_type`
     `D`'s node for a value synthesis and the generated plan-record type node
-    for a plan synthesis, whose members
+    for a state-model or hybrid plan synthesis, whose members
     [FR-800](../../functional/analysis/FR-800-define-the-plan-and-goal-model.md)
     lists. The plan candidate is not typed by `G`; the `grammar` binding
-    still references the actual `G` node;
+    still references the actual `G` node (`model`/`object_type` or
+    `hybrid`/`hybrid_model`, respectively). "Plan-record type" below defines
+    the referenced record and its applicable extensions;
   - `objective` — the empty aggregate when the declaration has no objective;
     otherwise `aggregate{[binding "direction" = literal text, binding
     "expression" = reference, binding "text" = literal text]}`: `direction`
@@ -5947,6 +5949,59 @@ holds:
   is how a request names the declaration from the package alone; no other
   carrier table exists for it. FR-290 gives the node no declaration family,
   so it derives no verification item and no premise slot (FR-807).
+
+**Plan-record type.** The producer emits the plan record and its supporting
+state, step and arguments records using the existing `composite_type`/`record`
+form: an aggregate body with one named binding referencing each field's type
+node. These are generated declared records, not model object-type nodes.
+They carry generated `declaration`s, the source unit's `SourceOwner` and
+`declaration` occurrences source-mapped within the generating synthesis
+declaration.
+The ordinary "Structural node identity", "Owner member schema", dependency
+and source-map rules apply, including declaration paths and producer-assigned
+ordinals; this rule reserves no name, path or package literal for a plan
+record. Supporting types are emitted when referenced, under their existing
+node-form rules, with their ordinary declaration identity rows where required.
+
+The candidate's `semantic_type` is the exact reference identifying the plan
+record. A reader resolves that reference and checks the referenced record's
+field bindings and their type references as follows; it never finds a record
+by a display name or substitutes another record with equal fields:
+
+- The required plan fields are `length` of builtin `Integer`, `initial` and
+  `final` referencing the same model-state record type, and `steps` of
+  `Sequence` of the step-record type. These fields have required presence.
+- For a state-model plan, the step record has required fields `index` of
+  builtin `Integer`,
+  `operation` of the model's operation enum, `arguments` of the arguments
+  record type, and `before` and `after` referencing the same state type as
+  the plan's `initial` and `final`. The arguments record's fields carry
+  the declared operation parameter names and types; a field absent for an
+  operation is optional in the shared arguments record.
+- For a state-model plan, the state record represents the whole model state
+  of `G`: one sequence
+  field per model population, named by that population, whose element record
+  carries that population's object-type attributes, and direct attribute
+  fields of `G` with their declared types and presence. A direct attribute
+  already represented by a population field is not repeated. The same state
+  type is used at all four state positions above.
+- These records have exactly the members of
+  [FR-800](../../functional/analysis/FR-800-define-the-plan-and-goal-model.md)
+  for the selected model, with the applicable timed and probabilistic
+  extensions of FR-808 and FR-809. A hybrid plan uses the same record forms
+  with [FR-819](../../functional/analysis/FR-819-plan-over-hybrid-models.md)'s
+  extensions: `elapsed` is the exact sum of dwells in the model's time unit,
+  the step's `delay` carries its dwell and `operation` its transition target
+  mode. The state type represents that hybrid model's state, rather than a
+  state-model object type. Extension field types are those the owning
+  requirement specifies; no field is typed by guessing its name.
+
+The field bindings follow the generated record declarations' order under
+the ordinary record rules; the plan check constrains their names, presence
+and types, without imposing another fixed field order. A plan candidate
+whose referenced type fails these requirements takes the existing
+`invalid_package`/`invalid-value` refusal at the `candidate` binding in
+reader step 3 below. A value-synthesis candidate remains typed by `D`.
 
 The reader visits every `claim`/`synthesis_request` node in ascending
 node-id order as the body step after the schedulability step, and for one
@@ -6443,6 +6498,31 @@ is carried by two `protocol` node forms.
 | FR-322-AC-507 | In a clause `over (p: Pulse)` activated `on each (q: Pulse) when (q.w > p.w)` with one capture `n: Int[0, 9] = q.w` and the leaf `holds(let xs = seq(i in 0 .. n: i) in true)`, `p` has `level` 0, the trigger `q` `level` 1 and the capture `n` `level` 2; the guard reads only levels 0 and 1, the capture initializer reads `q` at level 1, and the first leaf binder, the `seq` index `i`, has `level` 3, as does `xs`. | Test (TC-303) |
 | FR-322-AC-508 | A hyperproperty body wrapper whose leaf reaches a `let`, a `forall` quantifier, a `seq` application or a `fold` application refuses `ill_typed`/`operator-ineligible` at that form's application node; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
 | FR-322-AC-509 | One package holding `always[0,2] holds(p)` and `always[0,3] holds(p)` over the same `p` holds two `temporal`/`formula` nodes for the two `always` applications, with paths that differ in the interval operand after `filament.op.temporal.always` (`steps:0..2` and `steps:0..3`), so both may have `ordinal` 0; the one `holds(p)` node is shared. A timed `eventually[0, 21/2]` has the operand `time:[0..10.5]`, an unbounded `always` has none, and every published fixture and vector whose formula has a bounded operator carries the operand (`steps:0..3` in the seven fixtures, `steps:0..10`, `time:[0..10.5]` and `steps:0..2` in `hybrid-node-vectors.json`). | Test (TC-233) |
+
+### FR-322-AC-467
+
+The plan-synthesis case uses the admitted `example/config-version` domain
+package and this complete source unit; `Lengths` is the declared finite
+length domain, and the constant goal keeps the negative case independent
+of candidate field-projection typing:
+
+```fsl
+language "ix:native" edition "1-draft";
+profile p = "filament.model.complete/v1";
+model Config = "example/config-version";
+type Lengths = Int[0, 3];
+synthesis Reach using p grammar Config::ConfigVersion domain Lengths
+  satisfies { true };
+```
+
+Its objective is the empty aggregate and its block root has Boolean type.
+Read-back preserves the exact candidate reference and its referenced
+`composite_type`/`record` plan type, including the FR-800 field schema and
+the ordinary generated-record identity, ownership and source-map rules of
+"Plan-record type" above. It does not substitute a record with the same
+display name or field list. TC-2037 constructs the wrong-grammar-type
+candidate with valid structural keys and references so the expected defect
+is the synthesis reader's candidate-type check.
 
 ## Dependencies
 
