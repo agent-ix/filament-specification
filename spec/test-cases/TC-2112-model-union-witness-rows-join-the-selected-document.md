@@ -21,13 +21,14 @@ case is not executed.
 
 1. For each `positive` case, build the `model_unions` sidecar of the case over
    `fixtures/positive-model-tuple-union.json` (with the case's `document_patch`
-   applied to the `domain_package` of `model-tuple-union-vectors.json`), and join it
-   under the case's `scope` and `budget`.
-2. For each `schema_refusals`, `reader_refusals` and `budget_refusals` case, apply
+   applied to the `domain_package` of `model-tuple-union-vectors.json` and its `package_patch` to the package), and join it
+   under the case's `scope` with an ample budget.
+2. For each `schema_refusals` and `reader_refusals` case, apply
    its `patch` to the rows of its `base` case, join them, and compare the result
-   with `expected_code`, `expected_cause`, `locus` or `denial`.
+   with `expected_code`, `expected_cause` and `locus`.
+3. For each `budget_cases` case, run its probes on one `NativeJoinBudget`: measure the baseline work and storage delta, then assert each probe's admission or first unpaid charge.
 
 ## Expected Results
 
-- Step 1: every positive case is admitted and its rows are returned byte for byte; an exact budget admits.
-- Step 2: every refusal returns its code, cause and locus, every budget case returns `incomplete` with its typed denial, and no case returns a partial carrier.
+- Step 1: every positive case is admitted and its rows are returned byte for byte.
+- Step 2: every refusal returns its code, cause and locus, every budget probe returns its stated first unpaid charge, and no case returns a partial carrier.
