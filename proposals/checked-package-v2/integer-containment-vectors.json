@@ -7374,7 +7374,8 @@
                   "kind": "function_body",
                   "name": "f"
                 },
-                "path": []
+                "up": 0,
+                "down": []
               },
               "occurrence": {
                 "ordinal": 0,
@@ -10825,7 +10826,8 @@
                   "kind": "function_body",
                   "name": "f"
                 },
-                "path": []
+                "up": 0,
+                "down": []
               },
               "occurrence": {
                 "ordinal": 0,
@@ -15774,7 +15776,8 @@
                   "kind": "function_body",
                   "name": "f"
                 },
-                "path": []
+                "up": 0,
+                "down": []
               },
               "occurrence": {
                 "ordinal": 0,
@@ -18818,7 +18821,8 @@
                   "kind": "function_body",
                   "name": "f"
                 },
-                "path": []
+                "up": 0,
+                "down": []
               },
               "occurrence": {
                 "ordinal": 0,

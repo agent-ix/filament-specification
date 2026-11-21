@@ -12485,7 +12485,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12526,7 +12527,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12567,7 +12569,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12606,7 +12609,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12648,7 +12652,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12690,7 +12695,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12729,7 +12735,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12768,7 +12775,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -12809,7 +12817,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -12858,7 +12867,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12899,7 +12909,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12940,7 +12951,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -12979,7 +12991,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13021,7 +13034,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13063,7 +13077,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13102,7 +13117,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13141,7 +13157,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -13182,7 +13199,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 0
               ]
             },
@@ -13231,7 +13249,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13272,7 +13291,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13313,7 +13333,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13355,7 +13376,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -13399,7 +13421,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -13440,7 +13463,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13482,7 +13506,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13524,7 +13549,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13563,7 +13589,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13616,7 +13643,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13657,7 +13685,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13698,7 +13727,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13737,7 +13767,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13779,7 +13810,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13821,7 +13853,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13860,7 +13893,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13899,7 +13933,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -13954,7 +13989,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -13995,7 +14031,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14036,7 +14073,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14075,7 +14113,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14117,7 +14156,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14159,7 +14199,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14198,7 +14239,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14237,7 +14279,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -14278,7 +14321,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -14331,7 +14375,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14372,7 +14417,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14413,7 +14459,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14452,7 +14499,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14494,7 +14542,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14536,7 +14585,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14575,7 +14625,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14614,7 +14665,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -14655,7 +14707,8 @@
                 "kind": "function_body",
                 "name": "g"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -14708,7 +14761,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14749,7 +14803,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14790,7 +14845,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14829,7 +14885,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14871,7 +14928,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14913,7 +14971,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14952,7 +15011,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -14991,7 +15051,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -15032,7 +15093,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15086,7 +15148,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15127,7 +15190,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15168,7 +15232,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15207,7 +15272,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15249,7 +15315,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15291,7 +15358,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15330,7 +15398,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15369,7 +15438,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -15410,7 +15480,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15463,7 +15534,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15504,7 +15576,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15545,7 +15618,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15584,7 +15658,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15626,7 +15701,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15668,7 +15744,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15707,7 +15784,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15746,7 +15824,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -15787,7 +15866,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15828,7 +15908,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -15881,7 +15962,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "role": "expression",
@@ -15922,7 +16004,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -15963,7 +16046,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16002,7 +16086,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16044,7 +16129,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16086,7 +16172,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16125,7 +16212,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16164,7 +16252,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -16205,7 +16294,8 @@
                 "kind": "function_body",
                 "name": "f"
               },
-              "path": [
+              "up": 1,
+              "down": [
                 1
               ]
             },
@@ -16258,7 +16348,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16299,7 +16390,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16340,7 +16432,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 1,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16382,7 +16475,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": [
+              "up": 0,
+              "down": [
                 0
               ]
             },
@@ -16423,7 +16517,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16465,7 +16560,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16507,7 +16603,8 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
             },
             "occurrence": {
               "ordinal": 0,
@@ -16546,7 +16643,394 @@
                 "kind": "function_body",
                 "name": "h"
               },
-              "path": []
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          }
+        ]
+      },
+      {
+        "id": "BL-R9-up-beyond-previous-path",
+        "mutation": "the second sqrt row of BL-01 has up 2 where the previous path [0] has one entry",
+        "package": "f",
+        "expected_code": "invalid_package",
+        "expected_cause": "invalid-value",
+        "locus": "/checked_term_data/body_locations/8/location/up",
+        "rows": [
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 6
+                },
+                {
+                  "node": 11
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 9
+                },
+                {
+                  "node": 8
+                },
+                "filament.op.boolean.or",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "binary",
+                {
+                  "node": 12
+                },
+                {
+                  "node": 10
+                },
+                "filament.op.boolean.and",
+                "binary",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 1,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 5
+                },
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.total_order",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 7
+                },
+                "filament.op.ieee.numeric_equal",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 0
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": []
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 14
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 0,
+              "down": [
+                0
+              ]
+            },
+            "occurrence": {
+              "ordinal": 0,
+              "role": "expression"
+            },
+            "term_ordinal": 0
+          },
+          {
+            "application": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "expression",
+                "call",
+                {
+                  "node": 16
+                },
+                "filament.op.ieee.float64.sqrt",
+                "filament.value.ieee754-2019-default/v1",
+                "call",
+                {
+                  "node": 4
+                }
+              ]
+            },
+            "location": {
+              "origin": {
+                "function": {
+                  "ordinal": 0,
+                  "package": "fixture",
+                  "path": [
+                    "f"
+                  ]
+                },
+                "index": 0,
+                "kind": "function_body",
+                "name": "f"
+              },
+              "up": 2,
+              "down": [
+                1
+              ]
             },
             "occurrence": {
               "ordinal": 0,
@@ -16627,6 +17111,48 @@
         "target": "Identifier",
         "expected_code": "malformed_wire",
         "value": "#ieee_operand"
+      },
+      {
+        "id": "BL-S5-whole-path-form",
+        "target": "BodyLocation",
+        "expected_code": "malformed_wire",
+        "value": {
+          "origin": {
+            "function": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "f"
+              ]
+            },
+            "index": 0,
+            "kind": "function_body",
+            "name": "f"
+          },
+          "path": [
+            1
+          ]
+        }
+      },
+      {
+        "id": "BL-S6-up-without-down",
+        "target": "BodyLocation",
+        "expected_code": "malformed_wire",
+        "value": {
+          "origin": {
+            "function": {
+              "ordinal": 0,
+              "package": "fixture",
+              "path": [
+                "f"
+              ]
+            },
+            "index": 0,
+            "kind": "function_body",
+            "name": "f"
+          },
+          "up": 1
+        }
       }
     ],
     "carrierless": {
@@ -16635,6 +17161,27 @@
       "expected_code": "invalid_package",
       "expected_cause": "invalid-value",
       "locus": "/checked_term_data/body_locations"
-    }
+    },
+    "deep_body": [
+      {
+        "id": "BL-D1-left-nested-sum",
+        "function": "function d(x: Integer): Integer pure { x + x + ... + x }",
+        "additions": 100000,
+        "rule": "The body is 100,000 filament.op.integer.add applications nested on the left over the parameter x. The body walk visits the outermost application first and each left operand next. The row of the k-th term (k from 0) has path k zeros: the first row is {up: 0, down: []} and every later row {up: 0, down: [0]}. One row per application, each with term_ordinal 0 and origin {kind: function_body, function: <d NodeRef>, name: d, index: 0}.",
+        "rows": 100000,
+        "max_location_entries": 200000,
+        "whole_path_entries": 4999950000,
+        "expected": "admitted"
+      },
+      {
+        "id": "BL-D2-nested-lets",
+        "function": "function e(x: Integer): Integer pure { let x1 = x + 1 in let x2 = x1 + 1 in ... in x100000 }",
+        "lets": 100000,
+        "rule": "Each let binds one filament.op.integer.add application of the previous binder and 1, and the innermost body reads x100000. The walk visits each let value and then its body. The first row is {up: 0, down: [0]}; the row of the k-th term has path k ones then a zero and is written {up: 1, down: [1, 0]}.",
+        "rows": 100000,
+        "max_location_entries_per_row": 3,
+        "expected": "admitted"
+      }
+    ]
   }
 }
