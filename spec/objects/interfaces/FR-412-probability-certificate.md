@@ -62,7 +62,7 @@ components, conditional}`:
 | `kind` | `lower`, `upper`, `exact`, `long-run` or `conditional`. |
 | `values` | One exact rational per product state the certificate names (a dyadic value is an exact rational), keyed by product state key (FR-411). |
 | `ranking` | For `lower` and `exact`, and for `upper` under a fairness set with the optimisation `minimum`: one natural number per named state. A `lower` certificate under a fairness set with the optimisation `minimum` carries none ("Fair minimum"). For an expected reward, `exact` and `upper` carry it and `lower` carries none ("Expected reward"). |
-| `policy` | For a lower bound on a maximum or an upper bound on a minimum, including `workload-maximum` and `workload-minimum`: one choice per named state, a memoryless deterministic scheduler. For the `reset` part of an `optimum` certificate: one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
+| `policy` | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) checker profiles: optional per-state hints, checked by Policy hints below. Outside those three profiles, for `kind` `exact` under minimum or maximum objectives including workload variants and an `optimum` certificate's `post` part: required, with exactly one current action choice per checked undecided state. For the `reset` part of an `optimum` certificate: required, with one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
 | `components` | For `long-run`: per component, its value `ρ_C` and a gain–bias pair. |
 | `conditional` | For `conditional`, the certificate of a conditioned reading (FR-407 "Conditioned values"): `{mode: "ratio", numerator, denominator}`, `{mode: "optimum", post, reset}` or `{mode: "vacuous"}`, each part an `exact` certificate of this form. |
 
@@ -106,6 +106,21 @@ and, with a fairness set, the maximal fair end components (FR-411) by its own
 graph code, and checks the conditions
 below in exact rationals. It solves no equation and runs no iteration.
 
+On acceptance, the checker SHALL report the **derived selected policy** to
+its local consumer and test caller. This checker-local acceptance report
+contains the finite association from each complete probability product key
+where the Policy hints rule selects an action to that independently rebuilt
+action, whether inferred without a hint or verified from a present hint.
+It contains exactly one selected action per such checked undecided
+state and retains the action's complete identity: an identity action,
+the specific `PostState` choice, or terminal stutter. The consumer can
+inspect each selected action and use the association as its checked policy;
+selection is not inferred from certificate rows after acceptance. This
+report is checker output, outside the wire `ProbabilityCertificate` and
+FR-331 result envelope; it defines no new serialized member or action form.
+A rejected certificate returns its typed rejection rather than this
+acceptance report.
+
 With `F` the one-step operator of the objective (the workload's average; the
 minimum or maximum over actions; for `workload-minimum` or `workload-maximum`,
 the workload's average over drawn outcomes with the minimum or maximum over
@@ -121,6 +136,54 @@ decided, target and `Prob0` states:
   objective's least value: 0 for a probability or an expected reward, `−q`
   for FR-411's shifted reward of a quantile, so an unnamed state never
   raises a lower bound.
+- **Policy hints**: this rule applies only to the **fair-minimum**
+  ([FSL FR-1041](ix://agent-ix/filament-spec-language/FR-1041)),
+  **value-bounds** ([FSL FR-1042](ix://agent-ix/filament-spec-language/FR-1042))
+  and **finite-horizon measure**
+  ([FSL FR-1043](ix://agent-ix/filament-spec-language/FR-1043)) checker profiles.
+  In these three profiles, no certificate requires a policy member or row.
+  The
+  checker SHALL independently rebuild the current actions at every
+  undecided state it checks: all reachable undecided states for `upper` and `exact`,
+  and only named undecided states for `lower`, retaining the lower rule's
+  least-value treatment of unnamed successors. Each action is checked against
+  its profile's per-state conditions; conditions quantified over all actions
+  remain quantified over all actions. Fair-minimum `exact` retains its
+  existential tight-action and rank-progress rule below, including AC-13's
+  certificates without policy rows.
+  Outside these three profiles, for `kind` `exact` under
+  `minimum`, `maximum`, `workload-minimum` or `workload-maximum`, including
+  the `optimum` conditional certificate's exact `post` part, the checker
+  SHALL require `policy` and exactly one current action choice for each
+  checked undecided state; it SHALL reject a missing member or missing
+  state's choice `malformed` at member `policy`, without inferring a
+  replacement action. Each required choice must satisfy the Exact rule's
+  equality and applicable ranking conditions. The `optimum` certificate's
+  `reset` part requires its policy row for every reachable waiting state,
+  with the properness and coverage conditions in Conditional below.
+  In the three named profiles, when a checked state's optional `policy` row is absent, the checker
+  SHALL accept the per-state conditions exactly when some rebuilt action
+  satisfies every applicable condition at that state, including the
+  inequality and the ranking condition when required, and SHALL select
+  the first such action in canonical product-action order and include it
+  in the checker-local acceptance report's derived selected policy defined
+  above. One action
+  SHALL satisfy all those conditions together; separate actions satisfying
+  only the inequality or only the ranking do not suffice. After the
+  existing shape and missing-rank checks, if no action satisfies the
+  inequality the checker SHALL reject `inequality-fails` at that state;
+  if some action satisfies the inequality but none of those satisfies the
+  required rank progress, it SHALL reject `rank-broken` there. When a row is
+  present, the checker SHALL require its existing `TransitionIdentity`
+  choice to identify exactly one current rebuilt
+  action and SHALL check that action against every applicable per-state
+  condition. A nonexistent or ambiguous choice is rejected `malformed` at `policy`;
+  a choice failing an inequality or ranking is rejected by the existing
+  `inequality-fails` or `rank-broken` rule, even if another action would
+  satisfy every condition. Reset and randomized choices remain confined to
+  the existing conditional `reset` rules. The rebuilt action set includes
+  terminal stutter and distinct `PostState` choices; an absent hint
+  requires no fabricated operation or new wire choice form.
 - **Exact**: both conditions, with equality.
 - **Finite horizon**: the ranking is the remaining horizon, which the checker
   reads from the monitor state.
@@ -273,8 +336,11 @@ re-enumeration plus one pass over the edges.
 - **Key** — every member above.
 - **Absence** — a `lower` or `exact` certificate without `ranking` (except a
   fair-minimum or expected-reward `lower`), a fair-minimum or expected-reward
-  `upper` without `ranking`, a lower
-  bound on a maximum or an upper bound on a minimum without `policy`, or a `long-run` certificate without
+  `upper` without `ranking`, an `exact` certificate outside the three
+  Policy hints profiles under `minimum`,
+  `maximum`, `workload-minimum` or `workload-maximum` (including an
+  `optimum` certificate's `post` part) without `policy` or without exactly
+  one current action choice at each checked undecided state, or a `long-run` certificate without
   `components`, a `conditional` certificate without `conditional`, with a
   `mode` other than `ratio`, `optimum` and `vacuous`, with a `ratio` under
   an objective other than `workload`, without a part its mode requires
@@ -282,7 +348,9 @@ re-enumeration plus one pass over the edges.
   is not `exact`, or with a `reset` part without `policy` or `ranking`, is
   rejected, `certificate-rejected{rule, at}` with rule `malformed` at
   `{member}`, the missing or wrong member's name (`mode` for a wrong or
-  misplaced mode).
+  misplaced mode). Every `malformed` member locus is the member-only
+  `{member}` form of [FR-331](FR-331-backend-provider-envelope.md), including
+  a malformed member in a conditional part; it carries no `part`.
 
 ## Acceptance Criteria
 
@@ -304,6 +372,10 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-14 | A workload chain whose state `s` goes to itself, to the target `g` and to the non-target terminal `f` with `1/3` each (value `1/2`): the `lower` certificate `s` `7/16`, rank 1, is accepted for `>= 2/5` and the `upper` certificate `s` `9/16` for `<= 3/5`; `lower` `5/8` and `upper` `7/16` are rejected `inequality-fails` at `s`, `lower` `7/16` for `>= 1/2` `threshold-missed` at `s`, and `lower` `7/16` without `ranking` `malformed` at `ranking`. Over `W` with no fairness set, maximum `1/2`: `upper` `s` `3/5` is accepted for `<= 3/5` (every action satisfies `Q_a(y) <= y`); `lower` `s` 1 with policy `wait` and rank 1 is rejected `rank-broken` at `s`, and `lower` `7/16` with policy `go` and rank 1 is accepted as the lower side of a value-bounds proof. | Test (TC-2110) |
 | FR-412-AC-15 | `Retry`'s undelivered state has the action `try`, delivering with `1/2` and otherwise staying; delivered is terminal. For `quantile 0.5 of (steps from holds(true) until holds(delivered) within 4) <= 2` under its workload, the `ratio` certificate whose numerator has values `3/4`, `1/2`, 0, 0 at the active undelivered states of amounts 0, 1, 2 and above the bound, ranked by the remaining window 4, 3, 2, 1, and whose denominator is 1 there, is accepted. With `try` split into `fast` (`1/2`) and `slow` (`1/4`), for `quantile 0.4 of (…) <= 2` under every scheduler the `exact` shifted-reward certificate with values `3/80`, `−3/20`, `−2/5`, `−2/5` is accepted with side `AtLeast`; for `quantile 0.5` its values `−1/16`, `−1/4`, `−1/2`, `−1/2` are rejected `threshold-missed` at the initial state, and the level-0.4 certificate with `3/80` replaced by `fast`'s `9/40` is rejected `inequality-fails` there. `mean of fraction holds(delivered) over [0, 2]` under the workload has the exact initial value `5/12`. | Test (TC-2110) |
 | FR-412-AC-16 | Over FR-412-AC-15's `fast`/`slow` model at level 0.5 (minimum `Pr(M <= 2) = 7/16`, shifted minimum `−1/16`), a `lower` certificate that names only the initial state, at value 0, is rejected `inequality-fails` there: each unnamed successor counts as `−1/2`, so `Q_fast = Q_slow = −1/2 < 0`. Counted as 0 instead, it would pass (`Q_fast = 1/4`, `Q_slow = 1/8`) and prove a claim that fails. | Test (TC-2110) |
+| FR-412-AC-17 | For an active finite-window fraction measure over a terminal model state satisfying its predicate, with nonzero remaining window, the product continuation is undecided and its only action is terminal stutter advancing the monitor. With every completed payoff 1 and otherwise valid rows at value 1 and ranks equal to the remaining window where required, upper/minimum and lower/maximum certificates without policy rows are accepted. The checker-local acceptance report's derived selected policy names the existing terminal-stutter action at each checked undecided state, without an invented TransitionIdentity. | Test (TC-2110) |
+| FR-412-AC-18 | At a checked undecided state with two PostState choices of one operation whose independently recomputed action values are `1/4` and `3/4`, an upper/minimum bound `1/2` with no policy row reports the first action satisfying all per-state conditions in canonical product-action order in the checker-local acceptance report's derived selected policy; the bound `1/8` is rejected `inequality-fails` because neither action satisfies it. For a lower/maximum bound `1/2`, no row is needed when the `3/4` action also satisfies required rank progress; if only that action satisfies the inequality but fails rank progress, the bound is rejected `rank-broken`, even when the other action satisfies rank progress. A lower certificate checks only named undecided states and uses the existing least value for unnamed successors. | Test (TC-2110) |
+| FR-412-AC-19 | For distinct operations `low` and `high` with unambiguous TransitionIdentity hints and action values `1/4` and `3/4`, an upper/minimum bound `1/2` whose hint names `high` is rejected `inequality-fails` even though `low` would pass. On a variant where both operations have action value `3/4`, a lower/maximum bound `1/2` whose hint names an operation failing rank progress is rejected `rank-broken` even if the other operation satisfies both conditions. A nonexistent hint, or an identity ambiguous between AC-18's PostState choices, is rejected `malformed` at `policy` rather than replaced by another action. | Test (TC-2110) |
+| FR-412-AC-20 | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) profiles, removing a policy member or row from an otherwise valid certificate is accepted exactly when some rebuilt action satisfies all profile per-state conditions; fair-minimum `exact` retains AC-13's no-policy tight-action results. A present hint must itself identify an existing satisfying action. Outside those three profiles, an otherwise valid `exact` certificate under minimum or maximum objectives, including workload variants and an `optimum` certificate's exact `post` part, retains its required policy coverage; removing the member or one required state's choice is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. Older conditional `reset` coverage and properness rules remain unchanged. | Test (TC-2110) |
 
 ## Dependencies
 

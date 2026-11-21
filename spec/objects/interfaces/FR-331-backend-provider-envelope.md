@@ -667,7 +667,8 @@ names, FR-462), `kind` and `result`, and:
 - `diagnostic` — an [FR-272](../foundation/FR-272-typed-diagnostic-cause.md)
   typed cause `{code, cause, detail}`, `detail` keyed by FR-272 payload
   names;
-- `certificate` (FR-412 for `exact-value` and `value-bounds`, FR-418 for
+- `certificate` (FR-412 for `exact-value`, `value-bounds` and the vacuous
+  conditional `exhaustive` exception below, FR-418 for
   `zone-certified`; for `value-bounds` the claim side's certificate), `counterpart`
   (for `value-bounds`, the other side's FR-412 certificate, required except
   for a `lower` proof found on a partial product, which carries none and
@@ -676,6 +677,23 @@ names, FR-462), `kind` and `result`, and:
   `counterexample` (the position of the item's `counterexamples` entry, for
   `refuted`), and `task_search` (FR-419's replayable bounded-search frontier,
   on an incomplete task-automaton result only).
+
+A `proved` result with basis `exhaustive` SHALL remain value-free. When full
+exploration establishes that no activating state is reachable for any
+instance of a conditional claim, a `probabilistic-satisfaction` result MAY carry its
+[FR-412](FR-412-probability-certificate.md) certificate with `kind` `conditional`,
+`conditional` exactly `{"mode": "vacuous"}` and empty `values` on that
+`exhaustive` result. That certificate SHALL omit `ranking`, `policy` and
+`components`, including empty arrays; only the obligation identity,
+objective, `kind`, empty `values` and vacuous `conditional` are carried.
+The checker SHALL independently establish vacuity by
+FR-412's graph search before the proof is certified. The producer SHALL NOT
+encode vacuity as `exact-value`, a scalar zero or a zero-denominator rational;
+`exact-value` continues to require its `Rational` value. Every other
+`exhaustive` result SHALL omit `certificate`. Every `exhaustive` result SHALL
+omit `evidence`, including a result carrying the vacuous conditional
+certificate. The exception does not permit a certificate or evidence on
+`bounded-complete`, `inductive`, `reduced`, `witnessed` or `bounded-proof`.
 
 `task_search` is `{type: "task-search-frontier", identity, nodes, edges,
 frontier, limit?}`. It binds to the item's FR-201 certificate identity. Each
@@ -723,14 +741,21 @@ never proves that the unsearched product has no deadline miss. It is present on
 every incomplete task-automaton search stopped by a search limit or unresolved
 continuous dynamics; other incomplete results carry no `task_search`.
 
-A task search whose explored graph closed, with no node left open, but whose
-closure no accepted certificate has certified settles `incomplete` with cause
+When an exhaustive result's explored graph is closed, with no node left open,
+and its certificate is absent or no core certificate check has been performed,
+the producer SHALL settle the item `incomplete` with cause
 `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}`.
 The search left nothing open, so the cause carries no `task_search` evidence
 and no frontier; but a closed search is not a proof until a checker accepts
 its certificate, so no `proved` verdict may be given. A release-backed
 schedulability run on the task-product subject before the FR-418
-task-product certificate is checked settles with this cause (FR-419). The
+task-product certificate is checked settles with this cause (FR-419), as
+does an exhaustive HP-1 step-relation result closed without an accepted
+core product-closure certificate because the certificate is absent or its
+check has not been performed. A core check that rejected the certificate
+retains `inconclusive` with `certificate-rejected{rule, at}`; a check stopped
+by a limit retains its `incomplete` limit cause, rather than
+`certificate-unchecked`. The
 rule that `bounded-search-incomplete` carries `task_search` evidence and a
 non-empty `unresolved-choice` frontier applies to reason
 `unresolved-dynamics` only.
@@ -1075,6 +1100,7 @@ computed.
 | FR-331-AC-57 | The schema admits a `bounded-solver` entry's `flowpipe` certificate whose second step is a jump step carrying `from` `{"dwell": 0, "transition": 0}` (vector `hybrid-certificate-outcome`), and refuses that `from` with an added member `mode` (`hybrid-certificate-jump-source-unknown-member`) and with `dwell` written `"0"` (`hybrid-certificate-jump-source-string-dwell`), each at or above the patched member. | Test (TC-431) |
 | FR-331-AC-58 | The schema admits an `incomplete` result entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}` with no `task_search` member, and refuses the same entry with `task_search` added; an entry whose `cause` is `{"type": "bounded-search-incomplete", "reason": "unresolved-dynamics"}` with no `task_search` is still refused, and one whose reason is `closed` is refused. | Test (TC-431) |
 | FR-331-AC-59 | A `proved` `value-bounds` result whose `certificate` is a `lower` certificate with `upper` `{"numerator": "1", "denominator": "1"}` and no `counterpart` fails the result schema; the same result with basis `exploration: "partial"` passes, and with a `counterpart` added beside `exploration: "partial"` fails. A basis with `upper` `"infinity"` passes only with `exploration: "partial"`, and a fully explored `value-bounds` result with both `certificate` and `counterpart` passes. | Test (TC-431) |
+| FR-331-AC-60 | The schema admits `exhaustive-vacuous-conditional-outcome`, a value-free `proved` `exhaustive` probabilistic-satisfaction result carrying an FR-412 certificate with `kind` `conditional`, `conditional` exactly `{"mode": "vacuous"}` and empty `values`; it also admits that result without `certificate`. Adding `ranking`, `policy` or `components`, even an empty array, or changing the result kind to `refinement` with that certificate is refused; the refinement result without a certificate is admitted. The adverse vector `exhaustive-with-nonvacuous-certificate`, whose replacement is an otherwise well-shaped `exact` certificate, is refused. A certificate with `ratio` or `optimum` mode, missing `conditional`, missing `mode`, an unknown mode or another conditional member is refused on `exhaustive`, as is `evidence` with or without the permitted certificate. The same certificate remains forbidden on `bounded-complete`, `inductive`, `reduced`, `witnessed` and `bounded-proof`. An `exact-value` basis without its `Rational` value, with a scalar zero or with a zero denominator is refused; an ordinary exact certificate with a valid `Rational` value is admitted. | Test (TC-431) |
 
 ## Dependencies
 
