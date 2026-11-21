@@ -123,8 +123,9 @@ each task edge and bounded-subtraction row. It carries `action`, `taskset`,
 `task`, `job_rank`, `slot`, the source `release` transition, the optional
 `source_transition`, and `priority` exactly when the checked task declares
 one. `job_rank` is the zero-based position of that job among the task's live
-jobs, ordered within the quotient node by deadline-clock age, oldest first,
-ties broken by task declaration order. A quotient node holds no path
+jobs, ordered within the quotient node by deadline-clock age, oldest first;
+a tie between jobs of different tasks breaks by task declaration order, and a
+tie between jobs of the same task by generation, lower generation first. A quotient node holds no path
 occurrence, so no occurrence orders its jobs. `slot` binds that rank
 to one of the task's finite candidate slots. On an activation edge, rank and
 slot name the newly live job in the target node; on every other edge they name
