@@ -6676,6 +6676,24 @@ display name or field list. TC-2037 constructs the wrong-grammar-type
 candidate with valid structural keys and references so the expected defect
 is the synthesis reader's candidate-type check.
 
+### FR-322-AC-513
+
+BL-06 (`shared_parents`) is also admitted. Its graph holds exactly one
+`expression`/`binary` application of `filament.op.integer.sub` to the inline
+Integer literals `0` and `1` (node 1). Two distinct `value`/`record_value`
+parents (nodes 3 and 4, the same path at node ordinals 0 and 1) each hold
+field `n` referencing that application. Tuple value node 6 references those
+parents in positions 0 and 1; function `f` (node 7) references that tuple as
+its body. The shared application's occurrence is
+`{ordinal: 2, role: "expression"}`, with its matching `source_map` entry.
+The first and second visits through the distinct parents pair with that
+occurrence's rows of `term_ordinal` 0 and 1, in that order. Their rebuilt
+paths are `[0, 0]` and `[1, 0]`, encoded canonically as
+`{up: 0, down: [0, 0]}` then `{up: 2, down: [1, 0]}`. No row belongs to a
+record or tuple value. Counting the shared application only once, walking
+parents in reverse order or resetting the previous path between parents
+fails these row-pairing and path assertions.
+
 ## Dependencies
 
 - [interface_004](./interface_004-checked-package.md) owns the operation boundary.
