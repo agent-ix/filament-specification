@@ -550,6 +550,35 @@
       "code": "invalid_package",
       "cause": "invalid-value",
       "locus": "/temporal_bindings/0/source_unit"
+    },
+    {
+      "id": "SU-05",
+      "criterion": "FR-778-AC-12",
+      "note": "SU-01's clause with two claim occurrences whose rows name different source units, both locked: refused at the second row, the first whose unit differs from the clause's first row",
+      "lock_sources": [{"authority": "agent-ix", "identity": "example"}, {"authority": "agent-ix", "identity": "acme/orders"}],
+      "subject": {"type": "Reference<Order>", "declared_by": "acme/orders"},
+      "time_units": {"example": ["s", "ms"], "acme/orders": ["s", "ms"]},
+      "rows": [
+        {
+          "declaration": "c",
+          "occurrence": 0,
+          "clock_name": "ts",
+          "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+          "source_unit": {"authority": "agent-ix", "identity": "example"}
+        },
+        {
+          "declaration": "c",
+          "occurrence": 1,
+          "clock_name": "ts",
+          "clock": {"kind": "timestamped_event", "timestamp_unit": "ms"},
+          "source_unit": {"authority": "agent-ix", "identity": "acme/orders"}
+        }
+      ],
+      "bound_unit": {"owner": "example", "path": ["ms"]},
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "timed-node-reference",
+      "locus": "/temporal_bindings/1"
     }
   ]
 }

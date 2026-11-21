@@ -641,6 +641,7 @@
                     "operand": 3
                   },
                   "filament.op.temporal.eventually",
+                  "steps:0..3",
                   "temporal_formula",
                   {
                     "operand": 4
@@ -687,6 +688,7 @@
                 "operand": 3
               },
               "filament.op.temporal.eventually",
+              "steps:0..3",
               "temporal_formula",
               {
                 "operand": 4
@@ -2113,6 +2115,7 @@
               "operand": 2
             },
             "filament.op.temporal.eventually",
+            "steps:0..3",
             "temporal_formula",
             {
               "operand": 1
@@ -5800,6 +5803,7 @@
             "node": 28
           },
           "filament.op.temporal.eventually",
+          "steps:0..3",
           "temporal_formula",
           {
             "node": 0

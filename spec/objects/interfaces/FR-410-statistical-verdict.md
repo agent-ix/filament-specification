@@ -73,10 +73,18 @@ measure censored at the horizon `h`, as a witness value is.
 Every count member (`samples`, `draws`, the test `index` and `m`, a
 witness's `test`) is a JSON integer, never a string.
 
-A `measured` verdict always has an estimate, so `estimate.value` is
-required. A test with no counted sample, or a regenerative run with no
-positive-weight cycle, has no estimate: it does not produce a `measured`
-verdict and settles `incomplete`.
+A statistical run whose test counted no sample, or a regenerative run that
+completed no positive-weight cycle, has no estimate: it does not produce a
+`measured` verdict and settles `incomplete` with the FR-331 cause
+`{"type": "no-estimate", "reason": "no-counted-sample"}` or
+`{"type": "no-estimate", "reason": "no-positive-weight-cycle"}`, which names
+no limit because nothing was exhausted.
+
+`estimate` is required, in the verdict and in each test entry, except in
+two cases where it is absent: the decision is a rejection by an undefined
+sample (FR-409, cause `undefined-evaluation`), or it is `undecided` with
+cause `undecided-successor`. In both the decision does not read an
+estimate, so none is written. A present `estimate` always carries `value`.
 
 ### Sampled witness
 
@@ -102,7 +110,8 @@ which the claim evaluates undefined (FR-408). It carries:
   censored at the horizon (FR-407: the window ended before its end event, so
   its value exceeds every finite threshold) has no finite value, and is
   written `{"type": "censored", "horizon": h}`, `h` the horizon bound it
-  exceeded.
+  exceeded as a `Quantity` (`{"value": 10}` for `within 10` steps, with its
+  `unit` for a time horizon).
 
 A sampled witness is a behaviour of positive probability on which the event is
 false, so it is also a counterexample for the every-behaviour claim "the event
@@ -133,7 +142,7 @@ witness. The item's `measured` decision is unchanged by any witness replay.
 - **Key** — every member above; the per-test entries and witnesses in their
   stated orders.
 - **Absence** — an absent `interval` is admitted only for the sequential
-  method; every other absent member refuses the result with
+  method, and an absent `estimate` only in the two decisions above; every other absent member refuses the result with
   `invalid_result`/`missing-member`.
 
 ## Acceptance Criteria
@@ -147,8 +156,10 @@ witness. The item's `measured` decision is unchanged by any witness replay.
 | FR-410-AC-5 | Replay of a witness with a value outside its support refuses `invalid_runtime_input`/`invalid-value`; a recomputed draw selecting another identity settles `inconclusive`, `replay-parity`; neither changes the item's decision. | Test (TC-359) |
 | FR-410-AC-6 | A witness step of `Server::send(x, r)` with `r` a random argument drawn as `3` writes `scheduled` as the transition identity of `send` whose `arguments` hold `x` only, and `random` `[3]`; a `scheduled` written as a bare typed value refuses at the schema. A witness that continues past a terminal state writes each stutter step with `transition` and `scheduled` `{"type": "stutter"}` and `random` `[]`, and is admitted; a stutter arm with an `operation` member refuses at the schema. | Test (TC-359) |
 | FR-410-AC-7 | A sampled witness whose `steps from holds(A) until holds(B) within 10` measure is censored writes `value` `{"type": "censored", "horizon": {"value": 10}}` and is admitted; a quantile claim's estimate whose nearest-rank sample is censored writes `quantile` in the same form; a `censored` value without `horizon` refuses at the schema. | Test (TC-355) |
-| FR-410-AC-8 | A statistical run whose test counted no sample, and a regenerative run that completed no positive-weight cycle, each settle `incomplete` and write no `measured` verdict; a `StatisticalVerdict` without `estimate.value` refuses at the schema. | Test (TC-358) |
+| FR-410-AC-8 | A statistical run whose test counted no sample settles `incomplete` with cause `{"type": "no-estimate", "reason": "no-counted-sample"}`, and a regenerative run that completed no positive-weight cycle with `{"type": "no-estimate", "reason": "no-positive-weight-cycle"}`; neither writes a `measured` verdict, and a `no-estimate` cause with a `limit` member refuses at the schema; an `accepted` `StatisticalVerdict` without `estimate`, or with an `estimate` lacking `value`, refuses at the schema. | Test (TC-358) |
 | FR-410-AC-9 | A `StatisticalVerdict` whose `basis.samples` is the JSON integer `40` is admitted, and the same with `samples` the string `"40"` refuses at the schema. | Test (TC-358) |
+| FR-410-AC-10 | A `StatisticalVerdict` whose decision is `rejected` with cause `undefined-evaluation` (a drawn sample evaluated the claim undefined, FR-409) and which carries no `estimate`, in the verdict or in its test entry, is admitted; the same verdict with an `estimate` added refuses at the schema. | Test (TC-358) |
+| FR-410-AC-11 | A `StatisticalVerdict` whose decision is `undecided` with cause `undecided-successor` and which carries no `estimate`, in the verdict or in its test entry, is admitted; the same verdict with an `estimate` added refuses at the schema, while one `undecided` with cause `indifference-region` and no `estimate` refuses at the schema. | Test (TC-358) |
 
 ## Dependencies
 

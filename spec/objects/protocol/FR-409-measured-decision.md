@@ -40,6 +40,10 @@ FR-243 settlement basis.
 - A result with a `measured` value carries FR-241 execution `completed`, the
   FR-331 result value `measured`, and the statistical verdict of
   [FR-410](../interfaces/FR-410-statistical-verdict.md).
+- A `rejected` decision caused by an undefined sample (`undefined-evaluation`)
+  and an `undecided` decision with cause `undecided-successor` read no
+  estimate, so their FR-410 verdict and test entries carry no `estimate`;
+  every other decision carries one (FR-410).
 - A result with a `measured` value carries no FR-242 truth and no FR-243
   settlement basis. A reader SHALL refuse a result that carries both a
   `measured` value and a truth or basis, with `invalid_result`/`measured-with-truth`.

@@ -132,7 +132,6 @@
       "required": ["type"],
       "oneOf": [
         {"properties": {"type": {"const": "transition"}, "operation": {"$ref": "#/$defs/Nonempty"}, "receiver": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/TypedValue"}]}, "arguments": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}}, "required": ["type", "operation", "receiver", "arguments"], "additionalProperties": false},
-        {"description": "FR-410: a stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments, and is used in a sampled witness step.", "properties": {"type": {"const": "stutter"}}, "required": ["type"], "additionalProperties": false},
         {"properties": {"type": {"const": "protocol-transition"}}, "required": ["type"]},
         {"$ref": "#/$defs/TaskTransitionIdentity"}
       ]
@@ -1080,8 +1079,8 @@
         {"description": "FSL FR-149 SimulationStep{position, edge: None, verdict: None}, as FSL writes it with null edge and verdict, for an initial, successors, undecided-state or certificate-shape rule.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["initial-mismatch", "successors-differ", "bad-state", "malformed"]}, "at": {"type": "object", "required": ["position", "edge", "verdict"], "properties": {"position": {"$ref": "#/$defs/U64String"}, "edge": {"type": "null"}, "verdict": {"type": "null"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FSL FR-149 SimulationStep{position, edge, verdict: None} for post-differs.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "post-differs"}, "at": {"type": "object", "required": ["position", "edge", "verdict"], "properties": {"position": {"$ref": "#/$defs/U64String"}, "edge": {"$ref": "#/$defs/U64String"}, "verdict": {"type": "null"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FSL FR-149 SimulationStep{position, edge, verdict} for step-fails.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "step-fails"}, "at": {"type": "object", "required": ["position", "edge", "verdict"], "properties": {"position": {"$ref": "#/$defs/U64String"}, "edge": {"$ref": "#/$defs/U64String"}, "verdict": {"$ref": "#/$defs/StepVerdict"}}, "additionalProperties": false}}, "additionalProperties": false},
-        {"description": "FR-418: a node, its position in the certificate's nodes.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["successor-missing", "bad-state", "witness-fails", "initial-mismatch"]}, "at": {"type": "object", "required": ["node"], "properties": {"node": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
-        {"description": "FR-418, FSL FR-245 post-differs: an edge, its position in the certificate's edges.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["backward-edge", "post-differs"]}, "at": {"type": "object", "required": ["edge"], "properties": {"edge": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
+        {"description": "FR-418: a node, its position in the certificate's nodes.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["successor-missing", "bad-state", "witness-fails", "initial-mismatch", "unreached-node"]}, "at": {"type": "object", "required": ["node"], "properties": {"node": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
+        {"description": "FR-418, FSL FR-245 post-differs: an edge, its position in the certificate's edges.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"enum": ["backward-edge", "post-differs", "extra-edge"]}, "at": {"type": "object", "required": ["edge"], "properties": {"edge": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FSL FR-245 step-fails: an edge and the failing step verdict, both present.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "step-fails"}, "at": {"type": "object", "required": ["edge", "verdict"], "properties": {"edge": {"$ref": "#/$defs/Count"}, "verdict": {"$ref": "#/$defs/StepVerdict"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FR-418: a component, its index.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "witness-fails"}, "at": {"type": "object", "required": ["component"], "properties": {"component": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}}, "additionalProperties": false},
         {"description": "FR-412, FR-418: a malformed certificate member, named as its certificate names it; FSL FR-163 also owns components for absent HP-2/HP-3 structure, including empty closure, before recomputation. The originating checked claim selects the owning member vocabulary; this branch does not authorize borrowing another checker's members.", "properties": {"type": {"const": "certificate-rejected"}, "rule": {"const": "malformed"}, "at": {"type": "object", "required": ["member"], "properties": {"member": {"enum": ["identity", "node_id", "model", "ordinal", "objective", "kind", "values", "ranking", "policy", "components", "scale", "bounds", "nodes", "edges", "reasons", "divergence", "non_zeno", "initials", "admitted", "refinement", "refinement_node", "concrete_package", "abstract_package", "positions", "taken", "locked", "start", "nested", "task_product", "abstract_states", "automaton", "bias", "bound", "choice", "clock", "concrete", "conditional", "constraint", "denominator", "ef_nodes", "form", "gain", "history", "lower", "mode", "node", "numerator", "post", "rank", "reset", "set", "state", "state_graph", "strict", "target", "transition", "transitions", "type", "upper", "value", "zone"]}}, "additionalProperties": false}}, "additionalProperties": false},
@@ -1122,6 +1121,7 @@
         {"properties": {"type": {"const": "bounded-search-incomplete"}, "reason": {"enum": ["unresolved-dynamics", "certificate-unchecked"]}}, "required": ["type", "reason"], "additionalProperties": false},
         {"properties": {"type": {"const": "precision-budget"}, "lower": {"$ref": "#/$defs/Rational"}, "upper": {"$ref": "#/$defs/Rational"}}, "required": ["type", "lower", "upper"], "additionalProperties": false},
         {"properties": {"type": {"const": "cancelled"}, "source": {"enum": ["requested", "deadline"]}}, "required": ["type", "source"], "additionalProperties": false},
+        {"description": "FR-410: a statistical run that produced no estimate; nothing was exhausted, so it names no limit.", "properties": {"type": {"const": "no-estimate"}, "reason": {"enum": ["no-counted-sample", "no-positive-weight-cycle"]}}, "required": ["type", "reason"], "additionalProperties": false},
         {"properties": {"type": {"const": "timed-out"}}, "required": ["type"], "additionalProperties": false}
       ]
     },
@@ -1278,7 +1278,8 @@
     "StatisticalVerdict": {
       "description": "FR-410 StatisticalVerdict.",
       "type": "object",
-      "required": ["decision", "estimate", "basis", "provenance", "tests", "witnesses"],
+      "required": ["decision", "basis", "provenance", "tests", "witnesses"],
+      "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}],
       "properties": {
         "decision": {"$ref": "#/$defs/MeasuredDecision"},
         "estimate": {"$ref": "#/$defs/Estimate"},
@@ -1307,11 +1308,12 @@
           },
           "additionalProperties": false
         },
-        "tests": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["index", "decision", "estimate", "samples", "draws"], "properties": {"index": {"$ref": "#/$defs/Count"}, "decision": {"$ref": "#/$defs/MeasuredDecision"}, "estimate": {"$ref": "#/$defs/Estimate"}, "interval": {"$ref": "#/$defs/Interval"}, "samples": {"$ref": "#/$defs/Count"}, "draws": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}},
+        "tests": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["index", "decision", "samples", "draws"], "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}], "properties": {"index": {"$ref": "#/$defs/Count"}, "decision": {"$ref": "#/$defs/MeasuredDecision"}, "estimate": {"$ref": "#/$defs/Estimate"}, "interval": {"$ref": "#/$defs/Interval"}, "samples": {"$ref": "#/$defs/Count"}, "draws": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}},
         "witnesses": {"type": "array", "items": {"$ref": "#/$defs/SampledWitness"}}
       },
       "additionalProperties": false
     },
+    "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},
     "SampledWitness": {
       "description": "FR-410 sampled witness.",
       "type": "object",
@@ -1319,7 +1321,7 @@
       "properties": {
         "test": {"$ref": "#/$defs/Count"},
         "trace_index": {"$ref": "#/$defs/Decimal"},
-        "steps": {"type": "array", "items": {"type": "object", "required": ["transition", "post_state", "scheduled", "random"], "properties": {"transition": {"$ref": "#/$defs/TransitionIdentity"}, "post_state": {"$ref": "#/$defs/State"}, "scheduled": {"description": "FR-410/FR-405: the scheduled identity, the transition identity carrying only its non-random arguments; the random arguments are the step's random member.", "$ref": "#/$defs/TransitionIdentity"}, "random": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}, "delay": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}},
+        "steps": {"type": "array", "items": {"type": "object", "required": ["transition", "post_state", "scheduled", "random"], "properties": {"transition": {"oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "post_state": {"$ref": "#/$defs/State"}, "scheduled": {"description": "FR-410/FR-405: the scheduled identity, the transition identity carrying only its non-random arguments; the random arguments are the step's random member. A stutter step writes the stutter form here as in transition.", "oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "random": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}, "delay": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}},
         "probability": {"$ref": "#/$defs/Rational"},
         "value": {"oneOf": [
           {"type": "object", "required": ["type", "value"], "properties": {"type": {"const": "event"}, "value": {"type": "boolean"}}, "additionalProperties": false},

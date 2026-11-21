@@ -412,23 +412,29 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   depends on its name, level and type and not on the function that binds it.
   **Binder levels in a temporal clause leaf.** In a temporal clause
   ([FR-370](FR-370-checked-package-temporal-clause-body.md)) a binder's level
-  is its position among the binders in scope where it is bound. The clause's
-  `over` parameter is level 1. An activation trigger adds 1. Each capture
-  adds 1, in declaration order. The activation guard is in the scope of
-  `over` and the trigger only. Capture initializer k is in the scope of
+  is the number of binders already in scope where it is bound, as FSL FR-092
+  counts levels: a function's parameters have levels 0 to n-1, and a nested
+  binder's level adds its enclosing binders. The clause's `over` parameter
+  is level 0. An activation trigger binder takes the next level, 1. The
+  captures follow in declaration order. The activation guard is in the scope
+  of `over` and the trigger only. Capture initializer k is in the scope of
   `over`, the trigger and the captures declared before capture k. Inside a
-  leaf, a `let` binds its value at +0 and its body at +1: its value is read
-  in the scope the `let` is written in, and its binder is one level above
-  that scope. A quantifier binder is +1 for its body. A `fold` or `reduce`
-  step binds +2, its accumulator and its element. A `seq` binder `i`
-  ("Refinement row expressions"; admitted in a clause leaf by
+  leaf, a `let` binder takes the next level, and its value expression is
+  typed in the scope without it, so a binder inside the value takes the
+  same level as the `let` binder, and a binder inside the body the level
+  after it. A quantifier binder takes the next level for its body. A `fold`
+  or `reduce` step binds two binders: its accumulator takes level k and its
+  element level k + 1, where k is the number of binders in scope, so the
+  step's body is in the scope of both. A `seq` binder `i` ("Refinement row
+  expressions"; admitted in a clause leaf by
   [FR-376](../../functional/analysis/FR-376-evaluate-population-valued-mapping-expressions.md)
   "Surface syntax") takes its level by this rule. A hyperproperty body
   wrapper ([FR-402](FR-402-hyperproperty-obligation-identity.md) "Body
   wrapper") does not write its trace-atom slots on the wire as binders in
-  scope, so no level of a binder in its leaves can be checked: a reader SHALL
-  refuse `ill_typed`/`operator-ineligible` at the form a binder-introducing
-  form (`seq`, `let`, a quantifier) reachable from a body wrapper's leaf.
+  scope, so no level of a binder in its leaves can be checked. A reader SHALL
+  therefore refuse `ill_typed`/`operator-ineligible` at the application node
+  of any binder-introducing form (`seq`, `let`, a quantifier, `fold`,
+  `reduce`) reachable from a body wrapper's leaf.
   The name `#ieee_operand` is reserved for the checker: it names the binder of the `let` that lowering introduces for an IEEE ordering's operands, a source identifier can never spell it (the `Identifier` grammar excludes `#`), and the schema admits it only as the `name` literal of a `value`/`parameter` node's body.
   The node that binds an operation parameter of a state clause is typed by
   the parameter's step 4 type, which reads the parameter's presence: an
@@ -1707,10 +1713,36 @@ that key: a closed object with exactly these members:
 | Member | Value |
 | --- | --- |
 | `package` | The `name` of the package the node belongs to (for a `model_root` node and for a node a domain package owns, that domain package's identity). |
-| `path` | A non-empty array of segments, each a string or an operand segment: an *operand slot* `{"operand": k}` in a node-held id or an *index segment* `{"node": i}` in a document-held id ("Operand index segments" below). A declared node's path is its declaration path, the declaring scopes' names outermost first, all strings. A derived node (no `declaration`, for example `Set<Integer>`, an application or a literal) outside every recursion group has the path `[node_tag, semantic_form, ...operands]` (a `dimension_equivalence` node excepted: its path is an assigned label, "Dimension equivalence" below); each operand is a string (a literal's text, an operator or member name) or an operand node, which the path holds as the operand segment naming that operand node. A path never holds a `node_id` object. |
+| `path` | A non-empty array of segments, each a string or an operand segment: an *operand slot* `{"operand": k}` in a node-held id or an *index segment* `{"node": i}` in a document-held id ("Operand index segments" below). A declared node's path is its declaration path, the declaring scopes' names outermost first, all strings. A derived node (no `declaration`, for example `Set<Integer>`, an application or a literal) outside every recursion group has the path `[node_tag, semantic_form, ...operands]` (a `dimension_equivalence` node excepted: its path is an assigned label, "Dimension equivalence" below); each operand is a string (a literal's text, an operator or member name) or an operand node, which the path holds as the operand segment naming that operand node. A `temporal`/`formula` node of a bounded temporal operator also holds the operator's canonical interval text as a string operand, immediately after the operator name ("Formula intervals" below); an unbounded operator contributes no interval operand. A path never holds a `node_id` object. |
 | `ordinal` | A non-negative JSON integer from `0` to 9007199254740991 (2^53-1, the I-JSON safe integer), assigned by the producer. It tells apart nodes that share one `package` and `path`; the reader's only rule is that no two nodes sharing a `package` and `path` have the same `ordinal`. It need not be `0`, need not be contiguous and need not follow sibling or graph order, and a reader never derives one. A recursion-group member's `ordinal` is no exception: it is producer-assigned and unique among nodes sharing its `package` and `path`, and it is not a position in the group (`recursion_group`, below). |
 
 Ordinals compare numerically; `package` and `path` strings compare as UTF-8 bytes. An `ordinal` that is negative, above 9007199254740991, not a JSON integer (a string, a fraction or an exponent form, for example) is a malformed integer and is refused `malformed_wire` at `/semantic_graph/nodes/{i}/node_id/ordinal`, `i` the node's graph index; the same bound and the same refusal apply to every `node_id` held in a reference, dependency, `semantic_type` or `source_map` entry, to the `node` member of every index segment and the `operand` member of every operand slot, at that member's pointer, and to every `operand_rows` entry, at `/semantic_graph/operand_rows/{i}/{r}`.
+
+**Formula intervals.** A bounded temporal operator's interval is part of its
+`temporal`/`formula` node's identity, because a claim's identity changes with
+its formula and its intervals
+([FR-640](FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md)),
+and two formulas that differ only in an interval are two formulas. The path
+of such a node holds the interval's canonical text as a string operand placed
+immediately after the operator name: `["temporal", "formula", <operand>,
+"filament.op.temporal.once", "steps:0..2", "temporal_formula", <operand>]`.
+The canonical text is `<clock-kind>:<lo>..<hi>`, written from the
+`temporal_interval` member ([FR-370](FR-370-checked-package-temporal-clause-body.md)):
+
+- the integer form `{lower, upper}` is `steps:<lower>..<upper>`, the bounds
+  as their decimal integer strings, and `steps:<lower>..inf` for an
+  `upper` of `null`;
+- the timed form is `time:` followed by `[` or `(` for a `closed` or `open`
+  `lower_end`, `<lo>..<hi>`, and `]` or `)` for the `upper_end`, each bound
+  written as its exact decimal when the rational has a terminating decimal
+  expansion (no exponent, no trailing zero after the point, `0` for zero)
+  and as `numerator/denominator` in lowest terms otherwise, and `inf` for an
+  `upper` of `null`: `[0, 21/2]` is `time:[0..10.5]` and `(1/3, 1]` is
+  `time:(1/3..1]`.
+
+An unbounded operator (`interval` `null`) and every operator with no
+`temporal_interval` member contribute no interval operand, so their paths
+are unchanged.
 
 A recursion-group member is identified by `{package, path, ordinal}`, and its `path` is never derived from its operands. A member that carries a `declaration` keeps its declaration path (the declaring scopes' names outermost first), as every declared node does, so the members of one group need not share one `path`: a group may hold several declared members, each with its own declaration path. An anonymous derived member carries the path of the group's declared member where the group has exactly one; where the group has none, or several, there is no external anchor for it, and the producer chooses its path, which is admitted, with nothing invented or refused. Nodes sharing a `package` and `path`, members or not, are told apart by `ordinal`, which is producer-assigned like any other (unique among nodes sharing `package` and `path`; a producer may use graph order, but need not); membership of a group is the shared `recursion_group` label alone, and the reader derives no position in the group. Only a derived node outside every recursion group derives its path from its operands, each operand node written as an operand segment. A producer disambiguates other nodes sharing a package and path by distinct ordinals of its choosing; body content is not part of the path.
 
@@ -4524,9 +4556,12 @@ every other unit name the clause owns, in that unit (FR-778). It SHALL NOT
 infer the declaring unit from the clause's subject, the source map, the order
 of `lock.sources` or the position of any node. A clause over a `Reference` to
 a model declaration that another unit's selected model declares is still
-declared by its own unit, and resolves its unit names there. A name the
-declaring unit does not declare refuses `missing_declaration`/`missing-name`
-at the unit name (FR-778), even when another unit of the package declares it.
+declared by its own unit, and resolves its unit names there. A unit name that
+is not the FCD identity of a unit an admitted domain package declares (such as
+`ix://acme/rpc/unit/ms`, which resolves to that package's model-owned node,
+FR-778-AC-2), and that the declaring unit does not declare, refuses
+`missing_declaration`/`missing-name` at the unit name (FR-778), even when
+another unit of the package declares it.
 
 In the row visit, after the occurrence join and before the repeated-key
 check, the reader SHALL check `source_unit`. A `source_unit` that is not one
@@ -4536,6 +4571,14 @@ reference disagrees with the lock or the source map (FR-322-AC-52). A clause
 row without `source_unit` refuses `invalid_package`/`timed-node-reference`
 at `/temporal_bindings/{i}`. So does a `source_unit` on a row whose
 `declaration` is a compensation, an await or a `hyperproperty` node.
+
+A temporal clause is declared in exactly one source unit, so every
+`temporal_bindings` row of one clause node SHALL name the same `source_unit`.
+In the same row visit, after its lock join, a clause row whose `source_unit`
+differs from that of the clause node's first row, in the rows' ascending
+(`declaration`, `occurrence`) order, refuses
+`invalid_package`/`timed-node-reference` at that row, `/temporal_bindings/{i}`. The clause's aggregate bounds and every other unit name
+the clause owns resolve in that one unit.
 
 **Hyper clause rows: one per quantified trace.** A hyper clause relates
 several traces, and each trace's positions are its own: under a `behaviours`
@@ -4679,10 +4722,10 @@ Its `await_cases` (`AW-01` to `AW-06`, FR-322-AC-305) publish an await beside a
 compensation sharing its model, profile and clock name, an await alone, and the
 missing-row, repeated-row, clock-name and clock-kind refusals of an await row,
 which are `CB-03` to `CB-06` applied to an await. Its `source_unit_cases`
-(`SU-01` to `SU-04`, FR-778-AC-8 to FR-778-AC-11) publish a clause over a
+(`SU-01` to `SU-05`, FR-778-AC-8 to FR-778-AC-12) publish a clause over a
 `Reference<Order>` of a selected model and a clause over a source record, both
 resolving `ms` in their own unit, and the refusals of a unit declared only by
-the subject's unit and of a `source_unit` that is no lock source. The selected
+the subject's unit, of a `source_unit` that is no lock source, and of two rows of one clause naming different units. The selected
 profile, configuration kind, and clause clock name agree in every single- and
 multi-clause positive. `temporal-clock-occurrence-vectors.json` publishes the
 per-occurrence cases `BO-P1` to `BO-R9`: twins of one node with different and
@@ -5488,9 +5531,12 @@ the wrapper is removed.
 **Size.** `size(p)` over a clock collection place is the application of
 `filament.op.collection.size` in the place form `size_read`, parallel to
 `presence_read`. Its arguments are, in order: a reference to the
-`clock_place` template node of the collection `p`; the owner term; and one
-term for each `slot` step of the path to `p` in path order, the slot terms of
-the enclosing collections. Argument order and slot-term rules are those of
+`clock_place` template node of the element place of `p`, whose path is the
+path to `p` followed by its element `slot` step (a collection has no
+`clock_place` of its own: each clock path ends in its element slot); the
+owner term; and one term for each enclosing `slot` step, every `slot` step of
+the template's path except its last, in path order. The element slot of `p`
+takes no term, because a size reads the whole collection. Argument order and slot-term rules are those of
 `presence_read` above. A `size_read` is a recorded data predicate of the timed
 model and reads no clock: the number of elements of a collection is data,
 whatever its elements hold. Its result type is the non-negative integer range
@@ -5498,8 +5544,8 @@ that the collection's bounds give: the `bounded_domain`/`integer_range` node
 `[0, max]` when the collection declares a maximum `max`, and the
 non-negative integers when it declares none.
 The reader refuses `ill_typed`/`operator-ineligible` at `/body/arguments` an
-argument count other than two plus the number of slot steps of the path to
-`p`. It refuses `ill_typed`/`type-mismatch` at the argument an owner term not
+argument count other than two plus the number of `slot` steps of the
+template's path minus one. It refuses `ill_typed`/`type-mismatch` at the argument an owner term not
 of the owner type or a slot term not of the selector's domain, as for
 `presence_read`. A collection whose element holds data is not a clock member
 ("Data part of a clock-bearing record, tuple or union"), so its size is an
@@ -6374,11 +6420,12 @@ is carried by two `protocol` node forms.
 | FR-322-AC-502 | Both branches of an `if` are checked. With parameters `c: Boolean`, `x: Int[0, 9]`, `y: Int[5, 20]` and `w: Int[0, 1000]`: IC-16, `if c then 10 else x` as the body of a function of result `Int[0, 10]`, its then-branch the `filament.op.numeric.narrow` over the literal `10` to the `Int[0, 10]` node, its else-branch the `reference` to `x` and its `result_type` the `Int[0, 10]` node, is admitted; IC-17, `if c then x else y` as the body of a function of result `Int[0, 20]`, its `result_type` the `Int[0, 20]` node, the hull of its branches, which equals neither branch's type node, is admitted with no `convert` node; IC-18, IC-16 with the else-branch the `reference` to `w`, typed by the `Int[0, 1000]` node, and no `narrow` node over it, refuses `ill_typed`/`operator-ineligible` at the `if` application. | Test (TC-2099) |
 | FR-322-AC-501 | Integer containment at an annotated `let`. Over `function g using v(a: Integer): Boolean pure { true }` and a parameter `x: Int[0, 1000]`, IC-14, the package of `let y: Integer = x in g(y)` (FSpec FR-149-AC-30), whose `let` binder `y` is a `value`/`parameter` node typed by the builtin `Integer` node bound to the `reference` to `x`, and whose call argument is the `reference` to `y`, with no `convert` node, is admitted; IC-15, IC-14 with `y` and `g`'s parameter typed by an `Int[0, 999]` node, so that only the binder fails, refuses `ill_typed`/`operator-ineligible` at the `let` application; (pending QSL-2728: the wire has no id-level link from a `let` binding to its binder node, so `integer-containment-vectors.json` carries IC-15 admitted with `enforced: false` and TC-2099 does not verify this clause until that link lands); IC-19, IC-14 with `y` typed by the `Int[0, 1000]` node of its bound value, so that the call argument is a bare `Int[0, 1000]` term at the `Integer` parameter, refuses `ill_typed`/`operator-ineligible` at the `filament.op.function.call` application. IC-20, the package of `let r: Money = mint_taxed(receiver) in r`, the `filament.op.control.let` application itself the node under test (no enclosing function node), bound to a `filament.op.model.dispatch_call` of `mint_taxed` over a `Ledger` receiver parameter whose result is `TaxedMoney`, a record subtype of `Money`, and whose binder (a `value`/`parameter` node named `y`) is typed by the `Money` node, is admitted. | Test (TC-2099) |
 | FR-322-AC-503 | Every `temporal_bindings` row keyed by a `temporal`/`temporal_clause` node carries `source_unit`, a `lock.sources` entry naming the unit that declares the clause, and every published positive fixture's clause row names `{"authority": "agent-ix", "identity": "example"}`. The same row without `source_unit` refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/{i}`; a compensation row (`CB-01`'s `k1`) with a `source_unit` added refuses the same at its row; a clause row whose `source_unit` is `{"authority": "agent-ix", "identity": "other"}`, no lock source, refuses `invalid_package`/`invalid-value` at `/temporal_bindings/{i}/source_unit` (`SU-04`), after the occurrence join and before the repeated-key check. | Test (TC-233, TC-1890) |
-| FR-322-AC-504 | Over a selected timed document whose object type `Call` has a field `ts` typed by the record value type `Rec` with multiplicity `{1, 4, true, false}`, where `Rec` declares a data field `n: Integer` and a field `ys` typed `ix://filament/native/Clock` with multiplicity `{0, 3, true, false}`, the predicate `size(self.ts) >= 1 and size(self.ts[0].ys) >= 2` is admitted. `size(self.ts)` is an ordinary data read: `filament.op.collection.size` over the `field` application of `ts`, whose element holds data. `size(self.ts[0].ys)` is one `size_read` application of `filament.op.collection.size` with the arguments the `clock_place` template node of the path `ts`, `slot`, `ys`, the owner term `self` and one slot term, the Integer literal `0`; its result type is the `integer_range` node `[0, 3]`, it reads no clock, and it is recorded as a data predicate of the timed model. A `field` application over `self.ts[0].ys` used as the operand of an ordinary `filament.op.collection.size` refuses `invalid_timed_model`/`clock-read-outside-constraint` at that application. | Test (TC-367) |
-| FR-322-AC-505 | FR-322-AC-504's `size_read` with no slot term, or with two slot terms, refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with the slot term the Boolean literal `true` it refuses `ill_typed`/`type-mismatch` at `/body/arguments/2`. | Test (TC-367) |
-| FR-322-AC-506 | In `temporal Window using inf over (p: Pulse) clock "model-steps" on origin { always holds(let xs = seq(i in 0 .. 2: i) in p.w >= 0) }`, the `value`/`parameter` node of `p` has `level` 1, the `seq` binder `i`, bound inside the `let`'s value at +0, has `level` 2, and the `let` binder `xs` has `level` 2, and the `let` body is in the scope of `p` and `xs`. | Test (TC-303) |
-| FR-322-AC-507 | In a clause `over (p: Pulse)` activated `on each (q: Pulse) when (q.w > p.w)` with one capture `n: Int[0, 9] = q.w` and the leaf `holds(let xs = seq(i in 0 .. n: i) in true)`, `p` has `level` 1, the trigger `q` `level` 2 and the capture `n` `level` 3; the guard reads only levels 1 and 2, the capture initializer reads `q` at level 2, and inside the leaf `i` and `xs` have `level` 4. | Test (TC-303) |
-| FR-322-AC-508 | A hyperproperty body wrapper whose leaf reaches a `let`, a `forall` quantifier or a `seq` application refuses `ill_typed`/`operator-ineligible` at that form's application node; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
+| FR-322-AC-504 | Over a selected timed document whose object type `Call` has a field `ts` typed by the record value type `Rec` with multiplicity `{1, 4, true, false}`, where `Rec` declares a data field `n: Integer` and a field `ys` typed `ix://filament/native/Clock` with multiplicity `{0, 3, true, false}`, the predicate `size(self.ts) >= 1 and size(self.ts[0].ys) >= 2` is admitted. `size(self.ts)` is an ordinary data read: `filament.op.collection.size` over the `field` application of `ts`, whose element holds data. `size(self.ts[0].ys)` is one `size_read` application of `filament.op.collection.size` with the arguments the `clock_place` template node of the element place of `ys`, path `ts`, `slot`, `ys`, `slot`, the owner term `self` and one slot term for the enclosing slot of `ts`, the Integer literal `0` (the element slot of `ys` takes none); its result type is the `integer_range` node `[0, 3]`, it reads no clock, and it is recorded as a data predicate of the timed model. A `field` application over `self.ts[0].ys` used as the operand of an ordinary `filament.op.collection.size` refuses `invalid_timed_model`/`clock-read-outside-constraint` at that application. | Test (TC-367) |
+| FR-322-AC-505 | FR-322-AC-504's `size_read` with no slot term, or with two slot terms (a term added for the element slot of `ys`), refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with the slot term the Boolean literal `true` it refuses `ill_typed`/`type-mismatch` at `/body/arguments/2`. | Test (TC-367) |
+| FR-322-AC-506 | In a plain clause `over (p: Pulse)` with origin activation, levels follow where a `seq` sits relative to a `let`. In the leaf `holds(let s = seq(i in 0 .. 2: i) in p.w >= 0)` the `seq` is the `let`'s value, typed without the `let` binder: `p` has `level` 0, the `seq` index `i` `level` 1, and `s` `level` 1 for the body. In the leaf `holds(let s = p.w in size(seq(i in 0 .. 2: i)) >= s)` the `seq` is in the `let` body: `p` has `level` 0, `s` `level` 1 and the `seq` index `i` `level` 2. | Test (TC-303) |
+| FR-322-AC-507 | In a clause `over (p: Pulse)` activated `on each (q: Pulse) when (q.w > p.w)` with one capture `n: Int[0, 9] = q.w` and the leaf `holds(let xs = seq(i in 0 .. n: i) in true)`, `p` has `level` 0, the trigger `q` `level` 1 and the capture `n` `level` 2; the guard reads only levels 0 and 1, the capture initializer reads `q` at level 1, and the first leaf binder, the `seq` index `i`, has `level` 3, as does `xs`. | Test (TC-303) |
+| FR-322-AC-508 | A hyperproperty body wrapper whose leaf reaches a `let`, a `forall` quantifier, a `seq` application or a `fold` application refuses `ill_typed`/`operator-ineligible` at that form's application node; the same wrapper whose leaf reaches none of them is admitted. | Test (TC-303) |
+| FR-322-AC-509 | One package holding `always[0,2] holds(p)` and `always[0,3] holds(p)` over the same `p` holds two `temporal`/`formula` nodes for the two `always` applications, with paths that differ in the interval operand after `filament.op.temporal.always` (`steps:0..2` and `steps:0..3`), so both may have `ordinal` 0; the one `holds(p)` node is shared. A timed `eventually[0, 21/2]` has the operand `time:[0..10.5]`, an unbounded `always` has none, and every published fixture and vector whose formula has a bounded operator carries the operand (`steps:0..3` in the seven fixtures, `steps:0..10`, `time:[0..10.5]` and `steps:0..2` in `hybrid-node-vectors.json`). | Test (TC-233) |
 
 ## Dependencies
 

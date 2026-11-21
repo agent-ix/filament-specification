@@ -13456,7 +13456,7 @@ fn every_positive_fixture_carries_each_required_temporal_clock_binding() {
 /// of the clock-binding vectors, decided by the stated rule. The row's
 /// `source_unit` must be a lock source, and its `timestamp_unit` resolves in
 /// that unit only; the subject's declaring unit is never read.
-#[trace("TC-1890", "FR-778-AC-8", "FR-778-AC-9", "FR-778-AC-10", "FR-778-AC-11", "FR-322-AC-503")]
+#[trace("TC-1890", "FR-778-AC-8", "FR-778-AC-9", "FR-778-AC-10", "FR-778-AC-11", "FR-778-AC-12", "FR-322-AC-503")]
 #[test]
 fn tc_1890_clause_rows_resolve_unit_names_in_their_source_unit() {
     let vectors: Value = serde_json::from_str(TEMPORAL_CLOCK_BINDING_VECTORS)
@@ -13472,23 +13472,36 @@ fn tc_1890_clause_rows_resolve_unit_names_in_their_source_unit() {
     let (mut admitted, mut refused) = (0, 0);
     for case in vectors["source_unit_cases"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
-        let mut wire = case["row"].clone();
-        wire["declaration"] = clause["node_id"].clone();
-        assert!(binding_validator.is_valid(&wire), "{id}: the row meets the TemporalBinding schema");
-        let source_unit = &case["row"]["source_unit"];
-        let outcome = if !case["lock_sources"].as_array().unwrap().contains(source_unit) {
-            Some(("invalid_package", "invalid-value", "/temporal_bindings/0/source_unit"))
-        } else {
+        let rows: Vec<Value> = match case.get("rows") {
+            Some(rows) => rows.as_array().unwrap().clone(),
+            None => vec![case["row"].clone()],
+        };
+        let lock_sources = case["lock_sources"].as_array().unwrap();
+        let mut outcome = None;
+        for (i, row) in rows.iter().enumerate() {
+            let mut wire = row.clone();
+            wire["declaration"] = clause["node_id"].clone();
+            assert!(binding_validator.is_valid(&wire), "{id}: row {i} meets the TemporalBinding schema");
+            let source_unit = &row["source_unit"];
+            if !lock_sources.contains(source_unit) {
+                outcome = Some(("invalid_package", "invalid-value", format!("/temporal_bindings/{i}/source_unit")));
+                break;
+            }
+            // R13: every row of one clause node names the first row's unit.
+            if i > 0 && *source_unit != rows[0]["source_unit"] {
+                outcome = Some(("invalid_package", "timed-node-reference", format!("/temporal_bindings/{i}")));
+                break;
+            }
             let unit = source_unit["identity"].as_str().unwrap();
             let declared = case["time_units"][unit]
                 .as_array()
-                .is_some_and(|units| units.contains(&case["row"]["clock"]["timestamp_unit"]));
-            (!declared).then_some((
-                "missing_declaration",
-                "missing-name",
-                "/temporal_bindings/0/clock/timestamp_unit",
-            ))
-        };
+                .is_some_and(|units| units.contains(&row["clock"]["timestamp_unit"]));
+            if !declared {
+                outcome = Some(("missing_declaration", "missing-name", format!("/temporal_bindings/{i}/clock/timestamp_unit")));
+                break;
+            }
+        }
+        let source_unit = &rows[0]["source_unit"];
         match case["expected"].as_str().unwrap() {
             "admitted" => {
                 assert_eq!(outcome, None, "{id}");
@@ -13497,13 +13510,13 @@ fn tc_1890_clause_rows_resolve_unit_names_in_their_source_unit() {
             }
             "refused" => {
                 let (code, cause, locus) = outcome.unwrap_or_else(|| panic!("{id} is refused"));
-                assert_eq!((case["code"].as_str(), case["cause"].as_str(), case["locus"].as_str()), (Some(code), Some(cause), Some(locus)), "{id}");
+                assert_eq!((case["code"].as_str(), case["cause"].as_str(), case["locus"].as_str()), (Some(code), Some(cause), Some(locus.as_str())), "{id}");
                 refused += 1;
             }
             other => panic!("{id}: unknown expectation {other}"),
         }
     }
-    assert_eq!((admitted, refused), (2, 2));
+    assert_eq!((admitted, refused), (2, 3));
     let su03 = &vectors["source_unit_cases"][2];
     assert_eq!(
         su03["time_units"].as_object().unwrap().keys().collect::<Vec<_>>(),
@@ -24465,7 +24478,7 @@ const TIMED_CLOCK_ROW_VECTORS: &str =
 /// clock role. Each vector's row meets the closed `TemporalBinding` schema
 /// when its configuration is schema-valid, and a small reader over the stated
 /// rules decides it.
-#[trace("TC-1164", "FR-322-AC-450")]
+#[trace("TC-1164", "FR-322-AC-450", "FR-322-AC-503")]
 #[test]
 fn tc_1164_timed_rows_exist_only_for_trace_subjects() {
     let vectors: Value =
@@ -24503,7 +24516,14 @@ fn tc_1164_timed_rows_exist_only_for_trace_subjects() {
             );
         }
         let has_source = case["timed_model_source"].as_bool().unwrap_or(true);
-        let outcome: Option<&str> = match (subject, row.is_null()) {
+        // FR-322 "Clause source unit": a clause row without `source_unit` is
+        // refused at the row, so every published row carries it and each case
+        // tests what it was written to test.
+        let decide = |row: &Value| -> Option<&str> {
+            if !row.is_null() && row.get("source_unit").is_none() {
+                return Some("/temporal_bindings/0");
+            }
+            match (subject, row.is_null()) {
             ("model", true) if has_source => None,
             ("model", true) => Some("/semantic_graph/nodes/{clause-index}/body"),
             ("model", false) => Some("/temporal_bindings/0"),
@@ -24521,7 +24541,15 @@ fn tc_1164_timed_rows_exist_only_for_trace_subjects() {
                 }
             }
             (other, _) => panic!("{id}: unknown subject {other}"),
+            }
         };
+        if !row.is_null() {
+            assert!(row["source_unit"].is_object(), "{id}: the clause row names its source unit");
+            let mut missing = row.clone();
+            missing.as_object_mut().expect("row").remove("source_unit");
+            assert_eq!(decide(&missing), Some("/temporal_bindings/0"), "{id}: a clause row without source_unit is refused at the row");
+        }
+        let outcome = decide(row);
         if case["expected"] == "admitted" {
             assert_eq!(outcome, None, "{id}");
             if subject == "model" {
@@ -25913,4 +25941,85 @@ fn tc_2098_named_type_argument_alias() {
             }
         }
     }
+}
+
+/// FR-322 "Formula intervals": the canonical interval text of a
+/// `temporal_interval` member, or `None` for an unbounded operator.
+fn canonical_interval_text(member: &Value) -> Option<String> {
+    let interval = member.get("interval").filter(|i| !i.is_null())?;
+    fn rational(value: &Value) -> String {
+        if let Some(text) = value.as_str() {
+            return text.to_owned();
+        }
+        let numerator: u128 = value["numerator"].as_str().unwrap().parse().unwrap();
+        let mut denominator: u128 = value["denominator"].as_str().unwrap().parse().unwrap();
+        let mut d = denominator;
+        let mut scale = 0u32;
+        while d % 2 == 0 { d /= 2; scale += 1; }
+        let mut fives = 0u32;
+        while d % 5 == 0 { d /= 5; fives += 1; }
+        if d != 1 {
+            return format!("{numerator}/{denominator}");
+        }
+        let digits = scale.max(fives);
+        let factor = 10u128.pow(digits) / denominator;
+        denominator = 10u128.pow(digits);
+        let scaled = numerator * factor;
+        let whole = scaled / denominator;
+        let fraction = scaled % denominator;
+        if fraction == 0 {
+            return whole.to_string();
+        }
+        let text = format!("{:0width$}", fraction, width = digits as usize);
+        format!("{whole}.{}", text.trim_end_matches('0'))
+    }
+    let upper = if interval["upper"].is_null() { "inf".to_owned() } else { rational(&interval["upper"]) };
+    let lower = rational(&interval["lower"]);
+    Some(match interval.get("lower_end") {
+        None => format!("steps:{lower}..{upper}"),
+        Some(end) => {
+            let open = if end == "open" { "(" } else { "[" };
+            let close = if interval["upper_end"] == "open" { ")" } else { "]" };
+            format!("time:{open}{lower}..{upper}{close}")
+        }
+    })
+}
+
+/// FR-322-AC-509: every published formula node of a bounded operator holds
+/// its canonical interval text immediately after the operator name, and an
+/// unbounded one holds none.
+#[trace("TC-233", "FR-322-AC-509")]
+#[test]
+fn bounded_formula_nodes_carry_their_interval_in_the_path() {
+    let hybrid: Value = serde_json::from_str(HYBRID_NODE_VECTORS).expect("hybrid vectors");
+    let mut graphs: Vec<(String, Vec<Value>)> = published_positive_packages()
+        .into_iter()
+        .map(|(name, package)| (name, package["semantic_graph"]["nodes"].as_array().unwrap().clone()))
+        .collect();
+    let protocol: Value = serde_json::from_str(include_str!("../proposals/checked-package-v2/fixtures/protocol-node-base.json")).expect("protocol base");
+    graphs.push(("protocol-node-base".into(), protocol["semantic_graph"]["nodes"].as_array().unwrap().clone()));
+    graphs.push(("hybrid restored".into(), hybrid["restored_nodes"].as_array().unwrap().clone()));
+    graphs.push(("hybrid".into(), hybrid["nodes"].as_array().unwrap().clone()));
+    let mut bounded = 0;
+    for (name, nodes) in graphs {
+        for node in nodes.iter().filter(|n| n["node_tag"] == "temporal" && n["semantic_form"] == "formula") {
+            let path = node["node_id"]["path"].as_array().unwrap();
+            let identity = &node["body"]["operation"]["identity"];
+            let at = path.iter().position(|s| s == identity).expect("operator name in the path");
+            match canonical_interval_text(&node["body"]["operation"]["member"]) {
+                Some(text) => {
+                    assert_eq!(path[at + 1], Value::from(text), "{name}: interval operand after {identity}");
+                    bounded += 1;
+                }
+                None => assert_eq!(path[at + 1], "temporal_formula", "{name}: no interval operand for {identity}"),
+            }
+        }
+    }
+    assert_eq!(bounded, 10, "every bounded formula of the published packages is checked");
+    let two_three = canonical_interval_text(&json!({"interval": {"lower": "0", "upper": "2"}}));
+    assert_ne!(two_three, canonical_interval_text(&json!({"interval": {"lower": "0", "upper": "3"}})));
+    assert_eq!(
+        canonical_interval_text(&json!({"interval": {"lower": {"numerator": "1", "denominator": "3"}, "lower_end": "open", "upper": {"numerator": "1", "denominator": "1"}, "upper_end": "closed"}})).as_deref(),
+        Some("time:(1/3..1]")
+    );
 }

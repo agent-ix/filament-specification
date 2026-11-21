@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Verify that a `verify` declaration checks to plan nodes bound to clause identities, its refusals, and its linked package form. Scope: FR-192-AC-8 to FR-192-AC-11.
+Verify that a `verify` declaration checks to plan nodes bound to clause identities, its refusals, and its linked package form. Scope: FR-192-AC-8 to FR-192-AC-12.
 
 ## Test Procedure
 

@@ -68,6 +68,11 @@ each with its plan, certificate and provenance as below.
   certificate, because the excluded state may begin an admissible plan
   better than the best one or the only one. A checker SHALL NOT accept a
   certificate whose derivation rests on an undetermined invariant.
+- An `incomplete` result has one cause. A work limit, the deadline or a
+  cancellation that stopped the search wins: the cause is that stop, even
+  when the search had also excluded an undetermined state.
+  `invariant-undetermined` is the cause only when the search otherwise ran
+  to completion.
 - The objective SHALL be the `minimize` or `maximize` expression; a
   declaration with none minimizes `length`. A sum of per-step costs is
   written as a collection query over `steps`; the final-state value as an

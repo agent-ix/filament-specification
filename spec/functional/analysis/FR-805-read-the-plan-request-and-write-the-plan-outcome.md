@@ -177,8 +177,9 @@ refusal naming the first defect by its RFC 6901 pointer.
 - `limits` lists every limit in force by setting name, with defaults filled.
 - `cause` is present on `incomplete` (FR-801's `limit-reached` or
   `cancelled`, FR-650's `{"type": "invariant-undetermined", "invariant":
-  <name>}` naming the invariant that could not be decided, or FR-819's
-  `grid-exhausted{dwell_grid}` or `timed-out`) and
+  <name>}` naming the invariant that could not be decided, which is the cause
+  only when no limit, deadline or cancellation stopped the search (FR-650), or
+  FR-819's `grid-exhausted{dwell_grid}` or `timed-out`) and
   on `unsupported` (FR-193's `unsupported_projection`/
   `unsupported-requested-capability`), and `null` otherwise.
 - `plan` is `null` on `infeasible`, on `unsupported` and on an `incomplete`

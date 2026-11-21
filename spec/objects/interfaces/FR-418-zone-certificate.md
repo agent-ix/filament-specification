@@ -60,7 +60,7 @@ For a safety form (TT-1, TT-2, TT-3, the deadlock-freedom item):
 | `identity` | The item's obligation identity, the structural `{node_id, model, ordinal}` (FR-479) binding the proof to the exact subject and claim. For a task-automaton proof, this binding selects the checked schedulability claim through FR-322's `schedulability_claims` row and FR-482 body, and therefore its policy; policy is not supplied as an independent certificate or `task_product` value. |
 | `scale` | The common denominator the constants were scaled by. |
 | `bounds` | The per-clock lower and upper bounds `L` and `U`, per discrete state, used by the simulation test. |
-| `nodes` | A finite list of nodes `(s, q, Z)`: discrete state key, claim-automaton state, canonical DBM. For a task-product certificate, `s` is the complete source-plus-scheduler product key modulo the finite live-job renaming below. |
+| `nodes` | A finite list of nodes `(s, q, Z)`: discrete state key, claim-automaton state, canonical DBM. For a task-product certificate, `s` is the complete source-plus-scheduler product key modulo the finite live-job renaming below; its octets are the *task product state key*, the same octet encoding as the FR-331 `task_search` node key, and the wire carries them as unpadded base64url (the FR-331 `State` locus spelling). |
 | `edges` | For each node and each recomputed source transition or finite task-transition template enabled from it, the index of a target node. |
 | `initials` | Nonempty. The position in `nodes` of the initial node of each initial state of the subject, in the subject's initial-state order (FR-361): the node that covers that state's initial symbolic state. A form with one initial state lists one position. FSL FR-244 reads its single `initial` as `initials[0]`; the wire carries no `initial` member. |
 | `admitted` | Present on every certificate except the certificate of a state-graph item (`possible`, `always possible` or `unique path` over a timed subject, FR-712), which carries none. The ADR-026 TD-6 witness: a start node (in a refinement form, any positioned `initials[i]`, so a time-locked first initial state does not decide it) and a path of certificate edges to a quiescent node or to a node of a component with a cycle of positive total delay (FSL FR-244 `admitted`). |
@@ -123,8 +123,9 @@ each task edge and bounded-subtraction row. It carries `action`, `taskset`,
 `task`, `job_rank`, `slot`, the source `release` transition, the optional
 `source_transition`, and `priority` exactly when the checked task declares
 one. `job_rank` is the zero-based position of that job among the task's live
-jobs, ordered by source activation transition identity and then the exact
-occurrence in the path represented by the source node. `slot` binds that rank
+jobs, ordered within the quotient node by deadline-clock age, oldest first,
+ties broken by task declaration order. A quotient node holds no path
+occurrence, so no occurrence orders its jobs. `slot` binds that rank
 to one of the task's finite candidate slots. On an activation edge, rank and
 slot name the newly live job in the target node; on every other edge they name
 the affected live job in the source node. The template carries no global job
@@ -164,7 +165,12 @@ region, scheduler control, release/jitter phase and queue state within the
 declared finite cap. It recomputes periodic/sporadic activation, jitter,
 service, completion and feedback successors, and accepts exact mode only if
 every reachable successor is represented and no attempted allocation
-exceeds the cap. It requires `live_job_cap` to equal the sum of per-task
+exceeds the cap. This exploration runs under the checker work limit
+`max_check_work` (FR-461); exhausting it settles `incomplete` with
+`limit-reached` naming `max_check_work`, never `proved`. The method
+`closed-finite-product/v1` does not certify a dual-WCET task set with mode
+switches: such a set settles `incomplete` with
+`bounded-search-incomplete{reason: certificate-unchecked}` (FR-331). It requires `live_job_cap` to equal the sum of per-task
 `max_jobs`, then derives positive-delay SCCs from this closed graph; a
 source-only no-time-stops claim or an overflow edge cannot satisfy the gate.
 
@@ -202,12 +208,18 @@ declared diagonal predicate keeps its truth value; values above a ceiling are
 represented by their saturated region. The bounded-subtraction side condition
 makes subtraction by a fixed integer preserve this equivalence. The checker
 uses this refined-region relation instead of aLU for task-product successor
-coverage.
+coverage. A task-product node's `Z` is any canonical DBM that is a union
+of whole refined regions. A successor is covered by a target node with an
+equal key when the successor zone, closed under the refined-region relation,
+is included in the target's `Z`: coverage is inclusion, not equality.
 
 For a fixed-work task proof, the finite scheduler control, FR-419's finite job
 slots, finite clock ceilings and finite refined-region partition make the
 product graph finite. A task-product certificate covers its entire reachable
-graph. A bounded search frontier is not a `ZoneCertificate` and cannot prove
+graph. It is canonical: it holds exactly the reachable closure. A node
+the checker's recomputation does not reach from `initials` is rejected with
+rule `unreached-node` at `{node}`, and an edge that recomputation does not
+produce with rule `extra-edge` at `{edge}`. A bounded search frontier is not a `ZoneCertificate` and cannot prove
 absence of deadline misses. A finite-slot overflow is not a product state or
 certificate node; it stops certification and routes to replayable incomplete
 search evidence. A reachable deadline-miss node is permitted in this proof certificate only
@@ -325,7 +337,10 @@ A rejected certificate settles `inconclusive`, `certificate-rejected{rule,
 at}` (FR-331): `initial-missing` at the State locus `{key}` of
 the initial discrete state, when no node of it covers the initial symbolic state (in a refinement form, of the discrete state of concrete initial state `i`, when `initials[i]` does not cover that state's symbolic state, for each `i`); `successor-missing` at
 `{node}` when a node's successor by an identity is not covered by its named
-target; `bad-state` at `{node}` for a bad node; `backward-edge` at `{edge}`
+target; `bad-state` at `{node}` for a bad node; for a task-product certificate,
+`unreached-node` at `{node}` for a node not in the recomputed reachable
+closure and `extra-edge` at `{edge}` for an edge the recomputation does not
+produce; `backward-edge` at `{edge}`
 for an edge to a smaller component index; `witness-fails` at `{component}`
 for a component whose reason does not hold, and at `{node}` for a node whose
 named target is not a reachable time-divergent target; and `non-zeno-mismatch`
@@ -370,6 +385,10 @@ budget. Its cost is linear in the certificate's edges times the DBM operations.
 | FR-418-AC-15 | The certificate of the `Rpc` response proof at `T = 4 ms` carries `non_zeno` `not-required` and that of its `reply` self-loop variant `assumed`, and the checker accepts both; each with its `non_zeno` swapped, or removed, settles `inconclusive`, `certificate-rejected{rule: non-zeno-mismatch, at: {member: non_zeno}}`; a time-lock-freedom certificate carrying `non_zeno` is rejected the same way. | Test (TC-2041) |
 | FR-418-AC-16 | Over a Zeno-only variant of `Rpc` (time invariant `x <= 0 ms` at every state, so no positive delay is admissible and every infinite path is zero-delay), the certificates of `possible` of `phase = Replied` and of `always possible` of `phase = Idle` carry no `admitted` member, are valid `ZoneCertificate`s, and are accepted, the items settling `proved` with basis `zone-certified`; either certificate given an `admitted` member settles `inconclusive`, `certificate-rejected` with rule `malformed` at `{member: admitted}`; ZC-01's `NoLateReply` certificate with `admitted` removed is a valid `ZoneCertificate` and settles `inconclusive`, `certificate-rejected` with rule `malformed` at `{member: admitted}`. | Test (TC-371 ZC-31); the checker clauses by FSL TC-3030 |
 | FR-418-AC-17 | The `filament.backend-provider/v1` schema's zone certificate admits the `state_graph` part `{"form": "always-possible", "ef_nodes": [0, 2]}` on FR-712-AC-2's `always possible` proof certificate, and refuses a `state_graph` with `form` `possible`, with an extra member, or without `ef_nodes`; a certificate carrying no `state_graph` is still admitted by the schema. | Test (TC-2052) |
+| FR-418-AC-18 | In a fixed-work task-product certificate whose target node has the same task product state key as a successor and a `Z` that is the union of two whole refined regions, a successor whose zone, closed under the refined-region relation, is one of those regions is covered and the certificate is accepted; the same target with `Z` reduced to the other region alone settles `inconclusive`, `certificate-rejected` with rule `successor-missing` at the source node. | Test (TC-371) |
+| FR-418-AC-19 | A fixed-work task-product certificate with one extra node that the checker's recomputation does not reach from `initials` settles `inconclusive`, `certificate-rejected` with rule `unreached-node` at that node's position; one with an extra edge the recomputation does not produce settles the same with rule `extra-edge` at that edge's position; without either it is accepted. | Test (TC-371) |
+| FR-418-AC-20 | Checking an accepted fixed-work task-product certificate with `max_check_work` set below the work its exhaustive exploration needs settles `incomplete` with `limit-reached` naming `max_check_work`, never `proved`; with the limit at its published default the same certificate settles `proved`. | Test (TC-371) |
+| FR-418-AC-21 | A dual-WCET task set with a mode switch whose product closes under `closed-finite-product/v1` settles `incomplete` with cause `{"type": "bounded-search-incomplete", "reason": "certificate-unchecked"}`, never `proved`. | Test (TC-371) |
 
 ## Dependencies
 
