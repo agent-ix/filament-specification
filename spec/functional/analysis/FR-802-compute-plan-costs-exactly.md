@@ -42,6 +42,14 @@ comparison the search and the tie rule (FR-804) use.
   refuses `ill_typed`/`type-mismatch` (FR-194).
 - A declaration with no objective SHALL minimize `length`.
 
+**Current FSL behavior:** the planner supports `Integer`, `Rational` and
+`Decimal` objectives. A typed floating-point (`Float32` or `Float64`) or
+unit-bearing `Quantity` objective returns a typed `unsupported` result
+before search, naming the numeric family; it does not produce an undefined
+objective or an infeasible result. This implementation boundary does not
+change the admitted objective types or the arithmetic, `totalOrder`, NaN,
+unit-conversion and certificate requirements below.
+
 ### Exact arithmetic
 
 - `Integer`, `Rational` and `Decimal` objectives SHALL be computed exactly:
