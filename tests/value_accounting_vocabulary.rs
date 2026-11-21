@@ -131,6 +131,7 @@ fn published_charge_point_list_equals_the_ordered_table() {
         "frame.redefines-link",
         "declaration.check",
         "temporal.visit",
+        "model.candidate",
     ] {
         assert!(declared.contains(required), "{required} is declared");
     }

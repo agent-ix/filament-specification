@@ -49,6 +49,7 @@ completed result. That record is closed; its members are defined under
 | declaration check | `declaration.check`, charged by a checking family for its own checking work; the family states each charge and its amount, and `function.call` still charges only an evaluated call |
 | temporal | `temporal.visit`, charged by a temporal evaluator once per visit it makes; the evaluator owns its traversal, its memoization and when a visit occurs, and a visit it makes is charged once |
 | frame | for each field write of an invocation, in ascending (object reference key, field declaration key) order: one `frame.write` before the write is tested against the frame's `modifies` grants, then one `frame.redefines-link` before each `redefines` link followed from the written member, stopping at the first member a `modifies` entry names or at a member with no `redefines` link |
+| model candidate | `model.candidate` before caller-declared candidate work (argument vectors, candidate states or evaluated result pairs), and before canonical plan-policy key work or storage growth as specified below |
 
 Each charge is the following exact `{ counter: amount }` vector. A semantic-size
 counter records the high-water maximum, not a sum: admitting amount `n` changes
@@ -139,6 +140,8 @@ unmaterialized result.
 | each `temporal.visit` | no size-counter change; `work_units += 1` and no `result_units`; a temporal visit never charges `graph.expand`, which is reserved for `reaches` |
 | each `frame.write` | no size-counter change; `work_units += 1` |
 | each `frame.redefines-link` | no size-counter change; `work_units += 1` |
+| each `model.candidate` work charge | no size-counter change; `work_units += N`, `result_units += 0`, instead of the default one work unit, where `N` is the actual count of caller-owned candidate argument vectors, candidate states or evaluated result pairs, or the actual node/byte visits for canonical plan-policy key traversal, encoding, decoding, comparison or copying; charged before that work |
+| each `model.candidate` storage charge | no size-counter change; `work_units += 0`, `result_units += B`, instead of the default one work unit, before each canonical plan-policy key storage growth; `B` is the full new requested capacity in bytes for scratch storage, output storage or owned key copies, derived with checked arithmetic, not the capacity delta or typed value occurrence count |
 
 For each non-repeated row, `work_units += 1`; repeated identity, edge, rational,
 normalization-output, equality-pair, function-call, collection-element,
@@ -146,6 +149,14 @@ collection-visit, model-deref, model-navigate, graph-expand, graph-edge,
 population-visit, temporal-visit, frame-write and frame-redefines-link rows add one per event, and `equality.plan-form`,
 `collection.member-walk`, `collection.member-test` and `dispatch.select` add
 their stated amounts, and `declaration.check` adds the amount its charging family states.
+The two `model.candidate` alternatives use exactly their stated work and result
+additions; neither receives an additional default work unit. Successful storage
+reservations accumulate without refunds. Canonical plan-policy key work uses the
+established search, replay or checker-session evaluation ledger and its original
+`Cancel`, preserving atomic admission and first-denial behavior, with no per-key
+or per-instance reset. A work-only
+`WorkScope` does not share the result ledger. This charge point does not change
+model `max_state_key_bytes` or `IdentityLimits`.
 A composite retained value costs `occ(result)`. Checked amount derivation and counter arithmetic precede
 allocation or semantic arithmetic. A counter amount greater than `u64::MAX`
 returns incomplete at that point. No unnamed precision, shift, host-backend cost
@@ -696,7 +707,8 @@ the `work_units` addition `P` requires (one, the `equality.plan`
 reservation, or the stated amount of `equality.plan-form`,
 `collection.member-walk`, `collection.member-test` or `dispatch.select`, or
 the stated `work_units` addition of a population admission or model
-normalization row). A canonical exact-bound run permits every charge through result
+normalization row, or the stated `model.candidate` work addition, including
+zero for its storage-only alternative). A canonical exact-bound run permits every charge through result
 retention; its one-less partner denies the final named charge. Implementations
 may use a more efficient internal algorithm, but cannot omit, reorder or change
 normative charges or expose internal partial state.

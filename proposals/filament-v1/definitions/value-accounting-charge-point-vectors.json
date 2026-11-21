@@ -67,7 +67,8 @@
     "declaration.check",
     "temporal.visit",
     "frame.write",
-    "frame.redefines-link"
+    "frame.redefines-link",
+    "model.candidate"
   ],
   "undeclared": [
     "equality.plan-forms",
