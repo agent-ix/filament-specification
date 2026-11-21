@@ -61,3 +61,6 @@ Disposition pass 1 at frozen head `2975a1885c64cd1b90d091dc0c432a226f32e5f5`. Th
 | FND-001 | fixed | - |
 | FND-002 | fixed | - |
 | FND-003 | fixed | - |
+| FND-004 | fixed | round 2 (fix commit 53eb40c5) |
+
+Disposition pass 2 at frozen head `53eb40c5ea191641197071b641c749429f2a2d3b`. The fixes were inspected in fix commit `53eb40c5` (`git diff a39e303c 53eb40c5`); `a39e303c` merges main `9f5b30a5`. Round-2 rows are the rows whose reason begins `round 2`. Each `fixed` row's after-excerpt is in the round-2 Linear dispositions comment.

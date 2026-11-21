@@ -62,3 +62,12 @@ contract rather than restating its exit codes, so they raised no finding.
 | --- | --- | --- | --- |
 | FND-001 | high | Duplication: the shared-argument normalization and collision rule now has three normative statements. FR-322's Plan-record bullet, the owner, states it fully. FR-800 restates it: optional X and required Option<X> are one record-field type, omission flags are unchanged, and the diagnostic is FR-806's S3 refusal with a deterministic pair. The paragraph added under FR-806's S3 table restates the normalization, the omission-flag rule and the third-conflict pair rule again. A change to the rule must edit three files, and they already state the pair rule at three levels of detail. Keep the rule in FR-322 and FR-806's catalog row (code, cause, locus); reduce FR-800 and the FR-806 paragraph to references. | spec/objects/interfaces/FR-322-checked-package-artifact.md:6127-6144; spec/functional/analysis/FR-800-define-the-plan-and-goal-model.md:96-102; spec/functional/analysis/FR-806-refuse-plan-requests-with-located-causes.md:51-57 |
 | FND-002 | high | Duplication: the hybrid trajectory-local state semantics are stated normatively three times. FR-819 owns the hybrid execution semantics and the delay/elapsed override. FR-800 and FR-322 both restate them in full: point-valued records, universal quantification over the initial set and nondeterministic parameters, FR-193 enclosure evidence, and that no representative point discharges the obligation. FR-322 should state only the type nodes (builtin `scalar_type`/`rational`, the hybrid-state record). FR-800 needs only the pointer that FR-819 overrides its timed quantity typing for hybrid plans. The semantic paragraph should live once, in FR-819. | spec/functional/analysis/FR-819-plan-over-hybrid-models.md:70-81; spec/functional/analysis/FR-800-define-the-plan-and-goal-model.md:109-117; spec/objects/interfaces/FR-322-checked-package-artifact.md:6195-6200 |
+
+## Dispositions
+
+Disposition pass 2 at frozen head `53eb40c5ea191641197071b641c749429f2a2d3b`. The fixes were inspected in fix commit `53eb40c5` (`git diff a39e303c 53eb40c5`); `a39e303c` merges main `9f5b30a5`. Round-2 rows are the rows whose reason begins `round 2`. Each `fixed` row's after-excerpt is in the round-2 Linear dispositions comment.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | round 2 (fix commit 53eb40c5) |
+| FND-002 | fixed | round 2 (fix commit 53eb40c5) |
