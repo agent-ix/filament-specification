@@ -85,7 +85,9 @@ structures, but any external consumer receives only the contract.
   differently named aliases, reversed source order, all six related-bearing
   forms and dependency ownership, schema-valid and schema-invalid rows, reader
   refusals in FR-831 order, baseline-relative exact and one-short `work` and
-  `read_storage` budgets and the invariance comparisons. Every case is a
+  `read_storage` budgets (rows and nodes charged by the bytes of their control
+  text and alias, under the FR-358 budget), consumer cases and the invariance
+  comparisons. Every case is a
   complete published package: `fixtures/protocol-node-base.json` plus RFC 6902
   `ops` (`PC-REL`, with real related records on all six forms, and `PC-ROOT`) or
   the complete `fixtures/protocol-correlation-dependency.json` (`PC-DEP`, the

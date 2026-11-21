@@ -11,20 +11,32 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-822
     type: references
+  - target: ix://agent-ix/filament-contract-ir/FR-358
+    type: references
 ---
 
 # FR-831: Carry the authored correlation clauses of protocol controls
 
 ## Description
 
-When a producer hands off a checked package whose protocol controls carry
-`related` records (FR-466), it MAY publish the optional top-level member
-`protocol_correlation_occurrences`, beside `claim_names`, that records for each
-related-bearing control occurrence, in source order, which canonical `related`
-record each authored correlation clause became and under which local alias it
-was written. A reader that receives the member SHALL validate it as below and
-expose it as a typed read; a reader that does not receive it SHALL report the
-provenance unavailable and SHALL NOT treat the absence as an empty provenance.
+The optional top-level member `protocol_correlation_occurrences`, beside
+`claim_names`, records for each related-bearing control occurrence of a checked
+package, in source order, which canonical `related` record (FR-466) each
+authored correlation clause became and under which local alias it was written.
+Four parties act on it, each under its own obligation:
+
+- A producer that hands off a checked package whose protocol controls carry
+  `related` records MAY publish the member; when it does, it SHALL record every
+  authored clause before deduplication, in source order, with the checked
+  `Identifier` spelling of the alias and its actual canonical position.
+- A reader that receives the member SHALL validate it as below and SHALL expose
+  it as a typed read.
+- A reader that does not receive the member SHALL report the provenance
+  unavailable and SHALL NOT treat the absence as an empty provenance.
+- A consumer that needs the clause order of a control whose canonical `related`
+  is nonempty and holds only the unavailable provenance SHALL refuse with
+  `unavailable_correlation_provenance` and SHALL NOT proceed with empty or
+  guessed premises.
 
 ## Rationale
 
@@ -131,11 +143,15 @@ built outside it. `i` is the row's array index.
 
 **Row `i`** is handled in this order:
 
-1. **Charge** (`work`): `1 + S + L` units, `S` the number of segments of
-   `control.path` and `L` the UTF-8 byte length of `alias`, charged before the
-   row is inspected. The `alias` is borrowed from the retained document and is
-   neither copied nor charged as storage; a reader that copies it SHALL charge
-   the copied bytes first.
+1. **Charge** (`work`): `1 + B + L` units, `B` the UTF-8 byte length of
+   `control.package` plus the byte length of every segment of `control.path` (an
+   index segment counts the bytes of its decimal numeral) and `L` the UTF-8 byte
+   length of `alias`, charged before the row is inspected. The join resolution, the
+   key comparison with the predecessor and the `source_map` lookup examine only this
+   row's `control` text and `alias`, so `B` and `L` pay for every byte they read and
+   no unmetered length scan precedes the charge. The `alias` and the control text
+   are borrowed from the retained document and are neither copied nor charged as
+   storage; a reader that copies either SHALL charge the copied bytes first.
 2. **Joins**, in this order:
    1. `control` names a node of this package, else `invalid_package`/
       `invalid-value` at `/protocol_correlation_occurrences/{i}/control` (an
@@ -148,11 +164,15 @@ built outside it. `i` is the row's array index.
       `invalid-value` at `.../occurrence`;
    4. `canonical_index < m`, else `invalid_package`/`invalid-value` at
       `.../canonical_index`.
-3. **Key**, against the previous row, by `(control, occurrence, source_ordinal)`
-   under FR-322's lexicographic `NodeRef` order (package, then path segment by
-   segment with a shorter path first, then ordinal), then `role`, `ordinal`,
-   `source_ordinal`: an equal key is `invalid_package`/`conflicting-definition`
-   at `/protocol_correlation_occurrences/{i}`; a key that sorts before its
+3. **Key**, against the previous row, by the full key (`control`,
+   `occurrence.ordinal`, `source_ordinal`): `control` under FR-322's lexicographic
+   `NodeRef` order (package in UTF-8 byte order, then path segment by segment with a
+   shorter path first, then ordinal), then `occurrence.ordinal` numerically, then
+   `source_ordinal` numerically. `occurrence.role` is not an ordering member: join 3
+   admits only `declaration`, so every row that reaches this step carries that one
+   constant role and no order over roles exists to define. An equal full key is
+   `invalid_package`/`conflicting-definition` at
+   `/protocol_correlation_occurrences/{i}`; a key that sorts before its
    predecessor's is `invalid_package`/`invalid-value` at the same locus. An equal
    key is checked before order.
 4. **Ordinal**: the first row of a `(control, occurrence)` group has
@@ -173,10 +193,14 @@ defect is looked at, and within one row a join defect precedes a key defect.
    span), charged in full before it is requested. A member with no row requests
    no block.
 6. **Coverage**: every `protocol`/`control` node of the package in ascending
-   structural node-id order, one charge each (`work`): `1` for a node that is not
-   eligible and `1 + O + m` for an eligible one, `O` its declaration occurrences
-   and `m` its canonical related records, charged before the node is inspected,
-   so the pass is metered even when the member is `[]`. For an eligible node with
+   structural node-id order, one charge each (`work`): `1 + Bn` for a node that is
+   not eligible and `1 + Bn + O + m` for an eligible one, `Bn` the byte length of
+   the node id counted as `B` counts a `NodeRef`, `O` its declaration occurrences
+   and `m` its canonical related records, charged before the node is inspected.
+   Every node-id comparison of the walk against the next group's control reads at
+   most `Bn` bytes of that node, so the charge pays for it; the pass is metered even
+   when the member is `[]`.
+   For an eligible node with
    `m >= 1`, a block of `m` one-byte flags (`read_storage`, `m` bytes) is charged
    after the node's work charge and before it is requested; a block of zero bytes
    is not charged. The first eligible occurrence with `m >= 1` and a canonical
@@ -188,15 +212,16 @@ defect is looked at, and within one row a join defect precedes a key defect.
    join.
 
 **Budget.** The charges are made on the one caller-owned `NativeJoinBudget` of
-the strict read (the existing work counter and read-storage counter, FR-322
-reader limits), cumulative across the strict read of the package, every earlier
-join and this step, never reset and never refunded: a denied charge consumes
-nothing. This contract adds no limit field and claims no counter of its own. A
-denied charge returns the reader's `incomplete` result naming the counter
-(`work` or `read_storage`) and the full amount attempted, at
-`/protocol_correlation_occurrences/{i}` for a row charge and at
-`/protocol_correlation_occurrences` for every view, scan and flag charge, with no
-partial typed view. An absent member charges nothing.
+the strict read: the work counter and the read-storage counter that
+filament-contract-ir FR-358 owns and defines, in its units (FR-322 defines
+neither, and this requirement takes both from FR-358). The budget is cumulative
+across the strict read of the package, every earlier join and this step, never
+reset and never refunded: a denied charge consumes nothing. This contract adds no
+limit field and claims no counter of its own. A denied charge returns the
+reader's `incomplete` result naming the counter (`work` or `read_storage`) and the
+full amount attempted, at `/protocol_correlation_occurrences/{i}` for a row charge
+and at `/protocol_correlation_occurrences` for every view, scan and flag charge,
+with no partial typed view. An absent member charges nothing.
 
 The vectors state every limit as a **baseline plus an offset**, never a static
 total: the baseline is each counter's consumption immediately before this step,
@@ -251,15 +276,18 @@ results; they do not execute that dynamic replay.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-831-AC-1 | A package with no member is admitted and its typed read is `unavailable_correlation_provenance`, whether its controls' `related` arrays are empty or not; a consumer that needs the clause order of a control with a nonempty `related` and holds only the absent member refuses with that name and never proceeds with empty premises, and the same package with `[]` is admitted as a complete empty provenance. | Test (TC-2113) |
+| FR-831-AC-1 | A package with no member is admitted and its typed read is `unavailable_correlation_provenance`, whether its controls' `related` arrays are empty or not; the same package carrying `[]` is admitted as a complete empty provenance when every eligible control occurrence has an empty `related`, and refuses at the member (FR-831-AC-5) when any carries a record. | Test (TC-2113) |
 | FR-831-AC-2 | Rows for zero, one and many clauses of one control are admitted: two or more identical authored clauses give two or more rows of one `canonical_index` over one canonical record; repeated aliases, two aliases of one canonical record and an alias unlike the relationship's model name are admitted; reversing the source order of two clauses is admitted with the `source_ordinal` mapping reversed and the same canonical graph. | Test (TC-2113) |
 | FR-831-AC-3 | Every eligible form is admitted: `send`, `receive`, `attempt`, `effect`, `event` and `recommend`; a row naming any other control operator or form refuses `ill_typed`/`operator-ineligible` at `control`. | Test (TC-2113) |
 | FR-831-AC-4 | A row whose `control` names no node of the package, a node of another package or a dependency package's control, or whose `occurrence` is not a declaration occurrence of the control with an admitted `source_map` entry under the full key, refuses `invalid_package`/`invalid-value` at `control` or `occurrence`; a dependency control is read only from its own package's member, and no root member or ordinal-only lookup supplies it. | Test (TC-2113) |
 | FR-831-AC-5 | In one pass over the rows, each row is charged, then joined, then keyed against its predecessor, then ordinal-checked; a `canonical_index` at or above the control's `related` length, an equal key (`conflicting-definition`, before order), a row out of key order, a gap or a nonzero start of `source_ordinal` each refuse with the code, cause and locus of "Reader checks and refusal order", the first met in that order, so a defect of an earlier row precedes any defect of a later one and a join defect precedes a key defect of the same row. After the last row, an eligible control occurrence with an uncovered canonical position or no group, and `[]` over a nonempty `related`, refuse at the member. | Test (TC-2113) |
 | FR-831-AC-6 | A malformed shape (non-array, `null`, missing or extra member, wrong member shape, a role outside the closed set, a lexically invalid `alias`, a negative, fractional or beyond-safe integer) is `malformed_wire` at the first schema error path and is not an admission refusal. | Test (TC-2113) |
-| FR-831-AC-7 | Charging honours the strict read's one `NativeJoinBudget` (work and read-storage counters, no new limit field and no separate counter) and is interleaved with the pass, never preceded by an unmetered scan: a row costs `1 + S + L` work before it is inspected; the view block `G` and each eligible node's `m` flag bytes are charged to `read_storage` in full before they are requested; each `protocol`/`control` node costs `1` work, or `1 + O + m` when eligible, before it is inspected, even for `[]`. Over the measured baseline the exact offset admits; one unit short returns `incomplete` naming the counter, the first unpaid amount and the locus of the vectors, with no partial view and no reset of earlier consumption; a charge denied by earlier consumption is denied at the same first unpaid charge; an absent member charges nothing. | Test (TC-2113) |
-| FR-831-AC-8 | Adding duplicate authored clauses leaves every node, canonical triple, node id, `identityRef`, `source_map` entry and `protocol_locations` row unchanged and changes only the member; a package with the member differs in bytes from one without it. | Test (TC-2113) |
-| FR-831-AC-9 | A control carries no `owner`, so no `SourceOwner` coherence applies to a row; the typed read borrows the whole `source_map` entry of the full key with all its regions; a dependency control is read from its own package's entry and member; a control has one declaration occurrence, and a row naming a second one refuses at `occurrence`. | Test (TC-2113) |
+| FR-831-AC-7 | Charging draws on the one `NativeJoinBudget` of filament-contract-ir FR-358 (its work and read-storage counters, no new limit field and no separate counter) and is interleaved with the pass, never preceded by an unmetered scan: a row costs `1 + B + L` work before it is inspected, `B` the bytes of its control package and path segment texts and `L` the bytes of its alias; each `protocol`/`control` node costs `1 + Bn` work, plus `O + m` when eligible, before it is inspected, even for `[]`; the view block `G` and each eligible node's `m` flag bytes are charged to `read_storage` in full before they are requested. Over the measured baseline the exact offset admits; one unit short returns `incomplete` naming the counter, the first unpaid amount and the locus of the vectors, with no partial view and no reset of earlier consumption; a charge denied by earlier consumption is denied at the same first unpaid charge; an absent member charges nothing. | Test (TC-2113) |
+| FR-831-AC-8 | A producer that lowers one source with an authored clause written once, the same source with the clause repeated, and the same source with the clauses in the opposite order emits the same nodes, canonical `related` triples, node ids, `identityRef`, `source_map` entries and `protocol_locations` rows, and the three packages differ only in the member's rows. | Test (TC-2113) |
+| FR-831-AC-9 | The typed read of a group borrows the whole admitted `source_map` entry of the full key `(control, declaration, occurrence.ordinal)` with every region; a dependency control is read from its own package's member and entry and never from the root's; a row naming a second declaration occurrence of a control that has one (FR-464) refuses `invalid_package`/`invalid-value` at `occurrence`. | Test (TC-2113) |
+| FR-831-AC-10 | Every vector case is a complete published package that is schema-valid with and without the member; its rows are consistent with the package under the full key order (control, occurrence ordinal, source ordinal), the per-group ordinals, the `source_map` lookup by the full key and the coverage of every canonical position, each read from the package; and every budget expectation equals the charges recomputed from the case's package and rows. | Test (TC-2113) |
+| FR-831-AC-11 | The member is a separate top-level member: a package that carries it equals the same package without it, or with other rows, in every other member. | Test (TC-2113) |
+| FR-831-AC-12 | A consumer that needs the clause order of a control whose canonical `related` is nonempty and holds only an absent member refuses with `unavailable_correlation_provenance` and uses no empty or guessed premises; a control whose `related` is empty needs no clause order and is not refused; a complete table supplies the clauses in source order. | Test (TC-2113) |
 
 ## Dependencies
 
@@ -269,6 +297,10 @@ results; they do not execute that dynamic replay.
   carrier order, the `source_map` key, the owner join and the `protocol_locations`
   `related` end sites, all unchanged; [FR-464](FR-464-checked-package-protocol-node-bodies.md)
   owns the reader order this step follows; FR-822 owns `recommend`.
+- filament-contract-ir FR-358 owns the `NativeJoinBudget`, its work counter and
+  its read-storage counter with their units, which this step charges and does not
+  restate; FR-322 defines none of them. The IR reader that will carry this step
+  owns the charges' implementation.
 - FSL FR-731 owns first-failing-clause evaluation in source order; the FSL
   protocol lowering builds, sorts, renames and deduplicates authored records and
   is the producer of this member. None is restated.
@@ -277,4 +309,4 @@ results; they do not execute that dynamic replay.
 
 ## Status
 
-Draft contract. No reader or producer implements it: the existing strict reader refuses the member as `unknown_member` (`UnknownMember`), so every vector that carries the member states the expected result of a reader that has the carrier and is not executed against any reader. What is machine-checked is the JSON Schema (the member and the corrected `related` layouts) and the consistency of the vectors with their complete packages, and what is qualified against the existing strict reader is the packages themselves, read without the member. No implementation, capability pin or version is chosen here; they follow review of this contract and a reader.
+Draft contract. No reader, producer or consumer implements it: the existing strict reader refuses the member as `unknown_member` (`UnknownMember`), so every vector that carries the member states the expected result of a reader that has the carrier, and none is executed against any reader. FR-831-AC-1 to AC-5, AC-7 to AC-9 and AC-12 are therefore pending verification by the IR reader (FR-358 budget included), the FSL producer (AC-8, with real checked source variants) and a consumer (AC-12), and the existing FSL guard on missing provenance stays until that capability and its pin land. Executed now, as data and schema qualification only: the complete packages and every case edit against the V2 schema (AC-10), the schema decisions on the member (AC-6), the rows' consistency with their packages and the recomputed charge model (AC-10) and the member's separateness (AC-11). No implementation, capability pin or version is chosen here; they follow review of this contract and a reader.

@@ -1,0 +1,33 @@
+---
+id: SR-202611210022442313144108553
+title: "spec-review/risk-complexity review of the FR-831 budget and complexity"
+type: SpecReview
+analysis: risk-complexity
+scope: "agent-ix/filament-specification; QSL-2271; PR 794 head a1268905049929576de4a93789a6e06222cdec25; spec/objects/interfaces/FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md (Reader checks, Budget); protocol-correlation-vectors.json budget"
+review_set: subset
+relationships:
+  - target: ix://agent-ix/filament-specification/FR-831
+    type: references
+---
+
+## Summary
+
+Ticket: QSL-2271. Budget assessment against filament-contract-ir FR-358 (origin/main):
+- Read storage is heap bytes requested from the allocator, so G = groups × size_of(native group record) is consistent with FR-358. G is honestly left unmeasured until a reader exists, and no assurance is claimed for a specific ABI.
+- The offset 124 is grounded in the data and stated relative to a baseline measured on the whole admission.
+- Charges are interleaved with no unmetered preflight. The flags and view block are paid in full before they are requested.
+- Alias and source_map entries are borrowed, with copy-then-charge stated.
+- Charges are cumulative, with no reset, and a denied charge consumes nothing (CO-B13).
+- No new limit field is added.
+
+The remaining risk is reader-landing volatility, already disclosed.
+
+## Findings
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-001 | medium | The row charge `1 + S + L` counts path *segments*, not bytes. Join 1 (resolving the full compound NodeId) and the key comparison against the predecessor (package and path segment text compared element by element) both examine caller-controlled text whose byte length is uncharged. FR-358 requires a scan over caller-controlled text to charge each examined byte, and the coverage merge-walk's node-id comparisons are likewise unmetered. Long package or segment text can therefore cost work that is never charged. | spec/objects/interfaces/FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md:134-157, spec/objects/interfaces/FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md:175-180 |
+
+## Verdict
+
+Changes requested on one medium item: charge the examined NodeRef bytes, or state why they are bounded and already paid by an earlier admission charge.

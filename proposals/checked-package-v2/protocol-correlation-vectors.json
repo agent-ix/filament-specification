@@ -1,6 +1,6 @@
 {
   "version": "filament.protocol-correlation-vectors/v2",
-  "note": "FR-831 / TC-2113. Every case names a COMPLETE published checked package of `packages` (a base fixture plus RFC 6902 `ops`, or a complete fixture file) and the single `edit` that adds, or omits, the optional top-level member; each package is read by the existing strict reader without the member (receipts in the author report) and is schema-valid with it. No existing reader consumes the member (it refuses it `unknown_member`), so every `expect` is the contract's expected result of a reader that carries FR-831; nothing here is executed by a reader. Packages hold real canonical related records (relationship Order-order-Order of acme/orders; ends are the over binder `view`, retyped to Reference<Order>, and the event binder `notified`, a Reference<Order>), source_map entries and dependencies obeying FR-464/FR-466. Row order follows FR-322 structural NodeRef order: package, then path segment by segment (shorter path first), then ordinal. `controls[].related` is the emitted related array length m, checked against the package by tests/protocol_correlation_vectors.rs.",
+  "note": "FR-831 / TC-2113. Every case names a COMPLETE published checked package of `packages` (a base fixture plus RFC 6902 `ops`, or a complete fixture file) and the `edit` that adds, or omits, the optional top-level member; each package is read by the existing strict reader without the member (receipts in the author report) and is schema-valid with it. No existing reader consumes the member (it refuses it `unknown_member`), so every `expect` is the contract's expected result of a reader that carries FR-831 and nothing in `positive`, `reader_refusals`, `budget` or `consumer` is executed by a reader; what tests/protocol_correlation_vectors.rs executes is data consistency: packages, schema, row keys and coverage computed from the packages, and a charge model recomputed from the packages and compared with every budget expectation. Packages hold real canonical related records (relationship Order-order-Order of acme/orders; ends are the over binder `view`, retyped to Reference<Order>, and the event binder `notified`, a Reference<Order>), source_map entries and dependencies obeying FR-464/FR-466. Row order follows FR-322 structural NodeRef order: package, then path segment by segment (shorter path first), then ordinal, then occurrence ordinal, then source_ordinal.",
   "base": "fixtures/protocol-node-base.json",
   "member": "protocol_correlation_occurrences",
   "packages": {
@@ -7654,7 +7654,7 @@
             },
             {
               "control": {
-                "package": "other",
+                "package": "acme/orders",
                 "path": [
                   "Example",
                   "OrderFlow",
@@ -7680,9 +7680,13 @@
         "stage": "reader",
         "code": "invalid_package",
         "cause": "invalid-value",
-        "locus": "/protocol_correlation_occurrences/1/control"
+        "locus": "/protocol_correlation_occurrences/1/control",
+        "simultaneous_defects": [
+          "join: control names no node of this package",
+          "key: sorts before the previous row (acme/orders < example)"
+        ]
       },
-      "why": "row 1 is a foreign control and also sorts before row 0: the join is checked first"
+      "why": "row 1 names a control of acme/orders, a package that is not this package (a join defect) and that sorts before row 0's package example in UTF-8 byte order (a key defect): the join is checked first, so the locus is the control and not the row"
     },
     {
       "id": "CO-R18-uncovered-canonical-record",
@@ -7820,7 +7824,25 @@
         "stage": "reader",
         "code": "invalid_package",
         "cause": "invalid-value",
-        "locus": "/protocol_correlation_occurrences"
+        "locus": "/protocol_correlation_occurrences",
+        "retained": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Advised"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 1
+        }
       },
       "why": "canonical record 1 of Advised is named by no row; coverage is checked last"
     },
@@ -7960,7 +7982,25 @@
         "stage": "reader",
         "code": "invalid_package",
         "cause": "invalid-value",
-        "locus": "/protocol_correlation_occurrences"
+        "locus": "/protocol_correlation_occurrences",
+        "retained": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0
+        }
       },
       "why": "Requested has a record and no group"
     },
@@ -7979,7 +8019,25 @@
         "stage": "reader",
         "code": "invalid_package",
         "cause": "invalid-value",
-        "locus": "/protocol_correlation_occurrences"
+        "locus": "/protocol_correlation_occurrences",
+        "retained": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Advised"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0
+        }
       },
       "why": "present [] is a complete claim and Advised has records: first uncovered canonical_index 0 of Advised"
     },
@@ -8119,7 +8177,25 @@
         "stage": "reader",
         "code": "invalid_package",
         "cause": "invalid-value",
-        "locus": "/protocol_correlation_occurrences"
+        "locus": "/protocol_correlation_occurrences",
+        "retained": {
+          "control": {
+            "package": "acme/flow",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          },
+          "canonical_index": 0
+        }
       },
       "why": "the dependency's member omits Requested; the root's complete member is not consulted"
     }
@@ -8128,14 +8204,14 @@
     "meter": "one caller-owned NativeJoinBudget, the budget of the strict read (filament-contract-ir FR-358): a work counter and a read-storage counter, cumulative across the strict read, every earlier join and this step, no reset, a denied charge consumes nothing; this contract adds no limit field and no counter",
     "baseline": "B_work and B_storage are the consumption of each counter immediately before the step, measured on the same input; every limit below is stated as B plus an offset, never as a static total, because B depends on the strict read of the whole package",
     "work_policy": {
-      "row": "1 + S + L: one unit, S the number of segments of the row's control.path, L the UTF-8 byte length of alias; charged before the row is inspected, rows in array order",
-      "scan": "one charge per protocol/control node in ascending structural node-id order, amount 1 + O + m: O the node's declaration occurrences and m its canonical related records, both counted only when the operator is eligible, else 0; charged before the node is inspected",
+      "row": "1 + B + L: one unit, B the UTF-8 byte length of control.package plus the byte length of every segment of control.path (an index segment counts the bytes of its decimal numeral), L the UTF-8 byte length of alias; charged before the row is inspected, rows in array order. The join resolution, the key comparison with the predecessor and the source_map lookup examine only this row's control text and alias, so B and L pay for them.",
+      "scan": "one charge per protocol/control node in ascending structural node-id order: 1 + Bn, Bn the byte length of the node id as B counts a NodeRef, plus O + m when the node is eligible (O its declaration occurrences, m its canonical related records); charged before the node is inspected, so every node-id comparison of the coverage walk is paid by the node it reads",
       "absent_member": "nothing"
     },
     "storage_policy": {
       "groups": "after the last row passes: one block for the typed view, one group record (control, occurrence, the borrowed whole source_map entry, the row span) per distinct (control, occurrence) key, requested with its full size G = groups x size_of(group record) and charged before it is requested; size_of is the native type's, so G is measured, not stated",
       "flags": "per eligible control node with m >= 1, in scan order: one block of m one-byte flags, m bytes, charged at that node after its scan charge and before it is requested",
-      "alias": "borrowed from the retained document: no copy, no charge; a reader that copies an alias SHALL charge the copied bytes before the copy",
+      "alias": "borrowed from the retained document: no copy, no charge; a reader that copies an alias or a NodeRef text SHALL charge the copied bytes before the copy",
       "source_map_entry": "borrowed whole (every region): no copy, no charge",
       "zero_size": "a block of zero bytes is not charged"
     },
@@ -8143,43 +8219,426 @@
       {
         "id": "CO-B01-admit-measured",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
+        "counter": "work",
+        "limit_over_baseline": 1006,
+        "expect": {
+          "decision": "admit"
+        },
         "work_units": {
           "rows": [
-            12,
-            12,
-            13,
-            12,
-            14,
-            9,
-            19
+            44,
+            44,
+            45,
+            44,
+            47,
+            42,
+            53
           ],
-          "rows_total": 91,
-          "scan_nodes": 17,
-          "scan_total": 33,
-          "total": 124
+          "rows_total": 319,
+          "scan": [
+            {
+              "node": "Example/OrderFlow/run/Main",
+              "amount": 31
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Advised",
+              "amount": 41
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Applied",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Charged",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Finalized",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Notified",
+              "amount": 41
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Outcome",
+              "amount": 38
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Outcome/Done",
+              "amount": 42
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Outcome/Failed",
+              "amount": 44
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Poll",
+              "amount": 35
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Poll/Limit",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Poll/Polled",
+              "amount": 42
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Received",
+              "amount": 41
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Requested",
+              "amount": 42
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Shipments",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Shipments/East",
+              "amount": 45
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Shipments/West",
+              "amount": 45
+            }
+          ],
+          "scan_total": 687,
+          "total": 1006
         },
         "storage_units": {
           "groups": 6,
           "flags": [
-            2,
-            1,
-            1,
-            1,
-            1,
-            1
+            {
+              "node": "Example/OrderFlow/run/Main/Advised",
+              "bytes": 2
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Applied",
+              "bytes": 1
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Charged",
+              "bytes": 1
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Notified",
+              "bytes": 1
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Received",
+              "bytes": 1
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Requested",
+              "bytes": 1
+            }
           ],
           "flags_total": 7
         },
-        "expect": {
-          "limits": "B_work + 124 and B_storage + G + 7",
-          "decision": "admit"
-        }
+        "note": "limits are B_work + total and B_storage + G + flags_total"
       },
       {
         "id": "CO-B02-work-row-zero",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
         "limit_over_baseline": 0,
         "expect": {
@@ -8187,7 +8646,7 @@
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 12,
+            "amount": 44,
             "locus": "/protocol_correlation_occurrences/0",
             "charge": "row 0"
           },
@@ -8197,17 +8656,164 @@
       {
         "id": "CO-B03-work-last-row",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
-        "limit_over_baseline": 90,
+        "limit_over_baseline": 318,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 19,
+            "amount": 53,
             "locus": "/protocol_correlation_occurrences/6",
-            "charge": "row 6, the last row; rows 0 to 5 charged 72"
+            "charge": "row 6, the last row; rows 0 to 5 paid"
           },
           "partial_view": false
         }
@@ -8215,17 +8821,164 @@
       {
         "id": "CO-B04-work-first-scan",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
-        "limit_over_baseline": 91,
+        "limit_over_baseline": 319,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 1,
+            "amount": 31,
             "locus": "/protocol_correlation_occurrences",
-            "charge": "scan of Example/OrderFlow/run/Main, a sequence"
+            "charge": "scan of Example/OrderFlow/run/Main"
           },
           "partial_view": false
         }
@@ -8233,17 +8986,164 @@
       {
         "id": "CO-B05-work-one-short",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
-        "limit_over_baseline": 123,
+        "limit_over_baseline": 1005,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 2,
+            "amount": 45,
             "locus": "/protocol_correlation_occurrences",
-            "charge": "scan of Example/OrderFlow/run/Main/Shipments/West, the last control node, an eligible attempt with m 0"
+            "charge": "scan of Example/OrderFlow/run/Main/Shipments/West, the last control node"
           },
           "partial_view": false
         }
@@ -8251,9 +9151,156 @@
       {
         "id": "CO-B06-work-exact",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
-        "limit_over_baseline": 124,
+        "limit_over_baseline": 1006,
         "expect": {
           "decision": "admit"
         }
@@ -8261,25 +9308,200 @@
       {
         "id": "CO-B07-alias-payload",
         "package": "PC-REL",
-        "rows": "one row: Requested, canonical_index 0, source_ordinal 0, alias of 64 ASCII 'a'",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
-        "limit_over_baseline": 69,
+        "limit_over_baseline": 103,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 70,
+            "amount": 104,
             "locus": "/protocol_correlation_occurrences/0",
-            "charge": "row 0: 1 + 5 + 64"
+            "charge": "row 0: 1 + B + 64 alias bytes"
           },
           "partial_view": false
-        }
+        },
+        "rows": "one row: Requested, canonical_index 0, source_ordinal 0, alias of 64 ASCII a"
       },
       {
         "id": "CO-B08-storage-groups",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "read_storage",
         "limit_over_baseline": "G - 1",
         "expect": {
@@ -8287,9 +9509,9 @@
           "limit": "read_storage",
           "first_unpaid": {
             "kind": "read_storage",
-            "amount": "G, the whole view block of 6 group records",
+            "amount": "G",
             "locus": "/protocol_correlation_occurrences",
-            "charge": "typed-view block"
+            "charge": "typed-view block of 6 group records"
           },
           "partial_view": false
         }
@@ -8297,7 +9519,154 @@
       {
         "id": "CO-B09-storage-first-flags",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "read_storage",
         "limit_over_baseline": "G",
         "expect": {
@@ -8307,7 +9676,7 @@
             "kind": "read_storage",
             "amount": 2,
             "locus": "/protocol_correlation_occurrences",
-            "charge": "flags of Advised, m 2"
+            "charge": "flags of Example/OrderFlow/run/Main/Advised"
           },
           "partial_view": false
         }
@@ -8315,7 +9684,154 @@
       {
         "id": "CO-B10-storage-one-short",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "read_storage",
         "limit_over_baseline": "G + 6",
         "expect": {
@@ -8325,7 +9841,7 @@
             "kind": "read_storage",
             "amount": 1,
             "locus": "/protocol_correlation_occurrences",
-            "charge": "flags of Requested, the last eligible node with m >= 1"
+            "charge": "flags of Example/OrderFlow/run/Main/Requested, the last eligible node with m >= 1"
           },
           "partial_view": false
         }
@@ -8333,7 +9849,154 @@
       {
         "id": "CO-B11-storage-exact",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "read_storage",
         "limit_over_baseline": "G + 7",
         "expect": {
@@ -8343,28 +10006,95 @@
       {
         "id": "CO-B12-empty-member",
         "package": "PC-BASE",
-        "rows_of": "CO-P03-present-empty",
-        "work_units": {
-          "rows_total": 0,
-          "scan_nodes": 15,
-          "scan_total": 22,
-          "total": 22
-        },
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": []
+          }
+        ],
         "counter": "work",
-        "limit_over_baseline": 21,
+        "limit_over_baseline": 600,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 2,
+            "amount": 45,
             "locus": "/protocol_correlation_occurrences",
             "charge": "scan of Example/OrderFlow/run/Main/Shipments/West"
           },
           "partial_view": false
         },
+        "work_units": {
+          "rows_total": 0,
+          "scan": [
+            {
+              "node": "Example/OrderFlow/run/Main",
+              "amount": 31
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Applied",
+              "amount": 39
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Charged",
+              "amount": 39
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Finalized",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Outcome",
+              "amount": 38
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Outcome/Done",
+              "amount": 42
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Outcome/Failed",
+              "amount": 44
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Poll",
+              "amount": 35
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Poll/Limit",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Poll/Polled",
+              "amount": 42
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Received",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Requested",
+              "amount": 41
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Shipments",
+              "amount": 40
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Shipments/East",
+              "amount": 45
+            },
+            {
+              "node": "Example/OrderFlow/run/Main/Shipments/West",
+              "amount": 45
+            }
+          ],
+          "scan_total": 601,
+          "total": 601
+        },
         "exact": {
-          "limit_over_baseline": 22,
+          "limit_over_baseline": 601,
           "decision": "admit",
           "storage": "no block is charged: zero groups, no flags"
         }
@@ -8372,22 +10102,170 @@
       {
         "id": "CO-B13-prior-consumption",
         "package": "PC-REL",
-        "rows_of": "CO-P04-every-form",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
         "counter": "work",
-        "setup": "an earlier join on the same budget has consumed one more work unit than in CO-B01's measurement of the same input",
-        "limit_over_baseline_of_B01": 124,
+        "limit_over_baseline": 1006,
         "expect": {
           "decision": "incomplete",
           "limit": "work",
           "first_unpaid": {
             "kind": "work",
-            "amount": 2,
+            "amount": 45,
             "locus": "/protocol_correlation_occurrences",
             "charge": "scan of Example/OrderFlow/run/Main/Shipments/West"
           },
-          "partial_view": false,
-          "reset": false
-        }
+          "partial_view": false
+        },
+        "prior_work": 1,
+        "reset": false,
+        "setup": "an earlier join on the same budget has consumed 1 work unit, so the limit that admits CO-B01 is one unit short"
       },
       {
         "id": "CO-B14-absent-charges-nothing",
@@ -8401,6 +10279,72 @@
             "outcome": "unavailable_correlation_provenance"
           }
         }
+      },
+      {
+        "id": "CO-B15-control-bytes-are-charged",
+        "package": "PC-REL",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "a",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
+        "counter": "work",
+        "limit_over_baseline": 284,
+        "expect": {
+          "decision": "incomplete",
+          "limit": "work",
+          "first_unpaid": {
+            "kind": "work",
+            "amount": 232,
+            "locus": "/protocol_correlation_occurrences/1",
+            "charge": "row 1: 1 + B + 1 alias byte, B including a 200-byte segment, charged before the join refuses the absent control"
+          },
+          "partial_view": false
+        },
+        "rows": "row 0 is Requested; row 1 names a control whose last segment is 200 ASCII x"
       }
     ]
   },
@@ -11524,5 +13468,284 @@
       ],
       "why": "reversing the source order of the two aliases changes the source_ordinal to canonical_index mapping only"
     }
-  ]
+  ],
+  "consumer": {
+    "note": "FR-831-AC-12: expected results of a CONSUMER that needs the authored clause order of one control. They are planned qualification, not executed: no consumer or reader exists, and the existing FSL guard stays until the capability and pin land.",
+    "cases": [
+      {
+        "id": "CO-K01-absent-member-nonempty-related",
+        "package": "PC-REL",
+        "edit": [],
+        "needs": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          }
+        },
+        "expect": {
+          "outcome": "refuse",
+          "name": "unavailable_correlation_provenance",
+          "premises": "none: no empty or guessed clause list is used"
+        },
+        "why": "Requested carries one canonical related record and the member is absent"
+      },
+      {
+        "id": "CO-K02-absent-member-empty-related",
+        "package": "PC-REL",
+        "edit": [],
+        "needs": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Shipments",
+              "East"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          }
+        },
+        "expect": {
+          "outcome": "proceed",
+          "clauses": []
+        },
+        "why": "East has an empty related array: there is no clause order to need, so absence refuses nothing"
+      },
+      {
+        "id": "CO-K03-present-member-clauses",
+        "package": "PC-REL",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": [
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "notice",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Advised"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 1,
+                "alias": "holder",
+                "source_ordinal": 1
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Applied"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "applied",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Charged"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "charge",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Notified"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "announce",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Received"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "got",
+                "source_ordinal": 0
+              },
+              {
+                "control": {
+                  "package": "example",
+                  "path": [
+                    "Example",
+                    "OrderFlow",
+                    "run",
+                    "Main",
+                    "Requested"
+                  ],
+                  "ordinal": 0
+                },
+                "occurrence": {
+                  "role": "declaration",
+                  "ordinal": 0
+                },
+                "canonical_index": 0,
+                "alias": "shipmentOwner",
+                "source_ordinal": 0
+              }
+            ]
+          }
+        ],
+        "needs": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Advised"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          }
+        },
+        "expect": {
+          "outcome": "proceed",
+          "clauses": [
+            {
+              "source_ordinal": 0,
+              "canonical_index": 0,
+              "alias": "notice"
+            },
+            {
+              "source_ordinal": 1,
+              "canonical_index": 1,
+              "alias": "holder"
+            }
+          ]
+        },
+        "why": "the complete table supplies the clauses in source order"
+      },
+      {
+        "id": "CO-K04-present-empty-member-empty-related",
+        "package": "PC-BASE",
+        "edit": [
+          {
+            "op": "add",
+            "path": "/protocol_correlation_occurrences",
+            "value": []
+          }
+        ],
+        "needs": {
+          "control": {
+            "package": "example",
+            "path": [
+              "Example",
+              "OrderFlow",
+              "run",
+              "Main",
+              "Requested"
+            ],
+            "ordinal": 0
+          },
+          "occurrence": {
+            "role": "declaration",
+            "ordinal": 0
+          }
+        },
+        "expect": {
+          "outcome": "proceed",
+          "clauses": []
+        },
+        "why": "a present [] is a complete empty provenance and Requested has no related record in the base"
+      }
+    ]
+  }
 }
