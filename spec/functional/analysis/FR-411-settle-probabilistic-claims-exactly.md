@@ -230,7 +230,7 @@ certificate the provider has first checked with the FR-412 checker.
 | Outcome | FR-331 value | FR-243 basis | Proof basis or cause |
 | --- | --- | --- | --- |
 | Exact value on the claim's side of the threshold, equality meeting a non-strict bound and failing the strict reduced bound of `quantile q of M >= c` | `proved` | `closed-scope` | `exact-value{value, reductions}` with an `exact` certificate |
-| Sound interval on the claim's side | `proved` | `closed-scope` | `value-bounds{lower, upper, method, reductions}`, `method` one of `backward-induction{precision_bits}` and `interval-iteration{precision_bits, sweeps}`, with a `lower` or `upper` certificate |
+| Sound interval on the claim's side | `proved` | `closed-scope` | `value-bounds{lower, upper, method, reductions}`, `method` one of `backward-induction{precision_bits}` and `interval-iteration{precision_bits, sweeps}`, with a `lower` and an `upper` certificate, the one on the claim's side meeting the threshold (FR-412) |
 | Bound fails (every scheduler or a workload) | `refuted` | `decisive-counterexample` | an FR-413 counterexample that replays |
 | The claim evaluates undefined at a product state reached with positive probability, under some scheduler or the workload | `refuted` | `decisive-counterexample` | cause `undefined-evaluation`, with `where` and `cause`, and an FR-413 undefined path that replays |
 | Interval straddles the threshold at the budget | `incomplete`, execution `resource-incomplete` | `unavailable` | `precision-budget{lower, upper}` |
@@ -261,10 +261,14 @@ stops exploration settles the item.
 ### Evidence on a partial product
 
 A lower certificate and a path set read only the states they name and those
-states' successors, and an unexplored successor counts as value 0. Evidence of
+states' successors, and an unexplored successor counts as the objective's
+least value (0, or `−q` for a quantile's shifted reward, FR-412). Evidence of
 that kind found before a limit stops exploration therefore settles the item:
-a proof of a `>= θ` bound or a refutation of a `<= θ` bound. Every other
-verdict needs the complete product.
+a proof of a `>= θ` bound or a refutation of a `<= θ` bound. Such a proof
+settles `value-bounds` with `exploration: "partial"`, no `upper` certificate,
+and as `upper` the objective's least upper bound: 1 for a probability or a
+mean of a fraction, `1 − q` for a quantile's shifted reward and `"infinity"` for an expected
+reward (FR-331). Every other verdict needs the complete product.
 
 ### Symmetry
 

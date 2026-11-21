@@ -148,6 +148,25 @@ shape with their own certificate kinds.
 step content of a path-set path, of positive probability, ending at the
 product state at which the claim evaluates undefined
 ([FR-411](../../functional/analysis/FR-411-settle-probabilistic-claims-exactly.md)).
+The evidence is `{"type": "undefined-path", "path", "undefined"}`:
+
+- `path` — the steps, in order, from the initial state to the state of the
+  undefined read; empty when the read is at the initial state. Under every
+  scheduler each step's choice is the witness scheduler's at its product
+  state, and no product state repeats on the path, so a memoryless
+  deterministic scheduler takes it;
+- `undefined` — the FR-364 `undefined-evaluation{where, cause}` the read
+  produced, equal to the item's result cause. Its `where` carries `locus`,
+  the occurrence of the claim expression that has no value; `position`, the
+  event position of the read; `initial_state` and `binding`, the pair; and
+  `product_state`, whose `key` is the complete FR-411 product key of the
+  state before the read (the pre-read monitor and accumulator, which an
+  undefined value does not advance). `cause` is the catalogued reason.
+
+The read is the first undefined one on the path: every earlier position's
+reads are defined, and the claim's monitor or measure is still undecided at
+the read, so the claim reads that value. A path that the claim decides
+before the read is no evidence, because the claim never reads the value.
 
 ## Replay
 
@@ -168,10 +187,14 @@ not-activated path ends where no activating state is reachable, recomputes
 snapshot. For a subsystem certificate it applies the witness
 scheduler to rebuild the induced chain over the certificate's states and runs
 the FR-412 checker. For an undefined path it re-executes the path as a path
-of a path set, checks that its exact probability is positive, and evaluates
-the claim at its last state: the undefined value with the locus and
-catalogued reason of the item's `undefined-evaluation` cause agrees, and a
-defined value disagrees.
+of a path set, checks that its exact probability is positive, rebuilds the
+monitor or measure along it, and evaluates the claim's reads at each
+position: the first undefined value, at the position, product state, locus
+and catalogued reason `undefined` names, agrees, and the item's
+`undefined-evaluation` cause must equal `undefined`. A defined value at
+that position, an earlier undefined value, a different locus, reason or
+product state, or a path the claim decides before the read disagrees. The
+bound plays no part.
 
 Agreement settles `refuted`, `decisive-counterexample`. Disagreement settles
 `inconclusive`, `replay-parity`. Replay refuses as FR-181 replay refuses:
@@ -205,6 +228,7 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-8 | A refutation under a workload over a timed subject with a free delay carries a witness scheduler whose entries give that delay per drawn vector of the given delays; replay checks each step's free delay against it, and the same counterexample without `scheduler` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-374) |
 | FR-413-AC-9 | A quantile refutation replays by the two-mass rule: for `quantile q of M >= c` it refutes when `V > 0` and `V >= q · (1 − N)`, equality included, so the `Two` refutation of `quantile 0.5 of M >= 3` (`V = 1/2`, `N = 0`) replays; for `quantile q of M <= c` it refutes only when `V > (1 − q) · (1 − N)`; a path set whose activation probability is below 1 refutes only when its not-activated mass `N` is counted. | Test (TC-364, TC-360) |
 | FR-413-AC-10 | Under FR-407-AC-18's workload, `on each (x: T) when (g) { probability >= rational(2, 3) [E] }` is refuted by a path set naming `x` as its `instance`, with violating mass `V = 1/4` (`b`, then the event false) and not-activated mass `N = 3/8` (`a`, then the state from which `g` is unreachable): `1/4 > (1/3) · (5/8)`. The same paths without the not-activated path refute nothing, since `1/4` is not above `1/3`; and a counterexample without `instance` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-2062) |
+| FR-413-AC-11 | Over a `Coin` model whose `drop(b)` with `b = 0` deletes the coin (each `b` with probability `1/2`), the claim `probability >= 0.5 [ always[0,3] holds(c.v = 0) ]` is refuted by `{"type": "undefined-path", "path": [drop with b = 0], "undefined": {"type": "undefined-evaluation", "where": {locus, position: 1, initial_state: 0, binding, product_state}, "cause": "absent-key"}}`, the locus that of `c.v`; replay reproduces it at thresholds 0.5 and 0.01 alike. The same evidence with `position` 0, with the path `drop` with `b = 1` (where `c.v` is defined), or with another catalogued `cause` settles `inconclusive`, `replay-parity`; without `undefined` it fails the backend-provider schema. | Test (TC-2111) |
 
 ## Dependencies
 
@@ -217,4 +241,4 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 ## References
 
 - FSL ADR-028 WS-1 to WS-6, FS-9.
-- Ticket: STD-137 (paired with QSL-371).
+- Ticket: STD-137 (paired with QSL-371); the undefined-path members: QSL-2158.
