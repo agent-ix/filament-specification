@@ -40,6 +40,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-441
     type: references
+  - target: ix://agent-ix/filament-specification/FR-830
+    type: references
   - target: ix://agent-ix/filament-specification/FR-043
     type: references
   - target: ix://agent-ix/filament-specification/FR-150
@@ -2803,6 +2805,9 @@ no operation identity, and the published operation catalog is unchanged.
   operand. A nullary case of a union is a `union_value` node with the empty
   payload `aggregate`, never an `enum_value` node. The text leaves of a model
   union are those of its payload types under `member:<Name>` then `position:0`.
+  The producer's opaque declaration, case and payload identities of a model union are
+  not read from the package: the `model_unions` sidecar rows of FR-830 carry them
+  and a reader joins them to the node and the selected document.
 - **Admitted payload and position types.** A tuple position `typeRef` and a variant
   case `payloadType` are typed by the step 4 table as a field of presence `required`
   and multiplicity `[1, 1]`, and each is admitted exactly when a row of that table gives

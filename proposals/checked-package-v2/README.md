@@ -78,6 +78,13 @@ structures, but any external consumer receives only the contract.
   handle is in checked-package-v2; FR-418 `TaskTransitionTemplate` remains in
   the separate backend-provider-v1 certificate, where FSL owns successor
   recomputation.
+- `model-union-witness-vectors.json` publishes the FR-830 `model_unions`
+  producer-witness sidecar rows of selected model unions (cases in UTF-8 order
+  with authored position, sealed member, original opaque identities, data or
+  Clock payload correspondence), over the Shape, List, Cell and Nest declarations
+  above. `MUW-*` positives, schema and reader refusals and exact and one-short
+  budget cases are published inputs and expected results only; no reader
+  executes them and TC-2112 is not run.
 - `operation-effect-vectors.json` publishes the optional `operation_effects`
   carrier of FR-103's per-operation declared effect (modifies, creates, deletes
   and scoped deletes), keyed by selected document, declaring node and original

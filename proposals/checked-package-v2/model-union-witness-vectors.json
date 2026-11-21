@@ -1,0 +1,2237 @@
+{
+  "version": "filament.model-union-witness-vectors/v1",
+  "note": "QSL-2743. Row-contract vectors for FR-830 (selected model-union witness rows). They reuse the declarations of domain-package-acme-shapes.json (Shape Flag(Boolean)/Empty/Both(Pair); List Nil/Cons(Cell); Cell(Integer, List); Nest(Pair, Shape)) and the package fixtures/positive-model-tuple-union.json as read by model-tuple-union-vectors.json; they do not restate the declaration semantics (FR-322 'Tuple value types and payload-bearing variant types', FR-440, FR-441). Every opaque value (type_handle, settled_key, original_case, original_type) is an invented producer string, not derived from a name or a node. `model_unions` is the sidecar array of FR-830; a case's `scope` is `full` or `reached` with the `request` node; `budget` is the whole charge of the join (FR-830 'Work and storage'), in the units that section defines. Patches are RFC 6902 over a case's `model_unions`; `document_patch` is RFC 6902 over the `domain_package` of model-tuple-union-vectors.json. These vectors are published inputs and expected results only; no reader implements FR-830 yet and nothing here is qualified by running them.",
+  "package": "fixtures/positive-model-tuple-union.json",
+  "domain_package": "model-tuple-union-vectors.json#/domain_package",
+  "positive": [
+    {
+      "id": "MUW-01-full-environment",
+      "criterion": "FR-830-AC-1",
+      "scope": {
+        "mode": "full"
+      },
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/List",
+          "type_handle": "h/2e77",
+          "settled_key": "k/8a10",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "document_case": "ix://acme/shapes/variant/List-Cons",
+              "original_case": "c/e4",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Cell",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/cell-58"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 0,
+              "name": "Nil",
+              "document_case": "ix://acme/shapes/variant/List-Nil",
+              "original_case": "c/e5",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/9c41",
+          "settled_key": "k/5d02",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            }
+          ]
+        }
+      ],
+      "budget": {
+        "exact": 1452
+      },
+      "note": "Authored order Flag, Empty, Both is carried canonically as Both, Empty, Flag with positions 2, 1, 0; rows sort List before Shape."
+    },
+    {
+      "id": "MUW-02-reached-from-shape",
+      "criterion": "FR-830-AC-2",
+      "scope": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "variant_type",
+            "ix://acme/shapes/Shape"
+          ],
+          "ordinal": 0
+        }
+      },
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/9c41",
+          "settled_key": "k/5d02",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            }
+          ]
+        }
+      ],
+      "closure_edges": 4,
+      "budget": {
+        "exact": 866
+      },
+      "note": "Shape reaches Boolean and Pair; Pair reaches Boolean and Integer; List is not reached."
+    },
+    {
+      "id": "MUW-03-reached-does-not-inspect-unrelated-row",
+      "criterion": "FR-830-AC-2",
+      "scope": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "variant_type",
+            "ix://acme/shapes/Shape"
+          ],
+          "ordinal": 0
+        }
+      },
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/2e77",
+          "settled_key": "k/8a10",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "document_case": "ix://acme/shapes/variant/List-Cons",
+              "original_case": "c/e4",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Cell",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/cell-58"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 0,
+              "name": "Nil",
+              "document_case": "ix://acme/shapes/variant/List-Nil",
+              "original_case": "c/e5",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/9c41",
+          "settled_key": "k/5d02",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            }
+          ]
+        }
+      ],
+      "closure_edges": 4,
+      "budget": {
+        "exact": 866
+      },
+      "note": "The List row is wrong but is not in the reached closure, so it is neither inspected, charged nor retained; MUW-R-35 refuses the same rows under full scope."
+    },
+    {
+      "id": "MUW-04-reached-cycle-list",
+      "criterion": "FR-830-AC-3",
+      "scope": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "variant_type",
+            "ix://acme/shapes/List"
+          ],
+          "ordinal": 0
+        }
+      },
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/List",
+          "type_handle": "h/2e77",
+          "settled_key": "k/8a10",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "document_case": "ix://acme/shapes/variant/List-Cons",
+              "original_case": "c/e4",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Cell",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/cell-58"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 0,
+              "name": "Nil",
+              "document_case": "ix://acme/shapes/variant/List-Nil",
+              "original_case": "c/e5",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        }
+      ],
+      "closure_edges": 3,
+      "budget": {
+        "exact": 593
+      },
+      "note": "List reaches Cell; Cell reaches Integer and List; the visited List is not expanded again."
+    },
+    {
+      "id": "MUW-05-reached-through-tuple",
+      "criterion": "FR-830-AC-3",
+      "scope": {
+        "mode": "reached",
+        "request": {
+          "package": "acme/shapes",
+          "path": [
+            "model",
+            "tuple_value_type",
+            "ix://acme/shapes/Nest"
+          ],
+          "ordinal": 0
+        }
+      },
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/9c41",
+          "settled_key": "k/5d02",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            }
+          ]
+        }
+      ],
+      "closure_edges": 6,
+      "budget": {
+        "exact": 868
+      },
+      "note": "Nest is a tuple and needs no row; its Shape position makes Shape reached."
+    },
+    {
+      "id": "MUW-06-clock-payload",
+      "criterion": "FR-830-AC-4",
+      "scope": {
+        "mode": "full"
+      },
+      "document_patch": [
+        {
+          "op": "replace",
+          "path": "/variant_types/0/cases/0/payloadType",
+          "value": "ix://filament/native/Clock"
+        }
+      ],
+      "note": "model-tuple-union-vectors.json TK-08: Shape.Flag's payloadType is Clock. The row keeps the authored payload with no node and no original_type; Empty stays nullary.",
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/List",
+          "type_handle": "h/2e77",
+          "settled_key": "k/8a10",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "document_case": "ix://acme/shapes/variant/List-Cons",
+              "original_case": "c/e4",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Cell",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/cell-58"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 0,
+              "name": "Nil",
+              "document_case": "ix://acme/shapes/variant/List-Nil",
+              "original_case": "c/e5",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/9c41",
+          "settled_key": "k/5d02",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "clock",
+                "payload_type": "ix://filament/native/Clock"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MUW-07-same-spelled-case-in-two-unions",
+      "criterion": "FR-830-AC-5",
+      "scope": {
+        "mode": "full"
+      },
+      "document_patch": [
+        {
+          "op": "add",
+          "path": "/variant_types/2/cases/-",
+          "value": {
+            "name": "Empty",
+            "payloadType": null,
+            "identity": "ix://acme/shapes/variant/List-Empty"
+          }
+        }
+      ],
+      "note": "List gains a nullary Empty beside Shape.Empty; the two cases are two members with member declarations k/8a10 and k/5d02.",
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/List",
+          "type_handle": "h/2e77",
+          "settled_key": "k/8a10",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "document_case": "ix://acme/shapes/variant/List-Cons",
+              "original_case": "c/e4",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Cell",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/cell-58"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 2,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/List-Empty",
+              "original_case": "c/e6",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Nil",
+              "document_case": "ix://acme/shapes/variant/List-Nil",
+              "original_case": "c/e5",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/9c41",
+          "settled_key": "k/5d02",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MUW-08-forged-but-consistent",
+      "criterion": "FR-830-AC-12",
+      "scope": {
+        "mode": "full"
+      },
+      "model_unions": [
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/List"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/List",
+          "type_handle": "h/2e77",
+          "settled_key": "k/8a10",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 1,
+              "name": "Cons",
+              "document_case": "ix://acme/shapes/variant/List-Cons",
+              "original_case": "c/e4",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Cons"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Cell",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Cell"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/cell-58"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 0,
+              "name": "Nil",
+              "document_case": "ix://acme/shapes/variant/List-Nil",
+              "original_case": "c/e5",
+              "member": {
+                "declaration": "k/8a10",
+                "identifier": "Nil"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            }
+          ]
+        },
+        {
+          "structural_node": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "variant_type",
+              "ix://acme/shapes/Shape"
+            ],
+            "ordinal": 0
+          },
+          "selected_document": "acme/shapes",
+          "original_declaration": "ix://acme/shapes/Shape",
+          "type_handle": "h/0a0a",
+          "settled_key": "k/0b0b",
+          "cases": [
+            {
+              "rank": 0,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/0b0b",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/0b0b",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/0b0b",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            }
+          ]
+        }
+      ],
+      "note": "Every join passes with producer values the reader cannot authenticate: the rows are admitted and their opaque values returned byte for byte. Admission is not a claim of provenance."
+    }
+  ],
+  "schema_refusals": [
+    {
+      "id": "MUW-S-01-missing-settled-key",
+      "description": "row without settled_key",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_unions/1/settled_key"
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-02-extra-row-member",
+      "description": "row carrying an enum fallback member",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_unions/1/enum_variant_id",
+          "value": "v/1"
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-03-case-without-payload",
+      "description": "case without payload",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_unions/1/cases/0/payload"
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/cases/0",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-04-none-with-node",
+      "description": "nullary payload carrying a node",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_unions/1/cases/1/payload/node",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/cases/1/payload",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-05-data-without-original-type",
+      "description": "data payload without original_type",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_unions/1/cases/0/payload/original_type"
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/cases/0/payload",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-06-unknown-payload-kind",
+      "description": "payload kind enum_value",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/payload",
+          "value": {
+            "kind": "enum_value"
+          }
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/cases/1/payload",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-07-position-not-integer",
+      "description": "position written as a string",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/position",
+          "value": "2"
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/cases/0/position",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-08-empty-opaque-key",
+      "description": "empty settled_key",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/settled_key",
+          "value": ""
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/settled_key",
+      "criterion": "FR-830-AC-6"
+    },
+    {
+      "id": "MUW-S-09-clock-with-node",
+      "description": "clock payload carrying a node",
+      "base": "MUW-06-clock-payload",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_unions/1/cases/2/payload/node",
+          "value": {
+            "package": "example",
+            "path": [
+              "scalar_type",
+              "boolean"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected_code": "malformed_wire",
+      "locus": "/model_unions/1/cases/2/payload",
+      "criterion": "FR-830-AC-6"
+    }
+  ],
+  "reader_refusals": [
+    {
+      "id": "MUW-R-01-node-absent",
+      "description": "structural_node names no node of the package",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/structural_node/path/2",
+          "value": "ix://acme/shapes/Ghost"
+        }
+      ],
+      "expected_code": "missing_declaration",
+      "expected_cause": "missing-name",
+      "locus": "/model_unions/1/structural_node",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-02-enum-family-node",
+      "description": "structural_node names the enum-family variant type Color; no enum fallback",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/structural_node/path/2",
+          "value": "ix://acme/shapes/Color"
+        }
+      ],
+      "expected_code": "ill_typed",
+      "expected_cause": "operator-ineligible",
+      "locus": "/model_unions/1/structural_node",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-03-tuple-node",
+      "description": "structural_node names the tuple Pair",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/structural_node",
+          "value": {
+            "package": "acme/shapes",
+            "path": [
+              "model",
+              "tuple_value_type",
+              "ix://acme/shapes/Pair"
+            ],
+            "ordinal": 0
+          }
+        }
+      ],
+      "expected_code": "ill_typed",
+      "expected_cause": "operator-ineligible",
+      "locus": "/model_unions/1/structural_node",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-04-document-unselected",
+      "description": "selected_document is no lock selection",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/selected_document",
+          "value": "acme/unselected"
+        }
+      ],
+      "expected_code": "missing_declaration",
+      "expected_cause": "missing-selection",
+      "locus": "/model_unions/1/selected_document",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-05-document-not-owner",
+      "description": "selected_document is another selected document than the node's owner",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/selected_document",
+          "value": "acme/orders"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/selected_document",
+      "selected_documents": [
+        "acme/shapes",
+        "acme/orders"
+      ],
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-06-original-declaration",
+      "description": "original_declaration names another union",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/original_declaration",
+          "value": "ix://acme/shapes/List"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/original_declaration",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-07-duplicate-settled-key",
+      "description": "two rows with one settled_key; the row-level conflict precedes the member declaration mismatch it also causes",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/settled_key",
+          "value": "k/8a10"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "conflicting-definition",
+      "locus": "/model_unions/1/settled_key",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-08-duplicate-type-handle",
+      "description": "two rows with one type_handle",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/type_handle",
+          "value": "h/2e77"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "conflicting-definition",
+      "locus": "/model_unions/1/type_handle",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-09-duplicate-case",
+      "description": "Both carried twice",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_unions/1/cases/1",
+          "value": {
+            "rank": 1,
+            "position": 2,
+            "name": "Both",
+            "document_case": "ix://acme/shapes/variant/Shape-Both",
+            "original_case": "c/b1",
+            "member": {
+              "declaration": "k/5d02",
+              "identifier": "Both"
+            },
+            "payload": {
+              "kind": "data",
+              "type_kind": "declared",
+              "payload_type": "ix://acme/shapes/Pair",
+              "node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "tuple_value_type",
+                  "ix://acme/shapes/Pair"
+                ],
+                "ordinal": 0
+              },
+              "original_type": "t/pair-31"
+            }
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "conflicting-definition",
+      "locus": "/model_unions/1/cases/1/name",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-10-missing-case",
+      "description": "Empty dropped",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_unions/1/cases/1"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-11-extra-case",
+      "description": "a case the document does not declare",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_unions/1/cases/-",
+          "value": {
+            "rank": 3,
+            "position": 3,
+            "name": "Zed",
+            "document_case": "ix://acme/shapes/variant/Shape-Zed",
+            "original_case": "c/b9",
+            "member": {
+              "declaration": "k/5d02",
+              "identifier": "Zed"
+            },
+            "payload": {
+              "kind": "none"
+            }
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/3/name",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-12-authored-order",
+      "description": "cases in authored order Flag, Empty, Both",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases",
+          "value": [
+            {
+              "rank": 0,
+              "position": 0,
+              "name": "Flag",
+              "document_case": "ix://acme/shapes/variant/Shape-Flag",
+              "original_case": "c/b3",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Flag"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "native",
+                "payload_type": "ix://filament/native/Boolean",
+                "node": {
+                  "package": "example",
+                  "path": [
+                    "scalar_type",
+                    "boolean"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/bool-77"
+              }
+            },
+            {
+              "rank": 1,
+              "position": 1,
+              "name": "Empty",
+              "document_case": "ix://acme/shapes/variant/Shape-Empty",
+              "original_case": "c/b2",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Empty"
+              },
+              "payload": {
+                "kind": "none"
+              }
+            },
+            {
+              "rank": 2,
+              "position": 2,
+              "name": "Both",
+              "document_case": "ix://acme/shapes/variant/Shape-Both",
+              "original_case": "c/b1",
+              "member": {
+                "declaration": "k/5d02",
+                "identifier": "Both"
+              },
+              "payload": {
+                "kind": "data",
+                "type_kind": "declared",
+                "payload_type": "ix://acme/shapes/Pair",
+                "node": {
+                  "package": "acme/shapes",
+                  "path": [
+                    "model",
+                    "tuple_value_type",
+                    "ix://acme/shapes/Pair"
+                  ],
+                  "ordinal": 0
+                },
+                "original_type": "t/pair-31"
+              }
+            }
+          ]
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/1/name",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-13-rank",
+      "description": "rank differs from the array index",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/rank",
+          "value": 1
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/rank",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-14-position",
+      "description": "Both's authored position given as 0",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/position",
+          "value": 0
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/position",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-15-document-case",
+      "description": "document_case names another union's case",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/document_case",
+          "value": "ix://acme/shapes/variant/List-Cons"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/document_case",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-16-member-declaration",
+      "description": "sealed member declaration is another union's settled_key",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/member/declaration",
+          "value": "k/8a10"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/member/declaration",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-17-member-identifier",
+      "description": "sealed member identifier differs from the case name",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/member/identifier",
+          "value": "both"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/member/identifier",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-18-original-case-in-row",
+      "description": "two cases of one row with one original_case",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/original_case",
+          "value": "c/b1"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "conflicting-definition",
+      "locus": "/model_unions/1/cases/1/original_case",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-19-original-case-across-rows",
+      "description": "a case of Shape carrying a case identity List's Cons carries",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/original_case",
+          "value": "c/e4"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "conflicting-definition",
+      "locus": "/model_unions/1/cases/0/original_case",
+      "criterion": "FR-830-AC-8"
+    },
+    {
+      "id": "MUW-R-20-duplicate-row",
+      "description": "Shape's row repeated",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/model_unions/-",
+          "value": {
+            "structural_node": {
+              "package": "acme/shapes",
+              "path": [
+                "model",
+                "variant_type",
+                "ix://acme/shapes/Shape"
+              ],
+              "ordinal": 0
+            },
+            "selected_document": "acme/shapes",
+            "original_declaration": "ix://acme/shapes/Shape",
+            "type_handle": "h/9c41",
+            "settled_key": "k/5d02",
+            "cases": [
+              {
+                "rank": 0,
+                "position": 2,
+                "name": "Both",
+                "document_case": "ix://acme/shapes/variant/Shape-Both",
+                "original_case": "c/b1",
+                "member": {
+                  "declaration": "k/5d02",
+                  "identifier": "Both"
+                },
+                "payload": {
+                  "kind": "data",
+                  "type_kind": "declared",
+                  "payload_type": "ix://acme/shapes/Pair",
+                  "node": {
+                    "package": "acme/shapes",
+                    "path": [
+                      "model",
+                      "tuple_value_type",
+                      "ix://acme/shapes/Pair"
+                    ],
+                    "ordinal": 0
+                  },
+                  "original_type": "t/pair-31"
+                }
+              },
+              {
+                "rank": 1,
+                "position": 1,
+                "name": "Empty",
+                "document_case": "ix://acme/shapes/variant/Shape-Empty",
+                "original_case": "c/b2",
+                "member": {
+                  "declaration": "k/5d02",
+                  "identifier": "Empty"
+                },
+                "payload": {
+                  "kind": "none"
+                }
+              },
+              {
+                "rank": 2,
+                "position": 0,
+                "name": "Flag",
+                "document_case": "ix://acme/shapes/variant/Shape-Flag",
+                "original_case": "c/b3",
+                "member": {
+                  "declaration": "k/5d02",
+                  "identifier": "Flag"
+                },
+                "payload": {
+                  "kind": "data",
+                  "type_kind": "native",
+                  "payload_type": "ix://filament/native/Boolean",
+                  "node": {
+                    "package": "example",
+                    "path": [
+                      "scalar_type",
+                      "boolean"
+                    ],
+                    "ordinal": 0
+                  },
+                  "original_type": "t/bool-77"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "conflicting-definition",
+      "locus": "/model_unions/2/structural_node",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-21-row-order",
+      "description": "rows in the order Shape, List",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions",
+          "value": [
+            {
+              "structural_node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "variant_type",
+                  "ix://acme/shapes/Shape"
+                ],
+                "ordinal": 0
+              },
+              "selected_document": "acme/shapes",
+              "original_declaration": "ix://acme/shapes/Shape",
+              "type_handle": "h/9c41",
+              "settled_key": "k/5d02",
+              "cases": [
+                {
+                  "rank": 0,
+                  "position": 2,
+                  "name": "Both",
+                  "document_case": "ix://acme/shapes/variant/Shape-Both",
+                  "original_case": "c/b1",
+                  "member": {
+                    "declaration": "k/5d02",
+                    "identifier": "Both"
+                  },
+                  "payload": {
+                    "kind": "data",
+                    "type_kind": "declared",
+                    "payload_type": "ix://acme/shapes/Pair",
+                    "node": {
+                      "package": "acme/shapes",
+                      "path": [
+                        "model",
+                        "tuple_value_type",
+                        "ix://acme/shapes/Pair"
+                      ],
+                      "ordinal": 0
+                    },
+                    "original_type": "t/pair-31"
+                  }
+                },
+                {
+                  "rank": 1,
+                  "position": 1,
+                  "name": "Empty",
+                  "document_case": "ix://acme/shapes/variant/Shape-Empty",
+                  "original_case": "c/b2",
+                  "member": {
+                    "declaration": "k/5d02",
+                    "identifier": "Empty"
+                  },
+                  "payload": {
+                    "kind": "none"
+                  }
+                },
+                {
+                  "rank": 2,
+                  "position": 0,
+                  "name": "Flag",
+                  "document_case": "ix://acme/shapes/variant/Shape-Flag",
+                  "original_case": "c/b3",
+                  "member": {
+                    "declaration": "k/5d02",
+                    "identifier": "Flag"
+                  },
+                  "payload": {
+                    "kind": "data",
+                    "type_kind": "native",
+                    "payload_type": "ix://filament/native/Boolean",
+                    "node": {
+                      "package": "example",
+                      "path": [
+                        "scalar_type",
+                        "boolean"
+                      ],
+                      "ordinal": 0
+                    },
+                    "original_type": "t/bool-77"
+                  }
+                }
+              ]
+            },
+            {
+              "structural_node": {
+                "package": "acme/shapes",
+                "path": [
+                  "model",
+                  "variant_type",
+                  "ix://acme/shapes/List"
+                ],
+                "ordinal": 0
+              },
+              "selected_document": "acme/shapes",
+              "original_declaration": "ix://acme/shapes/List",
+              "type_handle": "h/2e77",
+              "settled_key": "k/8a10",
+              "cases": [
+                {
+                  "rank": 0,
+                  "position": 1,
+                  "name": "Cons",
+                  "document_case": "ix://acme/shapes/variant/List-Cons",
+                  "original_case": "c/e4",
+                  "member": {
+                    "declaration": "k/8a10",
+                    "identifier": "Cons"
+                  },
+                  "payload": {
+                    "kind": "data",
+                    "type_kind": "declared",
+                    "payload_type": "ix://acme/shapes/Cell",
+                    "node": {
+                      "package": "acme/shapes",
+                      "path": [
+                        "model",
+                        "tuple_value_type",
+                        "ix://acme/shapes/Cell"
+                      ],
+                      "ordinal": 0
+                    },
+                    "original_type": "t/cell-58"
+                  }
+                },
+                {
+                  "rank": 1,
+                  "position": 0,
+                  "name": "Nil",
+                  "document_case": "ix://acme/shapes/variant/List-Nil",
+                  "original_case": "c/e5",
+                  "member": {
+                    "declaration": "k/8a10",
+                    "identifier": "Nil"
+                  },
+                  "payload": {
+                    "kind": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1",
+      "criterion": "FR-830-AC-7"
+    },
+    {
+      "id": "MUW-R-22-data-for-nullary",
+      "description": "Empty given a data payload",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/payload",
+          "value": {
+            "kind": "data",
+            "type_kind": "native",
+            "payload_type": "ix://filament/native/Boolean",
+            "node": {
+              "package": "example",
+              "path": [
+                "scalar_type",
+                "boolean"
+              ],
+              "ordinal": 0
+            },
+            "original_type": "t/bool-77"
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/1/payload/kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-23-none-for-data",
+      "description": "Both's payload dropped to none",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/payload",
+          "value": {
+            "kind": "none"
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/payload/kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-24-clock-for-nullary",
+      "description": "Empty given a clock payload",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/1/payload",
+          "value": {
+            "kind": "clock",
+            "payload_type": "ix://filament/native/Clock"
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/1/payload/kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-25-nullary-for-clock",
+      "description": "clock case Flag carried as nullary",
+      "base": "MUW-06-clock-payload",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/2/payload",
+          "value": {
+            "kind": "none"
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/2/payload/kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-26-data-for-clock",
+      "description": "clock case Flag carried with a data payload",
+      "base": "MUW-06-clock-payload",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/2/payload",
+          "value": {
+            "kind": "data",
+            "type_kind": "native",
+            "payload_type": "ix://filament/native/Boolean",
+            "node": {
+              "package": "example",
+              "path": [
+                "scalar_type",
+                "boolean"
+              ],
+              "ordinal": 0
+            },
+            "original_type": "t/bool-77"
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/2/payload/kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-27-clock-for-data",
+      "description": "native Boolean payload carried as clock",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/2/payload",
+          "value": {
+            "kind": "clock",
+            "payload_type": "ix://filament/native/Clock"
+          }
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/2/payload/kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-28-payload-type",
+      "description": "Flag's payload_type is Integer",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/2/payload/payload_type",
+          "value": "ix://filament/native/Integer"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/2/payload/payload_type",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-29-type-kind",
+      "description": "Both's declared payload written native",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/payload/type_kind",
+          "value": "native"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/0/payload/type_kind",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-30-payload-node-wrong",
+      "description": "Flag's node is the Integer scalar node, a node of the package that is not Boolean",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/2/payload/node/path/1",
+          "value": "integer"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/1/cases/2/payload/node",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-31-payload-node-foreign",
+      "description": "Both's node names no node of the package",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions/1/cases/0/payload/node/path/2",
+          "value": "ix://acme/shapes/Ghost"
+        }
+      ],
+      "expected_code": "missing_declaration",
+      "expected_cause": "missing-name",
+      "locus": "/model_unions/1/cases/0/payload/node",
+      "criterion": "FR-830-AC-9"
+    },
+    {
+      "id": "MUW-R-32-full-missing-row",
+      "description": "full scope without List's row, though no term uses List alone",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/model_unions/0"
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions",
+      "criterion": "FR-830-AC-10"
+    },
+    {
+      "id": "MUW-R-33-full-empty",
+      "description": "full scope with an empty model_unions; an empty list does not witness a union",
+      "base": "MUW-01-full-environment",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions",
+          "value": []
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions",
+      "criterion": "FR-830-AC-10"
+    },
+    {
+      "id": "MUW-R-34-reached-missing-row",
+      "description": "reached from Shape without Shape's row; no enum fallback and no source_unions substitute",
+      "base": "MUW-02-reached-from-shape",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions",
+          "value": []
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions",
+      "source_unions_note": "a source_unions row naming Shape's node is present and is not read as a model union",
+      "criterion": "FR-830-AC-10"
+    },
+    {
+      "id": "MUW-R-35-full-inspects-unrelated-row",
+      "description": "the rows of MUW-03 under full scope",
+      "base": "MUW-03-reached-does-not-inspect-unrelated-row",
+      "patch": [],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions/0/original_declaration",
+      "scope": {
+        "mode": "full"
+      },
+      "criterion": "FR-830-AC-10"
+    },
+    {
+      "id": "MUW-R-36-reached-through-tuple-missing",
+      "description": "reached from Nest without Shape's row",
+      "base": "MUW-05-reached-through-tuple",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/model_unions",
+          "value": []
+        }
+      ],
+      "expected_code": "invalid_package",
+      "expected_cause": "invalid-value",
+      "locus": "/model_unions",
+      "criterion": "FR-830-AC-10"
+    }
+  ],
+  "budget_refusals": [
+    {
+      "id": "MUW-B-01-zero",
+      "base": "MUW-01-full-environment",
+      "budget": 0,
+      "expected_code": "incomplete",
+      "denial": {
+        "phase": "visit",
+        "locus": "/model_unions/0",
+        "requested": 1,
+        "remaining": 0
+      },
+      "output": "none",
+      "criterion": "FR-830-AC-11"
+    },
+    {
+      "id": "MUW-B-02-one-short-full",
+      "base": "MUW-01-full-environment",
+      "budget": 1451,
+      "expected_code": "incomplete",
+      "denial": {
+        "phase": "retain",
+        "locus": "/model_unions/1",
+        "requested": 428,
+        "remaining": 427
+      },
+      "output": "none",
+      "criterion": "FR-830-AC-11"
+    },
+    {
+      "id": "MUW-B-03-one-short-reached",
+      "base": "MUW-02-reached-from-shape",
+      "budget": 865,
+      "expected_code": "incomplete",
+      "denial": {
+        "phase": "retain",
+        "locus": "/model_unions/0",
+        "requested": 428,
+        "remaining": 427
+      },
+      "output": "none",
+      "criterion": "FR-830-AC-11"
+    },
+    {
+      "id": "MUW-B-04-before-closure-edge",
+      "base": "MUW-02-reached-from-shape",
+      "budget": 3,
+      "expected_code": "incomplete",
+      "denial": {
+        "phase": "edge",
+        "locus": "/model_unions",
+        "requested": 1,
+        "remaining": 0
+      },
+      "output": "none",
+      "criterion": "FR-830-AC-11"
+    }
+  ]
+}
