@@ -251,6 +251,7 @@ names, by the node's tag and `semantic_form` (FR-322) and its occurrence role:
 | `relation`/`refinement` | `relation-claim` |
 | `claim`/`probabilistic_claim` | `probabilistic` |
 | `claim`/`schedulability` | `real-time` |
+| `correspondence`/`component_composition`, whose rule is `protocol-refinement`, `refinement-transfer` or `interface` ([FR-491](../../functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md)) | `protocol` |
 | any `protocol` node | `protocol` |
 
 A claim that names a node of no row has no declaration family. Examples are
