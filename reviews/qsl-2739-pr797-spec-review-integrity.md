@@ -751,3 +751,40 @@ The line/part suffixes below locate verbatim examined fragments; they are not ne
   "bindings": []
 }
 ```
+
+## Disposition pass 1
+
+Reviewed frozen fix head 8d455b18fab64614dbf9c890754d57f6cfc031ae (normative fix 20af61df, followed only by initial review custody) against the original 2491154a. Original findings, verdict and review data above are preserved verbatim. Latest verdict: **PASS**; no new findings.
+
+The schema now excludes only non-composition correspondence forms from declaration metadata, applies declaration-presence coherence to component_composition, and moves declaration-only occurrence restrictions into abstraction_relation and implementation_guarantee branches. The component_composition branch retains the generic role vocabulary; FR-491 explicitly owns exact role/ordinal/region rejection, so its expression-role mutation remains structurally valid for semantic refusal. Existing declared-path/source-map/generic refusal order is unchanged.
+
+Examined author evidence at /home/peter/.cache/handoff/terra-QSL-package-consumer-api-fspec797-fix1/evidence.txt and the literal cases/logs: four positive node shapes, full-package schema acceptance, unchanged published positive package, five negative controls, old-schema refusal of the identical composition package, and metaschema acceptance. Independently compared both projected schema $defs with the frozen full schema (equal), the red schema with original2491154 (equal), and the full-package composition with the positive literal node (equal). No Cargo or duplicate schema run was needed. These prove syntax only, not semantic reader admission, source authenticity, slot derivation or AC10. Future IR/FSL work remains required.
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | Composition declaration metadata and generic occurrence-role schema admission now match the normative requirements; other correspondence restrictions remain. Exact role/ordinal/region constraints stay semantic, preserving the wrong-role located refusal boundary. Verified at 8d455b18fab64614dbf9c890754d57f6cfc031ae with the literal positive/negative controls and old-schema red evidence. |
+
+## Fix scope examined
+
+```yaml
+{
+  "head": "8d455b18fab64614dbf9c890754d57f6cfc031ae",
+  "scope": [
+    {
+      "id": "FR-491",
+      "path": "spec/functional/analysis/FR-491-spell-and-check-a-component-composition-declaration.md",
+      "role": "examined",
+      "excerpt": "The V2 schema SHALL admit the generic occurrence-role vocabulary on a\n`component_composition` node; the exact role, ordinal and region constraints\nabove are reader checks, so a well-shaped wrong role reaches the located\nsemantic refusal below. The schema's declaration-presence rule SHALL apply\nto this form: a declaration occurrence requires its `declaration` metadata.\nOther correspondence forms retain their existing declaration exclusions\nand occurrence-role restrictions."
+    },
+    {
+      "id": "FR-322-schema",
+      "path": "proposals/checked-package-v2/schema.json",
+      "role": "examined",
+      "excerpt": "    \"DeclarationTagRules\": {\n      \"if\": {\n        \"anyOf\": [\n          {\n            \"properties\": {\n              \"node_tag\": {\n                \"enum\": [\n                  \"expression\",\n                  \"state\",\n                  \"temporal\"\n                ]\n              }\n            },\n            \"required\": [\n              \"node_tag\"\n            ]\n          },\n          {\n            \"properties\": {\n              \"node_tag\": {\n                \"const\": \"correspondence\"\n              },\n              \"semantic_form\": {\n                \"no"
+    }
+  ],
+  "new_findings": []
+}
+```
