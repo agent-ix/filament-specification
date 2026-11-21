@@ -1435,5 +1435,320 @@
         }
       }
     }
+  ],
+  "source_transport_vectors": [
+    {
+      "id": "ZC-32",
+      "description": "Source-clock no-release wire shape with an original guard part, horizon fragment and delay-only edge; semantic acceptance still requires source recomputation.",
+      "document": {
+        "identity": {
+          "node_id": {
+            "ordinal": 0,
+            "package": "package",
+            "path": [
+              "claim",
+              "schedulability",
+              "kind",
+              "schedulable",
+              "policy",
+              "fixed-priority",
+              "task",
+              "bound",
+              "tasks",
+              "task",
+              "name",
+              "t1",
+              "arrival",
+              "periodic",
+              "period",
+              "4/1",
+              {
+                "node": 6
+              },
+              "deadline",
+              "4/1",
+              {
+                "node": 6
+              },
+              "bcet",
+              "0/1",
+              {
+                "node": 6
+              },
+              "wcet",
+              "1/1",
+              {
+                "node": 6
+              },
+              "wcet_hi",
+              "criticality",
+              "lo",
+              "priority",
+              "1",
+              "jitter",
+              "0/1",
+              {
+                "node": 6
+              },
+              "blocking",
+              "0/1",
+              {
+                "node": 6
+              },
+              "task",
+              "name",
+              "t2",
+              "arrival",
+              "periodic",
+              "period",
+              "6/1",
+              {
+                "node": 6
+              },
+              "deadline",
+              "6/1",
+              {
+                "node": 6
+              },
+              "bcet",
+              "0/1",
+              {
+                "node": 6
+              },
+              "wcet",
+              "2/1",
+              {
+                "node": 6
+              },
+              "wcet_hi",
+              "criticality",
+              "lo",
+              "priority",
+              "2",
+              "jitter",
+              "0/1",
+              {
+                "node": 6
+              },
+              "blocking",
+              "0/1",
+              {
+                "node": 6
+              },
+              "task",
+              "name",
+              "t3",
+              "arrival",
+              "periodic",
+              "period",
+              "12/1",
+              {
+                "node": 6
+              },
+              "deadline",
+              "12/1",
+              {
+                "node": 6
+              },
+              "bcet",
+              "0/1",
+              {
+                "node": 6
+              },
+              "wcet",
+              "5/1",
+              {
+                "node": 6
+              },
+              "wcet_hi",
+              "criticality",
+              "lo",
+              "priority",
+              "3",
+              "jitter",
+              "0/1",
+              {
+                "node": 6
+              },
+              "blocking",
+              "0/1",
+              {
+                "node": 6
+              }
+            ]
+          },
+          "model": "test/litmus",
+          "ordinal": 0
+        },
+        "scale": "1",
+        "bounds": [
+          {
+            "state": {
+              "key": "eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0"
+            },
+            "clock": "c.x",
+            "lower": {
+              "bound": "1",
+              "strict": false
+            },
+            "upper": "infinity"
+          }
+        ],
+        "nodes": [
+          {
+            "state": {
+              "key": "eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0"
+            },
+            "automaton": 0,
+            "zone": [
+              [
+                {
+                  "bound": "0",
+                  "strict": false
+                },
+                {
+                  "bound": "0",
+                  "strict": false
+                }
+              ],
+              [
+                "infinity",
+                {
+                  "bound": "0",
+                  "strict": false
+                }
+              ]
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "node": 0,
+            "target": 0,
+            "transition": {
+              "type": "transition",
+              "operation": "Cell::idle",
+              "receiver": null,
+              "arguments": []
+            },
+            "part": 0,
+            "horizon": []
+          },
+          {
+            "node": 0,
+            "target": 0,
+            "transition": null,
+            "horizon": [
+              {
+                "place": 0,
+                "operator": ">=",
+                "bound": {
+                  "numerator": "1",
+                  "denominator": "1"
+                }
+              }
+            ]
+          }
+        ],
+        "initials": [
+          0
+        ],
+        "admitted": {
+          "start": 0,
+          "edges": []
+        },
+        "task_product": {
+          "abstraction": "bounded-subtraction-diagonal/v1",
+          "queue_bounds": [
+            {
+              "taskset": "Ctl",
+              "task": "t1",
+              "arrival": "periodic",
+              "interarrival": {
+                "numerator": "4",
+                "denominator": "1"
+              },
+              "relative_deadline": {
+                "numerator": "4",
+                "denominator": "1"
+              },
+              "max_jitter": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "work_lower": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "work_upper": {
+                "numerator": "1",
+                "denominator": "1"
+              },
+              "max_jobs": 2
+            },
+            {
+              "taskset": "Ctl",
+              "task": "t2",
+              "arrival": "periodic",
+              "interarrival": {
+                "numerator": "6",
+                "denominator": "1"
+              },
+              "relative_deadline": {
+                "numerator": "6",
+                "denominator": "1"
+              },
+              "max_jitter": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "work_lower": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "work_upper": {
+                "numerator": "2",
+                "denominator": "1"
+              },
+              "max_jobs": 2
+            },
+            {
+              "taskset": "Ctl",
+              "task": "t3",
+              "arrival": "periodic",
+              "interarrival": {
+                "numerator": "12",
+                "denominator": "1"
+              },
+              "relative_deadline": {
+                "numerator": "12",
+                "denominator": "1"
+              },
+              "max_jitter": {
+                "numerator": "0",
+                "denominator": "1"
+              },
+              "work_lower": {
+                "numerator": "5",
+                "denominator": "1"
+              },
+              "work_upper": {
+                "numerator": "5",
+                "denominator": "1"
+              },
+              "max_jobs": 2
+            }
+          ],
+          "clock_ceilings": [],
+          "diagonal_constraints": [],
+          "subtractions": [],
+          "time_progress": {
+            "method": "closed-no-release-product/v1",
+            "live_job_cap": 0,
+            "closure": "recompute-all-source-successors-no-task-release/v1"
+          }
+        }
+      }
+    }
   ]
 }
