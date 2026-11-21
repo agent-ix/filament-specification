@@ -68,6 +68,12 @@ A sum over `steps` SHALL add its terms in step order, from step 0. Exact
 types make the order immaterial to the value; floating-point types make it
 part of the definition.
 
+Within a step sum, the type checker SHALL use the summand family at the
+objective's scale as a `decimal(c,s)` literal's unique expected type under
+[FR-140](../type-model/FR-140-evaluate-exact-decimals.md), refusing
+`refused { code: ill_typed, cause: ambiguous-literal }` when no unique
+expected type exists.
+
 ### Classification
 
 - An objective is a *per-step sum* when it is `length`, `elapsed` under tick time (FR-808), or an
