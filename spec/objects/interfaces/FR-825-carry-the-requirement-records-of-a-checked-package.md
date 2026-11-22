@@ -154,10 +154,20 @@ Its body is an aggregate of exactly these eight bindings, in this order:
    record of its own.
 6. `path_condition`: an aggregate with one member per guard the occurrence
    stands under, outermost first, each an aggregate of exactly three
-   bindings: `guard` (a `reference` to the guard's Boolean `expression`
-   node), `occurrence` (a `literal` integer, the ordinal of that guard's
-   `expression` occurrence) and `holds` (a `literal` Boolean, the outcome the
-   guard is required to have). A guard is an enclosing `if`'s condition,
+   bindings: `guard` (a `reference` to the Boolean node that is the guard),
+   `occurrence` (a `literal` integer, the ordinal of the guard's read as the
+   condition) and `holds` (a `literal` Boolean, the outcome the guard is
+   required to have). A guard node is either an `expression` node or a
+   `value` node of form `literal` or `parameter`; in either case it has
+   Boolean `semantic_type` and is reached from the owner's body root. A
+   Boolean literal used directly as a condition is `value`/`literal`; a
+   Boolean parameter or binder directly named as a condition is
+   `value`/`parameter`. Other value forms do not qualify. A let expression
+   or a reference to a let-bound name is an `expression` node and follows
+   the expression case. For an expression guard, the ordinal names its
+   `expression` occurrence; for a value guard, it names the `expression`
+   occurrence of that value node read as this condition, not a declaration
+   or generated occurrence. A guard is an enclosing `if`'s condition,
    required true in its `then` branch and false in its `else` branch, or the
    left operand of an enclosing `and`, `or` or `implies` whose right operand
    holds the occurrence, required true for `and` and `implies` and false for
@@ -187,8 +197,11 @@ H)…, "roots", {r}…, "objects", {o}…]`
 
 where `{x}` is the operand segment naming node `x`; `K`, `M` and `J` are the
 decimal texts of the `occurrence` ordinals of the application, the narrow
-and each guard; `H` is `"true"` or `"false"`; and the operands are in body
-order. The conversion group is absent for the empty `conversion`. Each
+and each guard read; `H` is `"true"` or `"false"`; and the operands are in
+body order. A guard segment names the exact expression or value node read as
+the condition, and `J` distinguishes that read when a node is read more
+than once. Thus the path includes the guard node, its read occurrence and
+required outcome. The conversion group is absent for the empty `conversion`. Each
 variable-length group has a fixed arity and the binding-name strings
 separate the groups, so two different bodies never give one path. The
 `ordinal` is `0`: the owner, the application and its occurrence ordinal
@@ -262,11 +275,16 @@ node's graph index:
    `type_argument` node is not the `result_bound` node:
    `invalid_package`/`invalid-value` at `body/members/4`;
 8. a `path_condition` member that is not the three bindings above, whose
-   `guard` is not a `reference` to a local `expression` node of Boolean
-   `semantic_type` reached from the owner's body root, whose `occurrence`
-   names no `expression` occurrence of that node, or whose `holds` is not a
-   Boolean literal: `invalid_package`/`invalid-value` at
+   `guard` is not a `reference` to a local `expression` node or a local
+   `value` node of form `literal` or `parameter`, its `semantic_type` is not
+   Boolean, or it is not reached from the owner's body root; whose
+   `occurrence` names no `expression` occurrence of that node read as this
+   condition; or whose `holds` is not a Boolean literal:
+   `invalid_package`/`invalid-value` at
    `body/members/5/value/members/{g}`;
+   within this rule the node-form, Boolean-type and body-reachability checks
+   precede the condition-read occurrence check, which precedes the `holds`
+   check. The first failing check determines the refusal.
 9. an `extent_roots` member that is not a `reference` to a `value`/`parameter`
    node, or that is repeated or out of ascending node-id order:
    `invalid_package`/`invalid-value` at `body/members/6/value/members/{r}`;
@@ -354,11 +372,13 @@ scan of the graph, and returns no record for a function that owns none.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` is emitted with exactly two `requirement_items` rows, both `value-validity` and `{"classification": "bounded"}`, keyed at the one `x + 1` application node's `expression` occurrences 0 and 1 in that order, and two `claim`/`value_validity` nodes each with one `generated` occurrence (ordinals 0 and 1) and the eight bindings: `owner` `f`'s node; `application` the `+` node; `occurrence` 0 and 1; `result_bound` the `Int[0, 10]` and `Int[0, 20]` type nodes; `conversion` the narrow to `Int[0, 10]` at its occurrence and the narrow to `Int[0, 20]` at its occurrence; `path_condition` empty for the first, and for the second one member whose `guard` is the `g(x + 1)` call node at its occurrence with `holds` true; `extent_roots` `x`'s parameter node for both; `objects` empty. Each node's path is the path of its body, `["claim", "value_validity", {f}, {+}, "0", "bound", {Int[0, 10]}, "conversion", {narrow}, "0", "guards", "roots", {x}, "objects"]` for the first, and the reader admits the package; `g` and `h` own no record. | Test (TC-2053) |
-| FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` is emitted with three `value-validity` rows (the `>=`, the `<` and the `+`), each `{"classification": "unbounded", "domains": [{"domain": {"type": "node", "node": <n's parameter node>, "path": []}, "kind": "integer"}]}`, in package order, which the test first establishes by comparing the three application nodes' structural keys; the `<` record's `path_condition` is one member (`n >= 0`, `holds` true), the `+` record's one member (the `if` condition `n >= 0 and n < 10`, `holds` true), and the `>=` record's empty; their record nodes have `generated` ordinals equal to their positions among `f`'s rows. Rewriting `n < 10` as `n < 11` changes the `<` record node's `node_id` and the `+` record node's (its guard changed), and not the `>=` record node's. | Test (TC-2053) |
+| FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` is emitted with exactly two `requirement_items` rows, both `value-validity` and `{"classification": "bounded"}`, keyed at the one `x + 1` application node's `expression` occurrences 0 and 1 in that order, and two `claim`/`value_validity` nodes each with one `generated` occurrence (ordinals 0 and 1) and the eight bindings: `owner` `f`'s node; `application` the `+` node; `occurrence` 0 and 1; `result_bound` the `Int[0, 10]` and `Int[0, 20]` type nodes; `conversion` the narrow to `Int[0, 10]` at its occurrence and the narrow to `Int[0, 20]` at its occurrence; `path_condition` empty for the first, and for the second one member whose `guard` is the `g(x + 1)` call node at its occurrence with `holds` true; `extent_roots` `x`'s parameter node for both; `objects` empty. Each node's path is the path of its body, `["claim", "value_validity", {f}, {+}, "0", "bound", {Int[0, 10]}, "conversion", {narrow}, "0", "guards", "roots", {x}, "objects"]` for the first, and the reader admits the package; `g` and `h` own no record. | Test |
+| FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` is emitted with three `value-validity` rows (the `>=`, the `<` and the `+`), each `{"classification": "unbounded", "domains": [{"domain": {"type": "node", "node": <n's parameter node>, "path": []}, "kind": "integer"}]}`, in package order, which the test first establishes by comparing the three application nodes' structural keys; the `<` record's `path_condition` is one member (`n >= 0`, `holds` true), the `+` record's one member (the `if` condition `n >= 0 and n < 10`, `holds` true), and the `>=` record's empty; their record nodes have `generated` ordinals equal to their positions among `f`'s rows. Rewriting `n < 10` as `n < 11` changes the `<` record node's `node_id` and the `+` record node's (its guard changed), and not the `>=` record node's. | Test |
 | FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced, including `Bounded`'s `operation-contract` row at its `state_clause` node's `claim` occurrence and `BelowThree`'s `temporal-satisfaction` row at its clause node's `claim` occurrence, each without `record`, and `inc`'s one `value-validity` row with `record`; the rows are in package order, which the test establishes from the rows' structural keys, occurrences and kinds; the reader admits the package; and the typed read returns, for `inc`'s node, exactly its one record at the request index of its row. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
 | FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer the reader rule gives: a record node with a `declaration` member, and with a second `generated` occurrence (rule 1, at `occurrences`); `conversion` and `result_bound` swapped (rule 2, at `body`); `owner` referencing the `+` node (rule 3); `owner` referencing `g`'s node, which does not reach `+` (rule 4, at `body/members/1`); `application` referencing the narrow node (rule 4); `occurrence` 2 (rule 5); `result_bound` referencing `x`'s parameter node (rule 6); the first record's `conversion` naming the `Int[0, 20]` narrow (rule 7, at `body/members/4`); the second record's guard with `holds` the text `"true"` (rule 8, at `body/members/5/value/members/0`); `extent_roots` holding `x` twice (rule 9, at `body/members/6/value/members/1`); `objects` referencing the Boolean type node (rule 10). Each is `invalid_package`/`invalid-value`. | Test (TC-2053) |
 | FR-825-AC-5 | Over FR-825-AC-2's and FR-825-AC-3's packages, each mutation refuses with the code, cause and pointer the reader rule gives: `requirement_items` removed from AC-1's package (`invalid-value` at `/requirement_items`); `requirement_items` `[]`, a row without `extent`, and a row with `kind` `value-validty` (`malformed_wire`); a row whose `claim.occurrence` ordinal is 7 (at `/requirement_items/{i}/claim`); the `>=` row's one domain written twice (at `/requirement_items/{i}/extent/domains/1`); `inc`'s row without `record` (at `/requirement_items/{i}`); `Bounded`'s row with `inc`'s `record` (at its `record`); the `<` row's `record` naming the `+` record node (at its `record`); a `value-validity` row whose domain names `g`'s parameter `p` (at `extent/domains/0`); the `<` row repeated after itself (`conflicting-definition` at the later row); the first two rows of AC-2's package swapped (`invalid-semantic-graph` at `/requirement_items/1`); the `+` row removed (`invalid-value` at the `+` record node's `body`); and the `>=` and `<` record nodes' `generated` ordinals swapped (`invalid-value` at the first such node's `occurrences` in owner, then node-id, order). Over AC-1's package (whose rows are both `bounded`, so they carry no domain to charge) the step charges the two record nodes and their members, then `f`'s body walk, then rows 0 and 1, so a reader budget one visit short of the package's count returns `incomplete` at `/requirement_items/1`, the last charged member, with no partial view, and a package whose `claim_names` is absent and whose only `claim` nodes are `value_validity` nodes is admitted. | Test (TC-2053) |
+| FR-825-AC-6 | A unit with `function f using v(p: Boolean, x: Int[0, 9]): Int[0, 10] pure { if p then x + 1 else x + 1 }` has two `value-validity` rows for the shared `x + 1` application node's `expression` occurrences 0 and 1. The strict reader admits both records. Their `path_condition` entries reference the same `value`/`parameter` node for `p` and the same `expression` occurrence of `p` read as the `if` condition; the first has `holds` true and the second `holds` false. Each record's identity path names `p`'s value node, its read occurrence and its required `holds` value; the records' `extent_roots` include `p` and `x` once each in node-id order. | Test |
+| FR-825-AC-7 | Starting from AC-6's package, replace one `path_condition` guard reference with the owner-reachable integer `value`/`parameter` node for `x`, retaining an occurrence of that node and rebuilding the record node identity and every reference to the changed record. The strict reader refuses `invalid_package`/`invalid-value` at the changed guard's `body/members/5/value/members/0` because the guard's semantic type is not Boolean. | Test |
 
 ## Dependencies
 

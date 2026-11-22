@@ -78,6 +78,11 @@ structures, but any external consumer receives only the contract.
   handle is in checked-package-v2; FR-418 `TaskTransitionTemplate` remains in
   the separate backend-provider-v1 certificate, where FSL owns successor
   recomputation.
+- `requirement-record-vectors.json` publishes TC-2053's FR-825-AC-6/7
+  reader-input recipes: a Boolean parameter used directly as an `if` guard,
+  with both branch outcomes, and the same package mutated to use an integer
+  parameter as a guard. Consumers resolve roles and reads against the checked
+  graph, then build complete packages; graph node IDs are not fixed.
 - `protocol-correlation-vectors.json` publishes the FR-831 optional top-level
   `protocol_correlation_occurrences` member (rows `{control, occurrence,
   canonical_index, alias, source_ordinal}`): absent and present-empty results,
