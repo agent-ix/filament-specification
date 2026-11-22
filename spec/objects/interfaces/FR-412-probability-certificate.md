@@ -62,7 +62,7 @@ components, conditional}`:
 | `kind` | `lower`, `upper`, `exact`, `long-run` or `conditional`. |
 | `values` | One exact rational per product state the certificate names (a dyadic value is an exact rational), keyed by product state key (FR-411). |
 | `ranking` | For `lower` and `exact`, and for `upper` under a fairness set with the optimisation `minimum`: one natural number per named state. A `lower` certificate under a fairness set with the optimisation `minimum` carries none ("Fair minimum"). For an expected reward, `exact` and `upper` carry it and `lower` carries none ("Expected reward"). |
-| `policy` | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) checker profiles: optional per-state hints, checked by Policy hints below. Outside those three profiles, for `kind` `exact` under minimum or maximum objectives including workload variants and an `optimum` certificate's `post` part: required, with exactly one current action choice per checked undecided state. For the `reset` part of an `optimum` certificate: required, with one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
+| `policy` | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) checker profiles: optional per-state hints, checked by Policy hints below. In FSL FR-201's closed `filament.probability-objective/reachability/v1` exact document profile: absent, by Reachability exact below; it is not an optional hint there. Outside those four profiles, for `kind` `exact` under minimum or maximum objectives including workload variants and an `optimum` certificate's `post` part: required, with exactly one current action choice per checked undecided state. For the `reset` part of an `optimum` certificate: required, with one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
 | `components` | For `long-run`: per component, its value `ρ_C` and a gain–bias pair. |
 | `conditional` | For `conditional`, the certificate of a conditioned reading (FR-407 "Conditioned values"): `{mode: "ratio", numerator, denominator}`, `{mode: "optimum", post, reset}` or `{mode: "vacuous"}`, each part an `exact` certificate of this form. |
 
@@ -151,7 +151,8 @@ decided, target and `Prob0` states:
   remain quantified over all actions. Fair-minimum `exact` retains its
   existential tight-action and rank-progress rule below, including AC-13's
   certificates without policy rows.
-  Outside these three profiles, for `kind` `exact` under
+  Outside these three profiles and the Reachability exact profile below,
+  whose `policy` is strictly absent rather than a hint, for `kind` `exact` under
   `minimum`, `maximum`, `workload-minimum` or `workload-maximum`, including
   the `optimum` conditional certificate's exact `post` part, the checker
   SHALL require `policy` and exactly one current action choice for each
@@ -185,6 +186,33 @@ decided, target and `Prob0` states:
   terminal stutter and distinct `PostState` choices; an absent hint
   requires no fabricated operation or new wire choice form.
 - **Exact**: both conditions, with equality.
+- **Reachability exact**: for a document in
+  [FSL FR-201](ix://agent-ix/filament-spec-language/FR-201)'s closed
+  `filament.probability-objective/reachability/v1` exact document profile,
+  `policy` SHALL be absent. This is strict absence, not a fourth Policy
+  hints profile. The checker SHALL independently rebuild every reachable
+  product state and verify Bellman equality `x = F(x)` for the objective's
+  `minimum`, `maximum` or resolved `workload` operator at every undecided
+  reachable product state, together with the decided-state values and the
+  ranking conditions that profile requires. It reads, infers and selects no
+  policy. The soundness condition is this: with values fixed at decided
+  states, `x = F(x)` gives `F(x) <= x`, so by Upper the optimum is at most
+  `x`; and it gives `x <= F(x)`, which with the profile's ranks, falling
+  along the product's transitions to rank 0 at decided states so that no
+  undecided end component remains, makes `x` at most the optimum by Lower.
+  Equality, not merely inequality, at EVERY undecided state, plus the
+  profile's ranking conditions, therefore establishes the supplied values
+  as the optimum without a policy. An inequality alone, or equality at only
+  some undecided states, does not. This exception admits only every-scheduler
+  `minimum` `AtLeast` proofs, `maximum` `AtMost` proofs and resolved
+  `workload` proofs. It SHALL NOT admit a crossing-bound proof requiring a
+  witness policy (`minimum` `AtMost`, `maximum` `AtLeast`). The checker
+  SHALL NOT infer or select a witness for such a proof, which keeps the
+  unsupported or refusal outcome that otherwise applies to it, unchanged.
+  A document in this profile that carries `policy` is rejected under
+  Absence below and is not read as a hint. The exception adds no profile,
+  AST, discriminator, horizon field or wire member. Shapes outside that
+  profile's admitted subsets remain unsupported by it.
 - **Finite horizon**: the ranking is the remaining horizon, which the checker
   reads from the monitor state.
 - **Finite-horizon measure**: over the product of an accumulate, steps or
@@ -300,7 +328,9 @@ decided, target and `Prob0` states:
 The checker accepts a certificate that meets its conditions and puts the
 initial state's value on the claim's side of the threshold: `lower` for a
 proof of `>= θ` or a refutation of `<= θ`; `upper` for a proof of `<= θ` or a
-refutation of `>= θ`; `exact` and `conditional` for either. A `conditional`
+refutation of `>= θ`; `exact` and `conditional` for either, except that a
+Reachability exact document is admitted only for that rule's proof
+directions. A `conditional`
 certificate is on the claim's side when its certified value is, and a
 `vacuous` one is on the side of a proof. A `value-bounds` proof (FR-411)
 carries a `lower` and an `upper` certificate; the one on the claim's side
@@ -337,10 +367,12 @@ re-enumeration plus one pass over the edges.
 - **Absence** — a `lower` or `exact` certificate without `ranking` (except a
   fair-minimum or expected-reward `lower`), a fair-minimum or expected-reward
   `upper` without `ranking`, an `exact` certificate outside the three
-  Policy hints profiles under `minimum`,
+  Policy hints profiles and the Reachability exact profile under `minimum`,
   `maximum`, `workload-minimum` or `workload-maximum` (including an
   `optimum` certificate's `post` part) without `policy` or without exactly
-  one current action choice at each checked undecided state, or a `long-run` certificate without
+  one current action choice at each checked undecided state, a
+  Reachability exact profile document that carries `policy`, even an empty
+  one, or a `long-run` certificate without
   `components`, a `conditional` certificate without `conditional`, with a
   `mode` other than `ratio`, `optimum` and `vacuous`, with a `ratio` under
   an objective other than `workload`, without a part its mode requires
@@ -375,7 +407,10 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-17 | For an active finite-window fraction measure over a terminal model state satisfying its predicate, with nonzero remaining window, the product continuation is undecided and its only action is terminal stutter advancing the monitor. With every completed payoff 1 and otherwise valid rows at value 1 and ranks equal to the remaining window where required, upper/minimum and lower/maximum certificates without policy rows are accepted. The checker-local acceptance report's derived selected policy names the existing terminal-stutter action at each checked undecided state, without an invented TransitionIdentity. | Test (TC-2110) |
 | FR-412-AC-18 | At a checked undecided state with two PostState choices of one operation whose independently recomputed action values are `1/4` and `3/4`, an upper/minimum bound `1/2` with no policy row reports the first action satisfying all per-state conditions in canonical product-action order in the checker-local acceptance report's derived selected policy; the bound `1/8` is rejected `inequality-fails` because neither action satisfies it. For a lower/maximum bound `1/2`, no row is needed when the `3/4` action also satisfies required rank progress; if only that action satisfies the inequality but fails rank progress, the bound is rejected `rank-broken`, even when the other action satisfies rank progress. A lower certificate checks only named undecided states and uses the existing least value for unnamed successors. | Test (TC-2110) |
 | FR-412-AC-19 | For distinct operations `low` and `high` with unambiguous TransitionIdentity hints and action values `1/4` and `3/4`, an upper/minimum bound `1/2` whose hint names `high` is rejected `inequality-fails` even though `low` would pass. On a variant where both operations have action value `3/4`, a lower/maximum bound `1/2` whose hint names an operation failing rank progress is rejected `rank-broken` even if the other operation satisfies both conditions. A nonexistent hint, or an identity ambiguous between AC-18's PostState choices, is rejected `malformed` at `policy` rather than replaced by another action. | Test (TC-2110) |
-| FR-412-AC-20 | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) profiles, removing a policy member or row from an otherwise valid certificate is accepted exactly when some rebuilt action satisfies all profile per-state conditions; fair-minimum `exact` retains AC-13's no-policy tight-action results. A present hint must itself identify an existing satisfying action. Outside those three profiles, an otherwise valid `exact` certificate under minimum or maximum objectives, including workload variants and an `optimum` certificate's exact `post` part, retains its required policy coverage; removing the member or one required state's choice is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. Older conditional `reset` coverage and properness rules remain unchanged. | Test (TC-2110) |
+| FR-412-AC-20 | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) profiles, removing a policy member or row from an otherwise valid certificate is accepted exactly when some rebuilt action satisfies all profile per-state conditions; fair-minimum `exact` retains AC-13's no-policy tight-action results. A present hint must itself identify an existing satisfying action. Outside those three profiles and the Reachability exact profile (FR-412-AC-21 to FR-412-AC-23), an otherwise valid `exact` certificate under minimum or maximum objectives, including workload variants and an `optimum` certificate's exact `post` part, retains its required policy coverage; removing the member or one required state's choice is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. Older conditional `reset` coverage and properness rules remain unchanged. | Test (TC-2110) |
+| FR-412-AC-21 | A model `Pick` whose one initial state `s` has actions `a` and `b`, each reaching a `P` state with probability `1/2` and `3/4` respectively and otherwise a non-`P` terminal, with the origin-activated claim `eventually[0,1] holds(P)`, no binding, clocks, rewards or fairness. Documents in FSL FR-201's `filament.probability-objective/reachability/v1` exact profile with `policy` absent, decided states at 1 (accepting) and 0 (false-extended terminal) with rank 0, and `s` ranked by its remaining event positions, are accepted as follows. The `minimum` document with `s` at `1/2` is accepted for `>= 1/2` (`AtLeast`) after the checker verifies `1/2 = min(1/2, 3/4)` at `s`. The `maximum` document with `s` at `3/4` is accepted for `<= 3/4` (`AtMost`) after it verifies `3/4 = max(1/2, 3/4)`. Over the resolved-workload variant leaving only `a`, the `workload` document with `s` at `1/2` is accepted for `>= 1/2` and for `<= 1/2`. The inequality-only `minimum` document with `s` at `2/5` for `>= 2/5`, and the `maximum` document with `s` at `4/5` for `<= 4/5`, are rejected `inequality-fails` at `s`. A reached `P` state valued `9/10` is rejected `inequality-fails` at that state, removing `s`'s rank is rejected `rank-missing` at `s`, and the `maximum` `3/4` document for `<= 2/3` is rejected `threshold-missed` at `s`. | Test |
+| FR-412-AC-22 | Over FR-412-AC-21's `Pick` with `policy` absent, the crossing-bound proofs `minimum` `<= 1/2` (`AtMost`, attained only by witness `a`) and `maximum` `>= 3/4` (`AtLeast`, attained only by witness `b`) are not admitted by the Reachability exact exception: neither settles `proved` through it, the checker infers and selects neither `a` nor `b` as a witness, and each keeps the unsupported or refusal outcome otherwise applicable to it, unchanged. | Test |
+| FR-412-AC-23 | FR-412-AC-21's otherwise valid `minimum` `1/2` document for `>= 1/2`, carrying `policy` as an empty array, a row naming `a` (which satisfies the equality) or a row naming `b`, is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. It is not checked as an optional hint under Policy hints. FR-412-AC-20's results for the fair-minimum, value-bounds and finite-horizon measure profiles and for required-policy certificates are unchanged. | Test |
 
 ## Dependencies
 
@@ -395,4 +430,5 @@ re-enumeration plus one pass over the edges.
   probabilities in Markovian models, TACAS 2014: the reset process of a
   `conditional` certificate.
 - Ticket: STD-137 (paired with QSL-371); the fair-minimum, value-bounds and
-  finite-horizon measure conditions: QSL-2158.
+  finite-horizon measure conditions: QSL-2158; the Reachability exact
+  policy-free exception: QSL-2779.
