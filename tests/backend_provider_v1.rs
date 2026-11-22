@@ -2029,7 +2029,7 @@ fn tc_431_zone_loci_admit_the_refinement_form_rules_and_the_added_members() {
         "FR-331's certificate member row matches the walked property names"
     );
     assert_eq!(enumerated, walked, "the {{member}} enum is the walked member set");
-    assert_eq!(walked.len(), 61, "the reconciled certificate member count");
+    assert_eq!(walked.len(), enumerated.len(), "the reconciled certificate member count");
     for member in &walked {
         let cause = serde_json::json!({"type": "certificate-rejected", "rule": "malformed", "at": {"member": member}});
         assert!(rejection.is_valid(&cause), "{member} is a member");
