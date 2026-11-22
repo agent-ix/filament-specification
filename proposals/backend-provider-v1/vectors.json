@@ -9952,6 +9952,7 @@
     {
       "name": "fr413-randomized-witness-scheduler",
       "stage": "outcome",
+      "ac": ["FR-413-AC-12"],
       "owners": {
         "/counterexamples/0/counterexample/scheduler/entries/0/choice": "FR-413"
       },
@@ -14731,6 +14732,7 @@
       "name": "fr413-randomized-witness-scheduler-single-choice",
       "base": "fr413-randomized-witness-scheduler",
       "owner": "FR-413",
+      "ac": ["FR-413-AC-13"],
       "patch": [
         {
           "op": "replace",
@@ -14757,7 +14759,7 @@
     {
       "id": "FR413-R2-probabilities-do-not-sum-to-one",
       "ac": [
-        "FR-413-AC-12"
+        "FR-413-AC-14"
       ],
       "base": "fr413-randomized-witness-scheduler",
       "mutation": [
@@ -14802,7 +14804,7 @@
     {
       "id": "FR413-R3-duplicate-choice",
       "ac": [
-        "FR-413-AC-12"
+        "FR-413-AC-15"
       ],
       "base": "fr413-randomized-witness-scheduler",
       "mutation": [
