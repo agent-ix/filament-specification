@@ -57,6 +57,8 @@ const OPERATION_EFFECT_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/operation-effect-vectors.json");
 const OPERATION_BODY_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/operation-body-vectors.json");
+const REQUIREMENT_RECORD_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/requirement-record-vectors.json");
 const OPTION_VALUE_VECTORS: &str =
     include_str!("../proposals/checked-package-v2/option-value-vectors.json");
 const SELECTED_TIMED_SLOT_DOCUMENT: &str =
@@ -26595,5 +26597,81 @@ fn bounded_formula_nodes_carry_their_interval_in_the_path() {
     assert_eq!(
         canonical_interval_text(&json!({"interval": {"lower": {"numerator": "1", "denominator": "3"}, "lower_end": "open", "upper": {"numerator": "1", "denominator": "1"}, "upper_end": "closed"}})).as_deref(),
         Some("time:(1/3..1]")
+    );
+}
+
+/// This checks that the normative reader-input recipes stay complete and
+/// traceable. It does not execute the checked-package reader.
+#[trace("TC-2053", "FR-825-AC-6", "FR-825-AC-7")]
+#[test]
+fn requirement_record_vectors_publish_boolean_value_guards_and_refusal() {
+    let vectors: Value = serde_json::from_str(REQUIREMENT_RECORD_VECTORS)
+        .expect("requirement record vectors JSON");
+    assert_eq!(vectors["test_case"], "TC-2053");
+    assert_eq!(vectors["requirement"], "FR-825");
+
+    let positive = &vectors["positive"][0];
+    assert_eq!(positive["id"], "RRV-01-bare-boolean-parameter-guard");
+    assert_eq!(positive["ac"], json!(["FR-825-AC-6"]));
+    assert_eq!(
+        positive["source"],
+        "function f using v(p: Boolean, x: Int[0, 9]): Int[0, 10] pure { if p then x + 1 else x + 1 }"
+    );
+    assert_eq!(positive["owner"]["declaration"], "f");
+    assert_eq!(positive["owner"]["role"], "function");
+    assert_eq!(positive["guard"]["role"], "value/parameter");
+    assert_eq!(positive["guard"]["semantic_type"], "scalar_type/boolean");
+    assert_eq!(positive["guard"]["reachability"], "owner body root");
+    assert_eq!(positive["guard_read"]["read_as"], "if condition");
+    assert_eq!(positive["guard_read"]["role"], "expression");
+    assert_eq!(positive["application"]["occurrences"], json!([0, 1]));
+    assert_eq!(positive["application"]["source"], "x + 1");
+    assert_eq!(positive["path_condition"][0]["application_occurrence"], 0);
+    assert_eq!(positive["path_condition"][0]["guard"], "p");
+    assert_eq!(positive["path_condition"][0]["guard_read_occurrence"], 0);
+    assert!(positive["path_condition"][0]["holds"].as_bool().unwrap());
+    assert_eq!(positive["path_condition"][1]["application_occurrence"], 1);
+    assert_eq!(positive["path_condition"][1]["guard"], "p");
+    assert_eq!(positive["path_condition"][1]["guard_read_occurrence"], 0);
+    assert!(!positive["path_condition"][1]["holds"].as_bool().unwrap());
+    assert_eq!(positive["extent_roots"], json!(["p", "x"]));
+    assert!(positive["expected"]["admitted"].as_bool().unwrap());
+    assert_eq!(positive["expected"]["record_count"], 2);
+    assert_eq!(
+        positive["expected"]["identity_includes"],
+        json!(["guard node", "guard read occurrence", "holds"])
+    );
+
+    let refusal = &vectors["reader_refusals"][0];
+    assert_eq!(refusal["id"], "RRV-02-non-boolean-value-guard");
+    assert_eq!(refusal["ac"], json!(["FR-825-AC-7"]));
+    assert_eq!(refusal["base"], "RRV-01-bare-boolean-parameter-guard");
+    assert_eq!(refusal["mutation"]["application_occurrence"], 0);
+    assert_eq!(refusal["mutation"]["replace_guard"], "p");
+    assert_eq!(refusal["mutation"]["with"]["name"], "x");
+    assert_eq!(refusal["mutation"]["with"]["role"], "value/parameter");
+    assert_eq!(
+        refusal["mutation"]["with"]["semantic_type"],
+        "scalar_type/integer"
+    );
+    assert_eq!(refusal["mutation"]["with"]["reachability"], "owner body root");
+    assert_eq!(refusal["mutation"]["guard_read_occurrence"]["node"], "x");
+    assert_eq!(
+        refusal["mutation"]["guard_read_occurrence"]["source_occurrence"],
+        "its read in x + 1"
+    );
+    assert_eq!(
+        refusal["mutation"]["rebuild"],
+        json!([
+            "record node identity",
+            "requirement_items references",
+            "all references to the changed record"
+        ])
+    );
+    assert_eq!(refusal["expected"]["code"], "invalid_package");
+    assert_eq!(refusal["expected"]["cause"], "invalid-value");
+    assert_eq!(
+        refusal["expected"]["pointer"],
+        "body/members/5/value/members/0"
     );
 }
