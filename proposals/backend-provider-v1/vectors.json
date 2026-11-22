@@ -9948,6 +9948,102 @@
           }
         ]
       }
+    },
+    {
+      "name": "fr413-randomized-witness-scheduler",
+      "stage": "outcome",
+      "owners": {
+        "/counterexamples/0/counterexample/scheduler/entries/0/choice": "FR-413"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-prob",
+            "kind": "probabilistic-satisfaction",
+            "result": "refuted",
+            "counterexample": 0
+          }
+        ],
+        "counterexamples": [
+          {
+            "request_index": 0,
+            "backend": "fsl-prob",
+            "counterexample": {
+              "initial_state": 0,
+              "binding": null,
+              "instance": null,
+              "bound": {
+                "type": "probability",
+                "comparison": "greater-or-equal",
+                "threshold": {
+                  "numerator": "1",
+                  "denominator": "2"
+                }
+              },
+              "scheduler": {
+                "entries": [
+                  {
+                    "state": {
+                      "key": "AQ"
+                    },
+                    "choice": {
+                      "type": "randomized",
+                      "choices": [
+                        {
+                          "choice": {
+                            "type": "transition",
+                            "operation": "M::left",
+                            "receiver": null,
+                            "arguments": []
+                          },
+                          "probability": {
+                            "numerator": "1",
+                            "denominator": "3"
+                          }
+                        },
+                        {
+                          "choice": {
+                            "type": "transition",
+                            "operation": "M::right",
+                            "receiver": null,
+                            "arguments": []
+                          },
+                          "probability": {
+                            "numerator": "2",
+                            "denominator": "3"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "evidence": {
+                "type": "path-set",
+                "paths": [
+                  []
+                ]
+              }
+            }
+          }
+        ],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result"
+          }
+        ]
+      }
     }
   ],
   "adverse": [
@@ -14630,6 +14726,123 @@
           "path": "/counterexamples/0/counterexample/loop/0/post_state"
         }
       ]
+    },
+    {
+      "name": "fr413-randomized-witness-scheduler-single-choice",
+      "base": "fr413-randomized-witness-scheduler",
+      "owner": "FR-413",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/counterexamples/0/counterexample/scheduler/entries/0/choice/choices",
+          "value": [
+            {
+              "choice": {
+                "type": "transition",
+                "operation": "M::left",
+                "receiver": null,
+                "arguments": []
+              },
+              "probability": {
+                "numerator": "1",
+                "denominator": "1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "reader_refusals": [
+    {
+      "id": "FR413-R2-probabilities-do-not-sum-to-one",
+      "ac": [
+        "FR-413-AC-12"
+      ],
+      "base": "fr413-randomized-witness-scheduler",
+      "mutation": [
+        {
+          "op": "replace",
+          "path": "/counterexamples/0/counterexample/scheduler/entries/0/choice/choices",
+          "value": [
+            {
+              "choice": {
+                "type": "transition",
+                "operation": "M::left",
+                "receiver": null,
+                "arguments": []
+              },
+              "probability": {
+                "numerator": "1",
+                "denominator": "3"
+              }
+            },
+            {
+              "choice": {
+                "type": "transition",
+                "operation": "M::right",
+                "receiver": null,
+                "arguments": []
+              },
+              "probability": {
+                "numerator": "1",
+                "denominator": "3"
+              }
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "stage": "reader",
+        "code": "invalid_runtime_input",
+        "cause": "invalid-value",
+        "pointer": "/counterexamples/0/counterexample/scheduler/entries/0/choice"
+      }
+    },
+    {
+      "id": "FR413-R3-duplicate-choice",
+      "ac": [
+        "FR-413-AC-12"
+      ],
+      "base": "fr413-randomized-witness-scheduler",
+      "mutation": [
+        {
+          "op": "replace",
+          "path": "/counterexamples/0/counterexample/scheduler/entries/0/choice/choices",
+          "value": [
+            {
+              "choice": {
+                "type": "transition",
+                "operation": "M::left",
+                "receiver": null,
+                "arguments": []
+              },
+              "probability": {
+                "numerator": "1",
+                "denominator": "2"
+              }
+            },
+            {
+              "choice": {
+                "type": "transition",
+                "operation": "M::left",
+                "receiver": null,
+                "arguments": []
+              },
+              "probability": {
+                "numerator": "1",
+                "denominator": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "stage": "reader",
+        "code": "invalid_runtime_input",
+        "cause": "invalid-value",
+        "pointer": "/counterexamples/0/counterexample/scheduler/entries/0/choice"
+      }
     }
   ]
 }

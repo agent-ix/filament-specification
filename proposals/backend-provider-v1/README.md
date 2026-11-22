@@ -29,6 +29,9 @@ consumer holds a copy of this schema.
   `failed` (`tool-failure`, `tool-unavailable` after a passing probe, and
   `runtime_invariant` for an IR mapping invariant break).
   Temporal, state-graph, hyperproperty and probabilistic vectors follow.
+  Its `reader_refusals` section records semantic reader cases that are
+  intentionally schema-valid; the FR-413 randomized-scheduler rows qualify
+  the exact probability-sum and distinct-choice checks owned by replay.
 - `refinement-failure-vectors.json` holds the wire cases of the FR-379
   `RefinementFailure` definition (the seven model kinds and the protocol
   relation kinds `RefusalNotPermitted` and `TerminalSuccessMismatch`) and the
