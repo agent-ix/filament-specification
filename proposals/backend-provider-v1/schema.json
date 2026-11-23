@@ -870,7 +870,7 @@
         "initial_state": {"$ref": "#/$defs/Count"},
         "binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/TypedValue"}]},
         "instance": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/TypedValue"}]},
-        "bound": {"description": "FR-407 owns the bound and its threshold.", "type": "object", "minProperties": 1},
+        "bound": {"$ref": "#/$defs/ProbabilisticBound"},
         "scheduler": {"description": "FR-413 WitnessScheduler{entries}.", "type": "object", "required": ["entries"], "properties": {"entries": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["state", "choice"], "properties": {"state": {"$ref": "#/$defs/State"}, "choice": {"description": "FR-413 direct choice or randomized choice. Replay enforces positive probabilities no greater than one, an exact sum of one and distinct choices.", "oneOf": [{"not": {"type": "object", "required": ["type"], "properties": {"type": {"const": "randomized"}}}}, {"type": "object", "required": ["type", "choices"], "properties": {"type": {"const": "randomized"}, "choices": {"type": "array", "minItems": 2, "items": {"type": "object", "required": ["choice", "probability"], "properties": {"choice": {}, "probability": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}}}, "additionalProperties": false}]}}, "additionalProperties": false}}}, "additionalProperties": false},
         "evidence": {
           "type": "object",
@@ -1310,10 +1310,11 @@
     "StatisticalVerdict": {
       "description": "FR-410 StatisticalVerdict.",
       "type": "object",
-      "required": ["decision", "basis", "provenance", "tests", "witnesses"],
+      "required": ["decision", "bound", "basis", "provenance", "tests", "witnesses"],
       "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}],
       "properties": {
         "decision": {"$ref": "#/$defs/MeasuredDecision"},
+        "bound": {"$ref": "#/$defs/ProbabilisticBound"},
         "estimate": {"$ref": "#/$defs/Estimate"},
         "interval": {"$ref": "#/$defs/Interval"},
         "basis": {
@@ -1342,6 +1343,17 @@
         },
         "tests": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["index", "decision", "samples", "draws"], "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}], "properties": {"index": {"$ref": "#/$defs/Count"}, "decision": {"$ref": "#/$defs/MeasuredDecision"}, "estimate": {"$ref": "#/$defs/Estimate"}, "interval": {"$ref": "#/$defs/Interval"}, "samples": {"$ref": "#/$defs/Count"}, "draws": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}},
         "witnesses": {"type": "array", "items": {"$ref": "#/$defs/SampledWitness"}}
+      },
+      "additionalProperties": false
+    },
+    "ProbabilisticBound": {
+      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: exact claim type, comparison and threshold.",
+      "type": "object",
+      "required": ["type", "comparison", "threshold"],
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "comparison": {"enum": ["greater-or-equal", "less-or-equal"]},
+        "threshold": {"$ref": "#/$defs/Rational"}
       },
       "additionalProperties": false
     },

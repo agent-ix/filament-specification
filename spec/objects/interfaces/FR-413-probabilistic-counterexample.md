@@ -44,7 +44,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | initial_state | index of the initial state in the subject |
 | binding | the `over` binding; JSON object, or null (absent); `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.binding` |
 | instance | the `on each` object of the failing instance; JSON object, or null for an `on origin` claim; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.instance` |
-| bound | the claim bound with its threshold; JSON object; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.bound` |
+| bound | the claim-bound object `{type, comparison, threshold}` with comparison `greater-or-equal` or `less-or-equal` and the exact rational threshold; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.bound` |
 | scheduler | WitnessScheduler{entries} as defined in this document; present under every scheduler and under a workload over a timed subject with free delays; absent under a workload that leaves no choice |
 | evidence | exactly one of: path set, subsystem certificate, undefined path; JSON object tagged by `type`; `proposals/backend-provider-v1/schema.json` `ProbabilisticCounterexample.evidence` |
 
@@ -90,7 +90,7 @@ defined on the evidence's states only.
 - `binding` — the `over` binding;
 - `instance` — the reference of the `on each` object whose instance fails,
   the first failing instance in key order, or null for an `on origin` claim;
-- `bound` — the claim's bound with its threshold;
+- `bound` — the claim-bound object `{type, comparison, threshold}`; `comparison` is `greater-or-equal` or `less-or-equal`, and `threshold` uses FR-413's exact rational wire type;
 - `scheduler` — the witness scheduler: present under every scheduler, and
   under a workload over a timed subject with free delays, where it carries the
   free delays' choices; absent under a workload that leaves no choice;
@@ -256,6 +256,7 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-14 | `FR413-R2-probabilities-do-not-sum-to-one` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its exact probability sum is not 1. | Inspection |
 | FR-413-AC-15 | `FR413-R3-duplicate-choice` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its alternatives repeat a choice. | Inspection |
 | FR-413-AC-16 | On FR-412-AC-24's induced chain, the `probability >= 3/4 [eventually E]` counterexample carries a deterministic scheduler and the `lower` certificate for `Pr(not eventually E)` with initial bound `1/2`; replay derives `{a}` as the event-free bottom target, checks the certificate, and applies `1/2 > 1 − 3/4` to settle `refuted`. Removing the scheduler, supplying an event-containing component, or using a lower bound at or below `1/4` prevents refutation. | Test (TC-432) |
+| FR-413-AC-17 | A `ProbabilisticCounterexample.bound` has exactly `{type, comparison, threshold}`, with `comparison` `greater-or-equal` or `less-or-equal` and `threshold` an FR-413 rational; a missing member, unknown comparison, non-rational threshold or extra member refuses at the backend-provider schema. | Test (TC-431) |
 
 ## Dependencies
 
