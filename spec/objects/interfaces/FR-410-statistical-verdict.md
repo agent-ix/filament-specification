@@ -30,6 +30,7 @@ no provider present.
 | Field | Type | Multiplicity | Constraints |
 |---|---|---|---|
 | decision | MeasuredDecision | 1..1 |  |
+| bound | ProbabilisticBound | 1..1 |  |
 | estimate | JsonObject | 1..1 |  |
 | interval | JsonObject | 0..1 |  |
 | basis | JsonObject | 1..1 |  |
@@ -44,6 +45,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | Field | Derivation note |
 |---|---|
 | estimate | JSON object `{value, quantile?}`; `proposals/backend-provider-v1/schema.json` `Estimate` |
+| bound | the checked claim's exact FR-413 bound object, including `q` for a quantile; `proposals/backend-provider-v1/schema.json` `ProbabilisticBound` |
 | interval | JSON object `{lower, upper}`; absent only for the sequential method (Absence); `proposals/backend-provider-v1/schema.json` `Interval` |
 | basis | `StatisticalBasis{method, confidence, samples, draws, tests, coverage, grid}` object |
 | provenance | object: seed, sampler identity, per-test entries |
@@ -59,7 +61,7 @@ witnesses it holds, each with its replay rule below.
 | Member | Content |
 | --- | --- |
 | `decision` | The [FR-409](../protocol/FR-409-measured-decision.md) value: `accepted`, `rejected` or `undecided`, with the undecided cause `indifference-region` or `undecided-successor`, or the rejection cause `undefined-evaluation` with its `where` and `cause`. |
-| `bound` | The exact FR-413 claim-bound object judged for this item, with `type`, `comparison` and `threshold`; `comparison` is `greater-or-equal` or `less-or-equal`, and `threshold` is the exact rational in FR-413's rational wire type. It is present for every accepted, rejected and undecided verdict, including a rejection by `undefined-evaluation`. |
+| `bound` | The exact FR-413 claim-bound object judged for this item. Its closed `type` is `probability`, `quantile`, `mean-of-fraction` or `long-run-fraction`; its `comparison` preserves the checked claim's operator, including strict `greater-than` and `less-than`; `threshold` is the exact FR-413 rational, and a `quantile` bound also carries its independent exact level `q`. It is present for every accepted, rejected and undecided verdict, including a rejection by `undefined-evaluation`. |
 | `estimate` | An exact rational: `p̂` for a probability bound; for a quantile claim, the conditional probability its decision reads, `Pr(M <= c | activated)` for `quantile q of M <= c` and `Pr(M < c | activated)` for `quantile q of M >= c` (FR-407), and the empirical nearest-rank quantile of the counted samples (the `⌈q · n⌉`-th smallest of `n`); the sample mean for a mean of a fraction; the regenerative ratio for a long-run fraction. A quantity estimate carries the threshold's unit. |
 | `interval` | The confidence interval `[lower, upper]` in exact rationals for the fixed-sample, exact binomial and regenerative methods (for the exact binomial method, the outward Clopper–Pearson interval of FR-408); absent for the sequential method. |
 | `basis` | `StatisticalBasis{method, confidence, samples, draws, tests, coverage, grid}`: `method` is `okamoto`, `sprt`, `clopper-pearson` or `regenerative` with its `min_cycles`; `confidence` is the claim's `α`, `β` and `ι`; `samples` is the count of counted samples; `draws` the count of drawn samples; `tests` is `m` with the per-test `α'` and `β'`; `coverage` is `finite-sample` or `asymptotic`; `grid` is the delay-draw grid exponent `q` of a timed run ([FR-420](../../functional/analysis/FR-420-sample-stochastic-timed-models.md)) and absent otherwise. |
@@ -150,7 +152,7 @@ witness. The item's `measured` decision is unchanged by any witness replay.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-410-AC-1 | A completed statistical run records every `StatisticalVerdict` member with exact rational values, one test entry per test, and `interval` absent exactly for the sequential method. Its `bound` equals the FR-413 `{type, comparison, threshold}` claim object for accepted, rejected and undecided decisions. | Test (TC-358) |
+| FR-410-AC-1 | A completed statistical run records every `StatisticalVerdict` member with exact rational values, one test entry per test, and `interval` absent exactly for the sequential method. Its `bound` equals the exact FR-413 claim object for accepted, rejected and undecided decisions, preserving type, strict or non-strict comparison and threshold; for a quantile it also preserves `q`. | Test (TC-358) |
 | FR-410-AC-2 | A quantile run records both the conditional probability estimate and the nearest-rank empirical quantile. | Test (TC-355) |
 | FR-410-AC-3 | The result keeps at most `max_witnesses` sampled witnesses, the first in trace-index order, each with its exact path probability. | Test (TC-359) |
 | FR-410-AC-4 | A sampled witness replays as an FR-161 counterexample for the every-behaviour claim over the same subject. | Test (TC-359) |
@@ -161,7 +163,7 @@ witness. The item's `measured` decision is unchanged by any witness replay.
 | FR-410-AC-9 | A `StatisticalVerdict` whose `basis.samples` is the JSON integer `40` is admitted, and the same with `samples` the string `"40"` refuses at the schema. | Test (TC-358) |
 | FR-410-AC-10 | A `StatisticalVerdict` whose decision is `rejected` with cause `undefined-evaluation` (a drawn sample evaluated the claim undefined, FR-409) and which carries no `estimate`, in the verdict or in its test entry, is admitted; the same verdict with an `estimate` added refuses at the schema. | Test (TC-358) |
 | FR-410-AC-11 | A `StatisticalVerdict` whose decision is `undecided` with cause `undecided-successor` and which carries no `estimate`, in the verdict or in its test entry, is admitted; the same verdict with an `estimate` added refuses at the schema, while one `undecided` with cause `indifference-region` and no `estimate` refuses at the schema. | Test (TC-358) |
-| FR-410-AC-12 | Accepted, rejected and undecided verdicts each carry the same `{type, comparison, threshold}` bound as FR-413, including `greater-or-equal` / `less-or-equal` spelling and the FR-413 rational wire type; a missing member, unknown comparison, non-rational threshold or bound inconsistent with the originating claim is refused by the result reader. | Test (TC-358) |
+| FR-410-AC-12 | Accepted, rejected and undecided verdicts each carry the same closed form-specific bound as FR-413. The four type spellings and allowed members match FR-413; strict and non-strict comparisons preserve the checked claim's operator; a quantile includes its separate `q`. A missing/extra member, unknown type/comparison, non-rational threshold or q, or a bound inconsistent with the originating claim is refused by the result reader. | Test (TC-358) |
 
 ## Dependencies
 
