@@ -145,18 +145,21 @@ claim bound. The wire shape remains
 and the objective remains bound to the original claim; no producer-supplied
 target set or qualitative classification is added. The checker SHALL
 enumerate the complete reachable finite induced claim-product chain,
-including its claim-monitor state, derive its bottom strongly connected
-components and classify them itself. For `eventually E`, a component is
-accepting when it contains a state where E holds or the monitor has accepted
-E, and rejecting otherwise. For `always P`, it is rejecting when it contains
-a state where P does not hold or the monitor has rejected the claim, and
-accepting otherwise. For `A until B`, it is accepting when it contains a
-state where B holds or the monitor has accepted the claim, and rejecting
-when it contains a state where neither A nor B holds or the monitor has
-rejected the claim. A component with no decided monitor state is rejecting for
-`eventually` and `until`, and accepting for `always`. These classifications
-include implicit terminal stutter and preserve each claim's predicate and
-monitor semantics.
+including its claim-monitor state. The checker SHALL evaluate each temporal
+predicate at its checked claim occurrence, profile, and binding, advance the
+claim monitor, and absorb each product state where the monitor has decided:
+the decided product state has only its monitor-preserving self-loop for this
+analysis. The checker SHALL derive bottom strongly connected components
+after this absorption and classify them by the monitor decisions they
+contain. A component with an accepting decision is accepting; one with a
+rejecting decision is rejecting. For `eventually E`, E decides acceptance;
+for `always P`, not P decides rejection; for `A until B`, B decides
+acceptance and a state where neither A nor B holds decides rejection. A
+component with no decided monitor state is rejecting for `eventually` and
+`until`, and accepting for `always`. This order prevents a component from
+mixing outcomes that the claim monitor has already decided. These
+classifications include implicit terminal stutter and preserve each claim's
+predicate and monitor semantics.
 
 For a `greater-or-equal` claim bound `θ`, the checker SHALL define R as the
 union of rejecting components and treat R as the targets of an auxiliary
