@@ -67,7 +67,8 @@ naming the offending row.
 The declaration extends the shared grammar's `declaration` production. The
 productions below use the shared grammar's EBNF conventions and its `ident`,
 `member-name`, `type-name`, `operation-name`, `model-name`, `type-ref`,
-`signed-int`, `exact-number`, `qualified-name` and `expr` productions.
+`signed-int`, `exact-number`, `qualified-name`, `expr`, `step-target` and
+`step-argument` productions.
 
 ```ebnf
 declaration    = … | refinement ;
@@ -82,10 +83,6 @@ object-row     = 'object', type-name, 'from', type-name,
                  '{', { field-row }, '}' ;
 field-row      = member-name, '=', expr, ';' ;
 step-row       = 'step', operation-name, '->', step-target, ';' ;
-step-target    = operation-name, '(', expr, { ',', step-argument }, ')'
-               | 'stutter'
-               | 'any' ;
-step-argument  = expr | '_' ;
 history-row    = 'history', type-name, '.', member-name, ':',
                  type-ref, '=', history-literal,
                  '{', { 'on', operation-name, ':', expr, ';' }, '}' ;
