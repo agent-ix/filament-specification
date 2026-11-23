@@ -54,10 +54,11 @@ Mutations, each applied alone to the positive unit:
    granularity;
 9. change the object row expression to `self.value + 0`, and separately
    reorder the rows other than step rows in source;
-10. write the initial literal of a history row on a type that admits it:
-    `-3` for `Int[-5, 4]`, `true` and `false` for `Boolean`, `none` for
-    `Option<Int[0, 4]>`, `"a"` for `Text[0, 4; nfc]`, `rational(1, 2)` for
-    `Rational[0, 1; 1, 2]`, and `Impl::Mode::idle` for `Impl::Mode`; then,
+10. write the initial value of a history row on a type that admits it:
+    `-3` for `Int[-5, 4]`, `true` and `false` for `Boolean`, `none` and
+    `Some(1)` for `Option<Int[0, 4]>`, `"a"` for `Text[0, 4; nfc]`,
+    `rational(1, 2)` for `Rational[0, 1; 1, 2]`, and `Impl::Mode::idle` for
+    `Impl::Mode`; then,
     each alone, `5` and `true` for `Int[0, 4]`, `0` for `Boolean`, `none` for
     `Int[0, 4]`, `Impl::Other::idle` for `Impl::Mode`, `idle` and
     `Impl::Mode::missing` for `Impl::Mode`, and `sequence[1]` and
@@ -275,7 +276,9 @@ the two misplaced rows, and the unmarked row's emitted granularity is `whole`
 (FR-375-AC-6). In mutation 9 the expression change changes the node's value and the
 obligation identity of the refinement item, and the
 reorder of the rows other than step rows changes none of them (FR-375-AC-7). In mutation 10 every
-literal on a type that admits it is admitted; `5`, `true`, `0` for `Boolean`,
+literal on a type that admits it is admitted, `Some(1)` produces a reference
+to its exact `value`/`option_value` node with semantic type `Option<Int[0, 4]>`,
+and `5`, `true`, `0` for `Boolean`,
 `none` for `Int[0, 4]` and `Impl::Other::idle` each refuse
 `ill_typed`/`type-mismatch` at the literal; `idle` and `Impl::Mode::missing`
 refuse `missing_declaration`/`missing-name`; `sequence[1]` and the float

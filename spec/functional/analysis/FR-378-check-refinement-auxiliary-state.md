@@ -37,7 +37,7 @@ reads at each concrete position, or a verdict this requirement settles.
 
 **History fields.** A history row adds one field to every object of its
 concrete type, for this refinement only. Every object starts with the row's
-initial literal, and an object a step creates starts with it too. When a step
+initial value, and an object a step creates starts with it too. When a step
 of an operation with an update is taken, the update is evaluated and written
 to the receiver's history field only; a step of an operation with no update
 keeps every history value. History values are a function of the concrete
@@ -106,7 +106,7 @@ abstract state keys, sorted ascending by their JCS bytes.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-378-AC-1 | A history field starts at its initial literal on every object, including an object a step creates; a step with an update writes only the receiver's history field; a step with none keeps every history value. | Test (TC-314) |
+| FR-378-AC-1 | A history field starts at its declared initial value on every object, including an object a step creates; a step with an update writes only the receiver's history field; a step with none keeps every history value. | Test (TC-314) |
 | FR-378-AC-2 | Adding history rows to a declaration leaves the set of concrete behaviours, the concrete package and every other verdict about the concrete model unchanged. | Test (TC-314) |
 | FR-378-AC-3 | A history update that evaluates undefined at a reachable state settles the refinement item `refuted`, cause `undefined-evaluation`, with an `Undefined` counterexample that replays; one whose value leaves the declared type settles `inconclusive`, cause `mapping-undetermined`; in both the step is not removed. | Test (TC-315) |
 | FR-378-AC-4 | For a hidden field, the candidate set starts at the abstract initial states matching the visible mapped state, is unchanged by a `stutter` step with an unchanged visible part, is replaced by the admitted successors matching the new visible part after an abstract-operation or `any` step, and a step that empties it fails `NoAbstractMatch`. | Test (TC-314) |
