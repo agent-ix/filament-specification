@@ -771,17 +771,17 @@
       "type": "object",
       "required": ["kind"],
       "oneOf": [
-        {"properties": {"kind": {"const": "InitialNotAbstract"}, "initial": {"$ref": "#/$defs/Count"}}, "required": ["kind", "initial"], "additionalProperties": false},
-        {"properties": {"kind": {"enum": ["StutterChanged", "NoAbstractMatch"]}, "position": {"$ref": "#/$defs/Count"}}, "required": ["kind", "position"], "additionalProperties": false},
-        {"properties": {"kind": {"const": "AbstractStepRejected"}, "position": {"$ref": "#/$defs/Count"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "cause": {"oneOf": [
+        {"properties": {"kind": {"const": "InitialNotAbstract"}, "initial": {"$ref": "#/$defs/U64String"}}, "required": ["kind", "initial"], "additionalProperties": false},
+        {"properties": {"kind": {"enum": ["StutterChanged", "NoAbstractMatch"]}, "position": {"$ref": "#/$defs/U64String"}}, "required": ["kind", "position"], "additionalProperties": false},
+        {"properties": {"kind": {"const": "AbstractStepRejected"}, "position": {"$ref": "#/$defs/U64String"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "cause": {"oneOf": [
           {"type": "object", "required": ["type", "clause"], "properties": {"type": {"const": "Precondition"}, "clause": {"$ref": "#/$defs/NodeId"}}, "additionalProperties": false},
           {"type": "object", "required": ["type", "code"], "properties": {"type": {"const": "Frame"}, "code": {"$ref": "#/$defs/Nonempty"}}, "additionalProperties": false},
           {"type": "object", "required": ["type"], "properties": {"type": {"const": "Postcondition"}}, "additionalProperties": false}
         ]}}, "required": ["kind", "position", "transition", "cause"], "additionalProperties": false},
         {"properties": {"kind": {"enum": ["Divergence", "AbstractUnfair"]}, "constraint": {"$ref": "#/$defs/Fairness"}}, "required": ["kind", "constraint"], "additionalProperties": false},
-        {"properties": {"kind": {"const": "Undefined"}, "position": {"$ref": "#/$defs/Count"}, "row": {"$ref": "#/$defs/Nonempty"}}, "required": ["kind", "position", "row"], "additionalProperties": false},
-        {"properties": {"kind": {"const": "RefusalNotPermitted"}, "position": {"$ref": "#/$defs/Count"}, "label": {"$ref": "#/$defs/ObservationLabel"}}, "required": ["kind", "position", "label"], "additionalProperties": false},
-        {"properties": {"kind": {"const": "TerminalSuccessMismatch"}, "position": {"$ref": "#/$defs/Count"}, "direction": {"enum": ["concrete-only", "abstract-only"]}}, "required": ["kind", "position", "direction"], "additionalProperties": false}
+        {"properties": {"kind": {"const": "Undefined"}, "position": {"$ref": "#/$defs/U64String"}, "row": {"$ref": "#/$defs/Nonempty"}}, "required": ["kind", "position", "row"], "additionalProperties": false},
+        {"properties": {"kind": {"const": "RefusalNotPermitted"}, "position": {"$ref": "#/$defs/U64String"}, "label": {"$ref": "#/$defs/ObservationLabel"}}, "required": ["kind", "position", "label"], "additionalProperties": false},
+        {"properties": {"kind": {"const": "TerminalSuccessMismatch"}, "position": {"$ref": "#/$defs/U64String"}, "direction": {"enum": ["concrete-only", "abstract-only"]}}, "required": ["kind", "position", "direction"], "additionalProperties": false}
       ]
     },
     "ObservationLabel": {
@@ -1040,7 +1040,7 @@
         {"properties": {"type": {"const": "bounded-proof"}, "checks": {"$ref": "#/$defs/PositiveCount"}}, "required": ["type", "checks"], "additionalProperties": false}
       ]
     },
-    "LimitReached": {"description": "FR-331, FR-408, FR-461: the one limit-stop cause. `required` is present only for a fixed-N statistical preflight stop and is its positive required sample count.", "type": "object", "required": ["type", "limit", "value", "setting"], "properties": {"type": {"const": "limit-reached"}, "limit": {"$ref": "#/$defs/LimitName"}, "value": {"$ref": "#/$defs/Count"}, "setting": {"$ref": "#/$defs/SettingName"}, "required": {"$ref": "#/$defs/PositiveCount"}}, "additionalProperties": false},
+    "LimitReached": {"description": "FR-331, FR-408, FR-461: the one limit-stop cause. `required` is present only for a fixed-N statistical preflight stop and is its exact positive required sample count as an arbitrary-precision decimal string: no sign or leading zero.", "type": "object", "required": ["type", "limit", "value", "setting"], "properties": {"type": {"const": "limit-reached"}, "limit": {"$ref": "#/$defs/LimitName"}, "value": {"$ref": "#/$defs/Count"}, "setting": {"$ref": "#/$defs/SettingName"}, "required": {"type": "string", "pattern": "^[1-9][0-9]*$"}}, "additionalProperties": false},
     "QueryPart": {"description": "FR-331: FSL FR-338's QueryPart: unrolling, base or step, and for a refinement certificate's step row r (FR-468) the text step/<r> that FSL FR-338 specifies, r the zero-based row as a canonical u64 decimal.", "type": "string", "anyOf": [{"enum": ["unrolling", "base", "step"]}, {"pattern": "^step/(0|[1-9][0-9]{0,18}|1[0-7][0-9]{18}|18[0-3][0-9]{17}|184[0-3][0-9]{16}|1844[0-5][0-9]{15}|18446[0-6][0-9]{14}|184467[0-3][0-9]{13}|1844674[0-3][0-9]{12}|184467440[0-6][0-9]{10}|1844674407[0-2][0-9]{9}|18446744073[0-6][0-9]{8}|1844674407370[0-8][0-9]{6}|18446744073709[0-4][0-9]{5}|184467440737095[0-4][0-9]{4}|18446744073709550[0-9]{3}|18446744073709551[0-5][0-9]{2}|1844674407370955160[0-9]|1844674407370955161[0-5])$"}]},
     "ProofStepLocus": {"description": "FR-331: FSL FR-314's ProofStep{part, index}, index FSL FR-314's command number.", "type": "object", "required": ["part", "index"], "properties": {"part": {"$ref": "#/$defs/QueryPart"}, "index": {"$ref": "#/$defs/U64String"}}, "additionalProperties": false},
     "AutomatonStateKey": {"description": "FR-331 transport of FSL FR-338 / ADR-018 PC-3 complete RFC 8785 UTF-8 octets: [filament.automaton-state-key/v1, context, state]. Reader admission must check the owner's closed algebra, actual property context and exact canonical bytes; base64url syntax alone is not semantic admission. No index, digest or opaque residual substitute.", "$ref": "#/$defs/Base64Url"},
@@ -1347,15 +1347,13 @@
       "additionalProperties": false
     },
     "ProbabilisticBound": {
-      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: exact claim type, comparison and threshold.",
-      "type": "object",
-      "required": ["type", "comparison", "threshold"],
-      "properties": {
-        "type": {"type": "string", "minLength": 1},
-        "comparison": {"enum": ["greater-or-equal", "less-or-equal"]},
-        "threshold": {"$ref": "#/$defs/Rational"}
-      },
-      "additionalProperties": false
+      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: closed claim form, the claim's own comparison, and exact threshold; quantile also carries its independent level.",
+      "oneOf": [
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "probability"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold", "level"], "properties": {"type": {"const": "quantile"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}, "level": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "mean-of-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
+      ]
     },
     "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},
     "SampledWitness": {

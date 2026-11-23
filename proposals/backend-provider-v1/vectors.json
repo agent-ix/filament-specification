@@ -11326,15 +11326,39 @@
         {"op": "replace", "path": "/results/0/cause/limit", "value": "max_samples"},
         {"op": "replace", "path": "/results/0/cause/value", "value": 1000000},
         {"op": "replace", "path": "/results/0/cause/setting", "value": "statistical.max_samples"},
-        {"op": "add", "path": "/results/0/cause/required", "value": 9210341}
+        {"op": "add", "path": "/results/0/cause/required", "value": "921034100000000000000000000000000000000"}
       ]
     },
     {
-      "name": "limit-reached-required-not-positive-count",
+      "name": "limit-reached-required-zero-string",
       "base": "limit-reached-fixed-sample-preflight",
       "owner": "FR-331",
       "patch": [
-        {"op": "replace", "path": "/results/0/cause/required", "value": 0}
+        {"op": "replace", "path": "/results/0/cause/required", "value": "0"}
+      ]
+    },
+    {
+      "name": "limit-reached-required-numeric",
+      "base": "limit-reached-fixed-sample-preflight",
+      "owner": "FR-331",
+      "patch": [
+        {"op": "replace", "path": "/results/0/cause/required", "value": 9210341}
+      ]
+    },
+    {
+      "name": "limit-reached-required-leading-zero",
+      "base": "limit-reached-fixed-sample-preflight",
+      "owner": "FR-331",
+      "patch": [
+        {"op": "replace", "path": "/results/0/cause/required", "value": "09210341"}
+      ]
+    },
+    {
+      "name": "limit-reached-required-signed",
+      "base": "limit-reached-fixed-sample-preflight",
+      "owner": "FR-331",
+      "patch": [
+        {"op": "replace", "path": "/results/0/cause/required", "value": "+9210341"}
       ]
     },
     {

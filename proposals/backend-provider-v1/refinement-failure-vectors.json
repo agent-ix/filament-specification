@@ -6,28 +6,28 @@
         "name": "InitialNotAbstract",
         "failure": {
           "kind": "InitialNotAbstract",
-          "initial": 0
+          "initial": "0"
         }
       },
       {
         "name": "StutterChanged",
         "failure": {
           "kind": "StutterChanged",
-          "position": 2
+          "position": "2"
         }
       },
       {
         "name": "NoAbstractMatch",
         "failure": {
           "kind": "NoAbstractMatch",
-          "position": 6
+          "position": "6"
         }
       },
       {
         "name": "AbstractStepRejected",
         "failure": {
           "kind": "AbstractStepRejected",
-          "position": 4,
+          "position": "4",
           "transition": {
             "type": "transition",
             "operation": "inc",
@@ -65,7 +65,7 @@
         "name": "Undefined",
         "failure": {
           "kind": "Undefined",
-          "position": 0,
+          "position": "0",
           "row": "value"
         }
       },
@@ -73,7 +73,7 @@
         "name": "RefusalNotPermitted",
         "failure": {
           "kind": "RefusalNotPermitted",
-          "position": 1,
+          "position": "1",
           "label": {
             "step": "ack",
             "binder": []
@@ -84,7 +84,7 @@
         "name": "RefusalNotPermitted-binder",
         "failure": {
           "kind": "RefusalNotPermitted",
-          "position": 3,
+          "position": "3",
           "label": {
             "step": "Spec::Full::ev",
             "binder": [
@@ -110,7 +110,7 @@
         "name": "TerminalSuccessMismatch-concrete-only",
         "failure": {
           "kind": "TerminalSuccessMismatch",
-          "position": 0,
+          "position": "0",
           "direction": "concrete-only"
         }
       },
@@ -118,12 +118,19 @@
         "name": "TerminalSuccessMismatch-abstract-only",
         "failure": {
           "kind": "TerminalSuccessMismatch",
-          "position": 1,
+          "position": "1",
           "direction": "abstract-only"
         }
       }
     ],
     "adverse": [
+      {
+        "name": "initial-numeric-position",
+        "failure": {
+          "kind": "InitialNotAbstract",
+          "initial": 0
+        }
+      },
       {
         "name": "unknown-kind",
         "failure": {
@@ -176,10 +183,10 @@
         }
       },
       {
-        "name": "refusal-string-position",
+        "name": "refusal-numeric-position",
         "failure": {
           "kind": "RefusalNotPermitted",
-          "position": "1",
+          "position": 1,
           "label": {
             "step": "ack",
             "binder": []
@@ -300,7 +307,7 @@
       ],
       "expected": {
         "kind": "RefusalNotPermitted",
-        "position": 1,
+        "position": "1",
         "label": {
           "step": "ack",
           "binder": []
@@ -408,7 +415,7 @@
       ],
       "expected": {
         "kind": "TerminalSuccessMismatch",
-        "position": 0,
+        "position": "0",
         "direction": "concrete-only"
       }
     },
@@ -431,7 +438,7 @@
       ],
       "expected": {
         "kind": "TerminalSuccessMismatch",
-        "position": 1,
+        "position": "1",
         "direction": "abstract-only"
       }
     },
@@ -501,7 +508,7 @@
       ],
       "expected": {
         "kind": "RefusalNotPermitted",
-        "position": 0,
+        "position": "0",
         "label": {
           "step": "a",
           "binder": []
@@ -609,7 +616,7 @@
       ],
       "expected": {
         "kind": "RefusalNotPermitted",
-        "position": 0,
+        "position": "0",
         "label": {
           "step": "a",
           "binder": []
@@ -742,7 +749,7 @@
       ],
       "expected": {
         "kind": "RefusalNotPermitted",
-        "position": 0,
+        "position": "0",
         "label": {
           "step": "ev",
           "binder": [

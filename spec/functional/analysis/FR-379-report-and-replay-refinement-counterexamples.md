@@ -94,12 +94,12 @@ of:
 
 | Kind | Members | Rule failed |
 | --- | --- | --- |
-| `InitialNotAbstract` | `initial` | initial-state rule |
-| `StutterChanged` | `position` | `stutter` step |
-| `AbstractStepRejected` | `position`, `transition`, `cause` (`Precondition{clause}`, `Frame{code}` or `Postcondition`) | abstract-operation step |
-| `NoAbstractMatch` | `position` | `any` step, or an emptied candidate set |
+| `InitialNotAbstract` | `initial` (`U64String`) | initial-state rule |
+| `StutterChanged` | `position` (`U64String`) | `stutter` step |
+| `AbstractStepRejected` | `position` (`U64String`), `transition`, `cause` (`Precondition{clause}`, `Frame{code}` or `Postcondition`) | abstract-operation step |
+| `NoAbstractMatch` | `position` (`U64String`) | `any` step, or an emptied candidate set |
 | `Divergence` | `constraint` | an `F_A` constraint violated by a lasso whose loop has only `stutter` steps, including the concrete terminal stutter |
-| `Undefined` | `position`, `row` | a field row, step-row receiver or argument or history update evaluated undefined at `position`; `row` names it |
+| `Undefined` | `position` (`U64String`), `row` | a field row, step-row receiver or argument or history update evaluated undefined at `position`; `row` names it |
 | `AbstractUnfair` | `constraint` | an `F_A` constraint violated by a lasso whose loop takes abstract steps |
 
 A safety failure is a finite prefix ending at its failing step. A liveness
@@ -115,10 +115,14 @@ rules unchanged.
 
 | Kind | Members | Rule failed |
 | --- | --- | --- |
-| `RefusalNotPermitted` | `position`, `label` (an `ObservationLabel`: `step`, the FR-432 class spelling of the step with no alias, and `binder`, the step's complete binder record in effective field order, each entry `{field, value}` with a typed value) | the concrete state at `position` refuses `label`, which no stable member of the candidate set refuses |
-| `TerminalSuccessMismatch` | `position`, `direction` (`concrete-only` or `abstract-only`) | concrete and abstract terminal success disagree at `position` |
+| `RefusalNotPermitted` | `position` (`U64String`), `label` (an `ObservationLabel`: `step`, the FR-432 class spelling of the step with no alias, and `binder`, the step's complete binder record in effective field order, each entry `{field, value}` with a typed value) | the concrete state at `position` refuses `label`, which no stable member of the candidate set refuses |
+| `TerminalSuccessMismatch` | `position` (`U64String`), `direction` (`concrete-only` or `abstract-only`) | concrete and abstract terminal success disagree at `position` |
 
-Both are safety failures: the prefix is the `position` concrete steps that
+Every `initial` and `position` member of `refinement_failure` is the canonical
+unsigned 64-bit decimal string defined by FR-149 `U64String`, including `"0"`;
+it is never a JSON number. Other counterexample positions outside
+`refinement_failure` retain their owning wire definitions. Both protocol
+relation kinds are safety failures: the prefix is the `position` concrete steps that
 reach the failing product state, the empty prefix at position 0, and there is
 no loop. `position` follows the convention of the step kinds above: it is the index of
 the post-state of the failing step, which equals the prefix's step count (0
@@ -225,8 +229,8 @@ when its relation is defined.
 | FR-379-AC-10 | A terminal-success concrete state with no terminal-success member of the candidate set fails `TerminalSuccessMismatch{position, direction: concrete-only}`, and a terminal non-intended concrete state with every member terminal success fails it with `abstract-only`. | Test (TC-318, TC-431) |
 | FR-379-AC-11 | `TerminalSuccessMismatch` is not reported when some member of the candidate set is terminal success (`concrete-only`), when some member is not (`abstract-only`), or when the concrete state enables a step. | Test (TC-318) |
 | FR-379-AC-12 | A failing step rule on the incoming step is reported instead of a protocol relation failure at its post-state, and where both relation kinds fail at one state `RefusalNotPermitted` is reported; a model abstract subject never yields either kind. | Test (TC-318, TC-431) |
-| FR-379-AC-13 | Replay of `RefusalNotPermitted` or `TerminalSuccessMismatch` recomputes the candidate set and the classifications at the prefix's last state and settles `reproduced-with-evaluated-witness` and the item `refuted` when the recorded failure holds; a recorded `position` that differs from the prefix's step count, a label no stable member enables or the concrete state does not refuse, a `direction` that does not hold, or no recomputed failure settles `inconclusive`, cause `replay-parity`; a loop on these kinds is refused `invalid_runtime_input`/`invalid-value`. | Test (TC-318, TC-431) |
-| FR-379-AC-14 | The `RefinementFailure` wire definition admits exactly the nine kinds with their members, `ObservationLabel` is closed, and the seven original kinds keep their wire shapes. | Test (TC-431) |
+| FR-379-AC-13 | Replay of `RefusalNotPermitted` or `TerminalSuccessMismatch` recomputes the candidate set and the classifications at the prefix's last state and settles `reproduced-with-evaluated-witness` and the item `refuted` when the recorded failure holds; a recorded decimal-string `position` that differs from the prefix's step count, a label no stable member enables or the concrete state does not refuse, a `direction` that does not hold, or no recomputed failure settles `inconclusive`, cause `replay-parity`; a numeric position is malformed at admission, and a loop on these kinds is refused `invalid_runtime_input`/`invalid-value`. | Test (TC-318, TC-431) |
+| FR-379-AC-14 | The `RefinementFailure` wire definition admits exactly the nine kinds with their members, `ObservationLabel` is closed, the seven original kinds keep their member sets, and every `initial` and `position` is a canonical unsigned 64-bit decimal string; numeric values are malformed. | Test (TC-431) |
 
 ## Dependencies
 

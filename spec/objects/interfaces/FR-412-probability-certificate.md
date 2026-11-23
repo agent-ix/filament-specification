@@ -167,14 +167,14 @@ reachability lower check. Every R state has value 1; the named values and
 ranks SHALL establish a lower bound on reaching R using the ordinary `lower`
 inequalities and progress rule. The checker SHALL independently confirm that
 R is closed and has the claim's rejecting classification. The lower bound
-`r` refutes the claim only when `r > 1 − θ`. For a `less-or-equal` bound `θ`,
-the checker SHALL instead define R as the union of accepting components,
-establish a lower bound on reaching R under the same rules, and refute only
-when `r > θ`. Because every path in a finite induced chain eventually enters
-a bottom component, these target events are exactly the violating sides of
-their respective bounds. This role does not change other `lower` certificate
-meanings or accept a proof-side certificate as a refutation without FR-413's
-strict comparison.
+`r` refutes `greater-or-equal` only when `r > 1 − θ`. For a `less-or-equal` bound
+`θ`, the checker SHALL instead define R as the union of accepting components,
+establish a lower bound on reaching R under the same rules, and refute
+`less-or-equal` only when `r > θ`. Because
+every path in a finite induced chain eventually enters a bottom component,
+these target events are exactly the violating sides of their respective
+bounds. This role does not change other `lower` certificate meanings or
+accept a proof-side certificate as a refutation without FR-413's comparison.
 
 - **Policy hints**: this rule applies only to the **fair-minimum**
   ([FSL FR-1041](ix://agent-ix/filament-spec-language/FR-1041)),
@@ -369,8 +369,9 @@ strict comparison.
 
 The checker accepts a certificate that meets its conditions and puts the
 initial state's value on the claim's side of the threshold: `lower` for a
-proof of `>= θ` or a refutation of `<= θ`; `upper` for a proof of `<= θ` or a
-refutation of `>= θ`; `exact` and `conditional` for either, except that a
+proof of `>= θ` or `> θ`, or a refutation of `<= θ` or `< θ`; `upper` for a
+proof of `<= θ` or `< θ`, or a refutation of `>= θ` or `> θ`; `exact` and
+`conditional` for either, except that a
 Reachability exact document is admitted only for that rule's proof
 directions. A `conditional`
 certificate is on the claim's side when its certified value is, and a
