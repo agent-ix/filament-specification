@@ -1,0 +1,11 @@
+{
+  "files": [
+    "hero-light.svg",
+    "hero-dark.svg",
+    "ecosystem-light.svg",
+    "ecosystem-dark.svg",
+    "corpus-light.svg",
+    "corpus-dark.svg"
+  ],
+  "generated_by": "ixd build"
+}

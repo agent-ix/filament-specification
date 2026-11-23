@@ -1,0 +1,64 @@
+{
+  "data": {
+    "definition_docs": {"from":"matches","glob":"src/lib.rs","pattern":"include_str!"},
+    "spec_dirs": {"from":"dirs","path":"spec"},
+    "spec_kinds": {"from":"expr","value":"drop(spec_dirs, '^(reviews|subsystems)$')"},
+    "spec_files": {"from":"files","glob":"spec/**/*.md"},
+    "spec_file_kinds": {"from":"expr","value":"rsub(spec_files, '^spec/([^/]+)/.*$', '$1')"},
+    "corpus_rows": {"from":"expr","value":"count_by(spec_file_kinds, spec_kinds)"},
+    "functional": {"from":"count","glob":"spec/functional/**/*.md"},
+    "quality": {"from":"count","glob":"spec/non-functional/**/*.md"},
+    "requirements": {"from":"sum","of":["functional","quality"]},
+    "cases": {"from":"count","glob":"spec/test-cases/**/*.md"},
+    "vectors": {"from":"count","glob":"proposals/**/*.json"},
+    "tests": {"from":"matches","glob":"tests/*.rs","pattern":"#\\[test\\]"}
+  },
+  "figures": [
+    {
+      "id": "hero",
+      "width": 980, "height": 340,
+      "label": "The standard is authored as requirements, test cases, schemas with vectors, and definition bytes. Today the qualification tests check the schemas, vectors and definition bytes and report each vector admitted or refused. Compiler acceptance of the test cases by filament-spec-language and the backends is planned.",
+      "items": [
+        {"k":"text","at":[0,12],"text":"AUTHORED HERE","role":"muted","size":12},
+        {"k":"text","at":[310,12],"text":"CHECKED BY","role":"muted","size":12},
+        {"k":"text","at":[640,12],"text":"OUTCOME","role":"muted","size":12},
+        {"k":"box","at":[0,24,220,56],"role":"code","title":"requirements","subs":["{requirements} functional and quality"]},
+        {"k":"box","at":[0,100,220,56],"role":"code","title":"test cases","subs":["{cases} written procedures"]},
+        {"k":"box","at":[0,176,220,56],"role":"model","title":"definition bytes","subs":["{definition_docs} documents in src/lib.rs"]},
+        {"k":"box","at":[0,252,220,56],"role":"model","title":"schemas + vectors","subs":["{vectors} JSON files in proposals/"]},
+        {"k":"line","points":[[110,80],[110,97]],"role":"code"},
+        {"k":"text","at":[310,94],"text":"PLANNED","role":"muted","size":12},
+        {"k":"box","at":[295,100,270,56],"role":"ink","title":"implementations","subs":["filament-spec-language · backends"]},
+        {"k":"line","points":[[220,128],[307,128]],"role":"code","dashed":true},
+        {"k":"box","at":[640,100,340,56],"role":"evidence","title":"compiler acceptance","subs":["each case passes or is refused"],"dashed":true},
+        {"k":"line","points":[[550,128],[637,128]],"dashed":true},
+        {"k":"text","at":[310,214],"text":"QUALIFIED TODAY","role":"muted","size":12},
+        {"k":"box","at":[310,220,240,56],"role":"logic","title":"qualification tests","subs":["cargo test · {tests} tests"]},
+        {"k":"line","points":[[220,204],[260,204],[260,240],[307,240]],"role":"model"},
+        {"k":"line","points":[[220,280],[260,280],[260,256],[307,256]],"role":"model"},
+        {"k":"box","at":[640,220,340,56],"role":"evidence","title":"admitted or refused","subs":["positive vectors pass, adverse ones fail"]},
+        {"k":"line","points":[[550,248],[637,248]],"role":"logic","weight":2.4},
+        {"k":"legend","at":[0,334],"entries":[["code","authored source","box"],["logic","compiler stage","box"],["model","checked package / IR","box"],["evidence","outcome (dashed: planned)","box"],["ink","input","box"]]}
+      ]
+    },
+    {"id":"ecosystem","construct":{"name":"ecosystem","here":"filament-specification"}},
+    {
+      "id": "corpus",
+      "width": 980, "height": 260,
+      "let": {
+        "top": "=max(pluck(corpus_rows, 'n'))",
+        "total": "=sum(pluck(corpus_rows, 'n'))"
+      },
+      "label": "The spec/ tree holds {total} authored artifacts in {len(corpus_rows)} kinds: {join(zip_join(pluck(corpus_rows, 'key'), pluck(corpus_rows, 'n'), ' '), ', ')}.",
+      "items": [
+        {"k":"text","at":[0,16],"text":"{total} SPEC ARTIFACTS IN {len(corpus_rows)} KINDS","role":"muted","size":12},
+        {"k":"repeat","over":"corpus_rows","let":{"y":"=36 + i * 24","w":"=700 * row.n / top"},"items":[
+          {"k":"text","at":[0,"=y + 11"],"text":"=row.key","role":"ink","size":12},
+          {"k":"rect","at":[150,"=y",700,14],"role":"muted","stroke":false,"opacity":0.18},
+          {"k":"bar","at":[150,"=y","=w",14],"role":"code"},
+          {"k":"text","at":["=150 + w + 10","=y + 11"],"text":"=row.n","role":"muted","size":12}
+        ]}
+      ]
+    }
+  ]
+}
