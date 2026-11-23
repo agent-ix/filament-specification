@@ -21,26 +21,33 @@ relationships:
 
 ## Description
 
-When a producer checks a package, it records one requirement record per
-claim the package asks a backend to settle: the claim's occurrence key, its
+When a producer checks a package, it records each source requirement record
+that the package asks a backend to settle: the claim's occurrence key, its
 FR-290 capability kind and its extent, and for a `value-validity` claim of a
 function body the facts of its claim site (the function that owns it, its
 result bound, its direct conversion, its path condition, its extent roots
-and the object types it reads). The producer SHALL write these records into
-the `filament.checked-package/v2` package: one `requirement_items` row per
-record, in package order, and one `claim`/`value_validity` node per
+and the object types it reads). The producer SHALL write these source records
+into the `filament.checked-package/v2` package: one `requirement_items` row
+per record, in package order, and one `claim`/`value_validity` node per
 `value-validity` record and one `claim`/`operation_contract` node per
-`operation-contract` record. The reader SHALL admit them and expose them as a
-typed read.
+`operation-contract` record. A generated `operation-contract` item for a
+`claim`/`step_relation` or a model-refinement `refinement` node is not a source
+requirement record: the producer SHALL NOT write an `operation-contract`
+`requirement_items` row or an `operation_contract` record node for it. Its
+item kind remains FR-290's `operation-contract`. The reader SHALL admit the
+source records and expose them as a typed read.
 
 A consumer that holds only the package bytes (a run of a selected package,
-FR-775) needs these records to answer which requirement items belong to a
-called function, what each item's request index is, and what each item
-requests. Without them it would have to rebuild ownership, guards, bounds and
-extents from the graph, which re-derives what the producer's checker
-decided, or answer with fewer items than the source route, which is a partial
-map. With them, the source route and the package route read one value per
-fact.
+FR-775) needs these records to answer which source requirement-record items
+belong to a called function, what each item's request index is, and what each
+item requests. Without them it would have to rebuild ownership, guards,
+bounds and extents from the graph, which re-derives what the producer's
+checker decided, or answer with fewer source requirement-record items than
+the source route, which is a partial map. Generated check items outside this
+source-record set, including relation-code and model-refinement simulation
+items, use the item inputs defined by their owning requirements and do not
+create a row under this requirement. For the source records this requirement
+carries, the source route and package route read one value per fact.
 
 ## Properties
 
@@ -293,6 +300,14 @@ bindings in this order:
    non-negative integer `literal` for the authored maximum). This is the
    complete population identity and bound; no JSON object is embedded in a
    graph term.
+
+This record node represents a source requirement record whose claim is a
+state-clause claim or operation-frame. It is not the representation of every
+item whose capability kind is `operation-contract`: generated relation-code
+and model-refinement simulation items do not have source requirement records
+and SHALL NOT be represented by this row or node. This package-record term is
+distinct from an operation-contract check obligation or counterexample record
+used by a backend.
 
 The operation binding and every object reference SHALL resolve within the
 selected package or its admitted dependencies. The node's `dependencies` and
@@ -563,14 +578,14 @@ scan of the graph, and returns no record for a function that owns none.
 | --- | --- | --- |
 | FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` emits two ordered value-validity rows and two records for the shared `+` node's expression occurrences 0 and 1. The first record has the empty path-condition aggregate; the second cites the frame for the `g(x + 1)` call occurrence with holds true. The frame row has parent null, the exact guard occurrence and holds true. The second record's body and node_id path both contain only that terminal frame_id, not the expanded guard data. Both records retain their own result bounds, conversions, roots and generated ordinals, and the reader admits the package. | Test |
 | FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` emits three value-validity rows (the `>=`, `<` and `+`), with `>=` unguarded and the other two citing the terminal ids of their exact chains. The `<` chain contains `n >= 0`; the `+` chain contains the whole `if` condition. Every shared prefix appears once in the frame table; each `+` and `<` record body and identity path cite only their terminal frame id. The false branch has no scalar operation occurrence and contributes no frame; the reader admits the package without requiring one. Rewriting `n < 10` as `n < 11` changes the `<` frame and record identity and the `+` frame chain, but not the `>=` record. | Test |
-| FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced. `Bounded` has an `operation-contract` row at its `state_clause` node's `claim` occurrence with an `operation_contract` record node; `BelowThree` has a `temporal-satisfaction` row at its clause node's `claim` occurrence without `record`; `inc` has one `value-validity` row with its record node. The operation-contract node retains the Boolean result bound, invariant marker, operation anchor when present, body object references and populations of the source record. The rows are in package order; the reader admits the package and its typed read returns equal source records at each row's request index. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
+| FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per source requirement record its checker produced. `Bounded` has an `operation-contract` row at its `state_clause` node's `claim` occurrence with an `operation_contract` record node; `BelowThree` has a `temporal-satisfaction` row at its clause node's `claim` occurrence without `record`; `inc` has one `value-validity` row with its record node. The operation-contract node retains the Boolean result bound, invariant marker, operation anchor when present, body object references and populations of the source record. In the FR-397-AC-4 bound-relation and FR-377-AC-7 per-step-refinement fixtures, no `operation-contract` `requirement_items` row or `operation_contract` record node is emitted for the generated code-claim or simulation items. The rows that are emitted are in package order; the reader admits the package and its typed read returns equal source records at each row's request index. A package of a unit with no source requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
 | FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer of its earliest applicable reader check. Adding a `declaration` member to a `claim`/`value_validity` node fails FR-322's strict schema/owner-presence check first as `malformed_wire` at `/semantic_graph/nodes/{n}`; the FR-825 record step is not reached. A second `generated` occurrence; `conversion` and `result_bound` swapped; invalid `owner`, `application`, `occurrence` or `result_bound`; the first record's `conversion` naming the other narrow; `extent_roots` holding `x` twice; and `objects` referencing the Boolean type node are refused by the FR-825 record rule as `invalid_package`/`invalid-value` at that rule's specified pointer. A frame row whose `holds` is the text `"true"` is refused by the earlier strict-wire check as `malformed_wire` at `/path_condition_frames/{f}`. | Test (TC-2053) |
 | FR-825-AC-5 | Over AC-2 and AC-3 packages, malformed or reordered `requirement_items` rows refuse with the existing rule's exact codes and pointers; a reader budget one validation visit short returns `incomplete` at the first uncharged item and no partial view. The reader charges the frame rows, each owner's body walk once, each record node, roots, objects, rows and domains; it does not charge or retain a repeated guard vector per record. A package whose only `claim` nodes are `value_validity` nodes and which has no `claim_names` member is admitted. | Test (TC-2053) |
 | FR-825-AC-6 | A unit with `function f using v(p: Boolean, x: Int[0, 9]): Int[0, 10] pure { if p then x + 1 else x + 1 }` has two records for the shared `+` node's occurrences. One frame for `p` with parent null and holds true and one frame for the same occurrence with parent null and holds false are present. The records cite their respective frame ids; each record body and node_id path contains only its terminal id. The reader admits both and the roots include `p` and `x` once in node order. | Test (TC-2053) |
 | FR-825-AC-7 | Starting from AC-6, replace a frame's guard occurrence with the owner's integer parameter `x`, retaining a valid expression occurrence. The reader refuses `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard` because the guard is not Boolean. | Test (TC-2053) |
 | FR-825-AC-8 | For a package with nested guards and at least two scalar records sharing a prefix, each malformed frame mutation refuses at the stated first defect: a non-array, empty array, row with missing/extra/reordered members, or non-Boolean JSON `holds` is `malformed_wire` at the table/row; a `parent` that is forward, self, missing, or from another owner is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/parent`; an unknown guard node or occurrence is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard`; a duplicate `(parent, guard occurrence, holds)` row is `invalid_package`/`conflicting-definition` at the duplicate row. | Test (TC-2053) |
 | FR-825-AC-9 | For the valid nested-guard package of AC-8, a frame chain with the wrong parent, guard order or `holds`, a missing table, a terminal frame id outside the table, a record id whose chain differs from the owner-body-derived chain, or an unreferenced frame row refuses `invalid_package`/`invalid-value` at the corresponding parent, `/path_condition_frames`, record `body/members/5`, or table row; changing only a record node's identity path to cite a different terminal id refuses `invalid_package`/`invalid-semantic-graph` at its `node_id`. | Test (TC-2053) |
-| FR-825-AC-10 | For AC-3's operation-contract item, the typed read equals the source `RequirementRecord` in kind, extent, Boolean bound, invariant marker, operation, body object references and population domains. Removing its record, attaching a value-validity node, changing the operation anchor, omitting or adding a model object or population, changing the invariant marker, or altering its identity path refuses the whole package with the specified first code and pointer; no package-route item may be omitted because the form is unavailable. | Test (TC-2053) |
+| FR-825-AC-10 | For AC-3's `Bounded` state-clause operation-contract record, the typed read equals the source `RequirementRecord` in kind, extent, Boolean bound, invariant marker, operation, body object references and population domains. Removing its record, attaching a value-validity node, changing the operation anchor, omitting or adding a model object or population, changing the invariant marker, or altering its identity path refuses the whole package with the specified first code and pointer. Generated step-relation and per-step model-refinement operation-contract items have no FR-825 source record, row or record node. | Test (TC-2053) |
 | FR-825-AC-11 | For one shared scalar application reached in two owner bodies ordered by FR-322's declaration source-map position, its expression occurrences are numbered package-wide as 0 and 1; each owner's record names its own occurrence, and removing the first owner's record does not renumber the second owner's occurrence. For a Boolean parameter used first as an expression and later as an `if` guard, the guard frame names expression occurrence 1, as do the checker and reader; neither restarts its ordinal at the owning body. | Test (TC-2053) |
 
 ## Dependencies

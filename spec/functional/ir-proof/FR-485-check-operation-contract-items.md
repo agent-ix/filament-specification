@@ -43,6 +43,15 @@ relationships:
 
 When an `operation-contract` item reaches a check arm, the arm SHALL decide the form's obligation, from the check input it derives from the claim form that [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) assigns to the claim and from the pre-state premises, frame clauses and invariant clauses of the checked package, for every admitted pre-state and argument vector, settling it by [FR-483](FR-483-settle-backend-items-at-the-check-arm.md).
 
+The forms below describe `operation-contract` check items, not
+`filament.checked-package/v2` requirement records. Under FR-825, a source
+state-clause or operation-frame item has an `operation-contract`
+`requirement_items` row and record node. A generated step-relation code claim
+or model-refinement simulation item keeps the `operation-contract` kind
+assigned by FR-290 but has no FR-825 row or `operation_contract` record node.
+The `refinement` capability kind is reserved for refinement between protocol
+subjects (FR-290); a model-refinement simulation item does not use that kind.
+
 ## Inputs
 
 An `operation-contract` item settled `supported`; the checked package with its `state`/`state_clause`, `state`/`operation_anchor` and `state`/`frame` nodes ([FR-341](../../objects/interfaces/FR-341-checked-package-state-clause-body.md), [FR-342](../../objects/interfaces/FR-342-checked-package-operation-anchor-body.md), [FR-340](../../objects/interfaces/FR-340-checked-package-frame-location.md)); for a relation, the `claim`/`step_relation` node ([FR-397](../analysis/FR-397-check-step-relations-over-model-operations.md)); for a refinement, the refinement node with its step rows ([FR-375](../analysis/FR-375-declare-model-refinement.md)); and each operation's abstraction-relation binding where present ([FR-353](FR-353-declare-abstraction-relation.md)).

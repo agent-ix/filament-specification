@@ -21,6 +21,10 @@ relationships:
 
 Check the operation-contract forms: an invariant with initial-state and preservation obligations, a pre or postcondition clause with and without an implementation binding, a frame item, a bound step relation and a per-step simulation item.
 
+OC-13 through OC-18 exercise generated operation-contract check items. Their
+kind and check-arm behavior do not imply an FR-825 package requirement row or
+`operation_contract` record node.
+
 ## Test Procedure
 
 Read `proposals/backend-check-arm-v1/vectors.json`. For each case, resolve each `$node:<label>` to the NodeId of the node it labels, recompute the FR-290 disposition from the case's registry and item, validate the case's outcome stage against `proposals/backend-provider-v1/schema.json`, apply the arm's own refusal gate, and compare the arm outcome with the result. The harness is `tests/backend_check_arm_v1.rs`.
