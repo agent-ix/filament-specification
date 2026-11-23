@@ -15,7 +15,7 @@ Inspect requirements against the inventory. Scope: FR-661-AC-4.
 
 ## Test Procedure
 
-For each inventory fact, open the requirement it names and check it defines the fact and names the fact's id. Review requirements that define a fact read through a producer's public API for an inventory id.
+For each inventory fact, open the requirement it names in its authoring repository's source tree and check it defines the fact and names the fact's id. Review requirements that define a fact read through a producer's public API for an inventory id. This inspection does not require requirement files to be exposed through the standard's `published_file` API; FR-660 publishes proposal files and test cases, while this case inspects source requirements.
 
 ## Expected Results
 
