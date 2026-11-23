@@ -259,47 +259,63 @@ row.
 ### Operation-contract record node
 
 An `operation-contract` row's `record` names one `claim` node with
-`semantic_form: "operation_contract"`. Its generated occurrence ordinal is
-its position among operation-contract record nodes in package order. The
-row's `claim` and occurrence
-identify the state-clause claim or operation-frame occurrence whose source
-`RequirementRecord` it represents. The node is compiler-derived, has no
+`semantic_form: "operation_contract"`. The node is compiler-derived, has no
 `declaration` member, one `generated` occurrence with the same source region
-as the row's claim occurrence, Boolean `semantic_type`, and exactly these
+as the row's claim occurrence; its generated ordinal is its position among
+operation-contract record nodes in package order. It has Boolean
+`semantic_type` and exactly these
 bindings in this order:
 
-1. `result_bound`: a reference to the Boolean type node used by the source
+1. `claim`: a `reference` to the state-clause claim node or operation-frame
+   node named by the row's `claim.node`.
+2. `occurrence`: a `Group` aggregate of exactly two bindings, `role` (a
+   `literal` string equal to the row occurrence role) then `ordinal` (a
+   non-negative integer `literal` equal to its ordinal).
+3. `result_bound`: a reference to the Boolean type node used by the source
    record.
-2. `invariant`: a Boolean literal; true exactly when the source record is
+4. `invariant`: a Boolean literal; true exactly when the source record is
    marked as an invariant-clause requirement (FR-962), false otherwise.
-3. `operation`: an empty aggregate when the source record has no associated
+5. `operation`: an empty aggregate when the source record has no associated
    operation, or a reference to the package's `operation_anchor` node naming
    the operation otherwise.
-4. `model_objects`: an aggregate of references to exactly the model/object
+6. `model_objects`: an aggregate of references to exactly the model/object
    type nodes in the source record's `ModelReferences` object set, ordered by
    structural key.
-5. `populations`: an aggregate of entries, ordered by the source record's
-   canonical domain-key order. Each entry is a closed object with exactly
-   `member_type`, `ordinal`, `maximum`, and `object` in that order.
-   `member_type` references the population's model/object type node,
-   `ordinal` is its non-negative package declaration ordinal, `maximum` is
-   `null` for an unbounded population or a non-negative integer for the
-   authored bound, and `object` references the same population member type.
+7. `populations`: an aggregate whose members are `Group` aggregates, one per
+   source population in canonical domain-key order. Each `Group` has exactly
+   three bindings in this order: `member_type` (a `reference` to its
+   population's model/object type node), `ordinal` (a non-negative integer
+   `literal`), and `maximum` (an empty aggregate for no authored bound, or a
+   non-negative integer `literal` for the authored maximum). This is the
+   complete population identity and bound; no JSON object is embedded in a
+   graph term.
 
 The operation binding and every object reference SHALL resolve within the
-selected package or its admitted dependencies. The producer SHALL preserve
-the source record's facts; it SHALL NOT infer an operation, object read, or
-population from source text or from a backend's candidate. The record has no
-owner, conversion, path condition, or extent roots. Its `requirement_items`
-row carries the source record's exact extent, and its frame table is not used
-by this record. Its identity path is
-`["claim", "operation_contract", {claim node}, "invariant", {bool},
-"operation", ({operation node})?, "objects", {object node}…,
-"populations", {domain and object identity}…, "extent", {extent key}]`; the
-extent key is `bounded`, or `unbounded` followed by each ordered domain key
-and domain kind from the row. Each variable-length group is separated by its
-binding-name text and entries are in the order above. The reader SHALL require
-the row's extent to equal this identity-path extent.
+selected package or its admitted dependencies. The node's `dependencies` and
+operand row are the unique target nodes of its references (including `claim`),
+ordered by structural key. Its `node_id.path` has the following ordered
+segments; each node operand is encoded as the `{"operand": k}` slot in that
+node's operand row, integer fields are canonical non-negative decimal text,
+and every variable-length group begins with its binding-name text:
+
+`["claim", "operation_contract", claim-operand, role, occurrence,
+"bound", Boolean-operand, "invariant", ("true"|"false"), "operation",
+(operation-operand|"none"), "objects", object-count, object-operands…,
+"populations", population-count,
+("population", member-type-operand, ordinal, ("none"|maximum))…,
+"extent", "bounded" | ("unbounded", domain-count,
+domain-key-and-kind-segments…)]`.
+
+For an unbounded node domain, `domain-key-and-kind-segments` are `"node"`,
+its node operand, the path length in decimal text, each numeric path index in
+decimal text, and the domain-kind label; for a population domain they are
+`"population"`, its member-type operand, its ordinal in decimal text and the
+domain-kind label. Each count is followed by exactly that many entries.
+Domains use the FR-331 canonical domain-key order. The row's `extent` SHALL equal the
+identity-path extent. The producer SHALL preserve the source record's facts;
+it SHALL NOT infer an operation, object read, or population from source text
+or from a backend's candidate. The record has no owner, conversion, path
+condition, or extent roots; its frame table is not used.
 The row's `record` is the only join to this node and does not alter the
 claim's identity. An operation-contract node is not itself claim-bearing for
 `claim_names`; it is reached only through its row.
@@ -413,22 +429,32 @@ Next, for each `claim`/`value_validity` node in ascending node-id order, at
     node, or that is repeated or out of order: `invalid_package`/`invalid-value`
     at `body/members/7/value/members/{o}`.
 
-Before `requirement_items`, the reader SHALL validate each
-`claim`/`operation_contract` node in ascending structural node-id order. It
-SHALL require the closed five-binding body and joins defined above; require
-the row to have kind `operation-contract`, matching claim occurrence and
-source-derived extent; and check the invariant marker against the referenced
-state-clause form. Its operation, model-object, and population references
-SHALL agree with the claim/form and FR-342/FR-104 operation-anchor joins.
-For a closed-shape or primitive-type defect it refuses `malformed_wire` at
-the malformed object. A non-Boolean bound refuses
-`invalid_package`/`invalid-value` at `body/members/0`; an invariant marker
-that disagrees with the state-clause kind refuses at `body/members/1`; an
-operation anchor mismatch refuses at `body/members/2`; a model-object
-reference mismatch refuses at `body/members/3`; and a population identity,
-order or maximum mismatch refuses at `body/members/4`, each with
-`invalid_package`/`invalid-value`. A node-id path mismatch refuses
-`invalid_package`/`invalid-semantic-graph` at the node's `node_id`.
+Before semantic requirement-row joins, the reader SHALL validate each
+`claim`/`operation_contract` node in ascending structural node-id order. The
+global strict-wire phase has already checked the rows' closed shapes and
+primitive JSON types. The node step SHALL validate its seven-binding body,
+references, source claim and occurrence, invariant marker, operation/form
+joins, population groups, dependencies and identity path, without consulting
+the row's `kind` or `extent`. A shape or primitive term defect is
+`malformed_wire` at that malformed node member. A missing or invalid claim
+reference, occurrence, Boolean bound, invariant marker, operation anchor,
+model-object reference, or population identity respectively refuses
+`invalid_package`/`invalid-value` at `body/members/0` through `/6`; an
+identity mismatch is `invalid_package`/`invalid-semantic-graph` at the node's
+`node_id`.
+
+The reader then validates requirement rows in array order. For an
+operation-contract row, its `record` SHALL name the already admitted
+operation-contract node, the row's claim and occurrence SHALL equal that
+node's bindings, its kind SHALL be `operation-contract`, and its extent SHALL
+equal the node's identity-path extent. The reader compares the recorded
+extent to the row and identity path; it SHALL NOT recompute source extent.
+These joins are checked at `/requirement_items/{i}/record` and
+`/requirement_items/{i}/extent`, with `invalid_package`/`invalid-value`.
+Because strict-wire row shape checks precede all record-node checks, a
+malformed row shape wins over a record-node defect; otherwise record-node
+defects win over semantic row-join defects. Missing or multiply joined rows
+are reported during post-row record coverage checks.
 
 Then, for `requirement_items`:
 
