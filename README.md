@@ -50,7 +50,7 @@ filament-specification-qualification = { git = "https://github.com/agent-ix/fila
   <img alt="The spec/ tree holds 773 authored artifacts in 9 kinds: assurance 16, decisions 6, functional 212, integration 19, non-functional 17, objects 158, stakeholder 2, test-cases 332, usecase 11." src="docs/images/corpus-light.svg">
 </picture>
 
-Every chart number is counted from the tree by `docs/images/figures.py`.
+Every chart number is counted from the tree, by `docs/images/figures.json` for the hero figure and by `docs/images/figures.py` for the corpus chart.
 
 The proposals are:
 
@@ -141,8 +141,11 @@ quire validate --scope . 'spec/**/*.md' --summary
 The first Cargo run fetches the git dependencies; later runs can add
 `--offline`. `quire validate` is the [quire-cli](https://github.com/agent-ix/quire-cli) command.
 
-To regenerate the figures, run the docs-figures skill from
-[dev-tools](https://github.com/agent-ix/dev-tools) on `docs/images/figures.py`.
+`make figures` regenerates the figures defined in `docs/images/figures.json` and `make figures-check`
+reports stale or missing files without writing, both through `ixd-figures` from
+[ix-diagrams](https://github.com/agent-ix/ix-diagrams). The corpus chart is still drawn by the docs-figures
+skill from [dev-tools](https://github.com/agent-ix/dev-tools) on `docs/images/figures.py`, because its bars
+follow the number of kinds in the `spec/` tree.
 
 ## Contributing and license
 
