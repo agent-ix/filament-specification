@@ -47,7 +47,7 @@ filament-specification-qualification = { git = "https://github.com/agent-ix/fila
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/corpus-dark.svg">
-  <img alt="The spec/ tree holds 773 authored artifacts in 9 kinds: assurance 16, decisions 6, functional 212, integration 19, non-functional 17, objects 158, stakeholder 2, test-cases 332, usecase 11." src="docs/images/corpus-light.svg">
+  <img alt="The spec/ tree holds 1129 authored artifacts in 9 kinds: assurance 16, decisions 6, functional 290, integration 19, non-functional 17, objects 177, stakeholder 2, test-cases 591, usecase 11." src="docs/images/corpus-light.svg">
 </picture>
 
 Every chart number is counted from the tree, by `docs/images/figures.json` for the hero figure and the corpus chart.
@@ -142,7 +142,7 @@ The first Cargo run fetches the git dependencies; later runs can add
 `--offline`. `quire validate` is the [quire-cli](https://github.com/agent-ix/quire-cli) command.
 
 `make figures` regenerates the figures defined in `docs/images/figures.json` and `make figures-check`
-reports stale or missing files without writing, both through `ixd-figures` from
+reports stale or missing files without writing, both through `ixd build` from
 [ix-diagrams](https://github.com/agent-ix/ix-diagrams). The corpus chart draws one bar per kind
 in the `spec/` tree.
 

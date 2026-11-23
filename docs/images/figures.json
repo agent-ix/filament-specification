@@ -1,5 +1,6 @@
 {
   "data": {
+    "definition_docs": {"from":"matches","glob":"src/lib.rs","pattern":"include_str!"},
     "spec_dirs": {"from":"dirs","path":"spec"},
     "spec_kinds": {"from":"expr","value":"drop(spec_dirs, '^(reviews|subsystems)$')"},
     "spec_files": {"from":"files","glob":"spec/**/*.md"},
@@ -23,7 +24,7 @@
         {"k":"text","at":[640,12],"text":"OUTCOME","role":"muted","size":12},
         {"k":"box","at":[0,24,220,56],"role":"code","title":"requirements","subs":["{requirements} functional and quality"]},
         {"k":"box","at":[0,100,220,56],"role":"code","title":"test cases","subs":["{cases} written procedures"]},
-        {"k":"box","at":[0,176,220,56],"role":"model","title":"definition bytes","subs":["3 documents in src/lib.rs"]},
+        {"k":"box","at":[0,176,220,56],"role":"model","title":"definition bytes","subs":["{definition_docs} documents in src/lib.rs"]},
         {"k":"box","at":[0,252,220,56],"role":"model","title":"schemas + vectors","subs":["{vectors} JSON files in proposals/"]},
         {"k":"line","points":[[110,80],[110,97]],"role":"code"},
         {"k":"text","at":[310,94],"text":"PLANNED","role":"muted","size":12},
