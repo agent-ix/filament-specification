@@ -42,3 +42,24 @@ Clean: TCB-17 (missing member) and TCB-18 (two matching selections) give `operat
 - temporal-clock-binding-vectors.json note, `finite_hyper_profile_fixture`, `mutation_protocol` and TCB-14..TCB-24 (examined; FND-003..FND-006)
 - FR-322-AC-461, FR-322-AC-462 (context_only; closed-schema and misplaced-member precedent)
 - filament-contract-ir PR 1136 at e7b81bbb, its src and tests (context_only)
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-008 | medium | The vectors file's top-level `note` was not updated. It still says TCB-20 and TCB-21..24 "refuse `invalid-value` at the member", that `behaviours_hyper_profile_fixture` "is any checked-package positive whose hyperproperty carries a `behaviours` domain", and that "the malformed-member cases are reader-level refusals ... not by the schema-validation test". The case rows, the new fixture objects, FR-322, AC-464, TC-2028, schema.json and the README now say `malformed_wire` and give the fixture an exact construction. The note contradicts the cases in the same file. | temporal-clock-binding-vectors.json:2 |
+| FND-009 | high | `behaviours_hyper_profile_fixture` (TCB-19) is the finite fixture with only `domain` replaced by the text literal `behaviours`. By FR-402 that is not a well-formed `behaviours`-domain hyperproperty. Its quantifier Groups have no `alias` binding, which FR-402 hyperproperty-step check 1 (Shape) refuses as `invalid_semantic_graph` at the Group. `subjects` is empty, so no Group alias resolves. `body` references a Boolean `expression`, not a body wrapper, which check 3.1 refuses as `ill_typed`/`operator-ineligible`. `dependencies` still holds the finite-domain node, which the body no longer references. The body steps run before the temporal-bindings joins, so a conforming reader refuses with one of those codes, not `invalid_package`/`invalid-value` at the member. The fixture note "its reader refusal is raised at the member before any row join" orders the check only against row joins, not against the FR-402 body step. Derive TCB-19 from a real behaviours-domain positive (for example FR-402-AC-11's `Whole` or the HB-01 package), or state in FR-322 that the member check runs before the hyperproperty body step. | temporal-clock-binding-vectors.json:166-169 (fixture object),298-322 (TCB-19); FR-402-hyperproperty-obligation-identity.md:33-74,286-322 |
+
+## Dispositions
+
+Round 1, against 848d0209 (fix delta 746855ab..848d0209). I schema-validated with Python `jsonschema` against `proposals/checked-package-v2/schema.json`. TCB-20 on `fixtures/positive-timed-clause-nodes.json` node 8 fails with `additionalProperties` (`temporal_profile`) at `/semantic_graph/nodes/8/body`. HyperpropertyBody with TCB-21..24's members fails at `/temporal_profile` (type), `/temporal_profile` (additionalProperties), `/temporal_profile/authority` (minLength) and `/temporal_profile/identity` (minLength). The lock's `profile_selections` has no `uniqueItems`, so TCB-18 is schema-valid. `quire validate` passes on FR-322 and TC-2028, with only the pre-existing EARS warnings at FR-322 line 116.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | FR-322:4928-4933, AC-464, TC-2028 step 4, the schema description and TCB-21..24 now say `malformed_wire` at the failing schema pointer. Measured schema pointers match. This is consistent with AC-461's closed-schema rule. |
+| FND-002 | fixed | TCB-20, FR-322:4925-4928, AC-464 and TC-2028 now say `malformed_wire` at `/semantic_graph/nodes/{N}/body`, citing AC-462. The measured schema error is at `/semantic_graph/nodes/8/body`. |
+| FND-003 | fixed | `mutation_protocol` now applies "exactly the case's mutations in the order listed". The new `remove-body-temporal-profile` op is a no-op when the member is absent, and TCB-17 uses it. |
+| FND-004 | fixed | `positive_temporal_clause_fixture` and `behaviours_hyper_profile_fixture` are now objects. `set-body-member`, `unique-temporal-clause-node`, `set-hyperproperty-domain-behaviours` and the `{temporal-clause-index}` placeholder are defined. TCB-20 no longer replaces the lock. Whether the behaviours construction is correct is a separate question, raised as FND-009. |
+| FND-005 | fixed | The protocol now separates `value` (a profile_definitions key) from `literal` (verbatim JSON). TCB-21..24 use `literal` with concrete strings. |
+| FND-006 | deferred | Cross-repo landing order. filament-contract-ir #1136 is being updated to these codes, per the coordinator. #815 must not merge before #1136's conformance test expects TCB-14..24. |
+| FND-007 | fixed | README:617 now lists TCB-14 to TCB-24 with the settled codes. |
