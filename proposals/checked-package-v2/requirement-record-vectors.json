@@ -2,7 +2,7 @@
   "version": "filament.checked-package-v2-requirement-record-vectors/v1",
   "test_case": "TC-2053",
   "requirement": "FR-825",
-  "note": "Each case is a reader-input recipe. Resolve source names, node roles and source occurrences against the checked graph, then construct a complete package as FR-825 specifies. Node IDs are not fixed across packages.",
+  "note": "Each case is a reader-input recipe. Resolve source names, node roles and source occurrences against the checked graph, then construct a complete package as FR-825 specifies. Node IDs and frame IDs are package-local and are not fixed across packages.",
   "positive": [
     {
       "id": "RRV-01-bare-boolean-parameter-guard",
@@ -12,12 +12,16 @@
       "guard": {"name": "p", "role": "value/parameter", "semantic_type": "scalar_type/boolean", "reachability": "owner body root"},
       "guard_read": {"role": "expression", "read_as": "if condition"},
       "application": {"source": "x + 1", "role": "expression", "occurrences": [0, 1]},
-      "path_condition": [
-        {"application_occurrence": 0, "guard": "p", "guard_read_occurrence": 0, "holds": true},
-        {"application_occurrence": 1, "guard": "p", "guard_read_occurrence": 0, "holds": false}
+      "path_condition_frames": [
+        {"frame_id": 0, "parent": null, "guard": {"name": "p", "node_role": "value/parameter", "occurrence": {"role": "expression", "ordinal": 0}}, "holds": true},
+        {"frame_id": 1, "parent": null, "guard": {"name": "p", "node_role": "value/parameter", "occurrence": {"role": "expression", "ordinal": 0}}, "holds": false}
+      ],
+      "record_path_condition": [
+        {"application_occurrence": 0, "terminal_frame_id": 0},
+        {"application_occurrence": 1, "terminal_frame_id": 1}
       ],
       "extent_roots": ["p", "x"],
-      "expected": {"admitted": true, "record_count": 2, "identity_includes": ["guard node", "guard read occurrence", "holds"]}
+      "expected": {"admitted": true, "record_count": 2, "identity_includes": ["terminal frame id only"], "reader_derives_each_chain_from_owner_body": true}
     }
   ],
   "reader_refusals": [
@@ -26,13 +30,40 @@
       "ac": ["FR-825-AC-7"],
       "base": "RRV-01-bare-boolean-parameter-guard",
       "mutation": {
-        "application_occurrence": 0,
+        "frame_id": 0,
         "replace_guard": "p",
         "with": {"name": "x", "role": "value/parameter", "semantic_type": "scalar_type/integer", "reachability": "owner body root"},
-        "guard_read_occurrence": {"node": "x", "source_occurrence": "its read in x + 1"},
-        "rebuild": ["record node identity", "requirement_items references", "all references to the changed record"]
+        "guard_read_occurrence": {"node": "x", "source_occurrence": "its read in x + 1"}
       },
-      "expected": {"code": "invalid_package", "cause": "invalid-value", "pointer": "body/members/5/value/members/0"}
+      "expected": {"code": "invalid_package", "cause": "invalid-value", "pointer": "/path_condition_frames/0/guard"}
+    },
+    {
+      "id": "RRV-03-parent-cycle-or-forward-reference",
+      "ac": ["FR-825-AC-8"],
+      "base": "RRV-01-bare-boolean-parameter-guard",
+      "mutation": {"frame_id": 0, "parent": 0},
+      "expected": {"code": "invalid_package", "cause": "invalid-value", "pointer": "/path_condition_frames/0/parent"}
+    },
+    {
+      "id": "RRV-04-duplicate-frame-tuple",
+      "ac": ["FR-825-AC-8"],
+      "base": "RRV-01-bare-boolean-parameter-guard",
+      "mutation": {"duplicate_frame_id": 0, "same_parent_guard_occurrence_and_holds": true},
+      "expected": {"code": "invalid_package", "cause": "conflicting-definition", "pointer": "/path_condition_frames/1"}
+    },
+    {
+      "id": "RRV-05-guard-chain-disagrees-with-owner-body",
+      "ac": ["FR-825-AC-9"],
+      "base": "RRV-01-bare-boolean-parameter-guard",
+      "mutation": {"record_occurrence": 0, "cite_frame_id": 1},
+      "expected": {"code": "invalid_package", "cause": "invalid-value", "pointer": "body/members/5"}
+    },
+    {
+      "id": "RRV-06-node-identity-terminal-frame-mismatch",
+      "ac": ["FR-825-AC-9"],
+      "base": "RRV-01-bare-boolean-parameter-guard",
+      "mutation": {"record_occurrence": 0, "change_identity_path_frame_id_only": true},
+      "expected": {"code": "invalid_package", "cause": "invalid-semantic-graph", "pointer": "/semantic_graph/nodes/{n}/node_id"}
     }
   ]
 }

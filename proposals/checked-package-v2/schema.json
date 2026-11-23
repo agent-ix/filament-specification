@@ -97,6 +97,14 @@
         "$ref": "#/$defs/RequirementItemRow"
       }
     },
+    "path_condition_frames": {
+      "description": "FR-825: optional shared parent-linked value-validity guard frames; absent exactly when every record has an empty path condition.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/PathConditionFrame"
+      }
+    },
     "capability_report": {
       "type": "array",
       "items": {
@@ -335,6 +343,31 @@
         "trace": {
           "$ref": "#/$defs/Nonempty"
         }
+      },
+      "additionalProperties": false
+    },
+    "PathConditionFrame": {
+      "description": "FR-825: one shared guard edge; array index is the frame id.",
+      "type": "object",
+      "required": ["parent", "guard", "holds"],
+      "properties": {
+        "parent": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "integer", "minimum": 0}
+          ]
+        },
+        "guard": {"$ref": "#/$defs/PathConditionGuardOccurrence"},
+        "holds": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "PathConditionGuardOccurrence": {
+      "type": "object",
+      "required": ["node", "occurrence"],
+      "properties": {
+        "node": {"$ref": "#/$defs/NodeRef"},
+        "occurrence": {"$ref": "#/$defs/Occurrence"}
       },
       "additionalProperties": false
     },
