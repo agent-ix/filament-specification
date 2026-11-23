@@ -4752,8 +4752,9 @@ A compensation node and an await have no `temporal_profile` law of their own
 (FR-464 "An `await` or a `compensate` reads a clock role"): the profile of each
 is the lock's `temporal_profile` selection, and no per-node law is read or
 required. A `hyperproperty` node's profile is its body wrapper's law under a
-`behaviours` domain and the lock's `temporal_profile` selection under a
-finite domain ("Hyper clause rows" below). The
+`behaviours` domain and its `filament.op.claim.clause` application law under a
+finite domain ("Hyper clause rows" below); each law must equal a matching lock
+selection. The
 selected definition determines exactly the `clock.kind` above. The profile's
 trust and identity are provided by that existing lock selection and the
 referenced law; `temporal_bindings` adds no revision, history, artifact
@@ -4905,8 +4906,8 @@ above, whether or not the clause has an object parameter.
   declaration identity text).
 - **Finite domain.** A finite-domain clause selects a finite-trace profile
   (FR-191), each of which is clock-configured, so the node always has rows.
-  Its body is a Boolean expression and it has no wrapper, profile law or clock
-  argument (FR-402). Its traces are trace subjects, so its clock name is a clock role
+  Its body is a Boolean expression and it has no wrapper or clock argument
+  (FR-402). Its traces are trace subjects, so its clock name is a clock role
   (FR-090 "Clock names"): the domain binder `t` of `t in Q bounded N`, the one
   role every trace of the clause reads. Every row of one occurrence carries
   that role as its `clock_name` and the one configuration the caller binds
