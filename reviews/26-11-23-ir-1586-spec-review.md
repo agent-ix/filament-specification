@@ -63,3 +63,19 @@ Round 1, against 848d0209 (fix delta 746855ab..848d0209). I schema-validated wit
 | FND-005 | fixed | The protocol now separates `value` (a profile_definitions key) from `literal` (verbatim JSON). TCB-21..24 use `literal` with concrete strings. |
 | FND-006 | deferred | Cross-repo landing order. filament-contract-ir #1136 is being updated to these codes, per the coordinator. #815 must not merge before #1136's conformance test expects TCB-14..24. |
 | FND-007 | fixed | README:617 now lists TCB-14 to TCB-24 with the settled codes. |
+
+## New findings (disposition pass 2)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-010 | low | FR-322 states the behaviours-domain member refusal (`invalid_package`/`invalid-value` at the member) but not where it runs. It does not say whether it comes before or after FR-402's hyperproperty body step, the temporal step, or the row-coverage and row checks, and it does not say that it applies when `temporal_bindings` is absent. TCB-19's base is otherwise admitted (FR-402-AC-11), and `Whole` under `inf` has no rows, so TCB-19's result does not depend on the order. A package that also has an FR-402 defect, or a row defect, has no specified first defect. State the step, for example "in the hyperproperty step, before check 1" or "with the temporal-bindings joins, whether or not rows exist". | FR-322-checked-package-artifact.md:4924-4926; FR-402-hyperproperty-obligation-identity.md:276-290 |
+| FND-011 | low | `behaviours_hyper_profile_fixture.generation` says "the FR-402-AC-11 emitter test" but gives no repository, source file, test name, command or capture step. `finite_hyper_profile_fixture` gives all of these. The test exists as agent-ix/filament-spec-language `fsl-analyze/tests/it/hyper_object_free.rs`, traced `FSpec-TC-2034`/`FSpec-FR-402-AC-11`, so the base can be found and the case can run, but only after that search. | temporal-clock-binding-vectors.json:166-170 |
+
+## Dispositions (round 2)
+
+Round 2, against 9f2b4530 (fix delta 848d0209..9f2b4530). FND-006 keeps its round-1 `deferred` row as its latest outcome. Reachability of TCB-19: `Whole` is a declared node, so its `node_id` is its declaration path and does not change when the body gains a member (FR-322 "structural key"). schema.json's HyperpropertyBody admits `temporal_profile` on any hyperproperty, so the case is schema-valid. FR-402-AC-11 admits the unmodified `Whole` at the temporal and hyperproperty steps. FR-402's Shape check constrains `members` only. The added member is therefore the package's only defect, and the stated `invalid-value` is its first defect whatever the order of the steps.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-008 | fixed | The top-level note now gives TCB-15/17/18 as `operation-law-unselected`, TCB-19 as `invalid-value` on the FR-402-AC-11 fixture, and TCB-20..24 as `malformed_wire` with the stated loci. It agrees with the cases, FR-322, AC-464 and TC-2028. |
+| FND-009 | fixed | `behaviours_hyper_profile_fixture` is now the unmodified emitted FR-402-AC-11 `Whole` package (wrapper `over` the model root, Groups with `alias`, `subjects` naming V). TCB-19's only mutation is `set-body-temporal-profile` D, with the lock as emitted. `set-hyperproperty-domain-behaviours` was removed. The base is well-formed, so the member check is reachable (see above). The ordering and fixture-locator gaps are new low findings FND-010 and FND-011. |
