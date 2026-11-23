@@ -164,14 +164,14 @@
     "note": "The package named by this file's top-level `fixture`, used unmodified as the base; its unique semantic_form temporal_clause node (graph index 8) is the `unique-temporal-clause-node`, and its lock already selects the event-position temporal_profile and the protocol_profile."
   },
   "behaviours_hyper_profile_fixture": {
-    "source": "FR-402-AC-11 (TC-2034): `hyper Whole using inf over behaviours () forall trace a of V forall trace b of V { always holds(true) }` with its subject package `V`, exactly as that criterion emits it",
+    "source": "FR-402-AC-11 (TC-2034): `hyper Whole using inf over behaviours () forall trace a of V forall trace b of V { always holds(true) }` with its subject package `V`, as that criterion specifies its emission",
     "repository": "agent-ix/filament-spec-language",
     "source_file": "fsl-analyze/tests/it/hyper_object_free.rs",
     "test": "an_object_free_hyper_wrapper_ranges_over_the_model_root",
     "test_command": "cargo test --locked -p fsl-analyze --test it -- hyper_object_free::an_object_free_hyper_wrapper_ranges_over_the_model_root --exact --include-ignored",
-    "package_capture": "The test builds World::new(Vault::Secure, false, &STARTS, <the Whole source>) and calls emitted(&world), which returns the complete checked-package bytes from fsl_package::emit_checked. Capture those bytes (the `bytes` value, before the test parses them into `wire`) as the complete base checked-package JSON value, writing them to a file from inside the test.",
+    "package_capture": "The test builds World::new(Vault::Secure, false, &STARTS, <the Whole source>) and calls emitted(&world), which is meant to return the complete checked-package bytes from fsl_package::emit_checked. Capture those bytes (the `bytes` value, before the test parses them into `wire`) as the complete base checked-package JSON value, writing them to a file from inside the test.",
     "generation": "Take that captured package, unmodified (body wrapper whose `over` references V's `model`/`model_root` node, quantifier Groups with their `alias` bindings, `subjects` naming V), as the base. No JSON copy is checked in. The unique node with node_tag claim and semantic_form hyperproperty is the `unique-claim-hyperproperty-node`.",
-    "note": "The base is a well-formed behaviours-domain hyperproperty that the reader admits at the temporal and hyperproperty steps (FR-402-AC-11), so the only change a TCB-19 case makes is adding body.temporal_profile. The member-placement check reads the node's domain and does not depend on the lock, so the lock is left as emitted."
+    "note": "TCB-19's base package depends on QSL-2887: the producing test is ignored until the object-free hyper source parses, so the base cannot be generated until then. The base is a well-formed behaviours-domain hyperproperty that the reader admits at the temporal and hyperproperty steps (FR-402-AC-11), so the only change a TCB-19 case makes is adding body.temporal_profile. The member-placement check reads the node's domain and does not depend on the lock, so the lock is left as emitted."
   },
   "finite_hyper_profile_cases": [
     {

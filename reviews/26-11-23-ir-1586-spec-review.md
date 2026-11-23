@@ -79,3 +79,18 @@ Round 2, against 9f2b4530 (fix delta 848d0209..9f2b4530). FND-006 keeps its roun
 | --- | --- | --- |
 | FND-008 | fixed | The top-level note now gives TCB-15/17/18 as `operation-law-unselected`, TCB-19 as `invalid-value` on the FR-402-AC-11 fixture, and TCB-20..24 as `malformed_wire` with the stated loci. It agrees with the cases, FR-322, AC-464 and TC-2028. |
 | FND-009 | fixed | `behaviours_hyper_profile_fixture` is now the unmodified emitted FR-402-AC-11 `Whole` package (wrapper `over` the model root, Groups with `alias`, `subjects` naming V). TCB-19's only mutation is `set-body-temporal-profile` D, with the lock as emitted. `set-hyperproperty-domain-behaviours` was removed. The base is well-formed, so the member check is reachable (see above). The ordering and fixture-locator gaps are new low findings FND-010 and FND-011. |
+
+## New findings (disposition pass 3)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-012 | medium | The `behaviours_hyper_profile_fixture` text describes a package that cannot be produced today. On filament-spec-language main, `an_object_free_hyper_wrapper_ranges_over_the_model_root` is `#[ignore = "QSL-2887: the test's hyper source does not parse at S1 (invalid_syntax: expected identifier)"]`. With the published `--include-ignored` command, `World::new`/`emitted` panics before any package exists. The fixture still says "exactly as that criterion emits it", that `emitted(&world)` "returns the complete checked-package bytes", and that "the base is a well-formed behaviours-domain hyperproperty that the reader admits". None of that holds until QSL-2887 is fixed. The vector should say that TCB-19's base depends on QSL-2887 and cannot be produced until then, which also matches the reader's named TCB-19 exception. | temporal-clock-binding-vectors.json:166-175 |
+
+## Dispositions (round 3)
+
+Round 3, against b87c2a87 (fix delta 9f2b4530..b87c2a87). I read the reader's check order at filament-contract-ir#1136 8fc3d38b. Its member shape is a term-stage `malformed_wire`. In `temporal_binding::validate`, the behaviours `invalid-value` comes before the finite lock join `operation-law-unselected` (`finite_profile`, called before any row is read), which comes before the row-coverage and row `clock.kind` checks. Rows may be absent. This matches FR-322:4935-4944, AC-464 and TC-2028 step 4. The reader runs `temporal_binding::validate` (mod.rs:4207) before `validate_hyperproperties`, the FR-402 step (mod.rs:4479). `quire validate` passes on FR-322 and TC-2028, with only the pre-existing EARS warnings at line 116.
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-010 | still-open | Partly fixed. FR-322 now states the order (1) shape, (2) behaviours, (3) lock join, (4) rows, and that it applies with or without `temporal_bindings`. That matches the reader. It places only (1) before the FR-402 hyperproperty step. For (2) and (3) it says only "before any later check of the same node", which does not say whether the FR-402 step is later. A behaviours hyperproperty with both an FR-402 defect and the member therefore still has no specified first defect. The reader reports `invalid-value`, because it runs the bindings check before `validate_hyperproperties`. Fix: state that (2) and (3) also run before the FR-402 hyperproperty step. |
+| FND-011 | fixed | The fixture now names the repository `agent-ix/filament-spec-language`, the source file `fsl-analyze/tests/it/hyper_object_free.rs`, the test `an_object_free_hyper_wrapper_ranges_over_the_model_root`, the command, and the capture step (the `bytes` from `emitted(&world)`). All of these exist on main. That the test is currently ignored is FND-012. |
