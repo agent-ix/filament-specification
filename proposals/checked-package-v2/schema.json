@@ -6648,6 +6648,29 @@
         }
       ]
     },
+    "HyperpropertyBody": {
+      "description": "FR-322 hyperproperty body aggregate. `temporal_profile`, when present, is an exact DefinitionRef; the reader requires it for a finite-trace-population hyperproperty and forbids it for a behaviours-domain hyperproperty.",
+      "type": "object",
+      "required": [
+        "term",
+        "members"
+      ],
+      "properties": {
+        "term": {
+          "const": "aggregate"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MemberTerm"
+          }
+        },
+        "temporal_profile": {
+          "$ref": "#/$defs/DefinitionRef"
+        }
+      },
+      "additionalProperties": false
+    },
     "ClaimNode": {
       "allOf": [
         {
@@ -6670,6 +6693,25 @@
                 "probabilistic_claim",
                 "value_validity"
               ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "semantic_form": {
+                "const": "hyperproperty"
+              }
+            },
+            "required": [
+              "semantic_form"
+            ]
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "$ref": "#/$defs/HyperpropertyBody"
+              }
             }
           }
         }
