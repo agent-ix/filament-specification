@@ -29,7 +29,8 @@ result bound, its direct conversion, its path condition, its extent roots
 and the object types it reads). The producer SHALL write these records into
 the `filament.checked-package/v2` package: one `requirement_items` row per
 record, in package order, and one `claim`/`value_validity` node per
-`value-validity` record. The reader SHALL admit them and expose them as a
+`value-validity` record and one `claim`/`operation_contract` node per
+`operation-contract` record. The reader SHALL admit them and expose them as a
 typed read.
 
 A consumer that holds only the package bytes (a run of a selected package,
@@ -85,9 +86,10 @@ non-empty array with one row per requirement record. Each row is exactly:
   `population` keys by `member_type` structural key, then `ordinal`. No key
   repeats. `finite_bound_available` is not written: it is a function of the
   domain kinds (FR-331), so the request writer computes it.
-- `record` is present exactly on a `value-validity` row and names that
-  record's `claim`/`value_validity` node ("Value-validity record node").
-  Every other row has no `record`.
+- `record` is present exactly on `value-validity` and `operation-contract`
+  rows. It names that record's `claim`/`value_validity` or
+  `claim`/`operation_contract` node respectively. Every other row has no
+  `record`.
 
 **Package order.** Rows are in package order: ascending `claim.node`
 structural key (FR-322 "Structural node identity", the order of structural
@@ -254,6 +256,70 @@ introduces it, it has no `declaration` or `claim` occurrence and no name, and
 a request never names it. It is reached only through its `requirement_items`
 row.
 
+### Operation-contract record node
+
+An `operation-contract` row's `record` names one `claim` node with
+`semantic_form: "operation_contract"`. The node is compiler-derived, has no
+`declaration` member, one `generated` occurrence with the same source region
+as the row's claim occurrence; its generated ordinal is its position among
+operation-contract record nodes in package order. It has Boolean
+`semantic_type` and exactly these
+bindings in this order:
+
+1. `claim`: a `reference` to the state-clause claim node or operation-frame
+   node named by the row's `claim.node`.
+2. `occurrence`: a `Group` aggregate of exactly two bindings, `role` (a
+   `literal` string equal to the row occurrence role) then `ordinal` (a
+   non-negative integer `literal` equal to its ordinal).
+3. `result_bound`: a reference to the Boolean type node used by the source
+   record.
+4. `invariant`: a Boolean literal; true exactly when the source record is
+   marked as an invariant-clause requirement (FR-962), false otherwise.
+5. `operation`: an empty aggregate when the source record has no associated
+   operation, or a reference to the package's `operation_anchor` node naming
+   the operation otherwise.
+6. `model_objects`: an aggregate of references to exactly the model/object
+   type nodes in the source record's `ModelReferences` object set, ordered by
+   structural key.
+7. `populations`: an aggregate whose members are `Group` aggregates, one per
+   source population in canonical domain-key order. Each `Group` has exactly
+   three bindings in this order: `member_type` (a `reference` to its
+   population's model/object type node), `ordinal` (a non-negative integer
+   `literal`), and `maximum` (an empty aggregate for no authored bound, or a
+   non-negative integer `literal` for the authored maximum). This is the
+   complete population identity and bound; no JSON object is embedded in a
+   graph term.
+
+The operation binding and every object reference SHALL resolve within the
+selected package or its admitted dependencies. The node's `dependencies` and
+operand row are the unique target nodes of its references (including `claim`),
+ordered by structural key. Its `node_id.path` has the following ordered
+segments; each node operand is encoded as the `{"operand": k}` slot in that
+node's operand row, integer fields are canonical non-negative decimal text,
+and every variable-length group begins with its binding-name text:
+
+`["claim", "operation_contract", claim-operand, role, occurrence,
+"bound", Boolean-operand, "invariant", ("true"|"false"), "operation",
+(operation-operand|"none"), "objects", object-count, object-operands…,
+"populations", population-count,
+("population", member-type-operand, ordinal, ("none"|maximum))…,
+"extent", "bounded" | ("unbounded", domain-count,
+domain-key-and-kind-segments…)]`.
+
+For an unbounded node domain, `domain-key-and-kind-segments` are `"node"`,
+its node operand, the path length in decimal text, each numeric path index in
+decimal text, and the domain-kind label; for a population domain they are
+`"population"`, its member-type operand, its ordinal in decimal text and the
+domain-kind label. Each count is followed by exactly that many entries.
+Domains use the FR-331 canonical domain-key order. The row's `extent` SHALL equal the
+identity-path extent. The producer SHALL preserve the source record's facts;
+it SHALL NOT infer an operation, object read, or population from source text
+or from a backend's candidate. The record has no owner, conversion, path
+condition, or extent roots; its frame table is not used.
+The row's `record` is the only join to this node and does not alter the
+claim's identity. An operation-contract node is not itself claim-bearing for
+`claim_names`; it is reached only through its row.
+
 ## Behavior
 
 ### Emission
@@ -267,6 +333,10 @@ row.
   bound's type node, the narrow, every frame guard, every root and every object
   type node it references, with the body and identity path above, and SHALL name it
   from the record's row.
+- The producer SHALL write one `claim`/`operation_contract` node for every
+  `operation-contract` record, after its claim, Boolean bound, operation
+  anchor, model/object nodes and population-domain nodes, and SHALL name it
+  from its row.
 - The producer SHALL write `path_condition_frames` exactly when at least one
   value-validity record has a non-empty path condition. It SHALL intern each
   distinct `(parent, guard occurrence, holds)` tuple once, assign frame ids by
@@ -359,9 +429,37 @@ Next, for each `claim`/`value_validity` node in ascending node-id order, at
     node, or that is repeated or out of order: `invalid_package`/`invalid-value`
     at `body/members/7/value/members/{o}`.
 
+Before semantic requirement-row joins, the reader SHALL validate each
+`claim`/`operation_contract` node in ascending structural node-id order. The
+global strict-wire phase has already checked the rows' closed shapes and
+primitive JSON types. The node step SHALL validate its seven-binding body,
+references, source claim and occurrence, invariant marker, operation/form
+joins, population groups, dependencies and identity path, without consulting
+the row's `kind` or `extent`. A shape or primitive term defect is
+`malformed_wire` at that malformed node member. A missing or invalid claim
+reference, occurrence, Boolean bound, invariant marker, operation anchor,
+model-object reference, or population identity respectively refuses
+`invalid_package`/`invalid-value` at `body/members/0` through `/6`; an
+identity mismatch is `invalid_package`/`invalid-semantic-graph` at the node's
+`node_id`.
+
+The reader then validates requirement rows in array order. For an
+operation-contract row, its `record` SHALL name the already admitted
+operation-contract node, the row's claim and occurrence SHALL equal that
+node's bindings, its kind SHALL be `operation-contract`, and its extent SHALL
+equal the node's identity-path extent. The reader compares the recorded
+extent to the row and identity path; it SHALL NOT recompute source extent.
+These joins are checked at `/requirement_items/{i}/record` and
+`/requirement_items/{i}/extent`, with `invalid_package`/`invalid-value`.
+Because strict-wire row shape checks precede all record-node checks, a
+malformed row shape wins over a record-node defect; otherwise record-node
+defects win over semantic row-join defects. Missing or multiply joined rows
+are reported during post-row record coverage checks.
+
 Then, for `requirement_items`:
 
-11. the member absent while the graph holds a `claim`/`value_validity` node:
+11. the member absent while the graph holds a `claim`/`value_validity` or
+    `claim`/`operation_contract` node:
     `invalid_package`/`invalid-value` at `/requirement_items`. A present
     empty array, a row with a missing or extra member, a `kind` or domain
     kind outside its vocabulary, an `unbounded` extent without `domains` or
@@ -373,13 +471,17 @@ Then, for `requirement_items`:
     `/requirement_items/{i}/claim`; a `node` domain key whose `node`, or a
     `population` key whose `member_type`, names no node of the graph, or a
     domain repeated or out of domain-key order: `invalid-value` at
-    `/requirement_items/{i}/extent/domains/{d}`; a `value-validity` row with
-    no `record`: `invalid-value` at `/requirement_items/{i}`; a row of any
-    other kind with a `record`: `invalid-value` at
-    `/requirement_items/{i}/record`; a `record` that names no local
-    `claim`/`value_validity` node, or one whose `application` is not
+    `/requirement_items/{i}/extent/domains/{d}`; a `value-validity` or
+    `operation-contract` row with no `record`: `invalid-value` at
+    `/requirement_items/{i}`; a row of any other kind with a `record`:
+    `invalid-value` at
+    `/requirement_items/{i}/record`; a `value-validity` record that names no
+    local `claim`/`value_validity` node, or one whose `application` is not
     `claim.node` or whose `occurrence` is not the ordinal of a `claim.occurrence`
-    of role `expression`: `invalid-value` at `/requirement_items/{i}/record`;
+    of role `expression`, or an `operation-contract` record that names no local
+    `claim`/`operation_contract` node or whose record's row claim, occurrence,
+    kind or extent differs from that node's joins and identity path:
+    `invalid-value` at `/requirement_items/{i}/record`;
     a `value-validity` row with a `population` domain key, or a `node` key
     whose `node` is not one of its record's `extent_roots`: `invalid-value` at
     `/requirement_items/{i}/extent/domains/{d}`; all `invalid_package`;
@@ -387,11 +489,14 @@ Then, for `requirement_items`:
     `invalid_package`/`conflicting-definition` at the later row; otherwise a
     row that is not after its predecessor in package order:
     `invalid_package`/`invalid-semantic-graph` at the later row;
-14. after every row, a `claim`/`value_validity` node that no row's `record`
-    names: `invalid_package`/`invalid-value` at that node's
-    `/semantic_graph/nodes/{n}/body`; and, for each owner in ascending
-    node-id order, a record node whose `generated` ordinal is not its
-    position among that owner's rows: `invalid_package`/`invalid-value` at
+14. after every row, a `claim`/`value_validity` or
+    `claim`/`operation_contract` node that no row's `record` names:
+    `invalid_package`/`invalid-value` at that node's
+    `/semantic_graph/nodes/{n}/body`; for each owner in ascending node-id
+    order, a value-validity node whose `generated` ordinal is not its position
+    among that owner's rows; and an operation-contract node whose `generated`
+    ordinal is not its position among operation-contract rows in package
+    order: `invalid_package`/`invalid-value` at
     `/semantic_graph/nodes/{n}/occurrences`.
 
 The reader SHALL verify that a record node's structural identity path contains
@@ -402,7 +507,8 @@ producer's checker should have produced a record it did not write; those
 remain the producer's duty.
 
 The reader SHALL charge one validation visit of the caller's reader budget per
-`path_condition_frames` row, `claim`/`value_validity` node,
+`path_condition_frames` row, `claim`/`value_validity` or
+`claim`/`operation_contract` node,
 `extent_roots` and `objects` member, `requirement_items` row, and extent
 domain, before inspecting it, and one visit per node it reaches while walking
 an owner's body. Each owner body SHALL be walked once for all of its records.
@@ -448,13 +554,14 @@ scan of the graph, and returns no record for a function that owns none.
 | --- | --- | --- |
 | FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` emits two ordered value-validity rows and two records for the shared `+` node's expression occurrences 0 and 1. The first record has the empty path-condition aggregate; the second cites the frame for the `g(x + 1)` call occurrence with holds true. The frame row has parent null, the exact guard occurrence and holds true. The second record's body and node_id path both contain only that terminal frame_id, not the expanded guard data. Both records retain their own result bounds, conversions, roots and generated ordinals, and the reader admits the package. | Test |
 | FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` emits three value-validity rows (the `>=`, `<` and `+`), with `>=` unguarded and the other two citing the terminal ids of their exact chains. The `<` chain contains `n >= 0`; the `+` chain contains the whole `if` condition. Every shared prefix appears once in the frame table; each `+` and `<` record body and identity path cite only their terminal frame id. Rewriting `n < 10` as `n < 11` changes the `<` frame and record identity and the `+` frame chain, but not the `>=` record. | Test |
-| FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced, including `Bounded`'s `operation-contract` row at its `state_clause` node's `claim` occurrence and `BelowThree`'s `temporal-satisfaction` row at its clause node's `claim` occurrence, each without `record`, and `inc`'s one `value-validity` row with `record`; the rows are in package order, which the test establishes from the rows' structural keys, occurrences and kinds; the reader admits the package; and the typed read returns, for `inc`'s node, exactly its one record at the request index of its row. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
+| FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced. `Bounded` has an `operation-contract` row at its `state_clause` node's `claim` occurrence with an `operation_contract` record node; `BelowThree` has a `temporal-satisfaction` row at its clause node's `claim` occurrence without `record`; `inc` has one `value-validity` row with its record node. The operation-contract node retains the Boolean result bound, invariant marker, operation anchor when present, body object references and populations of the source record. The rows are in package order; the reader admits the package and its typed read returns equal source records at each row's request index. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
 | FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer the reader rule gives: a record node with a `declaration` member, and with a second `generated` occurrence; `conversion` and `result_bound` swapped; invalid `owner`, `application`, `occurrence` or `result_bound`; the first record's `conversion` naming the other narrow; a frame row whose `holds` is the text `"true"` (`malformed_wire` at `/path_condition_frames/{f}`); `extent_roots` holding `x` twice; and `objects` referencing the Boolean type node. Record-shape/reference defects are `invalid_package`/`invalid-value` at the existing rule's record pointer; the malformed frame is `malformed_wire`. | Test (TC-2053) |
 | FR-825-AC-5 | Over AC-2 and AC-3 packages, malformed or reordered `requirement_items` rows refuse with the existing rule's exact codes and pointers; a reader budget one validation visit short returns `incomplete` at the first uncharged item and no partial view. The reader charges the frame rows, each owner's body walk once, each record node, roots, objects, rows and domains; it does not charge or retain a repeated guard vector per record. A package whose only `claim` nodes are `value_validity` nodes and which has no `claim_names` member is admitted. | Test (TC-2053) |
 | FR-825-AC-6 | A unit with `function f using v(p: Boolean, x: Int[0, 9]): Int[0, 10] pure { if p then x + 1 else x + 1 }` has two records for the shared `+` node's occurrences. One frame for `p` with parent null and holds true and one frame for the same occurrence with parent null and holds false are present. The records cite their respective frame ids; each record body and node_id path contains only its terminal id. The reader admits both and the roots include `p` and `x` once in node order. | Test (TC-2053) |
 | FR-825-AC-7 | Starting from AC-6, replace a frame's guard occurrence with the owner's integer parameter `x`, retaining a valid expression occurrence. The reader refuses `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard` because the guard is not Boolean. | Test (TC-2053) |
 | FR-825-AC-8 | For a package with nested guards and at least two scalar records sharing a prefix, each malformed frame mutation refuses at the stated first defect: a non-array, empty array, row with missing/extra/reordered members, or non-Boolean JSON `holds` is `malformed_wire` at the table/row; a `parent` that is forward, self, missing, or from another owner is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/parent`; an unknown guard node or occurrence is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard`; a duplicate `(parent, guard occurrence, holds)` row is `invalid_package`/`conflicting-definition` at the duplicate row. | Test (TC-2053) |
 | FR-825-AC-9 | For the valid nested-guard package of AC-8, a frame chain with the wrong parent, guard order or `holds`, a missing table, a terminal frame id outside the table, a record id whose chain differs from the owner-body-derived chain, or an unreferenced frame row refuses `invalid_package`/`invalid-value` at the corresponding parent, `/path_condition_frames`, record `body/members/5`, or table row; changing only a record node's identity path to cite a different terminal id refuses `invalid_package`/`invalid-semantic-graph` at its `node_id`. | Test (TC-2053) |
+| FR-825-AC-10 | For AC-3's operation-contract item, the typed read equals the source `RequirementRecord` in kind, extent, Boolean bound, invariant marker, operation, body object references and population domains. Removing its record, attaching a value-validity node, changing the operation anchor, omitting or adding a model object or population, changing the invariant marker, or altering its identity path refuses the whole package with the specified first code and pointer; no package-route item may be omitted because the form is unavailable. | Test (TC-2053) |
 
 ## Dependencies
 

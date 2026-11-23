@@ -13,9 +13,9 @@ relationships:
 
 ## Description
 
-Verify emission, reading, identity and reader refusals of the `requirement_items` rows and the `claim`/`value_validity` record nodes, and the place of the requirement-record step in the reader's check order.
+Verify emission, reading, identity and reader refusals of the `requirement_items` rows and their `claim`/`value_validity` and `claim`/`operation_contract` record nodes, and the place of the requirement-record step in the reader's check order.
 
-Scope: FR-825-AC-1 to FR-825-AC-9 and FR-322-AC-473. The published
+Scope: FR-825-AC-1 to FR-825-AC-10 and FR-322-AC-473. The published
 [requirement-record-vectors.json](../../proposals/checked-package-v2/requirement-record-vectors.json)
 cases RRV-01 through RRV-06 are the reader-input recipes for AC-6 through
 AC-9.
@@ -32,7 +32,8 @@ AC-9.
 8. Apply RRV-02's bad guard mutation to the frame row: replace the Boolean guard occurrence with the owner-reachable integer parameter `x`; confirm `invalid_package`/`invalid-value` at that row's `guard` (FR-825-AC-7).
 9. Starting from AC-8's nested package, apply RRV-03's parent self-reference and RRV-04's duplicate-frame mutation, then the remaining malformed-table mutations: wrong/empty table shape, missing/extra/reordered row members, wrong primitive type, forward/missing/cross-owner parent, and unknown guard node/occurrence. Confirm each first refusal's code and pointer (FR-825-AC-8).
 10. Starting from the same package, apply RRV-05's body-inconsistent terminal chain and RRV-06's identity-path-only terminal mismatch, then test wrong frame order or polarity, a missing table, an out-of-range terminal id and an orphan frame. Confirm every refusal code and pointer, including `invalid-semantic-graph` for the node-id mismatch (FR-825-AC-9).
+11. Emit FR-825-AC-3's `Bounded` operation-contract item. Inspect the `claim`/`operation_contract` node's seven graph bindings, population Group terms, dependencies and operand row; compare its occurrence, extent identity segments, operation anchor, invariant marker and model refs to the source `RequirementRecord`. Then independently mutate each binding and identity segment, remove its row, substitute a value-validity record, reverse population order, alter a population maximum, mismatch its row extent, and add an orphan record node. Verify the first strict-wire/record/row-join refusal and exact pointer, including precedence when the row shape and record body are both malformed (FR-825-AC-3, AC-10; FR-322-AC-473).
 
 ## Expected Results
 
-Each step gives the rows, frames, record paths, shared typed reads, identities and refusals (code, cause and JSON pointer) its AC states. The local qualification test checks all published RRV-01 through RRV-06 recipes and their trace links; it does not execute the strict reader.
+Each step gives the rows, frames, record paths, shared typed reads, identities and refusals (code, cause and JSON pointer) its AC states. The local qualification test checks all published RRV-01 through RRV-06 recipes and their trace links; the contract-record cases additionally exercise the strict reader and the new ordered Group encoding.
