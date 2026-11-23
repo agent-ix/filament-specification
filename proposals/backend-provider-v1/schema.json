@@ -1347,12 +1347,12 @@
       "additionalProperties": false
     },
     "ProbabilisticBound": {
-      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: closed claim form, the claim's own strict or non-strict comparison, and exact threshold; quantile also carries its independent level q.",
+      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: closed claim form, the claim's own comparison, and exact threshold; quantile also carries its independent level.",
       "oneOf": [
-        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "probability"}, "comparison": {"enum": ["greater-or-equal", "greater-than", "less-or-equal", "less-than"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
-        {"type": "object", "required": ["type", "comparison", "threshold", "q"], "properties": {"type": {"const": "quantile"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}, "q": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
-        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "mean-of-fraction"}, "comparison": {"enum": ["greater-or-equal", "greater-than", "less-or-equal", "less-than"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
-        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "greater-than", "less-or-equal", "less-than"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "probability"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal", "greater", "less"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold", "level"], "properties": {"type": {"const": "quantile"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal", "greater", "less"]}, "threshold": {"$ref": "#/$defs/Rational"}, "level": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "mean-of-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal", "greater", "less"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal", "greater", "less"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
       ]
     },
     "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},
