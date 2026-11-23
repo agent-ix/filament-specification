@@ -146,10 +146,14 @@ semantics above.
 
 The table's only semantic authority is the checked package body: the reader
 derives the ordered guard chain for every scalar-operation occurrence by
-walking each owner body from its root, excluding the termination measure.
-It SHALL compare each record's referenced frame chain with that independently
-derived chain, including guard occurrence, order and `holds`; it SHALL NOT
-trust a producer-supplied chain as proof of body context.
+walking function owners in FR-322's package-wide order, visiting each body
+before its termination measure. It SHALL maintain each node's expression
+occurrence counter across all owners. At each `if` or Boolean short-circuit
+guard read, it SHALL use the next occurrence for that guard node in this same
+walk, including earlier visits as an expression or guard. It SHALL compare
+each record's referenced frame chain with that independently derived chain,
+including guard occurrence, order and `holds`; it SHALL NOT trust a
+producer-supplied chain as proof of body context.
 
 ### Value-validity record node
 
@@ -343,6 +347,11 @@ claim's identity. An operation-contract node is not itself claim-bearing for
   the canonical order above, and make each guarded record cite only its
   terminal frame id in its body and identity path. It SHALL NOT serialize an
   expanded guard list in a record.
+- A frame SHALL exist only when it is a member of a non-empty path-condition
+  chain for a value-validity record. In particular, a branch with no scalar
+  operation occurrence that produces a record has no frame. The reader SHALL
+  accept that branch's absent frame and SHALL NOT require one for every branch
+  of an `if` expression.
 - The producer SHALL write a record's `extent` from its own classification
   of the record's extent (FSL ADR-014 §4), never from a backend's bounds.
 - The producer SHALL NOT duplicate a record's facts in any table or sidecar
@@ -553,7 +562,7 @@ scan of the graph, and returns no record for a function that owns none.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` emits two ordered value-validity rows and two records for the shared `+` node's expression occurrences 0 and 1. The first record has the empty path-condition aggregate; the second cites the frame for the `g(x + 1)` call occurrence with holds true. The frame row has parent null, the exact guard occurrence and holds true. The second record's body and node_id path both contain only that terminal frame_id, not the expanded guard data. Both records retain their own result bounds, conversions, roots and generated ordinals, and the reader admits the package. | Test |
-| FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` emits three value-validity rows (the `>=`, `<` and `+`), with `>=` unguarded and the other two citing the terminal ids of their exact chains. The `<` chain contains `n >= 0`; the `+` chain contains the whole `if` condition. Every shared prefix appears once in the frame table; each `+` and `<` record body and identity path cite only their terminal frame id. Rewriting `n < 10` as `n < 11` changes the `<` frame and record identity and the `+` frame chain, but not the `>=` record. | Test |
+| FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` emits three value-validity rows (the `>=`, `<` and `+`), with `>=` unguarded and the other two citing the terminal ids of their exact chains. The `<` chain contains `n >= 0`; the `+` chain contains the whole `if` condition. Every shared prefix appears once in the frame table; each `+` and `<` record body and identity path cite only their terminal frame id. The false branch has no scalar operation occurrence and contributes no frame; the reader admits the package without requiring one. Rewriting `n < 10` as `n < 11` changes the `<` frame and record identity and the `+` frame chain, but not the `>=` record. | Test |
 | FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced. `Bounded` has an `operation-contract` row at its `state_clause` node's `claim` occurrence with an `operation_contract` record node; `BelowThree` has a `temporal-satisfaction` row at its clause node's `claim` occurrence without `record`; `inc` has one `value-validity` row with its record node. The operation-contract node retains the Boolean result bound, invariant marker, operation anchor when present, body object references and populations of the source record. The rows are in package order; the reader admits the package and its typed read returns equal source records at each row's request index. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
 | FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer of its earliest applicable reader check. Adding a `declaration` member to a `claim`/`value_validity` node fails FR-322's strict schema/owner-presence check first as `malformed_wire` at `/semantic_graph/nodes/{n}`; the FR-825 record step is not reached. A second `generated` occurrence; `conversion` and `result_bound` swapped; invalid `owner`, `application`, `occurrence` or `result_bound`; the first record's `conversion` naming the other narrow; `extent_roots` holding `x` twice; and `objects` referencing the Boolean type node are refused by the FR-825 record rule as `invalid_package`/`invalid-value` at that rule's specified pointer. A frame row whose `holds` is the text `"true"` is refused by the earlier strict-wire check as `malformed_wire` at `/path_condition_frames/{f}`. | Test (TC-2053) |
 | FR-825-AC-5 | Over AC-2 and AC-3 packages, malformed or reordered `requirement_items` rows refuse with the existing rule's exact codes and pointers; a reader budget one validation visit short returns `incomplete` at the first uncharged item and no partial view. The reader charges the frame rows, each owner's body walk once, each record node, roots, objects, rows and domains; it does not charge or retain a repeated guard vector per record. A package whose only `claim` nodes are `value_validity` nodes and which has no `claim_names` member is admitted. | Test (TC-2053) |
@@ -562,6 +571,7 @@ scan of the graph, and returns no record for a function that owns none.
 | FR-825-AC-8 | For a package with nested guards and at least two scalar records sharing a prefix, each malformed frame mutation refuses at the stated first defect: a non-array, empty array, row with missing/extra/reordered members, or non-Boolean JSON `holds` is `malformed_wire` at the table/row; a `parent` that is forward, self, missing, or from another owner is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/parent`; an unknown guard node or occurrence is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard`; a duplicate `(parent, guard occurrence, holds)` row is `invalid_package`/`conflicting-definition` at the duplicate row. | Test (TC-2053) |
 | FR-825-AC-9 | For the valid nested-guard package of AC-8, a frame chain with the wrong parent, guard order or `holds`, a missing table, a terminal frame id outside the table, a record id whose chain differs from the owner-body-derived chain, or an unreferenced frame row refuses `invalid_package`/`invalid-value` at the corresponding parent, `/path_condition_frames`, record `body/members/5`, or table row; changing only a record node's identity path to cite a different terminal id refuses `invalid_package`/`invalid-semantic-graph` at its `node_id`. | Test (TC-2053) |
 | FR-825-AC-10 | For AC-3's operation-contract item, the typed read equals the source `RequirementRecord` in kind, extent, Boolean bound, invariant marker, operation, body object references and population domains. Removing its record, attaching a value-validity node, changing the operation anchor, omitting or adding a model object or population, changing the invariant marker, or altering its identity path refuses the whole package with the specified first code and pointer; no package-route item may be omitted because the form is unavailable. | Test (TC-2053) |
+| FR-825-AC-11 | For one shared scalar application reached in two owner bodies ordered by FR-322's declaration source-map position, its expression occurrences are numbered package-wide as 0 and 1; each owner's record names its own occurrence, and removing the first owner's record does not renumber the second owner's occurrence. For a Boolean parameter used first as an expression and later as an `if` guard, the guard frame names expression occurrence 1, as do the checker and reader; neither restarts its ordinal at the owning body. | Test (TC-2053) |
 
 ## Dependencies
 

@@ -87,8 +87,9 @@ step-target    = operation-name, '(', expr, { ',', step-argument }, ')'
                | 'any' ;
 step-argument  = expr | '_' ;
 history-row    = 'history', type-name, '.', member-name, ':',
-                 type-ref, '=', history-literal,
+                 type-ref, '=', history-initial,
                  '{', { 'on', operation-name, ':', expr, ';' }, '}' ;
+history-initial = history-literal | 'Some', '(', expr, ')' ;
 history-literal = signed-int | 'true' | 'false' | 'none' | string
                 | exact-number | qualified-name ;
 fairness-row   = ('assume' | 'ensure'), 'fair', ( 'weak' | 'strong' ),
@@ -117,13 +118,14 @@ word of a clause that already states its subject; a refinement row is a
 member of a fairness set that a transfer later compares by kind
 ([FR-380](FR-380-transfer-claims-through-refinement.md)), and a silent
 `weak` would let a strong row that lost its keyword pass as a weaker
-constraint, so a kindless `fair` refuses. The shared grammar has no general `literal`
-production; the initial value of a history row is a `history-literal`, a
-closed list of constant spellings: an integer, `true`, `false`, `none`, a
-string, an `exact-number`, or a `qualified-name` that names an enum member.
-Collection, record and float values are not initial literals; any other
-spelling in that position refuses `invalid_syntax`/`unexpected-token` at its
-first token. Inside a refinement declaration the
+constraint, so a kindless `fair` refuses. The shared grammar has no general
+`literal` production; the initial value of a history row is either a
+`history-literal`, a closed list of constant spellings (an integer, `true`,
+`false`, `none`, a string, an `exact-number`, or a `qualified-name` that names
+an enum member), or a present `Some(e)` option constructor. Collection, record
+and float values are not initial values; any other spelling in that position
+refuses `invalid_syntax`/`unexpected-token` at its first token. Inside a
+refinement declaration the
 expression grammar also admits the population-valued forms of
 [FR-376](FR-376-evaluate-population-valued-mapping-expressions.md) and the
 option constructor `Some(e)` (**Option rows**, below); the shared grammar owns
@@ -349,7 +351,10 @@ reference lifting, or the row refuses `ill_typed`/`type-mismatch`.
 
 **History rows.** A history row names a concrete object type, a new field
 name that the type does not declare, a bounded declared type and an initial
-`history-literal` of that type, and at most one update per concrete
+value of that type: a `history-literal`, or `Some(e)` when the history field
+type is `Option<T>` and `e` has type `T`. The checked-package form of the
+present option is a reference to the exact `value`/`option_value` node of
+type `Option<T>` (FR-322). The row has at most one update per concrete
 operation of that type. An update expression reads the step's receiver as
 `self` (post-state fields), `pre(...)` of pre-state fields and of the history
 field, and the step's arguments; it is typed against the history field's type. A name the
@@ -470,7 +475,7 @@ abstract declaration uses `RefinementKey`.
 | `populations` | `{abstract: RefinementKey, concrete: NodeRef}` | The abstract and source concrete population declarations. |
 | `objects` | `{abstract_type: RefinementKey, concrete_type: NodeRef, fields: [{name: Identifier, expression: SemanticTerm}]}` | One object-type mapping or one state-machine field-set mapping and its field rows; `name` is an abstract field name, resolved on `abstract_type`. For a state-machine mapping both type keys name `state_machine` declarations; it does not imply an object or population. |
 | `steps` | `{source_class: Nonempty, source_node?: NodeRef, target: StepTarget}` | One concrete operation or protocol step class. `source_class` is its alias-free canonical class spelling; `source_node` is required for a class with a declaration node and absent for a memory step class, which names no declaration. The reader resolves the spelling against the concrete subject and checks the node when present. |
-| `histories` | `{concrete_type: NodeRef, name: Identifier, type: NodeRef, initial: HistoryInitial, updates: [{operation: NodeRef, expression: SemanticTerm}]}` | One history field; `HistoryInitial` is a `literal` or local `reference` term naming the admitted `history-literal`; each update names the concrete operation it follows. |
+| `histories` | `{concrete_type: NodeRef, name: Identifier, type: NodeRef, initial: HistoryInitial, updates: [{operation: NodeRef, expression: SemanticTerm}]}` | One history field; `HistoryInitial` is either a `literal` term admitted as a `history-literal`, or a local `reference` term naming a checked `value`/`option_value` node whose `semantic_type` is this history field's `Option<T>` type; each update names the concrete operation it follows. |
 | `assume` | `{operation: NodeRef, kind: "weak"|"strong", granularity: "each"|"whole"}` | A concrete fairness row. |
 | `ensure` | `{operation: RefinementKey, kind: "weak"|"strong", granularity: "each"|"whole"}` | An abstract fairness row. |
 
@@ -828,7 +833,7 @@ before this step and cannot substitute for a missing body key.
 | FR-375-AC-6 | A fairness row with no granularity is read as `whole`; an `assume` row naming an abstract operation, or an `ensure` row naming a concrete operation, refuses `missing_declaration`/`missing-name`. | Test (TC-310) |
 | FR-375-AC-7 | Changing any row of an admitted declaration changes the refinement node's value and the obligation identity of an item that cites it; reordering rows other than step rows in source does not (reordering step rows reorders `steps` and changes the value); changing only the refinement's authored name changes the node id and the obligation identity (FR-375-AC-29). Each row-empty refinement node retains the local `abstract` root key in `dependencies` despite its empty rows. | Test (TC-310) |
 | FR-375-AC-8 | A request to check the whole declaration requires `temporal-satisfaction`, each per-step simulation obligation requires `operation-contract`, and neither requires `refinement`. | Test (TC-310) |
-| FR-375-AC-9 | A history row with an initial `history-literal` written as a negative or non-negative integer, `true`/`false`, `none`, a string, an exact number or a full-path enum member is admitted when its value is in the declared bounded type's value set; a literal of the right kind outside the value set or of the wrong kind (`5` or `true` for `Int[0, 4]`, `none` for a non-`Option` type) refuses `ill_typed`/`type-mismatch` at the literal; an unresolved enum path refuses `missing_declaration`/`missing-name`; a collection, record or float spelling refuses `invalid_syntax`/`unexpected-token`. | Test (TC-310) |
+| FR-375-AC-9 | A history row with an initial `history-literal` written as a negative or non-negative integer, `true`/`false`, `none`, a string, an exact number or a full-path enum member is admitted when its value is in the declared bounded type's value set; a literal of the right kind outside the value set or of the wrong kind (`5` or `true` for `Int[0, 4]`, `none` for a non-`Option` type) refuses `ill_typed`/`type-mismatch` at the literal; an unresolved enum path refuses `missing_declaration`/`missing-name`; a collection, record or float spelling refuses `invalid_syntax`/`unexpected-token`. For an `Option<T>` history field, a present initial `Some(e)` is admitted as a reference to the exact checked `value`/`option_value` node of type `Option<T>`; its payload is checked against `T` under FR-322. | Test (TC-310) |
 | FR-375-AC-10 | An `assume` or `ensure` fairness row written `fair strong` is admitted with or without `each` or `whole`, and its emitted entry carries kind `strong`; the same row written `fair weak` carries kind `weak`, and the two rows give different refinement node ids; `fair` with no kind, or any kind other than `weak` or `strong`, refuses `invalid_syntax`/`unexpected-token` at the token, because a refinement row has no default kind. | Test (TC-310) |
 | FR-375-AC-11 | `abstract Spec` selects the whole abstract model through its canonical local or dependency-package model-root key; `abstract Spec::Twice` and `abstract Spec::Twice2`, two protocol clauses of the abstract package with identical operation-target rows, are each admitted, with the model subject and two protocol subjects distinguished by their root/clause keys and protocol subjects carrying `protocol`; a clause of the declaring package is listed among local `dependencies`, while a clause of a directly selected dependency package joins through `dependency_selections` and is absent from local `dependencies`. `abstract Spec::Thrice` (no such clause), `abstract Spec::Counter` (a type), `abstract Spec::counters` (a population) and `abstract Nope::Twice` (no such alias) refuse `missing_declaration`/`missing-name` at the unresolved segment (`Thrice`, `Counter`, `counters`, `Nope`); a clause of the abstract package that acts only on another model refuses `invalid_model_binding`/`malformed-declaration` at the name. Syntax refusals are `invalid_syntax`/`unexpected-token` at these tokens: `abstract Spec::Twice::finish concrete Impl` at the second `::`; `abstract ::Twice` at the `::`; `abstract Spec:: concrete Impl` at `Impl` (`concrete` is read as the name); `abstract Spec:: {` at the `{`; `abstract Spec::1` at the `1`. | Test (TC-310) |
 | FR-375-AC-12 | The `refinement_internals` input is the only host of the internal list: `abstract Spec::Twice` with no row naming internals and the unit value `[{"refinement": "R", "internal": ["Spec::Twice::finish"]}]` is admitted with `abstract_internal` `["Twice::finish"]`; the same source with the value absent, `[]` or naming another refinement is admitted with no `abstract_internal` entry. A supplied library declaring its own refinement and given its own value (in a replay request, its `dependencies` entry's `refinement_internals`, absent meaning the empty list) is admitted with that value affecting only the library's node and the importer's selection of it; a value naming a refinement the library does not declare refuses `missing_declaration`/`missing-name` at (that library's value, `/0/refinement`) and the compilation, the unit included, is not admitted. | Test (TC-310) |
