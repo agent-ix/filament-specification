@@ -32,7 +32,7 @@ reproduce it with no provider present before the item settles `refuted`.
 | binding | JsonObject | 0..1 |  |
 | instance | JsonObject | 0..1 |  |
 | bound | JsonObject | 1..1 |  |
-| scheduler | WitnessScheduler | 0..1 |  |
+| scheduler | JsonObject | 0..1 |  |
 | evidence | JsonObject | 1..1 |  |
 
 ## Field sources
@@ -65,9 +65,17 @@ per drawn vector of the given delays, the delay of each racing identity whose
 delay is free. Under every scheduler with
 no fairness set the witness is memoryless and deterministic. For a claim with
 a fairness set it is memoryless and randomized: each entry may give a
-distribution over choices with exact rational probabilities, and it must be
-fair: every bottom strongly connected component of the chain it induces on
-the evidence's states meets the fair-end-component condition of FR-406. For a
+distribution over choices with exact rational probabilities in the form
+`{"type":"randomized","choices":[{"choice":c,"probability":p}, ...]}`.
+It SHALL contain at least two alternatives with distinct `choice` values;
+each `probability` SHALL be an exact rational in `(0, 1]`, and the
+probabilities SHALL sum exactly to 1. The alternatives use the same choice
+values the entry could carry directly: a scheduled identity, a post-state key
+where a draw has several post-states, or a free delay. The wire schema fixes
+the wrapper and member shapes; replay checks distinctness, positivity, the
+upper bound and exact sum. The randomized witness must be fair: every bottom
+strongly connected component of the chain it induces on the evidence's states
+meets the fair-end-component condition of FR-406. For a
 long-run refutation with a fairness set, where the infimum need not be
 attained, the provider mixes the actions the optimum leaves out with
 probability `2^-k`, raising `k` until the induced chain's exact value is past
@@ -229,6 +237,10 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-9 | A quantile refutation replays by the two-mass rule: for `quantile q of M >= c` it refutes when `V > 0` and `V >= q · (1 − N)`, equality included, so the `Two` refutation of `quantile 0.5 of M >= 3` (`V = 1/2`, `N = 0`) replays; for `quantile q of M <= c` it refutes only when `V > (1 − q) · (1 − N)`; a path set whose activation probability is below 1 refutes only when its not-activated mass `N` is counted. | Test (TC-364, TC-360) |
 | FR-413-AC-10 | Under FR-407-AC-18's workload, `on each (x: T) when (g) { probability >= rational(2, 3) [E] }` is refuted by a path set naming `x` as its `instance`, with violating mass `V = 1/4` (`b`, then the event false) and not-activated mass `N = 3/8` (`a`, then the state from which `g` is unreachable): `1/4 > (1/3) · (5/8)`. The same paths without the not-activated path refute nothing, since `1/4` is not above `1/3`; and a counterexample without `instance` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-2062) |
 | FR-413-AC-11 | Over a `Coin` model whose `drop(b)` with `b = 0` deletes the coin (each `b` with probability `1/2`), the claim `probability >= 0.5 [ always[0,3] holds(c.v = 0) ]` is refuted by `{"type": "undefined-path", "path": [drop with b = 0], "undefined": {"type": "undefined-evaluation", "where": {locus, position: 1, initial_state: 0, binding, product_state}, "cause": "absent-key"}}`, the locus that of `c.v`; replay reproduces it at thresholds 0.5 and 0.01 alike. The same evidence with `position` 0, with the path `drop` with `b = 1` (where `c.v` is defined), or with another catalogued `cause` settles `inconclusive`, `replay-parity`; without `undefined` it fails the backend-provider schema. | Test (TC-2111) |
+| FR-413-AC-12 | The backend-provider schema admits `fr413-randomized-witness-scheduler`, whose two distinct choices have exact probabilities `1/3` and `2/3`. | Test (TC-431) |
+| FR-413-AC-13 | The backend-provider schema rejects `fr413-randomized-witness-scheduler-single-choice` as `malformed_wire` at `scheduler.entries[0].choice.choices`, because the randomized choice has fewer than two alternatives. | Test (TC-431) |
+| FR-413-AC-14 | `FR413-R2-probabilities-do-not-sum-to-one` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its exact probability sum is not 1. | Inspection |
+| FR-413-AC-15 | `FR413-R3-duplicate-choice` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its alternatives repeat a choice. | Inspection |
 
 ## Dependencies
 
@@ -242,3 +254,4 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 
 - FSL ADR-028 WS-1 to WS-6, FS-9.
 - Ticket: STD-137 (paired with QSL-371); the undefined-path members: QSL-2158.
+- `proposals/backend-provider-v1/vectors.json` contains the randomized witness scheduler acceptance and refusal vectors.

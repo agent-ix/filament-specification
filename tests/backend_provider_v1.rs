@@ -531,6 +531,7 @@ fn hp3_array_removal_is_refused_and_restoration_is_admitted() {
 #[trace("TC-431", "FR-331-AC-41")]
 #[trace("TC-431", "FR-415-AC-26")]
 #[trace("TC-431", "FR-331-AC-66")]
+#[trace("FR-413-AC-12")]
 #[test]
 fn tc_431_positive_vectors_are_admitted_with_owned_members() {
     let validator = validator();
@@ -769,6 +770,7 @@ fn located_at_patch(error: &str, patched: &str) -> bool {
 #[trace("TC-431", "FR-193-AC-19")]
 #[trace("TC-431", "FR-193-AC-20")]
 #[trace("TC-431", "FR-415-AC-26")]
+#[trace("FR-413-AC-13")]
 #[test]
 fn tc_431_adverse_vectors_are_refused() {
     let whole = validator();
