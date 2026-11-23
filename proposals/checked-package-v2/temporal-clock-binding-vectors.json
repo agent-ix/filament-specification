@@ -1,5 +1,5 @@
 {
-  "note": "STD-621. These are full checked-package cases derived from the positive temporal-clause fixture, which carries one producer-owned temporal_bindings row for its clock-configured clause. Each single-clause positive retains that temporal/temporal_clause NodeRef, updates the clause's selected profile and the lock selection together, and replaces the row's typed configuration as needed. The multi-clause positive has two distinct clause NodeRefs with the same model, selected profile and clock name; their paths differ only by their formula NodeRef, and rows are in ascending structural NodeRef order. The row does not repeat its selected profile: temporal-clause profile law is in the clause application, while a finite hyperproperty carries its typed profile definition in the body aggregate; each temporal_bindings row carries only its structural declaration key, exact clock name and closed typed clock configuration. The QSpec test validates the complete packages against schema.json. Reader checks for declaration membership and the profile/configuration join are separately recorded for the typed IR reader. IR-1586 (FR-322-AC-464, TC-2028): `finite_hyper_profile_cases` publish one finite-hyper acceptance and two reader refusals. A finite hyperproperty body carries `temporal_profile` as an exact `DefinitionRef`; the accepted `[T, D]` lock selects that definition, TCB-15 refuses when the body definition has no matching lock row, and TCB-16 refuses a row clock kind inconsistent with the selected definition. The contrast hyperproperty body for a `behaviours` domain keeps its temporal law on the body wrapper. STD-644 (FR-322-AC-305): `compensation_cases` are abstract reader cases over declarations listed in `compensation_declarations` (`graph_index` is the node's position in the graph; `form` is its semantic_form; `clock` is the clause's or compensation's clock text); a row's `declaration` names a declaration by `key` and QSpec's test replaces it with the declaration's node_id. `lock_temporal_profile` is the clock kind the lock's temporal_profile selection determines (`none` when it selects no clock-configured profile). Rows are listed in the order written; cases with several declarations list them in ascending node-id order. Each row carries `occurrence` (the ordinal of the declaration's claim occurrence, or of a compensation's declaration occurrence), so the clock configuration is per occurrence (FR-322 \"Temporal clock bindings\"); the per-occurrence cases are in `temporal-clock-occurrence-vectors.json` (BO-*).",
+  "note": "STD-621. These are full checked-package cases derived from the positive temporal-clause fixture, which carries one producer-owned temporal_bindings row for its clock-configured clause. Each single-clause positive retains that temporal/temporal_clause NodeRef, updates the clause's selected profile and the lock selection together, and replaces the row's typed configuration as needed. The multi-clause positive has two distinct clause NodeRefs with the same model, selected profile and clock name; their paths differ only by their formula NodeRef, and rows are in ascending structural NodeRef order. The row does not repeat its selected profile: temporal-clause profile law is in the clause application, while a finite hyperproperty carries its typed profile definition in the body aggregate; each temporal_bindings row carries only its structural declaration key, exact clock name and closed typed clock configuration. The QSpec test validates the complete packages against schema.json. Reader checks for declaration membership and the profile/configuration join are separately recorded for the typed IR reader. IR-1586 (FR-322-AC-464, TC-2028): `finite_hyper_profile_cases` publish one finite-hyper acceptance and two reader refusals. A finite hyperproperty body carries `temporal_profile` as an exact `DefinitionRef`; the accepted `[T, D]` lock selects that definition, TCB-15 refuses when the body definition has no matching lock row, and TCB-16 refuses a row clock kind inconsistent with the selected definition. The contrast hyperproperty body for a `behaviours` domain keeps its temporal law on the body wrapper. IR-1586 member refusals (reader implementation agent-ix/filament-contract-ir PR 1136): TCB-17 a finite body with no `temporal_profile` member and TCB-18 a member matching two `temporal_profile`-role lock selections refuse `operation-law-unselected` at the member (the zero-match case is TCB-15); TCB-19 a `behaviours`-domain hyperproperty body, and TCB-20 any node other than a finite-domain hyperproperty, carrying the member, and TCB-21 to TCB-24 a member that is not exactly a DefinitionRef (non-object, extra field, empty authority, empty identity), refuse `invalid-value` at the member. `behaviours_hyper_profile_fixture` is any checked-package positive whose hyperproperty carries a `behaviours` domain; `positive_temporal_clause_fixture` is this file's `fixture`. The malformed-member cases are reader-level refusals: they are exercised on the reader, not by the schema-validation test. STD-644 (FR-322-AC-305): `compensation_cases` are abstract reader cases over declarations listed in `compensation_declarations` (`graph_index` is the node's position in the graph; `form` is its semantic_form; `clock` is the clause's or compensation's clock text); a row's `declaration` names a declaration by `key` and QSpec's test replaces it with the declaration's node_id. `lock_temporal_profile` is the clock kind the lock's temporal_profile selection determines (`none` when it selects no clock-configured profile). Rows are listed in the order written; cases with several declarations list them in ascending node-id order. Each row carries `occurrence` (the ordinal of the declaration's claim occurrence, or of a compensation's declaration occurrence), so the clock configuration is per occurrence (FR-322 \"Temporal clock bindings\"); the per-occurrence cases are in `temporal-clock-occurrence-vectors.json` (BO-*).",
   "fixture": "fixtures/positive-timed-clause-nodes.json",
   "positive": [
     {
@@ -193,6 +193,101 @@
       "code": "invalid_package",
       "cause": "timed-node-reference",
       "locus": "/temporal_bindings/0/clock/kind"
+    },
+    {
+      "id": "TCB-17-finite-hyper-profile-missing",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "operation-law-unselected",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-18-finite-hyper-profile-ambiguous",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "D"},
+        {"op": "set-lock-profile-selections", "value": ["T", "D", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "operation-law-unselected",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-19-behaviours-hyper-carries-profile",
+      "fixture": "behaviours_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "D"},
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-20-non-hyperproperty-node-carries-profile",
+      "fixture": "positive_temporal_clause_fixture",
+      "mutations": [
+        {"op": "set-body-member", "where": "unique-temporal-clause-node", "member": "temporal_profile", "value": "D"},
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{temporal-clause-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-21-finite-hyper-profile-non-object",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "filament.temporal.event-position.false-extension/v1"},
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-22-finite-hyper-profile-extra-field",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": {"authority": "D.authority", "identity": "D.identity", "extra": "x"}},
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-23-finite-hyper-profile-empty-authority",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": {"authority": "", "identity": "D.identity"}},
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-24-finite-hyper-profile-empty-identity",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": {"authority": "D.authority", "identity": ""}},
+        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
     }
   ],
   "compensation_declarations": [
