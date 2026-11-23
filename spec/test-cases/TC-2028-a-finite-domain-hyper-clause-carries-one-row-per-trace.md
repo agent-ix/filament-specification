@@ -16,19 +16,19 @@ relationships:
 Check the `temporal_bindings` rows of a hyper clause over a declared finite
 trace population: one row per quantified trace, keyed by its
 `hyperproperty` node, each carrying the domain binder as its clock role and
-the one configuration bound to it. Check that the row configuration is
-validated against the finite hyper clause's `filament.op.claim.clause`
-`temporal_profile` law even when the lock contains multiple temporal profile
-selections.
+the one configuration bound to it. Check that the finite hyper node carries
+the profile definition in its typed body member and that the row
+configuration is validated against that definition.
 
 Scope: FR-322-AC-464.
 
 ## Test Procedure
 
-1. Read `TCB-14` from `temporal-clock-binding-vectors.json`: its package lock has temporal `profile_selections` `[T, D]` in that order, where `D` is `event-position.false-extension/v1`; the hyper clause is `hyper Det using ep ...` and its application law selects `D`.
-2. Read the same package with its event-position row replaced by the `fixed_sample` row in TCB-14; also exercise the existing `b`-row removal, trace `c`, and second-row `clock_name` `u` mutations.
+1. Generate the complete base package from `finite_hyper_profile_fixture` in `temporal-clock-binding-vectors.json` using its source, named FSL emitter test, and generation procedure; assert that the `claim`/`hyperproperty` node's body aggregate omits `temporal_profile` and that the package has a row for each quantified trace.
+2. Apply TCB-14's mutations to that base: add the typed `temporal_profile` definition and set the lock selections to `[T, D]`. This accepted package is the common starting point for TCB-15 and TCB-16.
+3. Independently derive TCB-15 from accepted TCB-14 by changing only the lock selections to `[T]`; derive TCB-16 from accepted TCB-14 by changing only trace `a`'s row clock to `fixed_sample`. Also exercise the existing `b`-row removal, trace `c`, and second-row `clock_name` `u` mutations.
 
 ## Expected Results
 
-- Step 1: the package is admitted with two event-position rows keyed by the `hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t`. Its row kind is checked against the application law selecting `D`, not lock-array entry `T`.
-- Step 2: the fixed-sample mutation refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/0/clock/kind`; the existing missing-row, wrong-trace, and wrong-clock-name mutations refuse at the node's body, that row's `trace`, and `/temporal_bindings/1/clock_name` respectively.
+- Step 1: The generated base omits `temporal_profile`. TCB-14 is admitted after adding the typed definition and `[T, D]` selections; its two event-position rows are keyed by the `hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t`.
+- Step 2: TCB-15 refuses `invalid_package`/`operation-law-unselected` at `/semantic_graph/nodes/{N}/body/temporal_profile`; TCB-16 refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/0/clock/kind`. The existing missing-row, wrong-trace, and wrong-clock-name mutations refuse at the node's body, that row's `trace`, and `/temporal_bindings/1/clock_name` respectively.
