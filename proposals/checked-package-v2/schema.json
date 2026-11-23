@@ -6649,7 +6649,7 @@
       ]
     },
     "HyperpropertyBody": {
-      "description": "FR-322 hyperproperty body aggregate. `temporal_profile`, when present, is an exact DefinitionRef; the reader requires it, matching exactly one temporal_profile lock selection (operation-law-unselected), for a finite-trace-population hyperproperty and forbids it (invalid-value) for a behaviours-domain hyperproperty or any other node kind; a non-exact DefinitionRef is invalid-value.",
+      "description": "FR-322 hyperproperty body aggregate. `temporal_profile`, when present, is an exact DefinitionRef; the reader requires it, matching exactly one temporal_profile lock selection (operation-law-unselected), for a finite-trace-population hyperproperty and forbids it (invalid-value) for a behaviours-domain hyperproperty. A non-exact DefinitionRef is a schema failure (malformed_wire), as is the member on any other node kind.",
       "type": "object",
       "required": [
         "term",
