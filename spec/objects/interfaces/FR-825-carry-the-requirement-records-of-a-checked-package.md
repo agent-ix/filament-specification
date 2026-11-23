@@ -398,7 +398,10 @@ given, at the JSON pointer named. It SHALL first validate `path_condition_frames
    `invalid_package`/`invalid-value` at `/path_condition_frames/{f}`.
 
 The reader SHALL then walk each owner body once, from its body root and in
-body-reference order, excluding its termination measure. It SHALL derive for
+body-reference order, excluding its termination measure. A reference back
+to a node whose body the walk is currently inside is a recursive call: the walk SHALL NOT enter that node again,
+so a recursive owner is walked once, while a node shared by two paths without
+a cycle is walked in full each time it is reached. It SHALL derive for
 each scalar-operation occurrence the exact outermost-first chain of condition
 occurrences and required outcomes under which it is evaluated. In this walk,
 `if` then/else branches contribute their condition with `holds` true/false;
