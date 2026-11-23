@@ -17,7 +17,8 @@ Verify emission, reading, identity and reader refusals of the `requirement_items
 
 Scope: FR-825-AC-1 to FR-825-AC-9 and FR-322-AC-473. The published
 [requirement-record-vectors.json](../../proposals/checked-package-v2/requirement-record-vectors.json)
-cases RRV-01 and RRV-02 are the reader-input recipes for AC-6 and AC-7.
+cases RRV-01 through RRV-06 are the reader-input recipes for AC-6 through
+AC-9.
 
 ## Test Procedure
 
@@ -29,9 +30,9 @@ cases RRV-01 and RRV-02 are the reader-input recipes for AC-6 and AC-7.
 6. Build FR-322-AC-473's package with both defects, then with the record defect and the reversed `probabilistic_claims` row; add a `claim_names` row naming a `value_validity` node; emit FR-825-AC-1's unit and compare it node by node with the golden package written without records, then with a producer double that rewrites the `+` node's path (FR-322-AC-473).
 7. Build RRV-01 from its source and graph-role declarations. Establish that both scalar application occurrences use one shared Boolean guard occurrence `p`, with separate frame rows for holds true and false. Confirm both records cite only their respective frame ids and the reader independently derives those chains (FR-825-AC-6).
 8. Apply RRV-02's bad guard mutation to the frame row: replace the Boolean guard occurrence with the owner-reachable integer parameter `x`; confirm `invalid_package`/`invalid-value` at that row's `guard` (FR-825-AC-7).
-9. Starting from AC-8's nested package, apply each malformed-table mutation: wrong/empty table shape, missing/extra/reordered row members, wrong primitive type, forward/self/missing/cross-owner parent, unknown guard node/occurrence and duplicate frame tuple. Confirm each first refusal's code and pointer (FR-825-AC-8).
-10. Starting from the same package, alter frame parent, order or polarity; remove the table; cite an out-of-range terminal id; cite a valid but body-inconsistent chain; add an orphan frame; and alter only the record identity path's terminal id. Confirm every refusal code and pointer, including `invalid-semantic-graph` for the node-id mismatch (FR-825-AC-9).
+9. Starting from AC-8's nested package, apply RRV-03's parent self-reference and RRV-04's duplicate-frame mutation, then the remaining malformed-table mutations: wrong/empty table shape, missing/extra/reordered row members, wrong primitive type, forward/missing/cross-owner parent, and unknown guard node/occurrence. Confirm each first refusal's code and pointer (FR-825-AC-8).
+10. Starting from the same package, apply RRV-05's body-inconsistent terminal chain and RRV-06's identity-path-only terminal mismatch, then test wrong frame order or polarity, a missing table, an out-of-range terminal id and an orphan frame. Confirm every refusal code and pointer, including `invalid-semantic-graph` for the node-id mismatch (FR-825-AC-9).
 
 ## Expected Results
 
-Each step gives the rows, frames, record paths, shared typed reads, identities and refusals (code, cause and JSON pointer) its AC states. The local qualification test checks the published RRV-01/RRV-02 recipes and their trace links; it does not execute the strict reader.
+Each step gives the rows, frames, record paths, shared typed reads, identities and refusals (code, cause and JSON pointer) its AC states. The local qualification test checks all published RRV-01 through RRV-06 recipes and their trace links; it does not execute the strict reader.
