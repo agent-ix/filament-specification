@@ -767,7 +767,7 @@
       ]
     },
     "RefinementFailure": {
-      "description": "FR-379: exactly one refinement failure kind with its members.",
+      "description": "FR-379: exactly one of twelve refinement failure kinds with its members.",
       "type": "object",
       "required": ["kind"],
       "oneOf": [
@@ -778,7 +778,10 @@
           {"type": "object", "required": ["type", "code"], "properties": {"type": {"const": "Frame"}, "code": {"$ref": "#/$defs/Nonempty"}}, "additionalProperties": false},
           {"type": "object", "required": ["type"], "properties": {"type": {"const": "Postcondition"}}, "additionalProperties": false}
         ]}}, "required": ["kind", "position", "transition", "cause"], "additionalProperties": false},
+        {"properties": {"kind": {"const": "AbstractClockGuard"}, "position": {"$ref": "#/$defs/U64String"}, "operation": {"$ref": "#/$defs/Nonempty"}}, "required": ["kind", "position", "operation"], "additionalProperties": false},
+        {"properties": {"kind": {"const": "AbstractTimeInvariant"}, "position": {"$ref": "#/$defs/U64String"}, "model": {"$ref": "#/$defs/Nonempty"}}, "required": ["kind", "position", "model"], "additionalProperties": false},
         {"properties": {"kind": {"enum": ["Divergence", "AbstractUnfair"]}, "constraint": {"$ref": "#/$defs/Fairness"}}, "required": ["kind", "constraint"], "additionalProperties": false},
+        {"properties": {"kind": {"const": "HiddenUnfair"}, "constraint": {"$ref": "#/$defs/Fairness"}}, "required": ["kind", "constraint"], "additionalProperties": false},
         {"properties": {"kind": {"const": "Undefined"}, "position": {"$ref": "#/$defs/U64String"}, "row": {"$ref": "#/$defs/Nonempty"}}, "required": ["kind", "position", "row"], "additionalProperties": false},
         {"properties": {"kind": {"const": "RefusalNotPermitted"}, "position": {"$ref": "#/$defs/U64String"}, "label": {"$ref": "#/$defs/ObservationLabel"}}, "required": ["kind", "position", "label"], "additionalProperties": false},
         {"properties": {"kind": {"const": "TerminalSuccessMismatch"}, "position": {"$ref": "#/$defs/U64String"}, "direction": {"enum": ["concrete-only", "abstract-only"]}}, "required": ["kind", "position", "direction"], "additionalProperties": false}

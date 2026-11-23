@@ -1,5 +1,5 @@
 {
-  "description": "FR-379 protocol relation failures: wire cases of the RefinementFailure definition and the product and replay cases of RefusalNotPermitted and TerminalSuccessMismatch (TC-318, TC-431 BP-55). A product case gives the concrete state's stutter_enabled (an enabled stutter or any step), visible (labels of enabled visible concrete steps) and intended; each abstract member of the candidate set gives internal_enabled, enabled (labels of enabled abstract steps) and intended; terminal means no enabled step of any kind. expected is the failure the check reports, or null.",
+  "description": "FR-379 RefinementFailure wire cases, including timed and hidden-candidate kinds, plus product and replay cases of RefusalNotPermitted and TerminalSuccessMismatch (TC-318, TC-431 BP-55). A product case gives the concrete state's stutter_enabled (an enabled stutter or any step), visible (labels of enabled visible concrete steps) and intended; each abstract member of the candidate set gives internal_enabled, enabled (labels of enabled abstract steps) and intended; terminal means no enabled step of any kind. expected is the failure the check reports, or null.",
   "wire": {
     "positive": [
       {
@@ -40,6 +40,22 @@
         }
       },
       {
+        "name": "AbstractClockGuard",
+        "failure": {
+          "kind": "AbstractClockGuard",
+          "position": "3",
+          "operation": "Spec::M::send"
+        }
+      },
+      {
+        "name": "AbstractTimeInvariant",
+        "failure": {
+          "kind": "AbstractTimeInvariant",
+          "position": "4",
+          "model": "Spec::M"
+        }
+      },
+      {
         "name": "Divergence",
         "failure": {
           "kind": "Divergence",
@@ -58,6 +74,17 @@
             "kind": "strong",
             "operation": "inc",
             "granularity": "each"
+          }
+        }
+      },
+      {
+        "name": "HiddenUnfair",
+        "failure": {
+          "kind": "HiddenUnfair",
+          "constraint": {
+            "kind": "weak",
+            "operation": "fire",
+            "granularity": "whole"
           }
         }
       },
@@ -129,6 +156,87 @@
         "failure": {
           "kind": "InitialNotAbstract",
           "initial": 0
+        }
+      },
+      {
+        "name": "abstract-clock-guard-numeric-position",
+        "failure": {
+          "kind": "AbstractClockGuard",
+          "position": 3,
+          "operation": "Spec::M::send"
+        }
+      },
+      {
+        "name": "abstract-clock-guard-without-operation",
+        "failure": {
+          "kind": "AbstractClockGuard",
+          "position": "3"
+        }
+      },
+      {
+        "name": "abstract-clock-guard-extra-member",
+        "failure": {
+          "kind": "AbstractClockGuard",
+          "position": "3",
+          "operation": "Spec::M::send",
+          "model": "Spec::M"
+        }
+      },
+      {
+        "name": "abstract-clock-guard-empty-operation",
+        "failure": {
+          "kind": "AbstractClockGuard",
+          "position": "3",
+          "operation": ""
+        }
+      },
+      {
+        "name": "abstract-time-invariant-extra-member",
+        "failure": {
+          "kind": "AbstractTimeInvariant",
+          "position": "4",
+          "model": "Spec::M",
+          "operation": "Spec::M::send"
+        }
+      },
+      {
+        "name": "abstract-time-invariant-without-model",
+        "failure": {
+          "kind": "AbstractTimeInvariant",
+          "position": "4"
+        }
+      },
+      {
+        "name": "abstract-time-invariant-nonstring-model",
+        "failure": {
+          "kind": "AbstractTimeInvariant",
+          "position": "4",
+          "model": 3
+        }
+      },
+      {
+        "name": "hidden-unfair-without-constraint",
+        "failure": {
+          "kind": "HiddenUnfair"
+        }
+      },
+      {
+        "name": "hidden-unfair-extra-member",
+        "failure": {
+          "kind": "HiddenUnfair",
+          "constraint": {
+            "kind": "weak",
+            "operation": "fire",
+            "granularity": "whole"
+          },
+          "position": "4"
+        }
+      },
+      {
+        "name": "hidden-unfair-nonobject-constraint",
+        "failure": {
+          "kind": "HiddenUnfair",
+          "constraint": "weak"
         }
       },
       {

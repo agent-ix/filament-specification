@@ -27,6 +27,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-432
     type: references
+  - target: ix://agent-ix/filament-specification/FR-740
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-362
+    type: references
 ---
 
 # FR-379: Report and replay refinement verdicts and counterexamples
@@ -97,14 +101,37 @@ of:
 | `InitialNotAbstract` | `initial` (`U64String`) | initial-state rule |
 | `StutterChanged` | `position` (`U64String`) | `stutter` step |
 | `AbstractStepRejected` | `position` (`U64String`), `transition`, `cause` (`Precondition{clause}`, `Frame{code}` or `Postcondition`) | abstract-operation step |
+| `AbstractClockGuard` | `position` (`U64String`), `operation` (nonempty string naming the mapped abstract operation) | no auxiliary-clock valuation satisfies that operation's clock guard at the concrete step's post-state (FR-740) |
+| `AbstractTimeInvariant` | `position` (`U64String`), `model` (nonempty string naming the abstract timed model) | a concrete delay crosses the mapped abstract state's time invariant (FR-740) |
 | `NoAbstractMatch` | `position` (`U64String`) | `any` step, or an emptied candidate set |
-| `Divergence` | `constraint` | an `F_A` constraint violated by a lasso whose loop has only `stutter` steps, including the concrete terminal stutter |
+| `Divergence` | `constraint` (`Fairness`) | an `F_A` constraint violated by a lasso whose loop has only `stutter` steps, including the concrete terminal stutter |
 | `Undefined` | `position` (`U64String`), `row` | a field row, step-row receiver or argument or history update evaluated undefined at `position`; `row` names it |
-| `AbstractUnfair` | `constraint` | an `F_A` constraint violated by a lasso whose loop takes abstract steps |
+| `AbstractUnfair` | `constraint` (`Fairness`) | an `F_A` constraint violated by a lasso whose loop takes abstract steps |
+| `HiddenUnfair` | `constraint` (`Fairness`) | the hidden candidate graph of the concrete lasso has no cycle satisfying `F_A` together (FR-378) |
 
-A safety failure is a finite prefix ending at its failing step. A liveness
-failure is a lasso fair under `F_C`. The counterexample carries concrete
-steps only: no mapped state, history value or candidate set.
+A safety failure is a finite prefix ending at its failing step; a timed
+invariant failure ends at the delay that crosses its boundary. The two timed
+failures above carry the timed prefix and identify the mapped abstract clock
+guard or invariant that excludes it. A liveness failure is a lasso fair under
+`F_C`. For `HiddenUnfair`, replay also reconstructs the finite hidden
+candidate graph over the lasso and verifies that no cycle satisfies all of
+`F_A`. The counterexample carries concrete steps only: no mapped state,
+history value or candidate set.
+
+**Timed and hidden-candidate failures.** `AbstractClockGuard` and
+`AbstractTimeInvariant` occur only when the abstract subject is timed
+(FR-740). The
+former is reported at the concrete step whose post-state has no auxiliary-
+clock valuation satisfying the mapped abstract operation's guard; the latter
+is reported at the concrete delay that crosses the mapped abstract state's
+invariant. Both are finite-prefix safety failures. `HiddenUnfair` occurs when
+abstract hidden state requires retaining the candidate graph and no candidate
+cycle over the concrete lasso satisfies `F_A`; it is a liveness failure and
+carries the constraint selected by this deterministic hidden-candidate rule:
+the first `F_A` constraint violated by every candidate cycle, or, when no one
+constraint has that property, the last constraint in the shortest
+source-order prefix for which no candidate cycle satisfies them all. Its
+`constraint` has the same closed fairness shape as `AbstractUnfair`.
 
 **Protocol relation failures.** A refinement whose abstract subject is a
 protocol clause ([FR-432](../protocol/FR-432-map-every-protocol-step-in-refinements.md))
@@ -197,6 +224,16 @@ whose condition fails, and a state with no failure), and an earlier failure.
 A counterexample of these kinds that carries a loop is refused
 `invalid_runtime_input`/`invalid-value`.
 
+For `AbstractClockGuard`, replay rebuilds the auxiliary-clock zone and
+confirms no valuation satisfies the named operation's clock guard at the
+named position. For `AbstractTimeInvariant`, it confirms the timed prefix
+contains a delay that crosses the named abstract model's invariant. For
+`HiddenUnfair`, replay reconstructs the hidden candidate graph and confirms no
+cycle satisfies `F_A` together and that the named constraint is the one the
+hidden-candidate selection rule reports. Agreement settles these cases
+`reproduced-with-evaluated-witness` and the item `refuted`; disagreement
+settles `inconclusive`, cause `replay-parity`.
+
 Agreement settles the replay
 `reproduced-with-evaluated-witness` and the item `refuted`. A recomputed
 failure of a different kind or at a different position settles the item
@@ -218,7 +255,7 @@ when its relation is defined.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-379-AC-1 | Each outcome of the verdict table settles exactly its FR-360 label, FR-243 basis and cause, and a per-step simulation failure never settles `refuted`. | Test (TC-312, TC-315) |
-| FR-379-AC-2 | A refutation carries exactly one `refinement_failure` member of the seven kinds with their listed members, or on a protocol abstract subject of the nine kinds of both tables; a safety failure is a finite prefix ending at its failing step and a liveness failure is a lasso fair under `F_C`; the counterexample carries concrete steps only. | Test (TC-312, TC-313) |
+| FR-379-AC-2 | A refutation carries exactly one `refinement_failure` member of the seven base kinds with their listed members; a protocol abstract subject may also yield the two protocol kinds, a timed abstract subject may also yield `AbstractClockGuard` or `AbstractTimeInvariant`, and hidden-candidate liveness may yield `HiddenUnfair`. A safety failure is a finite prefix ending at its failing step and a liveness failure is a lasso fair under `F_C`; the counterexample carries concrete steps only. | Test (TC-312, TC-313, TC-431) |
 | FR-379-AC-3 | Replay re-executes the concrete steps, recomputes history values, `map` and candidate sets, reruns the step function at the failing position, and settles `reproduced-with-evaluated-witness` and the item `refuted` when it agrees. | Test (TC-315) |
 | FR-379-AC-4 | A lasso whose history values or candidate set at the loop's last position differ from those at its entry is refused `invalid_runtime_input`/`invalid-value`. | Test (TC-315) |
 | FR-379-AC-5 | A replay that recomputes a different failure kind, or the same kind at a different position, settles the item `inconclusive`, cause `replay-parity`. | Test (TC-315) |
@@ -230,7 +267,7 @@ when its relation is defined.
 | FR-379-AC-11 | `TerminalSuccessMismatch` is not reported when some member of the candidate set is terminal success (`concrete-only`), when some member is not (`abstract-only`), or when the concrete state enables a step. | Test (TC-318) |
 | FR-379-AC-12 | A failing step rule on the incoming step is reported instead of a protocol relation failure at its post-state, and where both relation kinds fail at one state `RefusalNotPermitted` is reported; a model abstract subject never yields either kind. | Test (TC-318, TC-431) |
 | FR-379-AC-13 | Replay of `RefusalNotPermitted` or `TerminalSuccessMismatch` recomputes the candidate set and the classifications at the prefix's last state and settles `reproduced-with-evaluated-witness` and the item `refuted` when the recorded failure holds; a recorded decimal-string `position` that differs from the prefix's step count, a label no stable member enables or the concrete state does not refuse, a `direction` that does not hold, or no recomputed failure settles `inconclusive`, cause `replay-parity`; a numeric position is malformed at admission, and a loop on these kinds is refused `invalid_runtime_input`/`invalid-value`. | Test (TC-318, TC-431) |
-| FR-379-AC-14 | The `RefinementFailure` wire definition admits exactly the nine kinds with their members, `ObservationLabel` is closed, the seven original kinds keep their member sets, and every `initial` and `position` is a canonical unsigned 64-bit decimal string; numeric values are malformed. | Test (TC-431) |
+| FR-379-AC-14 | The `RefinementFailure` wire definition admits exactly twelve kinds with their listed members: the seven base kinds; `RefusalNotPermitted` and `TerminalSuccessMismatch` only for a protocol abstract subject; `AbstractClockGuard` and `AbstractTimeInvariant` only for a timed abstract subject; and `HiddenUnfair` only for a hidden-candidate liveness failure. Every `initial` and `position` is a canonical unsigned 64-bit decimal string, including `"0"`, never a JSON number; `operation` and `model` are nonempty strings naming the mapped abstract operation and abstract timed model; `HiddenUnfair.constraint` uses the closed `Fairness` shape; and `ObservationLabel` is closed. The original nine kinds keep their member sets. | Test (TC-431) |
 
 ## Dependencies
 
