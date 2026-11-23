@@ -162,12 +162,12 @@ A window that reaches a terminal state continues on its stutter steps.
 
 | Form | Holds when, for every initial state and binding |
 | --- | --- |
-| `probability >= θ [E]`, `probability <= θ [E]`, `probability > θ [E]`, `probability < θ [E]` | The probability of `E` meets the bound, with strictness preserved. |
-| `quantile q of M <= c`, `quantile q of M >= c`, `quantile q of M < c`, `quantile q of M > c`, with `M` an accumulate, steps or elapsed measure; a quantile over a fraction measure refuses with `invalid_probabilistic_model`/`quantile-over-fraction` | In order, `Pr(M <= c | activated) >= q`, `Pr(M < c | activated) < q`, `Pr(M < c | activated) >= q`, and `Pr(M <= c | activated) < q`. The `q`-quantile of `M` is `inf {x : Pr(M <= x) >= q}`. A censored behaviour exceeds every finite threshold. |
-| `mean of F >= θ`, `mean of F <= θ`, `mean of F > θ`, `mean of F < θ`, with `F` a fraction | The expectation of `F` meets the stated strict or non-strict bound. A mean is admitted over a fraction measure only; a latency is stated as a quantile. |
-| `long_run_fraction holds(P) >= θ`, `<= θ`, `> θ` or `< θ`, optionally `weighted by R` or `weighted by delay` | The expectation of the limit, as `n → ∞`, of the fraction over `[0, n]` meets the stated strict or non-strict bound. In a finite Markov chain the limit exists with probability 1 and is constant on each bottom strongly connected component. |
-| `probability >= θ`, `<= θ`, `> θ` or `< θ` over `[eventually holds(P)]`, `[holds(A) until holds(B)]` or `[always holds(P)]`, `P`, `A`, `B` state predicates, under the infinite-trace profile | The reachability or until probability meets the stated strict or non-strict bound; `always holds(P)` reads `1 − Pr(eventually holds(not P))`. |
-| `expected accumulate R until holds(B) <= c`, `>= c`, `< c` or `> c`; over a timed subject also `expected elapsed until holds(B) <= c`, `>= c`, `< c` or `> c` | The expectation from position 0 of `R` summed over the steps up to the first position where `B` holds meets the stated strict or non-strict bound; where `B` is reached with probability below 1 the expectation exceeds every finite `c`. |
+| `probability >= θ [E]`, `probability <= θ [E]` | The probability of `E` meets the bound. |
+| `quantile q of M <= c`, `quantile q of M >= c`, with `M` an accumulate, steps or elapsed measure; a quantile over a fraction measure refuses with `invalid_probabilistic_model`/`quantile-over-fraction` | `Pr(M <= c | activated) >= q`, respectively `Pr(M < c | activated) < q`, with a strict `<`. The `q`-quantile of `M` is `inf {x : Pr(M <= x) >= q}`. It is at most `c` exactly when `Pr(M <= c) >= q`, since a distribution function is right-continuous. It is at least `c` exactly when `Pr(M <= x) < q` for every `x < c`; for a measure with finitely many values that is `Pr(M < c) < q`, and equality `Pr(M < c) = q` makes the claim false. A censored behaviour exceeds every finite threshold. |
+| `mean of F >= θ`, `mean of F <= θ`, with `F` a fraction | The expectation of `F` meets the bound. A mean is admitted over a fraction measure only; a latency is stated as a quantile. |
+| `long_run_fraction holds(P) >= θ` or `<= θ`, optionally `weighted by R` or `weighted by delay` | The expectation of the limit, as `n → ∞`, of the fraction over `[0, n]` meets the bound. In a finite Markov chain the limit exists with probability 1 and is constant on each bottom strongly connected component. |
+| `probability >= θ` or `<= θ` over `[eventually holds(P)]`, `[holds(A) until holds(B)]` or `[always holds(P)]`, `P`, `A`, `B` state predicates, under the infinite-trace profile | The reachability or until probability meets the bound; `always holds(P)` reads `1 − Pr(eventually holds(not P))`. |
+| `expected accumulate R until holds(B) <= c` or `>= c`; over a timed subject also `expected elapsed until holds(B) <= c` or `>= c` | The expectation from position 0 of `R` summed over the steps up to the first position where `B` holds meets the bound; where `B` is reached with probability below 1 the expectation exceeds every finite `c`. |
 
 The last two rows are the **exact-only forms**.
 
@@ -182,8 +182,9 @@ A probability threshold, a quantile level and a mean-of-fraction or long-run
 threshold `θ` are exact rationals with `0 < θ < 1`; the frontend refuses `0` or `1` with
 `invalid_probabilistic_model`/`qualitative-threshold`, naming the corresponding
 every-behaviour or possible-property form. A reward or time threshold has the
-reward's or time's dimension and converts exactly by FR-142. A value equal to
-the threshold meets a non-strict bound and fails a strict bound. Every estimate and value in a result is an
+reward's or time's dimension and converts exactly by FR-142. A bound with
+equality meets a non-strict bound; the reduced bound of `quantile q of M >= c`
+is strict, so equality fails it. Every estimate and value in a result is an
 exact rational, in the threshold's unit where it has one.
 
 ### Confidence parameters
@@ -303,7 +304,6 @@ carries every member of this identity in the claim's node
 | FR-407-AC-18 | A model's initial state `s0` has the action `a`, which reaches with probability `1/4` a state where `g` first holds and the event then holds with probability 1, and with probability `3/4` a state from which `g` is unreachable, and the action `b`, which reaches with probability 1 a state where `g` first holds and the event then holds with probability `1/2`. For `on each (x: T) when (g) { probability >= θ [E] }` over every scheduler, the conditioned minimum is `1/2` and the maximum is 1 (the unconditioned values `1/4` and `1/2` are wrong): `>= rational(1, 2)` holds, `>= rational(3, 5)` fails, and `<= rational(9, 10)` fails. Under a workload choosing `a` and `b` with `1/2` each, `Pr(act) = 5/8`, `Pr(E and act) = 3/8` and the value is `3/5`, so `>= rational(3, 5)` holds and `>= rational(2, 3)` fails. A variant where neither action reaches `g` holds vacuously under both scheduler clauses. | Test (TC-2060) |
 | FR-407-AC-19 | Over a timed trace with three positions at time stamps 0, 1 and 6, where `P` holds only at the second, `fraction holds(P) over [0, 4] weighted by delay` weights the first position 1 (its leaving step ends at 1) and the second `4 − 1 = 3` (its leaving step crosses the horizon 4), counts no weight for the third (stamp 6 is outside the window), and is `3/4`; the weights sum to the window's duration 4. | Test (TC-353) |
 | FR-407-AC-20 | Over a timed trace with two positions at time stamps 0 and 1, the second of which begins the idle tail (no step leaves it), where `P` holds only at the first, `fraction holds(P) over [0, 4] weighted by delay` weights the first position 1 and the idle-tail position `4 − 1 = 3`, the time the trace spends there within the window, and is `1/4`. | Test (TC-353) |
-| FR-407-AC-21 | At a value exactly equal to θ, `probability >= θ`, `probability <= θ`, `mean of F >= θ`, `mean of F <= θ`, and `long_run_fraction ... >= θ` / `<= θ` hold, while their strict `>` / `<` forms fail. For quantiles, `q of M <= c`, `>= c`, `< c`, and `> c` respectively use `Pr(M <= c) >= q`, `Pr(M < c) < q`, `Pr(M < c) >= q`, and `Pr(M <= c) < q`; the strict forms fail at equality. Expected reward comparisons use the same strict-boundary rule. | Test (TC-353) |
 
 ## Dependencies
 

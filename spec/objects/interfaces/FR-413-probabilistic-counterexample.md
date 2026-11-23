@@ -91,10 +91,9 @@ defined on the evidence's states only.
 - `instance` — the reference of the `on each` object whose instance fails,
   the first failing instance in key order, or null for an `on origin` claim;
 - `bound` — exactly one of the claim-bound forms below. The writer copies the
-  checked claim's own comparison and threshold; it never rewrites a strict
-  comparison to a non-strict comparison or a reduced quantile comparison.
-  `greater` and `less` are strict; the `quantile` form carries the claim's
-  level separately from its measure threshold `threshold`.
+  checked claim's own comparison and threshold, and never rewrites a quantile
+  comparison to its reduced comparison. The `quantile` form carries the
+  claim's level separately from its measure threshold `threshold`.
 - `scheduler` — the witness scheduler: present under every scheduler, and
   under a workload over a timed subject with free delays, where it carries the
   free delays' choices; absent under a workload that leaves no choice;
@@ -105,14 +104,14 @@ defined on the evidence's states only.
 
 | `type` | Exact members | `comparison` | Additional rule |
 | --- | --- | --- | --- |
-| `probability` | `type`, `comparison`, `threshold` | `greater-or-equal`, `less-or-equal`, `greater`, or `less` | `threshold` is the exact FR-413 rational |
-| `quantile` | `type`, `comparison`, `threshold`, `level` | `greater-or-equal`, `less-or-equal`, `greater`, or `less`, exactly as written on the quantile claim | `threshold` is the measure bound and `level` is its independent exact rational level with `0 < level < 1` |
-| `mean-of-fraction` | `type`, `comparison`, `threshold` | `greater-or-equal`, `less-or-equal`, `greater`, or `less` | `threshold` is the exact FR-413 rational |
-| `long-run-fraction` | `type`, `comparison`, `threshold` | `greater-or-equal`, `less-or-equal`, `greater`, or `less` | `threshold` is the exact FR-413 rational |
+| `probability` | `type`, `comparison`, `threshold` | `greater-or-equal` or `less-or-equal` | `threshold` is the exact FR-413 rational |
+| `quantile` | `type`, `comparison`, `threshold`, `level` | `greater-or-equal` or `less-or-equal`, exactly as written on the quantile claim | `threshold` is the measure bound and `level` is its independent exact rational level with `0 < level < 1` |
+| `mean-of-fraction` | `type`, `comparison`, `threshold` | `greater-or-equal` or `less-or-equal` | `threshold` is the exact FR-413 rational |
+| `long-run-fraction` | `type`, `comparison`, `threshold` | `greater-or-equal` or `less-or-equal` | `threshold` is the exact FR-413 rational |
 
 The comparison and threshold are the checked claim's own values. For example,
-a strict `probability < θ` is written `{"type":"probability",
-"comparison":"less","threshold":θ}`; a `quantile q of M >= c`
+a `probability <= θ` is written `{"type":"probability",
+"comparison":"less-or-equal","threshold":θ}`; a `quantile q of M >= c`
 keeps `comparison: "greater-or-equal"`, measure threshold `c`, and level
 `q`. The checker may reduce a claim to another comparison internally, but a
 writer SHALL NOT serialize that reduced comparison in place of the claim.
@@ -121,15 +120,14 @@ writer SHALL NOT serialize that reduced comparison in place of the claim.
 each a list of steps in FR-181 trace step content plus each step's drawn
 random vector (and, over a timed subject, its delay), such that:
 
-- on each path the event is false (for `>= θ` or `> θ`) or true (for `<= θ`
-  or `< θ`), or, for an exact-only form, the path's last state lies in a set the
+- on each path the event is false (for `>= θ`) or true (for `<= θ`), or, for
+  an exact-only form, the path's last state lies in a set the
   checker's qualitative computation places on the violating side (for
   example a state of value 0, or a state of a fair end component with no
   target state);
 - the paths are pairwise prefix-free, so their cylinders are disjoint;
 - their exact path probabilities establish the failing side: above `1 − θ`
-  for `>= θ`, at least `1 − θ` for `> θ`, above `θ` for `<= θ`, and at least
-  `θ` for `< θ`.
+  for `>= θ` and above `θ` for `<= θ`.
 
 A path's probability is the product of its step probabilities under the
 workload; under a workload with free delays, the product of the workload's
@@ -144,26 +142,21 @@ terminal stutter. If it does, the provider SHALL NOT search for or emit a path
 set for that claim, regardless of whether a finite path set could reach the
 bound. For the cyclic subjects admitted by FR-412's event-avoidance
 certificate role, the provider SHALL instead emit that subsystem certificate
-when its strict comparison succeeds; other cyclic subjects do not refute
+when its bound comparison establishes refutation; other cyclic subjects do not refute
 through path-set evidence under this requirement.
 
 **Quantile path sets.** A quantile claim is conditioned on activation
 (FR-407), so its path set reads two masses rather than one sum. Each path is
-either **violating** or **not activated**. For `<= c` and `< c`, violating
-means activated with `M > c` and `M >= c`, respectively; for `>= c` and
-`> c`, it means activated with `M < c` and `M <= c`, respectively. `V` is
+either **violating** or **not activated**. For `<= c`, violating means
+activated with `M > c`; for `>= c`, it means activated with `M < c`. `V` is
 the exact sum of violating-path probabilities and `N` that of not-activated
 paths. The paths left out have total mass `1 − V − N`, which bounds the mass
 of activated, non-violating behaviours from above, so replay checks:
 
 - `quantile level q of M <= c` (`Pr(M <= c | activated) >= q`): refute when
   `V > (1 − q) · (1 − N)`;
-- `quantile level q of M < c` (`Pr(M < c | activated) >= q`): refute when
-  `V > (1 − q) · (1 − N)`;
 - `quantile level q of M >= c` (`Pr(M < c | activated) < q`): refute when
   `V > 0` and `V >= q · (1 − N)`;
-- `quantile level q of M > c` (`Pr(M <= c | activated) < q`): refute when
-  `V > 0` and `V >= q · (1 − N)`.
 
 An `on each` instance is conditioned on its activation the same way (FR-407
 "Conditioned values"), and its path set reads the same two masses. A path is
@@ -244,8 +237,7 @@ claim-product chain, derives its accepting and rejecting bottom-component
 unions, and checks the FR-412 event-avoidance lower certificate for the
 union that violates the claim bound. It then applies the claim comparison:
 for `>= θ`, the lower bound on the rejecting union must exceed `1 − θ`; for
-`> θ`, it must be at least `1 − θ`; for `<= θ`, the lower bound on the
-accepting union must exceed `θ`; for `< θ`, it must be at least `θ`. Replay
+`<= θ`, the lower bound on the accepting union must exceed `θ`. Replay
 SHALL not interpret a bare engine value or proof-side acceptance as a
 refutation. The claim comparison is required even when the
 provider's proof-side checker accepts the claim.
@@ -292,7 +284,7 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-6 | Engines may return different valid witnesses; a vector checks that the returned evidence replays, not that it equals a stored witness. | Test (TC-364) |
 | FR-413-AC-7 | An undefined path re-executes with positive probability and replays to the undefined value with the item's locus and reason, settling `refuted`; the same path ending at a state where the claim is defined settles `inconclusive`, `replay-parity`. | Test (TC-364) |
 | FR-413-AC-8 | A refutation under a workload over a timed subject with a free delay carries a witness scheduler whose entries give that delay per drawn vector of the given delays; replay checks each step's free delay against it, and the same counterexample without `scheduler` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-374) |
-| FR-413-AC-9 | A quantile refutation replays by the two-mass rules for all four claim comparisons: `<=` and `<` require `V > (1 − q) · (1 − N)` for the respective violating events `M > c` and `M >= c`; `>=` and `>` require `V > 0` and `V >= q · (1 − N)` for `M < c` and `M <= c`. PC-09 and PC-12 cover equality boundaries; a path set whose activation probability is below 1 refutes only when its not-activated mass `N` is counted. | Test (TC-364, TC-360) |
+| FR-413-AC-9 | A quantile refutation replays by the two-mass rule: for `quantile level q of M >= c` it refutes when `V > 0` and `V >= q · (1 − N)`, equality included, so the `Two` refutation of `quantile 0.5 of M >= 3` (`V = 1/2`, `N = 0`) replays; for `quantile level q of M <= c` it refutes only when `V > (1 − q) · (1 − N)`; a path set whose activation probability is below 1 refutes only when its not-activated mass `N` is counted. | Test (TC-364, TC-360) |
 | FR-413-AC-10 | Under FR-407-AC-18's workload, `on each (x: T) when (g) { probability >= rational(2, 3) [E] }` is refuted by a path set naming `x` as its `instance`, with violating mass `V = 1/4` (`b`, then the event false) and not-activated mass `N = 3/8` (`a`, then the state from which `g` is unreachable): `1/4 > (1/3) · (5/8)`. The same paths without the not-activated path refute nothing, since `1/4` is not above `1/3`; and a counterexample without `instance` refuses `invalid_runtime_input`/`missing-member`. | Test (TC-2062) |
 | FR-413-AC-11 | Over a `Coin` model whose `drop(b)` with `b = 0` deletes the coin (each `b` with probability `1/2`), the claim `probability >= 0.5 [ always[0,3] holds(c.v = 0) ]` is refuted by `{"type": "undefined-path", "path": [drop with b = 0], "undefined": {"type": "undefined-evaluation", "where": {locus, position: 1, initial_state: 0, binding, product_state}, "cause": "absent-key"}}`, the locus that of `c.v`; replay reproduces it at thresholds 0.5 and 0.01 alike. The same evidence with `position` 0, with the path `drop` with `b = 1` (where `c.v` is defined), or with another catalogued `cause` settles `inconclusive`, `replay-parity`; without `undefined` it fails the backend-provider schema. | Test (TC-2111) |
 | FR-413-AC-12 | The backend-provider schema admits `fr413-randomized-witness-scheduler`, whose two distinct choices have exact probabilities `1/3` and `2/3`. | Test (TC-431) |
@@ -300,9 +292,8 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-14 | `FR413-R2-probabilities-do-not-sum-to-one` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its exact probability sum is not 1. | Inspection |
 | FR-413-AC-15 | `FR413-R3-duplicate-choice` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its alternatives repeat a choice. | Inspection |
 | FR-413-AC-16 | On FR-412-AC-24's induced chain, the `probability >= 3/4 [eventually E]` counterexample carries a deterministic scheduler and the `lower` certificate for `Pr(not eventually E)` with initial bound `1/2`; replay derives `{a}` as the event-free bottom target, checks the certificate, and applies `1/2 > 1 − 3/4` to settle `refuted`. Removing the scheduler, supplying an event-containing component, or using a lower bound at or below `1/4` prevents refutation. | Test (TC-432) |
-| FR-413-AC-17 | A `ProbabilisticCounterexample.bound` has exactly one FR-413 form: `probability`, `mean-of-fraction`, and `long-run-fraction` each carry exactly `type`, `comparison`, and `threshold`; `quantile` carries exactly those plus `level`. The schema admits the four closed type spellings and each comparison permitted by that form, preserves the checked claim's comparison and threshold, and keeps quantile `level` separate from its measure threshold. It refuses missing or extra members, an unknown type or comparison, and a non-rational threshold or level; the result reader also refuses a quantile level outside `0 < level < 1` or a bound not equal to the checked claim. | Test (TC-431, TC-358) |
-| FR-413-AC-18 | On a cyclic `INFINITE-TRACE` subject with an unwindowed `eventually`, `always`, or `until` claim, provider path-set search does not start and no path set is emitted, even when a finite set of paths would cross the bound. For an admitted subject, replay derives the accepting/rejecting bottom-component unions and verifies the `lower` certificate for the violating side: the lower bound exceeds `1 − θ` for `>= θ` or is at least `1 − θ` for `> θ`; it exceeds `θ` for `<= θ` or is at least `θ` for `< θ`. TC-433 covers the `always`, `until`, and `eventually <=` reproductions. | Test |
-| FR-413-AC-19 | At equality on TC-364 `Boundary`, a path set with violating mass exactly `1 − θ` refutes `probability > θ` but not `probability >= θ`; one with mass exactly `θ` refutes `probability < θ` but not `probability <= θ`. The strict and non-strict comparisons are each replayed against the originating claim's unchanged operator. | Test (TC-364) |
+| FR-413-AC-17 | A `ProbabilisticCounterexample.bound` has exactly one FR-413 form: `probability`, `mean-of-fraction`, and `long-run-fraction` each carry exactly `type`, `comparison`, and `threshold`; `quantile` carries exactly those plus `level`. The schema admits the four closed type spellings and each comparison permitted by FR-407, preserves the checked claim's comparison and threshold, and keeps quantile `level` separate from its measure threshold. It refuses missing or extra members, an unknown type or comparison, and a non-rational threshold or level; the result reader also refuses a quantile level outside `0 < level < 1` or a bound not equal to the checked claim. | Test (TC-431, TC-358) |
+| FR-413-AC-18 | On a cyclic `INFINITE-TRACE` subject with an unwindowed `eventually`, `always`, or `until` claim, provider path-set search does not start and no path set is emitted, even when a finite set of paths would cross the bound. For an admitted subject, replay derives the accepting/rejecting bottom-component unions and verifies the `lower` certificate for the violating side: the lower bound exceeds `1 − θ` for `>= θ` and exceeds `θ` for `<= θ`. TC-433 covers the `always`, `until`, and `eventually <=` reproductions. | Test |
 
 ## Dependencies
 

@@ -161,17 +161,16 @@ mixing outcomes that the claim monitor has already decided. These
 classifications include implicit terminal stutter and preserve each claim's
 predicate and monitor semantics.
 
-For a `greater-or-equal` or `greater` claim bound `θ`, the checker SHALL define R as the
+For a `greater-or-equal` claim bound `θ`, the checker SHALL define R as the
 union of rejecting components and treat R as the targets of an auxiliary
 reachability lower check. Every R state has value 1; the named values and
 ranks SHALL establish a lower bound on reaching R using the ordinary `lower`
 inequalities and progress rule. The checker SHALL independently confirm that
 R is closed and has the claim's rejecting classification. The lower bound
-`r` refutes `greater-or-equal` only when `r > 1 − θ`, and refutes
-`greater` when `r >= 1 − θ`. For a `less-or-equal` or `less` bound
+`r` refutes `greater-or-equal` only when `r > 1 − θ`. For a `less-or-equal` bound
 `θ`, the checker SHALL instead define R as the union of accepting components,
 establish a lower bound on reaching R under the same rules, and refute
-`less-or-equal` only when `r > θ`, and `less` when `r >= θ`. Because
+`less-or-equal` only when `r > θ`. Because
 every path in a finite induced chain eventually enters a bottom component,
 these target events are exactly the violating sides of their respective
 bounds. This role does not change other `lower` certificate meanings or
