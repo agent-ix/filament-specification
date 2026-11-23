@@ -50,6 +50,21 @@ A region must not split a UTF-8 scalar: a span that does receives
 `invalid_source_map` (FR-003-AC-2). Decoding JSON string escapes does not
 replace original spelling or offsets (FR-036).
 
+### Source-map provenance
+
+A source map produced with authored source available SHALL be verified by its
+producer before emission: each mapped occurrence SHALL identify the selected
+definition and occurrence that produced it, and every region SHALL be the exact
+half-open byte span in the admitted source text for that occurrence. The
+producer SHALL also verify byte bounds and UTF-8 scalar boundaries against that
+source. A package reader that receives only the package SHALL validate the
+source-map wire structure and joins to declared source references, but SHALL
+NOT claim to authenticate the authored bytes or that a region identifies the
+claimed syntax. A later analyzer or driver SHALL bind each selected definition
+to its own admitted definition before using the package's provenance or
+interpreting a rule identity for a decision. A package reference or opaque
+identity string alone is not authority to select a definition or rule.
+
 ## Identity and comparison
 
 - **Identity kind** — *value*. A region has no identity of its own and is
@@ -85,6 +100,7 @@ This artifact types the first kind only.
 | FR-203-AC-2 | An unavailable region compares only to absence and is not represented as offset zero. | Analysis |
 | FR-203-AC-3 | Changing the human-readable message that reports a region leaves the region's key unchanged. | Analysis |
 | FR-203-AC-4 | A source span, a JSON field/index path and a runtime value path are not compared to one another. | Inspection |
+| FR-203-AC-5 | An emitter given the selected definition, exact authored source and occurrence refuses a region beyond the source, one splitting a UTF-8 scalar, and one not equal to the occurrence's exact source span; it admits the exact span. A package-only reader admits structurally valid retained region data without claiming source-byte authentication, and a consuming analyzer/driver refuses source-level use until it binds the selected definition to its admitted definition. | Test (TC-988) |
 
 ## Resolved extraction boundary
 
