@@ -371,7 +371,6 @@ is a new, independent measurement of the same obligation.
 | FR-408-AC-17 | When the caller cancels a run with `workers` 4, the provider settles `incomplete`, `cancelled{source}` with counts and estimates equal to the one-worker run stopped at the trace index the merge reached, and the result carries no sample of a higher trace index. | Test (TC-356) |
 | FR-408-AC-18 | When a run with `workers` 4 stops at `max_samples` 100, a sampler test double that counts draws started records at most 103 draws and, at every moment, at most 4 samples drawn and not yet merged; a provider that draws further ahead fails. | Test (TC-356) |
 | FR-408-AC-19 | For Okamoto `NoFault` with `N = 9,210,341`, `max_samples` 1,000,000 settles before drawing with `incomplete`, `limit-reached{limit: max_samples, value: 1,000,000, setting: statistical.max_samples, required: 9,210,341}` and zero samples/draws; setting `max_draws` to 1,000,000 instead reports `limit: max_draws` and `setting: statistical.max_draws` with the same `required`; either limit equal to N permits the run. | Test (TC-355) |
-| FR-408-AC-19 | For Okamoto `NoFault` with `N = 9,210,341`, `max_samples` 1,000,000 settles before drawing with `incomplete`, `limit-reached{limit: max_samples, value: 1,000,000, setting: statistical.max_samples, required: 9,210,341}` and zero samples/draws; setting `max_draws` to 1,000,000 instead reports `limit: max_draws` and `setting: statistical.max_draws` with the same `required`; either limit equal to N permits the run. | Test (TC-355) |
 
 ## Dependencies
 

@@ -44,7 +44,6 @@ The models below are defined here in full; the citation names the FSL design rec
 | SC-12 | A `mean of` claim, and a long-run fraction claim, with method Clopper–Pearson | `invalid-request` at negotiation, `invalid_capability`/`not-statistical` naming the item and the method; no sample is drawn |
 | SC-13 | Every binomial tail SC-10 and SC-11 read | Each is a pair of binary floating bounds of `96 + ⌈log2(N + 1)⌉` bits within a relative `2^-90` of the true tail; a fixture whose exact `G(k, θ)` lies below `β'` by less than the upper bound's rounding error, so that the upper bound exceeds `β'`, is undecided, as SC-09 is for SPRT (a rule that decided on the lower bound or the midpoint would accept); the tails, interval ends and decisions are identical on both platforms |
 | SC-14 | `NoFault` with Okamoto, `N = 9,210,341`; separately set `max_samples` 1,000,000, `max_draws` 1,000,000, and each bound to N | Either below-N request settles before drawing with `limit-reached` naming the correct limit, configured value, setting and `required: 9,210,341`, with zero samples/draws; either equal-N request runs and decides |
-| SC-14 | `NoFault` with Okamoto, `N = 9,210,341`; separately set `max_samples` 1,000,000, `max_draws` 1,000,000, and each bound to N | Either below-N request settles before drawing with `limit-reached` naming the correct limit, configured value, setting and `required: 9,210,341`, with zero samples/draws; either equal-N request runs and decides |
 
 ## Expected Results
 
