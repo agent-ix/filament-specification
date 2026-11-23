@@ -4752,8 +4752,9 @@ A compensation node and an await have no `temporal_profile` law of their own
 (FR-464 "An `await` or a `compensate` reads a clock role"): the profile of each
 is the lock's `temporal_profile` selection, and no per-node law is read or
 required. A `hyperproperty` node's profile is its body wrapper's law under a
-`behaviours` domain and the lock's `temporal_profile` selection under a
-finite domain ("Hyper clause rows" below). The
+`behaviours` domain and its `filament.op.claim.clause` application law under a
+finite domain ("Hyper clause rows" below); each law must equal a matching lock
+selection. The
 selected definition determines exactly the `clock.kind` above. The profile's
 trust and identity are provided by that existing lock selection and the
 referenced law; `temporal_bindings` adds no revision, history, artifact
@@ -4905,16 +4906,19 @@ above, whether or not the clause has an object parameter.
   declaration identity text).
 - **Finite domain.** A finite-domain clause selects a finite-trace profile
   (FR-191), each of which is clock-configured, so the node always has rows.
-  Its body is a Boolean expression and it has no wrapper, profile law or clock
-  argument (FR-402), so, as for a compensation or an await, its profile is the
-  lock's `temporal_profile` selection and a row's `clock.kind` is checked
-  against it. Its traces are trace subjects, so its clock name is a clock role
+  Its body is a Boolean expression and it has no wrapper or clock argument
+  (FR-402). Its traces are trace subjects, so its clock name is a clock role
   (FR-090 "Clock names"): the domain binder `t` of `t in Q bounded N`, the one
   role every trace of the clause reads. Every row of one occurrence carries
   that role as its `clock_name` and the one configuration the caller binds
   the role to as its `clock`. The binder is not an argument of the node, so
   two occurrences of one node may carry different roles, and the reader checks
   the rows of one occurrence for agreement instead of against a node argument.
+  When validating a temporal binding for a finite-domain hyper clause, the
+  checked-package reader SHALL check each row's `clock.kind` against the
+  `temporal_profile` law carried by that hyper clause's
+  `filament.op.claim.clause` application, require that law to equal a matching
+  lock profile selection, and SHALL NOT select a profile by lock-array position.
 
 The rows of one occurrence may hold equal configurations (two traces of one
 model, a finite-domain clause, or a fixed-sample clause whose derived
@@ -4995,6 +4999,8 @@ missing-member and wrong-type cases. Its schema-valid semantic refusals cover a
 missing required row, absent and wrong-kind declaration references, and a
 repeated row. Further semantic refusals cover a clock-name mismatch and a
 profile/configuration kind mismatch, with their exact row loci and check order.
+Its `finite_hyper_profile_cases` publish the multi-selection finite-hyper
+acceptance and clock-kind refusal in FR-322-AC-464 (TC-2028).
 The multi-clause positive has two distinct declaration `NodeRef`s with the same
 model, selected profile and clock name; their formula references distinguish
 the structural keys, and the rows are in ascending `NodeRef` order. Its `compensation_cases` (`CB-01` to `CB-08`,
@@ -6824,7 +6830,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-461 | AC-460's package with the `Bounded` row's `declaration_region` removed refuses `malformed_wire` at the row (`/temporal_clause_names/0`), as the closed schema refuses any missing member; with it shrunk to one byte that does not contain the name token, or naming another source, refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/0/declaration_region`; the same edits on the `NotAboveThree` row refuse at `/claim_names/{i}/declaration_region`. | Test (TC-2015) |
 | FR-322-AC-462 | A package whose protocol declares `observe role Auditor on Orders::Order;` and `observe sequence Review { ... }` carries the `boundary` member `observe-only` as the last body argument of exactly the `Auditor` role node and the `Review` control node; removing the `observe` mark changes those two nodes' bodies and no other node's body, and leaves every `node_id` unchanged; and a `boundary` member on any node that is not a `protocol`/`role` or `protocol`/`control` node refuses `malformed_wire`. | Test (TC-2018) |
 | FR-322-AC-463 | Two hyper clauses with equal bodies, `Fwd` over `forall trace s of S forall trace n of N` and `Rev` over `forall trace n of N forall trace s of S`, are two `claim`/`hyperproperty` nodes that share one body wrapper; under event-position each node has its own two rows in its own quantifier order (`s` then `n` for `Fwd`, `n` then `s` for `Rev`), the wrapper has none, and the package is admitted. `Rev`'s rows written in `Fwd`'s order refuse `invalid_package`/`timed-node-reference` at the later row's `trace`. A clause with a third quantifier `forall trace m of N` that only its `match` block reads has three rows, and omitting the `m` row refuses `invalid_package`/`timed-node-reference` at that node's body. | Test (TC-2027) |
-| FR-322-AC-464 | `hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }`, under the lock's event-position selection and with role `t` bound to `{"kind": "event_position", "sequence_authority": "obs"}`, has two rows keyed by its `claim`/`hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t` and that configuration, and is admitted. Removing the `b` row refuses `invalid_package`/`timed-node-reference` at the node's body; a row whose `trace` is `c` refuses at that row's `trace`; a second row whose `clock_name` is `u` refuses at `/temporal_bindings/1/clock_name`; a `fixed_sample` row refuses at that row's `clock/kind`. | Test (TC-2028) |
+| FR-322-AC-464 | `hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }`, with lock `profile_selections` `[T, D]` (TC-935; `T` is `infinite-trace/v1`, `D` is `event-position.false-extension/v1`) and role `t` bound to `{"kind": "event_position", "sequence_authority": "obs"}`, has two rows keyed by its `claim`/`hyperproperty` node and its one `claim` occurrence, `trace` `a` then `b`, each with `clock_name` `t` and that configuration, and is admitted because its `filament.op.claim.clause` law selects `D`. The same package with a `fixed_sample` row refuses `invalid_package`/`timed-node-reference` at `/temporal_bindings/0/clock/kind` (TCB-14); the reader does not use the first lock selection `T`. Removing the `b` row refuses `invalid_package`/`timed-node-reference` at the node's body; a row whose `trace` is `c` refuses at that row's `trace`; a second row whose `clock_name` is `u` refuses at `/temporal_bindings/1/clock_name`. | Test (TC-2028) |
 | FR-322-AC-465 | FR-322-AC-457's package with a second `claim` occurrence on the `AtMostTwo` node, whose `claim_names` row carries the `NotAboveThree` name, `qualified_name` and `declaration_region` (a derived conjunction node naming a contributing clause), is admitted, and `NotAboveThree` resolves to the row on its own node, the node whose declaration set `{NotAboveThree}` is strictly contained in the other node's `{AtMostTwo, NotAboveThree}`, never to the row on that other node. The same package with a second `claim` occurrence on the `NotAboveThree` node, under the same name and `declaration_region` (one declaration with two occurrences, as a step relation's `declaration` and `claim` occurrences are), is admitted, and `NotAboveThree` resolves to its least `claim` row. That second row renamed `Other` refuses `invalid_package`/`invalid-value` at its `/claim_names/{i}/name`. Two rows of one `qualified_name` with different `declaration_region`s still refuse `ambiguous_declaration`/`ambiguous-name` (FR-322-AC-458). A name whose two nodes have declaration sets that do not nest (`{NotAboveThree, B}` and `{AtMostTwo, NotAboveThree}`) refuses `ambiguous_declaration`/`ambiguous-name` at its last row's `/claim_names/{i}/qualified_name`, naming its first and last rows. | Test (TC-2035) |
 | FR-322-AC-466 | A hyper clause's body wrapper has no `temporal_clause_names` row, and its `claim`/`hyperproperty` node has one `claim_names` row per `claim` occurrence, carrying the clause's name, `qualified_name` and the whole hyper declaration's `declaration_region`. A `temporal_clause_names` row whose `declaration` is a body wrapper refuses `invalid_package`/`invalid-value` at `/temporal_clause_names/{i}/declaration`. A `claim_names` row and a `temporal_clause_names` row with one `name` refuse `ambiguous_declaration`/`ambiguous-name` at `/claim_names/{i}/name`, even when their `declaration_region`s are equal. | Test (TC-2036) |
 | FR-322-AC-467 | Over `type Digit = Int[0, 9];`, `synthesis Pick using p grammar Digit domain Digit satisfies { Pick * Pick = 49 };` is one `claim`/`synthesis_request` node whose path is `["Pick"]`, with one `declaration` occurrence, `semantic_type` the `scalar_type`/`boolean` node, and a body of exactly `grammar` and `domain` (both the `Digit` node), `candidate` (a `value`/`parameter` node named `Pick` at level `0` typed `Digit`), `objective` the empty aggregate, `satisfies` (the block's root) and `symmetry` `identity`; its `dependencies` are the three nodes `Digit`, the candidate and the block root, and one `claim_names` row names it `Pick`. With `minimize Pick` the `objective` binding is `direction` `minimize`, `expression` the candidate node and `text` `Pick`. A second declaration `Pick2` with the same grammar, domain and block is a second node. For plan synthesis `Reach` over `Config::ConfigVersion` with domain `Lengths`, `grammar` references the actual `ConfigVersion` `model`/`object_type` node, `domain` references the `Lengths` `bounded_domain`/`integer_range` node, and `candidate` references the `value`/`parameter` node named `Reach` at level `0`, whose `semantic_type` references the generated FR-800 plan-record type node; the reader admits the package and returns that same candidate and plan-record type reference, grammar, domain, objective and block. Retyping the plan candidate to the `ConfigVersion` grammar node refuses `invalid_package`/`invalid-value` at the `candidate` binding. | Test (TC-2037) |

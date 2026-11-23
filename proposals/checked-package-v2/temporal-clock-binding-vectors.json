@@ -1,5 +1,5 @@
 {
-  "note": "STD-621. These are full checked-package cases derived from the positive temporal-clause fixture, which carries one producer-owned temporal_bindings row for its clock-configured clause. Each single-clause positive retains that temporal/temporal_clause NodeRef, updates the clause's selected profile and the lock selection together, and replaces the row's typed configuration as needed. The multi-clause positive has two distinct clause NodeRefs with the same model, selected profile and clock name; their paths differ only by their formula NodeRef, and rows are in ascending structural NodeRef order. The profile is vector metadata, not a wire member; the row carries only its structural declaration key, exact clock name and closed typed clock configuration. The QSpec test validates the complete packages against schema.json. Reader checks for declaration membership and the profile/configuration join are separately recorded for the typed IR reader. STD-644 (FR-322-AC-305): `compensation_cases` are abstract reader cases over declarations listed in `compensation_declarations` (`graph_index` is the node's position in the graph; `form` is its semantic_form; `clock` is the clause's or compensation's clock text); a row's `declaration` names a declaration by `key` and QSpec's test replaces it with the declaration's node_id. `lock_temporal_profile` is the clock kind the lock's temporal_profile selection determines (`none` when it selects no clock-configured profile). Rows are listed in the order written; cases with several declarations list them in ascending node-id order. Each row carries `occurrence` (the ordinal of the declaration's claim occurrence, or of a compensation's declaration occurrence), so the clock configuration is per occurrence (FR-322 \"Temporal clock bindings\"); the per-occurrence cases are in `temporal-clock-occurrence-vectors.json` (BO-*).",
+  "note": "STD-621. These are full checked-package cases derived from the positive temporal-clause fixture, which carries one producer-owned temporal_bindings row for its clock-configured clause. Each single-clause positive retains that temporal/temporal_clause NodeRef, updates the clause's selected profile and the lock selection together, and replaces the row's typed configuration as needed. The multi-clause positive has two distinct clause NodeRefs with the same model, selected profile and clock name; their paths differ only by their formula NodeRef, and rows are in ascending structural NodeRef order. The profile is vector metadata, not a wire member; the row carries only its structural declaration key, exact clock name and closed typed clock configuration. The QSpec test validates the complete packages against schema.json. Reader checks for declaration membership and the profile/configuration join are separately recorded for the typed IR reader. IR-1586 (FR-322-AC-464, TC-2028): `finite_hyper_profile_cases` use the admitted lock selections T then D from `contract-package-selection-vectors.json` and a finite hyper clause application law selecting D; the row's clock kind is checked against D, never the first lock entry. The refusal changes only the row clock kind. STD-644 (FR-322-AC-305): `compensation_cases` are abstract reader cases over declarations listed in `compensation_declarations` (`graph_index` is the node's position in the graph; `form` is its semantic_form; `clock` is the clause's or compensation's clock text); a row's `declaration` names a declaration by `key` and QSpec's test replaces it with the declaration's node_id. `lock_temporal_profile` is the clock kind the lock's temporal_profile selection determines (`none` when it selects no clock-configured profile). Rows are listed in the order written; cases with several declarations list them in ascending node-id order. Each row carries `occurrence` (the ordinal of the declaration's claim occurrence, or of a compensation's declaration occurrence), so the clock configuration is per occurrence (FR-322 \"Temporal clock bindings\"); the per-occurrence cases are in `temporal-clock-occurrence-vectors.json` (BO-*).",
   "fixture": "fixtures/positive-timed-clause-nodes.json",
   "positive": [
     {
@@ -137,6 +137,32 @@
       "expected_cause": "timed-node-reference",
       "locus": "/temporal_bindings/0/clock/kind",
       "precedence": "after-aggregate-order-and-declaration-resolution-and-clock-name"
+    }
+  ],
+  "finite_hyper_profile_cases": [
+    {
+      "id": "TCB-14-multiple-selections-use-hyper-law",
+      "lock_profile_selections": ["T", "D"],
+      "hyper_clause": "hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }",
+      "application_temporal_profile": "D",
+      "row_clock": {"kind": "event_position", "sequence_authority": "obs"},
+      "expected": "admitted"
+    },
+    {
+      "id": "TCB-15-multiple-selections-reject-kind-against-hyper-law",
+      "lock_profile_selections": ["T", "D"],
+      "hyper_clause": "hyper Det using ep over t in Obs bounded 3 forall trace a forall trace b { (a.in = b.in) -> (a.out = b.out) }",
+      "application_temporal_profile": "D",
+      "row_clock": {
+        "kind": "fixed_sample",
+        "epoch": {"kind": "integer", "decimal": "0"},
+        "period": {"kind": "rational", "numerator": "1", "denominator": "10"},
+        "unit": "milliseconds"
+      },
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "timed-node-reference",
+      "locus": "/temporal_bindings/0/clock/kind"
     }
   ],
   "compensation_declarations": [
