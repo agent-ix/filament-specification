@@ -105,6 +105,50 @@ for every kind, and the `claim`/`value_validity` node for a `value-validity`
 record), so the rows add no identity of their own. Like `claim_names`, the
 member is no digest or hash input (FR-201).
 
+### Shared path-condition frames
+
+The package MAY carry the top-level `path_condition_frames` member. It SHALL
+be absent exactly when every `value-validity` record has an empty path
+condition; otherwise it SHALL be a non-empty array. Its array index is the
+frame's package-local `frame_id`, a zero-based unsigned integer. The array is
+in canonical order: owner function structural key ascending, then first visit
+in that owner's body-reference order, depth first. A frame is emitted before
+any child that names it. Exactly one row exists for each distinct
+`(parent, guard occurrence, holds)` tuple; duplicate tuples are refused.
+
+Each row is a closed object with exactly these members, in this order:
+
+```json
+{"parent": null, "guard": {"node": {"package": "<package>", "path": ["<segment>"], "ordinal": 0}, "occurrence": {"role": "expression", "ordinal": 0}}, "holds": true}
+```
+
+- `parent` is `null` for an outermost frame, or the `frame_id` of its
+  immediately enclosing guard frame. It is a non-negative integer smaller
+  than this row's array index.
+- `guard` is the exact expression occurrence read as a Boolean guard: a
+  local `NodeRef` and an `expression` source-map occurrence ordinal, in the
+  closed occurrence object `{node, occurrence}`. The `occurrence` object is
+  exactly `{role, ordinal}` with role `expression`.
+- `holds` is the required Boolean outcome for this branch: `true` for an
+  `if` then branch and for the right operand of `and` or `implies`; `false`
+  for an `if` else branch and the right operand of `or`.
+
+The tuple's `parent` links the row to the complete outer prefix. Frames with
+the same tuple are shared by every record using that nested guard path. The
+table is not a graph node and frame IDs are not `NodeRef`s; they are indexes
+only in this package. Every table row SHALL occur in at least one record's
+referenced chain. The reader SHALL refuse a frame whose guard is not a Boolean
+expression/value condition in its owner's body, whose parent is not the
+immediately enclosing guard, or whose `holds` differs from the branch
+semantics above.
+
+The table's only semantic authority is the checked package body: the reader
+derives the ordered guard chain for every scalar-operation occurrence by
+walking each owner body from its root, excluding the termination measure.
+It SHALL compare each record's referenced frame chain with that independently
+derived chain, including guard occurrence, order and `holds`; it SHALL NOT
+trust a producer-supplied chain as proof of body context.
+
 ### Value-validity record node
 
 A `value-validity` record is the claim that one occurrence of a scalar
@@ -152,26 +196,16 @@ Its body is an aggregate of exactly these eight bindings, in this order:
    application) and `occurrence` (a `literal` integer, the ordinal of that
    narrow's `expression` occurrence that wraps this one). A narrow is never a
    record of its own.
-6. `path_condition`: an aggregate with one member per guard the occurrence
-   stands under, outermost first, each an aggregate of exactly three
-   bindings: `guard` (a `reference` to the Boolean node that is the guard),
-   `occurrence` (a `literal` integer, the ordinal of the guard's read as the
-   condition) and `holds` (a `literal` Boolean, the outcome the guard is
-   required to have). A guard node is either an `expression` node or a
-   `value` node of form `literal` or `parameter`; in either case it has
-   Boolean `semantic_type` and is reached from the owner's body root. A
-   Boolean literal used directly as a condition is `value`/`literal`; a
-   Boolean parameter or binder directly named as a condition is
-   `value`/`parameter`. Other value forms do not qualify. A let expression
-   or a reference to a let-bound name is an `expression` node and follows
-   the expression case. For an expression guard, the ordinal names its
-   `expression` occurrence; for a value guard, it names the `expression`
-   occurrence of that value node read as this condition, not a declaration
-   or generated occurrence. A guard is an enclosing `if`'s condition,
-   required true in its `then` branch and false in its `else` branch, or the
-   left operand of an enclosing `and`, `or` or `implies` whose right operand
-   holds the occurrence, required true for `and` and `implies` and false for
-   `or` (FR-484 "premises"). An unguarded occurrence has the empty aggregate.
+6. `path_condition`: an aggregate that is empty when the occurrence has no
+   guards, and otherwise has exactly one member: a non-negative integer
+   literal, the `frame_id` of the terminal row in `path_condition_frames`.
+   The parent links of that row and its ancestors encode the complete ordered
+   condition. The reader derives the condition independently from the owner
+   body's structure and requires the referenced chain to match it. The frame
+   row's `guard` is the exact Boolean expression occurrence, including its
+   source-map ordinal; its `holds` gives the required branch outcome. Thus the
+   frame chain preserves the guard semantics of FR-484 without repeating each
+   prefix in every record.
 7. `extent_roots`: an aggregate of `reference`s to the `value`/`parameter`
    nodes of every function parameter and every query, `count`, `sum`,
    `fold` or `reduce` binder that the application's argument subtrees or a
@@ -192,29 +226,27 @@ no operation, so these bindings are all of its references.
 The node's `node_id` path is
 
 `["claim", "value_validity", {owner}, {application}, K, "bound",
-{result_bound}, "conversion", ({narrow}, M)?, "guards", ({guard}, J,
-H)…, "roots", {r}…, "objects", {o}…]`
+{result_bound}, "conversion", ({narrow}, M)?, "path_condition", (F)?,
+"roots", {r}…, "objects", {o}…]`
 
-where `{x}` is the operand segment naming node `x`; `K`, `M` and `J` are the
-decimal texts of the `occurrence` ordinals of the application, the narrow
-and each guard read; `H` is `"true"` or `"false"`; and the operands are in
-body order. A guard segment names the exact expression or value node read as
-the condition, and `J` distinguishes that read when a node is read more
-than once. Thus the path includes the guard node, its read occurrence and
-required outcome. The conversion group is absent for the empty `conversion`. Each
-variable-length group has a fixed arity and the binding-name strings
+where `{x}` is the operand segment naming node `x`; `K` and `M` are the
+decimal texts of the application and narrow occurrence ordinals; `F`, when
+present, is the decimal text of the terminal frame's package-local `frame_id`.
+The conversion group is absent for the empty `conversion`, and the
+`path_condition` group is absent for the empty path condition. The identity
+path cites only the terminal frame id; it never expands the parent chain.
+Each variable-length group has a fixed arity and the binding-name strings
 separate the groups, so two different bodies never give one path. The
-`ordinal` is `0`: the owner, the application and its occurrence ordinal
-identify one claim site, so no two records share a path.
+`ordinal` is `0`: the owner, application and occurrence identify one claim
+site, so no two records share a path.
 
-The record's identity therefore covers what the claim reads. A change to the
-owning function, to the application or its occurrence, to the bound's type,
-to the wrapping narrow, to a guard or its required outcome, to the roots or
-to the object types read changes the node's `node_id`, and a change to the
-unit that changes none of these leaves it unchanged. A sidecar row cannot
-carry these facts with identity, because a row never alters a node or its id
-(FR-322 `checked_term_data`); the `requirement_items` row therefore names
-the node and repeats none of its bindings.
+The record's identity therefore covers the claim site and its terminal frame
+reference. A change to the owning function, application or occurrence, bound,
+narrow, terminal frame id, roots or object types changes the node's `node_id`.
+The frame rows are package contents, so changing a guard, parent or required
+outcome changes the package's structural JSON identity even if a frame id is
+unchanged. A `requirement_items` row never alters a node id and names the
+record node without repeating its bindings.
 
 A `claim`/`value_validity` node is not a claim-bearing node for
 `claim_names` (FR-322 "Claim declaration names"): no source declaration
@@ -232,22 +264,63 @@ row.
   because the package order counts every record.
 - The producer SHALL write one `claim`/`value_validity` node for every
   `value-validity` record, after the owner function, the application, the
-  bound's type node, the narrow, every guard, every root and every object
-  type node it references, with the body and path above, and SHALL name it
+  bound's type node, the narrow, every frame guard, every root and every object
+  type node it references, with the body and identity path above, and SHALL name it
   from the record's row.
+- The producer SHALL write `path_condition_frames` exactly when at least one
+  value-validity record has a non-empty path condition. It SHALL intern each
+  distinct `(parent, guard occurrence, holds)` tuple once, assign frame ids by
+  the canonical order above, and make each guarded record cite only its
+  terminal frame id in its body and identity path. It SHALL NOT serialize an
+  expanded guard list in a record.
 - The producer SHALL write a record's `extent` from its own classification
   of the record's extent (FSL ADR-014 §4), never from a backend's bounds.
-- The producer SHALL NOT carry a record's facts in any other table or
-  sidecar row.
+- The producer SHALL NOT duplicate a record's facts in any table or sidecar
+  row. `path_condition_frames` is the sole shared representation of guards.
 
 ### Reader
 
 The reader SHALL run this step after FR-640's `probabilistic` and
 `probabilistic_claim` checks and before the `checked_term_data` records
 (FR-322 "Check order"), and refuse the first failure with the code and cause
-given, at the JSON pointer named. First, for each `claim`/`value_validity`
-node in ascending node-id order, at `/semantic_graph/nodes/{n}`, `n` the
-node's graph index:
+given, at the JSON pointer named. It SHALL first validate `path_condition_frames`:
+
+- a present member that is not a non-empty array of closed rows whose members
+   are exactly `parent`, `guard`, `holds` in that order, or a row whose
+   `guard` is not exactly `{node, occurrence}` with an `expression` occurrence,
+   or whose primitive JSON types are wrong: `malformed_wire` at
+   `/path_condition_frames` or the malformed row;
+- a `parent` that is neither `null` nor an earlier array index, a missing
+   parent row, or a parent from a different owner body: `invalid_package`/
+   `invalid-value` at `/path_condition_frames/{f}/parent`. Requiring every
+   parent index to be less than `f` excludes cycles;
+- a guard node that is not a local Boolean `expression`, `value`/`literal`,
+   or `value`/`parameter` in the owner's reachable body, or whose source-map
+   expression occurrence does not identify that read: `invalid_package`/
+   `invalid-value` at `/path_condition_frames/{f}/guard`;
+- a row that repeats an earlier `(parent, guard, occurrence, holds)` tuple:
+   `invalid_package`/`conflicting-definition` at the repeated row;
+- a frame row not used by any record's referenced chain:
+   `invalid_package`/`invalid-value` at `/path_condition_frames/{f}`.
+
+The reader SHALL then walk each owner body once, from its body root and in
+body-reference order, excluding its termination measure. It SHALL derive for
+each scalar-operation occurrence the exact outermost-first chain of condition
+occurrences and required outcomes under which it is evaluated. In this walk,
+`if` then/else branches contribute their condition with `holds` true/false;
+the right operand of `and`, `implies` and `or` contributes the left operand
+with `holds` true/true/false respectively. Shared prefixes use the same
+canonical frame id. This traversal both validates each frame's parent and
+branch polarity and produces the expected terminal frame id for each
+occurrence. A record whose reference differs from that derived id refuses as
+`invalid_package`/`invalid-value` at its `body/members/5` binding. For an
+unguarded occurrence, only the empty aggregate is valid. A non-empty frame
+table when all record chains are empty, or a missing table when any derived
+chain is non-empty, refuses `invalid_package`/`invalid-value` at
+`/path_condition_frames`.
+
+Next, for each `claim`/`value_validity` node in ascending node-id order, at
+`/semantic_graph/nodes/{n}`, `n` the node's graph index:
 
 1. a node with a `declaration` member, or whose occurrences are not exactly
    one `generated` occurrence: `invalid_package`/`invalid-value` at
@@ -274,17 +347,11 @@ node's graph index:
    no `expression` occurrence of that narrow, or whose narrow's
    `type_argument` node is not the `result_bound` node:
    `invalid_package`/`invalid-value` at `body/members/4`;
-8. a `path_condition` member that is not the three bindings above, whose
-   `guard` is not a `reference` to a local `expression` node or a local
-   `value` node of form `literal` or `parameter`, its `semantic_type` is not
-   Boolean, or it is not reached from the owner's body root; whose
-   `occurrence` names no `expression` occurrence of that node read as this
-   condition; or whose `holds` is not a Boolean literal:
-   `invalid_package`/`invalid-value` at
-   `body/members/5/value/members/{g}`;
-   within this rule the node-form, Boolean-type and body-reachability checks
-   precede the condition-read occurrence check, which precedes the `holds`
-   check. The first failing check determines the refusal.
+8. a `path_condition` member that is not an empty aggregate or an aggregate
+   of exactly one non-negative integer literal naming a row in
+   `path_condition_frames`, or whose frame chain differs from the independently
+   derived chain for this owner's application occurrence:
+   `invalid_package`/`invalid-value` at `body/members/5`;
 9. an `extent_roots` member that is not a `reference` to a `value`/`parameter`
    node, or that is repeated or out of ascending node-id order:
    `invalid_package`/`invalid-value` at `body/members/6/value/members/{r}`;
@@ -327,28 +394,36 @@ Then, for `requirement_items`:
     position among that owner's rows: `invalid_package`/`invalid-value` at
     `/semantic_graph/nodes/{n}/occurrences`.
 
-The reader does not compare a record node's path with its body (FR-322
-"Structural node identity"), recomputes no extent, re-derives no owner or
-guard, and does not decide whether the producer's checker should have
-produced a record it did not write: each of those is the producer's duty,
-held by its own criteria.
+The reader SHALL verify that a record node's structural identity path contains
+the same terminal frame id as its body binding. A mismatch refuses
+`invalid_package`/`invalid-semantic-graph` at the node's `node_id`. The reader
+does not recompute an extent, re-derive an owner, or decide whether the
+producer's checker should have produced a record it did not write; those
+remain the producer's duty.
 
 The reader SHALL charge one validation visit of the caller's reader budget per
-`claim`/`value_validity` node and per `path_condition`, `extent_roots` and
-`objects` member, per `requirement_items` row and per extent domain, before
-inspecting it, and one visit per node it reaches while it walks an owner's
-body, each owner's body walked once whatever the number of its records. On
-exhaustion it SHALL return its `incomplete` result at the first uncharged
-member, with no partial view.
+`path_condition_frames` row, `claim`/`value_validity` node,
+`extent_roots` and `objects` member, `requirement_items` row, and extent
+domain, before inspecting it, and one visit per node it reaches while walking
+an owner's body. Each owner body SHALL be walked once for all of its records.
+It SHALL retain at most one path frame per distinct guard edge and one record
+index per value-validity record; it SHALL NOT retain an expanded path-condition
+vector per record. Retained storage for the requirement records, shared frames
+and typed views SHALL be O(G + R), where G is the number of unique path frames
+and R the number of records. The owner's body traversal may use O(D)
+temporary stack storage, D the maximum body depth, and SHALL release it after
+admission. On exhaustion the reader SHALL return its `incomplete` result at
+the first uncharged member, with no partial view.
 
 ### Typed read
 
 An admitted package SHALL expose its requirement records in package order,
-each with its claim node and occurrence, its kind, its extent and, for a
+each with its claim node and occurrence, kind and extent and, for a
 `value-validity` record, its record node, owner function node, application
 node and occurrence ordinal, result-bound type node, conversion narrow and
-occurrence, path condition (guard node, occurrence ordinal and required
-outcome, outermost first), extent-root nodes and object-type nodes. A
+occurrence, and a borrowed shared-chain view of the path condition (outermost
+first), plus extent-root nodes and object-type nodes. The view SHALL follow
+parent links without allocating or materializing a per-record vector. A
 record's request index is its position in that read. The read SHALL return,
 for a function node, its `value-validity` records in package order without a
 scan of the graph, and returns no record for a function that owns none.
@@ -360,25 +435,26 @@ scan of the graph, and returns no record for a function that owns none.
   function as `owner`, each with its row's request index, and writes each
   item's FR-331 request item from its row and record node.
 - A check arm that decides a `value-validity` item (FR-484) MAY read the
-  item's record node in place of locating the occurrence by its source region
-  and walking its guards. The reader does not check that the two agree (it
-  re-derives no owner or guard); agreement is the producer's duty: for a
-  package a conforming producer wrote, both give the same owner, guards
-  (including `holds` false for the right operand of `or`, as FR-484's
-  premises state), bound and conversion, because both describe one claim
-  site.
+  item's owner, bound, conversion and shared path-condition view from the
+  admitted record. The reader has already derived the occurrence's guard
+  chain from the owner body and verified every frame and required outcome,
+  including `holds` false for the right operand of `or`; the arm SHALL NOT
+  replace, omit or expand that validated chain into retained per-record
+  vectors.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` is emitted with exactly two `requirement_items` rows, both `value-validity` and `{"classification": "bounded"}`, keyed at the one `x + 1` application node's `expression` occurrences 0 and 1 in that order, and two `claim`/`value_validity` nodes each with one `generated` occurrence (ordinals 0 and 1) and the eight bindings: `owner` `f`'s node; `application` the `+` node; `occurrence` 0 and 1; `result_bound` the `Int[0, 10]` and `Int[0, 20]` type nodes; `conversion` the narrow to `Int[0, 10]` at its occurrence and the narrow to `Int[0, 20]` at its occurrence; `path_condition` empty for the first, and for the second one member whose `guard` is the `g(x + 1)` call node at its occurrence with `holds` true; `extent_roots` `x`'s parameter node for both; `objects` empty. Each node's path is the path of its body, `["claim", "value_validity", {f}, {+}, "0", "bound", {Int[0, 10]}, "conversion", {narrow}, "0", "guards", "roots", {x}, "objects"]` for the first, and the reader admits the package; `g` and `h` own no record. | Test |
-| FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` is emitted with three `value-validity` rows (the `>=`, the `<` and the `+`), each `{"classification": "unbounded", "domains": [{"domain": {"type": "node", "node": <n's parameter node>, "path": []}, "kind": "integer"}]}`, in package order, which the test first establishes by comparing the three application nodes' structural keys; the `<` record's `path_condition` is one member (`n >= 0`, `holds` true), the `+` record's one member (the `if` condition `n >= 0 and n < 10`, `holds` true), and the `>=` record's empty; their record nodes have `generated` ordinals equal to their positions among `f`'s rows. Rewriting `n < 10` as `n < 11` changes the `<` record node's `node_id` and the `+` record node's (its guard changed), and not the `>=` record node's. | Test |
+| FR-825-AC-1 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }`, `function h using v(q: Int[0, 20]): Boolean pure { true }` and `function f using v(x: Int[0, 9]): Boolean pure { g(x + 1) and h(x + 1) }` emits two ordered value-validity rows and two records for the shared `+` node's expression occurrences 0 and 1. The first record has the empty path-condition aggregate; the second cites the frame for the `g(x + 1)` call occurrence with holds true. The frame row has parent null, the exact guard occurrence and holds true. The second record's body and node_id path both contain only that terminal frame_id, not the expanded guard data. Both records retain their own result bounds, conversions, roots and generated ordinals, and the reader admits the package. | Test |
+| FR-825-AC-2 | A unit holding `function g using v(p: Int[0, 10]): Boolean pure { true }` and `function f using v(n: Integer): Boolean pure { if n >= 0 and n < 10 then g(n + 1) else true }` emits three value-validity rows (the `>=`, `<` and `+`), with `>=` unguarded and the other two citing the terminal ids of their exact chains. The `<` chain contains `n >= 0`; the `+` chain contains the whole `if` condition. Every shared prefix appears once in the frame table; each `+` and `<` record body and identity path cite only their terminal frame id. Rewriting `n < 10` as `n < 11` changes the `<` frame and record identity and the `+` frame chain, but not the `>=` record. | Test |
 | FR-825-AC-3 | FSL FR-620's Counter unit (claims `Bounded` and `BelowThree`), extended with `function inc using v(x: Int[0, 9]): Int[0, 10] pure { x + 1 }`, is emitted with one row per requirement record its checker produced, including `Bounded`'s `operation-contract` row at its `state_clause` node's `claim` occurrence and `BelowThree`'s `temporal-satisfaction` row at its clause node's `claim` occurrence, each without `record`, and `inc`'s one `value-validity` row with `record`; the rows are in package order, which the test establishes from the rows' structural keys, occurrences and kinds; the reader admits the package; and the typed read returns, for `inc`'s node, exactly its one record at the request index of its row. A package of a unit with no requirement record has no `requirement_items` member and is admitted. | Test (TC-2053) |
-| FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer the reader rule gives: a record node with a `declaration` member, and with a second `generated` occurrence (rule 1, at `occurrences`); `conversion` and `result_bound` swapped (rule 2, at `body`); `owner` referencing the `+` node (rule 3); `owner` referencing `g`'s node, which does not reach `+` (rule 4, at `body/members/1`); `application` referencing the narrow node (rule 4); `occurrence` 2 (rule 5); `result_bound` referencing `x`'s parameter node (rule 6); the first record's `conversion` naming the `Int[0, 20]` narrow (rule 7, at `body/members/4`); the second record's guard with `holds` the text `"true"` (rule 8, at `body/members/5/value/members/0`); `extent_roots` holding `x` twice (rule 9, at `body/members/6/value/members/1`); `objects` referencing the Boolean type node (rule 10). Each is `invalid_package`/`invalid-value`. | Test (TC-2053) |
-| FR-825-AC-5 | Over FR-825-AC-2's and FR-825-AC-3's packages, each mutation refuses with the code, cause and pointer the reader rule gives: `requirement_items` removed from AC-1's package (`invalid-value` at `/requirement_items`); `requirement_items` `[]`, a row without `extent`, and a row with `kind` `value-validty` (`malformed_wire`); a row whose `claim.occurrence` ordinal is 7 (at `/requirement_items/{i}/claim`); the `>=` row's one domain written twice (at `/requirement_items/{i}/extent/domains/1`); `inc`'s row without `record` (at `/requirement_items/{i}`); `Bounded`'s row with `inc`'s `record` (at its `record`); the `<` row's `record` naming the `+` record node (at its `record`); a `value-validity` row whose domain names `g`'s parameter `p` (at `extent/domains/0`); the `<` row repeated after itself (`conflicting-definition` at the later row); the first two rows of AC-2's package swapped (`invalid-semantic-graph` at `/requirement_items/1`); the `+` row removed (`invalid-value` at the `+` record node's `body`); and the `>=` and `<` record nodes' `generated` ordinals swapped (`invalid-value` at the first such node's `occurrences` in owner, then node-id, order). Over AC-1's package (whose rows are both `bounded`, so they carry no domain to charge) the step charges the two record nodes and their members, then `f`'s body walk, then rows 0 and 1, so a reader budget one visit short of the package's count returns `incomplete` at `/requirement_items/1`, the last charged member, with no partial view, and a package whose `claim_names` is absent and whose only `claim` nodes are `value_validity` nodes is admitted. | Test (TC-2053) |
-| FR-825-AC-6 | A unit with `function f using v(p: Boolean, x: Int[0, 9]): Int[0, 10] pure { if p then x + 1 else x + 1 }` has two `value-validity` rows for the shared `x + 1` application node's `expression` occurrences 0 and 1. The strict reader admits both records. Their `path_condition` entries reference the same `value`/`parameter` node for `p` and the same `expression` occurrence of `p` read as the `if` condition; the first has `holds` true and the second `holds` false. Each record's identity path names `p`'s value node, its read occurrence and its required `holds` value; the records' `extent_roots` include `p` and `x` once each in node-id order. | Test |
-| FR-825-AC-7 | Starting from AC-6's package, replace one `path_condition` guard reference with the owner-reachable integer `value`/`parameter` node for `x`, retaining an occurrence of that node and rebuilding the record node identity and every reference to the changed record. The strict reader refuses `invalid_package`/`invalid-value` at the changed guard's `body/members/5/value/members/0` because the guard's semantic type is not Boolean. | Test |
+| FR-825-AC-4 | Over FR-825-AC-1's package, each mutation refuses with the code, cause and pointer the reader rule gives: a record node with a `declaration` member, and with a second `generated` occurrence; `conversion` and `result_bound` swapped; invalid `owner`, `application`, `occurrence` or `result_bound`; the first record's `conversion` naming the other narrow; a frame row whose `holds` is the text `"true"` (`malformed_wire` at `/path_condition_frames/{f}`); `extent_roots` holding `x` twice; and `objects` referencing the Boolean type node. Record-shape/reference defects are `invalid_package`/`invalid-value` at the existing rule's record pointer; the malformed frame is `malformed_wire`. | Test (TC-2053) |
+| FR-825-AC-5 | Over AC-2 and AC-3 packages, malformed or reordered `requirement_items` rows refuse with the existing rule's exact codes and pointers; a reader budget one validation visit short returns `incomplete` at the first uncharged item and no partial view. The reader charges the frame rows, each owner's body walk once, each record node, roots, objects, rows and domains; it does not charge or retain a repeated guard vector per record. A package whose only `claim` nodes are `value_validity` nodes and which has no `claim_names` member is admitted. | Test (TC-2053) |
+| FR-825-AC-6 | A unit with `function f using v(p: Boolean, x: Int[0, 9]): Int[0, 10] pure { if p then x + 1 else x + 1 }` has two records for the shared `+` node's occurrences. One frame for `p` with parent null and holds true and one frame for the same occurrence with parent null and holds false are present. The records cite their respective frame ids; each record body and node_id path contains only its terminal id. The reader admits both and the roots include `p` and `x` once in node order. | Test (TC-2053) |
+| FR-825-AC-7 | Starting from AC-6, replace a frame's guard occurrence with the owner's integer parameter `x`, retaining a valid expression occurrence. The reader refuses `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard` because the guard is not Boolean. | Test (TC-2053) |
+| FR-825-AC-8 | For a package with nested guards and at least two scalar records sharing a prefix, each malformed frame mutation refuses at the stated first defect: a non-array, empty array, row with missing/extra/reordered members, or non-Boolean JSON `holds` is `malformed_wire` at the table/row; a `parent` that is forward, self, missing, or from another owner is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/parent`; an unknown guard node or occurrence is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard`; a duplicate `(parent, guard occurrence, holds)` row is `invalid_package`/`conflicting-definition` at the duplicate row. | Test (TC-2053) |
+| FR-825-AC-9 | For the valid nested-guard package of AC-8, a frame chain with the wrong parent, guard order or `holds`, a missing table, a terminal frame id outside the table, a record id whose chain differs from the owner-body-derived chain, or an unreferenced frame row refuses `invalid_package`/`invalid-value` at the corresponding parent, `/path_condition_frames`, record `body/members/5`, or table row; changing only a record node's identity path to cite a different terminal id refuses `invalid_package`/`invalid-semantic-graph` at its `node_id`. | Test (TC-2053) |
 
 ## Dependencies
 
