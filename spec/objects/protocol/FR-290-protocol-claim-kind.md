@@ -56,7 +56,7 @@ outcome independent from every other member.
 | Value | Description |
 | --- | --- |
 | value_validity | Wire spelling `value-validity`. Whether a Boolean clause over admitted values, pure expressions and function applications holds for every assignment of its declared domain. |
-| operation_contract | Wire spelling `operation-contract`. Whether a state operation's precondition, postcondition, invariant and frame clauses hold for every admitted pre-state and input. |
+| operation_contract | Wire spelling `operation-contract`. Whether a state operation's precondition, postcondition, invariant and frame clauses hold for every admitted pre-state and input, or a derived relation or simulation obligation over those operation contracts holds. |
 | finite_replay | Wire spelling `finite-replay`. Whether one finite execution, recorded or generated, conforms step by step to the selected protocol semantics. |
 | temporal_satisfaction | Wire spelling `temporal-satisfaction`. Whether a temporal requirement holds over the traces of its selected temporal profile. |
 | global_conformance | Wire spelling `global-conformance`. Finite global protocol conformance under the exact selected closure premises. |
@@ -129,6 +129,16 @@ declared domains as its extent. It takes the first row's kind,
 `value-validity`, as [FR-484](../../functional/ir-proof/FR-484-check-value-validity-items.md)
 "Forms" states. A function with any other result type names no claim. The third column names the
 declaration family of the claim ("Declaration-family applicability").
+
+The kind assigned to an item does not imply that the checked-package reader
+represents it as a source `requirement_items` row. [FR-825](../interfaces/FR-825-carry-the-requirement-records-of-a-checked-package.md)
+defines those rows and their record nodes. In particular, a code claim of a relation and a
+per-step model-refinement simulation obligation retain kind
+`operation-contract`, but are generated claim items rather than source
+state-clause or operation-frame records; FR-825 therefore writes no
+`operation-contract` row or record node for them. The `refinement` kind remains
+the separate capability for refinement between protocol subjects, as the
+Values table states.
 
 | Claim form | Required kind | Declaration family |
 | --- | --- | --- |
