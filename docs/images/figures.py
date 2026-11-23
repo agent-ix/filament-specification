@@ -34,6 +34,8 @@ def spec_dirs():
         if d.is_dir() and d.name not in ("reviews", "subsystems"):
             out.append((d.name, len(list(d.rglob("*.md")))))
     return out
+
+
 # ---- figures -----------------------------------------------------------------
 
 
