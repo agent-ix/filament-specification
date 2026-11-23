@@ -114,8 +114,17 @@ A path's probability is the product of its step probabilities under the
 workload; under a workload with free delays, the product of the workload's
 step probabilities with each free delay fixed by the witness scheduler; and
 under every scheduler, the product of its draw probabilities and the witness
-scheduler's choice probabilities. The provider emits a path set when at most
-`max_witness_paths` paths reach the bound, most probable first.
+scheduler's choice probabilities. For other subjects, the provider emits a
+path set when at most `max_witness_paths` paths reach the bound, most probable
+first. Before starting that search for an unwindowed `eventually`, `always`,
+or `until` claim over an `INFINITE-TRACE` subject, the provider SHALL determine
+whether the original reachable graph contains a cycle other than implicit
+terminal stutter. If it does, the provider SHALL NOT search for or emit a path
+set for that claim, regardless of whether a finite path set could reach the
+bound. For the cyclic subjects admitted by FR-412's event-avoidance
+certificate role, the provider SHALL instead emit that subsystem certificate
+when its strict comparison succeeds; other cyclic subjects do not refute
+through path-set evidence under this requirement.
 
 **Quantile path sets.** A quantile claim is conditioned on activation
 (FR-407), so its path set reads two masses rather than one sum. Each path is
@@ -146,18 +155,21 @@ A subsystem certificate for a quantile claim or an `on each` instance
 carries a `lower` certificate for `V` and one for `N`, and the same rule
 applies to their values.
 
-**Subsystem certificate.** Otherwise the evidence is an FR-412 `lower`
-certificate, on the chain the witness scheduler induces or under the workload,
-for the violating quantity (`Pr(not E)` for `>= θ`, `Pr(E)` for `<= θ`) with
-value past the bound. For `Pr(not eventually E)`, FR-412 defines the existing
-`lower` certificate role: replay rebuilds the complete finite induced chain,
-derives the union of its bottom components that contain no E state, and
-checks a lower bound on reaching that union. The objective remains bound to
-the original claim; the producer supplies no component list or target-set
-classification. Long-run refutations use the `long-run` certificate kind;
-expected-reward refutations use the `lower` kind for `<= θ` and `upper` for
-`>= θ`, with the expected-reward inequalities and properness checks of
-FR-412.
+**Subsystem certificate.** Otherwise the evidence is an FR-412 certificate,
+on the chain the witness scheduler induces or under the workload, for the
+violating quantity with value past the bound. For an unwindowed `eventually`,
+`always`, or `until` claim on an admitted cyclic subject, the certificate is
+the existing `lower` kind. Replay rebuilds the complete finite induced
+claim-product chain, derives accepting and rejecting bottom-component unions
+from the claim monitor and predicates, checks the lower certificate for the
+bound's violating side as FR-412 specifies, and applies the strict comparison:
+for `>= θ`, a lower bound `r` on reaching rejecting components must satisfy
+`r > 1 − θ`; for `<= θ`, a lower bound on reaching accepting components must
+satisfy `r > θ`. The objective remains bound to the original claim; the
+producer supplies no component list or target-set classification. Long-run
+refutations use the `long-run` certificate kind; expected-reward refutations
+use the `lower` kind for `<= θ` and `upper` for `>= θ`, with the
+expected-reward inequalities and properness checks of FR-412.
 
 **Undefined path.** One finite product path from the initial state, in the
 step content of a path-set path, of positive probability, ending at the
@@ -201,14 +213,20 @@ not-activated path ends where no activating state is reachable, recomputes
 `instance` names an object of the claim's `on each` population in the start
 snapshot. For a subsystem certificate it applies the witness
 scheduler to rebuild the induced chain over the certificate's states and runs
-the FR-412 checker. For an unwindowed eventual claim, it also rebuilds the
-complete finite induced chain, derives its event-free bottom components and
-checks the FR-412 event-avoidance lower certificate for their union. It then
-applies the strict complement comparison: `Pr(not eventually E) > 1 − θ`
-refutes `probability >= θ [eventually E]`. For a long-run or expected-reward
-certificate, replay checks the respective FR-412 certificate conditions and
-then applies the strict refutation comparison; proof-side acceptance alone
-does not settle `refuted`. For an undefined path it re-executes the path as a path
+the FR-412 checker. For an unwindowed `eventually`, `always`, or `until` claim
+on a cyclic subject, replay also rebuilds the complete finite induced
+claim-product chain, derives its accepting and rejecting bottom-component
+unions, and checks the FR-412 event-avoidance lower certificate for the
+union that violates the claim bound. It then applies the strict comparison:
+for `>= θ`, the lower bound on the rejecting
+union must exceed `1 − θ`; for `<= θ`, the lower bound on the accepting union
+must exceed `θ`. Replay SHALL not interpret a bare engine value or proof-side
+acceptance as a refutation. The strict comparison is required even when the
+provider's proof-side checker accepts the claim.
+For a long-run or expected-reward certificate, replay checks the respective
+FR-412 certificate conditions and then applies the strict refutation
+comparison; proof-side acceptance alone does not settle `refuted`. For an
+undefined path it re-executes the path as a path
 of a path set, checks that its exact probability is positive, rebuilds the
 monitor or measure along it, and evaluates the claim's reads at each
 position: the first undefined value, at the position, product state, locus
@@ -257,6 +275,7 @@ the every-behaviour claim "the event holds on every behaviour" (FR-161).
 | FR-413-AC-15 | `FR413-R3-duplicate-choice` is schema-valid, then the reader refuses `invalid_runtime_input`/`invalid-value` at the scheduler entry's `choice` because its alternatives repeat a choice. | Inspection |
 | FR-413-AC-16 | On FR-412-AC-24's induced chain, the `probability >= 3/4 [eventually E]` counterexample carries a deterministic scheduler and the `lower` certificate for `Pr(not eventually E)` with initial bound `1/2`; replay derives `{a}` as the event-free bottom target, checks the certificate, and applies `1/2 > 1 − 3/4` to settle `refuted`. Removing the scheduler, supplying an event-containing component, or using a lower bound at or below `1/4` prevents refutation. | Test (TC-432) |
 | FR-413-AC-17 | A `ProbabilisticCounterexample.bound` has exactly `{type, comparison, threshold}`, with `comparison` `greater-or-equal` or `less-or-equal` and `threshold` an FR-413 rational; a missing member, unknown comparison, non-rational threshold or extra member refuses at the backend-provider schema. | Test (TC-431) |
+| FR-413-AC-18 | On a cyclic `INFINITE-TRACE` subject with an unwindowed `eventually`, `always`, or `until` claim, provider path-set search does not start and no path set is emitted, even when a finite set of paths would cross the bound. For an admitted subject, replay instead derives the claim's accepting/rejecting bottom-component unions, verifies the `lower` certificate for the side selected by the bound, and settles `refuted` only when its bound is strictly past `1 − θ` for `>= θ` or `θ` for `<= θ`; TC-433 covers the `always`, `until`, and `eventually <=` reproductions. | Test |
 
 ## Dependencies
 
