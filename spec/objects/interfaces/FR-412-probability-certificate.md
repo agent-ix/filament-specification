@@ -136,6 +136,27 @@ decided, target and `Prob0` states:
   objective's least value: 0 for a probability or an expected reward, `−q`
   for FR-411's shifted reward of a quantile, so an unnamed state never
   raises a lower bound.
+For an FR-413 subsystem refutation of `probability >= θ [eventually E]`,
+the existing `lower` certificate kind SHALL also certify the probability of
+never reaching E under the workload or witness-induced chain. The wire shape
+remains `ProbabilityCertificate{identity, objective, kind: lower, values,
+ranking}` and the objective remains bound to the original eventual claim; no
+producer-supplied target set or qualitative classification is added. For
+this role, the checker SHALL enumerate the complete reachable finite induced
+claim-product chain, including its eventual-claim monitor state, derive its
+bottom strongly connected components, and define A as the union of
+components containing neither a state where E holds nor a state where the
+claim monitor has already accepted E. It SHALL treat A as
+the targets of an auxiliary reachability lower check: every A state has
+value 1, and the named values and ranks SHALL establish a lower bound on
+reaching A using the ordinary `lower` inequalities and progress rule. The
+checker SHALL independently confirm that A is closed and event-free. Since
+every finite-chain path eventually enters a bottom component, reaching A is
+exactly the event `not eventually E`; its certified lower bound is therefore
+a sound lower bound for that complement probability. This role does not
+change other `lower` certificate meanings or accept a proof-side certificate
+as a refutation without FR-413's strict comparison.
+
 - **Policy hints**: this rule applies only to the **fair-minimum**
   ([FSL FR-1041](ix://agent-ix/filament-spec-language/FR-1041)),
   **value-bounds** ([FSL FR-1042](ix://agent-ix/filament-spec-language/FR-1042))
@@ -413,6 +434,7 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-21 | A model `Pick` whose one initial state `s`, which does not satisfy `P` (position 0 participates), has actions `a` and `b`, each reaching a `P` state with probability `1/2` and `3/4` respectively and otherwise a non-`P` terminal, with the origin-activated claim `eventually[0,1] holds(P)`, no binding, clocks, rewards or fairness. Documents in FSL FR-201's `filament.probability-objective/reachability/v1` exact profile with `policy` absent, decided states at 1 (accepting) and 0 (rejecting decided: the non-`P` successor at horizon 1, whose rejection is the last actual observation) with rank 0, and `s` ranked by its remaining event positions, are accepted as follows. The `minimum` document with `s` at `1/2` is accepted for `>= 1/2` (`AtLeast`) after the checker verifies `1/2 = min(1/2, 3/4)` at `s`. The `maximum` document with `s` at `3/4` is accepted for `<= 3/4` (`AtMost`) after it verifies `3/4 = max(1/2, 3/4)`. Over the resolved-workload variant leaving only `a`, the `workload` document with `s` at `1/2` is accepted for `>= 1/2` and for `<= 1/2`. The inequality-only `minimum` document with `s` at `2/5` for `>= 2/5`, and the `maximum` document with `s` at `4/5` for `<= 4/5`, are rejected `inequality-fails` at `s`. A reached `P` state valued `9/10` is rejected `inequality-fails` at that state, removing `s`'s rank row is rejected `malformed` at the member-only locus `{"member": "ranking"}`, without `part`, because that profile's `ranking` must cover exactly the checker-rebuilt reachable states, and the `maximum` `3/4` document for `<= 2/3` is rejected `threshold-missed` at `s`. | Test |
 | FR-412-AC-22 | Over FR-412-AC-21's `Pick` with `policy` absent, the crossing-bound proofs `minimum` `<= 1/2` (`AtMost`, attained only by witness `a`) and `maximum` `>= 3/4` (`AtLeast`, attained only by witness `b`) are not admitted by the Reachability exact exception: neither settles `proved` through it, the checker infers and selects neither `a` nor `b` as a witness, and each keeps the unsupported or refusal outcome otherwise applicable to it, unchanged. | Test |
 | FR-412-AC-23 | FR-412-AC-21's otherwise valid `minimum` `1/2` document for `>= 1/2`, carrying `policy` as an empty array, a row naming `a` (which satisfies the equality) or a row naming `b`, is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. It is not checked as an optional hint under Policy hints. FR-412-AC-20's results for the fair-minimum, value-bounds and finite-horizon measure profiles and for required-policy certificates are unchanged. | Test |
+| FR-412-AC-24 | For an eventual-event refutation under a finite induced chain with initial `s` transitioning to event state `e` with probability `1/2` and event-free bottom state `a` with probability `1/2`, where `a` self-loops, the checker derives `{a}` as the event-free bottom target without a producer-supplied component set. The `lower` certificate with `x(s)=1/2`, `x(a)=1`, `x(e)=0`, and ranks 1 at `s`, 0 at `a` and `e` is accepted as a lower bound on `Pr(not eventually E)`; naming an event-containing component, changing the initial lower bound above `1/2`, or breaking the progress rank is rejected under the existing typed rules. Other `lower` certificate objectives retain their existing meaning. | Test (TC-432) |
 
 ## Dependencies
 
