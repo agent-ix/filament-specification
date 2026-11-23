@@ -1,5 +1,5 @@
 {
-  "note": "STD-621. These are full checked-package cases derived from the positive temporal-clause fixture, which carries one producer-owned temporal_bindings row for its clock-configured clause. Each single-clause positive retains that temporal/temporal_clause NodeRef, updates the clause's selected profile and the lock selection together, and replaces the row's typed configuration as needed. The multi-clause positive has two distinct clause NodeRefs with the same model, selected profile and clock name; their paths differ only by their formula NodeRef, and rows are in ascending structural NodeRef order. The row does not repeat its selected profile: temporal-clause profile law is in the clause application, while a finite hyperproperty carries its typed profile definition in the body aggregate; each temporal_bindings row carries only its structural declaration key, exact clock name and closed typed clock configuration. The QSpec test validates the complete packages against schema.json. Reader checks for declaration membership and the profile/configuration join are separately recorded for the typed IR reader. IR-1586 (FR-322-AC-464, TC-2028): `finite_hyper_profile_cases` publish one finite-hyper acceptance and two reader refusals. A finite hyperproperty body carries `temporal_profile` as an exact `DefinitionRef`; the accepted `[T, D]` lock selects that definition, TCB-15 refuses when the body definition has no matching lock row, and TCB-16 refuses a row clock kind inconsistent with the selected definition. The contrast hyperproperty body for a `behaviours` domain keeps its temporal law on the body wrapper. STD-644 (FR-322-AC-305): `compensation_cases` are abstract reader cases over declarations listed in `compensation_declarations` (`graph_index` is the node's position in the graph; `form` is its semantic_form; `clock` is the clause's or compensation's clock text); a row's `declaration` names a declaration by `key` and QSpec's test replaces it with the declaration's node_id. `lock_temporal_profile` is the clock kind the lock's temporal_profile selection determines (`none` when it selects no clock-configured profile). Rows are listed in the order written; cases with several declarations list them in ascending node-id order. Each row carries `occurrence` (the ordinal of the declaration's claim occurrence, or of a compensation's declaration occurrence), so the clock configuration is per occurrence (FR-322 \"Temporal clock bindings\"); the per-occurrence cases are in `temporal-clock-occurrence-vectors.json` (BO-*).",
+  "note": "STD-621. These are full checked-package cases derived from the positive temporal-clause fixture, which carries one producer-owned temporal_bindings row for its clock-configured clause. Each single-clause positive retains that temporal/temporal_clause NodeRef, updates the clause's selected profile and the lock selection together, and replaces the row's typed configuration as needed. The multi-clause positive has two distinct clause NodeRefs with the same model, selected profile and clock name; their paths differ only by their formula NodeRef, and rows are in ascending structural NodeRef order. The row does not repeat its selected profile: temporal-clause profile law is in the clause application, while a finite hyperproperty carries its typed profile definition in the body aggregate; each temporal_bindings row carries only its structural declaration key, exact clock name and closed typed clock configuration. The QSpec test validates the complete packages against schema.json. Reader checks for declaration membership and the profile/configuration join are separately recorded for the typed IR reader. IR-1586 (FR-322-AC-464, TC-2028): `finite_hyper_profile_cases` publish one finite-hyper acceptance and the reader/schema refusals of the body `temporal_profile` member. A finite hyperproperty body carries `temporal_profile` as an exact `DefinitionRef`; the accepted `[T, D]` lock selects that definition. TCB-15 (no matching lock row), TCB-17 (member missing) and TCB-18 (two matching lock rows) refuse `invalid_package`/`operation-law-unselected` at the member; TCB-16 refuses a row clock kind inconsistent with the selected definition (`timed-node-reference`); TCB-19 adds the member to the FR-402-AC-11 behaviours-domain hyperproperty (`behaviours_hyper_profile_fixture`) and refuses `invalid_package`/`invalid-value` at the member, since a behaviours domain keeps its law on the body wrapper. The schema-level refusals are `malformed_wire` with no cause: TCB-20 (the member on a non-hyperproperty node, at that node's body, as FR-322-AC-462 does for `boundary`) and TCB-21 to TCB-24 (a member that is not exactly a DefinitionRef: non-object, extra field, empty authority, empty identity, at the member or its `/authority` or `/identity` child). The reader implementation is agent-ix/filament-contract-ir PR 1136. STD-644 (FR-322-AC-305): `compensation_cases` are abstract reader cases over declarations listed in `compensation_declarations` (`graph_index` is the node's position in the graph; `form` is its semantic_form; `clock` is the clause's or compensation's clock text); a row's `declaration` names a declaration by `key` and QSpec's test replaces it with the declaration's node_id. `lock_temporal_profile` is the clock kind the lock's temporal_profile selection determines (`none` when it selects no clock-configured profile). Rows are listed in the order written; cases with several declarations list them in ascending node-id order. Each row carries `occurrence` (the ordinal of the declaration's claim occurrence, or of a compensation's declaration occurrence), so the clock configuration is per occurrence (FR-322 \"Temporal clock bindings\"); the per-occurrence cases are in `temporal-clock-occurrence-vectors.json` (BO-*).",
   "fixture": "fixtures/positive-timed-clause-nodes.json",
   "positive": [
     {
@@ -153,19 +153,43 @@
       "Link the graph with CheckedPackage::link, call emit_checked_with_temporal_selections, and take raw_wire(&emission) from fsl-package/src/emit/tests.rs as the complete base checked-package JSON value; raw_wire reads emission.package.bytes() without resolving operand slots. Preserve every generated node, reference, occurrence, lock member, sidecar, and source-map row.",
       "Select the unique semantic_graph node with node_tag claim and semantic_form hyperproperty; the current emitter base has its body aggregate without temporal_profile, and the mutation protocol adds the typed DefinitionRef. The base lock includes D and temporal_bindings has one row for each trace a and b."
     ],
-    "mutation_protocol": "For each case, clone the entire generated raw_wire value; resolve T and D from profile_definitions; resolve the unique claim/hyperproperty node by node_tag and semantic_form; set its body.temporal_profile to D; replace the whole lock.profile_selections array using the exact Selection objects named by the case; and apply any temporal_bindings row mutation by matching declaration to that node node_id, occurrence 0, and trace a. Keep every other package member and every untouched row unchanged.",
+    "mutation_protocol": "For each case, clone the entire generated raw_wire value and apply exactly the case's mutations in the order listed, then nothing else; keep every other package member and every untouched row unchanged. Operations: `set-body-temporal-profile` sets body.temporal_profile of the node selected by `where` (`unique-claim-hyperproperty-node`: the unique node with node_tag claim and semantic_form hyperproperty) to `value`, a key of profile_definitions whose `definition` object is used, or to `literal`, a JSON value written verbatim; `remove-body-temporal-profile` deletes body.temporal_profile from that node and is a no-op when it is absent, so TCB-17 stays a missing-member case whether or not the emitter writes the member; `set-body-member` sets the named body member of the node selected by `where` (`unique-temporal-clause-node`: the unique node with node_tag temporal and semantic_form temporal_clause) to `value`/`literal` as above; `set-lock-profile-selections` replaces the whole lock.profile_selections array by the listed Selection objects (T and D resolved from profile_definitions, any other entry named by its keyword kept as in the base); `set-temporal-binding-clock` matches declaration to the node's node_id, occurrence 0 and the trace. Placeholders `{hyperproperty-index}` and `{temporal-clause-index}` in a locus are the graph index of the selected node.",
     "profile_definitions": {
       "T": {"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "filament.temporal.infinite-trace/v1"}},
       "D": {"role": "temporal_profile", "definition": {"authority": "agent-ix", "identity": "filament.temporal.event-position.false-extension/v1"}}
     }
+  },
+  "positive_temporal_clause_fixture": {
+    "fixture": "fixtures/positive-timed-clause-nodes.json",
+    "note": "The package named by this file's top-level `fixture`, used unmodified as the base; its unique semantic_form temporal_clause node (graph index 8) is the `unique-temporal-clause-node`, and its lock already selects the event-position temporal_profile and the protocol_profile."
+  },
+  "behaviours_hyper_profile_fixture": {
+    "source": "FR-402-AC-11 (TC-2034): `hyper Whole using inf over behaviours () forall trace a of V forall trace b of V { always holds(true) }` with its subject package `V`, as that criterion specifies its emission",
+    "repository": "agent-ix/filament-spec-language",
+    "source_file": "fsl-analyze/tests/it/hyper_object_free.rs",
+    "test": "an_object_free_hyper_wrapper_ranges_over_the_model_root",
+    "test_command": "cargo test --locked -p fsl-analyze --test it -- hyper_object_free::an_object_free_hyper_wrapper_ranges_over_the_model_root --exact --include-ignored",
+    "package_capture": "The test builds World::new(Vault::Secure, false, &STARTS, <the Whole source>) and calls emitted(&world), which is meant to return the complete checked-package bytes from fsl_package::emit_checked. Capture those bytes (the `bytes` value, before the test parses them into `wire`) as the complete base checked-package JSON value, writing them to a file from inside the test.",
+    "generation": "Take that captured package, unmodified (body wrapper whose `over` references V's `model`/`model_root` node, quantifier Groups with their `alias` bindings, `subjects` naming V), as the base. No JSON copy is checked in. The unique node with node_tag claim and semantic_form hyperproperty is the `unique-claim-hyperproperty-node`.",
+    "note": "TCB-19's base package depends on QSL-2887: the producing test is ignored until the object-free hyper source parses, so the base cannot be generated until then. The base is a well-formed behaviours-domain hyperproperty that the reader admits at the temporal and hyperproperty steps (FR-402-AC-11), so the only change a TCB-19 case makes is adding body.temporal_profile. The member-placement check reads the node's domain and does not depend on the lock, so the lock is left as emitted."
   },
   "finite_hyper_profile_cases": [
     {
       "id": "TCB-14-finite-hyper-body-profile-selected",
       "fixture": "finite_hyper_profile_fixture",
       "mutations": [
-        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "D"},
-        {"op": "set-lock-profile-selections", "value": ["T", "D"]}
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "value": "D"
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        }
       ],
       "expected": "admitted"
     },
@@ -173,8 +197,17 @@
       "id": "TCB-15-finite-hyper-profile-not-selected",
       "fixture": "finite_hyper_profile_fixture",
       "mutations": [
-        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "D"},
-        {"op": "set-lock-profile-selections", "value": ["T"]}
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "value": "D"
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T"
+          ]
+        }
       ],
       "expected": "refused",
       "code": "invalid_package",
@@ -185,14 +218,208 @@
       "id": "TCB-16-finite-hyper-row-kind-mismatch",
       "fixture": "finite_hyper_profile_fixture",
       "mutations": [
-        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "D"},
-        {"op": "set-lock-profile-selections", "value": ["T", "D"]},
-        {"op": "set-temporal-binding-clock", "where": {"declaration": "unique-hyperproperty-node", "occurrence": 0, "trace": "a"}, "value": {"kind": "fixed_sample", "epoch": {"kind": "integer", "decimal": "0"}, "period": {"kind": "rational", "numerator": "1", "denominator": "10"}, "unit": "milliseconds"}}
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "value": "D"
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        },
+        {
+          "op": "set-temporal-binding-clock",
+          "where": {
+            "declaration": "unique-hyperproperty-node",
+            "occurrence": 0,
+            "trace": "a"
+          },
+          "value": {
+            "kind": "fixed_sample",
+            "epoch": {
+              "kind": "integer",
+              "decimal": "0"
+            },
+            "period": {
+              "kind": "rational",
+              "numerator": "1",
+              "denominator": "10"
+            },
+            "unit": "milliseconds"
+          }
+        }
       ],
       "expected": "refused",
       "code": "invalid_package",
       "cause": "timed-node-reference",
       "locus": "/temporal_bindings/0/clock/kind"
+    },
+    {
+      "id": "TCB-17-finite-hyper-profile-missing",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {
+          "op": "remove-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node"
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        }
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "operation-law-unselected",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-18-finite-hyper-profile-ambiguous",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "value": "D"
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D",
+            "D"
+          ]
+        }
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "operation-law-unselected",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-19-behaviours-hyper-carries-profile",
+      "fixture": "behaviours_hyper_profile_fixture",
+      "mutations": [
+        {"op": "set-body-temporal-profile", "where": "unique-claim-hyperproperty-node", "value": "D"}
+      ],
+      "expected": "refused",
+      "code": "invalid_package",
+      "cause": "invalid-value",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-20-non-hyperproperty-node-carries-profile",
+      "fixture": "positive_temporal_clause_fixture",
+      "mutations": [
+        {
+          "op": "set-body-member",
+          "where": "unique-temporal-clause-node",
+          "member": "temporal_profile",
+          "value": "D"
+        }
+      ],
+      "expected": "refused",
+      "code": "malformed_wire",
+      "locus": "/semantic_graph/nodes/{temporal-clause-index}/body"
+    },
+    {
+      "id": "TCB-21-finite-hyper-profile-non-object",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "literal": "filament.temporal.event-position.false-extension/v1"
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        }
+      ],
+      "expected": "refused",
+      "code": "malformed_wire",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-22-finite-hyper-profile-extra-field",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "literal": {
+            "authority": "agent-ix",
+            "identity": "filament.temporal.event-position.false-extension/v1",
+            "extra": "x"
+          }
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        }
+      ],
+      "expected": "refused",
+      "code": "malformed_wire",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile"
+    },
+    {
+      "id": "TCB-23-finite-hyper-profile-empty-authority",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "literal": {
+            "authority": "",
+            "identity": "filament.temporal.event-position.false-extension/v1"
+          }
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        }
+      ],
+      "expected": "refused",
+      "code": "malformed_wire",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile/authority"
+    },
+    {
+      "id": "TCB-24-finite-hyper-profile-empty-identity",
+      "fixture": "finite_hyper_profile_fixture",
+      "mutations": [
+        {
+          "op": "set-body-temporal-profile",
+          "where": "unique-claim-hyperproperty-node",
+          "literal": {
+            "authority": "agent-ix",
+            "identity": ""
+          }
+        },
+        {
+          "op": "set-lock-profile-selections",
+          "value": [
+            "T",
+            "D"
+          ]
+        }
+      ],
+      "expected": "refused",
+      "code": "malformed_wire",
+      "locus": "/semantic_graph/nodes/{hyperproperty-index}/body/temporal_profile/identity"
     }
   ],
   "compensation_declarations": [
