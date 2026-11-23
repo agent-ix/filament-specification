@@ -25,4 +25,3 @@ Reviewed the one changed randomized-scheduler requirement statement and ran the 
 
 - FR-413 randomized `WitnessScheduler` paragraph — examined: the conditional fairness-set behavior and the randomized alternatives' shape, probability range, exact sum, and distinctness.
 - FR-413-AC-12 — examined: the new criterion's admission and refusal cases.
-
