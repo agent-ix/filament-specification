@@ -4,7 +4,7 @@
     "spec_kinds": {"from":"expr","value":"drop(spec_dirs, '^(reviews|subsystems)$')"},
     "spec_files": {"from":"files","glob":"spec/**/*.md"},
     "spec_file_kinds": {"from":"expr","value":"rsub(spec_files, '^spec/([^/]+)/.*$', '$1')"},
-    "corpus_rows": {"from":"expr","value":"tally(spec_file_kinds, spec_kinds)"},
+    "corpus_rows": {"from":"expr","value":"count_by(spec_file_kinds, spec_kinds)"},
     "functional": {"from":"count","glob":"spec/functional/**/*.md"},
     "quality": {"from":"count","glob":"spec/non-functional/**/*.md"},
     "requirements": {"from":"sum","of":["functional","quality"]},
