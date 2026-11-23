@@ -161,7 +161,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | refinement_step_rows | absent exactly when no relation/refinement node has a steps entry; else a nonempty array |
 | checked_term_data | optional closed carrier; absent means its five arrays are empty |
 | temporal_clause_names | absent exactly when the graph has no temporal/temporal_clause node; see Field sources |
-| claim_names | absent exactly when the graph has no state/state_clause, relation/refinement, correspondence/component_composition or claim node other than a claim/value_validity node; see Field sources |
+| claim_names | absent exactly when the graph has no state/state_clause, relation/refinement, correspondence/component_composition or claim node other than a claim/value_validity or claim/operation_contract record node; see Field sources |
 | protocol_correlation_occurrences | optional array (FR-831); absent means the authored correlation provenance is unavailable, never empty; present is complete, and `[]` only when every eligible control occurrence has an empty `related`; outside every identity preimage |
 | schedulability_claims | optional; when present a non-empty array of {declaration, occurrence} |
 | operation_effects | optional; absent means effects are unavailable, not empty |
@@ -1665,8 +1665,8 @@ A frame body refusal, meaning-join or canonical-order
   state clause), each `relation`/`refinement` node, each
   `correspondence`/`component_composition` node and each `claim` node (a
   state-graph, hyperproperty, probabilistic or other non-temporal claim)
-  other than a `claim`/`value_validity` node (FR-825), which no source
-  declaration introduces and which has no name. The
+  other than a `claim`/`value_validity` or `claim`/`operation_contract` node
+  (FR-825), which no source declaration introduces and which has no name. The
   member is absent exactly when the graph has no such node; otherwise it is a
   non-empty array of closed `{declaration, occurrence, name, qualified_name}`
   rows, one per source declaration of each such node, as "Claim declaration
@@ -1707,11 +1707,15 @@ A frame body refusal, meaning-join or canonical-order
   `{claim, kind, extent, record?}` per record of every kind in package order,
   so a row's position is the record's request index; absent exactly when the
   package has no requirement record. A `value-validity` row's `record` names
-  its `claim`/`value_validity` node, whose body and path carry the owner
-  function, application occurrence, result bound, conversion, path-condition
-  frame reference, extent roots and object types the claim reads. The shared
-  `path_condition_frames` member carries guard chains once; FR-825 defines its
-  entries. The rows add no node and change no `node_id`.
+  its `claim`/`value_validity` node, whose body and identity path carry the
+  owner function, application occurrence, result bound, conversion,
+  path-condition frame reference, extent roots and object types the claim
+  reads. An `operation-contract` row's `record` names its
+  `claim`/`operation_contract` node, which carries its Boolean result bound,
+  invariant marker, operation anchor, model-object references and population
+  domains. The shared `path_condition_frames` member carries value-validity
+  guard chains once; operation-contract records have no path condition. FR-825
+  defines both record nodes, the rows, reader step and refusals.
   [FR-825](FR-825-carry-the-requirement-records-of-a-checked-package.md)
   states the rows, the node, the reader step and its refusals.
 - `path_condition_frames` — the shared parent-linked guard frames referenced
@@ -5185,7 +5189,7 @@ holds no claim-bearing node is unchanged, and the member is added beside the
 existing rows.
 
 `claim_names` is absent when the graph has no `state`/`state_clause`,
-`relation`/`refinement`, `correspondence`/`component_composition` or `claim` node other than a `claim`/`value_validity`
+`relation`/`refinement`, `correspondence`/`component_composition` or `claim` node other than a `claim`/`value_validity` or `claim`/`operation_contract`
 node (a compiler-derived requirement record that no source declaration
 introduces and no request names, FR-825), and otherwise is a non-empty array
 with one row for every `declaration` or `claim` occurrence through which a
@@ -5283,7 +5287,8 @@ visits rows in array order and checks each in full before the next:
 1. A `declaration` that names no node of the graph, or a node that is not a
    `state`/`state_clause`, `relation`/`refinement`,
    `correspondence`/`component_composition` or `claim` node, or that
-   is a `claim`/`value_validity` node (FR-825: no source declaration
+   is a `claim`/`value_validity` or `claim`/`operation_contract` node
+   (FR-825: no source declaration
    introduces it), is *dangling* and refuses `invalid_package`/`invalid-value` at
    `/claim_names/{i}/declaration`.
 2. An `occurrence` that is not one of that node's `declaration` or `claim`
@@ -5603,7 +5608,8 @@ stages" first, so every owner-bearing node, a clause function included, has
 already joined its owner (stage 2); then the `operation_effects` carrier; then
 the `operation_bodies` carrier; then FR-640's `probabilistic` reader
 checks; then FR-825's requirement-record step (`path_condition_frames`,
-`claim`/`value_validity` nodes, then `requirement_items`); then the
+`claim`/`value_validity` and `claim`/`operation_contract` nodes, then
+`requirement_items`); then the
 `checked_term_data` records; then the `protocol_correlation_occurrences`
 rows, the last carrier step ([FR-831](FR-831-carry-the-authored-correlation-clauses-of-protocol-controls.md)). The owner
 join therefore outranks every carrier check: a clause function whose owner names
@@ -6879,7 +6885,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-470 | A consumer that holds a SHA-256 integrity digest of a package's exact bytes for a foreign interface (FSL's evaluator, for its filament-observation package selection) writes it to no document or file FSL writes, uses it as no package identity or version, and never decides package sameness by it: two packages whose JSON values are equal member by member are the same package, and the reader's and the comparison's answers are unchanged when the consumer's digest is removed. | Test (TC-2050) |
 | FR-322-AC-471 | In FR-640-AC-1's `Service` package, the `duration` reward's `function` node carries the `clause` binding `"reward"` and the `ModelOwner` of the operation member `Server/attempt`, and the owner join admits it; `Server::attempt`, which has no body, keeps its `operation_bodies` row `{"kind": "no_body"}` and the reader admits the package; the precondition clause functions read for `Server::attempt` hold no function whose `clause` is `reward`. Each mutation refuses `missing_declaration`/`missing-selection` at the clause function's `node_id`: the reward function owned by the object type `Server` instead of its operation member, and the same function owned by a field member of `Server`. The function with its `clause` binding rewritten to `"precondition"` is admitted by the owner join but refuses FR-640 reader rule 4 (`invalid_package`/`invalid-value` at the `reward` node's `/body/expression`), because a reward's expression is a `reward` clause function; with the binding rewritten to `"body"` it refuses `invalid_package`/`invalid-value` at `/operation_bodies/{i}/body` of `Server::attempt`'s row, because a `body` clause function gives the operation a body and the row says `no_body`; the `operation_bodies` carrier runs before FR-640's reader, so rule 4 is not reached and no `/body/expression` refusal is reported. | Test (TC-1563) |
 | FR-322-AC-472 | Over `Service` with a second workload `Burst` and two claims both named `A`, written identically except that one is `under Steady` and the other `under Burst`, the producer emits two `probabilistic_claim` nodes whose paths differ only in the `scheduler` operand, each at ordinal 0, and two `probabilistic_claims` rows in the order of the `Steady` and `Burst` workload nodes' structural keys; the same rows reversed refuse `invalid_package`/`invalid-semantic-graph` at the second row (`PC-R7`'s rule). A `probabilistic_claim` node with an empty body refuses `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{i}/body` (FR-640 reader rule 6), and so a producer cannot satisfy the reader with a name-only claim node. In a package of the same unit with only the claim `A` under `Steady` (so no other claim node shares its path), that node's path rewritten to hold `Burst`'s node in place of `Steady`'s, its body unchanged, is admitted, because a derived node's path is an identity label the reader does not compare with its body; the producer vectors of FR-640-AC-3 and FR-640-AC-8 therefore hold the identity rule. | Test (TC-1563) |
-| FR-322-AC-473 | The requirement-record step runs in "Check order" between FR-640's reader and `checked_term_data`, with the path-condition frame table before value-validity record nodes and rows: the existing FR-825-AC-1 package with `function f` added to a unit holding FR-640-AC-8's claims, with both `P95`'s body missing `delays` and the first `value_validity` record's `owner` referencing the `+` node, refuses at `P95`'s `body` (FR-640 rule 6); with only the record defect and a `checked_term_data` `probabilistic_claims` row reversed (PC-R7), it refuses at the record's `body/members/0` (FR-825 owner rule). A package whose only `claim` nodes are `claim`/`value_validity` nodes has no `claim_names` member and is admitted, and adding a `claim_names` row whose `declaration` is a `value_validity` node refuses `invalid_package`/`invalid-value` at that row's `declaration`, because no source declaration introduces such a node. `requirement_items` adds no node; the frame table is package content, and each guarded record's body and node_id path cite only its terminal frame id. Comparing FR-825-AC-1's emitted package with the golden package emitted without requirement records confirms all pre-existing graph nodes remain byte-identical and that the only additions are its value_validity nodes, source-map entries, requirement_items and path_condition_frames; changing an existing `+` or function node path fails the comparison. | Test (TC-2053) |
+| FR-322-AC-473 | The requirement-record step runs between FR-640's reader and `checked_term_data`: it validates the path-condition table, both record-node forms, then rows. Existing AC-1's value-validity defect still refuses at its owner binding; a row/record defect in either record form refuses with FR-825's code and pointer. Record nodes are excluded from `claim_names`; a row naming either record node as a declaration refuses `invalid_package`/`invalid-value`. A package with both record kinds and valid rows is admitted, with the shared frame table used only by value-validity records. | Test (TC-2053) |
 | FR-322-AC-474 | Over `Service` under `Steady`, two claims both named `A`, `probability >= 0.5 [always[0,2] holds(true)]` and the same with `0.6`, emit two `probabilistic_claim` nodes whose paths differ only in the FR-640 `bound` `value` segment (`"1/2"` and `"3/5"`), each at ordinal 0, and two `probabilistic_claims` rows with the `1/2` claim's first, by structural key; the same rows reversed refuse `invalid_package`/`invalid-semantic-graph` at the second row (`PC-R7`'s rule). With the second claim's threshold written `rational(2, 4)` instead, the two claims have equal bodies and one path, and take ordinals 0 (the claim written `0.5`) and 1 (the one written `rational(2, 4)`), by FSL FR-498's written-content ranking. A claim node whose `bound` `value` literal is spelled `2/4` refuses `invalid_package`/`invalid-value` at that literal's `value` ("Scalar literal values"), before FR-640's reader runs, so two spellings of one threshold can never stand as two bodies. | Test (TC-1563) |
 | FR-322-AC-475 | Over FR-322-AC-399's package with a tuple `Trio` added (`p0` `Integer`, `p1` `ix://filament/native/Clock`, `p2` `Boolean`), a tuple `Ticks` whose only position `p0` is a clock, and a variant type `Mode` whose document declares the case `Zed` (`payloadType` `ix://filament/native/Clock`) before the case `Alpha` (no payload): the data part of `Slot` is one `Integer` at data index `0`, of `Trio` an `Integer` at data index `0` and a `Boolean` at data index `1`, and of `Ticks` the empty tuple; `filament.op.tuple.project` of `Trio` carries `position` `2`, has the `Boolean` node as its type and reads data index `1`, and one carrying `position` `1` in a value position refuses `invalid_timed_model`/`clock-read-outside-constraint`; the clock place of a field `t: Trio` has the path `field(t)`, `tuple(1)`; a postcondition that writes `self.t` with `4` at `p0`, `0 ms` at `p1` and `true` at `p2` writes a `tuple_value` with the two terms `4` and `true` and records a `clock_reset` of that place, and a `tuple_value` of `Trio` carrying the three terms `4`, `0 ms` and `true` refuses `ill_typed`/`type-mismatch` at that node. The data part of `Phase` has the members `Armed` and `Idle`, and that of `Mode` the members `Alpha` then `Zed` (ascending byte order, not declaration order), each of payload arity 0 and distinct; a `union_value` of `Mode` naming `Zed` with a payload term refuses `ill_typed`/`type-mismatch`. A record value type `Timer` with fields `x: Clock` and `n: Integer` has the data part of `n` alone, and a field `o: Option<Timer>` is an `Option` of that data part. Each data part is typed by its declaration node's type identity, and no node, type node or value type is added for a clock or a data part. The data consumer's refusals of a clock-shaped value are filament-semantic-value FR-133-AC-2's. | Test (TC-1361) |
 | FR-322-AC-476 | Over TC-2054's `test/refunds` unit, the `value`/`parameter` node binding `secondApprover` in `NoteSame` (`pre NoteSame using v on R::Order::note { secondApprover = secondApprover }`, which checks under either presence) has as its `semantic_type` the `composite_type`/`option` node over the `composite_type`/`reference` node of `Staff`, and the node binding `firstApprover` has that reference node. Recompiling a unit that keeps only the `NoteSame` clause (`NoteBy` and `NoteVal` apply `present` and `value` and do not check over a required parameter), with only `secondApprover`'s presence changed to `required`, gives a `secondApprover` parameter node with another `node_id` and leaves the `node_id` of the `Order` model declaration node and of the `NoteSame` clause node unchanged; recompiling with `secondApprover` typed `OptStaff` and presence `required` gives the `secondApprover` parameter node the same `node_id` and `semantic_type` as the `optional` spelling. The `Desk` invariant's call `deref(self.order).note(self.staff)` is one `dispatch_call` with three operands, the third the `literal` of `value_kind` `none` typed by the option node, and the package has `semantic_graph` nodes (`node_id`, body, `dependencies`, `semantic_type`) and `checked_term_data` equal to those of the package from `deref(self.order).note(self.staff, absent)`, only the source regions (`declaration_region`, the call's `source_map` entries) differing; the reader admits both. A hand-edited package that drops the third operand from the call's body, from its `operand_rows` row and from its `node_id.path` operand segments, every reference to the call node following its new id, so that every wire, operand-row and path check still holds, refuses `ill_typed`/`operator-ineligible` at the call by FR-322-AC-31's argument-count rule. | Test (TC-2054) |
