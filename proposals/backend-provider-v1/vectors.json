@@ -3877,6 +3877,7 @@
       "owners": {
         "/results/0/verdict": "FR-410",
         "/results/0/verdict/decision": "FR-409",
+        "/results/0/verdict/bound": "FR-410",
         "/results/1/basis": "FR-411",
         "/results/1/certificate": "FR-412",
         "/results/2/cause": "FR-331"
@@ -3908,6 +3909,14 @@
             "verdict": {
               "decision": {
                 "type": "accepted"
+              },
+              "bound": {
+                "type": "probability",
+                "comparison": "greater-or-equal",
+                "threshold": {
+                  "numerator": "9",
+                  "denominator": "10"
+                }
               },
               "estimate": {
                 "value": {
@@ -11310,6 +11319,25 @@
       ]
     },
     {
+      "name": "limit-reached-fixed-sample-preflight",
+      "base": "limit-reached-accounting-setting",
+      "owner": "FR-331",
+      "patch": [
+        {"op": "replace", "path": "/results/0/cause/limit", "value": "max_samples"},
+        {"op": "replace", "path": "/results/0/cause/value", "value": 1000000},
+        {"op": "replace", "path": "/results/0/cause/setting", "value": "statistical.max_samples"},
+        {"op": "add", "path": "/results/0/cause/required", "value": 9210341}
+      ]
+    },
+    {
+      "name": "limit-reached-required-not-positive-count",
+      "base": "limit-reached-fixed-sample-preflight",
+      "owner": "FR-331",
+      "patch": [
+        {"op": "replace", "path": "/results/0/cause/required", "value": 0}
+      ]
+    },
+    {
       "name": "limit-reached-bare-accounting-counter",
       "base": "limit-reached-accounting-setting",
       "owner": "FR-461",
@@ -11393,6 +11421,41 @@
         {
           "op": "remove",
           "path": "/results/0/verdict"
+        }
+      ]
+    },
+    {
+      "name": "measured-without-bound",
+      "base": "probabilistic-outcome",
+      "owner": "FR-410",
+      "patch": [
+        {
+          "op": "remove",
+          "path": "/results/0/verdict/bound"
+        }
+      ]
+    },
+    {
+      "name": "measured-bound-unknown-comparison",
+      "base": "probabilistic-outcome",
+      "owner": "FR-410",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/verdict/bound/comparison",
+          "value": "approximately"
+        }
+      ]
+    },
+    {
+      "name": "measured-bound-non-rational-threshold",
+      "base": "probabilistic-outcome",
+      "owner": "FR-410",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/verdict/bound/threshold",
+          "value": "9/10"
         }
       ]
     },

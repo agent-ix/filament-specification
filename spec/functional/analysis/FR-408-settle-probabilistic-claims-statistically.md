@@ -298,8 +298,12 @@ contract evaluated undecided during a step settles undecided with cause
 max_draws, max_cycle_steps}` plus time and the clause meter; each is set by
 the request, with the published default FR-461 gives it. Reaching any of them
 stops the run with `incomplete`, `limit-reached{limit, value, setting}`,
-naming the budget, its value and the request setting that raises it. A caller
-cancellation stops the run with `incomplete`, `cancelled{source}`, whose
+naming the budget, its value and the request setting that raises it. When a
+fixed-N method computes required sample count `N` before sampling and `N`
+exceeds `max_samples` or `max_draws`, it SHALL stop before drawing and the
+cause SHALL additionally carry `required: N`; the configured bound is
+`value`. This member is absent from every other `limit-reached` cause. A
+caller cancellation stops the run with `incomplete`, `cancelled{source}`, whose
 `source` is the cancellation cause, `requested` when the caller cancels and `deadline` when the caller's deadline ends the run; the backend's own time limit settles `limit-reached` or `timed-out`. Neither records a `measured` value. The method, `min_cycles`, the seed and the
 budgets are recorded in the result and are outside the obligation identity.
 
@@ -366,6 +370,7 @@ is a new, independent measurement of the same obligation.
 | FR-408-AC-16 | When a statistical request carries `workers` 0, the provider refuses the item at negotiation with `invalid_runtime_input`/`invalid-value` naming `statistical.workers`, settling it `invalid-request` with a cause that is not `invalid_capability`/`not-statistical`, and draws no sample; when the request names no `workers`, the run uses 1 worker; and `statistical.workers` has no member in `StatisticalLimits`, so no `limit-reached` result names it. | Test (TC-356) |
 | FR-408-AC-17 | When the caller cancels a run with `workers` 4, the provider settles `incomplete`, `cancelled{source}` with counts and estimates equal to the one-worker run stopped at the trace index the merge reached, and the result carries no sample of a higher trace index. | Test (TC-356) |
 | FR-408-AC-18 | When a run with `workers` 4 stops at `max_samples` 100, a sampler test double that counts draws started records at most 103 draws and, at every moment, at most 4 samples drawn and not yet merged; a provider that draws further ahead fails. | Test (TC-356) |
+| FR-408-AC-19 | For Okamoto `NoFault` with `N = 9,210,341`, `max_samples` 1,000,000 settles before drawing with `incomplete`, `limit-reached{limit: max_samples, value: 1,000,000, setting: statistical.max_samples, required: 9,210,341}` and zero samples/draws; setting `max_draws` to 1,000,000 instead reports `limit: max_draws` and `setting: statistical.max_draws` with the same `required`; either limit equal to N permits the run. | Test (TC-355) |
 
 ## Dependencies
 
