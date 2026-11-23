@@ -136,26 +136,42 @@ decided, target and `Prob0` states:
   objective's least value: 0 for a probability or an expected reward, `−q`
   for FR-411's shifted reward of a quantile, so an unnamed state never
   raises a lower bound.
-For an FR-413 subsystem refutation of `probability >= θ [eventually E]`,
-the existing `lower` certificate kind SHALL also certify the probability of
-never reaching E under the workload or witness-induced chain. The wire shape
-remains `ProbabilityCertificate{identity, objective, kind: lower, values,
-ranking}` and the objective remains bound to the original eventual claim; no
-producer-supplied target set or qualitative classification is added. For
-this role, the checker SHALL enumerate the complete reachable finite induced
-claim-product chain, including its eventual-claim monitor state, derive its
-bottom strongly connected components, and define A as the union of
-components containing neither a state where E holds nor a state where the
-claim monitor has already accepted E. It SHALL treat A as
-the targets of an auxiliary reachability lower check: every A state has
-value 1, and the named values and ranks SHALL establish a lower bound on
-reaching A using the ordinary `lower` inequalities and progress rule. The
-checker SHALL independently confirm that A is closed and event-free. Since
-every finite-chain path eventually enters a bottom component, reaching A is
-exactly the event `not eventually E`; its certified lower bound is therefore
-a sound lower bound for that complement probability. This role does not
-change other `lower` certificate meanings or accept a proof-side certificate
-as a refutation without FR-413's strict comparison.
+For an FR-413 subsystem refutation of an unwindowed `eventually`, `always`, or
+`until` claim over an `INFINITE-TRACE` subject, the existing `lower`
+certificate kind SHALL certify the probability of the claim's violating or
+satisfying side under the workload or witness-induced chain, according to the
+claim bound. The wire shape remains
+`ProbabilityCertificate{identity, objective, kind: lower, values, ranking}`
+and the objective remains bound to the original claim; no producer-supplied
+target set or qualitative classification is added. The checker SHALL
+enumerate the complete reachable finite induced claim-product chain,
+including its claim-monitor state, derive its bottom strongly connected
+components and classify them itself. For `eventually E`, a component is
+accepting when it contains a state where E holds or the monitor has accepted
+E, and rejecting otherwise. For `always P`, it is rejecting when it contains
+a state where P does not hold or the monitor has rejected the claim, and
+accepting otherwise. For `A until B`, it is accepting when it contains a
+state where B holds or the monitor has accepted the claim, and rejecting
+when it contains a state where neither A nor B holds or the monitor has
+rejected the claim. A component with no decided monitor state is rejecting for
+`eventually` and `until`, and accepting for `always`. These classifications
+include implicit terminal stutter and preserve each claim's predicate and
+monitor semantics.
+
+For a `greater-or-equal` claim bound `θ`, the checker SHALL define R as the
+union of rejecting components and treat R as the targets of an auxiliary
+reachability lower check. Every R state has value 1; the named values and
+ranks SHALL establish a lower bound on reaching R using the ordinary `lower`
+inequalities and progress rule. The checker SHALL independently confirm that
+R is closed and has the claim's rejecting classification. The lower bound
+`r` refutes the claim only when `r > 1 − θ`. For a `less-or-equal` bound `θ`,
+the checker SHALL instead define R as the union of accepting components,
+establish a lower bound on reaching R under the same rules, and refute only
+when `r > θ`. Because every path in a finite induced chain eventually enters
+a bottom component, these target events are exactly the violating sides of
+their respective bounds. This role does not change other `lower` certificate
+meanings or accept a proof-side certificate as a refutation without FR-413's
+strict comparison.
 
 - **Policy hints**: this rule applies only to the **fair-minimum**
   ([FSL FR-1041](ix://agent-ix/filament-spec-language/FR-1041)),
@@ -435,6 +451,7 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-22 | Over FR-412-AC-21's `Pick` with `policy` absent, the crossing-bound proofs `minimum` `<= 1/2` (`AtMost`, attained only by witness `a`) and `maximum` `>= 3/4` (`AtLeast`, attained only by witness `b`) are not admitted by the Reachability exact exception: neither settles `proved` through it, the checker infers and selects neither `a` nor `b` as a witness, and each keeps the unsupported or refusal outcome otherwise applicable to it, unchanged. | Test |
 | FR-412-AC-23 | FR-412-AC-21's otherwise valid `minimum` `1/2` document for `>= 1/2`, carrying `policy` as an empty array, a row naming `a` (which satisfies the equality) or a row naming `b`, is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. It is not checked as an optional hint under Policy hints. FR-412-AC-20's results for the fair-minimum, value-bounds and finite-horizon measure profiles and for required-policy certificates are unchanged. | Test |
 | FR-412-AC-24 | For an eventual-event refutation under a finite induced chain with initial `s` transitioning to event state `e` with probability `1/2` and event-free bottom state `a` with probability `1/2`, where `a` self-loops, the checker derives `{a}` as the event-free bottom target without a producer-supplied component set. The `lower` certificate with `x(s)=1/2`, `x(a)=1`, `x(e)=0`, and ranks 1 at `s`, 0 at `a` and `e` is accepted as a lower bound on `Pr(not eventually E)`; naming an event-containing component, changing the initial lower bound above `1/2`, or breaking the progress rank is rejected under the existing typed rules. Other `lower` certificate objectives retain their existing meaning. | Test (TC-432) |
+| FR-412-AC-25 | For cyclic induced chains, the checker derives the accepting and rejecting bottom-component unions from each unwindowed `eventually E`, `always P`, and `A until B` claim's monitor and predicates. A `lower` certificate for the rejecting union refutes `>= 3/4` only above `1/4`; a lower certificate for the accepting union refutes `<= 1/4` only above `1/4`. Thus the `always` and `until` reproductions and the `eventually <=` case in TC-433 are accepted with bound `1/2`, while a missing/wrong union, a malformed lower certificate, or a value equal to `1/4` does not establish refutation. | Test |
 
 ## Dependencies
 
