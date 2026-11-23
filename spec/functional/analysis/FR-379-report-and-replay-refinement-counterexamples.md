@@ -27,6 +27,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-432
     type: references
+  - target: ix://agent-ix/filament-specification/FR-740
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-362
+    type: references
 ---
 
 # FR-379: Report and replay refinement verdicts and counterexamples
@@ -97,13 +101,13 @@ of:
 | `InitialNotAbstract` | `initial` (`U64String`) | initial-state rule |
 | `StutterChanged` | `position` (`U64String`) | `stutter` step |
 | `AbstractStepRejected` | `position` (`U64String`), `transition`, `cause` (`Precondition{clause}`, `Frame{code}` or `Postcondition`) | abstract-operation step |
-| `AbstractClockGuard` | `position` (`U64String`), `operation` (nonempty string naming the mapped abstract operation) | no auxiliary-clock valuation satisfies that operation's clock guard at the concrete step's post-state (FR-900) |
-| `AbstractTimeInvariant` | `position` (`U64String`), `model` (nonempty string naming the abstract timed model) | a concrete delay crosses the mapped abstract state's time invariant (FR-900) |
+| `AbstractClockGuard` | `position` (`U64String`), `operation` (nonempty string naming the mapped abstract operation) | no auxiliary-clock valuation satisfies that operation's clock guard at the concrete step's post-state (FR-740) |
+| `AbstractTimeInvariant` | `position` (`U64String`), `model` (nonempty string naming the abstract timed model) | a concrete delay crosses the mapped abstract state's time invariant (FR-740) |
 | `NoAbstractMatch` | `position` (`U64String`) | `any` step, or an emptied candidate set |
-| `Divergence` | `constraint` | an `F_A` constraint violated by a lasso whose loop has only `stutter` steps, including the concrete terminal stutter |
+| `Divergence` | `constraint` (`Fairness`) | an `F_A` constraint violated by a lasso whose loop has only `stutter` steps, including the concrete terminal stutter |
 | `Undefined` | `position` (`U64String`), `row` | a field row, step-row receiver or argument or history update evaluated undefined at `position`; `row` names it |
-| `AbstractUnfair` | `constraint` | an `F_A` constraint violated by a lasso whose loop takes abstract steps |
-| `HiddenUnfair` | `constraint` | the hidden candidate graph of the concrete lasso has no cycle satisfying `F_A` together (FR-899) |
+| `AbstractUnfair` | `constraint` (`Fairness`) | an `F_A` constraint violated by a lasso whose loop takes abstract steps |
+| `HiddenUnfair` | `constraint` (`Fairness`) | the hidden candidate graph of the concrete lasso has no cycle satisfying `F_A` together (FR-378) |
 
 A safety failure is a finite prefix ending at its failing step; a timed
 invariant failure ends at the delay that crosses its boundary. The two timed
@@ -115,14 +119,15 @@ candidate graph over the lasso and verifies that no cycle satisfies all of
 history value or candidate set.
 
 **Timed and hidden-candidate failures.** `AbstractClockGuard` and
-`AbstractTimeInvariant` occur only when the abstract subject is timed. The
+`AbstractTimeInvariant` occur only when the abstract subject is timed
+(FR-740). The
 former is reported at the concrete step whose post-state has no auxiliary-
 clock valuation satisfying the mapped abstract operation's guard; the latter
 is reported at the concrete delay that crosses the mapped abstract state's
 invariant. Both are finite-prefix safety failures. `HiddenUnfair` occurs when
 abstract hidden state requires retaining the candidate graph and no candidate
 cycle over the concrete lasso satisfies `F_A`; it is a liveness failure and
-carries the constraint selected by the deterministic hidden-candidate rule:
+carries the constraint selected by this deterministic hidden-candidate rule:
 the first `F_A` constraint violated by every candidate cycle, or, when no one
 constraint has that property, the last constraint in the shortest
 source-order prefix for which no candidate cycle satisfies them all. Its
