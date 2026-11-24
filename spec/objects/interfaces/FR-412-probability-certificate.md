@@ -61,9 +61,9 @@ components, conditional}`:
 | `objective` | The target or decided states, the reward, the optimisation, and the claim's fairness set when it states one. The optimisation is `minimum` or `maximum` over every scheduler; `workload` under a workload that leaves no choice; or `workload-minimum` or `workload-maximum` under a workload over a timed subject with free delays, the minimum or maximum over those delays' choices. |
 | `kind` | `lower`, `upper`, `exact`, `long-run` or `conditional`. |
 | `values` | One exact rational per product state the certificate names (a dyadic value is an exact rational), keyed by product state key (FR-411). |
-| `ranking` | For `lower` and `exact`, and for `upper` under a fairness set with the optimisation `minimum`: one natural number per named state. A `lower` certificate under a fairness set with the optimisation `minimum` carries none ("Fair minimum"). For an expected reward, `exact` and `upper` carry it and `lower` carries none ("Expected reward"). |
+| `ranking` | For `lower` and `exact`, and for `upper` under a fairness set with the optimisation `minimum`: one natural number per named state. A `lower` certificate under a fairness set with the optimisation `minimum` carries none ("Fair minimum"). For an expected reward, `exact` and `upper` carry it and `lower` carries none ("Expected reward"). For `long-run` under a fairness set, and for a long-run bound certificate (`lower` or `upper` carrying `components`), it is the progress ranking of "Long-run certificate wire shape and witnesses". |
 | `policy` | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) checker profiles: optional per-state hints, checked by Policy hints below. In FSL FR-201's closed `filament.probability-objective/reachability/v1` exact document profile: absent, by Reachability exact below; it is not an optional hint there. Outside those four profiles, for `kind` `exact` under minimum or maximum objectives including workload variants and an `optimum` certificate's `post` part: required, with exactly one current action choice per checked undecided state. For the `reset` part of an `optimum` certificate: required, with one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
-| `components` | For `long-run`: per component, its value `ρ_C`, a gain–bias pair and, under `minimum` or `maximum`, its `policy` rows (FR-412 "Long-run certificate wire shape and witnesses"). One entry per maximal end component that the claim value needs: a missing or an extra entry is rejected `malformed` at `{"member": "components"}`. |
+| `components` | For `long-run` and for a long-run bound certificate: per component, its value `ρ_C`, a gain–bias pair and, under `minimum` or `maximum`, its `policy` rows (FR-412 "Long-run certificate wire shape and witnesses"). One entry per maximal end component (under a fairness set, per maximal fair end component) of the every-action graph the checker rebuilds, reachable from an initial state, whether or not the optimising scheduler enters it: a missing or an extra entry is rejected `malformed` at `{"member": "components"}`. |
 | `conditional` | For `conditional`, the certificate of a conditioned reading (FR-407 "Conditioned values"): `{mode: "ratio", numerator, denominator}`, `{mode: "optimum", post, reset}` or `{mode: "vacuous"}`, each part an `exact` certificate of this form. |
 
 A certificate names its states and carries no qualitative sets; the checker
@@ -404,9 +404,11 @@ the budget. The checker runs under the request's budgets; its cost is the
 re-enumeration plus one pass over the edges.
 
 ### Long-run certificate wire shape and witnesses
-
-A `long-run` certificate carries one `components` entry per maximal end
-component the checker rebuilds that the claim's value needs (every component
+A `long-run` certificate carries exactly one `components` entry per maximal end
+component of the graph the checker rebuilds from every enabled action of every
+product state reachable from an initial state (under a fairness set, per
+maximal fair end component of that graph), whether or not the optimising
+scheduler enters it, each exactly
 reachable under the optimising scheduler), each exactly
 
 ```json
@@ -462,6 +464,62 @@ chain is fair for the set, which the checker decides by its own recomputation
 (FR-411); an unfair induced chain is rejected `inequality-fails` at the initial
 state. The fair infimum or supremum need not be attained (FR-411), and then no
 witness exists and the refutation is a `lower` or `upper` certificate instead.
+
+**Component coverage.** A missing entry, an extra entry (a set of states that is
+not a maximal end component of the rebuilt graph, or that is not fair under the
+fairness set), two entries for one component, and entries out of the ascending
+order are each rejected `malformed` at `{"member": "components"}`, before any
+equality or inequality is checked.
+
+**The progress ranking of a fair long-run.** A `long-run` certificate for a
+claim that carries a fairness set, under `minimum` or `maximum`, carries
+`ranking` (the member of "Field sources"), one natural number per product state
+that is reachable, outside every `components` component and not decided. It
+exists because the combination step (the expected component value reached) is a
+reachability value over the states outside the components, and over a cyclic
+unfair region plain Bellman equality admits spurious fixed points that a fair
+scheduler never realises. The checker requires, in addition to the equalities
+and inequalities above: rank 0 exactly at the states of the `components`
+components (a ranked state of a component with a nonzero rank, or an unranked
+state outside them, is rejected `rank-missing` at the state); and at every
+ranked state outside the components, under `maximum` for the action of the
+state's top-level `policy` row and under `minimum` for every enabled action,
+a successor of positive probability with a strictly smaller rank (a state
+without one is rejected `rank-broken` at the state). A `ranking` on a
+certificate without a fairness set, or under `workload`, is rejected
+`malformed` at `{"member": "ranking"}`; a missing `ranking` where required is
+rejected `rank-missing` at the first unranked state. The ranking is the same
+progress property as the fair-minimum profile's (FSL FR-1041), over this
+certificate's state set.
+
+**The fair refutation without a fair deterministic witness.** When the fair
+infimum or supremum of a long-run fraction is not attained (FR-411), the
+refutation of the bound is a certificate of `kind` `upper` (refuting
+`>= t` by a bound `y < t` on the fair infimum) or `lower` (refuting `<= t` by
+a bound `x > t` on the fair supremum) over the long-run objective. It carries
+`components` exactly as above (each `value` the optimum `ρ_C`, with its
+gain–bias pair and `policy`), and `values`, `ranking` and top-level `policy`
+over the states outside the components, with each component state's value
+fixed at its component's `ρ_C`. The checker accepts an `upper` when `F(y) <=
+y` at every state outside the components and `y` at the initial states is on
+the refuting side of the threshold, and a `lower` when `x <= F(x)` at every
+named state with the ranking above, with `F` the one-step operator of the
+objective; a value that is not on the refuting side is `threshold-missed` at
+the initial state, and the component and ranking failures reject as above.
+It is accepted only for an objective under a fairness set whose deterministic
+witness does not exist: a fair deterministic witness whose induced chain is
+fair is the witness of the previous paragraph and is preferred, and a bound
+certificate offered where the witness exists is accepted when it checks.
+
+**Weighted long-run under every scheduler.** `weighted by delay` over a timed
+subject takes each step's delay as the weight, and `weighted by R` takes the
+checked per-action weight `R(s, a)` of the claim (the weight unit FSL FR-199
+checks for a workload, here read per enabled action). Both use the witness and
+component shapes above with the reward `R(s, a) · ([P] − ρ_C)`; an action's
+weight is the weight of the step that leaves its state. A component all of
+whose recurrent classes have total weight 0 under `R` takes the unweighted
+fraction and its unweighted gain–bias pair (FR-411); no weighted claim settles
+`unsupported` for naming `Every`, for a delay weight or for an action weight.
 
 **Replay of an initial-state verdict.** A refutation whose verdict is decided
 at the initial states (an `always P` claim whose initial state does not
@@ -535,6 +593,10 @@ the initial verdict unchanged. No other profile is refused for a cycle.
 | FR-412-AC-26 | Over a model with a component `C` of two states `u`, `v`, where `u` has actions `a` (to `v`) and `b` (to `u`), a `maximum` `long-run` certificate whose component row carries `value`, `gain`, `bias` and a `policy` with one row per state is accepted when the equalities hold under that policy and the inequalities hold for both actions at each state; changing one bias by `1/1000` is rejected `inequality-fails` at the state; removing the component's `policy`, adding a row for a state outside `C`, duplicating a row, or naming a choice that is no action of its state is rejected `malformed` at `{"member": "policy"}`; the same certificate under `workload` with a `policy` is rejected `malformed` at the same member, and without one is accepted. | Test (TC-362) |
 | FR-412-AC-27 | Under `minimum` over every scheduler with no fairness set, a refutation of `long_run_fraction holds(P) >= 3/4` on a model where one deterministic scheduler yields `1/2` is accepted when its `policy` rows are deterministic and induce a chain whose recomputed long-run value is `1/2`; a witness whose induced value is `3/4` is rejected `inequality-fails` at the initial state; a randomised row, a row naming no action, or a missing row for a reachable undecided state is rejected `malformed` at `{"member": "policy"}`. Under a fairness set, the same witness is accepted only when every bottom component of its induced chain is fair for the set, and an induced chain with an unfair bottom component is rejected `inequality-fails` at the initial state. The unweighted and `weighted by delay` forms use the same witness shape. | Test (TC-362) |
 | FR-412-AC-28 | Over a package whose raw graph holds a reachable cycle (a repeatable operation), an `always holds(P)` claim whose initial state does not satisfy `P` and an `eventually holds(E)` claim with an empty event cylinder are each refuted by the `lower` certificate on the absorbed initial state (FR-412-AC-25): the item settles `refuted`, no path-set search runs and no path-set evidence is emitted, and the item is not refused, not `unsupported` and not `inconclusive` for the cycle. A `lower` certificate with progress ranks over the same cyclic chain is accepted as FR-412-AC-24 and FR-412-AC-25 state. A fair-minimum certificate (FSL FR-1041) whose ranking part is given over a cyclic graph is rejected `inconclusive`, `certificate-rejected` with rule `malformed` at `{"member": "ranking"}`, and the refutation of the initial verdict is unchanged by it. | Test (TC-433) |
+| FR-412-AC-29 | Over a model whose initial state `s0` chooses between a fair component `C1` (value `1/2`) and a two-state cyclic region `R` outside every component that a fair scheduler leaves (it can enter `C1` from `R`), under a fairness set, a `maximum` `long-run` certificate with the component row for `C1`, a top-level `policy` and a `ranking` giving `C1`'s states rank 0, `R`'s states ranks 1 and 2 and `s0` rank 3, each non-component state having a positive-probability successor of smaller rank under its policy action, is accepted. The same certificate with `R`'s two states each ranked 1 and pointing at each other is rejected `rank-broken` at the first such state (the spurious fixed point in which `R` retains the mass); with `ranking` removed it is rejected `rank-missing` at the first unranked state; with a nonzero rank on a `C1` state, `rank-missing` at that state; the same certificate with a `ranking` and no fairness set, or under `workload`, is rejected `malformed` at `{"member": "ranking"}`. Under `minimum` each enabled action of a ranked state must have the smaller-ranked successor. | Test (TC-2115) |
+| FR-412-AC-30 | Over a model whose fair supremum of a long-run fraction is approached but not attained (a component action that must be taken with vanishing frequency), the refutation of `long_run_fraction holds(P) <= t` under a fairness set is a `lower` certificate carrying `components` (one entry per maximal fair end component, each `value` its `ρ_C`, gain–bias pair and `policy`), `values`, `ranking` and `policy`, and is accepted when `x <= F(x)` at every named state, the ranking progress holds and `x` at the initial states exceeds `t`; the refutation of `>= t` over the dual model is an `upper` certificate accepted when `F(y) <= y` and `y` at the initial states is below `t`. A bound on the wrong side of the threshold is rejected `threshold-missed` at the initial state; a missing, extra or duplicated component entry is rejected `malformed` at `{"member": "components"}` before any inequality is read; changing a component bias by `1/1000` is rejected `inequality-fails` at the state. | Test (TC-2115) |
+| FR-412-AC-31 | Over `Pair` (FR-411-AC-18) extended with a third maximal end component `C3` that no optimising scheduler enters, a `long-run` certificate with entries for `C1` and `C2` only is rejected `malformed` at `{"member": "components"}`, the entry for `C3` is required, and an entry for a state set that is not a maximal end component of the every-action graph (for example half of `C1`) is rejected the same way; under a fairness set under which `C3` holds no fair end component, the entry for `C3` is an extra entry and is rejected, while the entries are accepted without it. Entries out of ascending order of their least state key are rejected at the same member. | Test (TC-2115) |
+| FR-412-AC-32 | Over `Pair` with an action weight `R` (a declared weight `duration` of 1 on actions into `C1` and of 3 into `C2`) and over a timed `Pair` with `weighted by delay`, `long_run_fraction holds(P) weighted by duration >= 3/4` and `weighted by delay >= 3/4` under `Every` settle `proved` or `refuted` with the witness of FR-412-AC-27 and the component certificate of FR-412-AC-26 for the reward `R(s, a) · ([P] − ρ_C)`, whose value is the weighted ratio `π_C(R · [P]) / π_C(R)` of the recurrent class the scheduler stays in. A component whose every recurrent class has weight 0 takes the unweighted fraction with its unweighted gain–bias pair. No weighted `Every` request settles `unsupported` for naming `Every`, a delay weight or an action weight. | Test (TC-2115) |
 
 ## Dependencies
 

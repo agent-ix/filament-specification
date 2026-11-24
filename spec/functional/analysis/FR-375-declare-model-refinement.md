@@ -509,8 +509,19 @@ abstract declaration uses `RefinementKey`.
 | `ensure` | `{operation: RefinementKey, kind: "weak"|"strong", granularity: "each"|"whole"}` | An abstract fairness row. |
 
 `StepTarget` is one of four closed shapes. An abstract operation target is
-`{kind: "operation", operation: RefinementKey, receiver: SemanticTerm,
-arguments: [StepArgument]}`. An abstract protocol target is
+`{kind: "operation", operation: RefinementKey, target_type: RefinementKey,
+receiver: SemanticTerm, arguments: [StepArgument]}`. `target_type` names the
+abstract type the receiver is lifted against: the type that declares
+`operation`, or a subtype of it when the operation is inherited (the row's
+target type). It is required, because a concrete type that several object
+rows name (two subtypes of one declaring type, such as `FastQueue` and
+`SlowQueue` of `Queue`) lifts ambiguously without it; a reader or decision
+never infers it from the declaring type. A `target_type` that names no
+abstract type, a type that neither declares nor inherits `operation`, or a
+type that is not the declaring type or a subtype of it refuses
+`invalid_model_binding`/`malformed-declaration` at `target_type`; an absent
+`target_type` is the reader's missing-member refusal at the step entry. An
+abstract protocol target is
 `{kind: "protocol_step", class: Nonempty, node?: RefinementKey,
 arguments: [StepArgument]}`; its `class` is the alias-free FR-432 spelling,
 and `node` is required for a class with a declaration node and absent for a
@@ -892,6 +903,7 @@ before this step and cannot substitute for a missing body key.
 | FR-375-AC-36 | A checked-package `histories` row for an `Option<T>` history field whose `initial` is a local `reference` term naming a `value`/`option_value` node whose `semantic_type` is exactly that `Option<T>` is admitted by the reader and read as that node's present option; the same row with a `literal` `none` is admitted as before. A `reference` to a node that is not `value`/`option_value`, to an `option_value` whose `semantic_type` is `Option<U>` for another `U`, to a node of a different type than the history field's `type`, or a `dependency_reference` in place of a local one, refuses `invalid_model_binding`/`malformed-declaration` at the row's `initial`; an `initial` `reference` for a history field whose type is not an `Option` refuses the same way. The reference is admitted by the node's identity, not by re-reading `Some(e)`'s payload, so two rows naming the same `option_value` node share one initial value. | Test (TC-310) |
 | FR-375-AC-37 | Two step rows for operations of one concrete type, both mapped to abstract subtypes `A1` and `A2` of the type `P` that declares an inherited abstract operation, are each admitted, and the step decision lifts each receiver against its own row's target type; a decision that types the receiver against `P` instead faults and is a defect. A protocol-node row with an argument of a concrete type named by two object rows lifts to the row conforming to the node record's declared field type and decides without fault; naming a type no conforming row covers refuses `ill_typed`/`type-mismatch` at the argument. | Test (TC-310) |
 | FR-375-AC-38 | With object rows `Queue` and `SubQueue` (a subtype of `Queue`) both admitted by the population `queues` for one concrete type, a concrete reference lifts to the `SubQueue` row whatever the source order of the two rows, and swapping the rows' source order changes no `map` value and no step verdict. Rows with unrelated abstract types are not ranked against each other: the declared type of the lifted position chooses between them, and a declared type to which both conform with neither more specific is a step fault that S3 admits no row for. | Test (TC-310) |
+| FR-375-AC-39 | An abstract operation `StepTarget` carries `target_type`. Two step rows of one concrete type `Ring`, `put -> enq(self.ring, x)` and `put2 -> enq(self.ring, x)`, whose abstract operation `enq` is declared by `Queue` and inherited by its subtypes `FastQueue` and `SlowQueue` (both conform to `Queue`, neither to the other), are emitted with `target_type` `FastQueue` and `SlowQueue` respectively; a consumer that reads the package decides each row's receiver against its own `target_type`, so the receiver lifts to the `FastQueue` object for the first row and the `SlowQueue` object for the second, without ambiguity and without a target type of `None`. A step row without `target_type` is refused with the reader's missing-member refusal at the step entry. A `target_type` naming `Cell` (a type that does not declare or inherit `enq`) or a node that is no abstract type refuses `invalid_model_binding`/`malformed-declaration` at `target_type`. Two rows with the same operation and different `target_type` are two rows with distinct canonical bytes. | Test (TC-2114) |
 
 ## Dependencies
 
