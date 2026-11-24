@@ -104,3 +104,15 @@ Clean:
 | FND-018 | fixed | The FR-740 sentence is rewritten, and `quire validate` reports no EARS warning on lines 80-99 at 373286f6. |
 | FND-019 | fixed | The FR-412 member tables list `policy`, and a missing or extra component entry is `malformed` at `components`. |
 | FND-020 | fixed | The vector-specific body sentence is removed, and FSL FR-852-AC-7 at d9cb3b64 now says `Late` is the item whose predicate is `c.phase = 3`, the `TimedOut` state, so the two repos name the same item. |
+
+## New findings (disposition pass 2)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-022 | high | At 0747d2dc, FR-740 equates "the failing edge into the locked entry node" with the undelayed failing edge, and keeps "an undelayed failing edge reachable from a certified initial position refutes the safety half, so no proof certificate contains one" (FR-740-AC-6: never accepted as a proof). FR-377-AC-15 proves a safety half whose failing edge enters a time-locked region ("the failing edge does not refute and the safety half settles proved"), and FSL FR-244-AC-8 requires that proof certificate to carry the edge as `Taken::Failing`. Under the new equivalence those proofs are forbidden. Limit the refutation to a failing edge whose pre-state reaches a time-divergent continuation, or keep the two notions apart. | FR-740:80-93; FR-740-AC-6; FR-377-AC-15; FR-418 taken row; FSL FR-244-AC-8 |
+
+## Dispositions (round 2)
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-021 | fixed | FR-420 now cites FR-408's fixed-sample interval with `N` and `ι`, and FR-408:111 states that the same `N` decides a mean of values in [0, 1]. |

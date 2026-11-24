@@ -82,13 +82,16 @@ refused for the abstract side's tick source.
 no delay (the abstract guard is false throughout, or the target violates the
 abstract invariant). It is written with `taken` `{type: "failing"}` (FR-418
 "Refinement part"), which is distinct from `null`, the edge inside the locked
-region; the failing edge into the locked entry node is the undelayed failing edge. An undelayed failing edge reachable from a certified
-initial position refutes the safety half, so no proof certificate contains
-one. The zone certificate of another half or form (the liveness half over
-candidates that die) may contain such an edge on a path the half does not
-need to reach; the checker accepts it when its recomputation produces the
-same edge with `taken` `{type: "failing"}`, and does not reject it as
-`extra-edge` or for failing. A checker that cannot recompute such an edge
+region; the failing edge into the locked entry node is this undelayed failing edge.
+Whether it refutes depends on the continuation, as FR-377-AC-15 states: it
+refutes the safety half when some point of its pre-state zone can still run
+with time diverging, and then no proof certificate contains it; when no
+point of the pre-state zone has a time-divergent continuation (the post-state
+is time-locked), the edge enters the locked region as its entry node and does
+not refute, so a proof certificate may contain it, written `{type: "failing"}`.
+The checker accepts such an edge when its recomputation produces the same edge
+with the locked entry node as target and `taken` `{type: "failing"}`, and does
+not reject it as `extra-edge` or for failing. A checker that cannot recompute such an edge
 settles `inconclusive` and never `proved`, and never turns the edge into a
 proof or a refutation without recomputing it.
 
@@ -106,7 +109,7 @@ is reachability in a finite product.
 | FR-740-AC-3 | An untimed concrete model refines the timed abstract model of AC-1. With an abstract invariant `y <= 0` and guard `y >= 1`, it is refuted by an empty zone. | Test (TC-1787) |
 | FR-740-AC-4 | A timed concrete model with a hidden abstract field `mode` whose two candidates both take the abstract `send` but only the `mode = true` row resets `y`: after `send` at concrete delay 2, the `true` candidate's block holds `y = 0` and the `false` candidate's holds `y = 2`; a following abstract guard `y >= 1` kills the `true` candidate when the next step is taken at delay 0 and keeps the `false` one, so the refinement is not refuted; when both blocks fail the guard the step fails and the counterexample replays. Two candidates of one abstract state with different blocks are two entries in the certificate position. Resetting one candidate's clock leaves the other's block unchanged. | Test (TC-1787) |
 | FR-740-AC-5 | An abstract model with `time tick Step period 5` and a concrete model with dense time: a concrete delay of 100 advances no abstract clock, a concrete step mapped to `Step` advances abstract time by 5, and an abstract guard `y >= 10` is false after one such step and true after two. A concrete model with its own tick source over the same abstract tick source never supplies abstract time. The liveness half of a hidden-field declaration over this abstract model settles `proved` when every concrete behaviour fair under `F_C` has a candidate run that takes `Step` infinitely often and satisfies `F_A`, and `refuted` with a replaying lasso and its candidate graph when a fair lasso takes `Step` only finitely often: the concrete model of the vector steps `Step` on every second concrete step, so the verdict is `proved`, and the variant whose concrete lasso never takes a step mapped to `Step` settles `refuted`; neither settles `unsupported`. | Test (TC-1787) |
-| FR-740-AC-6 | A zone certificate whose refinement part holds an undelayed failing edge on a path the half does not need to reach, written with `taken` `{type: "failing"}`, is accepted and settles the verdict its other parts support; the same edge with `taken` `null` or `{type: "stutter"}`, or an edge the recomputation does not produce, settles `inconclusive`, `certificate-rejected`; a safety certificate with an undelayed failing edge reachable from an initial position is never accepted as a proof. | Test (TC-1787) |
+| FR-740-AC-6 | A zone certificate whose refinement part holds an undelayed failing edge on a path the half does not need to reach, written with `taken` `{type: "failing"}`, is accepted and settles the verdict its other parts support; the same edge with `taken` `null` or `{type: "stutter"}`, or an edge the recomputation does not produce, settles `inconclusive`, `certificate-rejected`; a safety certificate with an undelayed failing edge reachable from an initial position whose pre-state zone has a time-divergent continuation is never accepted as a proof, while the same edge into a locked entry node, whose pre-state points reach no time-divergent continuation (FR-377-AC-15 with `when self.trap { x <= 0 }`), is accepted in a proof certificate written `{type: "failing"}`. | Test (TC-1787) |
 
 ## Dependencies
 
