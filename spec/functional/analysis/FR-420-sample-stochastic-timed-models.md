@@ -164,11 +164,18 @@ reaches no regeneration point within `max_cycle_steps` steps stops with
 cycle, of the positions where `P` holds, and `L_k`, the cycle's total delay,
 each an exact rational from the sampled delays, so `Y_k / L_k` is the fraction
 of the cycle's time spent in `P`. The estimate and its interval are those of
-FR-408's regenerative method with these `Y_k` and `L_k`. A cycle that ends in a
-terminal state is an idle tail whose weight is unbounded: the long-run
-fraction of that behaviour is `1` when `P` holds at the terminal position and
-`0` otherwise, and the cycle contributes that limit as a completed run, never
-as a finite `Y_k / L_k`. A cycle of total delay 0 (a run of zero-delay steps
+FR-408's regenerative method with these `Y_k` and `L_k`. A behaviour that reaches
+a terminal state ends in an idle tail whose weight is unbounded, so its
+long-run fraction is the limit `1` when `P` holds at the terminal position and
+`0` otherwise, never a finite `Y_k / L_k`. When any sampled behaviour
+terminates, the sampler draws independent behaviours from `s0`, each giving one
+value `v_j` in `[0, 1]`: the terminal limit for a behaviour that terminates,
+and its own ratio `Σ Y_k / Σ L_k` for a behaviour that completes at least
+`min_cycles` cycles without terminating. The estimate is the mean of the
+`v_j` and its interval is FR-408's exact rational Hoeffding bound for a mean
+of values in `[0, 1]`, not the Chow–Robbins half-width; only when no sampled
+behaviour terminates does FR-408's single-behaviour regenerative estimate
+apply unchanged. A cycle of total delay 0 (a run of zero-delay steps
 that returns to the initial key) contributes `Y_k = L_k = 0` and does not
 enter the denominator; a run whose every cycle has total delay 0 takes the
 unweighted fraction `Σ [P] / Σ 1` over positions, the same limit FR-411
@@ -194,8 +201,8 @@ model and ignore distributions.
 | FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon settles the item `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |
 | FR-420-AC-8 | Under a workload with weight 0 on `Call::retry` and weight 1 on `Call::reply`, when both tie at the smallest delay `reply` is taken first and `retry` second; when two weight-0 operations tie with no positive-weight operation, each order has probability `1/2`. The model's `delay` declarations are read from its `delay_distribution` nodes. | Test (TC-1561) |
 | FR-420-AC-9 | A timed model with two states `Up` and `Down`, `Up` lasting `delay ~ discrete { 1 ms: 1 }` and `Down` `discrete { 3 ms: 1 }`, each step resetting the one clock, has `long_run_fraction holds(phase = Up) weighted by delay` equal to `1/4`: every cycle has `Y_k = 1` and `L_k = 4`, the estimate is `1/4` with a zero-variance cycle sample and a positive half-width, `>= 1/5` settles `measured: accepted` and `>= 1/3` `measured: rejected`, and each sampled run replays with its delays; the unweighted fraction of the same model is `1/2`. | Test (TC-374) |
-| FR-420-AC-10 | A return to the initial discrete state with a clock above 0 is not a regeneration point: with `Down` not resetting the clock, a run that returns to `Up` with `x = 1 ms` cuts no cycle there and cuts at the position where the key equals the initial one; a model in which no step ever reaches the initial key settles `incomplete`, `limit-reached` naming `max_cycle_steps`, its value and the request setting. | Test (TC-374) |
-| FR-420-AC-11 | A delay-weighted long-run sample that ends in a terminal state with `P` true at the terminal position contributes `1`, one with `P` false contributes `0`, and neither is a cycle ratio; a cycle of total delay 0 contributes nothing to the denominator, and a run whose every cycle has total delay 0 takes the unweighted fraction; a time-locked state settles `unsupported`, `time-locked-sample{state}` as in FR-420-AC-7. | Test (TC-374) |
+| FR-420-AC-10 | A return to the initial discrete state with a clock above 0 is not a regeneration point. Over `Loop` (state `A` initial with `x = 0`; `A` to `B` after `delay ~ discrete { 1 ms: 1 }`, no reset; `B` to `A` with weight 1 after 1 ms with no reset, or to `Z` with weight 1, `Z` to `A` after 1 ms resetting `x`), the return `B` to `A` has `x = 2 ms` and cuts no cycle, and every cut is a return `Z` to `A` where `x = 0` and no draw is pending; a variant of `Loop` in which no step resets `x` never reaches the initial key and settles `incomplete`, `limit-reached` naming `max_cycle_steps`, its value and the request setting. | Test (TC-374) |
+| FR-420-AC-11 | A model whose initial state moves with weight 1 to a terminal state where `P` holds and with weight 1 to a terminal state where `P` does not settles a delay-weighted long-run fraction `>= 1/4` with estimate the mean of the run limits `1` and `0` (value `1/2`), an interval from the Hoeffding bound, and `measured: accepted`; the same model's `>= 3/4` settles `measured: rejected`. A cycle of total delay 0 contributes nothing to the denominator, and a run whose every cycle has total delay 0 takes the unweighted fraction; a time-locked state settles `unsupported`, `time-locked-sample{state}` as in FR-420-AC-7. | Test (TC-374) |
 
 ## Dependencies
 

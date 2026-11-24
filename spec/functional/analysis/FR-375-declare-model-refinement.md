@@ -375,7 +375,7 @@ row the declaration admits is never refused by the step decision for typing.
   type of the lifted position. Source order never decides. Rows whose abstract
   types are unrelated by subtyping are not ranked against each other: the
   declared type chooses between them, and one to which both conform with
-  neither more specific is the step fault that FR-141 states, so `map` and
+  neither more specific is the step fault that FSL FR-141 states (ix://agent-ix/filament-spec-language/FR-141), so `map` and
   the step decision agree (FR-377 "The mapping").
 
 **History rows.** A history row names a concrete object type, a new field

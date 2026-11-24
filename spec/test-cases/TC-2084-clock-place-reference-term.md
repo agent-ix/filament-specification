@@ -15,7 +15,7 @@ Verify that `ref(p)` is carried as the `filament.op.clock_reference.ref`
 application typed by the one `scalar_type`/`clock_reference` node, that it
 and `present(p)` are evaluated per instance under a population binder and
 through a reference, that `Reference<Clock>` is a data member, and that the
-reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-10.
+reader refuses the malformed shapes. Scope: FR-829-AC-1 to FR-829-AC-10 and FR-181-AC-35.
 
 ## Test Procedure
 

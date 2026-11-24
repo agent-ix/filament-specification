@@ -48,7 +48,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | values | array of `{state, value}` objects; `proposals/backend-provider-v1/schema.json` `ProbabilityCertificate.values` |
 | ranking | array of `{state, rank}` objects; `proposals/backend-provider-v1/schema.json` `ProbabilityCertificate.ranking` |
 | policy | array of `{state, choice}` objects; `proposals/backend-provider-v1/schema.json` `ProbabilityCertificate.policy` |
-| components | for `long-run`: per component, its value and a gain-bias pair |
+| components | for `long-run`: per component, its value, a gain-bias pair and, under `minimum` or `maximum`, its `policy` rows |
 | conditional | for `conditional`: JSON object tagged by `mode`, `ratio`, `optimum` or `vacuous`; `proposals/backend-provider-v1/schema.json` `ProbabilityCertificate.conditional` |
 
 
@@ -63,7 +63,7 @@ components, conditional}`:
 | `values` | One exact rational per product state the certificate names (a dyadic value is an exact rational), keyed by product state key (FR-411). |
 | `ranking` | For `lower` and `exact`, and for `upper` under a fairness set with the optimisation `minimum`: one natural number per named state. A `lower` certificate under a fairness set with the optimisation `minimum` carries none ("Fair minimum"). For an expected reward, `exact` and `upper` carry it and `lower` carries none ("Expected reward"). |
 | `policy` | In the fair-minimum (FSL FR-1041), value-bounds (FSL FR-1042) and finite-horizon measure (FSL FR-1043) checker profiles: optional per-state hints, checked by Policy hints below. In FSL FR-201's closed `filament.probability-objective/reachability/v1` exact document profile: absent, by Reachability exact below; it is not an optional hint there. Outside those four profiles, for `kind` `exact` under minimum or maximum objectives including workload variants and an `optimum` certificate's `post` part: required, with exactly one current action choice per checked undecided state. For the `reset` part of an `optimum` certificate: required, with one choice per waiting state: a transition identity, `{"type": "reset"}`, or with a fairness set a randomized choice over them. |
-| `components` | For `long-run`: per component, its value `ρ_C` and a gain–bias pair. |
+| `components` | For `long-run`: per component, its value `ρ_C`, a gain–bias pair and, under `minimum` or `maximum`, its `policy` rows (FR-412 "Long-run certificate wire shape and witnesses"). One entry per maximal end component that the claim value needs: a missing or an extra entry is rejected `malformed` at `{"member": "components"}`. |
 | `conditional` | For `conditional`, the certificate of a conditioned reading (FR-407 "Conditioned values"): `{mode: "ratio", numerator, denominator}`, `{mode: "optimum", post, reset}` or `{mode: "vacuous"}`, each part an `exact` certificate of this form. |
 
 A certificate names its states and carries no qualitative sets; the checker
@@ -456,19 +456,28 @@ violates the bound; a witness whose choice names no action of its state is
 `malformed` at `{"member": "policy"}`, and a witness whose induced value meets
 the bound is `inequality-fails` at the initial state. No row of the witness
 is randomised or history dependent, since a stationary deterministic
-scheduler attains the optimum of a long-run fraction.
+scheduler attains the optimum of a long-run fraction. Under a fairness set the
+same witness shape is accepted only when every bottom component of the induced
+chain is fair for the set, which the checker decides by its own recomputation
+(FR-411); an unfair induced chain is rejected `inequality-fails` at the initial
+state. The fair infimum or supremum need not be attained (FR-411), and then no
+witness exists and the refutation is a `lower` or `upper` certificate instead.
 
 **Replay of an initial-state verdict.** A refutation whose verdict is decided
 at the initial states (an `always P` claim whose initial state does not
-satisfy `P`, an `eventually` claim whose event cylinder is empty) is checked
-from the initial states first, with no ordering of the whole graph: the
-checker SHALL decide the initial verdict before it orders any part of the
-supplied or induced graph, and SHALL NOT refuse the replay because the
-graph, reachable from an initial state or not, holds a cycle. A cyclic
-induced chain beyond the decided states replays by the bottom-component rule
-of FR-412-AC-25, with the ranking required only where a `lower` proof needs
-it. Only a part whose proof needs an acyclic order (a ranking) is refused
-when it is cyclic, and the refusal names that part.
+satisfy `P`, an `eventually` claim whose event cylinder is empty) is
+refuted by the `lower` certificate on the absorbed initial state, the
+accepting or rejecting union FR-412-AC-25 derives, and never by a path set.
+A cycle in the raw graph, reachable from an initial state or not, SHALL NOT
+refuse the replay: the item settles `refuted` with that certificate, no
+path-set search runs and no path-set evidence is emitted, and the cyclic
+induced chain beyond the decided states is checked by the bottom-component
+rule of FR-412-AC-25, ranked `lower` certificates over cyclic chains included
+(FR-412-AC-24, FR-412-AC-25). Only the fair-minimum profile (FSL FR-1041)
+requires an acyclic order of the graph it is given; a ranking part of that
+profile over a cyclic graph is rejected `inconclusive`, `certificate-rejected`
+with rule `malformed` at `{"member": "ranking"}`, and that rejection leaves
+the initial verdict unchanged. No other profile is refused for a cycle.
 
 ## Identity and comparison
 
@@ -524,8 +533,8 @@ when it is cyclic, and the refusal names that part.
 | FR-412-AC-24 | For an eventual-event refutation under a finite induced chain with initial `s` transitioning to event state `e` with probability `1/2` and event-free bottom state `a` with probability `1/2`, where `a` self-loops, the checker derives `{a}` as the event-free bottom target without a producer-supplied component set. The `lower` certificate with `x(s)=1/2`, `x(a)=1`, `x(e)=0`, and ranks 1 at `s`, 0 at `a` and `e` is accepted as a lower bound on `Pr(not eventually E)`; naming an event-containing component, changing the initial lower bound above `1/2`, or breaking the progress rank is rejected under the existing typed rules. Other `lower` certificate objectives retain their existing meaning. | Test (TC-432) |
 | FR-412-AC-25 | For cyclic induced chains, the checker derives the accepting and rejecting bottom-component unions from each unwindowed `eventually E`, `always P`, and `A until B` claim's monitor and predicates. A `lower` certificate for the rejecting union refutes `>= 3/4` only above `1/4`; a lower certificate for the accepting union refutes `<= 1/4` only above `1/4`. Thus the `always` and `until` reproductions and the `eventually <=` case in TC-433 are accepted with bound `1/2`, while a missing/wrong union, a malformed lower certificate, or a value equal to `1/4` does not establish refutation. | Test |
 | FR-412-AC-26 | Over a model with a component `C` of two states `u`, `v`, where `u` has actions `a` (to `v`) and `b` (to `u`), a `maximum` `long-run` certificate whose component row carries `value`, `gain`, `bias` and a `policy` with one row per state is accepted when the equalities hold under that policy and the inequalities hold for both actions at each state; changing one bias by `1/1000` is rejected `inequality-fails` at the state; removing the component's `policy`, adding a row for a state outside `C`, duplicating a row, or naming a choice that is no action of its state is rejected `malformed` at `{"member": "policy"}`; the same certificate under `workload` with a `policy` is rejected `malformed` at the same member, and without one is accepted. | Test (TC-362) |
-| FR-412-AC-27 | Under `minimum` over every scheduler with no fairness set, a refutation of `long_run_fraction holds(P) >= 3/4` on a model where one deterministic scheduler yields `1/2` is accepted when its `policy` rows are deterministic and induce a chain whose recomputed long-run value is `1/2`; a witness whose induced value is `3/4` is rejected `inequality-fails` at the initial state; a randomised row, a row naming no action, or a missing row for a reachable undecided state is rejected `malformed` at `{"member": "policy"}`. The same long-run claim under a fairness set, and the unweighted and `weighted by delay` forms, use the same witness shape. | Test (TC-362) |
-| FR-412-AC-28 | A refutation of `always holds(P)` whose initial state does not satisfy `P`, over a package whose raw graph holds a reachable cycle (a repeatable operation), replays and settles `refuted` with its initial verdict decided before any graph ordering, and is not refused for the cycle; an `eventually` claim with an empty initial cylinder behaves the same. A part of the same document whose proof needs a ranking over the cyclic graph is refused naming that part, and the initial verdict is unchanged by it. | Test (TC-433) |
+| FR-412-AC-27 | Under `minimum` over every scheduler with no fairness set, a refutation of `long_run_fraction holds(P) >= 3/4` on a model where one deterministic scheduler yields `1/2` is accepted when its `policy` rows are deterministic and induce a chain whose recomputed long-run value is `1/2`; a witness whose induced value is `3/4` is rejected `inequality-fails` at the initial state; a randomised row, a row naming no action, or a missing row for a reachable undecided state is rejected `malformed` at `{"member": "policy"}`. Under a fairness set, the same witness is accepted only when every bottom component of its induced chain is fair for the set, and an induced chain with an unfair bottom component is rejected `inequality-fails` at the initial state. The unweighted and `weighted by delay` forms use the same witness shape. | Test (TC-362) |
+| FR-412-AC-28 | Over a package whose raw graph holds a reachable cycle (a repeatable operation), an `always holds(P)` claim whose initial state does not satisfy `P` and an `eventually holds(E)` claim with an empty event cylinder are each refuted by the `lower` certificate on the absorbed initial state (FR-412-AC-25): the item settles `refuted`, no path-set search runs and no path-set evidence is emitted, and the item is not refused, not `unsupported` and not `inconclusive` for the cycle. A `lower` certificate with progress ranks over the same cyclic chain is accepted as FR-412-AC-24 and FR-412-AC-25 state. A fair-minimum certificate (FSL FR-1041) whose ranking part is given over a cyclic graph is rejected `inconclusive`, `certificate-rejected` with rule `malformed` at `{"member": "ranking"}`, and the refutation of the initial verdict is unchanged by it. | Test (TC-433) |
 
 ## Dependencies
 

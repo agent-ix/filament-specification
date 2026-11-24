@@ -98,8 +98,7 @@ timed form.
   `always possible` claim settles with its `state_graph` part, and the proof
   certificate carries no `admitted` member (FR-418-AC-16). Candidate
   selection SHALL NOT refuse such a request as inconsistent because no
-  divergence witness exists, and a `Replied` claim over a Zeno-only subject
-  settles with `zone-certified` basis when the claimed state is reached.
+  divergence witness exists.
 - **Routing.** A timed state-graph item is routed by its `options.method`,
   as a timed temporal item is (FR-416): without `method`, or with `zones`,
   only a backend that decides the subject on zones and lists the form in

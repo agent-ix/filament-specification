@@ -196,8 +196,8 @@ object key and two places of one object would then be one value.
   place id is a duplicate member and refuses `invalid_runtime_input`/
   `duplicate-member` (FR-550).
 - **State key and wire form.** A clock reference is encoded as the FR-181
-  typed value of kind `clock_reference` carrying its place id text, in the
-  state key and on the wire (`{"clock_reference": "<place id text>"}`), so two
+  typed value of kind `clock_reference` (defined in FR-181) carrying its place id text, in the
+  state key and on the wire (`{"type":"clock_reference","place_id":"<place id text>"}` (FR-181)), so two
   states are the same state exactly when their references are byte equal, a
   decode of the wire form gives back the equal reference, and a reference
   never serializes as an object key or as an object-reference value. A
@@ -278,7 +278,7 @@ under these checks, in this order:
 | FR-829-AC-7 | Over FR-154-AC-53's `acme/rpc` package, the field `r` typed by the `reference` type `ClockRef` over `Clock` is typed in the checked package by the one `scalar_type`/`clock_reference` node, no other node stands for `ClockRef`, and the postcondition `self.r = ref(self.x)` of an operation whose frame names only `r` is a `filament.op.clock_reference.eq` comparison of the post-state read of `r` with the place-reference application of AC-1, which the strict reader admits; it resets no clock, and a state's key holds the place id `r` holds. | Test (TC-2084) |
 | FR-829-AC-8 | Two references to the same place of the same owner are equal, whether produced in one state or in two states or universes; references to two places of one owner (`ref(self.x)`, `ref(self.y)`), to the same template of two owners, and to the same slot template at two positions are each distinct, and `ne` is the negation of `eq` in all cases. A reference from the abstract side of a refinement is false against a concrete reference with another owner identity and never refuses; a clock reference compared with an object reference refuses `ill_typed`/`operator-ineligible`. | Test (TC-2084) |
 | FR-829-AC-9 | A `Set<Reference<Clock>>` and a `Map` keyed by `Reference<Clock>` supplied in two different entry orders are one value with one state key and one wire form, ordered by the UTF-8 byte order of the place id texts; a repeated place id refuses `invalid_runtime_input`/`duplicate-member`; adding an element for another place changes the state key. | Test (TC-2084) |
-| FR-829-AC-10 | A clock reference round-trips through the state key and the wire form `{"clock_reference": "<place id text>"}` to an equal value; it is never encoded as an object reference, and a reference to an owner or template absent from the supplied world refuses `dangling_reference` at that reference. Two places of one object produce two state keys, which an object-reference model of them would conflate. | Test (TC-2084) |
+| FR-829-AC-10 | A clock reference round-trips through the state key and the wire form `{"type":"clock_reference","place_id":"<place id text>"}` (FR-181) to an equal value; it is never encoded as an object reference, and a reference to an owner or template absent from the supplied world refuses `dangling_reference` at that reference. Two places of one object produce two state keys, which an object-reference model of them would conflate. | Test (TC-2084) |
 
 ## Dependencies
 
