@@ -108,6 +108,20 @@ claim's or the task set's name) share one node id and one obligation
 identity. A task set has no other subject: no model, profile, clock or
 initial state enters the identity.
 
+The `task_set`, `release_bindings` and `mode_switch_bindings` members of the
+FR-322 `schedulability_claims` row are occurrence-scoped checked relations,
+not members of this body and not inputs to the claim node's derived
+structural identity. Each row is keyed by exact `(declaration, occurrence)`;
+two occurrences sharing this node and body retain separate relation rows.
+The row's `task_set` preserves the checked source task-set identifier. Its
+release bindings associate each task name in this body's `tasks` with an
+operation declaring identity/member in a selected timed model; its mode-switch
+bindings associate the selected-model operation identity/member with this
+task set. FR-322 owns their wire fields, canonical order and strict joins.
+The reader exposes these admitted relations as typed reads, and the FSL
+FR-418 checker uses them as its package route input without reconstructing
+them from raw bytes.
+
 ## Reader order
 
 The schedulability step is the last of the body steps, after the protocol
@@ -185,6 +199,8 @@ the identity in concrete replay and witness evidence.
 | FR-482-AC-2 | `CtlFp` and `schedulable CtlEdf on Ctl under edf;` have different node ids and different obligation identities; `CtlFp` over `Ctl` with `t3`'s `wcet` 6 ms or `bcet` 1 ms has a different node id and obligation identity; `CtlFp` over `Ctl` with its tasks listed `t3`, `t1`, `t2`, with `jitter 0 ms` added to `t1`, with other whitespace and comments, or with the claim named `Other` has `CtlFp`'s node id and obligation identity; one unit declaring `CtlFp`'s claim twice, as `CtlFp` and `CtlFp2`, has one node with two `claim` occurrences, ordinals 0 and 1. | Test |
 | FR-482-AC-3 | Fed to the reader, each edit of `CtlFp`'s node refuses with the code at the locus stated: `tasks` with no member, `invalid_semantic_graph` at `tasks`; `policy` and `kind` swapped in order, `invalid_semantic_graph` at the body; `policy` `rate-monotonic`, `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{n}/body/members/1`; `kind` `response` with `task` still the empty aggregate, `invalid_semantic_graph` at the `task` binding; `t1`'s `wcet_hi` a `quantity` literal with `criticality` `lo`, `invalid_semantic_graph` at `t1`'s `wcet_hi` binding; tasks in the order `t2`, `t1`, `t3`, `invalid_semantic_graph` at `tasks`; `T3`'s `task` the text `t9`, `invalid_semantic_graph` at the `task` binding; `t2`'s `period` typed by a unit of length, `ill_typed`/`type-mismatch` at that literal; `t1`'s `period` `0`, `invalid_timed_model`/`invalid-task-set` at `t1`'s aggregate; `t1`'s `bcet` `-1`, `invalid_timed_model`/`invalid-task-set` at `t1`'s aggregate; `t1`'s `bcet` greater than `wcet`, and a HI task's `bcet` greater than `wcet_hi`, each `invalid_timed_model`/`invalid-task-set` at that task's aggregate; `t2`'s `jitter` `-1`, `invalid_timed_model`/`invalid-task-set` at `t2`'s aggregate; `t3`'s `priority` `1`, `invalid_timed_model`/`invalid-task-set` at `t3`'s aggregate; `dependencies` naming the `ms` unit node, `invalid_semantic_graph` at `/dependencies`. The same equal-priority edit of `CtlEdf`'s node is admitted. | Test |
 | FR-482-AC-4 | `CtlFp`'s exact local claim `NodeRef` and occurrence are carried by one `schedulability_claims` row; when the same claim node has two `claim` occurrences, both occurrence keys are present once in canonical order. The IR read returns the FR-482 body and identity by reference. It does not interpret the timed model's release bindings or task successors; FSL alone performs those joins and recomputations under FR-418. Every positive and malformed carrier row has the outcome and locus in TC-976. | Test (TC-976) |
+| FR-482-AC-5 | Holding the claim body fixed, changing only `task_set`, only `release_bindings`, or only `mode_switch_bindings` in its carrier row leaves the schedulability claim body's node id and obligation identity unchanged in each case. | Test |
+| FR-482-AC-6 | For two claim occurrences sharing one equal schedulability claim body, the rows keyed by `(declaration, occurrence)` retain their own task-set identifiers and exact release and mode-switch arrays; neither row's relations are derived from the shared node or body. | Test |
 
 ## Published artifacts
 

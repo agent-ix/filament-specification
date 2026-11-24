@@ -1,5 +1,5 @@
 {
-  "note": "STD-638. The row is the checked-package identity index for FR-482's authenticated claim body; it does not carry task-transition templates or copy the task-set data.",
+  "note": "QSL-3121. The exact declaration-occurrence key scopes the checked task-set identity and the release/mode-switch relations consumed by FSL TaskProduct; it carries no task-transition templates.",
   "positive": [
     {
       "id": "SCC-01-single-schedulability-occurrence",
@@ -142,7 +142,10 @@
               }
             ]
           },
-          "occurrence": 0
+          "occurrence": 0,
+          "task_set": "Ctl",
+          "release_bindings": [],
+          "mode_switch_bindings": []
         }
       ]
     },
@@ -287,7 +290,10 @@
               }
             ]
           },
-          "occurrence": 0
+          "occurrence": 0,
+          "task_set": "Ctl",
+          "release_bindings": [],
+          "mode_switch_bindings": []
         },
         {
           "declaration": {
@@ -425,7 +431,10 @@
               }
             ]
           },
-          "occurrence": 1
+          "occurrence": 1,
+          "task_set": "Ctl",
+          "release_bindings": [],
+          "mode_switch_bindings": []
         }
       ]
     }

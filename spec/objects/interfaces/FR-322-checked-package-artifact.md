@@ -64,6 +64,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-383
     type: depends_on
+  - target: ix://agent-ix/filament-spec-language/FR-246
+    type: references
+  - target: ix://agent-ix/filament-spec-language/FR-075
+    type: references
   - target: ix://agent-ix/filament-spec-language/FR-093
     type: references
   - target: ix://agent-ix/filament-specification/FR-660
@@ -163,7 +167,7 @@ Type and Multiplicity above were derived from the retained text below. Where tha
 | temporal_clause_names | absent exactly when the graph has no temporal/temporal_clause node; see Field sources |
 | claim_names | absent exactly when the graph has no state/state_clause, relation/refinement, correspondence/component_composition or claim node other than a claim/value_validity or claim/operation_contract record node; see Field sources |
 | protocol_correlation_occurrences | optional array (FR-831); absent means the authored correlation provenance is unavailable, never empty; present is complete, and `[]` only when every eligible control occurrence has an empty `related`; outside every identity preimage |
-| schedulability_claims | optional; when present a non-empty array of {declaration, occurrence} |
+| schedulability_claims | optional; when present a non-empty array of closed rows with {declaration, occurrence, task_set, release_bindings, mode_switch_bindings}; the two binding arrays are present and may be empty |
 | operation_effects | optional; absent means effects are unavailable, not empty |
 | operation_bodies | optional; absent means bodies are unavailable, not empty; present is one row per operation member and may be an empty array |
 | requirement_items | absent exactly when the package has no requirement record; otherwise one row per record in package order (FR-825) |
@@ -5430,30 +5434,75 @@ from source text, a source region or a `NodeRef` path.
 `schedulability_claims` is the typed checked-package index for the
 `claim`/`schedulability` body defined by FR-482. It is absent when no such
 claim occurrence exists and otherwise contains one row for every occurrence.
-Each row is exactly:
+Each row is a closed object with exactly these five members:
 
 ```json
 {
   "declaration": {"package": "<package>", "path": ["<segment>"], "ordinal": 0},
-  "occurrence": 0
+  "occurrence": 0,
+  "task_set": "Ctl",
+  "release_bindings": [],
+  "mode_switch_bindings": []
 }
 ```
 
+`task_set` is the nonempty source task-set `Identifier` whose checked task
+body is carried by this claim occurrence. `release_bindings` is an array of
+zero or more closed objects, each exactly
+`{task_name, selected_model_identity, operation_declaring_identity,
+operation_member}`. `task_name` is an `Identifier` in the claim's FR-482
+`tasks`; `selected_model_identity` is the nonempty package identity of a
+model selected by this checked package; `operation_declaring_identity` is
+the exact structural `NodeRef` of the selected model's declaring model node
+(for example, model type `M` in member `M::go`); `operation_member` is the
+separate exact operation-member `Identifier`. Model operations have no graph
+node of their own, so `operation_declaring_identity` never names a synthetic
+operation path or operation node.
+`mode_switch_bindings` is an array of zero or more closed objects, each
+exactly `{selected_model_identity, operation_declaring_identity,
+operation_member}` with the same types and meanings. Both arrays are present
+even when empty. A release row binds one claim task to one operation in one
+selected model; a mode-switch row binds one operation in one selected model
+to this claim's task set.
+
 The local `declaration` resolves to a `claim` node with
 `semantic_form: "schedulability"`; `occurrence` resolves to one of that
-node's occurrences with role `claim`. Rows sort by structural declaration
-identity and then occurrence and contain no duplicate pair. Every
-`claim`/`schedulability` occurrence has exactly one row. A missing member or
-missing occurrence row refuses `invalid_package`/`invalid-value` at
-`/schedulability_claims`. A row naming an absent, foreign, wrong-kind or
-non-schedulability node refuses `invalid_package`/`invalid-value` at
-`/schedulability_claims/{i}/declaration`; an occurrence not owned by that node
-refuses the same code and cause at `/schedulability_claims/{i}/occurrence`. A
-repeated key refuses `invalid_package`/`conflicting-definition` at the later
-row. A row out of canonical order refuses `invalid_package`/`invalid-value` at
-the later row. The closed schema refuses a missing row member, a non-integer
-or negative occurrence, or an extra member as `malformed_wire` at the row or
-member that breaks the schema.
+node's occurrences with role `claim`. Claim rows sort by structural
+declaration identity and then occurrence and contain no duplicate pair.
+Every `claim`/`schedulability` occurrence has exactly one row. Within each
+claim row, release bindings sort ascending by the tuple `(task_name,
+selected_model_identity, operation_declaring_identity, operation_member)`;
+mode-switch bindings sort ascending by `(selected_model_identity,
+operation_declaring_identity, operation_member)`. Identifiers compare by
+Unicode scalar value, selected model identities by UTF-8 byte order, and
+operation declaring identities by canonical structural `NodeRef` order.
+Rows are not deduplicated across distinct `(declaration, occurrence)` keys,
+even when those occurrences share one claim node and body.
+
+After the FR-482 body step, strict admission checks each release `task_name`
+against the exact task names in that row's claim body and each
+`selected_model_identity` against the package's selected timed models. It
+then resolves each `operation_declaring_identity` and `operation_member`
+pair in that selected model and requires the member to name an operation
+declared by that exact identity. A task name absent from its claim body
+refuses `invalid_package`/`invalid-value` at
+`/schedulability_claims/{i}/release_bindings/{j}/task_name`; an unselected
+model identity or an operation identity/member that does not resolve as
+specified refuses `invalid_package`/`invalid-value` at its exact field
+pointer. These checks do not infer or reconstruct a relation from raw graph
+bytes after admission.
+
+A missing index or missing occurrence row refuses
+`invalid_package`/`invalid-value` at `/schedulability_claims`. A row naming an
+absent, foreign, wrong-kind or non-schedulability node refuses
+`invalid_package`/`invalid-value` at `/schedulability_claims/{i}/declaration`;
+an occurrence not owned by that node refuses the same code and cause at
+`/schedulability_claims/{i}/occurrence`. A repeated key refuses
+`invalid_package`/`conflicting-definition` at the later row. A row out of
+canonical order refuses `invalid_package`/`invalid-value` at the later row.
+The closed schema refuses a missing row or binding member, a non-integer or
+negative occurrence, an empty or malformed identifier, or an extra member as
+`malformed_wire` at the row or member that breaks the schema.
 
 After aggregate-order validation and before the FR-482 body checks, the reader
 visits rows in array order. For each row it checks the declaration join before
@@ -5464,12 +5513,14 @@ the caller's finite reader budget before inspection. Exhaustion returns the
 reader's `incomplete` result at the first uncharged row without a partial
 typed claim view.
 
-This index is an authenticated handle, not a second copy of the task claim.
-The IR reader validates the row join and the complete FR-482 body, then exposes
-the admitted policy, task fields, units and claim occurrence as a typed read.
-It does not bind the claim to a timed model, interpret source release
-declarations or compute task successors. The FSL checker consumes the typed
-claim and the selected timed model, resolves each task release binding, and
+This index is an authenticated handle, not a second copy of the FR-482 task
+body. The IR reader validates the row join, the complete FR-482 body, the
+claim-scoped task-set and release/mode-switch relation rows, and their joins
+to selected timed models. It exposes the admitted body and relations through
+borrowed typed reads. It does not create task-product states or compute task
+successors. The FSL checker consumes `claim.task_set`, selects release and
+mode-switch rows by that task-set identity and selected model, binds the exact
+operation declaring identity/member (and the release task name), then
 recomputes the source-plus-scheduler product and each finite
 `TaskTransitionTemplate` successor under FR-418. The template and
 `TaskProductCertificate` remain in `backend-provider-v1`; neither is a
@@ -6805,7 +6856,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-299 | A `dimension_node_ids` operand is a local `NodeRef` of a dimension node of the importing graph or a package operand `{package, node}` naming a dimension node of a direct dependency, resolved by lookup in that dependency's admitted package and never minted into the importing graph (`XP-01` to `XP-10` write every foreign dimension as a package operand and are decided as before). An operand whose `package` is not in the direct `dependency_selections` refuses `missing_declaration`/`missing-selection` at `/semantic_graph/nodes/{i}/body/dimension_node_ids/{k}/package`: a package only in the derived closure (`XP-11`), a package in no selection (`XP-12`) and the importing package itself (`XP-15`). A `node` absent from the dependency's admitted package refuses `missing_declaration`/`missing-name` at `.../{k}/node` (`XP-13`). A `NodeRef` naming a foreign package (self-minted) refuses `invalid_semantic_graph` at `.../{k}` (`XP-14`). | Test (TC-280) |
 | FR-322-AC-301 | A `scalar_type`/`carried_quantity` node over the unit node of `m` and a `decimal_range` carrier `Decimal[-100, 100; 2, 2; exact]`, one over an `integer_range` carrier `Int[-2, 2]` with `rounding` `exact`, and one over `Int[-2, 2]` with `rounding` `nearest-even` are admitted, self-typed, of family `quantity`, with the path of "Derived type forms and forwarding", and the three are three nodes; the V2 schema enumerates `carried_quantity` among the `scalar_type` forms. Their refusals are `RM-CQ-UNIT`, `RM-CQ-CARRIER` and `RM-CQ-MODE`, each `invalid_package`/`invalid-derived-shape` at the node (`CQ-W01` to `CQ-W08`). | Test (TC-280) |
 | FR-322-AC-302 | A `filament.op.quantity.convert` application whose operand 0 is typed by the unit node of `in` and whose `result_type` is a carried quantity node over `m` with a `Decimal[-100, 100; 2, 2; exact]` carrier is admitted with `mode` `{kind: rounding, value: exact}`, and one with the carrier's mode `nearest-even` with that mode; a `mode` differing from the result node's `rounding`, `null` included, refuses `invalid_package`/`operation-mode-type-mismatch`; a result over a unit of another dimension refuses `ill_typed`/`operator-ineligible`; a carried quantity as an operand of `filament.op.quantity.add` refuses `ill_typed`/`operator-ineligible` (`CQ-W09` to `CQ-W15`; `CQ-W15` converts a carried quantity into another). | Test (TC-280) |
-| FR-322-AC-300 | A package with no `claim`/`schedulability` occurrence omits `schedulability_claims`; a package with such occurrences contains exactly one closed `{declaration, occurrence}` row for each, in structural-`NodeRef`, then occurrence order. Each row resolves only to its local `claim`/`schedulability` node and one of that node's `claim` occurrences; it copies no claim body, task value, source release binding, policy or task-transition template. The positive and shared-node/multiple-occurrence vectors are schema-valid. Missing coverage, a foreign, absent or wrong-form node, an unowned occurrence, a repeated key and a non-canonical row order have the exact `invalid_package` refusal and locus in TC-976; missing/extra row members and a non-integer or negative occurrence are `malformed_wire`. The IR typed read exposes the FR-482 body and identity without evaluating model releases or task successors; the FSL FR-418 checker alone recomputes source/scheduler successors. `TaskTransitionTemplate` remains in the backend-provider-v1 certificate and is not a checked-package member. | Test (TC-976) |
+| FR-322-AC-300 | A package with no `claim`/`schedulability` occurrence omits `schedulability_claims`; each occurrence has exactly one closed row with required `declaration`, `occurrence`, `task_set`, `release_bindings` and `mode_switch_bindings` members. The two binding arrays may be empty and otherwise use the closed binding objects and types of FR-322 "Schedulability claim carrier". The exact `(declaration, occurrence)` pair is the row key, including two rows for shared-node claim occurrences. Missing/extra members and malformed values are `malformed_wire`; malformed claim joins, missing coverage, unowned occurrence, repeated key and non-canonical ordering have the exact refusals and loci in TC-976. | Test (TC-976) |
 | FR-322-AC-303 | A package carries `operation_effects` or omits it; when omitted the effects are unavailable, not empty, and no other member changes. When present it has exactly one closed `{document, declaring, operation, effect, provenance}` row per operation member of every admitted `object_type`, `process` and `state_machine` declaring node, keyed and sorted by `(document, declaring, operation)`, with all four `effect` members always present. Each of `modifies`, `creates`, `deletes` and `deletes_scoped` is carried exactly as the selected document's operation frame lifts under FR-013-AC-13 and FR-340, so no effect kind is dropped, and an operation with no frame entries has an all-empty row. One member name under another declaring node or document is another row. The positive vectors OEC-01 to OEC-07 are schema-valid and read back; the exact `malformed_wire`, `missing_declaration`, `ill_typed`, `invalid_model_binding`, `invalid_semantic_graph` and `invalid_package` refusals and loci for missing/extra members, unknown effect or entry kinds, wrong provenance, a field or undeclared operation, a dropped or invented effect, a repeated key, key order and missing coverage are in TC-977. FSL emits the carrier and the IR strict reader admits or refuses it; the IR does not mirror it. | Test (TC-977) |
 | FR-322-AC-304 | A `text` literal typed by `Text[min, max; profile]` is admitted exactly when its `value` is already normalized under `profile` (`nfc`, `nfd`, `nfkc`, `nfkd`; the reader normalizes nothing) and its length (scalar count, or UTF-8 byte count under `binary-utf8`) lies in `[min, max]`, both bounds inclusive. A length below `min`, a length above `max` and a `value` not in the profile's normal form each refuse `ill_typed`/`type-mismatch` at `/semantic_graph/nodes/{n}/body/value`; under `binary-utf8` a two-scalar, four-byte `value` against `Text[1, 3; binary-utf8]` refuses while the same `value` against `Text[1, 3; unicode-scalars]` is admitted (`proposals/checked-package-v2/text-literal-vectors.json`, `TX-01` to `TX-14`). | Test (TC-233) |
 | FR-322-AC-305 | A `temporal_bindings` row may be keyed by the `node_id` of a `protocol`/`compensation` node (operator `compensate`) or of a `protocol`/`control` node of operator `await` as well as of a `temporal`/`temporal_clause` node; an await row follows every rule below for a compensation row, its `clock_name` being the await's `clock` text (`AW-01` an await beside a compensation sharing model, profile and clock name, `AW-02` an await alone, both admitted; `AW-03` to `AW-06` the `CB-03` to `CB-06` refusals of an await row, at the same loci); its `clock_name` is the compensation's `clock` text and its configuration kind is the one the lock's `temporal_profile` selection determines (no per-node law). When that selection is clock-configured every compensation node has exactly one row. A compensation with no row refuses `invalid_package`/`timed-node-reference` at `/semantic_graph/nodes/{N}/body` (`CB-03`); a repeated compensation key at the second row `/temporal_bindings/{i}` as `conflicting-definition` (`CB-04`); a compensation row whose `clock_name` differs from the node's `clock` at `/temporal_bindings/{i}/clock_name` (`CB-05`) before a configuration kind inconsistent with the lock's selection at `/temporal_bindings/{i}/clock/kind` (`CB-06`); a row naming a node that is neither a temporal clause, a compensation nor an await, a `send` control included, at `/temporal_bindings/{i}/declaration` (`CB-07`). A clause beside two compensations sharing model, profile and clock name (`CB-01`), compensations alone (`CB-02`) and the same rows under a profile with no clock configuration (`CB-08`, no rows, member absent) are admitted. A compensation row names the compensation's `declaration` occurrence, ordinal 0 in every published package (`proposals/checked-package-v2/temporal-clock-binding-vectors.json`). | Test (TC-233, TC-1925) |
@@ -6961,6 +7012,20 @@ is carried by two `protocol` node forms.
 | FR-322-AC-521 | A `component_composition` node's operand row entry may be a dependency position. `fixtures/positive-dependency-call.json`, read with `fixtures/positive-dependency-library.json` supplied as its direct dependency `test/predicates` (19 nodes), with a `correspondence`/`component_composition` node appended at index `4` whose `guarantees[0].clause` and `dependencies` entry are `{"package": "test/predicates", "path": ["composite_type", "set", {"operand": 0}], "ordinal": 0}` and whose row is `[{"package": "test/predicates", "node": 6}]`, passes the V2 schema and the operand checks; the clause rebuilds to the structural key of library node `8` (`Set<Lib::Point>`), and no node of the importer's graph has that key or library node `6`'s (`NI-30`). A component clause whose operand the importer also holds is written with the importer's graph index and resolves by its rebuilt key to the component package's clause node: a library temporal clause over library node `0` (Integer), named with the row `[0]` (the importer's Integer node), is admitted with no `missing-name` refusal (`NI-37`). Each of these refuses `malformed_wire`, with no cause, at `/semantic_graph/operand_rows/4/0`: the entry's `package` `no/such-package` (`NI-31`); its `node` `19`, not below the library's 19 nodes (`NI-32`); and its `package` `other/lib`, a package the reader is supplied that no `lock.dependency_selections` entry names (`NI-40`). A dependency position in the row of node `3`, a `function` node, refuses at `/semantic_graph/operand_rows/3/0` (`NI-38`). With node `4`'s own `node_id` path extended by `{"operand": 0}`, which names the dependency position, it refuses `malformed_wire` at `/semantic_graph/nodes/4/node_id/path/2/operand` (`NI-33`), also when that position is out of range, because the slot precedes the row entry in canonical bytes (`NI-39`). The V2 schema refuses, as `malformed_wire`, the entry with an extra member (`NI-34`), the entry whose `node` is an object (`NI-35`), and the clause's slot written as the path segment `{"package": "test/predicates", "node": 6}` (`NI-36`). No byte of any published fixture changes. | Test (TC-233; NI-30..NI-40) |
 | FR-322-AC-522 | For one expression node reached in two function bodies whose owners have declaration source-map order `a` then `b`, the package-wide owner walk assigns its expression occurrences 0 and 1 respectively; the second owner does not restart at 0. In one body, a Boolean parameter visited first as an expression and later read as an `if` guard has occurrences 0 and 1, so the guard occurrence is 1. Omitting a requirement record does not renumber either source occurrence. A termination measure is walked after its owner's body, so its visits take ordinals before the next owner's first visit. | Test (TC-2053) |
 | FR-322-AC-523 | In `function sum(): Integer pure { 1 + 2 }`, the root `expression`/`binary` application uses `filament.op.integer.add`, operator `binary`, and the builtin Integer node as both its `result_type` and its own `semantic_type`. Its structural path ends with two equal operand-slot segments in order, each naming the Integer node: first the application's `result_type`, then the expression node's `semantic_type`. Both positions remain in the path even though the operand row holds the shared Integer node once; removing either occurrence or deduplicating the two path segments changes the identity. | Test (TC-233) |
+| FR-322-AC-524 | Every schedulability row has exactly the five required members `declaration`, `occurrence`, `task_set`, `release_bindings` and `mode_switch_bindings`; a missing or extra row member, or a missing or extra release/mode-switch binding member, refuses `malformed_wire` at the exact row or member. | Test |
+| FR-322-AC-525 | `task_set`, each release `task_name`, and each `operation_member` use the `Identifier` schema; a value outside that grammar refuses `malformed_wire` at its exact field. | Test |
+| FR-322-AC-526 | Each `selected_model_identity` is a nonempty string; an empty or non-string value refuses `malformed_wire` at its exact field. | Test |
+| FR-322-AC-527 | Each `operation_declaring_identity` is a well-formed structural `NodeRef` with exactly `package`, `path` and `ordinal`; an invalid or extra-member identity refuses `malformed_wire` at that field. | Test |
+| FR-322-AC-528 | A `Ctl` row with no release or mode declarations retains `task_set: "Ctl"`, `release_bindings: []` and `mode_switch_bindings: []`; both empty arrays remain present in strict read and complete read/encode/read. | Test |
+| FR-322-AC-529 | For `Ctl` with tasks `a` and `b`, selected model `acme/model`, and `release Ctl.a on M::go;`, the admitted row carries `task_set: "Ctl"` and exactly `{task_name: "a", selected_model_identity: "acme/model", operation_declaring_identity: {package: "acme/model", path: ["M"], ordinal: 0}, operation_member: "go"}` in `release_bindings`. The declaring identity is the selected model node `M`; it is not a synthetic operation node. | Test |
+| FR-322-AC-530 | For `Ctl` with tasks `a` and `b`, selected model `acme/model`, and `mode Ctl hi on M::enter_hi;`, the admitted row carries exactly `{selected_model_identity: "acme/model", operation_declaring_identity: {package: "acme/model", path: ["M"], ordinal: 0}, operation_member: "enter_hi"}` in `mode_switch_bindings`, with no `task_name`; the declaring identity is the selected model node `M`. | Test |
+| FR-322-AC-531 | A release whose `task_name` is not in the claim's task set refuses `invalid_package`/`invalid-value` at `/schedulability_claims/0/release_bindings/0/task_name` and exposes no admitted row or package. | Test |
+| FR-322-AC-532 | A release or mode-switch binding whose `selected_model_identity` is not one of the package's selected timed models refuses `invalid_package`/`invalid-value` at its exact `/selected_model_identity` field and exposes no admitted row or package. | Test |
+| FR-322-AC-533 | A release or mode-switch binding whose `operation_declaring_identity` does not resolve to the exact declaring model node in the named selected model refuses `invalid_package`/`invalid-value` at its exact `/operation_declaring_identity` field and exposes no admitted row or package. The identity denotes the declaring model node; a synthetic operation-path identity is not accepted. | Test |
+| FR-322-AC-534 | A release or mode-switch binding whose `operation_member` is not an operation declared by its exact `operation_declaring_identity` in the selected model refuses `invalid_package`/`invalid-value` at its exact `/operation_member` field and exposes no admitted row or package. | Test |
+| FR-322-AC-535 | Release rows sort by `(task_name, selected_model_identity, operation_declaring_identity, operation_member)` using the comparisons defined in “Schedulability claim carrier”; a descending release array refuses `invalid_package`/`invalid-value` at `/schedulability_claims/{i}/release_bindings/{j}`, where `j` is the first out-of-order row. | Test |
+| FR-322-AC-536 | Mode-switch rows sort by `(selected_model_identity, operation_declaring_identity, operation_member)` using the comparisons defined in “Schedulability claim carrier”; a descending mode-switch array refuses `invalid_package`/`invalid-value` at `/schedulability_claims/{i}/mode_switch_bindings/{j}`, where `j` is the first out-of-order row. | Test |
+| FR-322-AC-537 | When one shared schedulability node has claim occurrences 0 and 1, the package carries two rows keyed by those exact pairs and retains each row's task-set identity and binding arrays independently, even when the claim body is equal. | Test |
 
 ### FR-322-AC-467
 
