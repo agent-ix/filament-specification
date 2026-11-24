@@ -835,3 +835,10 @@ plus the clock name and kind of a second occurrence (FR-322-AC-359..370). A repe
 (`declaration`, `occurrence`) key is `conflicting-definition` in `temporal_bindings`
 too (TCB-10, CB-04). Every published positive package with a temporal clause carries
 its name and binding rows.
+
+For `function sum(): Integer pure { 1 + 2 }`, the root `expression`/`binary`
+application's node id has the expression/body walk operands followed by
+`filament.op.integer.add`, `binary`, the Integer node for `result_type`, and the
+same Integer node for the enclosing expression's `semantic_type`. The two
+final path segments are equal operand slots into the shared Integer node in
+the operand row, but both positions are present (FR-322-AC-523).

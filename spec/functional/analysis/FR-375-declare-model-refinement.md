@@ -88,7 +88,8 @@ step-target    = operation-name, '(', expr, { ',', step-argument }, ')'
 step-argument  = expr | '_' ;
 history-row    = 'history', type-name, '.', member-name, ':',
                  type-ref, '=', history-initial,
-                 '{', { 'on', operation-name, ':', expr, ';' }, '}' ;
+                 '{', { history-update }, '}' ;
+history-update = 'on', operation-name, ':', expr, ';' ;
 history-initial = history-literal | 'Some', '(', expr, ')' ;
 history-literal = signed-int | 'true' | 'false' | 'none' | string
                 | exact-number | qualified-name ;
