@@ -41,10 +41,6 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-482-AC-6
     type: verifies
-  - target: ix://agent-ix/filament-specification/FR-482-AC-5
-    type: verifies
-  - target: ix://agent-ix/filament-specification/FR-482-AC-6
-    type: verifies
 ---
 
 # TC-976: Authenticated schedulability claim carrier and reader boundary
