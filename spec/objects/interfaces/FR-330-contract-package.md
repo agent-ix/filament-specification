@@ -487,6 +487,10 @@ incomplete. Its cause follows the incomplete `limit_kind` one-to-one:
 The `setting` value is the member name of the reader's limits argument, not an
 FR-461 dotted setting; `CheckedPackageReadLimits` also has a `diagnostics` member, which this reader never reports as a stop; no member bounds depth (FR-460).
 
+A host allocation failure while reading a package produces no package record
+and is reported by the tool as a host error; it is distinct from the reader's
+package refusals and budget stops.
+
 The cause's `kind` is the cause tag, `bound` is the incomplete `limit`,
 `actual` is its `consumed`, and the location is its `path`; the `bytes` record
 has no `path`, so its diagnostic has no location. The reader charges no
@@ -516,6 +520,7 @@ this reader and the I2 reader together, is outside this requirement.
 | FR-330-AC-14 | A ContractPackage whose requested key is absent and derived (its structural key holds at least one operand) carries that key in `source_keys` as a document-held id, with its index segments naming other `source_keys` entries; the requested id is the source-key reference to it, and the package is admitted with `invalid_input` and an empty output graph. No source-frame id resolves against the output graph or a source package graph. | Test (TC-934) |
 | FR-330-AC-15 | The reader runs the index checks once before any stage that rebuilds a structural key, in one order: the output `semantic_graph`'s FR-322 operand checks, then `source_keys` index segments, then source-key references. In the output graph the FR-322 steps refuse `malformed_wire` with no cause at the member FR-322 names (an out-of-range operand slot or a slot on a cycle at its `operand` pointer); in `source_keys` an out-of-range index, then a cycle (a self-naming entry included), refuses `malformed_wire` with no cause at the segment's `node` pointer; and an out-of-range reference at its `source_key` pointer. A wrong-shape `{"source_key": i}` is a closed-shape defect: `invalid_package` with `unknown-member`, `missing-member`, `wrong-value-kind` or `invalid-value` per AC-11. Two `source_keys` entries with one rebuilt structural key refuse `invalid_package`/`invalid-value` at the later entry. | Test (TC-937) |
 | FR-330-AC-16 | A `lowered` record's source key and its output root node's id rebuild to the same structural key, and the accounting/request bijection and the refusal's requested-id pointer compare rebuilt structural keys, not table or graph indexes: a package that reorders `source_keys` or the output graph without changing any key is equal in every such comparison. | Test (TC-934) |
+| FR-330-AC-17 | When a package read's admitted allocation cannot be provided by the host, the reader returns `HostAllocationFailed` with its stage, locus, requested size and consumed count; the result creates no ContractPackage or `feature_accounting` record, and the tool reports a host error. The failure is not `body_incomplete` and does not change that record's closed shape. | Test |
 
 ## Dependencies
 
