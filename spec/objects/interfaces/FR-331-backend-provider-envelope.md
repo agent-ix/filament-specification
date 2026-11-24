@@ -810,7 +810,7 @@ non-empty `unresolved-choice` frontier applies to reason
 | `unsupported` | exactly one of `cause` and `diagnostic` |
 | `declined` | `cause` (`refused`, `invalid-input` or `incomplete-input`) and `diagnostic` |
 | `incomplete` | `cause` (`limit-reached`, `bounded-search-incomplete{reason: unresolved-dynamics}`, `bounded-search-incomplete{reason: certificate-unchecked}`, `no-estimate{reason}` (FR-410), `precision-budget`, `cancelled{source}` or `timed-out`); a bounded task-automaton search additionally carries `task_search` |
-| `failed` | exactly one of `cause` (`tool-failure{defect}`, with `limit` and `value` for `frame-length` and `total-bytes`, FR-462; the defect is an FR-462 wire defect, or `oracle-disagreement` or `invalid-shrink` for a model-based test run whose refusal case native admission accepted or whose shrink step left the domain or changed the failing clause, FR-190, which only an FR-190 record carries) and `diagnostic` |
+| `failed` | exactly one of `cause` (`tool-failure{defect}`, with `limit` and `value` for `frame-length`, `total-bytes` and `observed-memory-limit`, FR-462; the defect is one of FR-462's wire or observed-memory-limit defects, or `oracle-disagreement` or `invalid-shrink` for a model-based test run whose refusal case native admission accepted or whose shrink step left the domain or changed the failing clause, FR-190, which only an FR-190 record carries) and `diagnostic` |
 
 The closed proof bases are those of FR-363 (`exhaustive`,
 `bounded-complete{depth}`, `inductive{depth}`; `depth` is a `Count`, and for a `value-validity` or `operation-contract` item it is the number of transition steps the SMT query encodes, 0 for a value-validity item, which has no transition, and 1 for an operation-contract item, FR-483), FR-385
@@ -1042,7 +1042,7 @@ or from a failure around the run:
 | `Cancelled` | `incomplete` | cause `cancelled{source}` |
 | `Inconclusive` | `inconclusive` | its typed cause, such as `replay-parity` (a replay disagreement at AD-016 arrow 7) |
 | a backend success that is not proof (AD-016: `tested` keeps its value) | `tested` | none; never proof evidence |
-| a plugin-wire failure (FR-462) | `failed` | cause `tool-failure{defect}`, with `limit` and `value` for `frame-length` and `total-bytes` |
+| a plugin-wire failure (FR-462) | `failed` | cause `tool-failure{defect}`, with `limit` and `value` for `frame-length`, `total-bytes` and `observed-memory-limit` |
 | the tool becomes unavailable after a passing probe (FR-290) | `failed` | diagnostic `unsupported_projection`/`tool-unavailable` naming `kind` and `backend` |
 | an IR invariant breaks while mapping (AD-016) | `failed` | diagnostic `runtime_invariant`/`established-invariant-broken` |
 
@@ -1315,6 +1315,7 @@ and never yields a decisive refutation from unchecked evidence.
 | FR-331-AC-65 | A provider's `composition` result entry carrying `provider-answer-unconfirmed`, plugin or in-process, is refused `invalid_result`/`unknown-cause` at `/cause/type`; the producer's guard settles a provider's `proved` `composition` answer `inconclusive`, `provider-answer-unconfirmed` naming the first `component-guarantee` premise the same request does not hold or does not settle `proved` (including a request that holds none of them, and one whose held item over the same clause node has other identity members or an entry whose `assumptions` differ from the derived array), and leaves it `proved` when every one is held and `proved`. | Test (TC-986) |
 | FR-331-AC-66 | The schema admits a `composition` request item carrying `premises` and `assumptions`, a `refuted` `composition` result entry with an `interface-mismatch` counterexample, and an `inconclusive` entry with cause `provider-answer-unconfirmed{premise}`; it refuses `premises` without `assumptions`, `assumptions` without `premises`, `premises` or `assumptions` on another kind (by the existing `premises` rule alone), a non-integer inner index, an `interface-mismatch` missing a member, with another `reason` or with an extra member, and the cause without `premise` or with an extra member. The schema decides neither cross-item facts (derivation, ordering, which writer) nor provider-origin refusal; AC-64 and AC-65 own those. | Test (TC-431) |
 | FR-331-AC-67 | The result schema admits a fixed-N `limit-reached` with `required: "921034100000000000000000000000000000000"` exactly, and admits ordinary reached-limit causes with no `required`; it refuses a numeric `required`, zero, a signed string or a string with a leading zero. No conforming writer caps or rounds the exact positive required count. | Test (TC-431) |
+| FR-331-AC-68 | The result schema admits a `failed` result whose cause is exactly `{"type":"tool-failure","defect":"observed-memory-limit","limit":1048576,"value":1048577}`; it refuses this cause with `limit` absent, `value` absent, an extra member, a string `limit` or a string `value`. It refuses `limit` or `value` on `crash`. | Test (TC-431) |
 
 ## Dependencies
 
