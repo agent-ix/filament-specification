@@ -200,6 +200,20 @@ unweighted gain–bias pair. A weighted long-run claim therefore always
 settles a verdict; the weights decide only how positive-weight components
 are read.
 
+**One solver for fair and every-scheduler long-run.** Over every scheduler
+with no fairness set, the long-run solver is the one used with a fairness
+set, run with the fairness set empty: the maximal end components of the
+process (every end component, since nothing filters them), the optimal ratio of
+each by Dinkelbach's method, and the reachability combination above. A claim
+that requests `Every` with `eventually`-activated or origin-activated
+`long_run_fraction` is therefore decided for every subject the fair solver
+decides, with the same component decomposition, the same zero-weight rule and
+the same certificate shape (FR-412 "Long-run certificate wire shape and
+witnesses"), and is never refused for naming `Every` rather than a workload
+or a fairness set. The two cases differ only in which end components count:
+under a fairness set the maximal fair end components, otherwise every maximal
+end component.
+
 ### Package intake
 
 The provider reads the model's random parameters, workloads, rewards and
@@ -314,6 +328,7 @@ and are not read.
 | FR-411-AC-15 | A caller cancellation of an exact run stops it with `incomplete`, `cancelled{source}` with `source` `requested`, not `limit-reached`, and records no value. | Test (TC-365) |
 | FR-411-AC-16 | A request whose `ExactProbLimits.max_witness_paths` is 0 validates against the backend-provider schema; a `<= θ` claim refuted on a fully explored model under it settles the verdict it settles under the default and carries no path set, and a `max_witness_paths` of -1 fails the schema. | Test (TC-365) |
 | FR-411-AC-17 | Given a package from another producer whose `reward` node evaluates to `n - 3` with `n: Int[0, 5]`, the exact provider refuses `invalid_probabilistic_model`/`negative-reward` naming the operation, the reward and `n = 0` before it builds any product state; the same package with the reward `n` is read and settled. | Test (TC-1561) |
+| FR-411-AC-18 | Over `Pair`, a model with an initial choice between two components `C1` (long-run fraction of `P` equal to `1/2`) and `C2` (equal to `3/4`), each with one action per state: `long_run_fraction holds(P) >= 3/4` under `Every` settles `refuted` with the deterministic scheduler witness of FR-412-AC-27 (the scheduler entering `C1`), and `<= 3/4` settles `proved` with the per-component `policy` certificate of FR-412-AC-26, whose component pairs have gain 0 at the accepted `ρ_C`; under a fairness set neither component violates, both verdicts are the same. No `Every`-scheduler long-run request settles `unsupported` for naming `Every` or for a delay weight (`weighted by delay` over a timed subject takes its delays as the reward). | Test (TC-362) |
 
 ## Dependencies
 

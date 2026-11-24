@@ -89,6 +89,16 @@ timed form.
   re-deriving one predecessor pass that adds no zone and finding every
   reachable `Q` node among them. A proof by digitization of an all-closed
   subject settles with basis `exhaustive` (FR-416).
+- **A subject with no time-divergent behaviour.** A state-graph item reads
+  finite paths of delay and step edges and quantifies over no infinite
+  behaviour, so it needs no time-divergence witness (FR-418). Over a subject
+  whose every infinite path is zero-delay (every state's invariant forbids a
+  positive delay), the item is decided on zones exactly as over any other
+  timed subject: a `possible` claim holds with a witness path or does not, an
+  `always possible` claim settles with its `state_graph` part, and the proof
+  certificate carries no `admitted` member (FR-418-AC-16). Candidate
+  selection SHALL NOT refuse such a request as inconsistent because no
+  divergence witness exists.
 - **Routing.** A timed state-graph item is routed by its `options.method`,
   as a timed temporal item is (FR-416): without `method`, or with `zones`,
   only a backend that decides the subject on zones and lists the form in
@@ -108,6 +118,7 @@ The vector is TC-369's `Rpc` model with `T = 4 ms`.
 | FR-712-AC-2 | `always possible` of `phase = Idle` holds, and its proof's certificate carries the `state_graph` part with the `E(P)` zones in `ef_nodes`; with `reset` removed it is refuted by a path ending at `phase` `Replied`. | Test (TC-1742) |
 | FR-712-AC-3 | `unique path` from `phase = Idle` to `phase = Replied` is refuted with the cycle through `reset`; without `reset` it holds, the runs with different delays before `reply` counting as one path. | Test (TC-1742) |
 | FR-712-AC-4 | A backend that lists the three forms but offers neither timed method is not a candidate for these items, and an item naming it settles `unsupported` `unsupported-requested-capability`; with `options.method` `digital-clocks`, AC-1's items settle the same verdicts on the backend that publishes that method, the proof with basis `exhaustive` (FR-416). | Test (TC-1742) |
+| FR-712-AC-5 | Over the Zeno-only variant of `Rpc` (invariant `x <= 0 ms` in every state), `possible` of `phase = Replied` settles `proved` with basis `zone-certified` and a zone certificate carrying no `admitted` member, and the item is not refused `invalid_capability`/`inconsistent-candidates` or any refusal that names a missing divergence witness; `possible` of `phase = TimedOut` settles `refuted` with no `admitted` requested; supplying an `admitted` member to either certificate settles `inconclusive`, `certificate-rejected`, `malformed` (FR-418-AC-16). | Test (TC-1742) |
 
 ## Dependencies
 

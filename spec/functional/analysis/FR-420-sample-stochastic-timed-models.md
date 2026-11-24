@@ -144,6 +144,45 @@ carries each step's delay and replays by FR-181 timed replay plus the draw
 recomputation of FR-410, which recomputes each delay from the seed, trace
 index, step, choice index and `q`.
 
+**The timed regeneration point.** A timed run regenerates at a position whose
+**regeneration key** equals the initial one. The key is the pair of the
+discrete state key and the clock-state key: the exact rational value of every
+clock, with the delay already drawn for each racing identity that is still
+pending (FR-196's pending schedule and draw). The initial key is the initial
+discrete state with every clock 0 and no pending draw, so a return to the
+initial discrete state with any clock above 0, or with a draw still pending,
+is not a regeneration point and does not cut the run. After a regeneration
+point the future depends only on the key, because each racing identity's
+delay is drawn afresh when it becomes enabled, so the cycles between
+successive regeneration points are independent and identically distributed.
+A clock that no step resets keeps the key from recurring, and a run that
+reaches no regeneration point within `max_cycle_steps` steps stops with
+`incomplete`, `limit-reached` naming `max_cycle_steps` (FR-408).
+
+**Delay-weighted cycles.** For `long_run_fraction holds(P) weighted by delay`
+(FR-407), cycle `k` contributes `Y_k`, the sum of the delays, clipped to the
+cycle, of the positions where `P` holds, and `L_k`, the cycle's total delay,
+each an exact rational from the sampled delays, so `Y_k / L_k` is the fraction
+of the cycle's time spent in `P`. The estimate and its interval are those of
+FR-408's regenerative method with these `Y_k` and `L_k`. A behaviour that reaches
+a terminal state ends in an idle tail whose weight is unbounded, so its
+long-run fraction is the limit `1` when `P` holds at the terminal position and
+`0` otherwise, never a finite `Y_k / L_k`. When any sampled behaviour
+terminates, the sampler draws independent behaviours from `s0`, each giving one
+value `v_j` in `[0, 1]`: the terminal limit for a behaviour that terminates,
+and its own ratio `Σ Y_k / Σ L_k` for a behaviour that completes at least
+`min_cycles` cycles without terminating. The estimate is the mean of the
+`v_j` and its interval is FR-408's fixed-sample interval `[v̄ − ι, v̄ + ι]` with its sample count
+`N`, which FR-408 states also decides a mean of values in `[0, 1]`, not the Chow–Robbins half-width; only when no sampled
+behaviour terminates does FR-408's single-behaviour regenerative estimate
+apply unchanged. A cycle of total delay 0 (a run of zero-delay steps
+that returns to the initial key) contributes `Y_k = L_k = 0` and does not
+enter the denominator; a run whose every cycle has total delay 0 takes the
+unweighted fraction `Σ [P] / Σ 1` over positions, the same limit FR-411
+uses for a zero-weight component. The witness of a sampled run lists each
+cycle's regeneration positions and delays and replays by FR-181 timed replay
+and FR-410's draw recomputation.
+
 ### Every-behaviour claims
 
 Non-probabilistic claims over a stochastic timed model read it as a timed
@@ -161,6 +200,9 @@ model and ignore distributions.
 | FR-420-AC-6 | With `reply` under `delay Call::reply ~ uniform;` the event's probability is 0, the statistical item settles `measured: accepted`, and the every-behaviour claim `NoLateReply` settles `refuted`. | Test (TC-374) |
 | FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon settles the item `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |
 | FR-420-AC-8 | Under a workload with weight 0 on `Call::retry` and weight 1 on `Call::reply`, when both tie at the smallest delay `reply` is taken first and `retry` second; when two weight-0 operations tie with no positive-weight operation, each order has probability `1/2`. The model's `delay` declarations are read from its `delay_distribution` nodes. | Test (TC-1561) |
+| FR-420-AC-9 | A timed model with two states `Up` and `Down`, `Up` lasting `delay ~ discrete { 1 ms: 1 }` and `Down` `discrete { 3 ms: 1 }`, each step resetting the one clock, has `long_run_fraction holds(phase = Up) weighted by delay` equal to `1/4`: every cycle has `Y_k = 1` and `L_k = 4`, the estimate is `1/4` with a zero-variance cycle sample and a positive half-width, `>= 1/5` settles `measured: accepted` and `>= 1/3` `measured: rejected`, and each sampled run replays with its delays; the unweighted fraction of the same model is `1/2`. | Test (TC-374) |
+| FR-420-AC-10 | A return to the initial discrete state with a clock above 0 is not a regeneration point. Over `Loop` (state `A` initial with `x = 0`; `A` to `B` after `delay ~ discrete { 1 ms: 1 }`, no reset; `B` to `A` with weight 1 after 1 ms with no reset, or to `Z` with weight 1, `Z` to `A` after 1 ms resetting `x`), the return `B` to `A` has `x = 2 ms` and cuts no cycle, and every cut is a return `Z` to `A` where `x = 0` and no draw is pending; a variant of `Loop` in which no step resets `x` never reaches the initial key and settles `incomplete`, `limit-reached` naming `max_cycle_steps`, its value and the request setting. | Test (TC-374) |
+| FR-420-AC-11 | A model whose initial state moves with weight 1 to a terminal state where `P` holds and with weight 1 to a terminal state where `P` does not settles a delay-weighted long-run fraction `>= 1/4` with estimate the mean of the run limits `1` and `0` (value `1/2`), an interval from FR-408's fixed-sample `N` and `ι`, and `measured: accepted`; the same model's `>= 3/4` settles `measured: rejected`. A cycle of total delay 0 contributes nothing to the denominator, and a run whose every cycle has total delay 0 takes the unweighted fraction; a time-locked state settles `unsupported`, `time-locked-sample{state}` as in FR-420-AC-7. | Test (TC-374) |
 
 ## Dependencies
 

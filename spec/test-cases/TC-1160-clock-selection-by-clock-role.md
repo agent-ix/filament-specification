@@ -11,7 +11,7 @@ relationships:
 
 ## Description
 
-Bind trace-subject declarations to clock configurations through a selection keyed by clock role, and refuse missing, unused and mismatched entries (FR-540-AC-1 to AC-3).
+Bind trace-subject declarations to clock configurations through a selection keyed by clock role, and refuse missing, unused and mismatched entries (FR-540-AC-1 to AC-4).
 
 ## Test Procedure
 
@@ -21,6 +21,7 @@ Bind trace-subject declarations to clock configurations through a selection keye
 | CS-02 | CS-01 without `plant-ms`; with an extra `spare`; with a timestamp unit for `events` | `missing-clock-selection`, `unused-clock-selection`, `clock-kind-mismatch`, each naming the role, before any package | FR-540-AC-2 |
 | CS-03 | An event-position clause over a model subject, no entry | Binds the model's step sequence; no refusal | FR-540-AC-2 |
 | CS-04 | CS-01 with another `events` sequence authority; CS-01 with entries reordered | Different binding identity; equal identity | FR-540-AC-3 |
+| CS-05 | The timestamped-event clause of CS-01 on `plant-ms` with its selection, read back as a whole package with no clock declaration for `plant-ms`; then with an appended row for an unwritten role and a row with a changed alternative | Admitted, the formula reader receives role and unit, and the state-graph identity equals the source-plus-selection identity; then `unused-clock-selection`; then `clock-kind-mismatch`; never a no-configured-declaration refusal | FR-540-AC-4 |
 
 ## Expected Results
 

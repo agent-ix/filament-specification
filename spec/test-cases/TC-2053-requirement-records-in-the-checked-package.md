@@ -15,7 +15,7 @@ relationships:
 
 Verify emission, reading, identity and reader refusals of the `requirement_items` rows and their `claim`/`value_validity` and `claim`/`operation_contract` record nodes, and the place of the requirement-record step in the reader's check order.
 
-Scope: FR-825-AC-1 to FR-825-AC-11, FR-322-AC-473 and FR-322-AC-522. The published
+Scope: FR-825-AC-1 to FR-825-AC-12, FR-322-AC-473 and FR-322-AC-522. The published
 [requirement-record-vectors.json](../../proposals/checked-package-v2/requirement-record-vectors.json)
 cases RRV-01 through RRV-06 are the reader-input recipes for AC-6 through
 AC-9.
@@ -36,6 +36,7 @@ AC-9.
 12. Emit a package with one structurally shared scalar application reached once in each of two owner bodies, with owner `a`'s declaration source-map position before owner `b`'s. Confirm that the package-wide owner walk assigns the expression occurrences 0 and 1, and each value-validity row names its owner's occurrence. Omit owner `a`'s requirement record while retaining the shared application and owner `b`'s record; confirm the second record remains keyed to occurrence 1 and the reader admits the package. (FR-322-AC-522; FR-825-AC-11).
 13. Emit a package where a Boolean parameter is read as an expression before it is used as an `if` guard around a scalar operation. Confirm the guard frame names expression occurrence 1, matching the checker's package-wide owner walk; confirm the reader's package-wide counter derives the same ordinal and guard chain. (FR-322-AC-522; FR-825-AC-11).
 14. Emit the FR-397-AC-4 bound-relation and FR-377-AC-7 per-step-refinement fixtures, each beside a package with an ordinary state-clause contract record. Inspect `requirement_items` and the graph: the state-clause contract has its FR-825 row and record node; the generated relation-code and per-step simulation items have no `operation-contract` row or `operation_contract` record node. (FR-825-AC-3, AC-10).
+15. Emit `if p then x + 1 else x` over a Boolean parameter `p`: confirm the table has the `holds` true row only and the reader admits it; add a `holds` false row and confirm the orphan refusal. Emit the nested form with a pruned inner else branch and confirm the outer frame is kept as the inner frame's parent. Give the first owner a termination measure that visits a shared application and confirm the second owner's occurrence is numbered after the measure's visits. (FR-825-AC-12; FR-825-AC-11; FR-322-AC-522).
 
 ## Expected Results
 

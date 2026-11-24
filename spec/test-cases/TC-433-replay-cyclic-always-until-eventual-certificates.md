@@ -12,7 +12,7 @@ relationships:
 
 ## Description
 
-Verify FR-412-AC-25 and FR-413-AC-18 for both comparison directions and ensure
+Verify FR-412-AC-25, FR-412-AC-28 and FR-413-AC-18 for both comparison directions and ensure
 that a cyclic subject cannot be refuted with a path set for an unwindowed
 `eventually`, `always`, or `until` claim.
 
@@ -46,6 +46,7 @@ rejecting bottom components each have probability `1/2` from `s`.
 5. For each claim, also supply a finite path set that crosses its bound. Try
    lower bounds equal to `1/4`, an incorrectly classified bottom component,
    and an invalid progress rank.
+6. Make the initial state of an `always P` subject violate `P` (and, for `eventually E`, give `E` an empty cylinder) while a repeatable operation keeps a reachable cycle in the raw graph, then replay the refutation, and add a ranked `lower` certificate over the cyclic chain and a fair-minimum ranking part over a cyclic graph (FR-412-AC-28).
 
 ## Expected Results
 
@@ -57,3 +58,5 @@ accepts the valid certificate, and applies the strict comparison: `1/2 > 1/4`
 settles `refuted`. The equal bound, wrong component, or broken rank does not
 settle `refuted`; a supplied path set is not accepted as evidence for these
 cyclic claims.
+
+For step 6, each initial-verdict claim is refuted by the `lower` certificate on the absorbed initial state, with no path-set search and no path-set evidence, and is not refused for the cycle; the ranked `lower` certificate over the cyclic chain is accepted; the fair-minimum ranking part over a cyclic graph is rejected `inconclusive`, `certificate-rejected`, rule `malformed` at `{"member": "ranking"}` and the initial verdict is unchanged.

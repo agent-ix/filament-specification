@@ -349,6 +349,35 @@ count refuses `ill_typed`/`operator-ineligible`. When both operations declare a
 result, the concrete result type conforms to the abstract result type after
 reference lifting, or the row refuses `ill_typed`/`type-mismatch`.
 
+**Typing of receivers, node-row arguments and lifted references.** One rule
+types a step row's references in the checker and in the step decision, so a
+row the declaration admits is never refused by the step decision for typing.
+
+- The receiver of an abstract-operation target is typed against the row's
+  **target type**, the abstract object type the row names for the receiver,
+  which may be a subtype of the type that declares the operation when the
+  operation is inherited. The target type is part of the abstract-operation
+  target, and the step decision lifts the receiver against it, never against
+  the operation's declaring type. Two rows from one concrete type that map to
+  two subtypes of the declaring parent are each admitted, and each decides
+  against its own target type.
+- An argument of a protocol-node target is lifted by the declared type of
+  the node's record field it fills, the checked field type of the concrete
+  node (FR-464), not by the one object row of the argument's concrete type. A
+  concrete type that more than one object row names lifts to the row whose
+  abstract type conforms to that declared field type. It is not a step fault
+  for that reason.
+- **Most specific row.** When a concrete reference is lifted and more than
+  one object row of its concrete type is admitted, whether by one abstract
+  population (`Queue` and `SubQueue` into `queues`) or by two, the row whose
+  abstract type is most specific is the one used, by the subtype order of the
+  abstract model, among the rows whose abstract type conforms to the declared
+  type of the lifted position. Source order never decides. Rows whose abstract
+  types are unrelated by subtyping are not ranked against each other: the
+  declared type chooses between them, and one to which both conform with
+  neither more specific is the step fault that FSL FR-141 states (ix://agent-ix/filament-spec-language/FR-141), so `map` and
+  the step decision agree (FR-377 "The mapping").
+
 **History rows.** A history row names a concrete object type, a new field
 name that the type does not declare, a bounded declared type and an initial
 value of that type: a `history-literal`, or `Some(e)` when the history field
@@ -860,6 +889,9 @@ before this step and cannot substitute for a missing body key.
 | FR-375-AC-33 | The refinement's concrete identity is the `identity` of the `model_root` owner joined by its `semantic_type`. With two or more selected models, swapping only a valid refinement's `semantic_type` to the root of another selected model refuses, in this order: an absent concrete catalog on a protocol subject `invalid_semantic_graph` at `/body/class_catalog`; the first concrete key (array order of reader step 2) whose declaration or anchor owner is not the concrete identity `invalid_model_binding`/`malformed-declaration` at that key; then, at FR-464 step 7, `invalid_semantic_graph` at the first discrepancy between the catalog and the classes the new concrete identity derives, walked together in catalog-key order: at the entry for a class the identity does not derive, at the `class_catalog/concrete` array for a derived class the catalog lacks. The swap is undetectable only when the refinement has no concrete key and the swapped-to model derives an identical class set (every protocol subject with an empty concrete catalog over a model deriving no class, and every model subject, which carries no catalog): it is then admitted as a different node whose id differs by `semantic_type` (FR-375-AC-7). Protocol-body nodes are compared only at step 7. No `model_root` nodes or wire field is added. | Test (TC-310) |
 | FR-375-AC-34 | A refinement whose `semantic_type` root is the same node as its `abstract` model root is admitted when every concrete key and the concrete catalog agree with that one identity as in FR-375-AC-33; FR-375 imposes no distinctness between the two. | Test (TC-310) |
 | FR-375-AC-35 | The index segments of an external `{package, node}` key resolve against the graph of the dependency package named by the key's own `package` member (not by `node.package`), never the importing graph: mutation 13's package with an index segment `{"node": N}` appended to `body.abstract.node.path`, `N` the length of the selected dependency's `semantic_graph.nodes`, passes the V2 schema and refuses `malformed_wire`, with no cause, at `/semantic_graph/nodes/{n}/body/abstract/node/path/{s}/node`, `s` the appended segment's position, even when `N` is below the length of the importing graph (`RW-09`). | Test (TC-310) |
+| FR-375-AC-36 | A checked-package `histories` row for an `Option<T>` history field whose `initial` is a local `reference` term naming a `value`/`option_value` node whose `semantic_type` is exactly that `Option<T>` is admitted by the reader and read as that node's present option; the same row with a `literal` `none` is admitted as before. A `reference` to a node that is not `value`/`option_value`, to an `option_value` whose `semantic_type` is `Option<U>` for another `U`, to a node of a different type than the history field's `type`, or a `dependency_reference` in place of a local one, refuses `invalid_model_binding`/`malformed-declaration` at the row's `initial`; an `initial` `reference` for a history field whose type is not an `Option` refuses the same way. The reference is admitted by the node's identity, not by re-reading `Some(e)`'s payload, so two rows naming the same `option_value` node share one initial value. | Test (TC-310) |
+| FR-375-AC-37 | Two step rows for operations of one concrete type, both mapped to abstract subtypes `A1` and `A2` of the type `P` that declares an inherited abstract operation, are each admitted, and the step decision lifts each receiver against its own row's target type; a decision that types the receiver against `P` instead faults and is a defect. A protocol-node row with an argument of a concrete type named by two object rows lifts to the row conforming to the node record's declared field type and decides without fault; naming a type no conforming row covers refuses `ill_typed`/`type-mismatch` at the argument. | Test (TC-310) |
+| FR-375-AC-38 | With object rows `Queue` and `SubQueue` (a subtype of `Queue`) both admitted by the population `queues` for one concrete type, a concrete reference lifts to the `SubQueue` row whatever the source order of the two rows, and swapping the rows' source order changes no `map` value and no step verdict. Rows with unrelated abstract types are not ranked against each other: the declared type of the lifted position chooses between them, and a declared type to which both conform with neither more specific is a step fault that S3 admits no row for. | Test (TC-310) |
 
 ## Dependencies
 

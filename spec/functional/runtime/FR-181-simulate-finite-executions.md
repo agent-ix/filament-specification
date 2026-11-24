@@ -182,6 +182,7 @@ object, `{"type": <tag>, ...}`:
 - union — `{"type":"union","name":"<qualified-name>","member":"<member-ident>","components":[<encoded>, ...]}`,
   an empty array for a nullary member.
 - `Reference<T>` — the reference triple defined above.
+- `Reference<Clock>` — `{"type":"clock_reference","place_id":"<place id text>"}`, the place id of FR-829 as one nonempty text. It is canonical as that text, its set elements and map keys order by the UTF-8 bytes of `place_id`, and it is never encoded as the reference triple (FR-829 "The runtime value").
 
 The `sequence`, `set`, `bag` and `ordered-set` forms are also the wire value
 form of a supplied snapshot or input collection value, each element being the
@@ -526,6 +527,7 @@ so every timed refutation has a counterexample with exact rational delays.
 | FR-181-AC-32 | A `sample` request with no bounds and no `seed` reports `max_states` 10,000,000, `max_steps` 16,777,216, `max_state_key_bytes` 16,777,216, `samples` 1 and `seed` 0, under the settings `explore.states`, `simulation.max_steps`, `identity.input_bytes` and `simulation.samples`; `max_states` 2 stops an enumeration `incomplete` `limit-reached` naming `explore.states` with value 2; `max_steps` 0 refuses `invalid_runtime_input`/`invalid-value` at its pointer, `samples` in `enumerate` mode and an unknown bound `bogus` refuse `invalid_runtime_input`/`unknown-member`, each before any state is explored. | Test (TC-2008) |
 | FR-181-AC-33 | A simulation over a subject whose declared invariant is false at a state that a reported trace reaches reports one finding naming that trace, the state's position on it, the invariant and the object, and the result keeps the outcome, traces and coverage of the same simulation with the invariant removed, with no counterexample or verdict; repeating the sampled request with the same seed gives equal findings, and a subject whose invariant holds at every reached state reports no finding. | Test (TC-2013) |
 | FR-181-AC-34 | TC-1954's `(0,S0)` and `(1,S0)` with equal invocation identity are two typed result/post-state pairs in the native planning relation before graph coalescing; planning replay and certificate checking rederive both. The simulator's existing graph may coalesce their equal transition/post-state edge without changing that planning relation, and no serialized trace result member is introduced. | Test (TC-1954) |
+| FR-181-AC-35 | A state holding `ref(self.x)` and `ref(self.y)` of one object encodes each as `{"type":"clock_reference","place_id":"<text>"}` with two distinct texts and two distinct state keys; a set holding both orders its elements by the UTF-8 bytes of `place_id`; decoding returns equal references, and no clock reference is encoded as the reference triple. | Test (TC-2084) |
 
 ## Dependencies
 

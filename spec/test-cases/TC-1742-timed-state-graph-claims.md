@@ -14,7 +14,7 @@ relationships:
 Check the three state-graph forms over TC-369's timed `Rpc` vector: timed
 reachability, the `E(P)` fixpoint, path counting that ignores delays, exact
 rational evidence, and routing that excludes untimed backends.
-Scope: FR-712-AC-1 to FR-712-AC-4.
+Scope: FR-712-AC-1 to FR-712-AC-5.
 
 ## Test Procedure
 
@@ -22,6 +22,7 @@ Scope: FR-712-AC-1 to FR-712-AC-4.
 2. Check `always possible` of `phase = Idle`, then over the model without `reset`.
 3. Check `unique path` from `phase = Idle` to `phase = Replied` with and without `reset`.
 4. Name a backend listing the forms that offers neither timed method; repeat step 1 with `options.method` `digital-clocks`.
+5. Check `possible` of `phase = Replied` and of `phase = TimedOut` over the Zeno-only variant of `Rpc` (FR-712-AC-5).
 
 ## Expected Results
 
@@ -29,3 +30,4 @@ Scope: FR-712-AC-1 to FR-712-AC-4.
 - Step 2: holds with the `state_graph` part's `ef_nodes` in the certificate; then refuted ending at `phase` `Replied`.
 - Step 3: refuted by the `reset` cycle; holds without `reset`.
 - Step 4: `unsupported` `unsupported-requested-capability`; with `digital-clocks`, the same verdicts with basis `exhaustive`.
+- Step 5: `Replied` proved with `zone-certified` basis and no `admitted` member, `TimedOut` refuted, and neither is refused for a missing divergence witness.
