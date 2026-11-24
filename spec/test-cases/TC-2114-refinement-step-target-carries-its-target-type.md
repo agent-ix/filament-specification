@@ -12,14 +12,14 @@ relationships:
 
 Verify that an abstract operation step target carries `target_type`, that the
 reader requires and checks it, and that two rows over inherited-operation
-subtypes are distinguished by it. Scope: FR-375-AC-39.
+subtypes are distinguished by it. Scope: FR-375-AC-39 to FR-375-AC-44; the schema vectors are `proposals/checked-package-v2/refinement-step-target-vectors.json`.
 
 ## Test Procedure
 
 1. Emit a refinement with two step rows from `Ring` to the inherited operation
    `enq` of `Queue` with `target_type` `FastQueue` and `SlowQueue`.
-2. Read the package, then remove `target_type` from one row.
-3. Set `target_type` to `Cell` (does not declare or inherit `enq`) and to a
+2. Read the package, then remove `target_type` from one row and set it to `null` in another.
+3. Add a protocol node row of FR-375-AC-40. Set `target_type` to `Cell` (does not declare or inherit `enq`) and to a
    node that is no abstract type.
 4. Swap the two rows' `target_type` values and compare the canonical bytes.
 
@@ -27,5 +27,5 @@ subtypes are distinguished by it. Scope: FR-375-AC-39.
 
 - Step 1: both rows admitted; each receiver lifts against its own type.
 - Step 2: the reader's missing-member refusal at the step entry.
-- Step 3: `invalid_model_binding`/`malformed-declaration` at `target_type`.
+- Step 3: `invalid_model_binding`/`malformed-declaration` at `target_type`; `ill_typed`/`type-mismatch` at the node-row argument of FR-375-AC-40.
 - Step 4: the bytes differ.

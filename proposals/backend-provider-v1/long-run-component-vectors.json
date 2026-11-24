@@ -1,0 +1,61 @@
+{
+  "description": "FR-412-AC-33: a mixed-weight long-run component entry carries zero_weight with its own value; each case is a ProbabilityCertificate validated against the backend-provider schema.",
+  "base": {
+    "identity": {"node_id": {"package": "example", "path": ["Pair", "0"], "ordinal": 0}, "model": "Pair", "ordinal": 0},
+    "objective": {"optimization": "maximum"},
+    "kind": "long-run",
+    "values": []
+  },
+  "cases": [
+    {
+      "id": "mixed-component-two-pairs",
+      "valid": true,
+      "components": [
+        {
+          "value": {"numerator": "3", "denominator": "4"},
+          "gain": {"numerator": "0", "denominator": "1"},
+          "bias": [{"state": "AQ", "value": {"numerator": "0", "denominator": "1"}}],
+          "policy": [],
+          "zero_weight": {
+            "value": {"numerator": "1", "denominator": "2"},
+            "gain": {"numerator": "0", "denominator": "1"},
+            "bias": [{"state": "Ag", "value": {"numerator": "0", "denominator": "1"}}],
+            "policy": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "zero-weight-without-own-value",
+      "valid": false,
+      "components": [
+        {
+          "value": {"numerator": "3", "denominator": "4"},
+          "gain": {"numerator": "0", "denominator": "1"},
+          "bias": [],
+          "zero_weight": {
+            "gain": {"numerator": "0", "denominator": "1"},
+            "bias": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "zero-weight-unknown-member",
+      "valid": false,
+      "components": [
+        {
+          "value": {"numerator": "3", "denominator": "4"},
+          "gain": {"numerator": "0", "denominator": "1"},
+          "bias": [],
+          "zero_weight": {
+            "value": {"numerator": "1", "denominator": "2"},
+            "gain": {"numerator": "0", "denominator": "1"},
+            "bias": [],
+            "weight": "0"
+          }
+        }
+      ]
+    }
+  ]
+}

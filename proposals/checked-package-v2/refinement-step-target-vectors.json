@@ -1,0 +1,48 @@
+{
+  "description": "FR-375-AC-39: an abstract operation StepTarget carries target_type; each case is validated against $defs/RefinementStepTarget.",
+  "cases": [
+    {
+      "id": "target-type-fast-queue",
+      "valid": true,
+      "target": {
+        "kind": "operation",
+        "operation": {"package": "abstract", "path": ["Queue", "enq"], "ordinal": 0},
+        "target_type": {"package": "abstract", "path": ["FastQueue"], "ordinal": 0},
+        "receiver": {"term": "reference", "target": {"package": "concrete", "path": ["Ring", "self"], "ordinal": 0}},
+        "arguments": [{"term": "open"}]
+      }
+    },
+    {
+      "id": "target-type-slow-queue-distinct-bytes",
+      "valid": true,
+      "target": {
+        "kind": "operation",
+        "operation": {"package": "abstract", "path": ["Queue", "enq"], "ordinal": 0},
+        "target_type": {"package": "abstract", "path": ["SlowQueue"], "ordinal": 0},
+        "receiver": {"term": "reference", "target": {"package": "concrete", "path": ["Ring", "self"], "ordinal": 0}},
+        "arguments": [{"term": "open"}]
+      }
+    },
+    {
+      "id": "target-type-absent",
+      "valid": false,
+      "target": {
+        "kind": "operation",
+        "operation": {"package": "abstract", "path": ["Queue", "enq"], "ordinal": 0},
+        "receiver": {"term": "reference", "target": {"package": "concrete", "path": ["Ring", "self"], "ordinal": 0}},
+        "arguments": [{"term": "open"}]
+      }
+    },
+    {
+      "id": "target-type-null",
+      "valid": false,
+      "target": {
+        "kind": "operation",
+        "operation": {"package": "abstract", "path": ["Queue", "enq"], "ordinal": 0},
+        "target_type": null,
+        "receiver": {"term": "reference", "target": {"package": "concrete", "path": ["Ring", "self"], "ordinal": 0}},
+        "arguments": [{"term": "open"}]
+      }
+    }
+  ]
+}

@@ -15,7 +15,7 @@ relationships:
 Verify the progress ranking of a long-run certificate under a fairness set, the
 bound certificates of an unattained fair optimum, the one-entry-per-component
 rule and the weighted `Every` forms. Scope: FR-412-AC-29 to FR-412-AC-33 and
-FR-411-AC-18.
+FR-411-AC-18; the schema vectors are `proposals/backend-provider-v1/long-run-component-vectors.json`.
 
 ## Test Procedure
 

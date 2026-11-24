@@ -2956,3 +2956,25 @@ fn task_product_canonical_closure_rules() {
     assert!(!rejected.is_valid(&serde_json::json!({"type": "certificate-rejected", "rule": "unreached-node", "at": {"edge": 5}})), "unreached-node is a node rule");
     assert!(!rejected.is_valid(&serde_json::json!({"type": "certificate-rejected", "rule": "extra-edge", "at": {"node": 3}})), "extra-edge is an edge rule");
 }
+
+const LONG_RUN_COMPONENT_VECTORS: &str =
+    include_str!("../proposals/backend-provider-v1/long-run-component-vectors.json");
+
+/// FR-412-AC-33: a mixed-weight component entry carries a `zero_weight` pair
+/// with its own value; the pair is closed and requires `value`.
+#[trace("TC-2115", "FR-412-AC-33")]
+#[test]
+fn tc_2115_mixed_weight_component_carries_a_zero_weight_pair() {
+    let validator = definition("ProbabilityCertificate");
+    let vectors = parsed(LONG_RUN_COMPONENT_VECTORS);
+    for case in vectors["cases"].as_array().expect("cases") {
+        let mut certificate = vectors["base"].clone();
+        certificate["components"] = case["components"].clone();
+        assert_eq!(
+            validator.is_valid(&certificate),
+            case["valid"].as_bool().expect("valid"),
+            "{}",
+            case["id"]
+        );
+    }
+}

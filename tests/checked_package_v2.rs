@@ -26675,3 +26675,27 @@ fn requirement_record_vectors_publish_boolean_value_guards_and_refusal() {
         "body/members/5/value/members/0"
     );
 }
+
+const REFINEMENT_STEP_TARGET_VECTORS: &str =
+    include_str!("../proposals/checked-package-v2/refinement-step-target-vectors.json");
+
+/// FR-375-AC-39: an abstract operation step target requires `target_type`; an
+/// absent or null member is a schema failure, and the same operation with two
+/// target types is two distinct targets.
+#[trace("TC-2114", "FR-375-AC-39")]
+#[test]
+fn tc_2114_operation_step_target_requires_target_type() {
+    let schema = parsed_fixture(SCHEMA);
+    let validator = schema_for_def(&schema, "RefinementStepTarget");
+    let vectors = parsed_fixture(REFINEMENT_STEP_TARGET_VECTORS);
+    let mut valid_targets = Vec::new();
+    for case in vectors["cases"].as_array().expect("cases") {
+        let expected = case["valid"].as_bool().expect("valid");
+        assert_eq!(validator.is_valid(&case["target"]), expected, "{}", case["id"]);
+        if expected {
+            valid_targets.push(case["target"].clone());
+        }
+    }
+    assert_eq!(valid_targets.len(), 2);
+    assert_ne!(valid_targets[0], valid_targets[1]);
+}
