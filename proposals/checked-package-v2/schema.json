@@ -10671,6 +10671,7 @@
           "required": [
             "kind",
             "operation",
+            "target_type",
             "receiver",
             "arguments"
           ],
@@ -10679,6 +10680,10 @@
               "const": "operation"
             },
             "operation": {
+              "$ref": "#/$defs/RefinementKey"
+            },
+            "target_type": {
+              "description": "FR-375: the abstract type the receiver is lifted against, the type that declares the operation or a subtype of it.",
               "$ref": "#/$defs/RefinementKey"
             },
             "receiver": {
