@@ -116,3 +116,15 @@ Clean:
 | FND | outcome | reason |
 | --- | --- | --- |
 | FND-021 | fixed | FR-420 now cites FR-408's fixed-sample interval with `N` and `ι`, and FR-408:111 states that the same `N` decides a mean of values in [0, 1]. |
+
+## New findings (disposition pass 3)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-023 | low | FR-740-AC-6 still opens with "an undelayed failing edge on a path the half does not need to reach ... is accepted", a case the FR-740 body no longer defines at 9006b4e0. The body accepts a failing edge only when recomputation gives a locked-entry target, and the AC clause does not require that. Drop the clause, or restate it as "into a locked entry node". | FR-740:80-97; FR-740-AC-6 |
+
+## Dispositions (round 3)
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-022 | fixed | At 9006b4e0, FR-740 refutes with a failing edge only when some point of its pre-state zone has a time-divergent continuation. With no such point, the edge is the locked-entry edge and may appear in a proof as `{type: "failing"}`. This agrees with FR-377-AC-15, FR-418 `taken`, FR-418-AC-22, TC-371 ZC-33, FSL FR-244-AC-8 and FSL FR-245-AC-12. Soundness: the two cases partition the pre-state zone (refute if any point diverges), and FSL FR-245 recomputes the locked region and rejects `Taken::Failing` on a non-locked target, so a refutable edge cannot be accepted in a proof. |
