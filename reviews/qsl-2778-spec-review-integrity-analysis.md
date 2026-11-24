@@ -73,3 +73,34 @@ Clean:
 - FR-464 protocol references text, FR-464-AC-26, FR-464-AC-27 (examined); FR-464-AC-15 (context)
 - proposals/backend-provider-v1/schema.json `components[].policy` (examined, clean)
 - TC-310, TC-362, TC-374, TC-433, TC-946, TC-1160, TC-1742, TC-1787, TC-1830, TC-2053, TC-2084 additions (examined)
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-021 | low | The new FR-420 terminal-run estimate cites "FR-408's exact rational Hoeffding bound for a mean of values in [0, 1]". FR-408 defines no Hoeffding bound; its fixed-sample bound is Okamoto's, for Bernoulli samples. Either state the bound for [0, 1]-valued means and its coverage (`finite-sample`), or point to the FR-408 section that supplies it. | FR-420:167-178; FR-408:101 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | At 373286f6, FR-412 and FR-412-AC-28 refuse only a fair-minimum (FSL FR-1041) ranking over a cyclic graph, as `inconclusive`/`certificate-rejected`/`malformed` at `{"member": "ranking"}`, and accept ranked `lower` certificates over cyclic chains per AC-24/25. The FSL twin still differs (see QSL-2779 FND-003). |
+| FND-002 | fixed | FR-412-AC-28 names the `lower` certificate on the absorbed initial state with no path-set search and no path-set evidence, and drops the internal-ordering clause. |
+| FND-003 | fixed | FR-420-AC-10 now uses the `Loop` vector: the return from B to A has x = 2 ms and no cut, every cut is a return from Z to A with x = 0, and the no-reset variant hits `max_cycle_steps`. ST-09 matches. |
+| FND-004 | fixed | When any behaviour terminates, the estimate is the mean of independent per-behaviour values; FR-420-AC-11 has a concrete two-terminal vector (value 1/2). |
+| FND-005 | fixed | `taken` `{type: "failing"}` is added to FR-418 and the schema; `null` stays the locked-region marker. FR-740-AC-6 and FR-418-AC-22 test both. |
+| FND-006 | fixed | FR-418 `positions[].candidate_blocks` is added (schema, FR-331 member set, FR-418-AC-22, TC-371 ZC-33). |
+| FND-007 | fixed | FR-740-AC-5 now names `proved` for the vector and `refuted` for the never-Step variant. |
+| FND-008 | fixed | The FR-412 body and AC-27 accept the witness under fairness only when every induced bottom component is fair; otherwise `inequality-fails`. |
+| FND-009 | fixed | FR-411-AC-18 now uses the `Pair` model (fractions 1/2 and 3/4, defined in TC-362) and states gain 0 at the accepted value. |
+| FND-010 | fixed | The FR-825 paragraph now keys on occurrences that produce a record, covers the omitted-record case and matches the 729a6641 reader. |
+| FND-011 | fixed | FR-825-AC-12 now says the member is absent when every record has an empty chain. |
+| FND-012 | fixed | FR-464 and AC-27 keep ordinary wire references and refuse only a guard naming the clause directly, not through the carrier. |
+| FND-013 | fixed | FR-464-AC-26 maps removal to `/dependencies` and retargeting to `ill_typed`/`operator-ineligible`. |
+| FND-014 | fixed | FR-181 defines `{"type":"clock_reference","place_id":...}` with FR-181-AC-35, and the schema `TypedValue` gains it. FR-829 now cites that form. |
+| FND-015 | fixed | Now reads "FSL FR-141 (ix://agent-ix/filament-spec-language/FR-141)". |
+| FND-016 | fixed | FR-377-AC-18 now cites TC-310. |
+| FND-017 | fixed | The K26 and K27 rows now have 3 cells. |
+| FND-018 | fixed | The FR-740 sentence is rewritten, and `quire validate` reports no EARS warning on lines 80-99 at 373286f6. |
+| FND-019 | fixed | The FR-412 member tables list `policy`, and a missing or extra component entry is `malformed` at `components`. |
+| FND-020 | fixed | The vector-specific body sentence is removed, and FSL FR-852-AC-7 at d9cb3b64 now says `Late` is the item whose predicate is `c.phase = 3`, the `TimedOut` state, so the two repos name the same item. |

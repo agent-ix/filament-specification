@@ -81,8 +81,8 @@ refused for the abstract side's tick source.
 *undelayed failing* when its step fails at every point of its source zone with
 no delay (the abstract guard is false throughout, or the target violates the
 abstract invariant). It is written with `taken` `{type: "failing"}` (FR-418
-"Refinement part"), which is distinct from `null`, the edge into or inside
-the locked region. An undelayed failing edge reachable from a certified
+"Refinement part"), which is distinct from `null`, the edge inside the locked
+region; the failing edge into the locked entry node is the undelayed failing edge. An undelayed failing edge reachable from a certified
 initial position refutes the safety half, so no proof certificate contains
 one. The zone certificate of another half or form (the liveness half over
 candidates that die) may contain such an edge on a path the half does not
