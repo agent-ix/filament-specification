@@ -128,8 +128,8 @@ The tool-failure cause is the FR-331 cause `tool-failure{defect}`, with
 that crossed it: the frame's length for `frame-length` and the run's running
 total for `total-bytes`. `observed-memory-limit` carries `limit`, the configured
 maximum process-memory footprint in bytes, and `value`, the observed footprint
-in bytes; `value` is greater than `limit`. No other defect carries `limit` or
-`value`.
+in bytes; `value` is greater than `limit`. No other wire defect carries
+`limit` or `value`.
 
 | Failure | `defect` |
 | --- | --- |
@@ -162,7 +162,7 @@ in bytes; `value` is greater than `limit`. No other defect carries `limit` or
 | FR-462-AC-7 | A `request` body carries `package`, the unpadded base64url spelling of the package's RFC 8785 v2 bytes, which decodes to exactly those bytes; a plugin given a body whose `package` is padded, uses the standard alphabet or has nonzero trailing bits, runs no item and settles every routed item `failed` with the refusal as its diagnostic. | Test (TC-428) |
 | FR-462-AC-8 | Each wire failure of the failure table settles every affected item `failed` with cause `tool-failure` and that row's `defect`. | Test (TC-428) |
 | FR-462-AC-9 | A `hello` whose only defects are FR-290 registration causes is refused as that registration, keyed by backend identity, and settles no item `failed`; a request naming that identity receives the unknown-backend mark. | Test (TC-428) |
-| FR-462-AC-10 | A frame one byte over a frame-length limit of 1048576 settles each affected item `failed` with `{"type": "tool-failure", "defect": "frame-length", "limit": 1048576, "value": 1048577}`, and frames whose running total first exceeds a total-byte limit of 4194304 at 4194305 bytes settle `{"type": "tool-failure", "defect": "total-bytes", "limit": 4194304, "value": 4194305}`; `crash` carries neither `limit` nor `value`. | Test (TC-428) |
+| FR-462-AC-10 | A frame one byte over a frame-length limit of 1048576 settles each affected item `failed` with `{"type": "tool-failure", "defect": "frame-length", "limit": 1048576, "value": 1048577}`, and frames whose running total first exceeds a total-byte limit of 4194304 at 4194305 bytes settle `{"type": "tool-failure", "defect": "total-bytes", "limit": 4194304, "value": 4194305}`; every other wire defect carries neither `limit` nor `value`. The separate `observed-memory-limit` cause is specified in AC-11. | Test (TC-428) |
 | FR-462-AC-11 | When the process host observes a process-memory footprint of 1048577 bytes against a configured 1048576-byte limit, including when the process races a natural exit with status 0, the affected item settles `failed` with exactly `{"type": "tool-failure", "defect": "observed-memory-limit", "limit": 1048576, "value": 1048577}`; an observed footprint at or below the configured limit does not produce this defect. | Test (TC-428) |
 
 ## Dependencies
