@@ -1379,7 +1379,9 @@
       },
       "additionalProperties": false
     },
-    "CertificateIdentity": {"description": "FR-201: the structural identity that binds a certificate to the obligation it proves: the obligation node, the model identity that owns it and an ordinal, compared componentwise.", "type": "object", "required": ["node_id", "model", "ordinal"], "properties": {"node_id": {"$ref": "#/$defs/NodeId"}, "model": {"$ref": "#/$defs/Nonempty"}, "ordinal": {"$ref": "#/$defs/Count"}}, "additionalProperties": false},
+    "CertificateNodeId": {"description": "FR-201 canonical structural NodeId used in certificate identity JSON. Its path encodes canonical identity, not checked-package-v2 wire references.", "type": "object", "required": ["package", "path", "ordinal"], "properties": {"package": {"$ref": "#/$defs/Nonempty"}, "path": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/CertificatePathSegment"}}, "ordinal": {"$ref": "#/$defs/Count"}}, "additionalProperties": false},
+    "CertificatePathSegment": {"description": "One canonical FR-201 path segment: an authored string or a recursively nested structural NodeId.", "oneOf": [{"type": "string"}, {"$ref": "#/$defs/CertificateNodeId"}]},
+    "CertificateIdentity": {"description": "FR-201: the structural identity that binds a certificate to the obligation it proves: the obligation node, the model identity that owns it and an ordinal, compared componentwise. node_id uses certificate identity JSON and does not use checked-package-v2 wire PathSegment.", "type": "object", "required": ["node_id", "model", "ordinal"], "properties": {"node_id": {"$ref": "#/$defs/CertificateNodeId"}, "model": {"$ref": "#/$defs/Nonempty"}, "ordinal": {"$ref": "#/$defs/Count"}}, "additionalProperties": false},
     "ProbabilityCertificate": {
       "description": "FR-412 ProbabilityCertificate{identity, objective, kind, values, ranking, policy, components, conditional}.",
       "type": "object",
