@@ -64,6 +64,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-383
     type: depends_on
+  - target: ix://agent-ix/filament-spec-language/TC-1063
+    type: references
   - target: ix://agent-ix/filament-spec-language/FR-246
     type: references
   - target: ix://agent-ix/filament-spec-language/FR-075
@@ -7029,7 +7031,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-535 | Release rows sort by `(task_name, selected_model_identity, operation_declaring_identity, operation_member)` using the comparisons defined in “Schedulability claim carrier”; a descending release array refuses `invalid_package`/`invalid-value` at `/schedulability_claims/{i}/release_bindings/{j}`, where `j` is the first out-of-order row. | Test |
 | FR-322-AC-536 | Mode-switch rows sort by `(selected_model_identity, operation_declaring_identity, operation_member)` using the comparisons defined in “Schedulability claim carrier”; a descending mode-switch array refuses `invalid_package`/`invalid-value` at `/schedulability_claims/{i}/mode_switch_bindings/{j}`, where `j` is the first out-of-order row. | Test |
 | FR-322-AC-537 | When one shared schedulability node has claim occurrences 0 and 1, the package carries two rows keyed by those exact pairs and retains each row's task-set identity and binding arrays independently, even when the claim body is equal. | Test |
-| FR-322-AC-538 | For an admitted `protocol_clause` with node-level `owner_model` target `M`, whose node id path contains the owner-model operand resolving to `M`, changing only the `owner_model` edge to another valid model node `N` leaves the recorded key segment resolving to `M` and refuses `invalid_package`/`stale-node-key` at `/semantic_graph/nodes/{i}/owner_model` with the clause as graph-node locus; the reader returns no package. Changing the edge and that owner-model operand together to `N` admits, provided the ordinary dependency and owner checks pass. The reader does not derive any other protocol-clause path component from its body. | Test (TC-233) |
+| FR-322-AC-538 | For an admitted `protocol_clause` with node-level `owner_model` target `M`, whose dependencies contain `M` and whose node id path contains the owner-model operand resolving to `M`, changing the edge to another valid model node `N` and replacing `M` by `N` in dependencies in canonical order, while leaving the recorded owner-model operand resolving to `M`, refuses `invalid_package`/`stale-node-key` at `/semantic_graph/nodes/{i}/owner_model` with the clause as graph-node locus; the reader returns no package. Changing the edge, dependency and owner-model operand together to `N` admits, provided the ordinary owner checks pass. The reader does not derive any other protocol-clause path component from its body. | Test |
 
 ### FR-322-AC-467
 
