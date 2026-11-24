@@ -32,6 +32,9 @@ The models below are defined here in full; the citation names the FSL design rec
 | LR-01 | `LongRun` | `proved`, `exact-value{1800/1801}` with a `long-run` certificate: gain `1800/1801`, bias 0 at `up` and `−2000/1801` at `down` |
 | LR-02 | The checker on LR-01's certificate | Accepts after checking both multichain equations by exact equality |
 | LR-03 | A weighted long-run claim whose bottom component has every cycle of total weight 0 | the component's unweighted fraction, settled as a verdict with its unweighted gain–bias certificate; never `zero-weight-component` |
+| LR-04 | A `maximum` `long-run` certificate with per-component `policy` rows, then with one row removed, one row for a foreign state, one duplicate, one non-action choice, and one bias changed by `1/1000`; the same certificate under `workload` with and without `policy` | Accepted; `malformed` at `{"member": "policy"}` for the four policy defects; `inequality-fails` at the state for the bias; under `workload` `malformed` with a `policy` and accepted without (FR-412-AC-26) |
+| LR-05 | `Every`, no fairness set, `>= 3/4`, refuted by deterministic scheduler rows inducing `1/2`; a witness inducing `3/4`; a randomised row; a row naming no action; a missing reachable row | Accepted; `inequality-fails` at the initial state; `malformed` at `{"member": "policy"}` for the last three (FR-412-AC-27) |
+| LR-06 | A model with two components of gains `1/2` and `3/4` chosen by a scheduler: `>= 3/4` and `<= 3/4` under `Every`, and under a fairness set excluding neither | `refuted` with the witness; `proved` with component policies; same under the fairness set; never `unsupported` (FR-411-AC-18) |
 
 ## Expected Results
 

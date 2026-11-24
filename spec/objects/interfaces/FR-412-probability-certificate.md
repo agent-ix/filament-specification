@@ -403,6 +403,73 @@ a checker stopped by a budget settles `incomplete`, `limit-reached` naming
 the budget. The checker runs under the request's budgets; its cost is the
 re-enumeration plus one pass over the edges.
 
+### Long-run certificate wire shape and witnesses
+
+A `long-run` certificate carries one `components` entry per maximal end
+component the checker rebuilds that the claim's value needs (every component
+reachable under the optimising scheduler), each exactly
+
+```json
+{"value": "<ρ_C>", "gain": "<g>", "bias": [{"state": "<key>", "value": "<h>"}],
+ "policy": [{"state": "<key>", "choice": <choice>}]}
+```
+
+with `value`, `gain` and each bias `value` an exact rational and `state` a
+product state key (FR-412 "Field sources"). `policy` is present exactly when
+the objective's optimisation is `minimum` or `maximum`, whatever the
+fairness set (FR-411 "Long-run fractions"), and strictly absent under
+`workload`, where no choice exists. A component's `policy` has one row for
+every state of the component, each `choice` the action that state takes
+(the same `choice` shapes as the top-level `policy` rows of "Policy hints",
+a transition identity or a post-state choice). The checker rebuilds the
+component, recomputes every action at every state of it, and checks, for the
+reward `R · ([P] − ρ_C)` (with `R = 1` unweighted, the delay weight under
+`weighted by delay`, FR-407), the following at every state `s` of the
+component with gain `g` and bias `h`:
+
+- **Equalities under the component's policy.** `g + h(s) = r(s, a_σ) + Σ
+  P(s' | s, a_σ) · h(s')` for the action `a_σ` the policy row names, with
+  `g = 0` at the accepted `ρ_C`, exactly (no tolerance);
+- **Inequalities over every action.** `g + h(s) >= r(s, a) + Σ P(s' | s, a) ·
+  h(s')` for every action `a` of `s` under `maximum`, and `<=` under
+  `minimum`, so the pair is the optimum and not only a solution of the
+  policy's chain.
+
+A missing component policy under `minimum` or `maximum`, a row for a state
+outside the component, a duplicated row, a choice that names no action of its
+state, or a `policy` under `workload` is rejected `malformed` at
+`{"member": "policy"}`; a failing equality or inequality is rejected
+`inequality-fails` at the state. Components are in ascending order of their
+least state key. A component's pair never reads another component's.
+
+**The every-scheduler refutation witness.** For a long-run claim under
+`minimum` or `maximum` over every scheduler, with no fairness set, the
+certificate that refutes a bound is a deterministic stationary scheduler:
+the `components[].policy` rows above for the components the witness enters,
+and the top-level `policy` array of `{state, choice}` rows, deterministic (one
+`choice` per state, never a randomised row), for every other undecided state
+reachable from the initial states under it, choosing the action that reaches
+those components. The checker rebuilds the chain the witness induces,
+recomputes its bottom components and their stationary values by its own exact
+solve, and accepts the refutation exactly when the induced long-run value
+violates the bound; a witness whose choice names no action of its state is
+`malformed` at `{"member": "policy"}`, and a witness whose induced value meets
+the bound is `inequality-fails` at the initial state. No row of the witness
+is randomised or history dependent, since a stationary deterministic
+scheduler attains the optimum of a long-run fraction.
+
+**Replay of an initial-state verdict.** A refutation whose verdict is decided
+at the initial states (an `always P` claim whose initial state does not
+satisfy `P`, an `eventually` claim whose event cylinder is empty) is checked
+from the initial states first, with no ordering of the whole graph: the
+checker SHALL decide the initial verdict before it orders any part of the
+supplied or induced graph, and SHALL NOT refuse the replay because the
+graph, reachable from an initial state or not, holds a cycle. A cyclic
+induced chain beyond the decided states replays by the bottom-component rule
+of FR-412-AC-25, with the ranking required only where a `lower` proof needs
+it. Only a part whose proof needs an acyclic order (a ranking) is refused
+when it is cyclic, and the refusal names that part.
+
 ## Identity and comparison
 
 - **Identity kind** — *value*, compared componentwise.
@@ -456,6 +523,9 @@ re-enumeration plus one pass over the edges.
 | FR-412-AC-23 | FR-412-AC-21's otherwise valid `minimum` `1/2` document for `>= 1/2`, carrying `policy` as an empty array, a row naming `a` (which satisfies the equality) or a row naming `b`, is rejected `malformed` at the member-only locus `{"member": "policy"}`, without `part`. It is not checked as an optional hint under Policy hints. FR-412-AC-20's results for the fair-minimum, value-bounds and finite-horizon measure profiles and for required-policy certificates are unchanged. | Test |
 | FR-412-AC-24 | For an eventual-event refutation under a finite induced chain with initial `s` transitioning to event state `e` with probability `1/2` and event-free bottom state `a` with probability `1/2`, where `a` self-loops, the checker derives `{a}` as the event-free bottom target without a producer-supplied component set. The `lower` certificate with `x(s)=1/2`, `x(a)=1`, `x(e)=0`, and ranks 1 at `s`, 0 at `a` and `e` is accepted as a lower bound on `Pr(not eventually E)`; naming an event-containing component, changing the initial lower bound above `1/2`, or breaking the progress rank is rejected under the existing typed rules. Other `lower` certificate objectives retain their existing meaning. | Test (TC-432) |
 | FR-412-AC-25 | For cyclic induced chains, the checker derives the accepting and rejecting bottom-component unions from each unwindowed `eventually E`, `always P`, and `A until B` claim's monitor and predicates. A `lower` certificate for the rejecting union refutes `>= 3/4` only above `1/4`; a lower certificate for the accepting union refutes `<= 1/4` only above `1/4`. Thus the `always` and `until` reproductions and the `eventually <=` case in TC-433 are accepted with bound `1/2`, while a missing/wrong union, a malformed lower certificate, or a value equal to `1/4` does not establish refutation. | Test |
+| FR-412-AC-26 | Over a model with a component `C` of two states `u`, `v`, where `u` has actions `a` (to `v`) and `b` (to `u`), a `maximum` `long-run` certificate whose component row carries `value`, `gain`, `bias` and a `policy` with one row per state is accepted when the equalities hold under that policy and the inequalities hold for both actions at each state; changing one bias by `1/1000` is rejected `inequality-fails` at the state; removing the component's `policy`, adding a row for a state outside `C`, duplicating a row, or naming a choice that is no action of its state is rejected `malformed` at `{"member": "policy"}`; the same certificate under `workload` with a `policy` is rejected `malformed` at the same member, and without one is accepted. | Test (TC-362) |
+| FR-412-AC-27 | Under `minimum` over every scheduler with no fairness set, a refutation of `long_run_fraction holds(P) >= 3/4` on a model where one deterministic scheduler yields `1/2` is accepted when its `policy` rows are deterministic and induce a chain whose recomputed long-run value is `1/2`; a witness whose induced value is `3/4` is rejected `inequality-fails` at the initial state; a randomised row, a row naming no action, or a missing row for a reachable undecided state is rejected `malformed` at `{"member": "policy"}`. The same long-run claim under a fairness set, and the unweighted and `weighted by delay` forms, use the same witness shape. | Test (TC-362) |
+| FR-412-AC-28 | A refutation of `always holds(P)` whose initial state does not satisfy `P`, over a package whose raw graph holds a reachable cycle (a repeatable operation), replays and settles `refuted` with its initial verdict decided before any graph ordering, and is not refused for the cycle; an `eventually` claim with an empty initial cylinder behaves the same. A part of the same document whose proof needs a ranking over the cyclic graph is refused naming that part, and the initial verdict is unchanged by it. | Test (TC-433) |
 
 ## Dependencies
 

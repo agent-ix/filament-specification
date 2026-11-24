@@ -737,6 +737,31 @@ never carry a `recursion_group`). Inside such a component the members are
 ordered by their group ordinals, not by the rule that a protocol follows the
 state clauses its attempts list.
 
+## Protocol references in a protocol body
+
+A protocol's own body may hold a reference to a protocol: a `choice` or
+`repeat` guard, a `check` condition, a `visible` entry or a retry or recovery
+predicate that reads `protocol Q` for a declared protocol clause `Q` (a
+Boolean term that holds when `Q` has completed). The checked package carries
+it as the `protocol`/`protocol_reference` carrier of FR-322 for `Q`, one per
+target, and the term in the body is an ordinary `reference` to that carrier;
+a producer SHALL write it and SHALL NOT refuse the body for holding it. The
+carrier is a dependency of the control that reads it, so the control's
+dependencies list it.
+
+When `Q` is not the protocol whose body holds the term, the references form no
+cycle unless `Q`'s own body reaches back, and the carrier carries no
+`recursion_group`. When the term names the protocol that holds it (a
+self-referring protocol) or `Q`'s body reaches back to the holding protocol,
+the clause node, the controls on the path from its `run` down to the reading
+control, any state clause or predicate on the path and the closing carrier
+form one strongly connected component, written as one recursion group exactly
+as the predicate-join case above states: every member, the carrier included,
+carries the group, with ordinals assigned by the producer, and in-component
+references are `group_reference`s in the written form. A self-referring
+protocol is therefore one recursion group, never two groups and never a
+protocol node holding its own `node_id` as a plain reference.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -766,6 +791,8 @@ state clauses its attempts list.
 | FR-464-AC-23 | A nested `repeat`'s counter is reset on each entry from outside it, so `repeat max 1 while true { attempt }` with an `exhausted` control, nested as the only body of an outer `repeat`, is admitted: its exit is infeasible, its `maximum` is 1 and its body steps, and the outer `repeat` takes a step on every iteration. A nested `repeat` is never counted through its `exhausted` control: a nested `repeat max 1 while true` whose body is only a `check` and whose `exhausted` control is an `attempt` leaves the outer `repeat` refused (`unsupported_construct`/`declaration-form` at the first `repeat` in tree order, the outer one). | Test (TC-946) |
 | FR-464-AC-24 | The V2 schema decides a protocol node's layout: every protocol node except a `protocol_reference` carrier must satisfy `ProtocolControlApplication`, so an operator's argument names, order and count, a Tuple-of-Groups record, and an enumerated value outside its set (`delivery`, `overflow`, `loss`, `memory`, `outstanding`, `policy`, `ordering`, `scheduling`, `mode`) each refuse `malformed_wire` at the schema stage, and the recorded locus is the node-level pointer `/semantic_graph/nodes/{i}` (the first error path of the strict validator); every spelling an enumeration admits, and an appended `fence`, `event` and `await` with their layouts, stay schema-valid. | Test (TC-946) |
 | FR-464-AC-25 | A protocol `Flow` whose `attempt` lists the precondition `Pre`, whose body calls the predicate `ready`, which holds `protocol Flow`, is admitted when `Flow`, its `attempt` control, `Pre`, `ready` and the carrier to `Flow` share one `recursion_group` (TC-946 K24); `Pre` is an anonymous derived member whose path is producer-chosen and whose ordinal is producer-assigned. The same package with `Pre`'s `recursion_group` removed refuses `invalid_semantic_graph`, with no cause, at `Pre`'s node, and a `model`/`object_type` node given the same label still refuses `invalid_package`/`invalid-derived-shape` (FR-322-AC-29). | Test (TC-946) |
+| FR-464-AC-26 | A protocol `Gate` whose `choice` guard reads `protocol Other` for a declared protocol `Other` whose body does not reach `Gate` is admitted with one `protocol_reference` carrier for `Other`, no `recursion_group` on any node, the guarding control's `dependencies` listing the carrier, and a second read of `protocol Other` in another control sharing the one carrier. Removing the carrier, or retargeting it to a non-protocol node, refuses `invalid_semantic_graph` at the reading control's `/dependencies` or the typed refusal of FR-322-AC-66. | Test (TC-946) |
+| FR-464-AC-27 | A protocol `Loop` whose `repeat` guard reads `protocol Loop` is admitted when the `Loop` clause, the controls on the path to the guard, and the carrier to `Loop` share one `recursion_group` with producer-assigned ordinals and `group_reference`s in the written form; the carrier removed from the group, a second group for the same component, or a plain `reference` from `Loop`'s control to `Loop`'s own `node_id` each refuse `invalid_semantic_graph` at the node that departs from the group, and two protocols that read each other form one group for both. | Test (TC-946) |
 
 ## Published artifacts and the operation catalog
 

@@ -68,6 +68,21 @@ The selection enters result identity only through the bindings it produces:
 selections that differ in any configuration component produce different
 binding identities (FR-090-AC-3), and the order of entries changes nothing.
 
+**Read-back of a selected clock.** A clock role named by a selection is a
+binding, not a declaration: the package carries the role's configuration only
+in the `temporal_bindings` rows it produced, and the unit declares no clock
+for a trace-subject role. Whole-package read-back SHALL therefore admit a
+package whose `temporal_bindings` rows carry a selected role and
+configuration with no matching clock declaration, SHALL hand each such row to
+the temporal formula reader of its clause with that role and configuration,
+and SHALL NOT refuse the selection as a clock that has no configured
+declaration. A binding row whose role no clause of the package writes is
+refused (`unused-clock-selection`), and a row whose alternative differs from
+the one its clause's profile determines is refused (`clock-kind-mismatch`), by
+read-back as by the frontend. A state-graph or other item identity that reads
+the binding (FR-090-AC-3) is the same value when computed from the source and
+selection or from the package alone.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -75,6 +90,7 @@ binding identities (FR-090-AC-3), and the order of entries changes nothing.
 | FR-540-AC-1 | A unit with event-position, fixed-sample and timestamped-event clauses over a trace subject on roles `events`, `sample-clock` and `plant-ms`, and a selection with one entry per role, produces one binding row per clause holding its role and configuration; two clauses on one role get equal configurations. | Test (TC-1160) |
 | FR-540-AC-2 | Omitting `plant-ms`, adding an entry `spare`, and selecting a timestamp unit for `events` each refuse before any package is produced with `missing-clock-selection`, `unused-clock-selection` and `clock-kind-mismatch` naming the role; an event-position clause over a model subject needs no entry. | Test (TC-1160) |
 | FR-540-AC-3 | Changing the `events` sequence authority changes the binding identity; reordering the entries does not. | Test (TC-1160) |
+| FR-540-AC-4 | A unit with a timestamped-event clause on role `plant-ms` and a selection naming `plant-ms` produces a package that whole-package read-back admits with no clock declaration for `plant-ms`; the temporal formula reader receives the clause's row with role `plant-ms` and the selected unit; an `analyze-state-graph` item over it has the same identity from the source plus selection and from the package alone. Appending a `temporal_bindings` row for a role no clause writes refuses `unused-clock-selection`; changing a row's alternative to fixed-sample refuses `clock-kind-mismatch`; neither is reported as a clock with no configured declaration. | Test (TC-1160) |
 
 ## Dependencies
 

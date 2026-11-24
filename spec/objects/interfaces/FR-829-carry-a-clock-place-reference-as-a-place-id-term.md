@@ -168,6 +168,42 @@ appears in the path only as that operand segment. Two place references of
 one place at one owner term and the same slot terms are one node, and a
 reference at `self` and one at a population binder are two.
 
+### The runtime value
+
+At run time a `Reference<Clock>` is its own value kind, a **clock reference**
+holding exactly the place id of FR-415's place instance (the owner object's
+identity, the `clock_place` template and the slot positions, as one text). It
+is not an object reference: no implementation SHALL model it as a reference to
+an object with a place attached, because an object reference's identity is its
+object key and two places of one object would then be one value.
+
+- **Equality.** Two clock references are equal exactly when their place id
+  texts are byte equal, whichever universe produced them. A place id names its
+  owner by that owner's declared identity and key, so a reference from
+  another universe (the abstract side of a refinement, a second composed
+  instance, a supplied snapshot of another population) is equal to a local one
+  only when it names the same owner identity, template and slots, and is
+  otherwise a distinct value. `eq` across universes never refuses: it is
+  false for distinct place ids and true for the same, and `ne` is its
+  negation. A clock reference is never equal to an object reference or to a
+  place of another template of the same owner.
+- **Sets and maps.** The canonical order of the elements of a `Set` and of
+  the keys of a `Map` of clock references is the UTF-8 byte order of the
+  place id text. The language has no ordering operator over the family (see
+  above), so this order is only the canonical order of the container: it
+  fixes the canonical form, the state key and the wire order. Entries of a
+  supplied set or map are accepted in any order and give one value; a repeated
+  place id is a duplicate member and refuses `invalid_runtime_input`/
+  `duplicate-member` (FR-550).
+- **State key and wire form.** A clock reference is encoded as the FR-181
+  typed value of kind `clock_reference` carrying its place id text, in the
+  state key and on the wire (`{"clock_reference": "<place id text>"}`), so two
+  states are the same state exactly when their references are byte equal, a
+  decode of the wire form gives back the equal reference, and a reference
+  never serializes as an object key or as an object-reference value. A
+  snapshot or observation that supplies a reference naming an owner or
+  template absent from the supplied world refuses `dangling_reference`
+  (FR-550), at the reference.
 ### Operation catalog entry
 
 The QVC `checked-operation-catalog-v1.json` SHALL carry these entries, in the
@@ -240,6 +276,9 @@ under these checks, in this order:
 | FR-829-AC-5 | A record value type `Tag { x: Clock; r: Reference<Clock>; n: Integer }` has the data part `r`, `n`, in that order, and no member for `x`; a `tuple_value` of a tuple `(Clock, Reference<Clock>)` carries one term, the place id; `filament.op.clock_reference.eq` over `ref(self.x)` and `ref(self.x)` is true and `ne` false; and the three identities, the operator class `place_ref`, the form `place_reference` and the `scalar_type` form `clock_reference` are enumerated together by the catalog and the V2 schema `proposals/checked-package-v2/schema.json` (`OperationIdentity`, application `operator`, `expression` and `scalar_type` `semantic_form`). | Test (TC-2084) |
 | FR-829-AC-6 | Negative: the place-reference application over `q`'s element place with no slot term refuses `ill_typed`/`operator-ineligible` at `/body/arguments`; with a `scalar_type` first argument, `ill_typed`/`operator-ineligible` at `/body/arguments/0`; over the `clock_place` of a place under a `Map` value, `ill_typed`/`type-mismatch` at `/body/arguments/0`; with an `Integer` owner term, `ill_typed`/`type-mismatch` at `/body/arguments/1`; with a `Reference<Order>` owner term (an object type `Order` that does not conform to `Call`), `ill_typed`/`type-mismatch` at `/body/arguments/1`; with the binder `c` itself as owner term (as AC-2 writes it), admitted; with the owner term the `filament.op.model.deref` application over `c` (an `object` term), `ill_typed`/`operator-ineligible` at `/body/arguments/1`, and the same for a `presence_read` and an FR-772 slot domain with that owner; with `result_type` the `composite_type`/`reference` node of `Call`, `ill_typed`/`type-mismatch` at `/body/result_type`; a `filament.op.reference.eq` and a `filament.op.integer.lt` over two place references each refuse `ill_typed`/`operator-ineligible` at `/body/arguments/0`; and a `filament.op.collection.sum.integer` whose binder body is a place reference refuses `ill_typed`/`operator-ineligible` at the sum's `/semantic_graph/nodes/{n}/body/arguments/1`. | Test (TC-2084) |
 | FR-829-AC-7 | Over FR-154-AC-53's `acme/rpc` package, the field `r` typed by the `reference` type `ClockRef` over `Clock` is typed in the checked package by the one `scalar_type`/`clock_reference` node, no other node stands for `ClockRef`, and the postcondition `self.r = ref(self.x)` of an operation whose frame names only `r` is a `filament.op.clock_reference.eq` comparison of the post-state read of `r` with the place-reference application of AC-1, which the strict reader admits; it resets no clock, and a state's key holds the place id `r` holds. | Test (TC-2084) |
+| FR-829-AC-8 | Two references to the same place of the same owner are equal, whether produced in one state or in two states or universes; references to two places of one owner (`ref(self.x)`, `ref(self.y)`), to the same template of two owners, and to the same slot template at two positions are each distinct, and `ne` is the negation of `eq` in all cases. A reference from the abstract side of a refinement is false against a concrete reference with another owner identity and never refuses; a clock reference compared with an object reference refuses `ill_typed`/`operator-ineligible`. | Test (TC-2084) |
+| FR-829-AC-9 | A `Set<Reference<Clock>>` and a `Map` keyed by `Reference<Clock>` supplied in two different entry orders are one value with one state key and one wire form, ordered by the UTF-8 byte order of the place id texts; a repeated place id refuses `invalid_runtime_input`/`duplicate-member`; adding an element for another place changes the state key. | Test (TC-2084) |
+| FR-829-AC-10 | A clock reference round-trips through the state key and the wire form `{"clock_reference": "<place id text>"}` to an equal value; it is never encoded as an object reference, and a reference to an owner or template absent from the supplied world refuses `dangling_reference` at that reference. Two places of one object produce two state keys, which an object-reference model of them would conflate. | Test (TC-2084) |
 
 ## Dependencies
 

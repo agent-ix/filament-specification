@@ -248,6 +248,8 @@ Mutations, each applied alone to the positive unit:
     componentwise.
 30. Withdrawn: the refinement identity, step provenance and row-expression binder vectors it ran are removed with `refinement-identity-vectors.json`.
 31. Withdrawn: the selected model root vectors it ran are removed with `refinement-identity-vectors.json`.
+32. **Local option-value history initials.** Over a checked package whose `Option<Int[0, 4]>` history field has `initial` a local `reference` to its `Some(1)` `option_value` node, read the package and confirm it is admitted; then retarget the reference to a non-option node, to an `option_value` of `Option<Boolean>`, and replace it with a `dependency_reference`, and give a non-`Option` history field a reference initial; each refuses `invalid_model_binding`/`malformed-declaration` at the row's `initial` (FR-375-AC-36).
+33. **Receiver, node-row argument and most-specific typing.** Admit rows from one concrete type to `A1` and `A2` under an inherited operation of `P`, with and without source-order swapped; admit `Queue` and `SubQueue` into `queues` in both orders; admit a protocol-node row with an argument whose concrete type two object rows name; then add two unrelated rows for one concrete type, from one population and from two (FR-375-AC-37, FR-375-AC-38; the step verdicts FR-377-AC-18).
 
 ## Expected Results
 

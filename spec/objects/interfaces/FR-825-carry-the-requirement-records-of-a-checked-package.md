@@ -162,6 +162,23 @@ each record's referenced frame chain with that independently derived chain,
 including guard occurrence, order and `holds`; it SHALL NOT trust a
 producer-supplied chain as proof of body context.
 
+**Branches with no scalar operation.** A frame exists to give a
+`value-validity` record its path condition, so it exists only on the chain of
+some scalar-operation occurrence. A branch (an `if` then or else branch, or
+the right operand of `and`, `implies` or `or`) whose subtree, followed through
+body references, holds no scalar-operation application of this requirement's
+families has no frame: the producer SHALL NOT write a row for it, and the
+reader SHALL admit a package whose table has no row for it, whether or not the
+guard's occurrence is otherwise present. A branch that holds no scalar
+operation of its own but encloses a deeper branch that does is on that deeper
+occurrence's chain, so its frame is still required as the deeper frame's
+`parent`. The reader still derives the expected chain for every occurrence
+that has a record, and the rule above that refuses a row used by no record's
+chain applies unchanged, so a producer that does write a frame for a pruned
+branch is refused. The pruned branch still advances the package-wide
+expression-occurrence counters, because the walk visits it: pruning removes
+a frame, never a visit.
+
 ### Value-validity record node
 
 A `value-validity` record is the claim that one occurrence of a scalar
@@ -589,7 +606,8 @@ scan of the graph, and returns no record for a function that owns none.
 | FR-825-AC-8 | For a package with nested guards and at least two scalar records sharing a prefix, each malformed frame mutation refuses at the stated first defect: a non-array, empty array, row with missing/extra/reordered members, or non-Boolean JSON `holds` is `malformed_wire` at the table/row; a `parent` that is forward, self, missing, or from another owner is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/parent`; an unknown guard node or occurrence is `invalid_package`/`invalid-value` at `/path_condition_frames/{f}/guard`; a duplicate `(parent, guard occurrence, holds)` row is `invalid_package`/`conflicting-definition` at the duplicate row. | Test (TC-2053) |
 | FR-825-AC-9 | For the valid nested-guard package of AC-8, a frame chain with the wrong parent, guard order or `holds`, a missing table, a terminal frame id outside the table, a record id whose chain differs from the owner-body-derived chain, or an unreferenced frame row refuses `invalid_package`/`invalid-value` at the corresponding parent, `/path_condition_frames`, record `body/members/5`, or table row; changing only a record node's identity path to cite a different terminal id refuses `invalid_package`/`invalid-semantic-graph` at its `node_id`. | Test (TC-2053) |
 | FR-825-AC-10 | For AC-3's `Bounded` state-clause operation-contract record, the typed read equals the source `RequirementRecord` in kind, extent, Boolean bound, invariant marker, operation, body object references and population domains. Removing its record, attaching a value-validity node, changing the operation anchor, omitting or adding a model object or population, changing the invariant marker, or altering its identity path refuses the whole package with the specified first code and pointer. Generated step-relation and per-step model-refinement operation-contract items have no FR-825 source record, row or record node. | Test (TC-2053) |
-| FR-825-AC-11 | For one shared scalar application reached in two owner bodies ordered by FR-322's declaration source-map position, its expression occurrences are numbered package-wide as 0 and 1; each owner's record names its own occurrence, and removing the first owner's record does not renumber the second owner's occurrence. For a Boolean parameter used first as an expression and later as an `if` guard, the guard frame names expression occurrence 1, as do the checker and reader; neither restarts its ordinal at the owning body. | Test (TC-2053) |
+| FR-825-AC-11 | For one shared scalar application reached in two owner bodies ordered by FR-322's declaration source-map position, its expression occurrences are numbered package-wide as 0 and 1; each owner's record names its own occurrence, and removing the first owner's record does not renumber the second owner's occurrence. For a Boolean parameter used first as an expression and later as an `if` guard, the guard frame names expression occurrence 1, as do the checker and reader; neither restarts its ordinal at the owning body. When the first owner's termination measure also visits that shared application, those visits take the next ordinals after the owner's body and before the second owner's body, so the second owner's occurrence is numbered after them; the measure holds no record and no frame but consumes ordinals. | Test (TC-2053) |
+| FR-825-AC-12 | For `function f using v(p: Boolean, x: Int[0, 9]): Int[0, 9] pure { if p then x + 1 else x }` the else branch holds no scalar operation, so the table has one row (`p`, holds `true`) and none for `holds` `false`, and the package is admitted. The same package with an extra row for `p` with `holds` `false` refuses `invalid_package`/`invalid-value` at that row (used by no record's chain). For `if p then (if q then x + 1 else x) else x` with Boolean `q`, the frame for `p` holds `true` is present as the `parent` of the `q` frame, and the frame for `q` holds `false` is absent. Removing the `p` frame refuses with the existing parent refusal. A guard whose two branches hold no scalar operation yields an empty `path_condition_frames` member that is absent, not an empty array. Occurrence ordinals of nodes visited inside the pruned branch still advance, so a later guard on a node read there takes the ordinal the checker's walk gives it. | Test (TC-2053) |
 
 ## Dependencies
 
