@@ -516,9 +516,9 @@ abstract type the receiver is lifted against: the type that declares
 target type). It is required, because a concrete type that several object
 rows name (two subtypes of one declaring type, such as `FastQueue` and
 `SlowQueue` of `Queue`) lifts ambiguously without it; a reader or decision
-never infers it from the declaring type. A `target_type` that names no
-abstract type, a type that neither declares nor inherits `operation`, or a
-type that is not the declaring type or a subtype of it refuses
+never infers it from the declaring type. A `target_type` that names a
+node that is no abstract type, or an abstract type that neither declares nor
+inherits `operation`, refuses
 `invalid_model_binding`/`malformed-declaration` at `target_type`; an absent
 `target_type` is the reader's missing-member refusal at the step entry. An
 abstract protocol target is
