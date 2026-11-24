@@ -1180,12 +1180,12 @@
     },
     "DeclinedCause": {"description": "FR-331 (defined): the typed refusal category of a declined Kani run (FSL ADR-013 O-16, QC-9; AD-016 kinds 3 to 5).", "type": "object", "required": ["type"], "properties": {"type": {"enum": ["refused", "invalid-input", "incomplete-input"]}}, "additionalProperties": false},
     "FailedCause": {
-      "description": "FR-331 (defined), FR-462, FR-305: the tool-failure cause and the wire defect that caused it; the two byte-limit defects also carry limit, the configured maximum in bytes, and value, the byte count that crossed it.",
+      "description": "FR-331 (defined), FR-462, FR-305: the tool-failure cause and the defect that caused it; frame-length and total-bytes carry limit, the configured byte maximum, and value, the byte count that crossed it; observed-memory-limit carries limit, the configured maximum process-memory footprint in bytes, and value, the observed process-memory footprint in bytes.",
       "type": "object",
       "required": ["type", "defect"],
       "oneOf": [
         {"properties": {"type": {"const": "tool-failure"}, "defect": {"enum": ["crash", "nonzero-exit", "malformed-frame", "noncanonical-frame", "unknown-protocol", "unknown-frame-kind", "envelope-member", "unknown-request-id", "malformed-body", "unrouted-item", "unadvertised-kind", "missing-terminal-record"]}}, "required": ["type", "defect"], "additionalProperties": false},
-        {"properties": {"type": {"const": "tool-failure"}, "defect": {"enum": ["frame-length", "total-bytes"]}, "limit": {"$ref": "#/$defs/Count"}, "value": {"$ref": "#/$defs/Count"}}, "required": ["type", "defect", "limit", "value"], "additionalProperties": false}
+        {"properties": {"type": {"const": "tool-failure"}, "defect": {"enum": ["frame-length", "total-bytes", "observed-memory-limit"]}, "limit": {"$ref": "#/$defs/Count"}, "value": {"$ref": "#/$defs/Count"}}, "required": ["type", "defect", "limit", "value"], "additionalProperties": false}
       ]
     },
     "ResultValue": {"description": "FR-331: the closed result vocabulary.", "enum": ["proved", "refuted", "tested", "measured", "inconclusive", "unsupported", "declined", "incomplete", "failed"]},

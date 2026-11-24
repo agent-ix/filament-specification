@@ -1952,6 +1952,7 @@
         ]
       }
     },
+    {"name":"observed-memory-limit-outcome","stage":"outcome","owners":{"/results/0/cause":"FR-462"},"document":{"contract_version":"filament.backend-provider/v1","capability_vocabulary":"filament.capability-kind/v1","dispositions":[{"request_index":0,"disposition":"supported"}],"artifacts":[],"results":[{"request_index":0,"backend":"example-plugin","kind":"temporal-satisfaction","result":"failed","cause":{"type":"tool-failure","defect":"observed-memory-limit","limit":1048576,"value":1048577}}],"counterexamples":[],"accounting":[{"request_index":0,"settled_by":"result"}]}},
     {
       "name": "certificate-rejected-loci",
       "stage": "outcome",
@@ -10294,6 +10295,11 @@
         }
       ]
     },
+    {"name":"observed-memory-limit-missing-limit","base":"observed-memory-limit-outcome","owner":"FR-462","patch":[{"op":"remove","path":"/results/0/cause/limit"}]},
+    {"name":"observed-memory-limit-missing-value","base":"observed-memory-limit-outcome","owner":"FR-462","patch":[{"op":"remove","path":"/results/0/cause/value"}]},
+    {"name":"observed-memory-limit-extra-member","base":"observed-memory-limit-outcome","owner":"FR-462","patch":[{"op":"add","path":"/results/0/cause/extra","value":true}]},
+    {"name":"observed-memory-limit-string-limit","base":"observed-memory-limit-outcome","owner":"FR-462","patch":[{"op":"replace","path":"/results/0/cause/limit","value":"1048576"}]},
+    {"name":"observed-memory-limit-string-value","base":"observed-memory-limit-outcome","owner":"FR-462","patch":[{"op":"replace","path":"/results/0/cause/value","value":"1048577"}]},
     {
       "name": "query-part-step-row-empty",
       "base": "certificate-rejected-fsl-spellings",
