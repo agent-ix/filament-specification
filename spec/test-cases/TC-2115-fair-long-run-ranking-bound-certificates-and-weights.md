@@ -14,7 +14,7 @@ relationships:
 
 Verify the progress ranking of a long-run certificate under a fairness set, the
 bound certificates of an unattained fair optimum, the one-entry-per-component
-rule and the weighted `Every` forms. Scope: FR-412-AC-29 to FR-412-AC-32 and
+rule and the weighted `Every` forms. Scope: FR-412-AC-29 to FR-412-AC-33 and
 FR-411-AC-18.
 
 ## Test Procedure
@@ -25,7 +25,7 @@ FR-411-AC-18.
 2. Check the `lower` and `upper` bound certificates of FR-412-AC-30 and their
    defects.
 3. Check the component-coverage cases of FR-412-AC-31.
-4. Settle the weighted `Every` requests of FR-412-AC-32.
+4. Settle the weighted `Every` requests of FR-412-AC-32, and check the mixed-class component of FR-412-AC-33.
 
 ## Expected Results
 
