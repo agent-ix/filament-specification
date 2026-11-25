@@ -42,8 +42,11 @@ by `1-draft`. One recognizer can retain raw word spelling and let the selected
 edition classify it; no second handwritten token scanner is required.
 
 `ident` excludes that edition's reserved words in native declaration/binder
-positions. A `member-name` accepts the same ASCII word spelling including
-reserved words in a syntactically qualified model/member position. Thus
+positions. In the complete-V1 `operation-parameter` name position below, the
+reserved spelling `by` is the sole exception: that position accepts either an
+`ident` or `by`; every other native binder position remains unchanged. A
+`member-name` accepts the same ASCII word spelling including reserved words in
+a syntactically qualified model/member position. Thus
 `view.exhausted`, `M::result` and `M::Payment::retry` preserve model-owned names;
 they do not declare native binders named `exhausted`, `result` or `retry`.
 The parser uses token spelling in those positions without rescanning source or
@@ -369,8 +372,10 @@ object-decl       = [ 'abstract' ], 'object', ident,
                     '{', { object-member }, '}' ;
 object-member     = field | population-member | operation-member ;
 population-member = [ 'symmetric' ], 'population', ident, ';' ;
+operation-parameter = ( ident | 'by' ), ':', type-ref ;
 operation-member  = 'operation', ident,
-                    '(', [ parameter, { ',', parameter } ], ')',
+                    '(', [ operation-parameter,
+                           { ',', operation-parameter } ], ')',
                     [ ':', type-ref ],
                     [ 'redefines', ident, '::', member-name ],
                     { frame-clause }, ';' ;
@@ -502,7 +507,9 @@ member is written exactly as a `record-decl` field and admits every
 types"). A `population-member` declares a closed population whose member type
 is the declaring type; `symmetric` marks it symmetric (FR-150). An
 `operation-member` declares an operation with its ordered parameters, its
-optional result, the inherited operation it `redefines` and its frame:
+optional result, the inherited operation it `redefines` and its frame. Its
+`operation-parameter` name is an `ident` or the sole reserved spelling `by`;
+the exception does not apply to any other binder position:
 `modifies self.f` is a receiver-scoped field entry, `modifies f` an
 every-object entry of the declaring type's field `f`, `modifies T.f` an entry
 of field `f` of the source object type `T`, `creates T` and `deletes T`
