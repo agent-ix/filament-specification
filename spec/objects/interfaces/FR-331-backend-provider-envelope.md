@@ -301,8 +301,12 @@ substitute.
 
 `ProbabilityProductKey` SHALL travel as unpadded base64url of exactly FSL
 FR-196 / ADR-028 PR-4's RFC 8785 UTF-8 octets of
-`["filament.probability-product-key/v1", binding, instance, activation, model, monitor, accumulator, pending]`.
-All eight members are required: `binding` is the `over` binding, `instance`
+`["filament.probability-product-key/v1", binding, instance, activation, model, monitor, accumulator, pending]`,
+with `root` appended as a ninth member exactly when the checked product is a
+reset process over multiple canonical initial roots. `root` is the
+zero-based index in FR-101 canonical initial-root order. It is omitted for
+single-root and no-reset products, whose original eight-member bytes remain
+unchanged. The eight base members are required: `binding` is the `over` binding, `instance`
 the `on each` object, and `activation` its `"waiting"` or `"active"` phase,
 each null where the claim has none. `model` retains the full typed canonical
 simulation state (including digital clock, deadline and tail control when
