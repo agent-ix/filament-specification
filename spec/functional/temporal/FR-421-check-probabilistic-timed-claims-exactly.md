@@ -48,8 +48,8 @@ clause ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)).
 An [FR-411](../analysis/FR-411-settle-probabilistic-claims-exactly.md) exact
 verdict over the digital process, or over the region process when a
 constraint is strict or the claim is a bounded-window formula other than a
-deadline event; an `incomplete` limit stop where a monitor's pending target
-times are unbounded; or, for a continuous delay distribution only,
+deadline event or its `always[0, D]` complement; an `incomplete` limit stop
+while a case cannot be decided within the request's limits; or, for a continuous delay distribution only,
 `unsupported` with `delay-distribution{operation}`.
 
 ## Behavior
@@ -89,8 +89,15 @@ When every atomic clock constraint in a guard, every time invariant and every
 timed interval of the claim is non-strict, and the claim is unbounded
 reachability or until over state predicates, a deadline event or its
 `always[0, D]` complement over state predicates (predicates over the
-discrete state, with no clock atom), or an elapsed form, the provider reads
-the subject through digital clocks. When one is strict, or the claim is any
+discrete state, with no clock atom), an elapsed form, or a `steps` measure
+or an `accumulate` of per-step rewards within a time horizon (a reachability
+over the closed automaton: its count or sum is discrete state and its
+horizon a closed clock), the provider reads the subject through digital
+clocks. This rule does not settle the route of a `weighted by delay` fraction
+over a window, a `weighted by delay` long-run fraction or an unweighted
+fraction over a time window, which keep the rule they had before it (digital
+when every constraint is closed, clock regions otherwise) pending a ruling
+(QSL-3324). When one is strict, or the claim is any
 other bounded-window formula, it reads the subject through clock regions
 instead, closed or not: each clock keeps its integer part, capped as below,
 whether its fractional part is zero, and the order of the clocks' fractional
@@ -105,11 +112,15 @@ maximum 1 (`a` strictly between 0 and 1) but digital maximum 0, because
 integer time stamps put `a` at 1 or `b` at 2. The equality of digital and
 dense extrema below covers reachability and expected time only.
 
-When the number of pending target times a bounded-window monitor needs is not
-bounded on the region process for an admitted form, the provider SHALL settle
-the item `incomplete`, `limit-reached` naming the `ExactProbLimits` member
-that stopped it (FR-411), never
-`unsupported` and never `proved`.
+For some admitted forms the number of pending target times a bounded-window
+monitor keeps can grow without bound on the region process (an interval
+operator nested under another, read at arbitrarily many positions of its
+window). While the provider cannot decide such a case within the request's
+limits, the run stops `incomplete`, `limit-reached` naming the
+`ExactProbLimits` member it reached (FR-411), as any exact run does, and
+settles neither `unsupported` nor a verdict it has not decided. That stop is
+what the provider may do while it cannot decide a case; it replaces no
+criterion, and every exact value a criterion states stands.
 
 ### Digital clocks
 
