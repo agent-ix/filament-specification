@@ -13,7 +13,7 @@
       "IR filament-contract-ir cf7396b4 accepts no temporal_bindings row for a compensation node (FR-322-AC-305); the base carries the row the spec requires, and admission by that reader was checked with the refund-clock row removed."
     ]
   },
-  "reader_order": "When a row names no node, the first offending node is the lowest node-id (FR-322 ascending structural key order, which puts the clause Example::OrderFlow before its members) among the nodes the refusal's step visits; steps run in FR-464 'Reader order'. A row asserts only the first defect in reader order; later defects are masked by design.",
+  "reader_order": "When a row names no node, the first offending node is the lowest node-id (FR-322 ascending structural key order, in which a string path segment sorts before an operand, so the clause Example::OrderFlow follows the members named under it) among the nodes the refusal's step visits; steps run in FR-464 'Reader order'. A row asserts only the first defect in reader order; later defects are masked by design.",
   "loci": {
     "rule": "locus is the JSON pointer of the first offending node or entry in reader order; 'at the node' is /semantic_graph/nodes/{i}, 'at the target' is the pointer of the reference term that names the target, and a graph-stage dependency defect is /semantic_graph/nodes/{i}/dependencies (FR-322-AC-96).",
     "wire": "for malformed_wire the locus is the instance path of the first error of the repository's V2 schema validator (schema.json, jsonschema crate 0.55.0) on the edited package;",
@@ -315,8 +315,8 @@
         "stage": "reader",
         "code": "invalid_package",
         "cause": "operation-law-unselected",
-        "locus": "/semantic_graph/nodes/82",
-        "document_pointer": "/semantic_graph/nodes/82/body/operation/laws/0/definition"
+        "locus": "/semantic_graph/nodes/62",
+        "document_pointer": "/semantic_graph/nodes/62/body/operation/laws/0/definition"
       }
     },
     {
