@@ -43,10 +43,16 @@ FR-322-AC-490, FR-322-AC-494, FR-322-AC-510, FR-322-AC-513, FR-322-AC-544.
     the declarations of the operation's clause functions.
 
 Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`
-(steps 1 to 5 and 7 to 9); FSL `tests/it/dispatch_emission.rs` (step 6);
-FSL `fsl-package/src/emit/tests/source_objects.rs`
-`a_source_operation_declares_its_effective_precondition_function` (step 10,
-the function's declared name).
+(steps 1 to 5 and 7 to 9); FSL `tests/it/dispatch_emission.rs` (step 6). Step
+10 in FSL: `fsl-semantics/tests/it/source_objects.rs`
+`the_source_and_model_twins_link_equal_tables_and_check_equal_types` checks, on
+the checked graph, that the source candidate of `Order::size`, which has one
+contributing precondition clause, names an effective-precondition function
+whose name differs from that clause function's;
+`fsl-package/src/emit/tests/source_objects.rs`
+`a_source_operation_declares_its_effective_precondition_function` checks that
+an emitted package declares `["Order", "measure", "effective_precondition"]`.
+Neither reads the emitted candidate's handle against the emitted declarations.
 
 ## Expected Results
 
