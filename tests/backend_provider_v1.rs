@@ -2410,7 +2410,7 @@ fn tc_431_a_derived_item_is_keyed_by_its_anchor_node_and_kind() {
         );
     }
     let model_root = serde_json::json!({"package": "acme/orders", "path": ["model", "model_root"], "ordinal": 0});
-    let handshake = serde_json::json!({"package": "example", "path": ["Example", "Handshake"], "ordinal": 0});
+    let handshake = serde_json::json!({"package": "example", "path": ["Example", "Handshake", {"node": 44}], "ordinal": 0});
     assert_eq!(items[3]["claim"]["node"], model_root);
     assert_eq!(items[5]["claim"]["node"], handshake);
     assert_eq!(anchor_of(&document, 3), Some(("model".into(), "model_root".into())));

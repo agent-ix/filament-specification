@@ -3466,7 +3466,10 @@
         "package": "example",
         "path": [
           "Example",
-          "Handshake"
+          "Handshake",
+          {
+            "node": 21
+          }
         ]
       },
       "ordinal": 0,
