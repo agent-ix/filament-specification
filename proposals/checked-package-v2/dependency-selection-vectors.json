@@ -137,5 +137,69 @@
       ],
       "outcome": "admitted"
     }
+  ],
+  "closure_vectors": [
+    {
+      "id": "own-name-before-diamond",
+      "package_base": "fixtures/positive-two-owners-a.json",
+      "packages": [
+        {
+          "id": "own-name-leaf",
+          "name": "test/root",
+          "supplies": [],
+          "patch": []
+        },
+        {
+          "id": "middle",
+          "name": "test/m",
+          "supplies": ["own-name-leaf"],
+          "patch": []
+        },
+        {
+          "id": "leaf",
+          "name": "test/x",
+          "supplies": [],
+          "patch": []
+        },
+        {
+          "id": "unequal-leaf",
+          "name": "test/x",
+          "supplies": [],
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/source_map/0/regions/0/end",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "left",
+          "name": "test/a",
+          "supplies": ["middle", "leaf"],
+          "patch": []
+        },
+        {
+          "id": "right",
+          "name": "test/b",
+          "supplies": ["unequal-leaf"],
+          "patch": []
+        },
+        {
+          "id": "root",
+          "name": "test/root",
+          "supplies": ["left", "right"],
+          "patch": []
+        }
+      ],
+      "read": "root",
+      "outcome": "refused:invalid_package/definition-cycle",
+      "loci": [
+        "/lock/dependency_selections/0/lock/dependency_selections/0/lock/dependency_selections/0"
+      ],
+      "contract_package_loci": [
+        "/package/source/lock/dependency_selections/0/lock/dependency_selections/0/lock/dependency_selections/0"
+      ]
+    }
   ]
 }

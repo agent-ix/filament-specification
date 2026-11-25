@@ -275,10 +275,23 @@ structures, but any external consumer receives only the contract.
   symbolic supply states, that name no admitted package: they exercise the
   schema, the order rule and the supply order only, and a reader that requires
   every entry's package to be supplied refuses them
-  `missing_import`/`missing-selection` at entry 0 by design. Only
-  `dependency-call-vectors.json` names packages a reader can be supplied. Each
+  `missing_import`/`missing-selection` at entry 0 by design. Of the dependency
+  vectors, only `dependency-call-vectors.json` and this file's
+  `closure_vectors` name packages a reader can be supplied. Each
   `supply_vectors` entry lists the direct entries in lock order with a symbolic
   `supply` state (`bound` or `absent`) and the outcome FR-322-AC-84 requires.
+  Its `closure_vectors` pin the closure outcomes of both package readers
+  (FR-322-AC-546). Each entry of a vector's `packages` is its `package_base`
+  with the top-level `name`, and every `package` member equal to the base's
+  `name`, replaced by the entry's `name`; with `lock.dependency_selections` one
+  `{identity}` per package listed in `supplies`, in that order, holding that
+  package's `name`; and with the entry's `patch` (RFC 6902) applied. `supplies`
+  names the packages supplied to that entry's read, and every entry listed before
+  `read` admits on its own read. The checked-package reader's read of the `read`
+  entry returns `outcome` at `loci`. The ContractPackage reader (FR-330) reads
+  the same closure with the `read` entry's `name` as `package.source.identity`
+  and its selections in `package.source.lock`, supplied the same packages, and
+  returns `outcome` at `contract_package_loci`.
 - The V2 schema carries the `dependency_reference` term
   `{term: "dependency_reference", package, node}` (FR-322): `package` is the
   identity string of a `dependency_selections` entry and `node` a `NodeId`
