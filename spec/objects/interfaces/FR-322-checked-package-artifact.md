@@ -2531,7 +2531,7 @@ display name:
    `0` and one `declaration` occurrence. On the source route, a dispatch
    candidate with an effective precondition declares its own
    `effective_precondition` clause function, `[<type>, <operation>,
-   "effective_precondition"]`, even where a single term (one authored clause)
+   "effective_precondition"]`, even where only one authored precondition clause
    contributes. Every segment meets the identifier
    rule `[A-Za-z_][A-Za-z0-9_]*`, so the one-holder-per-qualified-name rule
    admits sibling clause functions with no change. The owner-presence row for
@@ -7051,6 +7051,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-536 | Mode-switch rows sort by `(selected_model_identity, operation_declaring_identity, operation_member)` using the comparisons defined in “Schedulability claim carrier”; a descending mode-switch array refuses `invalid_package`/`invalid-value` at `/schedulability_claims/{i}/mode_switch_bindings/{j}`, where `j` is the first out-of-order row. | Test |
 | FR-322-AC-537 | When one shared schedulability node has claim occurrences 0 and 1, the package carries two rows keyed by those exact pairs and retains each row's task-set identity and binding arrays independently, even when the claim body is equal. | Test |
 | FR-322-AC-538 | For an admitted `protocol_clause` with node-level `owner_model` target `M`, its dependencies contain `M` and its path is the exact `declaration.qualified_name` prefix followed by one final `{"operand": k}` segment whose ordinary operand-row entry is the local graph index resolving to `M`. Changing the edge to another valid model node `N` and replacing `M` by `N` in dependencies in canonical order, while the same path slot continues to resolve to `M`, refuses `invalid_package`/`stale-node-key` at `/semantic_graph/nodes/{i}/owner_model` with the clause as graph-node locus; the reader returns no package. Changing the edge, dependency and row target at slot `k` together to `N` admits, provided the ordinary owner checks pass. The reader does not derive any other protocol-clause path component from its body. | Test (TC-233) |
+| FR-322-AC-544 | For a source-declared operation with exactly one authored precondition clause, labelled `L`, a source-route dispatch candidate with that effective precondition names in `effective_precondition` a local `function` node declared `[<type>, <operation>, "effective_precondition"]`, a node distinct from the authored clause function declared `[<type>, <operation>, "precondition", L]`. | Test (TC-2090) |
 
 ### FR-322-AC-467
 
