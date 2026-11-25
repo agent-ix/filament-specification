@@ -1012,6 +1012,14 @@
         },
         {
           "op": "replace",
+          "path": "/semantic_graph/nodes/82/node_id/path/2",
+          "value": {
+            "operand": 9
+          },
+          "node": "Example::OrderFlow"
+        },
+        {
+          "op": "replace",
           "path": "/semantic_graph/operand_rows/82",
           "value": [
             2,
@@ -1022,7 +1030,8 @@
             20,
             47,
             3,
-            0
+            0,
+            14
           ]
         }
       ],
