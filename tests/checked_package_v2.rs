@@ -25550,6 +25550,19 @@ fn is_composite_value(node: &Value) -> bool {
     node["node_tag"] == "value" && (node["semantic_form"] == "record_value" || node["semantic_form"] == "tuple_value")
 }
 
+/// The `value` of the body binding of the one `function` node among `nodes`.
+fn function_body(nodes: &[Value]) -> &Value {
+    let mut functions = nodes.iter().filter(|node| node["node_tag"] == "function");
+    let (Some(function), None) = (functions.next(), functions.next()) else {
+        panic!("one function node");
+    };
+    function["body"]["members"]
+        .as_array()
+        .and_then(|members| members.iter().find(|member| member["name"] == "body"))
+        .map(|member| &member["value"])
+        .expect("the function has a body binding")
+}
+
 /// FR-322 `body_locations`: the reader refusals over a package's wire graph, in
 /// the order the rule states them. The repository has no production reader;
 /// this decider is the executable statement of the body walk, the row checks
@@ -25944,6 +25957,20 @@ fn tc_2090_function_body_location_rows() {
         if id == "BL-04" {
             assert_eq!([&members[0]["name"], &members[1]["name"]], ["z", "a"], "{id}: stored field order");
         }
+        // Both stored positions reference one node, BL-01's `let` body, and
+        // `f`'s body is the composite. The positions share a target, so their
+        // order shows in the rows: a first visit sits under component 0.
+        let held: Vec<&Value> = members
+            .iter()
+            .map(|member| if form == "record_value" { &member["value"] } else { member })
+            .collect();
+        assert_eq!(held[0], held[1], "{id}");
+        let shared = nodes
+            .iter()
+            .find(|node| *held[0] == json!({"term": "reference", "target": node["node_id"]}))
+            .expect("the position references a node");
+        assert_eq!(shared["body"]["operation"]["identity"], "filament.op.control.let", "{id}");
+        assert_eq!(function_body(nodes), &json!({"term": "reference", "target": composites[0]["node_id"]}), "{id}");
         let rows = rows_of(positive(id));
         assert_eq!(rows.len(), 18, "{id}");
         let paths = rebuilt(id);
@@ -26005,6 +26032,28 @@ fn tc_2090_function_body_location_rows() {
         assert_eq!(nodes[at]["semantic_form"], form, "node {at}");
     }
     assert_ne!(nodes[3]["node_id"], nodes[4]["node_id"]);
+    let reference = |at: usize| json!({"term": "reference", "target": nodes[at]["node_id"]});
+    let operands = nodes[1]["body"]["arguments"].as_array().unwrap();
+    assert_eq!(operands.len(), 2);
+    for (operand, value) in operands.iter().zip(["0", "1"]) {
+        assert_eq!(
+            (&operand["term"], &operand["value_kind"], &operand["value"]),
+            (&json!("literal"), &json!("integer"), &json!(value))
+        );
+    }
+    for at in [3, 4] {
+        assert_eq!(
+            nodes[at]["body"]["members"],
+            json!([{"term": "binding", "name": "n", "value": reference(1)}]),
+            "node {at}"
+        );
+    }
+    assert_eq!(nodes[6]["body"]["members"], json!([reference(3), reference(4)]));
+    assert_eq!(
+        (&nodes[7]["node_tag"], &nodes[7]["semantic_form"]),
+        (&json!("function"), &json!("pure_function"))
+    );
+    assert_eq!(function_body(nodes), &reference(6));
     let occurrence = json!({"role": "expression", "ordinal": 2});
     assert_eq!(nodes[1]["occurrences"], json!([occurrence]));
     let sources = bl06["source_map"]
