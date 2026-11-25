@@ -57,11 +57,16 @@ unit above the threshold) and the activation flag; rewards are non-negative
 values from finite supports, so the accumulator takes finitely many values.
 The complete product key SHALL use FSL FR-196's canonical RFC 8785 UTF-8
 octets of `["filament.probability-product-key/v1", binding, instance,
-activation, model, monitor, accumulator, pending]`: the `over` binding, the
+activation, model, monitor, accumulator, pending]`, with `root` appended as
+a ninth member only for a reset process over multiple canonical initial
+roots. `root` is that initial root's zero-based index in FR-101 canonical
+initial-root order. It is absent for single-root and no-reset products, whose
+original eight-member bytes remain unchanged. The base members are the `over` binding, the
 `on each` instance and its `"waiting"`/`"active"` activation phase (null for
 `on origin`), the full typed model form, actual canonical monitor/accumulator,
 and actual pending scheduled identity and declaration-ordered drawn vector.
-All members are present; actual None is null, never a default component.
+All members of the applicable form are present; actual None is null, never a
+default component.
 Formula monitors retain the full parsed FSL FR-338 automaton array, not a
 local state index. Exact-only forms retain actual None monitor/accumulator;
 digital model forms retain actual clocks, deadline and tail control.

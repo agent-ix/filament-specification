@@ -79,9 +79,15 @@ identity and drawn vector. For an exact-only form, the absent monitor and
 accumulator remain absent. A model state key alone SHALL NOT stand for
 a bounded or intermediate product state.
 
-FSL FR-196 / ADR-028 PR-4 now own the complete canonical octet basis:
+FSL FR-196 / ADR-028 PR-4 own the complete canonical octet basis:
 `["filament.probability-product-key/v1", binding, instance, activation, model, monitor, accumulator, pending]`
-in RFC 8785 UTF-8, with every component present and actual None as null.
+in RFC 8785 UTF-8, with every component present and actual None as null,
+except that a reset process over more than one canonical initial root uses
+the same array followed by `root`, the zero-based index in FR-101's canonical
+initial-root order. The component is present in every key of that reset
+process and omitted in all other cases; a single-root key and a key without
+a reset process retain the original eight-member bytes exactly. A reset
+edge returns to the initial state for the key's `root`.
 `instance` is the reference of the `on each` object the state is read for
 and `activation` is `"waiting"` or `"active"`; both are null for an
 `on origin` claim. Two states that differ only in instance or activation
@@ -337,6 +343,13 @@ accept a proof-side certificate as a refutation without FR-413's comparison.
 
     `values`, `policy` and `ranking` each cover exactly the waiting states
     the checker rebuilt as reachable from the initial states, one row each.
+    If that reset process has multiple canonical initial roots, coverage is
+    per root: each reachable waiting state has a row for each root, whose
+    complete FR-196 state key in the existing `state` member includes that
+    root. Rows for otherwise identical waiting states from distinct roots
+    therefore coexist. The checker rebuilds each reset edge to the initial
+    state named by that row's root and checks each root-specific value
+    inequality, policy equality and ranking progress independently.
     The rule that an unnamed successor counts as value 0 does not apply to
     `reset`: a waiting state with no row would let a maximum ignore a
     successor of high value. A missing, extra or duplicate row is rejected
@@ -599,6 +612,13 @@ the initial verdict unchanged. No other profile is refused for a cycle.
 | FR-412-AC-32 | Over `Pair` with an action weight `R` (a declared weight `duration` of 1 on actions into `C1` and of 3 into `C2`) and over a timed `Pair` with `weighted by delay`, `long_run_fraction holds(P) weighted by duration >= 3/4` and `weighted by delay >= 3/4` under `Every` settle `proved` or `refuted` with the witness of FR-412-AC-27 and the component certificate of FR-412-AC-26 for the reward `R(s, a) · ([P] − ρ_C)`, whose value is the weighted ratio `π_C(R · [P]) / π_C(R)` of the recurrent class the scheduler stays in. A component whose every recurrent class has weight 0 takes the unweighted fraction with its unweighted gain–bias pair. No weighted `Every` request settles `unsupported` for naming `Every`, a delay weight or an action weight. | Test (TC-2115) |
 | FR-412-AC-33 | Over a component `C` of `Pair` (FR-412-AC-32) whose recurrent classes are `K1`, with total weight 2 under `R` and weighted ratio `ρ_+`, and `K0`, with total weight 0 and unweighted fraction `ρ_0`, the `maximum` weighted long-run entry for `C` carries `value` `ρ_+` with `gain`, `bias` and `policy` over the states of `K1`, and `zero_weight` with `value` `ρ_0` and its own `gain`, `bias` and `policy` over the states of `K0`. It is accepted when each pair's equalities (gain 0 at that pair's own value) and inequalities hold over its own classes; the component value the combination step reads is `max(ρ_+, ρ_0)`, and `min` under `minimum`. Omitting `zero_weight`, adding it to a component whose classes all have positive weight, or giving either pair states of the other's classes is rejected `malformed` at `{"member": "components"}`; changing a bias in either pair by `1/1000` is rejected `inequality-fails` at the state. | Test (TC-2115) |
 | FR-412-AC-34 | Certificate `identity.node_id` admits the exact canonical structural NodeId `{package: "pkg", path: ["claim", {package: "pkg", path: ["operand"], ordinal: 2}], ordinal: 7}` and rejects a path segment object missing any of `package`, `path` or `ordinal`, with an extra member, with an empty package, with an empty path, or with a mistyped member or nested segment. The checked-package-v2 `PathSegment` remains unchanged: a nested structural NodeId object used directly as a checked-package wire path segment is rejected; wire operands continue to use `NodeIndex`/`OperandSlot` as specified there. | Test |
+| FR-412-AC-35 | For a `conditional` `optimum` certificate whose reset process is built from a model with multiple canonical initial roots, the producer emits each reachable waiting state's complete FR-196 key with that root's index in the existing `state` member. When distinct initial roots reach the same waiting product state, their root-indexed keys are distinct and both are present in the certificate rows. | Test |
+| FR-412-AC-36 | In that multiple-root reset process, every `reset` choice in a `policy` row returns to the initial state identified by that row's root index. | Test |
+| FR-412-AC-37 | In that multiple-root reset process, `values` contains exactly one row for every reachable waiting state under every initial root, and the checker validates each root-specific value inequality. A missing, extra or duplicate root-specific `values` row is rejected `malformed` at `{"member": "values"}` before arithmetic. | Test |
+| FR-412-AC-38 | In that multiple-root reset process, `policy` contains exactly one row for every reachable waiting state under every initial root, and the checker validates each root-specific policy equality. A missing, extra or duplicate root-specific `policy` row is rejected `malformed` at `{"member": "policy"}` before arithmetic. | Test |
+| FR-412-AC-39 | In that multiple-root reset process, `ranking` contains exactly one row for every reachable waiting state under every initial root, and the checker validates root-specific ranking progress. A missing, extra or duplicate root-specific `ranking` row is rejected `malformed` at `{"member": "ranking"}` before arithmetic. | Test |
+| FR-412-AC-40 | When a multiple-root reset process requires a root component, a certificate row whose state key omits that component is rejected `malformed` at the incomplete certificate member (`values`, `policy` or `ranking`) before arithmetic, under the existing reset-row coverage rule. | Test |
+| FR-412-AC-41 | For a single-root model or a model with no reset process, the producer and reader use the original eight-member FR-196 product-key bytes exactly; the certificate has no root member or trailing placeholder, and its existing `state` row shape is unchanged. | Test |
 
 ## Dependencies
 
