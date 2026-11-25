@@ -239,11 +239,20 @@ other transition forms are outside this body and this version.
   node-id-ascending `reference` targets of the body, so the anchor, subject,
   each input, the `pre` clause when present and the `post` clause.
 - **identity** — the node is an application with no `declaration`, so,
-  outside every recursion group, its `node_id` is the structural path of FR-322's derived-node form: the
-  operator, the operation identity, the profile law's definition, the member
-  operator and the five bindings (every referenced node's `node_id`, therefore
-  the anchor's context, operation name and execution point, the subject's
-  field and the two clauses' conditions). It holds no source region,
+  outside every recursion group, its `node_id` is the structural path of
+  FR-322's derived-node form. After `"state", "transition"`, the path contains
+  each binding name and its operand node in this order: `anchor`, `subject`,
+  `inputs`, `pre`, `post`; it then contains the operation identity
+  `filament.op.state.transition`, the selected `protocol_profile` definition
+  identity, member operator `transition`, operator `state_transition`, and one
+  operand segment for the application's `result_type`. It has no second
+  `semantic_type` segment: unlike an `expression` node, a `state`/`transition`
+  node's result type is not followed by a separate expression `semantic_type`
+  position. The literal path is the one in
+  `proposals/checked-package-v2/fixtures/positive-state-transition.json`.
+  Each referenced node contributes its `node_id`, therefore the anchor's
+  context, operation name and execution point, the subject's field and the two
+  clauses' conditions. It holds no source region,
   occurrence or source-map entry: re-spelling the source, moving a region or
   adding an occurrence leaves the node id unchanged, while changing the
   field, the operation, an input, `pre`, `post` or the profile selection

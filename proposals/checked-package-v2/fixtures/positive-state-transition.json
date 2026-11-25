@@ -693,6 +693,7 @@
               "operand": 1
             },
             "on",
+            "bare",
             "query",
             {
               "operand": 3
