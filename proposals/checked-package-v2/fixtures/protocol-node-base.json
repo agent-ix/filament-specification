@@ -10796,7 +10796,10 @@
           "package": "example",
           "path": [
             "Example",
-            "OrderFlow"
+            "OrderFlow",
+            {
+              "operand": 8
+            }
           ]
         },
         "node_tag": "protocol",
@@ -11206,7 +11209,8 @@
         21,
         19,
         57,
-        0
+        0,
+        14
       ]
     ]
   },
