@@ -1420,11 +1420,15 @@ declarations refuse. A bare `type-ref` looks up the type namespace only, and
 `Quantity<u>` and `Quantity<u, C>` are the `type-ref`s that look up the unit namespace. Their first argument may also be a product of qualified unit factors with signed integer powers, such as `kg*m^2*s^-2`; every factor uses that same namespace. A bare qualified name keeps its declared-unit meaning, while a product or explicit power forms a checked compound unit under FR-142, even when normalization leaves one term or none. The comma and closing `>` delimit the unit expression; no value expression is an exponent here. The checker restricts `C` to a bounded `Int[..]`, `Decimal[..]` or `Rational[..]` (FR-142 "Carried quantity"), and an `Int[lo, hi; mode]` carrier is the one place `Int` takes a trailing rounding mode; a `Rational[..]` carrier takes none and its mode is `exact`. A unit
 containing only model-independent Boolean predicates needs no dummy model import.
 Any referenced model declaration still requires an exact explicit import, except that a domain package's own clauses name its declarations through the self alias of their owner and need no import (FR-470). Predicate
-parameters and lexical binders are unique in their enclosing declaration and
-cannot shadow aliases, native declarations or another visible binding. Separate
-predicate declarations may reuse a parameter name. A `let` binding is visible
-only in its body, not its initializer. A quantifier binder is visible only in
-its predicate, not its domain. Forward predicate references can resolve after
+parameters are unique within each parameter list, and lexical binder names
+are unique among active local binders.
+A `let` or quantifier binder may have the same name as a visible parameter;
+bare reads in the binder's body resolve to that local binder. This does not
+allow a binder to shadow an alias, native declaration or another active local
+binder, and duplicate parameter names still refuse. Separate predicate
+declarations may reuse a parameter name. A `let` binding is visible only in
+its body, not its initializer. A quantifier binder is visible only in its
+predicate, not its domain. Forward predicate references can resolve after
 declaration collection; the complete call graph, including the FR-151 dispatch
 edges from a dispatched call to every candidate body and effective precondition
 clause, must be acyclic. No overload
