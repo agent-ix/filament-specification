@@ -20953,46 +20953,111 @@ fn published_keys(package: &Value) -> Vec<usize> {
     KeyInterner::default().graph_keys(viewed["semantic_graph"]["nodes"].as_array().expect("nodes"))
 }
 
+/// The file whose model-union and model-tuple rows carry FR-830 original node
+/// keys.
+const MODEL_UNION_WITNESS_FILE: &str = "model-union-witness-vectors.json";
+
+/// Whether the value at `pointer` of the model-union witness file sits at a
+/// position FR-830 gives an original node key: a model-tuple row's `node_key`,
+/// a model-union row's `type_handle`, `settled_key` or case
+/// `member.declaration`, or inside a case payload's `original_type`. Such a key
+/// is the producer's structural `NodeKey`, not a `node_id`, so FR-322-AC-278
+/// does not cover it. A positive carries the rows itself; a refusal's patch
+/// value sits at its patch's sidecar pointer.
+fn is_original_node_key_position(document: &Value, pointer: &str) -> bool {
+    let segments: Vec<&str> = pointer.split('/').skip(1).collect();
+    let sidecar: Vec<&str> = match segments.as_slice() {
+        ["positive", _, rows @ ..] => rows.to_vec(),
+        [section @ ("schema_refusals" | "reader_refusals"), case, "patch", operation, "value", inner @ ..] => {
+            let patch = format!("/{section}/{case}/patch/{operation}/path");
+            let Some(target) = document.pointer(&patch).and_then(Value::as_str) else {
+                return false;
+            };
+            target.split('/').skip(1).chain(inner.iter().copied()).collect()
+        }
+        _ => return false,
+    };
+    matches!(
+        sidecar.as_slice(),
+        ["model_tuples", _, "node_key", ..]
+            | ["model_unions", _, "type_handle" | "settled_key", ..]
+            | ["model_unions", _, "cases", _, "member", "declaration", ..]
+            | ["model_unions", _, "cases", _, "payload", "original_type", ..]
+    )
+}
+
+/// What one published file's node ids hold.
+#[derive(Default)]
+struct NodeIdScan {
+    /// Pointers of the path segments that are neither a string, an operand slot
+    /// nor an index segment, outside FR-830 original node keys.
+    nested: Vec<String>,
+    slots: usize,
+    index_segments: usize,
+    packages: usize,
+}
+
+/// Walks every value of the published file `name`, checking each package's
+/// operand rows on the way.
+fn scan_node_ids(name: &str, document: &Value) -> NodeIdScan {
+    let mut scan = NodeIdScan::default();
+    let mut pending = vec![(document, String::new())];
+    while let Some((value, pointer)) = pending.pop() {
+        match value {
+            Value::Object(members) => {
+                if is_node_id(value) {
+                    for (position, segment) in value["path"].as_array().into_iter().flatten().enumerate() {
+                        if operand_slots::operand_slot(segment).is_some() {
+                            scan.slots += 1;
+                        } else if operand_slots::index_segment(segment).is_some() {
+                            scan.index_segments += 1;
+                        } else if !segment.is_string() {
+                            // Inside an original node key, only a nested key.
+                            let nested_key = name == MODEL_UNION_WITNESS_FILE
+                                && is_node_id(segment)
+                                && is_original_node_key_position(document, &pointer);
+                            if !nested_key {
+                                scan.nested.push(format!("{name}{pointer}/path/{position}"));
+                            }
+                        }
+                    }
+                }
+                if members.get("semantic_graph").is_some_and(|graph| graph.get("operand_rows").is_some()) {
+                    scan.packages += 1;
+                    assert_eq!(operand_refusal(value), None, "{name}{pointer}: the published package passes the operand checks");
+                }
+                pending.extend(members.iter().map(|(key, member)| (member, format!("{pointer}/{key}"))));
+            }
+            Value::Array(items) => {
+                pending.extend(items.iter().enumerate().map(|(at, item)| (item, format!("{pointer}/{at}"))));
+            }
+            _ => {}
+        }
+    }
+    scan
+}
+
 /// FR-322-AC-278 and FR-322-AC-392: no published package, fixture or vector
 /// nests a `node_id` object inside a `node_id.path`; every node-held id names
 /// its operands by operand slots and every document-held id by index segments;
 /// and every operand row is numbered by first occurrence, so writing the
 /// published nodes back from their index view reproduces them byte for byte.
+/// The scan passes over nested keys of FR-830 original node keys and still
+/// reports the same nesting written into a wire node id of the same file.
 #[trace("TC-233", "FR-322-AC-278", "FR-322-AC-392")]
 #[test]
 fn tc_233_no_published_node_id_nests_an_operand_node_id() {
     let mut nested = Vec::new();
     let (mut slots, mut index_segments, mut packages) = (0, 0, 0);
-    for (name, document) in published_checked_package_files() {
-        let mut pending = vec![(&document, String::new())];
-        while let Some((value, pointer)) = pending.pop() {
-            match value {
-                Value::Object(members) => {
-                    if is_node_id(value) {
-                        for (position, segment) in value["path"].as_array().into_iter().flatten().enumerate() {
-                            if operand_slots::operand_slot(segment).is_some() {
-                                slots += 1;
-                            } else if operand_slots::index_segment(segment).is_some() {
-                                index_segments += 1;
-                            } else if !segment.is_string() {
-                                nested.push(format!("{name}{pointer}/path/{position}"));
-                            }
-                        }
-                    }
-                    if members.get("semantic_graph").is_some_and(|graph| graph.get("operand_rows").is_some()) {
-                        packages += 1;
-                        assert_eq!(operand_refusal(value), None, "{name}{pointer}: the published package passes the operand checks");
-                    }
-                    pending.extend(members.iter().map(|(key, member)| (member, format!("{pointer}/{key}"))));
-                }
-                Value::Array(items) => {
-                    pending.extend(items.iter().enumerate().map(|(at, item)| (item, format!("{pointer}/{at}"))));
-                }
-                _ => {}
-            }
-        }
+    let files = published_checked_package_files();
+    for (name, document) in &files {
+        let scan = scan_node_ids(name, document);
+        nested.extend(scan.nested);
+        slots += scan.slots;
+        index_segments += scan.index_segments;
+        packages += scan.packages;
         assert_eq!(
-            operand_slots::slot_view(&operand_slots::index_view(&document)),
+            &operand_slots::slot_view(&operand_slots::index_view(document)),
             document,
             "{name}: every operand row is numbered by first occurrence"
         );
@@ -21000,6 +21065,43 @@ fn tc_233_no_published_node_id_nests_an_operand_node_id() {
     assert!(nested.is_empty(), "{nested:#?}");
     assert!(slots > 0 && index_segments > 0, "the published files hold operand slots and index segments");
     assert!(packages > 0, "the published packages carry operand rows");
+
+    let (_, witness) = files.iter().find(|(name, _)| name == MODEL_UNION_WITNESS_FILE).expect("published");
+    let wire = json!({"package": "example", "path": ["Nested"], "ordinal": "0"});
+    // A row's `structural_node`, a payload's `node`, and a patch value that
+    // writes a `structural_node`: each is a wire node id.
+    let patch = witness["schema_refusals"]
+        .as_array()
+        .expect("refusals")
+        .iter()
+        .position(|case| case["id"] == "MUW-S-14-settled-key-too-deep")
+        .expect("MUW-S-14");
+    let mut retargeted = witness.clone();
+    retargeted["schema_refusals"][patch]["patch"][0]["path"] = json!("/model_unions/1/structural_node");
+    // Its 33 nested keys put 32 key objects inside a `path`.
+    assert_eq!(
+        scan_node_ids(MODEL_UNION_WITNESS_FILE, &retargeted).nested.len(),
+        32,
+        "a deep value patched onto a structural_node is reported"
+    );
+    for target in [
+        "/positive/16/model_unions/0/structural_node",
+        "/positive/16/model_unions/0/cases/0/payload/node",
+        "/positive/16/model_tuples/0/structural_node",
+    ] {
+        let mut injected = witness.clone();
+        let path = injected
+            .pointer_mut(&format!("{target}/path"))
+            .and_then(Value::as_array_mut)
+            .expect("a wire node id");
+        let position = path.len();
+        path.push(wire.clone());
+        assert_eq!(
+            scan_node_ids(MODEL_UNION_WITNESS_FILE, &injected).nested,
+            [format!("{MODEL_UNION_WITNESS_FILE}{target}/path/{position}")],
+            "{target}"
+        );
+    }
 }
 
 /// FR-322-AC-36, FR-322-AC-278..AC-280, FR-322-AC-392..AC-395 and FR-322-AC-521
