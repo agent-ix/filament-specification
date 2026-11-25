@@ -59,8 +59,10 @@ it:
 
 1. **The route.** Digital when every atomic clock constraint of every guard
    and time invariant, every timed interval of the claim and every comparison
-   of an elapsed measure with its threshold is non-strict; region otherwise
-   (FR-752). The strict comparison `M < c` that the `>=` quantile transform
+   of an elapsed measure with its threshold is non-strict and the claim is a
+   form FR-421 "Closed and strict conditions" reads through digital clocks;
+   region otherwise (FR-752), for every other bounded-window formula closed
+   or not. The strict comparison `M < c` that the `>=` quantile transform
    introduces counts as strict.
 2. **The scale and caps.** The least common denominator of every time
    constant in the model's unit, including resets, delay supports, the claim's

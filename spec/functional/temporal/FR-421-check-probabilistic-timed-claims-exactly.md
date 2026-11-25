@@ -47,7 +47,9 @@ clause ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)).
 
 An [FR-411](../analysis/FR-411-settle-probabilistic-claims-exactly.md) exact
 verdict over the digital process, or over the region process when a
-constraint is strict; or, for a continuous delay distribution only,
+constraint is strict or the claim is a bounded-window formula other than a
+deadline event; an `incomplete` limit stop where a monitor's pending target
+times are unbounded; or, for a continuous delay distribution only,
 `unsupported` with `delay-distribution{operation}`.
 
 ## Behavior
@@ -84,13 +86,30 @@ below.
 ### Closed and strict conditions
 
 When every atomic clock constraint in a guard, every time invariant and every
-timed interval of the claim is non-strict, the provider reads the subject
-through digital clocks. When one is strict, it reads the subject through
-clock regions instead: each clock keeps its integer part, capped as below,
+timed interval of the claim is non-strict, and the claim is unbounded
+reachability or until over state predicates, a deadline event or its
+`always[0, D]` complement over state predicates (predicates over the
+discrete state, with no clock atom), or an elapsed form, the provider reads
+the subject through digital clocks. When one is strict, or the claim is any
+other bounded-window formula, it reads the subject through clock regions
+instead, closed or not: each clock keeps its integer part, capped as below,
 whether its fractional part is zero, and the order of the clocks' fractional
 parts. The region process gives the exact minimum and maximum of every
 admitted form on the dense semantics, which digital clocks do not once a
-constraint is strict, so a strict constraint keeps an exact verdict.
+constraint is strict, so a strict constraint keeps an exact verdict. Digital
+clocks also miss the dense extremum of a bounded-window formula whose truth
+turns on a position being absent from a window, even when every constraint
+is closed: in a model where `a` happens at a scheduler-chosen time in
+`[0, 1]` and `b` exactly 2 later, `always[1, 2] holds(false)` has dense
+maximum 1 (`a` strictly between 0 and 1) but digital maximum 0, because
+integer time stamps put `a` at 1 or `b` at 2. The equality of digital and
+dense extrema below covers reachability and expected time only.
+
+When the number of pending target times a bounded-window monitor needs is not
+bounded on the region process for an admitted form, the provider SHALL settle
+the item `incomplete`, `limit-reached` naming the `ExactProbLimits` member
+that stopped it (FR-411), never
+`unsupported` and never `proved`.
 
 ### Digital clocks
 
@@ -116,7 +135,7 @@ as its reward. `always[0, D] holds(P)` is the complement of
 `eventually[0, D] holds(not P)`, a minimum read as one minus the other's
 maximum. Every other bounded-window formula, a punctual interval and an
 interval operator nested under another included, is decided over the product
-with the claim's monitor. The monitor SHALL give the formula's FR-416
+of the region process with the claim's monitor. The monitor SHALL give the formula's FR-416
 pointwise value on every behaviour of the product, and SHALL keep whatever
 pending target times that value needs.
 
@@ -200,4 +219,6 @@ with the scaled constants and is bounded only by the request's `max_states`.
 - Ticket: STD-139 (paired with QSL-373); STD-137 (paired with QSL-371).
 - QSL-3324 (draco:QSL:arch ruling of 2026-11-25): FR-416's pointwise meaning
   governs the monitor; the earlier "one deadline clock per interval operator
-  occurrence" could not hold it and is withdrawn.
+  occurrence" could not hold it and is withdrawn. Second ruling (route):
+  every bounded-window form other than a deadline event (or its complement)
+  over state predicates is read through clock regions.
