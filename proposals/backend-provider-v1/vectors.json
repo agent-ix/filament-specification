@@ -6631,7 +6631,10 @@
                   "package": "example",
                   "path": [
                     "Example",
-                    "Handshake"
+                    "Handshake",
+                    {
+                      "node": 44
+                    }
                   ]
                 },
                 "occurrence": {
@@ -6650,7 +6653,10 @@
                         "package": "example",
                         "path": [
                           "Example",
-                          "Handshake"
+                          "Handshake",
+                          {
+                            "node": 44
+                          }
                         ]
                       },
                       "path": []
@@ -6689,7 +6695,10 @@
                   "package": "example",
                   "path": [
                     "Example",
-                    "Handshake"
+                    "Handshake",
+                    {
+                      "node": 44
+                    }
                   ]
                 },
                 "occurrence": {
@@ -6708,7 +6717,10 @@
                         "package": "example",
                         "path": [
                           "Example",
-                          "Handshake"
+                          "Handshake",
+                          {
+                            "node": 44
+                          }
                         ]
                       },
                       "path": []
