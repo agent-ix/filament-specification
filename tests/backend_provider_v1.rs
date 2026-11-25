@@ -810,6 +810,61 @@ fn tc_431_adverse_vectors_are_refused() {
     }
 }
 
+/// BP-68: a fixed-N `limit-reached` carries its exact arbitrary-precision
+/// `required` count as a positive decimal string, an ordinary reached limit
+/// carries no `required`, and every other spelling is refused at that member.
+#[trace("TC-431", "FR-331-AC-67")]
+#[test]
+fn tc_431_fixed_sample_preflight_required_is_an_exact_positive_string() {
+    let whole = validator();
+    let base = positive("limit-reached-fixed-sample-preflight");
+    let preflight = composed(&base);
+    assert_eq!(preflight["results"][0]["cause"]["type"], "limit-reached");
+    assert_eq!(
+        preflight["results"][0]["cause"]["required"],
+        json!("921034100000000000000000000000000000000")
+    );
+    assert!(whole.is_valid(&preflight), "the exact count is admitted");
+    let ordinary = composed(&positive("limit-reached-accounting-setting"));
+    assert_eq!(ordinary["results"][0]["cause"]["type"], "limit-reached");
+    assert_eq!(ordinary["results"][0]["cause"].get("required"), None);
+    assert!(whole.is_valid(&ordinary), "an ordinary reached limit needs no count");
+    let adverse = parsed(VECTORS)["adverse"].clone();
+    for (name, spelling) in [
+        ("limit-reached-required-zero-string", json!("0")),
+        ("limit-reached-required-numeric", json!(9210341)),
+        ("limit-reached-required-leading-zero", json!("09210341")),
+        ("limit-reached-required-signed", json!("+9210341")),
+    ] {
+        let vector = adverse
+            .as_array()
+            .expect("adverse vectors")
+            .iter()
+            .find(|vector| vector["name"] == name)
+            .unwrap_or_else(|| panic!("adverse vector {name} exists"));
+        assert_eq!(vector["base"], "limit-reached-fixed-sample-preflight", "{name}");
+        assert_eq!(
+            vector["patch"],
+            json!([{"op": "replace", "path": "/results/0/cause/required", "value": spelling}]),
+            "{name}"
+        );
+        let mut document = preflight.clone();
+        assert_eq!(apply(&mut document, &vector["patch"][0]), Ok(()), "{name}");
+        assert!(!whole.is_valid(&document), "{name} is refused by the schema");
+        let stage = definition(stage_definition(base["stage"].as_str().expect("stage")));
+        let locations: Vec<String> = stage
+            .iter_errors(&document)
+            .map(|error| error.instance_path().to_string())
+            .collect();
+        assert!(
+            locations
+                .iter()
+                .any(|location| located_at_patch(location, "/results/0/cause/required")),
+            "{name} is refused at the count: {locations:?}"
+        );
+    }
+}
+
 /// The exhaustive exception admits only a value-free vacuous certificate.
 #[trace("TC-431", "FR-331-AC-60")]
 #[test]
