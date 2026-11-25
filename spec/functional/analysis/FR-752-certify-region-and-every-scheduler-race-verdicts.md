@@ -42,7 +42,9 @@ FR-751's result.
 ### Strict constraints
 
 - The region route SHALL apply when any guard, time invariant, timed interval
-  or elapsed-threshold comparison is strict (FR-751). Its states are the
+  or elapsed-threshold comparison is strict, and to every bounded-window
+  formula FR-421 "Closed and strict conditions" reads through clock regions
+  (FR-751). Its states are the
   region keys of FR-725; delay moves go from a region to its time successor;
   a discrete move applies a guard to the region, which decides a diagonal-free
   constraint exactly, and resets set the integer part and fraction to zero.
