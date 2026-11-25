@@ -17,6 +17,8 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-330-AC-15
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-322-AC-552
+    type: verifies
   - target: ix://agent-ix/filament-specification/FR-272-AC-21
     type: verifies
 ---
@@ -92,6 +94,15 @@ In a planned reader case, supply two valid direct dependency packages whose
 locks each select the same transitive library identity with structurally unequal
 packages. Require `invalid_package`/`conflicting-definition` with the two
 importer-rooted selection-path JSON pointers as loci before graph references.
+In planned reader cases for a closure holding `package.source.identity`, select
+that name directly, with no package supplied under it and then with one; select
+it through one library; and run the `own-name-before-diamond` closure vector of
+`dependency-selection-vectors.json`, admitting its packages in listed order and
+reading a ContractPackage whose source has the `read` package's name and
+selections. Require `missing_import`/`missing-selection` for the unsupplied
+entry, `invalid_package`/`definition-cycle` with one selection-path locus for
+each supplied case, and the vector's `outcome` at its `contract_package_loci`,
+all before graph references.
 
 ## Expected Results
 

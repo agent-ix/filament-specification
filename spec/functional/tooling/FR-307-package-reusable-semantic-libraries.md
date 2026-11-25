@@ -117,7 +117,11 @@ packages' locks record, and they unify only when the packages supplied for
 refusal lists both dependency paths, including paths through the dependency
 packages' own locks. Structurally unequal packages under one identity never unify. An import
 cycle is `refused { code: invalid_package, cause: definition-cycle }`, whose
-dependency-edge payload lists the cycle path. The importing package lock records
+dependency-edge payload lists the cycle path. A dependency closure that holds
+the importing package's own identity, directly or through a library, is such a
+cycle: it is never a `conflicting-definition` of that identity, whether or not
+the packages under it are structurally equal. FR-322 states where a reader of
+checked packages locates it. The importing package lock records
 only libraries the unit imports directly, one selection per identity in ascending
 identity order. Its closure is derived from those entries and each admitted
 dependency package's own lock; a transitive-only identity needs no entry in the
