@@ -20,3 +20,7 @@ Reviewed the new root-indexed identity for convergence aliasing, reset target se
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | No findings (placeholder) | - |
+
+## Round 1 Re-review
+
+Re-reviewed PR head `8f24ceb2d5cab784d14ab3c194f793d99b840b96` against paired FSL FR-196-AC-18 at PR #3842 head `7c6e028bc923f0a700bf323b46b8b928a0bd333d`. FR-411 and FR-331 preserve root identity in complete product-key octets; TC-363 no longer applies the legacy key fixture to reset products. No prior findings existed and no new failure-domain defect was found.

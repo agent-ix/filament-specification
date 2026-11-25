@@ -20,3 +20,7 @@ Reviewed the changed schema documentation and FR-412 text for duplication, integ
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | No findings (placeholder) | - |
+
+## Round 1 Re-review
+
+Re-reviewed the supplied PR head `8f24ceb2d5cab784d14ab3c194f793d99b840b96`. FR-411 and FR-331 use consistent root-key wording, TC-363 EC-08 scopes the original key bytes to no-reset products, and the JSON schema remains valid. No prior findings existed and no new defect was found.

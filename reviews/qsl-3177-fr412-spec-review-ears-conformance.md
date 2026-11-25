@@ -20,3 +20,7 @@ Reviewed the newly edited normative reset-coverage paragraph and ACs FR-412-AC-3
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | No findings (placeholder) | - |
+
+## Round 1 Re-review
+
+Re-reviewed PR head `8f24ceb2d5cab784d14ab3c194f793d99b840b96`. The added FR-411 wording names the conditional reset trigger and the exact root index, with explicit single-root/no-reset compatibility. No prior findings existed and no new EARS defect was found.
