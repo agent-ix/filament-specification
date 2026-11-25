@@ -2528,7 +2528,11 @@ display name:
    "effective_precondition"]` for an effective precondition, `[<type>,
    <operation>, "body"]` for a body and `[<type>, <operation>, "reward",
    <reward name>]` for the clause function of a reward (FR-640), with that name as its id path, ordinal
-   `0` and one `declaration` occurrence. Every segment meets the identifier
+   `0` and one `declaration` occurrence. On the source route, a dispatch
+   candidate with an effective precondition declares its own
+   `effective_precondition` clause function, `[<type>, <operation>,
+   "effective_precondition"]`, even where a single term (one authored clause)
+   contributes. Every segment meets the identifier
    rule `[A-Za-z_][A-Za-z0-9_]*`, so the one-holder-per-qualified-name rule
    admits sibling clause functions with no change. The owner-presence row for
    a clause function with no `declaration` (`ModelOwner`) is unchanged.
