@@ -19,4 +19,4 @@ Read every fenced `ebnf` block of `proposals/filament-v1/shared-grammar.md`; col
 
 ## Expected Results
 
-The set is non-empty, every `=/` name is defined earlier with `=`, and every right-hand-side name is defined or is one of `ident`, `member-name`, `string`, `uint` and `EOF`; any undefined name is reported with its line.
+The set is non-empty, every `=/` name is defined earlier with `=`, and every right-hand-side name is defined or is one of `ident`, `member-name`, `string`, `uint`, `decimal-literal` and `EOF`. The `decimal-literal` terminal matches `[0-9]+ '.' [0-9]+` and rejects exponent forms. The inventory includes definitions for `step-target` and `step-argument`; any other undefined name is reported with its line.

@@ -811,6 +811,10 @@ protocol-step-source = [ 'fork' | 'join' | 'cend' | 'cfail' | 'ctimeout' | 'cexp
 protocol-step-target = step-target
                      | 'node', qualified-name,
                        [ '(', step-argument, { ',', step-argument }, ')' ] ;
+step-target = operation-name, '(', expr, { ',', step-argument }, ')'
+            | 'stutter'
+            | 'any' ;
+step-argument = expr | '_' ;
 
 relation-clause = 'relation', ident, 'using', ident,
                   'over', '(', execution-binding, ',', execution-binding,
@@ -959,7 +963,8 @@ and FR-435. A `protocol-step-row` is one row of a refinement declaration whose
 concrete side is a protocol subject (FR-432); it is admitted wherever that
 declaration admits a step row, and its first `qualified-name` names a
 concrete protocol node, template, channel, role or protocol. `step-target`
-and `step-argument` are the refinement declaration's productions (FR-375).
+and `step-argument` are shared productions used by the refinement declaration
+(FR-375).
 
 `observe` is matched as a keyword spelling only as the first word of a `role`
 or a `control`, and `recommend` only as the first word of an `event-node`;

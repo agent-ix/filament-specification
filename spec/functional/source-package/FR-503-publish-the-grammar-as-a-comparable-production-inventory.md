@@ -42,7 +42,9 @@ it is defined in.
   states; the inventory holds the name once.
 - Every name used on the right-hand side of a definition is either defined in
   some `ebnf` block of the document or is one of the lexical terminals `ident`,
-  `member-name`, `string`, `uint` and `EOF` that the lexical contract defines.
+  `member-name`, `string`, `uint`, `decimal-literal` and `EOF` that the lexical
+  contract defines. `decimal-literal` is the token `[0-9]+ '.' [0-9]+`; it has
+  no exponent form.
 - Because the inventory is read from the document, a conforming implementation
   keeps a correspondence between its own grammar productions and these names,
   with each name that has no counterpart on either side listed with the
@@ -54,7 +56,7 @@ it is defined in.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-503-AC-1 | Reading every fenced `ebnf` block of the shared grammar yields a non-empty set of production names; each name is defined at least once with `=`, and each `=/` line names a production defined with `=` earlier in the document. | Test (TC-1010) |
-| FR-503-AC-2 | Every name on the right-hand side of a definition in the shared grammar is defined in some `ebnf` block or is one of `ident`, `member-name`, `string`, `uint` and `EOF`; a name used but not defined is reported with the line that uses it. | Test (TC-1010) |
+| FR-503-AC-2 | Every name on the right-hand side of a definition in the shared grammar is defined in some `ebnf` block or is one of `ident`, `member-name`, `string`, `uint`, `decimal-literal` and `EOF`; `decimal-literal` matches `[0-9]+ '.' [0-9]+` with no exponent form. A name used but not defined is reported with the line that uses it. | Test (TC-1010) |
 
 ## Dependencies
 
