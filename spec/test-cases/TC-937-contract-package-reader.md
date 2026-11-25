@@ -17,7 +17,7 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-330-AC-15
     type: verifies
-  - target: ix://agent-ix/filament-specification/FR-322-AC-551
+  - target: ix://agent-ix/filament-specification/FR-322-AC-552
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-272-AC-21
     type: verifies

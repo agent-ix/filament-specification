@@ -91,9 +91,9 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-75
     type: verifies
-  - target: ix://agent-ix/filament-specification/FR-322-AC-550
-    type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-551
+    type: verifies
+  - target: ix://agent-ix/filament-specification/FR-322-AC-552
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-114
     type: verifies
@@ -172,7 +172,7 @@ package is in the derived closure but absent from the importer's direct entries.
 With one direct dependency, name its transitive-only selection in a
 `dependency_reference` and require `missing_declaration`/`missing-selection`,
 even though the named package is in the derived closure. Build the closures of
-FR-322-AC-550, in which a package's derived closure holds its own name: a direct
+FR-322-AC-551, in which a package's derived closure holds its own name: a direct
 selection of it, a selection of it one library and two libraries down, and two
 libraries that select it as structurally unequal packages. Admit each library on
 its own read, then require the importer's `invalid_package`/`definition-cycle`,
@@ -180,7 +180,7 @@ its one locus where the criterion states one, and no
 `conflicting-definition` for the unequal pair. Select the importer's own name
 directly with no package supplied under it and require
 `missing_import`/`missing-selection`. Run each of the `closure_vectors` of
-`dependency-selection-vectors.json` (FR-322-AC-551), built as the vectors
+`dependency-selection-vectors.json` (FR-322-AC-552), built as the vectors
 README states: admit every package listed before `read` on its own read, then
 require the `read` package's recorded `outcome` at its `loci`. Validate a `dependency_reference` term against the V2 schema, and its missing-`node` and extra-member mutations; place it as the callee of the `function-call` operation vector (FR-322-AC-36). Validate
 `fixtures/positive-dependency-library.json`,
@@ -752,7 +752,7 @@ refusal. The filament-contract-ir reader implements both outcomes: its diamond
 test refuses conflicting transitive selections with both importer-rooted
 selection paths, and its transitive-reference test refuses a transitive-only
 package as `missing_declaration`/`missing-selection`. Each closure of
-FR-322-AC-550 refuses `invalid_package`/`definition-cycle`, at the locus the
+FR-322-AC-551 refuses `invalid_package`/`definition-cycle`, at the locus the
 criterion states where it states one, and never admits; the unsupplied direct
 entry refuses `missing_import`/`missing-selection`. The
 `own-name-before-diamond` closure vector refuses
