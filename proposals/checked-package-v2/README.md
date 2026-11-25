@@ -281,7 +281,7 @@ structures, but any external consumer receives only the contract.
   `supply_vectors` entry lists the direct entries in lock order with a symbolic
   `supply` state (`bound` or `absent`) and the outcome FR-322-AC-84 requires.
   Its `closure_vectors` pin the closure outcomes of both package readers
-  (FR-322-AC-546). Each entry of a vector's `packages` is its `package_base`
+  (FR-322-AC-551). Each entry of a vector's `packages` is its `package_base`
   with the top-level `name`, and every `package` member equal to the base's
   `name`, replaced by the entry's `name`; with `lock.dependency_selections` one
   `{identity}` per package listed in `supplies`, in that order, holding that
