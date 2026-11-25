@@ -5,6 +5,10 @@ type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-712
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-391
+    type: verifies
+  - target: ix://agent-ix/filament-specification/FR-393
+    type: verifies
 ---
 
 # TC-1742: State-graph claims over a timed model subject
@@ -14,7 +18,7 @@ relationships:
 Check the three state-graph forms over TC-369's timed `Rpc` vector: timed
 reachability, the `E(P)` fixpoint, path counting that ignores delays, exact
 rational evidence, and routing that excludes untimed backends.
-Scope: FR-712-AC-1 to FR-712-AC-5.
+Scope: FR-712-AC-1 to FR-712-AC-9.
 
 ## Test Procedure
 
@@ -23,6 +27,7 @@ Scope: FR-712-AC-1 to FR-712-AC-5.
 3. Check `unique path` from `phase = Idle` to `phase = Replied` with and without `reset`.
 4. Name a backend listing the forms that offers neither timed method; repeat step 1 with `options.method` `digital-clocks`.
 5. Check `possible` of `phase = Replied` and of `phase = TimedOut` over the Zeno-only variant of `Rpc` (FR-712-AC-5).
+6. Run TC-349 SG-06, SG-07, SG-09, SG-11 and SG-12 on the `zones` route. For each fixture, add a clock `z` with initial value `0 ms`, invariant `z <= 0 ms` in every state, and reset `z := 0 ms` on every operation. This timed overlay preserves the fixture's state and transition graph and admits no positive delay.
 
 ## Expected Results
 
@@ -31,3 +36,4 @@ Scope: FR-712-AC-1 to FR-712-AC-5.
 - Step 3: refuted by the `reset` cycle; holds without `reset`.
 - Step 4: `unsupported` `unsupported-requested-capability`; with `digital-clocks`, the same verdicts with basis `exhaustive`.
 - Step 5: `Replied` proved with `zone-certified` basis and no `admitted` member, `TimedOut` refuted, and neither is refused for a missing divergence witness.
+- Step 6: SG-06 settles from its depth-1 trap as `refuted`, `closed-scope`; SG-07 settles from its depth-1 undefined predicate as `refuted`, `decisive-counterexample`, cause `undefined-evaluation`. SG-09 settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation` with the `audit(a)` guard's transition identity and `absent-key` reason (the guard is not disabled). SG-11 settles the same cause from the undefined `Lost` terminal predicate with no predicate or transition member in `where`. SG-12 settles the same cause from the undefined initial state constraint with no predicate or transition member in `where`.

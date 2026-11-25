@@ -76,24 +76,25 @@ timed form.
   (FR-416): `E(P)` as the least fixpoint of timed and discrete predecessors of
   the `P` zones, and the forward reachable zones by FR-416's zone search,
   with a result equal to the definition above over the concrete timed states.
-- **Undefined evaluation.** When the analyzer explores a reachable timed
-  state, it SHALL apply FR-391's undefined-evaluation rule to the claim
-  predicates and the subject's guard enabled-tested there, `terminal when`
-  predicate at a state with no enabled step, and selected state constraint.
-  When one of those evaluations is undefined, the analyzer SHALL settle each
-  affected item `refuted`, `decisive-counterexample`, with cause
-  `undefined-evaluation`. When it settles an item this way, the analyzer SHALL
-  carry FR-393's undefined-evaluation evidence naming the timed state's state
-  key and expression locus, the FR-181 transition identity for a guard, and
-  the catalogued undefined-value reason. The analyzer SHALL NOT read an
-  undefined guard as a disabled step or an undefined `terminal when` predicate
-  as a non-terminal state. This applies to `possible`, `always possible` and
-  `unique path`, including an item for which `possible` already has a witness.
-- **Evidence.** A witness or counterexample path SHALL be concretized with
-  exact rational delays by FR-416's canonical choice, carried in FR-393's
-  path form with each step's delay before it, and replay with no provider
-  present. A `unique path` refutation carries the two step sequences, or the
-  cycle and the node it returns to.
+- **Definedness scope.** On the timed zone route, the analyzer SHALL apply
+  FR-391's undefined-evaluation rule to claim predicates and to the subject's
+  guard enabled-tested at an explored state, `terminal when` predicate at an
+  explored state with no enabled step, and selected state constraint.
+- **Undefined guard.** The timed zone route SHALL treat a guard that evaluates
+  undefined at an explored state as undefined evaluation, not as a disabled
+  step (FR-391).
+- **Undefined terminal declaration.** The timed zone route SHALL classify an
+  explored terminal state using FR-366; an undefined `terminal when`
+  predicate is not a non-terminal classification.
+- **Refuting-evidence order.** The timed zone route SHALL settle refuting
+  evidence in FR-391's canonical discovery order, including FR-391's
+  precedence for undefined evidence at the same node.
+- **Evidence.** The analyzer SHALL concretize a witness or counterexample
+  path with exact rational delays chosen by FR-416's canonical rule. The
+  analyzer SHALL carry the path in FR-393 form with each step's delay before
+  it. The replay component SHALL replay it with no provider present. A
+  `unique path` refutation carries the two step sequences, or the cycle and
+  the node it returns to.
 - **Proof basis and certificate.** A zone proof settles with basis
   `zone-certified` and an FR-418 certificate covering the reachable zones.
   For `always possible` the certificate also carries a `state_graph` part
@@ -131,8 +132,11 @@ The vector is TC-369's `Rpc` model with `T = 4 ms`.
 | FR-712-AC-2 | `always possible` of `phase = Idle` holds, and its proof's certificate carries the `state_graph` part with the `E(P)` zones in `ef_nodes`; with `reset` removed it is refuted by a path ending at `phase` `Replied`. | Test (TC-1742) |
 | FR-712-AC-3 | `unique path` from `phase = Idle` to `phase = Replied` is refuted with the cycle through `reset`; without `reset` it holds, the runs with different delays before `reply` counting as one path. | Test (TC-1742) |
 | FR-712-AC-4 | A backend that lists the three forms but offers neither timed method is not a candidate for these items, and an item naming it settles `unsupported` `unsupported-requested-capability`; with `options.method` `digital-clocks`, AC-1's items settle the same verdicts on the backend that publishes that method, the proof with basis `exhaustive` (FR-416). | Test (TC-1742) |
-| FR-712-AC-6 | On the timed zone graph, if any reachable state has an undefined claim predicate, enabled-tested guard, terminal predicate or selected state constraint, every affected `possible`, `always possible` and `unique path` item settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with FR-393 evidence whose path reaches that state and whose `where` identifies its state key and expression locus, plus the transition identity for a guard and the catalogued reason; an undefined guard is not treated as disabled, an undefined terminal predicate is not treated as non-terminal, and a `possible` witness does not suppress the result. | Test |
 | FR-712-AC-5 | Over the Zeno-only variant of `Rpc` (invariant `x <= 0 ms` in every state), `possible` of `phase = Replied` settles `proved` with basis `zone-certified` and a zone certificate carrying no `admitted` member, and the item is not refused `invalid_capability`/`inconsistent-candidates` or any refusal that names a missing divergence witness; `possible` of `phase = TimedOut` settles `refuted` with no `admitted` requested; supplying an `admitted` member to either certificate settles `inconclusive`, `certificate-rejected`, `malformed` (FR-418-AC-16). | Test (TC-1742) |
+| FR-712-AC-6 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-06 has a trap at depth 1 and undefined predicate at depth 3 and settles from the earlier trap as `refuted`, `closed-scope`; SG-07 has undefined predicate at depth 1 and trap at depth 2 and settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`. | Test (TC-1742) |
+| FR-712-AC-7 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-09's `audit(a)` guard evaluates `lookup` of absent `rz` at the initial state; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key, guard locus and FR-181 identity of `audit(a)`, and whose cause is `absent-key`; the guard is not treated as disabled. | Test (TC-1742) |
+| FR-712-AC-8 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-11's `Lost` terminal state evaluates its `terminal when` predicate by `lookup` of an absent key; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key and terminal-predicate locus, with no predicate or transition member, and whose cause is `absent-key`. | Test (TC-1742) |
+| FR-712-AC-9 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-12's selected state constraint evaluates `lookup` of absent `rz` at the initial state; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key and constraint locus, with no predicate or transition member, and whose cause is `absent-key`. | Test (TC-1742) |
 
 ## Dependencies
 
