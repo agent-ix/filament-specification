@@ -114,9 +114,20 @@ closed, by one extra digital clock that no step resets, capped at `D + 1`; and
 `expected elapsed until holds(B)`, each delay move carrying one unit of time
 as its reward. `always[0, D] holds(P)` is the complement of
 `eventually[0, D] holds(not P)`, a minimum read as one minus the other's
-maximum. Every other bounded-window formula, a punctual interval included, is
-decided over the product with the claim's monitor, which keeps one deadline
-clock per interval operator occurrence, capped at its upper bound plus one.
+maximum. Every other bounded-window formula, a punctual interval and an
+interval operator nested under another included, is decided over the product
+with the claim's monitor. The monitor SHALL give the formula's FR-416
+pointwise value on every behaviour of the product, and SHALL keep whatever
+pending target times that value needs.
+
+Every form above, deadline events included, reads its predicates at
+positions only (FR-416 "Pointwise meaning"): the initial state, the
+post-state of each discrete step and each terminal stutter position of an
+idle tail. A delay move is not a position: it advances time, so a window it
+passes closes, but it reads no predicate. The time stamps of terminal stutter
+positions after a quiescent state are the scheduler's choice (FR-416 "Time
+stamps"), so a minimum or maximum ranges over them as over every other
+scheduler choice.
 
 The provider SHALL resolve the probabilistic claim's exact
 `{declaration NodeRef, occurrence}` through
@@ -187,3 +198,6 @@ with the scaled constants and is bounded only by the request's `max_states`.
 - M. Kwiatkowska, G. Norman, D. Parker and J. Sproston, "Performance analysis
   of probabilistic timed automata using digital clocks", 2006.
 - Ticket: STD-139 (paired with QSL-373); STD-137 (paired with QSL-371).
+- QSL-3324 (draco:QSL:arch ruling of 2026-11-25): FR-416's pointwise meaning
+  governs the monitor; the earlier "one deadline clock per interval operator
+  occurrence" could not hold it and is withdrawn.
