@@ -4655,11 +4655,21 @@
       "class": "refuse",
       "locus_basis": "schema_error_path",
       "base": "protocol-node-base.json",
-      "edit_prose": "Omit `owner_model`, or use an external `PackageNodeKey`",
+      "edit_prose": "Omit `owner_model`, its final path operand and that operand-row slot",
       "edit": [
         {
           "op": "remove",
           "path": "/semantic_graph/nodes/82/owner_model",
+          "node": "Example::OrderFlow"
+        },
+        {
+          "op": "remove",
+          "path": "/semantic_graph/nodes/82/node_id/path/2",
+          "node": "Example::OrderFlow"
+        },
+        {
+          "op": "remove",
+          "path": "/semantic_graph/operand_rows/82/8",
           "node": "Example::OrderFlow"
         }
       ],

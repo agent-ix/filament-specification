@@ -1017,7 +1017,10 @@
           "package": "example",
           "path": [
             "Example",
-            "Handshake"
+            "Handshake",
+            {
+              "operand": 3
+            }
           ]
         },
         "node_tag": "protocol",
@@ -6577,7 +6580,8 @@
       [
         23,
         24,
-        26
+        26,
+        53
       ],
       [],
       [

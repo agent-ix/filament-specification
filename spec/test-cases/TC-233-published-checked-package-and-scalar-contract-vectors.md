@@ -552,8 +552,8 @@ model-only case (FR-322-AC-130).
 | `CCW-02` | Remove a declared class entry's `node` or `binder_types`, add any extra member, give a concrete entry an external key, or give an abstract entry an ill-shaped key | The V2 schema refuses the malformed member. |
 | `CCW-03` | Add `node` or `binder_types` to a memory entry, omit `drain` from `memory drain`, add `drain` to `memory flush`, use a memory class spelling other than `memory drain` or `memory flush`, or use a second word after the kind | The V2 schema refuses the malformed member. |
 | `CCW-05` | Change the refinement and update references, but leave a local catalog node or binder type out of exact `dependencies` | Graph shape refuses `invalid_semantic_graph` at `/dependencies` before the refinement body step. |
-| `CCW-06` | Remove a protocol clause's `owner_model`, put an external key there, or remove its local owner node from exact dependencies | The V2 schema refuses the absent edge or external-key shape; graph admission refuses a missing owner dependency. |
-| `CCW-07` | Retarget `owner_model` to another selected model | The V2 schema admits the closed local edge; the clause body changes and the reader returns the new owner identity unchanged. |
+| `CCW-06` | Remove a protocol clause's `owner_model` and its final path operand (and remove that row slot if no other node-held path operand uses it); put an external key at `owner_model`; or remove its local owner node from exact dependencies | The V2 schema refuses the absent edge or external-key shape; graph admission refuses a missing owner dependency. An ownerless clause has only its declaration path. |
+| `CCW-07` | Retarget `owner_model` to another selected model and update the exact dependency plus the final path operand's local row target at slot `k` | The V2 schema admits the closed local edge; the structural key changes through that operand, and the reader returns the new owner identity unchanged. |
 | `CCW-08` | Memory entries `memory drain` for `ra`, `sc` and `tso`, each with `drain: store-buffer-flush`, and `memory flush` for `tso`, in that order | The V2 schema admits each entry (a schema states shape, not order); the reader admits the canonical order and refuses a reordered or repeated (`class`, `memory_model`) pair as `invalid_semantic_graph` at the entry in step 2 (FR-322-AC-133). |
 | `CCW-09` | A declared class entry `{class: "activate P", node, binder_types}` on the concrete (`NodeRef`) and abstract (`RefinementKey`) side | The V2 schema admits it as an ordinary declared class (FR-322-AC-133). |
 | `CCW-10` | The cases `CCF-01` to `CCF-15` of `proposals/checked-package-v2/class-catalog-vectors.json` (effect, commit, event, attempt, template `cend`, the three drain entries and `memory flush`) validated against the closed catalog definition, then read for canonical order, duplicates and the effect, commit and `cend` classes | `CCF-01` admitted; `CCF-02` to `CCF-06` (an entry without `node` or `binder_types`, an extra member, a memory entry with `node`, a drain without `drain`) refuse in the schema; `CCF-07` to `CCF-13` (one class dropped each: `Impl::E`, `Impl::K`, `cend`, each of the three drains, `memory flush`) are schema-valid and refuse in the reader as `omitted_class`, `CCF-14` (two drains swapped) as `misordered_class` and `CCF-15` (repeated `cend`) as `duplicate_class` (FR-375-AC-28). |
@@ -844,3 +844,15 @@ application's node id has the expression/body walk operands followed by
 same Integer node for the enclosing expression's `semantic_type`. The two
 final path segments are equal operand slots into the shared Integer node in
 the operand row, but both positions are present (FR-322-AC-523).
+
+Protocol clause owner identity: in each of the eight published positive
+protocol packages, the `protocol_clause` path prefix equals its
+`declaration.qualified_name`, and its final `{"operand": k}` slot resolves
+through that clause's `operand_rows` entry to the same local graph node as
+`owner_model`. In `positive-all-families.json`, `Handshake` has path
+`["Example", "Handshake", {"operand": 3}]`, and slot 3 of node 9's operand
+row is graph index 44, the exact `owner_model` node. Mutating a valid package
+so `owner_model` and its dependency name `N` while that path slot still resolves
+to `M` refuses `invalid_package`/`stale-node-key` at the `owner_model` member.
+Changing the edge, dependency and row target at that slot together to `N`
+admits when the ordinary owner checks pass (FR-322-AC-130, AC-538).
