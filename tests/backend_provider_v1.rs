@@ -810,6 +810,61 @@ fn tc_431_adverse_vectors_are_refused() {
     }
 }
 
+/// BP-68: a fixed-N `limit-reached` carries its exact arbitrary-precision
+/// `required` count as a positive decimal string, an ordinary reached limit
+/// carries no `required`, and every other spelling is refused at that member.
+#[trace("TC-431", "FR-331-AC-67")]
+#[test]
+fn tc_431_fixed_sample_preflight_required_is_an_exact_positive_string() {
+    let whole = validator();
+    let base = positive("limit-reached-fixed-sample-preflight");
+    let preflight = composed(&base);
+    assert_eq!(preflight["results"][0]["cause"]["type"], "limit-reached");
+    assert_eq!(
+        preflight["results"][0]["cause"]["required"],
+        json!("921034100000000000000000000000000000000")
+    );
+    assert!(whole.is_valid(&preflight), "the exact count is admitted");
+    let ordinary = composed(&positive("limit-reached-accounting-setting"));
+    assert_eq!(ordinary["results"][0]["cause"]["type"], "limit-reached");
+    assert_eq!(ordinary["results"][0]["cause"].get("required"), None);
+    assert!(whole.is_valid(&ordinary), "an ordinary reached limit needs no count");
+    let adverse = parsed(VECTORS)["adverse"].clone();
+    for (name, spelling) in [
+        ("limit-reached-required-zero-string", json!("0")),
+        ("limit-reached-required-numeric", json!(9210341)),
+        ("limit-reached-required-leading-zero", json!("09210341")),
+        ("limit-reached-required-signed", json!("+9210341")),
+    ] {
+        let vector = adverse
+            .as_array()
+            .expect("adverse vectors")
+            .iter()
+            .find(|vector| vector["name"] == name)
+            .unwrap_or_else(|| panic!("adverse vector {name} exists"));
+        assert_eq!(vector["base"], "limit-reached-fixed-sample-preflight", "{name}");
+        assert_eq!(
+            vector["patch"],
+            json!([{"op": "replace", "path": "/results/0/cause/required", "value": spelling}]),
+            "{name}"
+        );
+        let mut document = preflight.clone();
+        assert_eq!(apply(&mut document, &vector["patch"][0]), Ok(()), "{name}");
+        assert!(!whole.is_valid(&document), "{name} is refused by the schema");
+        let stage = definition(stage_definition(base["stage"].as_str().expect("stage")));
+        let locations: Vec<String> = stage
+            .iter_errors(&document)
+            .map(|error| error.instance_path().to_string())
+            .collect();
+        assert!(
+            locations
+                .iter()
+                .any(|location| located_at_patch(location, "/results/0/cause/required")),
+            "{name} is refused at the count: {locations:?}"
+        );
+    }
+}
+
 /// The exhaustive exception admits only a value-free vacuous certificate.
 #[trace("TC-431", "FR-331-AC-60")]
 #[test]
@@ -2651,16 +2706,47 @@ fn tc_431_the_request_has_a_memory_member_and_its_identity_includes_it() {
 const REFINEMENT_FAILURE_VECTORS: &str =
     include_str!("../proposals/backend-provider-v1/refinement-failure-vectors.json");
 
-/// FR-379-AC-14: the `RefinementFailure` definition admits the seven model
-/// kinds and the two protocol relation kinds, each with exactly its members.
+/// FR-379-AC-14: the `RefinementFailure` definition admits exactly twelve
+/// kinds, the seven base kinds, the two protocol relation kinds, the two timed
+/// kinds and the hidden-candidate kind, each with exactly its members.
 #[trace("TC-431", "FR-379-AC-14")]
 #[test]
 fn tc_431_refinement_failure_wire_kinds_are_closed() {
+    let twelve = BTreeSet::from([
+        "InitialNotAbstract",
+        "StutterChanged",
+        "AbstractStepRejected",
+        "NoAbstractMatch",
+        "Divergence",
+        "Undefined",
+        "AbstractUnfair",
+        "RefusalNotPermitted",
+        "TerminalSuccessMismatch",
+        "AbstractClockGuard",
+        "AbstractTimeInvariant",
+        "HiddenUnfair",
+    ]);
+    let schema = parsed(SCHEMA);
+    let admitted: Vec<&str> = schema["$defs"]["RefinementFailure"]["oneOf"]
+        .as_array()
+        .expect("kind branches")
+        .iter()
+        .flat_map(|branch| {
+            let kind = &branch["properties"]["kind"];
+            match kind["enum"].as_array() {
+                Some(values) => values.iter().collect(),
+                None => vec![&kind["const"]],
+            }
+        })
+        .map(|kind| kind.as_str().expect("closed kind spelling"))
+        .collect();
+    assert_eq!(admitted.len(), twelve.len(), "each kind has one branch: {admitted:?}");
+    assert_eq!(admitted.into_iter().collect::<BTreeSet<_>>(), twelve, "the schema admits the twelve kinds");
     let vectors = parsed(REFINEMENT_FAILURE_VECTORS);
     let validator = definition("RefinementFailure");
     let positive = vectors["wire"]["positive"].as_array().expect("positive wire cases");
     let kinds: BTreeSet<&str> = positive.iter().map(|case| case["failure"]["kind"].as_str().expect("kind")).collect();
-    assert_eq!(kinds.len(), 9, "exactly the nine kinds are covered: {kinds:?}");
+    assert_eq!(kinds, twelve, "each of the twelve kinds has a positive case");
     for case in positive {
         assert_eq!(errors(&validator, &case["failure"]), Vec::<String>::new(), "{}", case["name"]);
     }
@@ -2675,6 +2761,11 @@ fn labels(value: &Value) -> Vec<Value> {
 
 fn has(list: &[Value], label: &Value) -> bool {
     list.contains(label)
+}
+
+/// A product state's prefix step count in its wire spelling, a decimal string.
+fn wire_position(product: &Value) -> Value {
+    Value::String(product["position"].as_u64().expect("prefix step count").to_string())
 }
 
 /// A member is stable when it enables no internal step.
@@ -2692,7 +2783,7 @@ fn relation_failure(product: &Value) -> Option<Value> {
     if product.get("incoming_step_failure").is_some() {
         return None;
     }
-    let position = product["position"].clone();
+    let position = wire_position(product);
     let concrete = &product["concrete"];
     let visible = labels(&concrete["visible"]);
     let concrete_stable = !concrete["stutter_enabled"].as_bool().expect("stutter_enabled");
@@ -2729,7 +2820,7 @@ fn replay_relation_failure(product: &Value, recorded: &Value, loop_steps: u64) -
     if loop_steps > 0 {
         return "invalid_runtime_input/invalid-value";
     }
-    if product.get("incoming_step_failure").is_some() || recorded["position"] != product["position"] {
+    if product.get("incoming_step_failure").is_some() || recorded["position"] != wire_position(product) {
         return "replay-parity";
     }
     let concrete = &product["concrete"];
@@ -2780,6 +2871,7 @@ fn tc_318_protocol_relation_failure_vectors() {
     }
     for replay in vectors["replays"].as_array().expect("replays") {
         let product = products.iter().find(|p| p["name"] == replay["product"]).expect("replay product");
+        assert_eq!(errors(&validator, &replay["recorded"]), Vec::<String>::new(), "{} records a wire failure", replay["name"]);
         let result = replay_relation_failure(product, &replay["recorded"], replay["loop_steps"].as_u64().expect("loop_steps"));
         assert_eq!(result, replay["expected"].as_str().expect("expected"), "{}", replay["name"]);
     }
