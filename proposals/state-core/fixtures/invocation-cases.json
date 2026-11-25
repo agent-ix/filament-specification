@@ -93,7 +93,7 @@
       },
       "expected": {
         "execution": "refused",
-        "diagnostic": "wrong_snapshot",
+        "diagnostic": "invalid_runtime_input",
         "logicalValue": "absent"
       }
     },
