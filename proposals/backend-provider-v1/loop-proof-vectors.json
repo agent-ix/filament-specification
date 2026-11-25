@@ -1673,7 +1673,10 @@
                   "package": "example",
                   "path": [
                     "Example",
-                    "Handshake"
+                    "OrderFlow",
+                    {
+                      "node": 14
+                    }
                   ]
                 },
                 "occurrence": {
@@ -1692,7 +1695,10 @@
                         "package": "example",
                         "path": [
                           "Example",
-                          "Handshake"
+                          "OrderFlow",
+                          {
+                            "node": 14
+                          }
                         ]
                       },
                       "path": []
