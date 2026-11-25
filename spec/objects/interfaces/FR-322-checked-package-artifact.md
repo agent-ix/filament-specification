@@ -1533,15 +1533,20 @@ A frame body refusal, meaning-join or canonical-order
   has no body walk and no rows, and its `decreases` binding is never walked.
   The walk starts at the local node the `body` binding references and visits
   nodes in pre-order. The producer and reader SHALL descend through a
-  `value`/`record_value` or `value`/`tuple_value` node, including when the
-  function's body binding references that value directly. At each visited
+  `value`/`record_value`, `value`/`tuple_value` or `value`/`option_value` node,
+  including when the function's body binding references that value directly.
+  For an option value, the walk follows its sole `value` binding as its payload
+  component; the option-value node is a composite container, not a term. At
+  each visited
   node the walk follows, in the order they
   occur in a pre-order traversal of that node's `body` term (members, then
   arguments, left to right), each `reference` leaf whose target is a local
-  `expression` node of any form or a local `value`/`record_value` or
-  `value`/`tuple_value` node, and visits that node next. For a record value,
-  component references are followed in the node's stored field order; for
-  a tuple value, in ascending position order. Each component reference leaf
+  `expression` node of any form or a local `value`/`record_value`,
+  `value`/`tuple_value` or `value`/`option_value` node, and visits that node
+  next. For a record value, component references are followed in the node's
+  stored field order; for a tuple value, in ascending position order; for an
+  option value, its sole payload reference is followed. Each component
+  reference leaf
   targeting a local expression is followed just as an expression argument
   leaf is. Composite values are walked through and are not terms. The walk
   follows no other reference, so an atomic `value` node (a literal or a
@@ -1851,6 +1856,41 @@ both positions; it does not deduplicate equal operand keys in an expression
 path. This records both the application's declared result and the enclosing
 expression node's type, so each independently contributes to structural
 identity.
+
+**Member segments in an expression path.** After the argument positions and
+operation identity, a `position` member contributes its `declaration` tuple
+node as an operand segment and then its zero-based `position` as a canonical
+base-10 string segment (no sign and no leading zero except for `0`). A model
+`field` member contributes its `declaration` node and `name` string and, when
+the member carries `read_form`, the wire value `bare` or `explicit_deref` as a
+string segment immediately after `name` and before any `population` segment.
+A record `field` projection carries no `read_form` and contributes no segment
+for it. A `relationship_end` member contributes its `declaration` node and
+end `name`, followed by its `population` node operand segment when present;
+`destination_type` is carried and validated as FR-322 specifies but is not a
+path segment. The `destination_type` is not required to resolve in the graph,
+so no operand slot can be assigned to it. These segments precede the operator
+and result-type positions. Other member kinds retain their existing path
+rules.
+
+For example, when tuple `Pair` positions 0 and 1 both have type `Integer`,
+two `filament.op.tuple.project` nodes over the same tuple value have paths
+`["expression", "query", {"operand": 0}, "filament.op.tuple.project", {"operand": 1}, "0", "query", {"operand": 2}, {"operand": 2}]` and
+`["expression", "query", {"operand": 0}, "filament.op.tuple.project", {"operand": 1}, "1", "query", {"operand": 2}, {"operand": 2}]`,
+with the same package and ordinal. The position string makes the paths distinct
+even though the declaration and result type operands are equal.
+
+For a model field `on` declared by node `M`, a dereference operand `D` and
+Boolean result `B`, otherwise identical projections with `read_form: bare`
+and `read_form: explicit_deref` have respective paths
+`["expression", "query", {"operand": 0}, "filament.op.record.project", {"operand": 1}, "on", "bare", "query", {"operand": 2}, {"operand": 2}]` and
+`["expression", "query", {"operand": 0}, "filament.op.record.project", {"operand": 1}, "on", "explicit_deref", "query", {"operand": 2}, {"operand": 2}]`.
+The record projection has no `read_form`, so its corresponding path omits that
+segment. For `filament.op.model.reaches` over relationship end `successor`
+declared by `R`, with `population` node `P` and Boolean type `B`, the path is
+`["expression", "reaches", {"operand": 0}, {"operand": 1}, "filament.op.model.reaches", {"operand": 2}, "successor", {"operand": 3}, "reaches", {"operand": 4}, {"operand": 4}]`;
+the member's `destination_type` is absent from this path whether or not its
+node resolves in the graph.
 
 **Formula intervals.** A bounded temporal operator's interval is part of its
 `temporal`/`formula` node's identity, because a claim's identity changes with
@@ -7047,6 +7087,11 @@ is carried by two `protocol` node forms.
 | FR-322-AC-536 | Mode-switch rows sort by `(selected_model_identity, operation_declaring_identity, operation_member)` using the comparisons defined in “Schedulability claim carrier”; a descending mode-switch array refuses `invalid_package`/`invalid-value` at `/schedulability_claims/{i}/mode_switch_bindings/{j}`, where `j` is the first out-of-order row. | Test |
 | FR-322-AC-537 | When one shared schedulability node has claim occurrences 0 and 1, the package carries two rows keyed by those exact pairs and retains each row's task-set identity and binding arrays independently, even when the claim body is equal. | Test |
 | FR-322-AC-538 | For an admitted `protocol_clause` with node-level `owner_model` target `M`, its dependencies contain `M` and its path is the exact `declaration.qualified_name` prefix followed by one final `{"operand": k}` segment whose ordinary operand-row entry is the local graph index resolving to `M`. Changing the edge to another valid model node `N` and replacing `M` by `N` in dependencies in canonical order, while the same path slot continues to resolve to `M`, refuses `invalid_package`/`stale-node-key` at `/semantic_graph/nodes/{i}/owner_model` with the clause as graph-node locus; the reader returns no package. Changing the edge, dependency and row target at slot `k` together to `N` admits, provided the ordinary owner checks pass. The reader does not derive any other protocol-clause path component from its body. | Test (TC-233) |
+| FR-322-AC-539 | For a function whose body walk reaches a `value`/`option_value` node, the producer and reader follow its sole payload reference and continue the same pre-order walk through nested option, record and tuple values. Option-value nodes receive no `body_locations` row; every application term below a payload receives one row per walk visit, paired with its application occurrence and term ordinal. In a package where function `f`'s body is option value `O` and its payload subtree reaches application `A` at child-index path `[0]`, the typed read returns `A`'s captured location and its row rebuilds to `[0]`; removing that row refuses `invalid_package`/`invalid-value` at `/checked_term_data/body_locations`. A direct or nested option value with no application term below its payload contributes no row. | Test |
+| FR-322-AC-540 | For a tuple `Pair` whose positions 0 and 1 are both `Integer`, `filament.op.tuple.project` nodes over the same tuple value have paths `["expression", "query", {"operand": 0}, "filament.op.tuple.project", {"operand": 1}, "0", "query", {"operand": 2}, {"operand": 2}]` and `["expression", "query", {"operand": 0}, "filament.op.tuple.project", {"operand": 1}, "1", "query", {"operand": 2}, {"operand": 2}]`, respectively, at equal package and ordinal. Slot 0 names the tuple value, slot 1 the declaring `Pair` node and slot 2 `Integer`; the paths differ at the canonical decimal position segment immediately after the declaring tuple node, despite equal result types. | Test |
+| FR-322-AC-541 | For otherwise identical model field projections of `on` declared by `Switch`, with the same dereference operand and Boolean result, the `read_form: bare` and `read_form: explicit_deref` paths are `["expression", "query", {"operand": 0}, "filament.op.record.project", {"operand": 1}, "on", "bare", "query", {"operand": 2}, {"operand": 2}]` and `["expression", "query", {"operand": 0}, "filament.op.record.project", {"operand": 1}, "on", "explicit_deref", "query", {"operand": 2}, {"operand": 2}]`; the wire values appear after the field name. The record projection in `positive-state-transition.json` has `read_form: bare` and its path contains `bare`; an ordinary record projection without `read_form` omits that path segment. | Test |
+| FR-322-AC-542 | For `filament.op.model.reaches` with reference operands at slots 0 and 1, relationship end `successor` declared by `R` at slot 2, population `P` at slot 3 and Boolean result `B` at slot 4, the path is `["expression", "reaches", {"operand": 0}, {"operand": 1}, "filament.op.model.reaches", {"operand": 2}, "successor", {"operand": 3}, "reaches", {"operand": 4}, {"operand": 4}]`. The `destination_type` member remains in the wire member and is returned verbatim but adds no path segment whether its node resolves in the graph or not; the optional `population` segment remains after the end name. | Test |
+| FR-322-AC-543 | In `positive-state-transition.json`, the `state`/`transition` node path is `["state", "transition", "anchor", {"operand": 8}, "subject", {"operand": 10}, "inputs", {"operand": 7}, "pre", {"operand": 11}, "post", {"operand": 12}, "filament.op.state.transition", "filament.protocol.finite-global/v1", "transition", "state_transition", {"operand": 4}]`: the five binding names and operands precede operation identity, selected profile definition, member operator, operator and one `result_type` operand. There is no additional `semantic_type` segment for a `state`/`transition` node. | Test |
 
 ### FR-322-AC-467
 
