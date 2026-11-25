@@ -91,7 +91,7 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-75
     type: verifies
-  - target: ix://agent-ix/filament-specification/FR-322-AC-544
+  - target: ix://agent-ix/filament-specification/FR-322-AC-545
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-322-AC-114
     type: verifies
@@ -170,7 +170,7 @@ package is in the derived closure but absent from the importer's direct entries.
 With one direct dependency, name its transitive-only selection in a
 `dependency_reference` and require `missing_declaration`/`missing-selection`,
 even though the named package is in the derived closure. Build the closures of
-FR-322-AC-544, in which a package's derived closure holds its own name: a direct
+FR-322-AC-545, in which a package's derived closure holds its own name: a direct
 selection of it, a selection of it one library and two libraries down, and two
 libraries that select it as structurally unequal packages. Admit each library on
 its own read, then require the importer's `invalid_package`/`definition-cycle`,
@@ -745,7 +745,7 @@ refusal. The filament-contract-ir reader implements both outcomes: its diamond
 test refuses conflicting transitive selections with both importer-rooted
 selection paths, and its transitive-reference test refuses a transitive-only
 package as `missing_declaration`/`missing-selection`. Each closure of
-FR-322-AC-544 refuses `invalid_package`/`definition-cycle`, at the locus the
+FR-322-AC-545 refuses `invalid_package`/`definition-cycle`, at the locus the
 criterion states where it states one, and never admits. A `dependency_reference`
 term is admitted by the V2 schema and each of its four mutations fails it; as a call's callee it forms a valid application, and changing its `package` or its `node` each gives a distinct application. The dependency library is admitted,
 and the dependency call package that selects it by identity is admitted with it
