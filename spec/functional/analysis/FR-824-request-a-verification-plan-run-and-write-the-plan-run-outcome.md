@@ -46,7 +46,7 @@ the first defect by its RFC 6901 pointer.
 ### Request
 
 ```json
-{"plan": "Release", "emit": false, "execute": true, "initial": "spine-snapshot.json", "seed": 7, "max_trace_length": 8}
+{"plan": "Release", "emit": false, "execute": true, "universe_snapshot": "universe.json", "initial": "spine-snapshot.json", "seed": 7, "max_trace_length": 8}
 ```
 
 A native run carries the request as its one `verification_plan` member, and
@@ -64,6 +64,7 @@ The member list is closed:
 | `plan` | string, a bare or qualified declared name | Selection | the selection |
 | `emit` | boolean | `false` | the outcome's `document` |
 | `execute` | boolean | `true` | the coordinator |
+| `universe_snapshot` | string, a `filament.state.snapshot/v1` file resolved against the request file's directory | none | each consuming `model_based_test` step: its admitted complete population memberships supply the population universes; snapshot field values are not initial states |
 | `initial` | string, a `filament.state.snapshot/v1` file resolved against the request file's directory | none | every `model_check`, `model_based_test`, `simulate` and `contract_check` step whose claim's subject is a state model: the state each such step starts from |
 | `seed` | unsigned 64-bit integer | `0` | every `model_based_test` and `probabilistic_statistical` step: the FR-190 generation seed, the same seed for each such step, so a rerun with one seed reproduces every step |
 | `max_trace_length` | unsigned 64-bit integer, at least 1 | none | every `model_based_test` step whose claim's subject is a state model: the FR-190 trace bound, the same for each such step |
@@ -94,7 +95,7 @@ The member list is closed:
   `max_trace_length` outside 1 to 2^64 − 1, or a `max_value_bits` outside 1
   to 64, refuses `invalid-value` at its pointer, and a value of another JSON
   kind `wrong-value-kind`.
-- Once the plan is selected, `initial`, `seed`, `max_trace_length` or
+- Once the plan is selected, `universe_snapshot`, `initial`, `seed`, `max_trace_length` or
   `max_value_bits` on a plan with no step it is consumed by refuses
   `unknown-member` at its pointer: the member set is closed by the
   selected plan, as FR-823 closes it by the selected synthesis kind. The
@@ -107,10 +108,22 @@ The member list is closed:
   member has a default, because FR-190 forbids inventing a bound the request
   did not state. These plan-dependent checks run after the selection (its
   `document` refusals included), member by member in the table's order, and
-  the first defect is the refusal: a request missing both members refuses
+  the first defect is the refusal: a request missing both bound members refuses
   `missing-member` at `/max_trace_length`. A step
   that consumes `initial` and finds none starts from every state the step's
   `domain` admits (FR-192 "Source form").
+- `universe_snapshot` is admitted for the selected model by FR-106 before
+  any `initial` snapshot is admitted. Each `complete: true` population row
+  supplies exactly its listed object keys as that population's finite
+  universe; a missing row or `complete: false` supplies no finite universe.
+  Snapshot field values are validated by FR-106 but do not become initial
+  states. If both members are present, `universe_snapshot` is authoritative:
+  `initial` snapshots must be admitted against it and cannot add keys. If it
+  is absent, initial snapshots supply universes as before. An invalid
+  `universe_snapshot` retains FR-106's exact refusal at `/universe_snapshot`;
+  missing path is `io-error`, wrong JSON kind is `wrong-value-kind`. It is
+  accepted only when the selected plan has a `model_based_test` state-subject
+  step; otherwise it refuses `unknown-member` at `/universe_snapshot`.
 - `initial` is read by the snapshot's own admission for the step's model; an
   inadmissible snapshot refuses with that admission's refusal at `/initial`
   and the snapshot's member, as FR-806 states for a plan request.
@@ -241,6 +254,8 @@ with `execute` `false` settles no node and exits `0`.
 | FR-824-AC-5 | A plan of a `probabilistic_statistical` step `s` and a `model_check` step `t depends [s]`: with `s` `measured` `accepted`, `t` runs and `s`'s disposition has category success `0`; with `s` `measured` `rejected`, `t` is `blocked` by `s`, `failed_steps` is `["s"]`, `status` `failed` and the exit `22`; with `s` `measured` `undecided`, `t` is `blocked`, `failed_steps` is empty, `status` `incomplete` and the exit `22`. | Test (TC-2045) |
 | FR-824-AC-6 | Carried in a `native-run/1` request, `seed` `"7"` refuses `wrong-value-kind` at `/request/verification_plan/seed`; `seed` `-1`, `7.5` and `18446744073709551616` each refuse `invalid-value` there; `{"plan": "Release", "seed": null, "emit": null, "initial": null, "max_value_bits": null, "max_trace_length": 8}` runs `Release` with `inputs` `{"initial": null, "seed": 0, "max_trace_length": 8, "max_value_bits": null}` as if the four `null` members were absent; `"verification_plan": null` refuses `wrong-value-kind` at `/request/verification_plan`; each refusal exits `20` before any step runs. In FR-824-AC-5's runs, `s`'s disposition has exactly the members `status`, `method`, `evidence`, `blocked_by` and `result`, and its decision is `result.verdict.decision.type` (`accepted`, `rejected`, `undecided`); `{"plan": "Release", "emit": true, "execute": false}` writes `status` `null`. | Test (TC-2046) |
 | FR-824-AC-7 | `{"plan": "Release"}` refuses `invalid_runtime_input`/`missing-member` at `/max_trace_length` naming the step `tested`, and carried in a `native-run/1` request at `/request/verification_plan/max_trace_length`; `max_trace_length` 0, `-1` and `8.5` each refuse `invalid-value` there and `"8"` `wrong-value-kind`; `max_value_bits` 8 on `Release`, whose roots all have finite bounds, refuses `unknown-member` at `/max_value_bits`, and `max_trace_length` 8 on a plan of `model_check` steps only refuses `unknown-member` at `/max_trace_length`; over a plan `Sized` whose one step `s` is a `model_based_test` of a state clause over a model with a field `n: Integer`, `{"plan": "Sized", "max_trace_length": 8}` refuses `missing-member` at `/max_value_bits` naming `s`, `max_value_bits` 0 and 65 refuse `invalid-value` there, and with `max_value_bits` 8 `s` runs with `max_trace_length` 8 and `max_value_bits` 8 and `inputs.max_value_bits` is 8; each refusal exits `20` before any step runs. A step of a plan whose FR-190 run discards every case is `inconclusive` with `result.cause` `{"type": "no-evaluated-case"}`, and a step that `depends` on it is `blocked` by it, exit `22`. | Test (TC-2046) |
+| FR-824-AC-8 | The checked package `test/no-initial` declares record value type `ix://test/no-initial/Cell` with `value: Int[0,1]`, model `NoInitial` with only population `cells: Population<Cell>`, and state clause `NoInitial::CheckCells` whose predicate is `true` over that model. Its plan source is `verify Release using p { check tested claim NoInitial::CheckCells method model_based_test domain M::NoInitial bound 100; }`. Executing that plan with `{"plan":"Release","universe_snapshot":"universe.json","seed":7,"max_trace_length":8}` and no `initial` admits the `universe_snapshot` before `initial`; its `cells` row `complete: true`, with objects `c1` and `c2`, is the exact object universe `{c1,c2}`. Each generated initial state and the reachability domain is the product of those keys and `Cell.value` in `{0,1}`; no other key or population is present, and snapshot field values do not constrain the field-value domain or become initial states. Equal requests produce byte-equal model-based-test records and `inputs.initial` is `null`. | Test (TC-2039) |
+| FR-824-AC-9 | For a refusal fixture whose selected model declares populations `cells` then `unbounded_cells`, both of `record value type ix://test/no-initial/Cell`, a numeric `universe_snapshot` refuses `wrong-value-kind` at `/universe_snapshot`, a missing `universe.json` refuses `io-error` there, and a snapshot whose `cells` row is complete with objects `c1`,`c2` and whose `unbounded_cells` row has `complete: false` admits but leaves `unbounded_cells` unbounded. The selected plan result is `declined` with refusal `{member:"subject",code:"requires_bound",cause:"requires-bound",details:{domains:[{key:DomainKey::Population{member_type:{package:"test/no-initial",path:["model","record_value_type","ix://test/no-initial/Cell"],ordinal:0},ordinal:1},kind:Population(None)}]}}`, exit `20`, before any case runs. A malformed or model-inadmissible snapshot retains FR-106's exact code and cause at `/universe_snapshot`. Supplying `universe_snapshot` to a selected plan with no state-subject `model_based_test` step refuses `unknown-member` there. | Test (TC-2039) |
 
 ## Dependencies
 
