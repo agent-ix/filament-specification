@@ -48,10 +48,27 @@ package `example/queue-spec`: type `Queue` with
 7. Read the undefined reason and payload of step 4's two `only` rows.
 8. Parse `count(s in R::slots)`, `exists(s in R::slots)`,
    `seq(i in 0..1: i)` and `seq(i in 0 .. 1: i)` in a field row, parse
-   `exists(s in R::slots: s.value = 1)` in a state clause, write
-   `count(s in R::slots)` in a state clause, and write
-   `only(s in R::slots where s.value = 1: s.value)` and
-   `seq(i in 0 .. 1: i)` in a state clause.
+   `exists(s in R::slots: s.value = 1)` in a state clause, and use
+   `count(s in R::slots)`,
+   `only(s in R::slots where s.index = 0: s.value)` and
+   `seq(i in 0 .. 1: i)` in state-clause bodies over the step-1 observation.
+9. At S1 under the complete-V1 profile, parse a unit with profile aliases `v`
+   for `filament.value.complete/v1` and `p` for
+   `filament.protocol.complete/v1` and `model M = "example/messages";`:
+
+   ```text
+   function only using v(x: Int[0, 1]): Int[0, 1] pure { x }
+   function seq using v(x: Int[0, 1]): Int[0, 1] pure { x }
+   protocol Names using p over (k: M::Acct) on origin {
+     role w on M;
+     channel C from w to w carries M::Message ordering unordered
+       delivery unknown capacity 1 overflow block;
+     run sequence Main {
+       send seq via C as (only: M::Message) { true };
+     }
+     finish Done as (d: M::Acct) { true };
+   }
+   ```
 
 ## Expected Results
 
@@ -68,8 +85,10 @@ undefined at that state, and the refinement settles `refuted`, cause
 Step 7 reads the reason `only-not-one` with the population binding, the `only`
 locus and the row, identical for no match and for two (FR-376-AC-7). Step 8
 parses the four field-row spellings as the productions of the shared grammar,
-reads the state-clause `exists` as the quantifier, scans `0..1` and `0 .. 1`
-alike, refuses the state-clause `count(s in R::slots)` with
-`unsupported_construct`/`expression-form`, and refuses the state-clause `only`
-and `seq` spellings with `invalid_syntax`/`unexpected-token` at their `in`
-token (FR-376-AC-8).
+reads the state-clause `exists(s in R::slots: s.value = 1)` as the quantifier,
+and scans `0..1` and `0 .. 1` alike. The state-clause population forms parse
+as forms: `count` yields `2`, `only` yields `0`, and `seq` yields `[0, 1]`
+over the step-1 observation (FR-376-AC-8, AC-9). Step 9 parses with no
+diagnostic, retaining the declaration names `only` and `seq`, the protocol
+send event name `seq`, and payload binder `only` as identifiers
+(FR-376-AC-11, AC-12).
