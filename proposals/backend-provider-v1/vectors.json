@@ -6146,6 +6146,53 @@
       }
     },
     {
+      "name": "limit-reached-fixed-sample-preflight",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/cause": "FR-408",
+        "/results/0/cause/required": "FR-331"
+      },
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-prob",
+            "kind": "probabilistic-satisfaction",
+            "result": "incomplete",
+            "cause": {
+              "type": "limit-reached",
+              "limit": "max_samples",
+              "value": 1000000,
+              "setting": "statistical.max_samples",
+              "required": "921034100000000000000000000000000000000"
+            }
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result",
+            "limits": {
+              "max_samples": 1000000
+            },
+            "reached": [
+              "max_samples"
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "refuted-ignoring-constraints-outcome",
       "stage": "outcome",
       "owners": {
@@ -11334,17 +11381,6 @@
           "op": "remove",
           "path": "/results/0/cause/setting"
         }
-      ]
-    },
-    {
-      "name": "limit-reached-fixed-sample-preflight",
-      "base": "limit-reached-accounting-setting",
-      "owner": "FR-331",
-      "patch": [
-        {"op": "replace", "path": "/results/0/cause/limit", "value": "max_samples"},
-        {"op": "replace", "path": "/results/0/cause/value", "value": 1000000},
-        {"op": "replace", "path": "/results/0/cause/setting", "value": "statistical.max_samples"},
-        {"op": "add", "path": "/results/0/cause/required", "value": "921034100000000000000000000000000000000"}
       ]
     },
     {
