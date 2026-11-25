@@ -25443,6 +25443,11 @@ fn tc_427_probabilistic_claim_body_grammar_caps_nesting_at_four_aggregates() {
 
 type BodyLocationRefusal = (String, String, String);
 
+/// A `value`/`record_value` or `value`/`tuple_value` node.
+fn is_composite_value(node: &Value) -> bool {
+    node["node_tag"] == "value" && (node["semantic_form"] == "record_value" || node["semantic_form"] == "tuple_value")
+}
+
 /// FR-322 `body_locations`: the reader refusals over a package's wire graph, in
 /// the order the rule states them. The repository has no production reader;
 /// this decider is the executable statement of the body walk, the row checks
@@ -25519,10 +25524,15 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<Vec<Vec<u64>
             }
             let mut found = Vec::new();
             references(&node["body"], &mut found);
+            // A record or tuple value is walked through and is not a term;
+            // every other `value` node ends the branch.
             let mut next: Vec<usize> = found
                 .iter()
                 .filter_map(position)
-                .filter(|target| nodes[*target]["node_tag"] == "expression")
+                .filter(|target| {
+                    let target = &nodes[*target];
+                    target["node_tag"] == "expression" || is_composite_value(target)
+                })
                 .collect();
             next.reverse();
             pending.extend(next);
@@ -25669,10 +25679,12 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<Vec<Vec<u64>
     Ok(paths)
 }
 
-/// FR-322-AC-490 (TC-2090): the `body_locations` vectors over the packages of
-/// `f` and `h`. The rows keep the checker's paths, a node reached twice has one
-/// row per position, and each refusal vector refuses at its own locus.
-#[trace("TC-2090", "FR-322-AC-490", "FR-322-AC-510")]
+/// FR-322-AC-490, FR-322-AC-510 and FR-322-AC-513 (TC-2090): the
+/// `body_locations` vectors over the packages of `f` and `h` and over record,
+/// tuple and shared-parent bodies. The rows keep the checker's paths, a node
+/// reached twice has one row per position, the walk passes through composite
+/// values, and each refusal vector refuses at its own locus.
+#[trace("TC-2090", "FR-322-AC-490", "FR-322-AC-510", "FR-322-AC-513")]
 #[test]
 fn tc_2090_function_body_location_rows() {
     let vectors = parsed_fixture(CHECKED_TERM_DATA_VECTORS);
@@ -25815,6 +25827,101 @@ fn tc_2090_function_body_location_rows() {
         assert_eq!(levels[1], levels[0] + 1, "{name}: the inner let binds the next level");
     }
 
+    // FR-322-AC-513, BL-04 and BL-05: BL-01's body under the record fields `z`
+    // then `a`, and under tuple positions 0 then 1. Each application's first
+    // visit is component 0 and its second component 1; rows 14..=17 are the two
+    // `sqrt` applications and every other row sits at its component's path.
+    for (id, form) in [("BL-04", "record_value"), ("BL-05", "tuple_value")] {
+        let package = package_of(id);
+        let nodes = package["semantic_graph"]["nodes"].as_array().unwrap();
+        let composites: Vec<&Value> = nodes.iter().filter(|node| is_composite_value(node)).collect();
+        assert_eq!(composites.len(), 1, "{id}");
+        assert_eq!(composites[0]["semantic_form"], form, "{id}");
+        let members = composites[0]["body"]["members"].as_array().unwrap();
+        assert_eq!(members.len(), 2, "{id}");
+        if id == "BL-04" {
+            assert_eq!([&members[0]["name"], &members[1]["name"]], ["z", "a"], "{id}: stored field order");
+        }
+        let rows = rows_of(positive(id));
+        assert_eq!(rows.len(), 18, "{id}");
+        let paths = rebuilt(id);
+        let mut applications = Vec::new();
+        for (at, row) in rows.iter().enumerate() {
+            let component = at % 2;
+            assert_eq!(row["occurrence"], json!({"role": "expression", "ordinal": 0}), "{id}: row {at}");
+            assert_eq!(row["term_ordinal"], component, "{id}: row {at}");
+            assert_eq!(row["application"], rows[at - component]["application"], "{id}: row {at}");
+            assert_ne!(row["application"], composites[0]["node_id"], "{id}: a composite value has no row");
+            if component == 0 && !applications.contains(&&row["application"]) {
+                applications.push(&row["application"]);
+            }
+            let component = component as u64;
+            let expected = match at {
+                14 | 15 => vec![component, 0],
+                16 | 17 => vec![component, 1],
+                _ => vec![component],
+            };
+            assert_eq!(paths[at], expected, "{id}: row {at}");
+            let application = nodes
+                .iter()
+                .find(|node| node["node_id"] == row["application"])
+                .expect("the row names a node");
+            assert_eq!(
+                application["body"]["operation"]["identity"] == "filament.op.ieee.float64.sqrt",
+                at >= 14,
+                "{id}: row {at}"
+            );
+        }
+        assert_eq!(applications.len(), 9, "{id}");
+        assert_eq!(encoded(&rows)[15], (1, vec![1, 0]), "{id}: component 1 follows component 0 without a reset");
+        assert_eq!(encoded(&rows)[16], (1, vec![1]), "{id}");
+    }
+
+    // BL-R11 is BL-04 with one row written with a larger `up` than its least.
+    let bl_r11 = cases["reader_refusals"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["id"] == "BL-R11-composite-up-not-least")
+        .expect("BL-R11");
+    let mut expected_rows = rows_of(positive("BL-04"));
+    expected_rows[16]["location"]["up"] = json!(2);
+    expected_rows[16]["location"]["down"] = json!([0, 1]);
+    assert_eq!(bl_r11["package"], positive("BL-04")["package"]);
+    assert_eq!(rows_of(bl_r11), expected_rows);
+
+    // BL-06: one application under two record values under a tuple value.
+    let bl06 = package_of("BL-06");
+    let nodes = bl06["semantic_graph"]["nodes"].as_array().unwrap();
+    let applications: Vec<usize> = (0..nodes.len())
+        .filter(|at| nodes[*at]["body"]["operation"]["identity"] == "filament.op.integer.sub")
+        .collect();
+    assert_eq!(applications, [1]);
+    assert_eq!((&nodes[1]["node_tag"], &nodes[1]["semantic_form"]), (&json!("expression"), &json!("binary")));
+    for (at, form) in [(3, "record_value"), (4, "record_value"), (6, "tuple_value")] {
+        assert!(is_composite_value(&nodes[at]), "node {at}");
+        assert_eq!(nodes[at]["semantic_form"], form, "node {at}");
+    }
+    assert_ne!(nodes[3]["node_id"], nodes[4]["node_id"]);
+    let occurrence = json!({"role": "expression", "ordinal": 2});
+    assert_eq!(nodes[1]["occurrences"], json!([occurrence]));
+    let sources = bl06["source_map"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|entry| entry["node_id"] == nodes[1]["node_id"] && entry["role"] == "expression" && entry["ordinal"] == 2)
+        .count();
+    assert_eq!(sources, 1, "the occurrence has its source-map entry");
+    let bl06_rows = rows_of(positive("BL-06"));
+    assert_eq!(bl06_rows.len(), 2);
+    for (term_ordinal, row) in bl06_rows.iter().enumerate() {
+        assert_eq!(row["application"], nodes[1]["node_id"]);
+        assert_eq!(row["occurrence"], occurrence);
+        assert_eq!(row["term_ordinal"], term_ordinal);
+    }
+    assert_eq!(encoded(&bl06_rows), [(0, vec![0, 0]), (2, vec![1, 0])]);
+    assert_eq!(rebuilt("BL-06"), [[0, 0], [1, 0]]);
+
     for case in cases["reader_refusals"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
         let package = package_with(case);
@@ -25852,13 +25959,15 @@ fn tc_2090_function_body_location_rows() {
             "BL-R7-no-occurrence-1",
             "BL-R8-bl03-without-occurrence-1-row",
             "BL-R9-up-beyond-previous-path",
-            "BL-R10-up-not-least"
+            "BL-R10-up-not-least",
+            "BL-R11-composite-up-not-least"
         ]
     );
-    assert_eq!(cases["reader_refusals"].as_array().unwrap().len(), 10);
+    assert_eq!(cases["reader_refusals"].as_array().unwrap().len(), 11);
     for (id, locus) in [
         ("BL-R9-up-beyond-previous-path", "/checked_term_data/body_locations/8/location/up"),
         ("BL-R10-up-not-least", "/checked_term_data/body_locations/8/location/up"),
+        ("BL-R11-composite-up-not-least", "/checked_term_data/body_locations/16/location/up"),
     ] {
         let case = cases["reader_refusals"].as_array().unwrap().iter().find(|case| case["id"] == id).unwrap();
         assert_eq!(case["locus"], locus, "{id}");

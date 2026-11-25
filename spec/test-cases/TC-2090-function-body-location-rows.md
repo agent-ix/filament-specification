@@ -38,7 +38,7 @@ FR-322-AC-490, FR-322-AC-494, FR-322-AC-510, FR-322-AC-513.
 9. Admit BL-06 and inspect its single subtraction node, its two distinct record-value parents and their tuple/function reachability. Read both rows of occurrence 2 in rank order and their compact locations.
 
 Test: `tests/checked_package_v2.rs` `tc_2090_function_body_location_rows`
-(steps 1 to 5 and 7); FSL `tests/it/dispatch_emission.rs` (step 6).
+(steps 1 to 5 and 7 to 9); FSL `tests/it/dispatch_emission.rs` (step 6).
 
 ## Expected Results
 

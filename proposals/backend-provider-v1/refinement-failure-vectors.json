@@ -903,7 +903,7 @@
       "product": "TC318-4-ready",
       "recorded": {
         "kind": "RefusalNotPermitted",
-        "position": 1,
+        "position": "1",
         "label": {
           "step": "ack",
           "binder": []
@@ -917,7 +917,7 @@
       "product": "TC318-4-ready",
       "recorded": {
         "kind": "RefusalNotPermitted",
-        "position": 0,
+        "position": "0",
         "label": {
           "step": "ack",
           "binder": []
@@ -931,7 +931,7 @@
       "product": "TC318-4-ready",
       "recorded": {
         "kind": "RefusalNotPermitted",
-        "position": 1,
+        "position": "1",
         "label": {
           "step": "other",
           "binder": []
@@ -945,7 +945,7 @@
       "product": "TC318-6-concrete-only",
       "recorded": {
         "kind": "TerminalSuccessMismatch",
-        "position": 0,
+        "position": "0",
         "direction": "concrete-only"
       },
       "loop_steps": 0,
@@ -956,7 +956,7 @@
       "product": "TC318-6-concrete-only",
       "recorded": {
         "kind": "TerminalSuccessMismatch",
-        "position": 0,
+        "position": "0",
         "direction": "abstract-only"
       },
       "loop_steps": 0,
@@ -967,7 +967,7 @@
       "product": "TC318-8-matching",
       "recorded": {
         "kind": "TerminalSuccessMismatch",
-        "position": 1,
+        "position": "1",
         "direction": "concrete-only"
       },
       "loop_steps": 0,
@@ -978,7 +978,7 @@
       "product": "least-label",
       "recorded": {
         "kind": "RefusalNotPermitted",
-        "position": 0,
+        "position": "0",
         "label": {
           "step": "b",
           "binder": []
@@ -992,7 +992,7 @@
       "product": "TC318-4-ready",
       "recorded": {
         "kind": "TerminalSuccessMismatch",
-        "position": 1,
+        "position": "1",
         "direction": "concrete-only"
       },
       "loop_steps": 0,
@@ -1003,7 +1003,7 @@
       "product": "TC318-4-ready",
       "recorded": {
         "kind": "RefusalNotPermitted",
-        "position": 1,
+        "position": "1",
         "label": {
           "step": "ack",
           "binder": []
@@ -1017,7 +1017,7 @@
       "product": "concrete-enables-label",
       "recorded": {
         "kind": "RefusalNotPermitted",
-        "position": 0,
+        "position": "0",
         "label": {
           "step": "a",
           "binder": []
@@ -1031,7 +1031,7 @@
       "product": "both-kinds-refusal-first",
       "recorded": {
         "kind": "TerminalSuccessMismatch",
-        "position": 0,
+        "position": "0",
         "direction": "concrete-only"
       },
       "loop_steps": 0,
