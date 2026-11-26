@@ -101,25 +101,35 @@ two delay classes:
 A subject in which some delays are given and others are not is in neither
 class, and every claim over it is read through clock regions. A scheduler-chosen
 delay beats a given one only by the strict comparison "chosen less than given",
-which integer times lose (the `Overtake` model of TC-374). This section sets no
-further condition on a workload race among two or more identities with free
-delays; "Delays" states how it is read.
+which integer times lose (the `Overtake` model of TC-374), and no theorem shows
+a narrower shape of such a subject safe. **Pending the region route:**
+FR-421-AC-6 (TC-374 DG-06) and FR-413-AC-8 are stated over such subjects; they
+keep their stated results, and until the region process is built the items stop
+`incomplete`. This section sets no further condition on a workload race among
+two or more identities with free delays; "Delays" states how it is read.
+
+**Fairness.** No row below admits a claim that states a fairness set: no cited
+statement covers fairness, and a constraint can be enabled only at instants
+that integer times skip, or never enabled densely while integer times enable it
+(FR-416 "Strong fairness over time"; the `FairLoop` model of TC-374). Such a
+claim is read through clock regions.
 
 **The claim.** Over such a subject, digital clocks decide only:
 
-| Claim form | Delay classes |
-| --- | --- |
-| Reachability and until over state predicates (predicates over the discrete state, with no clock atom), `expected accumulate ... until`, and a step-bounded or long-run measure that reads only the sequence of discrete steps | given, free |
-| A deadline event `eventually[0, D] holds(P)` or `holds(A) until[0, D] holds(B)`, its `always[0, D]` complement, a `steps` or `accumulate` measure within a time horizon, and a `fraction` over `[0, h]` of a state predicate `weighted by R` for a reward `R` that reads no clock, each read `on origin` | given, free |
-| `expected elapsed until holds(B)` | given, free |
-| `M <= c` of an elapsed measure whose first position is position 0 on every run | given, free |
-| A deadline event, or a `steps`, `accumulate` or `weighted by R` fraction measure within a time horizon, read from a later position (`on each`), and `M <= c` of an elapsed measure whose first position can follow position 0 | given only |
-| A `weighted by delay` fraction over a time window, and a `weighted by delay` long-run fraction | given only |
+| Claim form | Delay classes | Fairness set |
+| --- | --- | --- |
+| Reachability and until over state predicates (predicates over the discrete state, with no clock atom), `expected accumulate ... until`, and a step-bounded or long-run measure that reads only the sequence of discrete steps | given, free | none |
+| A deadline event `eventually[0, D] holds(P)` or `holds(A) until[0, D] holds(B)`, its `always[0, D]` complement, a `steps` or `accumulate` measure within a time horizon, and a `fraction` over `[0, h]` of a state predicate `weighted by R` for a reward `R` that reads no clock, each read `on origin` | given, free | none |
+| `expected elapsed until holds(B)` | given, free | none |
+| `M <= c` of an elapsed measure whose first position is position 0 on every run | given, free | none |
+| A deadline event, or a `steps`, `accumulate` or `weighted by R` fraction measure within a time horizon, read from a later position (`on each`), and `M <= c` of an elapsed measure whose first position can follow position 0 | given only | none |
+| A `weighted by delay` fraction over a time window, and a `weighted by delay` long-run fraction | given only | none |
 
 **Time-locks.** A free subject is further restricted when a time-lock (FR-416
 "Time-locks") is reachable. Then digital clocks decide only the maximum, over
-schedulers and with no fairness set, of the probability of a reachability,
-until or deadline event over state predicates, which is also the minimum of the
+schedulers and with no fairness set, of the probability of a reachability or
+until event over state predicates, or of a deadline event read `on origin`,
+which is also the minimum of the
 probability of the matching `always`: the value an item takes for a `<=` bound
 on `eventually` or `until` and for a `>=` bound on `always`. Everything else
 leaves digital clocks: the minimum of such an event, the maximum of an
@@ -131,7 +141,8 @@ process with no time-lock does not establish it. A given subject needs no such
 condition.
 
 Every other claim is read through clock regions, closed or not: a strict
-constraint or interval; any other bounded-window formula; an unweighted
+constraint or interval; any other bounded-window formula; a claim with a
+fairness set; an unweighted
 fraction over a time window; any other `elapsed` form; and any claim over a
 subject outside these conditions. Each clock then keeps its integer
 part, capped as below, whether its fractional part is zero, and the order of
@@ -246,6 +257,7 @@ with the scaled constants and is bounded only by the request's `max_states`.
 | FR-421-AC-10 | Over the `Overtake` model (TC-374), closed and diagonal-free with no time-lock, whose delays are partly given and partly free, `probability <= 0.6 [eventually holds(c.phase = DDone)]` under `W` never settles `proved`, the maximum being 1: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
 | FR-421-AC-11 | Over the `Skew` model (TC-374), closed and diagonal-free with every delay free, `probability <= 0.6 [fraction holds(c.phase = U or c.phase = V2) over [0 ms, 2 ms] weighted by delay >= rational(1, 4)]` under every scheduler never settles `proved`, the maximum being 1: it settles `refuted`, or `incomplete`. | Test (TC-374) |
 | FR-421-AC-12 | Over the `Pinch` model (TC-374), closed and diagonal-free with a reachable time-lock, `expected elapsed until holds(c.phase = Done) <= 2 ms` under every scheduler never settles `proved`, the maximum being infinite: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
+| FR-421-AC-13 | Over the `FairLoop` model (TC-374), closed and diagonal-free with every delay free and no time-lock, `probability >= 0.9 [eventually holds(c.done)]` under every scheduler with `fair strong Gate::t` never settles `proved`, the minimum being 0: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
 
 ## Dependencies
 

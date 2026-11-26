@@ -78,7 +78,8 @@ it:
 1. **The route.** Digital exactly when FR-421 "Closed and strict conditions"
    admits the claim on digital clocks, the checker deciding each condition of
    that section itself: strictness (the strict comparison `M < c` that the
-   `>=` quantile transform introduces included), the delay class, the claim
+   `>=` quantile transform introduces included), the delay class, whether the
+   claim states a fairness set, the claim
    form and the position it is read from, and, where that section requires it,
    that no time-lock is reachable on the dense runs, which the checker never
    reads from the digital product. It then looks the route up in the declared

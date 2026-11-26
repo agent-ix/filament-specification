@@ -57,3 +57,26 @@ CHANGES REQUESTED. One high finding (the mixed delay class admits an unsound dig
 - TC-369 (examined): TS-16 to TS-20.
 - TC-374 (examined): Split, Burst models; ST-07; DG-08, DG-09.
 - FR-725 (context_only): Certificate attests the value over time-divergent behaviours.
+
+## New findings (disposition pass 1)
+
+Head checked: 7a42b7ba1e35739ea36be9c4408d610abc5b6818.
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-009 | high | Digital rows admit claims with a fairness set; no cited statement covers fairness, and a strong fairness set gives a wrong digital minimum on a closed, lock-free free subject. | spec/functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md:63,112-117 |
+| FND-010 | medium | Arch ruling (2) on the mixed race: FR-421-AC-6 is a mixed subject and stays unedited, but it must be marked in the admission rule as pending the region route; FR-421's table says nothing about it. | spec/functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md:242 |
+| FND-011 | low | Argument E's admission says 'deadline event' without 'on origin'; the rounding it relies on (argument B) keeps a deadline only from position 0. | spec/functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md:119-124 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | - |
+| FND-002 | fixed | - |
+| FND-003 | fixed | - |
+| FND-004 | fixed | - |
+| FND-005 | fixed | - |
+| FND-006 | fixed | - |
+| FND-007 | fixed | - |
+| FND-008 | fixed | - |
