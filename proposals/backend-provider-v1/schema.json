@@ -1510,7 +1510,7 @@
         "task_search": {"description": "FR-331/FR-419: replayable stopped-search frontier; permitted only on an incomplete task-automaton result and never proof evidence.", "$ref": "#/$defs/TaskSearchEvidence"},
         "verdict": {"$ref": "#/$defs/StatisticalVerdict"},
         "counterexample": {"description": "the zero-based position of the item's entry in counterexamples", "$ref": "#/$defs/Count"},
-        "instance": {"description": "FR-390: the over binding of the claim instance whose record a state-graph item's non-proved result is.", "$ref": "#/$defs/GraphInstance"},
+        "instance": {"description": "FR-390: the over binding of the claim instance whose record a state-graph item's non-proved result is. Its key is the bound object, never null.", "$ref": "#/$defs/GraphInstance", "properties": {"key": {"$ref": "#/$defs/TypedValue"}}},
         "ordering_restrictions": {"description": "FR-439, FR-741: each ordering a weak memory model restricted to its instantiated access kind, in canonical transition-identity order.", "type": "array", "items": {"type": "object", "required": ["site", "access", "written", "effective"], "properties": {"site": {"$ref": "#/$defs/Locus"}, "access": {"enum": ["load", "store", "rmw", "local"]}, "written": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}, "effective": {"oneOf": [{"type": "null"}, {"enum": ["relaxed", "acquire", "release", "acq_rel", "seq_cst"]}]}}, "additionalProperties": false}}
       },
       "allOf": [
