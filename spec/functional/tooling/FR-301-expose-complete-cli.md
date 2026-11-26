@@ -64,7 +64,7 @@ category to its exit code:
 | indeterminate: a temporal clause whose closed evidence leaves its verdict unresolved ([FR-091](../temporal/FR-091-evaluate-bounded-future.md)) | `11` |
 | refusal: invalid or refused input | `20` |
 | unsupported | `21` |
-| incomplete: a limit, cancellation, deadline or budget | `22` |
+| incomplete: a limit, cancellation, deadline or budget, or a population whose membership is not established (code `incomplete_population`) | `22` |
 | inconclusive | `22` |
 | internal-failure, including tool failure | `30` |
 

@@ -19,7 +19,7 @@ FR-806-AC-8.
 1. Check an unbounded `domain` and an unbounded parameter.
 2. Check a goal reading `elapsed` over an untimed model and a negative `domain`.
 3. Request a value-type synthesis and a foreign policy.
-4. Request with an inadmissible initial snapshot.
+4. Request with an initial snapshot that violates the model's population bound.
 5. Request an unreachable goal.
 6. Request the policies `["NotFour", "Nowhere"]` with `counters` listed
    `complete: false`, then with `counters` omitted from the snapshot.
