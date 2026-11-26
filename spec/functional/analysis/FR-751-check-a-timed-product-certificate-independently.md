@@ -27,10 +27,17 @@ relationships:
 
 When an FR-725 timed-product certificate is checked, the checker SHALL
 rebuild the timed product from the checked package and the claim alone, with
-its own clock, race and graph code and no part of the provider that produced
-the certificate, and SHALL accept the certificate only when FR-412's
-conditions hold on that rebuilt product. A `proved` result over a timed
-subject SHALL count only after such a checker accepts its certificate.
+its own abstraction, product, race and graph code and no part of the provider
+that produced the certificate, and SHALL accept the certificate only when
+FR-412's conditions hold on that rebuilt product. A `proved` result over a
+timed subject SHALL count only after such a checker accepts its certificate.
+
+The one thing the checker and the provider may share is the qualified core's
+statement of the concrete timed run (FR-416 "The timed run"): exact clock
+values, delay admissibility, the discrete step, positions and the outcome
+types. Every abstraction of that run (integer clocks, regions, zones), with
+its successor, race, monitor-progress and component code, is written
+separately in each.
 
 The checker exists so that a reviewer need not trust the provider's timed
 reasoning, which is where the subtle errors live: a digital reading of a
@@ -57,13 +64,13 @@ The checker SHALL compute each of the following from the package and the
 claim, and compare it with the certificate only where the certificate states
 it:
 
-1. **The route.** Digital when every atomic clock constraint of every guard
-   and time invariant, every timed interval of the claim and every comparison
-   of an elapsed measure with its threshold is non-strict and the claim is a
-   form FR-421 "Closed and strict conditions" reads through digital clocks;
-   region otherwise (FR-752), for every other bounded-window formula closed
-   or not. The strict comparison `M < c` that the `>=` quantile transform
-   introduces counts as strict.
+1. **The route.** Digital exactly when FR-421 "Closed and strict conditions"
+   admits the claim on digital clocks, the checker deciding each condition of
+   that section itself: strictness (the strict comparison `M < c` that the
+   `>=` quantile transform introduces included), the delay class, the claim
+   form and the position it is read from, and, where that section requires it,
+   that no time-lock is reachable on the dense runs, which the checker never
+   reads from the digital product. Region otherwise (FR-752).
 2. **The scale and caps.** The least common denominator of every time
    constant in the model's unit, including resets, delay supports, the claim's
    bounds and thresholds; each clock's cap from its largest scaled compared

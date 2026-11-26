@@ -41,10 +41,9 @@ FR-751's result.
 
 ### Strict constraints
 
-- The region route SHALL apply when any guard, time invariant, timed interval
-  or elapsed-threshold comparison is strict, and to every bounded-window
-  formula FR-421 "Closed and strict conditions" reads through clock regions
-  (FR-751). Its states are the
+- The region route SHALL apply to every claim FR-421 "Closed and strict
+  conditions" does not read through digital clocks, a strict constraint or
+  interval and a strict elapsed-threshold comparison included (FR-751). Its states are the
   region keys of FR-725; delay moves go from a region to its time successor;
   a discrete move applies a guard to the region, which decides a diagonal-free
   constraint exactly, and resets set the integer part and fraction to zero.
@@ -55,9 +54,9 @@ FR-751's result.
 - An expected-elapsed form on the region route SHALL use boundary-region keys,
   each delay edge carrying the exact elapsed time between its corners; the
   infimum and supremum are the boundary-region minimum and maximum.
-- The checker SHALL refuse a `digital` certificate for a subject or claim that
-  has a strict constraint as an objective mismatch, and a `region` certificate
-  where every constraint is non-strict the same way: the route is a function
+- The checker SHALL refuse a `digital` certificate for a claim FR-421 reads
+  through clock regions as an objective mismatch, and a `region` certificate
+  for a claim it reads through digital clocks the same way: the route is a function
   of the model and claim.
 
 ### Delay distributions under every scheduler

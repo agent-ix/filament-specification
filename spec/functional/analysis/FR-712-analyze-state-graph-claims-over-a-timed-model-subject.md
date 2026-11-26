@@ -105,7 +105,8 @@ timed form.
   all-closed subject settles with basis `exhaustive` (FR-416).
 - **A subject with no time-divergent behaviour.** A state-graph item reads
   finite paths of delay and step edges and quantifies over no infinite
-  behaviour, so it needs no time-divergence witness (FR-418). Over a subject
+  behaviour, so it needs no time-divergence witness (FR-418) and never settles
+  `no-admitted-behaviour` (FR-416 "Outcomes decided before a run is read"). Over a subject
   whose every infinite path is zero-delay (every state's invariant forbids a
   positive delay), the item is decided on zones exactly as over any other
   timed subject: a `possible` claim holds with a witness path or does not, an
