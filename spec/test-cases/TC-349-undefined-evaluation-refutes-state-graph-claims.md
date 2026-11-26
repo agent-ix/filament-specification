@@ -22,6 +22,9 @@ evidence that replays to the same undefined value.
 
 ## Test Procedure
 
+"Each instance" below is that instance's own result; the claim's one item
+combines them as FR-390 states.
+
 Use the ConfigVersion subject of TC-331. `rz` is a
 `Reference<Config::ConfigVersion>` parameter valued `z`, which is not in
 `config_history = {a, b}`. Run each vector through the real local Rust

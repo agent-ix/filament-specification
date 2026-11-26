@@ -3102,3 +3102,63 @@ fn tc_2115_mixed_weight_component_carries_a_zero_weight_pair() {
         );
     }
 }
+
+/// FR-331-AC-69: a non-proved state-graph result entry names its claim instance
+/// by a typed key, and a two-parameter evidence arm lists both bindings.
+#[trace("TC-431", "FR-331-AC-69")]
+#[test]
+fn tc_431_state_graph_result_instance_and_evidence_list() {
+    let result = definition("Result");
+    let key = json!({"type": "integer", "value": "1"});
+    let instance = json!({"type": "instance", "parameter": "c", "key": key});
+    let entry = json!({
+        "request_index": 0,
+        "backend": "engine",
+        "kind": "temporal-satisfaction",
+        "result": "inconclusive",
+        "cause": {"type": "undecided-successor"},
+        "instance": instance
+    });
+    assert!(result.is_valid(&entry), "{:?}", errors(&result, &entry));
+    for refused in [
+        json!({"type": "instance", "parameter": "c", "key": null}),
+        json!({"type": "instance", "parameter": "c"}),
+        json!({"type": "instance", "key": key}),
+        json!({"type": "instance", "parameter": "c", "key": key, "population": "p"}),
+    ] {
+        let mut altered = entry.clone();
+        altered["instance"] = refused.clone();
+        assert!(!result.is_valid(&altered), "{refused}");
+    }
+    let mut proved = json!({
+        "request_index": 0,
+        "backend": "engine",
+        "kind": "temporal-satisfaction",
+        "result": "proved",
+        "basis": {"type": "exhaustive"},
+        "certification": "uncertified"
+    });
+    assert!(result.is_valid(&proved), "{:?}", errors(&result, &proved));
+    proved["instance"] = instance;
+    assert!(!result.is_valid(&proved), "a proved entry names no instance");
+
+    let evidence = definition("GraphEvidence");
+    let binding = |parameter: &str| json!({"parameter": parameter, "key": key});
+    let arm = |instance: Value| {
+        json!({
+            "type": "graph-evidence",
+            "arm": "trap",
+            "instance": instance,
+            "stem": {"type": "model-path", "initial": "0", "steps": []}
+        })
+    };
+    let listed = arm(json!([binding("v"), binding("w")]));
+    assert!(evidence.is_valid(&listed), "{:?}", errors(&evidence, &listed));
+    for refused in [
+        json!([binding("v")]),
+        json!([binding("v"), {"parameter": "w", "key": null}]),
+        json!([binding("v"), {"parameter": "w", "key": key, "population": "p"}]),
+    ] {
+        assert!(!evidence.is_valid(&arm(refused.clone())), "{refused}");
+    }
+}

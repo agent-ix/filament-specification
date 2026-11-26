@@ -19,6 +19,12 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-366
     type: references
+  - target: ix://agent-ix/filament-specification/FR-394
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-396
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-331
+    type: references
 ---
 
 # FR-390: Analyze state-graph claims over a model subject
@@ -36,7 +42,7 @@ model subject: initial states, universes and proof bounds.
 
 ## Outputs
 
-One result per claim instance, settled by
+One result per claim, combined from its instances, each settled by
 [FR-391](FR-391-settle-state-graph-claims.md), with its evidence
 ([FR-393](../../objects/interfaces/FR-393-state-graph-evidence.md)).
 
@@ -57,6 +63,37 @@ subject's model, and the clause has one instance per distinct admitted key (FR-3
 universe of any population overlapping the parameter's type; a clause with no `over` parameter has one instance. Where the bound
 object does not exist at a node, its predicates read the bound object as a
 temporal atom over a model subject reads an absent `over` object.
+
+## Instances and the item's result
+
+A state-graph claim, over all of its instances, is one requested item with one
+terminal record. A clause with no instance is still that one item, which
+FR-391 settles. FR-391 settles each instance on its own evidence, and the
+analyzer SHALL combine the instances into the item's one record, taking them in
+the instance order of FR-361:
+
+- When any instance is `refuted`, the item is `refuted` with the first refuted
+  instance's record and counterexample, an earlier instance that is not
+  `proved` notwithstanding. An instance is `refuted` only when replay (FR-394)
+  confirms its refutation. A refutation whose replay disagrees leaves its
+  instance `inconclusive` with `replay-parity` and never replaces or hides a
+  confirmed refutation of another instance, so the item is `replay-parity`
+  only when no instance's refutation is confirmed.
+- Otherwise, when any instance is not `proved`, the item's record is that of
+  the first instance that is not `proved`.
+- Otherwise the item is `proved`. It stands only when every certificate an
+  instance carries was checked. Its certification, and the one instance whose
+  proof basis with its payload, FR-243 basis, certificate and settlement
+  method it takes, are chosen as FR-396 "Certification and basis of a proved
+  item" states, and its evidence is that instance's. Each instance's own
+  record and evidence keep that instance's certification and basis.
+
+The item's label, cause, basis, certificate and evidence are those of the
+instance whose record it reports. When that record is not `proved` and the
+clause has an `over` parameter, the item's result entry SHALL also carry
+`instance`, the FR-393 `Instance` of that binding (FR-331), whether or not it
+carries evidence, so the refuting or first non-`proved` binding is never lost.
+An item with no instance carries none.
 
 ## The state graph
 
@@ -138,7 +175,7 @@ temporal profile is consulted.
 
 ## Routing
 
-Each claim instance is one requested item. It requires the FR-290 kind
+Each claim, over all of its instances, is one requested item. It requires the FR-290 kind
 `temporal-satisfaction` with an unbounded extent naming the claim, and its
 form (`possible`, `always possible` or `unique path`) is recorded beside the
 item as an obligation form. A candidate's negotiation arm settles the item
@@ -156,7 +193,9 @@ A trace monitor evaluates no state-graph claim.
 | FR-390-AC-4 | `unique path` counts paths per reachable node where `X` holds: two interleavings of independent steps give one such node two paths, a sequenced model gives one, and a cycle on a path to `Y` gives more than one. | Test (TC-333) |
 | FR-390-AC-5 | A reachable terminal node where `Q` holds and `P` does not refutes `always possible`; declaring a `terminal when` predicate that holds there changes no state-graph verdict and settles the subject's deadlock-freedom item `proved`. | Test (TC-332) |
 | FR-390-AC-6 | A request whose only items over a subject are state-graph items holds that subject's one deadlock-freedom item. | Test (TC-330) |
-| FR-390-AC-7 | Each claim instance requires `temporal-satisfaction` with its form recorded as an obligation form; a single candidate whose arm does not discharge the form settles the item `unsupported` with `unsupported_projection`/`unsupported-requested-capability`; an `over` clause yields one item per universe key. | Test (TC-330) |
+| FR-390-AC-7 | Each claim, over all of its instances, is one requested item that requires `temporal-satisfaction` with its form recorded as an obligation form; a single candidate whose arm does not discharge the form settles it `unsupported` with `unsupported_projection`/`unsupported-requested-capability`; an `over` clause with two admitted keys (FR-361) yields one item and one record, and a clause with no admitted key yields one item, settled `no-instance` or `no-initial-state` by FR-391. | Test (TC-330) |
+| FR-390-AC-8 | The item's one record is the first confirmed refuted instance's in instance order, even after an earlier instance that is not `proved`; otherwise the first instance's that is not `proved`; otherwise a `proved` record with the certification FR-396 states and the basis, certificate, settlement method and evidence of the instance its steps choose. A refutation whose replay disagrees leaves its instance `replay-parity` and hides no confirmed refutation. | Test (TC-334) |
+| FR-390-AC-9 | An `over` item whose record is not `proved` carries `instance` naming the refuting or first non-`proved` binding, also when it carries no evidence, and that binding's label, cause, basis and any evidence are the record's, so nothing stated for that key is dropped. A `proved` item, an item with no instance and a clause with no `over` parameter carry no `instance`. | Test (TC-334) |
 
 ## Dependencies
 
@@ -170,6 +209,7 @@ A trace monitor evaluates no state-graph claim.
 - [FR-290](../../objects/protocol/FR-290-protocol-claim-kind.md) assigns the
   capability kind.
 - [FR-391](FR-391-settle-state-graph-claims.md) settles each instance.
+- FR-396 owns the certification and basis choice of a `proved` item.
 - [FR-361](../temporal/FR-361-read-model-behaviours-as-temporal-traces.md) and [FR-366](../temporal/FR-366-check-deadlock-freedom.md)
   own the model subject, the `over` binding over a model population, the derived deadlock-freedom item and the `terminal` member.
 

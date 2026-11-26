@@ -1098,6 +1098,10 @@ probabilistic engine's is `exact_prob`.
   `contract-counterexample` ([FR-485](../../functional/ir-proof/FR-485-check-operation-contract-items.md)
   "Counterexample"): `{type, obligation, violated, bound, executions}`. `backend` and `request_index` are the originating
   run identity.
+- A state-graph item has one result entry over all of its claim's instances
+  (FR-390). When that entry is not `proved` and is the record of an instance of
+  a clause with an `over` parameter, it carries `instance`, the FR-393
+  `Instance` of that binding.
 - An accounting record is the item's terminal record:
   `{request_index, settled_by}`, `settled_by` `disposition` when its
   disposition settles it and no result entry exists, or `result` when its one
@@ -1337,6 +1341,7 @@ and never yields a decisive refutation from unchecked evidence.
 | FR-331-AC-66 | The schema admits a `composition` request item carrying `premises` and `assumptions`, a `refuted` `composition` result entry with an `interface-mismatch` counterexample, and an `inconclusive` entry with cause `provider-answer-unconfirmed{premise}`; it refuses `premises` without `assumptions`, `assumptions` without `premises`, `premises` or `assumptions` on another kind (by the existing `premises` rule alone), a non-integer inner index, an `interface-mismatch` missing a member, with another `reason` or with an extra member, and the cause without `premise` or with an extra member. The schema decides neither cross-item facts (derivation, ordering, which writer) nor provider-origin refusal; AC-64 and AC-65 own those. | Test (TC-431) |
 | FR-331-AC-67 | The result schema admits a fixed-N `limit-reached` with `required: "921034100000000000000000000000000000000"` exactly, and admits ordinary reached-limit causes with no `required`; it refuses a numeric `required`, zero, a signed string or a string with a leading zero. No conforming writer caps or rounds the exact positive required count. | Test (TC-431) |
 | FR-331-AC-68 | The result schema admits a `failed` result whose cause is exactly `{"type":"tool-failure","defect":"observed-memory-limit","limit":1048576,"value":1048577}`; it refuses this cause with `limit` absent, `value` absent, an extra member, a string `limit` or a string `value`. It refuses `limit` or `value` on `crash`. | Test (TC-431) |
+| FR-331-AC-69 | The result schema admits a non-`proved` state-graph result entry carrying `instance`, the FR-393 `Instance` with a typed `key`, and refuses `instance` with a null or absent `key`, with an absent `parameter`, with an extra member, and on a `proved` entry; the `GraphEvidence` schema admits an arm whose `instance` is a two-entry list of `{parameter, key}` and refuses a one-entry list, an entry with a null `key` and an entry with an extra member. | Test (TC-431) |
 
 ## Dependencies
 

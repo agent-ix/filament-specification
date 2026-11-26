@@ -52,8 +52,8 @@ proof bounds, clock guards and time invariants.
 
 ## Outputs
 
-One result per claim instance, settled by FR-391, with its FR-393 evidence in
-timed form.
+One result per claim, combined from its instances as FR-390 states, each
+settled by FR-391, with its FR-393 evidence in timed form.
 
 ## Behavior
 

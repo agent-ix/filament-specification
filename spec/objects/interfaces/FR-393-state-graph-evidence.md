@@ -19,6 +19,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-364
     type: references
+  - target: ix://agent-ix/filament-specification/FR-396
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-400
+    type: references
 ---
 
 # FR-393: State-graph evidence wire
@@ -46,10 +50,13 @@ runs.
     ([FR-712](../../functional/analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md))
     also carries `delay`, the FR-181 delay before the step as a
     `{"numerator","denominator"}` exact rational in the model's unit.
-- **Instance** — the `over` binding of the item's instance:
+- **Instance** — the `over` binding of the instance the evidence is for:
   `{"type":"instance","parameter":"<ident>","key":<encoded>}`, with `key`
   the bound object's universe key in FR-181 typed canonical form, or `null`
-  for a clause with no `over` parameter.
+  for a clause with no `over` parameter. For a single-existential claim
+  (FR-396) with two or more object parameters, `instance` is instead the
+  FR-400 `Instance` list, one entry per object parameter in declaration
+  order.
 - **WitnessSource** — exactly one of
   `{"type":"sampled","seed":"<decimal>","trace_index":"<decimal>"}`,
   `{"type":"explored"}` or `{"type":"unrolled","depth":"<decimal>"}`.
@@ -97,8 +104,10 @@ Every decimal is `0` or `[1-9][0-9]*`.
 its own model-graph replay-source arm, distinct from the backend-transcript
 and input arms of [FR-197](../../functional/ir-proof/FR-197-replay-backend-counterexamples.md).
 The envelope's obligation identity binds the model subject (initial states,
-universes and proof bounds) and the checked claim, including its form and
-instance. The evidence carries no canonical state, permutation or reduction:
+universes and proof bounds) and the checked claim, including its form. A
+state-graph item and a single-existential item (FR-396) each have one identity
+over all their instances: it binds no instance, and the subject's universe
+lists fix them. The evidence carries no canonical state, permutation or reduction:
 evidence found by a reduced search is concretised before it is encoded.
 
 ## Validation
@@ -115,7 +124,10 @@ member:
 - a `loop_entry` on an entry of a form that carries none, an absent
   `loop_entry` on an entry of a form that requires one, or a `loop_entry`
   greater than the path's number of steps;
-- an `instance` whose parameter or key does not match the item's instance;
+- an `instance` whose parameter or key does not match the clause, or is not
+  one of the item's instances (FR-390, FR-396); and an `instance` list where the clause has fewer than two object
+  parameters, a single-parameter form where it has two or more, or a list
+  that does not hold one entry per object parameter in declaration order;
 - an `undefined` arm with no `undefined` member, or whose `cause` is not a
   catalogued undefined reason, or an `undefined` member on any other arm;
 - an `undefined` arm whose `where` carries both `predicate` and `transition`,
@@ -133,6 +145,7 @@ member:
 | FR-393-AC-3 | An unknown arm, a missing or duplicate member, a witness arm with the wrong number or order of entries, an out-of-range initial index, a misplaced or out-of-range `loop_entry` and a mismatched instance each refuse as `invalid_runtime_input`/`invalid-value` before replay. | Test (TC-335) |
 | FR-393-AC-5 | An `undefined` arm carries its `undefined-evaluation` value (state key, locus and catalogued reason, plus the predicate for a claim predicate or the FR-181 transition identity for a guard) and reads back with it; an `undefined` arm without it, with an uncatalogued reason, with both `predicate` and `transition`, with a `transition` not enabled-tested at the stem's last state, or an `undefined` member on another arm refuses before replay. | Test (TC-335, TC-349) |
 | FR-393-AC-4 | Two envelopes whose evidence is equal but whose subject or claim differs have different obligation identities. | Test (TC-335) |
+| FR-393-AC-6 | The evidence of a single-existential claim with two object parameters carries `instance` as a two-entry list in declaration order and reads back byte-identically; a one-entry list, the single-parameter form, a swapped order and a tuple that is not an instance of the item each refuse `invalid_runtime_input`/`invalid-value` before replay. | Test (TC-335) |
 
 ## Dependencies
 
