@@ -55,10 +55,14 @@ successor-free.
     step 10 (`Done` undefined and `Stop` true), add a `possible true`
     state-graph item and complete the exploration.
 12. On that same model, set `Stop`'s terminal predicate evaluation to the
-    existing typed `refused` outcome, leave `Done` undefined, add the same
-    state-graph item, and complete the exploration with no other refuting
-    evidence.
-13. On that same model and terminal state at `l = 1`, set both aliases'
+    existing typed `refused` outcome, leave `Done` undefined, and add a
+    `possible` state-graph item whose predicate is false at every state in the
+    unit. Its terminal node remains open as an undecided successor, and the
+    graph has no other refuting evidence.
+13. On the same unknown-terminal model from step 12, add a `possible true`
+    state-graph item, which has a witness at every initial state; keep the
+    unknown terminal open.
+14. On that same model and terminal state at `l = 1`, set both aliases'
     terminal predicates to `q(1 - self.l) = 0`, add the same state-graph item,
     and complete the exploration with no other refuting evidence.
 
@@ -98,10 +102,13 @@ successor-free.
 11. The terminal state is `intended` under FR-366; the state-graph item is
     `proved`, basis `decisive-witness`, with no `Undefined` evidence arm
     (FR-391-AC-15).
-12. The terminal state is `unknown`; the state-graph item is `inconclusive`,
-    cause `undecided-successor`, naming the first unknown declaration in
-    terminal-row order (FR-391-AC-16).
-13. The terminal state is `undefined`; the state-graph item is `refuted`,
+12. The terminal state is `unknown`; the no-witness state-graph item is
+    `inconclusive`, cause `undecided-successor`, naming the first unknown
+    declaration in terminal-row order (FR-391-AC-16).
+13. The terminal state remains open and `unknown`; the state-graph item is
+    `inconclusive`, cause `well-definedness-unchecked`, carrying the witness
+    (FR-391-AC-13).
+14. The terminal state is `undefined`; the state-graph item is `refuted`,
     basis `decisive-counterexample`, cause `undefined-evaluation`, with the
     `Undefined` evidence arm naming the first declaration in terminal-row
     order and replaying to its undefined value (FR-391-AC-17).
