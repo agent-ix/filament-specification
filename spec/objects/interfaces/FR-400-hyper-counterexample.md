@@ -35,12 +35,13 @@ below before any replay runs.
 - **HyperStep** — the model trace step of an
   [FR-364](../../functional/temporal/FR-364-replay-temporal-counterexamples.md)
   `TemporalCounterexample`:
-  `{"type":"step","transition":<transition>,"post_state":"<state key>"}`,
+  `{"type":"step","transition":<transition>,"post_state":{"key":"<state key>"}}`,
   with `transition` the FR-181 typed canonical form of the transition
   identity, or `{"type":"terminal-stutter"}` for the terminal stutter step,
-  and `post_state` the post-state's state key in the unpadded
-  base64url spelling of its canonical JCS bytes (FR-331), with no hash. A
-  terminal-stutter step's post-state is its pre-state.
+  and `post_state` the post-state's State locus `{"key":"<state key>"}`
+  (FR-331), `<state key>` the state key in the unpadded base64url spelling of
+  its canonical JCS bytes, with no hash. A terminal-stutter step's post-state
+  is its pre-state.
   In a `projected` counterexample every step also carries
   `"mark":"skipped"` or `"mark":"visible"`.
 - **HyperTrace** — `{"type":"hyper-trace","variable":"<ident>","alias":"<ident>","initial":"<decimal>","steps":[<HyperStep>, ...]}`:
