@@ -25,3 +25,9 @@ Observations outside the changed files, with no failing run observed there, so n
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | HyperStep text can be read as a step whose `transition` is `{"type":"terminal-stutter"}` with a `post_state`; the schema rejects that and admits only `{"type":"terminal-stutter","mark"?}` as the whole step. Older than this PR. | spec/objects/interfaces/FR-400-hyper-counterexample.md:37-44 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | At 7a25c8b227c678c4f40499831d763d3b578189ac the terminal stutter step is stated as the whole object, with no transition or post_state member, matching HyperStep. |
