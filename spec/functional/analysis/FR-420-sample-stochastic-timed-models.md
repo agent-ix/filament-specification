@@ -125,13 +125,13 @@ Each delay draw and each tie-break is one more choice of FR-408's step, with
 its own choice index in the sampler preimage. A `discrete` draw selects by
 exact integer weights. A `uniform`, `uniform[a, b]` or `exponential` draw
 takes a uniform value `u` on the grid of `2^-q` from the generator and returns
-the conditioned inverse distribution function at `u`, computed with FR-408's
+the conditioned inverse distribution function at `u`, computed as "Delay from the grid value" below states with FR-408's
 rational bounds and rounded up, so every sampled delay is an exact rational. A sampled delay is always one the
 window includes. Where the quantile lands on an end the window excludes, or
 beyond it, the delay is `2^-(q+1)` of the window interval's length inside that
 end (for an unbounded interval, of the mean `1/λ` of an `exponential(λ)`), and an
-included end is kept. A law with no mass in the window (a point beside an
-interval) does not race.
+included end is kept. A window part of a single point has no mass under a
+continuous law, so a uniform or exponential law races on the rest of the window, and does not race when none of the window has mass.
 A sampled delay is the declared distribution quantised to that grid, which
 changes each draw's distribution function by at most `2^-q`; the `measured`
 result is a measurement of the quantised model, and its basis records `q`. A
@@ -252,6 +252,33 @@ stands in its place
 Exact evidence is not affected: the stutter stamps are the scheduler's choice
 there, and a bound is read on the minimum or maximum over them
 ([FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md)).
+
+### Delay from the grid value
+
+Let the window's non-empty ranges, clipped to the law's support for
+`uniform[a, b]`, be the disjoint intervals `I1 < I2 < …` in increasing order,
+and `u` the grid value. A part of the window that is a single point has no
+mass under a continuous law; `uniform` and `uniform[a, b]` over a window made
+only of points are uniform over those points, and `exponential` over such a
+window does not race. The raw delay is:
+
+- `uniform`, `uniform[a, b]`: with `L` the total length of the intervals, the
+  point at distance `u · L` along them in increasing order.
+- `exponential(λ)`: let `t0` be the lower end of the first interval of positive
+  length and `S(t)` the lower bound of `e^-(λ(t − t0))` from FR-408 (the lower
+  end of the `e^-x` bounds). Each interval from `a` to `b` has mass
+  `S(a) − S(b)`, with `S(b) = 0` when `b` is unbounded. Take `r = u · M` for the
+  total mass `M`, walk the intervals in order subtracting each mass that is
+  below `r` (the last interval is never skipped), and let `s = S(a) − r`
+  inside the interval reached. If `s <= 0` the raw delay is that interval's
+  upper end. Otherwise `s` is rounded down to 96 significant bits, except when
+  the window is one unbounded interval, where `s = 1 − u` is exact; the raw
+  delay is `t0 + ln_up(1/s) / λ`, with `ln_up` the upper bound of FR-408's
+  logarithm bounds.
+
+The sampled delay is the raw delay moved inside the interval as the excluded
+end rule below states. The re-derivation of a recorded delay (FR-410) repeats
+this procedure exactly, so two readers agree on the rational.
 
 ### Regeneration and witnesses
 

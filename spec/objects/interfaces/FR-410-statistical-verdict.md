@@ -131,7 +131,7 @@ undefined value with its position, locus and reason), plus two checks:
 
 1. each drawn random argument lies in its parameter's support;
 2. each draw, re-derived from the recorded seed, trace index, step and
-   choice index (and `q` for a delay) by FSL FR-254's draw derivation,
+   choice index (and `q` for a delay) by the sampler definition (`proposals/filament-v1/definitions/simulation-sampler.md`) and FR-420,
    without running the sampler over the witness, selects the recorded scheduled identity, values and,
    over a timed subject, the recorded delay.
 
