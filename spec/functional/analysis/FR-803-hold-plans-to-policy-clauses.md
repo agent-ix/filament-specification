@@ -11,6 +11,10 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-377
     type: references
+  - target: ix://agent-ix/filament-specification/FR-361
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-331
+    type: references
 ---
 
 # FR-803: Hold every plan to the model's rules and the requested policy clauses
@@ -47,7 +51,26 @@ states for the search node (FR-801).
   read elsewhere (FR-377 "Terminal states and deadlocks"). Under a
   step-counting profile each step is one position; under a timed profile the
   positions carry the plan's delays (FR-808).
-- A plan *keeps* a policy clause when the clause holds on its behaviour.
+- A plan *keeps* a policy clause when the clause holds on its behaviour for
+  every instance of the clause (below).
+
+### Policy instances
+
+- A policy clause `over (x: T)`, `T` an object type, SHALL have one instance
+  for each admitted key of `T`, as FR-361 "Binding of the clause's `over`
+  parameter" defines it, with the bound initial snapshot as the one initial
+  state and the keys it lists for each population as that population's
+  universe. Each instance has its own monitor or automaton. A key that only
+  a step creates is not an instance.
+- When some policy clause the request names has no admitted key, the planner
+  SHALL settle the run `inconclusive` with cause `no-instance` (FR-331),
+  whatever its other policy clauses and its goal. It SHALL decide this after
+  every admission refusal (FR-806) and before it explores any state, so no
+  plan is reported, no certificate is written and every `explored` count is
+  zero. A clause with no instance has been checked of nothing, so it SHALL
+  NOT be read as kept.
+- This rule applies to the policy clauses the request names. It does not
+  change how the model's own state clauses and invariants are read.
 
 ### Safety and non-safety policies
 
@@ -89,6 +112,8 @@ A rule whose evaluation is undefined at a position does not hold there.
 | FR-803-AC-3 | A bounded policy `eventually[0, 2] holds(c.value >= 4)` admits `inc, double, double` (value 4 at position 2) and prunes the prefix `inc, inc` at position 2 (value 3), so no reported plan begins `inc, inc`. | Test (TC-1953) |
 | FR-803-AC-4 | A model invariant `value <= 10` excludes the step from 6 to 12 without naming any policy, and a policy over another model's object refuses as FR-806 states. | Test (TC-1953) |
 | FR-803-AC-5 | With the policy `always holds(c.value != 8)` every plan reaching the goal value 8 breaks the policy at its final state, no plan is admissible, and the result is `infeasible` with an accepted closure certificate. | Test (TC-1953) |
+| FR-803-AC-6 | Over the counter with the snapshot's `counters` population holding no object, domain `Int[0, 0]` and goal `true`, a run with no policy is `optimal` with the empty plan, and the same run with the policy `NotFour`, or with `SomeTime`, is `inconclusive` with cause `no-instance`, never `optimal`; with goal `false` the run with no policy is `infeasible` and the run with `NotFour` is `inconclusive` with cause `no-instance`, never `infeasible`. | Test (TC-1953) |
+| FR-803-AC-7 | Over a variant of the counter model that adds an object type `Spare` whose population holds no object, and a temporal clause `SpareHolds` `over (s: M::Spare)` with body `always holds(true)`, with `c` at 1 and goal `Reach.final.value = 8` the policy list `["SomeTime"]` gives `optimal` `inc, inc, inc, double` and the list `["SomeTime", "SpareHolds"]` gives `inconclusive` with cause `no-instance`. | Test (TC-1953) |
 
 ## Dependencies
 

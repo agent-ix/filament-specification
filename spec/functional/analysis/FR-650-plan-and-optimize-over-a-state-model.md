@@ -33,8 +33,8 @@ identities; and work, deadline and cancellation limits.
 
 ## Outputs
 
-One planning result: `optimal`, `feasible`, `infeasible` or `incomplete`,
-each with its plan, certificate and provenance as below.
+One planning result: `optimal`, `feasible`, `infeasible`, `incomplete` or
+`inconclusive`, each with its plan, certificate and provenance as below.
 
 ## Behavior
 
@@ -86,6 +86,7 @@ each with its plan, certificate and provenance as below.
 | `feasible` | an admissible plan whose optimality is not certified | the plan, its objective value, and the best certified bound (`lower` for `minimize`, `upper` for `maximize`) when one exists |
 | `infeasible` | no admissible plan of any length in `D` | a closure certificate the core accepted |
 | `incomplete` | a work, deadline or cancellation limit stopped the search, or the search excluded a state at which an invariant could not be decided | the FR-461 limit or the `invariant-undetermined` cause, the explored count and any best plan as `feasible` |
+| `inconclusive` | a policy clause the request names has no instance (FR-803) | the FR-331 cause `no-instance`, no plan and no certificate |
 
 - Every plan in a result SHALL be replayed natively from the bound initial
   state before it is reported: each invocation enabled, every policy clause

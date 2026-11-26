@@ -139,7 +139,8 @@ actual ordinals; the example reserves no declaration path or ordinal.
 ```
 
 - `status` is FR-650's `optimal`, `feasible`, `infeasible` or `incomplete`,
-  or `unsupported` when no engine can decide the plan (a hybrid plan with no
+  `inconclusive` when a named policy clause has no instance (FR-803), or
+  `unsupported` when no engine can decide the plan (a hybrid plan with no
   hybrid candidate, FR-819).
 - `objective` is always the object `{direction, expression, value}`:
   `direction` `minimize` or `maximize`, `expression` the objective's source
@@ -213,11 +214,12 @@ actual ordinals; the example reserves no declaration path or ordinal.
   `cancelled`, FR-650's `{"type": "invariant-undetermined", "invariant":
   <name>}` naming the invariant that could not be decided, which is the cause
   only when no limit, deadline or cancellation stopped the search (FR-650), or
-  FR-819's `grid-exhausted{dwell_grid}` or `timed-out`) and
-  on `unsupported` (FR-193's `unsupported_projection`/
+  FR-819's `grid-exhausted{dwell_grid}` or `timed-out`), on
+  `inconclusive` (FR-331's `no-instance`, written `{"type": "no-instance"}`)
+  and on `unsupported` (FR-193's `unsupported_projection`/
   `unsupported-requested-capability`), and `null` otherwise.
-- `plan` is `null` on `infeasible`, on `unsupported` and on an `incomplete`
-  result that found no admissible plan.
+- `plan` is `null` on `infeasible`, on `inconclusive`, on `unsupported` and
+  on an `incomplete` result that found no admissible plan.
 
 ### Members by status
 
@@ -234,6 +236,7 @@ one key set for every status and a missing member is always a defect, as
 | `infeasible` | `null` | `null` | `null` | accepted `closure` or `enclosure` | `certified` | `null` | `null` |
 | `incomplete` with a best plan | the value | the best plan | `reproduced` | `null` | `uncertified` | `null` | the stop cause |
 | `incomplete` with no plan | `null` | `null` | `null` | `null`, or the rejected certificate under `certificate-rejected` | `null` | `null` | the stop cause |
+| `inconclusive` | `null` | `null` | `null` | `null` | `null` | `null` | `{"type": "no-instance"}` |
 | `unsupported` | `null` | `null` | `null` | `null` | `null` | `null` | the `unsupported` cause |
 
 `objective`'s `direction` and `expression`, `explored` (zero counts when no
@@ -247,6 +250,7 @@ search ran) and `limits` are written for every status.
 | `feasible` | success | `0` |
 | `infeasible` | violation | `10` |
 | `incomplete` | incomplete | `22` |
+| `inconclusive` | inconclusive | `22` |
 | `unsupported` | unsupported | `21` |
 | refusal (FR-806) | refusal | `20` |
 | method failure (FR-650 replay failure) | internal-failure | `30` |
@@ -268,6 +272,7 @@ which is a definite negative answer and is never success.
 | FR-805-AC-8 | A plan request with `limits` `{"max_steps": 1}` refuses `unknown-member` at `/limits/max_steps` and `accounting` `{"steps": 1}` at `/accounting/steps`, not FR-461-AC-4's setting refusal; carried under a host surface's `synthesis` member the same requests refuse at `/request/synthesis/limits/max_steps` and `/request/synthesis/accounting/steps`; a hybrid request's `dwell_grid` `{"type": "rational", "numerator": "1", "denominator": "2"}` is admitted as one half time unit, `dwell_grid` `1` (a JSON number) refuses `wrong-value-kind` and `{"type": "rational", "numerator": "0", "denominator": "1"}` refuses `invalid-value`, each at `/dwell_grid`; a hybrid request carrying `initial` refuses `unknown-member` at `/initial`. | Test (TC-1955) |
 | FR-805-AC-9 | TC-1955's receiver-bearing steps, including the counter's `c`, write the exact FR-181 typed reference; receiverless steps omit it. Missing, unexpected or wrong-operation-type receivers fail FR-650's plan-substitution seam with method failure exit `30` and no outcome document, or reject the internal certificate under `closure` at the tampered entry. | Test (TC-1955) |
 | FR-805-AC-10 | TC-1955's three-outcome steps carry JSON-integer ordinals 0, 1 or 2; omission, `-1`, `3`, a non-integer, or ordinal `0` on a singleton fails the FR-650 library checks with the respective replay method-failure or certificate `closure` contract. A valid changed ordinal selecting an equal post-state replays as a different result/step identity; duplicating that identity in a certificate while losing the original edge rejects `closure`. | Test (TC-1955) |
+| FR-805-AC-11 | FR-803-AC-6's run with `NotFour` writes `status` `inconclusive` and `cause` `{"type": "no-instance"}`, with `objective` `{"direction": "minimize", "expression": "length", "value": null}`, `plan`, `replay`, `certificate`, `certification` and `bound` `null`, `explored` `{"states": 0, "work": 0, "nan_objectives": 0, "undefined_objectives": 0}`, `limits` listed, no member absent, and exits `22`. | Test (TC-1955) |
 
 ## Dependencies
 
