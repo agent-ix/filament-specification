@@ -103,8 +103,9 @@ successor-free.
     `proved`, basis `decisive-witness`, with no `Undefined` evidence arm
     (FR-391-AC-15).
 12. The terminal state is `unknown`; the no-witness state-graph item is
-    `inconclusive`, cause `undecided-successor`, naming the first unknown
-    declaration in terminal-row order (FR-391-AC-16).
+    `inconclusive`, cause `undecided-successor`; FR-366 terminal-row order
+    determines the `unknown` classification, and the state-graph result does
+    not require an emitted declaration name (FR-391-AC-16).
 13. The terminal state remains open and `unknown`; the state-graph item is
     `inconclusive`, cause `well-definedness-unchecked`, carrying the witness
     (FR-391-AC-13).
