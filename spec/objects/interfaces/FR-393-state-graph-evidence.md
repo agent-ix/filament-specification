@@ -50,7 +50,7 @@ runs.
     ([FR-712](../../functional/analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md))
     also carries `delay`, the FR-181 delay before the step as a
     `{"numerator","denominator"}` exact rational in the model's unit.
-- **Instance** — the `over` binding of the item's instance:
+- **Instance** — the `over` binding of the instance the evidence is for:
   `{"type":"instance","parameter":"<ident>","key":<encoded>}`, with `key`
   the bound object's universe key in FR-181 typed canonical form, or `null`
   for a clause with no `over` parameter. For a single-existential claim
@@ -104,10 +104,10 @@ Every decimal is `0` or `[1-9][0-9]*`.
 its own model-graph replay-source arm, distinct from the backend-transcript
 and input arms of [FR-197](../../functional/ir-proof/FR-197-replay-backend-counterexamples.md).
 The envelope's obligation identity binds the model subject (initial states,
-universes and proof bounds) and the checked claim, including its form and,
-for a state-graph item, its instance. A single-existential item (FR-396) has
-one identity over all its instances: it binds no instance, and the subject's
-universe lists fix them. The evidence carries no canonical state, permutation or reduction:
+universes and proof bounds) and the checked claim, including its form. A
+state-graph item and a single-existential item (FR-396) each have one identity
+over all their instances: it binds no instance, and the subject's universe
+lists fix them. The evidence carries no canonical state, permutation or reduction:
 evidence found by a reduced search is concretised before it is encoded.
 
 ## Validation
@@ -124,9 +124,8 @@ member:
 - a `loop_entry` on an entry of a form that carries none, an absent
   `loop_entry` on an entry of a form that requires one, or a `loop_entry`
   greater than the path's number of steps;
-- an `instance` whose parameter or key does not match the item's instance
-  or, for a single-existential item, is not one of the item's instances
-  (FR-396); and an `instance` list where the clause has fewer than two object
+- an `instance` whose parameter or key does not match the clause, or is not
+  one of the item's instances (FR-390, FR-396); and an `instance` list where the clause has fewer than two object
   parameters, a single-parameter form where it has two or more, or a list
   that does not hold one entry per object parameter in declaration order;
 - an `undefined` arm with no `undefined` member, or whose `cause` is not a

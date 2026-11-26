@@ -85,8 +85,8 @@ A `hyper` clause, over all of its instances, and the model claim of a
 `relation` clause are each one requested item that requires the FR-290 kind
 `temporal-satisfaction` with an unbounded extent naming the clause; its form
 is recorded beside the item as an obligation form. An HP-5 clause is one such
-item too: the one item per claim instance of FR-390 is for state-graph
-clauses. A candidate's negotiation
+item too, as an FR-390
+state-graph claim is. A candidate's negotiation
 arm settles the item `supported` only when it discharges that form. A
 `relation` clause's code claim is a separate item of kind
 `operation-contract` (FR-397).
@@ -134,9 +134,12 @@ A `hyper` item has one result over the instances FR-395 gives its clause.
   bounds one instance's automaton and `max_witness_set` one witness set. An
   instance that is neither refuted nor proved does not end the item: the
   analyzer SHALL decide each later instance with what remains, and a later
-  refuted instance gives the item's result. A cancellation ends the run: a
+  refuted instance gives the item's result. A cancellation ends the run. A
   run cancelled before it refutes an instance settles `cancelled`, whatever an
-  earlier instance's result.
+  earlier instance's result, except that when every initial state of every
+  instance already has a witness it settles `inconclusive` with
+  `well-definedness-unchecked`, as the FR-391 rows adopted for HP-5 state,
+  taking the first instance that is not proved.
 
 A clause with no instance settles as FR-399 states.
 
@@ -230,7 +233,7 @@ body.
 | FR-396-AC-7 | A `hyper` clause with several instances is one requested item with one result. It is `refuted` when any instance is refuted, even after an instance that is not proved, and takes its refuting evidence (counterexample or graph evidence), basis and cause from the first refuted instance in the instance order, the first declared parameter varying slowest; with none refuted it takes the result of the first instance that is not proved; it is `proved` only when every instance is. | Test (TC-342) |
 | FR-396-AC-8 | A `proved` item over several instances takes its `certification` by FR-492's rule over its instances, and its proof basis, FR-243 basis, certificate and settlement method from one instance chosen by the five steps of "Certification and basis of a proved item"; it carries every instance's evidence in instance order, for HP-5 one `witness` arm per instance, each naming its instance. | Test (TC-342) |
 | FR-396-AC-9 | An instance is refuted only once its refutation replays. A refutation that does not replay never replaces or hides a confirmed refutation of another instance; the item settles `replay-parity` or `replay-refused` only when no instance's refutation is confirmed; and an engine returning one outcome over all instances whose refutation fails replay settles `replay-parity`. | Test (TC-342) |
-| FR-396-AC-10 | `max_states`, `max_transitions`, the work meter, the time budget and cancellation are shared by the item's instances, while `max_depth` is each instance's own horizon; an undecided, bounded or stopped instance does not hide a later refuted one that can be decided with what remains; and a run cancelled before it refutes an instance settles `cancelled`. | Test (TC-342) |
+| FR-396-AC-10 | `max_states`, `max_transitions`, the work meter, the time budget and cancellation are shared by the item's instances, while `max_depth` is each instance's own horizon; an undecided, bounded or stopped instance does not hide a later refuted one that can be decided with what remains; and a run cancelled before it refutes an instance settles `cancelled`, or `well-definedness-unchecked` when every initial state of every instance already has a witness. | Test (TC-342) |
 | FR-396-AC-11 | A product state with no run of the body's automaton that a limit or the maximum depth left unexpanded does not keep a part from being a trap when every contract conjunction of its model state has a value, and the trap replays; with a contract conjunction undefined there the item does not settle `closed-scope`. | Test (TC-342) |
 
 ## Dependencies

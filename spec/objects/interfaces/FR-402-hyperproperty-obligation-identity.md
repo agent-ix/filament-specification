@@ -261,7 +261,7 @@ instances and their order, so changing a universe list, its order included,
 changes the identity.
 
 Reversing two quantifiers, moving a fairness constraint from one variable to
-another, renaming which alias a variable ranges over gives a
+another, or renaming which alias a variable ranges over gives a
 different obligation identity (FR-191-AC-2, FR-191-AC-4).
 A form and a compiler-detected copy-swap symmetry are functions of the checked
 clause, so they add no identity member. A trace variable's name is part of the

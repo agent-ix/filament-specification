@@ -1098,6 +1098,10 @@ probabilistic engine's is `exact_prob`.
   `contract-counterexample` ([FR-485](../../functional/ir-proof/FR-485-check-operation-contract-items.md)
   "Counterexample"): `{type, obligation, violated, bound, executions}`. `backend` and `request_index` are the originating
   run identity.
+- A state-graph item has one result entry over all of its claim's instances
+  (FR-390). When that entry is not `proved` and is the record of an instance of
+  a clause with an `over` parameter, it carries `instance`, the FR-393
+  `Instance` of that binding.
 - An accounting record is the item's terminal record:
   `{request_index, settled_by}`, `settled_by` `disposition` when its
   disposition settles it and no result entry exists, or `result` when its one

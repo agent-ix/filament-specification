@@ -30,7 +30,7 @@ subject's native transition relation by the rule of its kind.
 ## Inputs
 
 The `HyperCounterexample` ([FR-400](../../objects/interfaces/FR-400-hyper-counterexample.md)),
-the package bytes, one subject per alias, the checked clause and its instance,
+the package bytes, one subject per alias, the checked clause,
 and the request's limits.
 
 ## Outputs
@@ -42,7 +42,9 @@ cause `limit-reached{limit, value, setting}` or `cancelled`, or a refusal
 
 ## Trace re-execution
 
-Replay recompiles the package, re-admits each subject, checks the match and
+Replay recompiles the package, re-admits each subject and refuses, before any
+trace re-executes, a counterexample whose `instance` is not one of the clause's
+instances over those subjects (FR-400). It checks the match and
 each trace's fairness, and runs with no engine or solver present. Each trace re-executes from the initial state its `initial` index names
 through its subject's FR-181 transition relation. A step is refused when its
 transition is not enabled, or when a terminal-stutter step appears at a
@@ -122,6 +124,7 @@ reachability prefix is involved.
 | FR-401-AC-8 | An `undefined` counterexample reproduces when the expression its `where` names (the body, a match, or a component subject's guard, `terminal when` predicate or state constraint) evaluated at `trace_position` is the counterexample's carried undefined value, with its state keys, locus and catalogued reason, settling `reproduced-with-evaluated-witness` and the item `refuted`; a defined value there, or another locus or reason, settles `inconclusive` with `replay-parity`. | Test (TC-348) |
 | FR-401-AC-9 | A well-formed terminal-stutter step whose pre-state is not terminal settles `inconclusive` with `replay-parity`. | Test (TC-345) |
 | FR-401-AC-10 | An `undefined` counterexample whose paths differ in step count, that of an `align skip` clause with unmarked paths that each hold a skipped step and a position that counts visible steps and that of an HP-3 `μ_U` with its existential paths one step short, is refused as `unsupported_construct`/`not-yet-implemented`, settles no result and is not replayed as a lockstep counterexample. | Test (TC-345) |
+| FR-401-AC-11 | A counterexample whose `instance` is not one of the clause's instances over the supplied subjects is refused as `invalid_runtime_input`/`invalid-value` before any trace re-executes, and settles no `refuted` item. | Test (TC-345) |
 
 ## Dependencies
 

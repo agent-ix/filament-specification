@@ -17,17 +17,18 @@ Parse and admit the three state-graph clauses, refuse the constructs a state-gra
 
 ## Test Procedure
 
-Compile each source vector through the real local Rust boundary under the complete facets and record its parse tree or located refusal. For each admitted vector, build the request for a model subject and record its items, each item's FR-290 kind, extent, recorded obligation form and instance key, and the deadlock-freedom items. For SG-R07, register one candidate whose negotiation arm discharges `possible` only.
+Compile each source vector through the real local Rust boundary under the complete facets and record its parse tree or located refusal. For each admitted vector, build the request for a model subject and record its items, each item's FR-290 kind, extent, recorded obligation form and instance keys, and the deadlock-freedom items. For SG-R07, register one candidate whose negotiation arm discharges `possible` only.
 
 ## Vectors
 
 | Vector | Input | Expected result |
 | --- | --- | --- |
-| SG-S01 | `possible Win using v over (g: G::Game) { g.phase = G::Phase::Won }` | form `possible`, one `over` parameter; one item per distinct admitted key (FR-361) |
+| SG-S01 | `possible Win using v over (g: G::Game) { g.phase = G::Phase::Won }` | form `possible`, one `over` parameter; one item, with one instance per distinct admitted key (FR-361), and one record |
 | SG-S02 | `always possible Rec using v over (g: G::Game) { g.phase = G::Phase::Won }` | form `always possible`, `Q` read as `true` |
 | SG-S03 | `always possible Rec using v over (g: G::Game) from (g.phase != G::Phase::Lost) { g.phase = G::Phase::Won }` | form `always possible` with its `from` predicate |
 | SG-S04 | `unique path One using v over (j: M::Job) from (not j.a) to (j.done);` | form `unique path` with `X` and `Y` |
 | SG-S05 | `possible P using v { true }` | one item, no `over` parameter, instance `null` |
+| SG-S06 | SG-S01 over a subject whose universes of the populations overlapping `G::Game` are empty, with one initial state; then with an empty list of initial states | one item each, settled `no-instance` and `no-initial-state` (FR-390-AC-7) |
 | SG-R01 | `possible P using v over (g: G::Game) { pre(g.phase) = G::Phase::Mid }` | `unsupported_construct`/`expression-form` at the `pre` read |
 | SG-R02 | a `possible` predicate that reads an operation anchor | `unsupported_construct`/`expression-form` at the anchor read |
 | SG-R03 | a `possible` claim whose predicate holds `eventually` | `unsupported_construct`/`expression-form` at the operator |

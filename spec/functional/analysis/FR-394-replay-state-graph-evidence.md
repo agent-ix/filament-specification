@@ -31,7 +31,7 @@ through the native transition relation by the rule of its arm.
 
 The `GraphEvidence` value ([FR-393](../../objects/interfaces/FR-393-state-graph-evidence.md)),
 the package bytes, the subject's initial states, universes and proof bounds,
-the claim and its instance, and the request's limits.
+the claim and the instance the evidence names, and the request's limits.
 
 ## Outputs
 

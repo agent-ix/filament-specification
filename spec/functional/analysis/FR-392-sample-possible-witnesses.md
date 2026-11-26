@@ -30,7 +30,7 @@ each walk that reaches a node where `P` holds as that initial state's witness.
 
 ## Inputs
 
-The `possible` item and its instance binding, the subject's initial states in
+The `possible` claim and one instance's binding, the subject's initial states in
 their canonical order, the request's `seed` and `witness_samples`, the
 `max_walk_steps` member of its temporal `limits`, and the run's search
 horizon.
