@@ -760,6 +760,7 @@
                     "operand": 4
                   },
                   "on",
+                  "bare",
                   "query",
                   {
                     "operand": 2
@@ -802,6 +803,7 @@
                 "operand": 4
               },
               "on",
+              "bare",
               "query",
               {
                 "operand": 2
@@ -1399,6 +1401,7 @@
                     "operand": 4
                   },
                   "on",
+                  "bare",
                   "query",
                   {
                     "operand": 3
@@ -1444,6 +1447,7 @@
                 "operand": 4
               },
               "on",
+              "bare",
               "query",
               {
                 "operand": 3
@@ -1606,6 +1610,7 @@
                       "operand": 0
                     },
                     "on",
+                    "bare",
                     "query",
                     {
                       "operand": 4
@@ -1762,6 +1767,7 @@
                 "operand": 0
               },
               "on",
+              "bare",
               "query",
               {
                 "operand": 4
@@ -2362,6 +2368,7 @@
             "node": 3
           },
           "on",
+          "bare",
           "query",
           {
             "node": 0
