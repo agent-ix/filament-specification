@@ -798,7 +798,7 @@
       },
       "additionalProperties": false
     },
-    "GraphStep": {"description": "FR-393: a model trace step.", "type": "object", "required": ["type", "transition", "post_state"], "properties": {"type": {"const": "step"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "post_state": {"$ref": "#/$defs/State"}}, "additionalProperties": false},
+    "GraphStep": {"description": "FR-393: a model trace step.", "type": "object", "required": ["type", "transition", "post_state"], "properties": {"type": {"const": "step"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "post_state": {"$ref": "#/$defs/State"}, "delay": {"description": "FR-181, FR-712: the delay before the step, on a timed state-graph path.", "$ref": "#/$defs/Rational"}}, "additionalProperties": false},
     "ModelPath": {"description": "FR-393 ModelPath.", "type": "object", "required": ["type", "initial", "steps"], "properties": {"type": {"const": "model-path"}, "initial": {"$ref": "#/$defs/Decimal"}, "steps": {"type": "array", "items": {"$ref": "#/$defs/GraphStep"}}}, "additionalProperties": false},
     "WitnessSource": {
       "description": "FR-393 WitnessSource.",
@@ -1321,7 +1321,7 @@
       "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}],
       "properties": {
         "decision": {"$ref": "#/$defs/MeasuredDecision"},
-        "bound": {"$ref": "#/$defs/ProbabilisticBound"},
+        "bound": {"$ref": "#/$defs/ProbabilisticBound", "not": {"required": ["type"], "properties": {"type": {"const": "expected-total"}}}},
         "estimate": {"$ref": "#/$defs/Estimate"},
         "interval": {"$ref": "#/$defs/Interval"},
         "basis": {
@@ -1354,12 +1354,13 @@
       "additionalProperties": false
     },
     "ProbabilisticBound": {
-      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: closed claim form, the claim's own comparison, and exact threshold; quantile also carries its independent level.",
+      "description": "FR-413 claim bound: closed claim form, the claim's own comparison, and exact threshold; quantile also carries its independent level. FR-410 StatisticalVerdict copies it for every form but the exact-only expected-total.",
       "oneOf": [
         {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "probability"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
         {"type": "object", "required": ["type", "comparison", "threshold", "level"], "properties": {"type": {"const": "quantile"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}, "level": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
         {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "mean-of-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
-        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "expected-total"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
       ]
     },
     "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},

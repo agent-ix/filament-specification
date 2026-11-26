@@ -105,7 +105,9 @@ is a mix of the arms.
 A model-arm step is `{transition, post_state}`: `transition` is the step's
 [FR-181](../runtime/FR-181-simulate-finite-executions.md) transition identity,
 `{"type":"terminal-stutter"}` for the terminal stutter step, or `{"type":"closure-stutter"}` for the stutter closure's stutter step ("Closure stutter" below); `post_state` is
-the state key of the step's post-state. An
+the State locus object `{"key": <StateKey>}`
+([FR-331](../../objects/interfaces/FR-331-backend-provider-envelope.md)) of the
+step's post-state. An
 observed-arm step is `{document}`: the zero-based position in `request.provision` of the observed
 document at that position. An observed trace whose positions are record
 samples of a declared record trace subject, not provisioned documents, has
@@ -342,7 +344,8 @@ only as its `activate` steps. There is one step per activated job, the steps
 are consecutive, and they are ordered by ascending canonical task name in
 Unicode scalar value order (FR-482), independent of release declaration
 order. The first step carries the move's delay and the others carry delay 0.
-Each step carries as `post_state` the key of the move's whole post-state: every
+Each step carries as `post_state` the State locus object `{"key": <StateKey>}`
+of the move's whole post-state: every
 activation applied, and `HI` mode when the move is the entry into `HI`. Each
 step's `release` and `source_transition` equal the move's source identity.
 The move never also appears as a `transition` step. The replayer refuses each

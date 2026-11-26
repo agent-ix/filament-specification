@@ -27,17 +27,35 @@ relationships:
 
 When an FR-725 timed-product certificate is checked, the checker SHALL
 rebuild the timed product from the checked package and the claim alone, with
-its own clock, race and graph code and no part of the provider that produced
-the certificate, and SHALL accept the certificate only when FR-412's
-conditions hold on that rebuilt product. A `proved` result over a timed
-subject SHALL count only after such a checker accepts its certificate.
+its own abstraction, product, race and graph code and no part of the provider
+that produced the certificate, and SHALL accept the certificate only when
+FR-412's conditions hold on that rebuilt product. A `proved` result over a
+timed subject SHALL count only after such a checker accepts its certificate.
+
+The checker and the provider may share the qualified core's statement of the
+concrete timed run (FR-416 "The timed run": exact clock values, delay
+admissibility, the discrete step, positions and the outcome types) and the one
+type, with its validator and encoder, of a certificate's wire members, a
+product state key included. They may also share, as data only, two
+declarations: the route admission table (the rows of FR-421 "Closed and strict
+conditions" and the names of the conditions each row tests) and the mapping of
+FR-416 "How claims read a time-lock" from a claim's kind and reading to the
+value of a locked run. No code that tests a condition is shared. Every
+abstraction of the run (integer clocks, regions, zones), with its successor,
+race, monitor-progress and component code, is written separately in each, and
+so is the detection of end components and time-locks: no fact found on an
+abstraction (divergence, an end component, a time-lock) passes from one to the
+other.
 
 The checker exists so that a reviewer need not trust the provider's timed
 reasoning, which is where the subtle errors live: a digital reading of a
 strict guard, a distribution dropped from a race, a Zeno cycle counted as a
 behaviour, an elapsed clock that keeps running after its measure completed.
 Each of these changes the value; the checker catches each by deriving the
-object itself rather than reading it from the certificate.
+object itself rather than reading it from the certificate. A wrong row of the
+shared table, or a wrong entry of the shared mapping, is a defect both sides
+carry: only the theorem the row cites, review and the dense-time oracle of FSL
+ADR-038 catch it.
 
 ## Inputs
 
@@ -57,13 +75,15 @@ The checker SHALL compute each of the following from the package and the
 claim, and compare it with the certificate only where the certificate states
 it:
 
-1. **The route.** Digital when every atomic clock constraint of every guard
-   and time invariant, every timed interval of the claim and every comparison
-   of an elapsed measure with its threshold is non-strict and the claim is a
-   form FR-421 "Closed and strict conditions" reads through digital clocks;
-   region otherwise (FR-752), for every other bounded-window formula closed
-   or not. The strict comparison `M < c` that the `>=` quantile transform
-   introduces counts as strict.
+1. **The route.** Digital exactly when FR-421 "Closed and strict conditions"
+   admits the claim on digital clocks, the checker deciding each condition of
+   that section itself: strictness (the strict comparison `M < c` that the
+   `>=` quantile transform introduces included), the delay class, whether the
+   claim states a fairness set, the claim
+   form and the position it is read from, and, where that section requires it,
+   that no time-lock is reachable on the dense runs, which the checker never
+   reads from the digital product. It then looks the route up in the declared
+   table. Region otherwise (FR-752).
 2. **The scale and caps.** The least common denominator of every time
    constant in the model's unit, including resets, delay supports, the claim's
    bounds and thresholds; each clock's cap from its largest scaled compared
@@ -112,6 +132,7 @@ first state in canonical key order, is the result.
 | FR-751-AC-2 | The same certificate with `route` changed to `region`, or with `scale` changed to `2`, is refused as an objective mismatch, `invalid_runtime_input`/`invalid-value`; a key with the cap of `x` changed from 3 to 2 is rejected `malformed` at `values`. | Test (TC-1768) |
 | FR-751-AC-3 | A certificate that omits one reachable state is rejected `malformed` at `values`; one that adds a key the rebuilt product does not reach is rejected the same way. | Test (TC-1768) |
 | FR-751-AC-4 | The checker, run in a process that contains no part of the provider, accepts the certificates of FR-752-AC-1, FR-752-AC-3, FR-753-AC-1 and FR-753-AC-4 from their bytes and the package, and rejects each with one value altered. | Test (TC-1768) |
+| FR-751-AC-5 | For each row of the route admission table and each entry of the locked-run mapping, the provider and the checker each give the expected route or value written by hand in the test, not derived from the shared declaration. | Test (TC-1768) |
 
 ## Dependencies
 

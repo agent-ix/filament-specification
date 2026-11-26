@@ -23,6 +23,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-322
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-417: Settle time-lock freedom for every timed subject
@@ -46,12 +48,10 @@ One time-lock-freedom item per distinct timed subject, settled `proved`,
 
 ### Time-locks
 
-A **time-lock** is a reachable timed state from which no time-divergent
-behaviour exists. It is **local** when no positive delay is admissible and no
-discrete step is enabled at it, so time stops there; otherwise every
-continuation from it is Zeno. Claims over a time-locked state hold vacuously,
-because time-divergent behaviours are the admitted set (FR-161), so the
-derived item reports every time-lock.
+A **time-lock**, local or non-local, is as
+[FR-416](FR-416-evaluate-timed-temporal-claims.md) "Time-locks" defines it,
+and how each kind of claim reads a run that ends in one is as FR-416 "How
+claims read a time-lock" states. The derived item reports every time-lock.
 
 ### The derived item
 

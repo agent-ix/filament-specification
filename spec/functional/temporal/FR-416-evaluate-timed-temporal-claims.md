@@ -49,20 +49,112 @@ value over one timed trace, or a typed refusal or `unsupported` cause.
 
 ## Behavior
 
-### Time stamps
+### The timed run
 
-Each position of a timed behaviour carries its **time stamp**, a
-non-negative exact rational in the binding's unit, non-decreasing along the
-behaviour (FR-181): under `time dense` the sum of the delays before it; under
-`time tick O period p` the period times the number of `O` steps up to it.
-Positions with equal time stamps keep their step order, which is the admitted
-order FR-090 requires of order-sensitive operators.
+This section is the one definition of a timed run. Every evaluator, provider,
+sampler, replay and certificate checker, and every requirement that reads a
+timed subject, takes the run from here.
 
-A behaviour whose discrete steps end at a quiescent state continues with
-FR-161's terminal stutter positions, each stamped after a positive delay of
-any length (one tick period under a tick source), every such choice an
-admitted behaviour; a behaviour that ends at a state that is not quiescent is
-not admitted.
+#### Positions and time stamps
+
+The positions of a timed run are the initial state at time 0, the post-state of
+each discrete step, and each terminal stutter position of an idle tail. A delay
+is not a position: it advances time and every present clock, so a window it
+passes closes, and no predicate is read during it or at its end.
+
+Each position carries its **time stamp**, a non-negative exact rational in the
+binding's unit, non-decreasing along the run (FR-181): under `time dense` the
+sum of the delays before it; under `time tick O period p` the period times the
+number of `O` steps up to it. Positions with equal time stamps keep their step
+order, which is the admitted order FR-090 requires of order-sensitive
+operators.
+
+#### Delays and strictness
+
+A delay is a non-negative exact rational, admissible as FR-181 "Timed
+subjects" states: 0, or a delay at a state that is not urgent along which every
+applying time invariant holds. A strict clock constraint (`<`, `>`) excludes
+its bound and a non-strict one includes it, over exact rational valuations, and
+an interval end is included or excluded as written. A provider that replaces
+the exact valuations by an abstraction (zones, regions or integer clocks) SHALL
+settle only a verdict that holds on these runs.
+
+#### Idle tail
+
+A discrete state is **quiescent** when no time invariant applies at it and it
+is not urgent. A run whose discrete steps end at a quiescent state continues
+with terminal stutter positions that repeat that state, each stamped after a
+positive delay of any length (one tick period under a tick source). Every such
+choice of delays is an admitted run. An every-behaviour claim quantifies over
+all of them, and an exact probabilistic item takes its minimum and maximum over
+them. Statistical evidence has no distribution over them and decides a sample
+only as [FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)
+"Windows on an idle tail" states. A provider that offers only some of these
+delays, such as whole units, SHALL do so only where its verdict is the verdict
+over all of them.
+
+#### Time-locks
+
+A **time-lock** is a reachable timed state from which no time-divergent
+continuation exists. It is **local** when no positive delay is admissible and
+no discrete step is enabled at it; otherwise every continuation from it is
+Zeno. A Zeno trap with no exit, a set of reachable states that a run cannot
+leave and in which time cannot diverge, therefore consists of time-locked
+states. A terminal state whose admissible delay is bounded (FR-181) is a
+time-lock. [FR-417](FR-417-settle-time-lock-freedom.md) reports time-locks.
+A run that reaches a time-lock and takes no further step **ends** there with
+time frozen: it adds no new state and no later time stamp, and a product that
+closes it with a stutter repeats its last position, state and time stamp
+unchanged.
+
+#### Time divergence
+
+A run's time **diverges** when its time stamps grow beyond every bound. An
+every-behaviour claim reads each run on its own. A probabilistic item reads a
+scheduler, with the workload and the draws it resolves, and admits it when,
+**with probability 1**, a run under it either diverges or reaches a time-lock
+and ends there. This is almost-sure divergence: a run of probability 0 that
+takes only zero-time steps for ever does not exclude its scheduler, and a
+scheduler that keeps a set of runs of positive probability in zero-time steps
+for ever, while a continuation that lets time pass exists, is not admitted.
+
+A provider's progress test (a positive total delay on a cycle of integer
+clocks, the Alur-Dill condition on a region component, the divergence
+acceptance condition of a zone construction) is the test of this one property
+on that abstraction.
+
+#### How claims read a time-lock
+
+- **Every-behaviour claims** (temporal claims) quantify over time-divergent
+  runs only. A violation, or an undefined evaluation, that lies only on runs
+  ending in a time-lock does not refute: the claim holds there vacuously, the
+  time-lock-freedom item reports the time-lock, and where the initial state has
+  no admitted behaviour at all the typed outcome is `inconclusive`,
+  `no-admitted-behaviour`.
+- **Probabilistic items** keep a run that ends in a time-lock, with its
+  probability. The claim's event is read over the positions the run has by the
+  pointwise meaning below: an `eventually` or `until` that no such position
+  meets is never met, so the run counts 0 for it, and an `always` that every
+  such position in its window satisfies holds, so the run counts 1 for it. A
+  measure whose completing position the run does not have is never completed:
+  it is censored, and an `expected ... until` expectation whose target the run
+  has not reached is infinite, so it exceeds every finite bound
+  (FR-407). A probabilistic item does not settle
+  `no-admitted-behaviour` on account of a time-lock. How a `fraction` or a
+  long-run fraction reads a run that ends in a time-lock is not decided by this
+  requirement.
+
+#### Outcomes decided before a run is read
+
+For an authored claim over a timed subject the outcomes are decided in the
+order [FR-361](FR-361-read-model-behaviours-as-temporal-traces.md) states:
+`requires-bound`, then `no-initial-state`, then `conflicting-identity`, then
+`no-instance`. `no-admitted-behaviour` comes after all four, and only in place
+of a proof of an every-behaviour claim over infinite runs, or of the
+deadlock-freedom item, when the initial state has no fair time-divergent run. A
+state-graph item reads finite paths and no divergence
+([FR-712](../analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md))
+and keeps its verdict.
 
 ### Pointwise meaning
 
@@ -109,8 +201,11 @@ the proof basis `zone-certified`, with an [FR-418](../../objects/interfaces/FR-4
 zone certificate the checker accepts before the item settles, or `exhaustive`
 when every clock constraint, time invariant and timed interval is closed and
 the provider decides the subject over integer-valued clocks with constants
-scaled to integers (digitization), which gives the same verdict for TT-1 over
-the discrete state, deadlock freedom and location reachability.
+scaled to integers (digitization), which a provider SHALL do only for the items
+and claim forms an admission rule names: for exact probabilistic claims,
+[FR-421](FR-421-check-probabilistic-timed-claims-exactly.md) "Closed and strict
+conditions"; for the other timed items, the route admission table of FSL
+ADR-038.
 
 Every timed refutation carries a counterexample with exact rational delays
 that replays by FR-181 timed replay. A symbolic provider concretizes a
@@ -208,6 +303,11 @@ identity.
 | FR-416-AC-9 | A `Blink` model (`time dense`; object `b` with `fired: Bool` and clock `x`; `tick` with guard `x >= 1` and reset `x`; `fire` with guard `x > 0 and x < 1` and postcondition `self.fired = true`; time invariant `when true { x <= 1 }`; initial `fired = false`, `x = 0`), in which `tick` fires exactly at `x = 1`, and `eventually holds(b.fired)` under infinite-trace: under `fair { weak Blink::fire }` it settles `refuted` with a lasso of `tick` steps of loop delay 1; under `fair { strong Blink::fire }` it settles `proved` with an accepted zone certificate, because `fire` is enabled at instants inside every delay of that lasso, though at no position of it. | Test (TC-963) |
 | FR-416-AC-10 | On the zone route over `Rpc` with `T = 4 ms`, the response claim proves with `non_zeno` `not-required`; the variant in which `reply` loops on itself with no reset, under the deadline `x <= 3 ms`, proves with `non_zeno` `assumed`; the variant with an `echo` step that resets `x` refutes with `non_zeno` `checked`; `always eventually holds(true)` over `Stall` settles `inconclusive`, `no-admitted-behaviour`, with `non_zeno` `refuted`; `NoLateReply` (TT-1), the time-lock-freedom item and FR-416-AC-8's `undefined-evaluation` refutation carry no `non_zeno`; the reply-loop proof's FR-418 certificate states `non_zeno` `assumed`, and the same certificate with that member changed to `not-required` is rejected; and the closed MITL claim `Within` proved on the digital-clock route carries the same `non_zeno` as on the zone route. | Test (TC-2041) |
 | FR-416-AC-11 | Over a dense timed model whose initial state is quiescent and enables no operation, the admitted behaviours are the idle tails whose stutter positions follow positive delays, one behaviour per delay choice, so `always[2 ms, 3 ms] P` with `P` false there is refuted by the idle tail with a stutter position at 2 ms; under `time tick O period 1 ms` each stutter position adds 1 ms; a model whose only dead end is urgent, or under an applying time invariant, has no admitted behaviour that ends there. | Test (TC-369) |
+| FR-416-AC-12 | On the TC-374 `Lock` model under `One` with exact evidence, whose run has `A` at time 0, `B` at `1/2 ms` and a time-lock at `1 ms`: `probability <= 0.5 [eventually[0 ms, 2 ms] holds(c.phase = B)]` settles `refuted` with exact value 1; `probability <= 0.5 [eventually[3/4 ms, 2 ms] holds(c.phase = B)]` settles `proved` with exact value 0, no position being stamped in the window; and `probability <= 0.5 [always[3/4 ms, 2 ms] holds(c.phase = A)]` settles `refuted` with exact value 1 for the same reason. | Test (TC-369) |
+| FR-416-AC-13 | Over the same `Lock` model, the temporal claim `always holds(c.phase = A)` settles `proved`, because the run that idles in `A` is admitted and every run that reaches `B` ends in a time-lock; the time-lock-freedom item settles `refuted`. | Test (TC-369) |
+| FR-416-AC-14 | On the `Retx` variant whose `send` has no guard and no reset, under the invariant `x <= 2 ms` while not delivered, with exact evidence over every scheduler, `probability >= 0.99 [eventually[0 ms, 4 ms] holds(m.delivered)]` settles `proved` with exact value 1: at 2 ms only zero-time `send` steps remain, and the run on which every one is lost has probability 0 and excludes no scheduler. | Test (TC-369) |
+| FR-416-AC-15 | On the TC-374 `Idle` model with exact evidence, over the stutter stamps, `probability <= 0.5 [eventually[3 ms, 5 ms] holds(phase = 1)]` settles `refuted` on the maximum 1 (a stutter at 4 ms) and `probability >= 0.5` of the same event settles `refuted` on the minimum 0 (no stutter in the window). | Test (TC-369) |
+| FR-416-AC-16 | Over a timed subject whose initial state has an applying time invariant that admits no delay and no enabled operation: `always holds(true)` settles `inconclusive`, `no-admitted-behaviour`; `probability <= 0.5 [eventually[0 ms, 1 ms] holds(false)]` settles `proved` with exact value 0; and a claim over a type with no instance in that subject settles `inconclusive`, `no-instance`, not `no-admitted-behaviour`. | Test (TC-369) |
 
 ## Dependencies
 

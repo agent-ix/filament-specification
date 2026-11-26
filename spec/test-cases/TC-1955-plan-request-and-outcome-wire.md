@@ -13,7 +13,7 @@ relationships:
 
 ## Description
 
-Verify the outcome document members, native receiver/outcome identity, exits and the request reader. Scope: FR-805-AC-1 to FR-805-AC-10 and FR-322-AC-519.
+Verify the outcome document members, native receiver/outcome identity, exits and the request reader. Scope: FR-805-AC-1 to FR-805-AC-11 and FR-322-AC-519.
 
 ## Test Procedure
 
@@ -46,6 +46,8 @@ Verify the outcome document members, native receiver/outcome identity, exits and
     ordinal with the second, retaining the other record unchanged. This
     creates a duplicate identity and loses the first edge even though the
     two target post-states are equal.
+12. Run TC-1953 step 6's goal `true` request with `NotFour` and read the
+    whole outcome document.
 
 ## Expected Results
 
@@ -71,3 +73,7 @@ Verify the outcome document members, native receiver/outcome identity, exits and
   The certificate edit rejects `closure` at its entry because the supplied
   identity claims do not equal the complete rederived outcome-edge set.
   The result is demoted to `feasible`, `uncertified`, never `optimal`.
+- Step 12: `status` `inconclusive`, `cause` `{"type": "no-instance"}`,
+  `objective.value`, `plan`, `replay`, `certificate`, `certification` and
+  `bound` `null`, all four `explored` counts zero, every member present,
+  exit `22`.

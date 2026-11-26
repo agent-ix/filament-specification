@@ -25,6 +25,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-363
     type: references
+  - target: ix://agent-ix/filament-specification/FR-366
+    type: references
 ---
 
 # FR-391: Settle state-graph claims from decisive evidence
@@ -76,39 +78,45 @@ Each evidence row settles only after its evidence replays
 
 | Row | Condition | FR-360 label | FR-243 basis | Evidence |
 | --- | --- | --- | --- | --- |
-| Witnessed | `possible`: every initial state has a witness path to a node where `P` holds, and exploration completed with no open node and no undefined evaluation of a predicate of the claim or of the subject's guards, `terminal when` predicate or state constraints | `proved` | `decisive-witness` | `Witness` |
+| Witnessed | `possible`: every initial state has a witness path to a node where `P` holds, and exploration completed with no open node and no undefined evaluation of a predicate of the claim, guard or state constraint, and no reachable terminal state has FR-366 classification `unknown` or `undefined` | `proved` | `decisive-witness` | `Witness` |
 | Trap | a trap is reachable where the form requires reaching the target: an initial state (`possible`), a node where `Q` holds (`always possible`), a node where `X` holds (`unique path`) | `refuted` | `closed-scope` | `Trap` |
 | Path pair | `unique path`: a known node where `X` holds counts 2 | `refuted` | `decisive-counterexample` | `PathPair` |
-| Undefined | a predicate of the claim (`P`, `Q`, `X` or `Y`), or a guard, the `terminal when` predicate or a state constraint of the subject, evaluated undefined at an explored node | `refuted` | `decisive-counterexample` | `Undefined` |
-| Exhaustive | `always possible` or `unique path`: exploration completed with no open node and no undefined evaluation of a predicate of the claim or of the subject's guards, `terminal when` predicate or state constraints, and every reachable node where `Q` holds is in `E(P)`, or every reachable node where `X` holds counts exactly 1 | `proved` | `closed-scope` | none |
+| Undefined | a predicate of the claim (`P`, `Q`, `X` or `Y`), a guard or a state constraint evaluates undefined at an explored node, or a reachable terminal state has FR-366 classification `undefined` | `refuted` | `decisive-counterexample` | `Undefined` |
+| Exhaustive | `always possible` or `unique path`: exploration completed with no open node, no undefined evaluation of a predicate of the claim, guard or state constraint, and no reachable terminal state classified `unknown` or `undefined` by FR-366; every reachable node where `Q` holds is in `E(P)`, or every reachable node where `X` holds counts exactly 1 | `proved` | `closed-scope` | none |
 | Witness found, well-definedness unchecked | `possible`: every initial state has a witness, and exploration ended with open nodes or a limit stopped it before any refuting evidence was found | `inconclusive` | `unsettled` | cause `well-definedness-unchecked`, with the witnesses |
 | No decisive evidence | none of the rows above | by the [FR-363](../temporal/FR-363-settle-every-behaviour-temporal-verdicts.md) verdict map | | none |
 
-**Refuting evidence is ordered.** A trap node, a known node that counts 2, and
-a node at which a predicate, guard or state constraint evaluates undefined are
-each refuting evidence.
-When an exploration finds more than one, the analyzer SHALL settle the item
-from the one whose node comes first in FR-181 canonical breadth-first
-discovery order, as FR-363 orders a violation and an undefined evaluation. A
-node at which an evaluation is undefined and which is itself a trap node or a
-node that counts 2 settles as `Undefined`, since the evaluation at the node
-comes first.
+**Refuting evidence is ordered.** A trap node, a known node that counts 2, a
+node at which a claim predicate, guard or state constraint evaluates undefined,
+and a terminal node whose combined FR-366 classification is `undefined` are
+each refuting evidence. An `unknown` terminal classification is not refuting
+evidence. If any decisive refuting evidence exists in the explored graph, it
+takes precedence over an `unknown` terminal classification, even when that
+classification's node was discovered first. When an exploration finds more
+than one refuting evidence, the analyzer SHALL settle the item from the one
+whose node comes first in FR-181 canonical breadth-first discovery order, as
+FR-363 orders a violation and an undefined evaluation. A node at which an
+evaluation is undefined and which is itself a trap node or a node that counts
+2 settles as `Undefined`, since the evaluation at the node comes first.
 
 **Undefined evaluation.** An undefined evaluation refutes by the FR-363 rule
 for every model proof engine. The expressions evaluated at an explored node
 are the predicates of the claim and the subject's own expressions: a guard of
-a transition enabled-tested at the node, the `terminal when` predicate at a
-node with no enabled transition, and a state constraint that restricts the
-explored states. When one of them evaluates undefined, the analyzer SHALL
-settle the item `refuted` with cause `undefined-evaluation`, whose `where`
-names the node's state key and the locus of the
-expression that has no value, plus the predicate for a predicate of the claim
-and the FR-181 transition identity for a guard, and whose `cause` names the
-undefined value's catalogued reason. An undefined guard is never read as a
-disabled transition, and an undefined `terminal when` predicate never as a
-non-terminal node. A subject's expression belongs to the subject, so its
-undefined evaluation refutes every state-graph item over the subject whose
-exploration reaches that node. Its evidence is the `undefined` arm of
+a transition enabled-tested at the node, and a state constraint that restricts
+the explored states. An undefined claim predicate, guard or state constraint
+SHALL settle the item `refuted` with cause `undefined-evaluation`, whose
+`where` names the node's state key and the locus of the expression that has no
+value, plus the predicate for a predicate of the claim and the FR-181
+transition identity for a guard, and whose `cause` names the undefined value's
+catalogued reason. An undefined guard is never read as a disabled transition.
+A subject's guard or state constraint belongs to the subject, so its undefined
+evaluation refutes every state-graph item over the subject whose exploration
+reaches that node. A terminal state is handled by FR-366's combined
+classification, not by treating each `terminal when` value as an independent
+subject expression. Only a combined `undefined` classification is refuting
+evidence; its `Undefined` evidence arm names the declaration selected by
+FR-366's reporting order. The evidence for an undefined claim predicate,
+guard or state constraint is the `undefined` arm of
 [FR-393](../../objects/interfaces/FR-393-state-graph-evidence.md), which
 carries that `undefined-evaluation` value, with the canonical breadth-first
 path to the node as its stem; [FR-394](FR-394-replay-state-graph-evidence.md)
@@ -117,8 +125,32 @@ replays it to the carried value.
 **Well-definedness is global.** A `proved` result asserts that the claim is
 well-defined at every reachable node. The analyzer SHALL settle a state-graph
 item `proved` only after an exploration with no open node has evaluated every
-predicate of the claim, and every guard, `terminal when` predicate and state
-constraint of the subject, at every reachable node without an undefined value. A
+predicate of the claim, every guard, and every state constraint of the subject,
+at every reachable node without an undefined value. At a reachable node with no
+enabled transition, the analyzer SHALL read the subject's `terminal when`
+declarations as the combined terminal-state classification defined by
+[FR-366](../temporal/FR-366-check-deadlock-freedom.md), rather than treating
+each declaration's value as an independent subject expression. An `intended`
+classification contributes no `undefined-evaluation` refutation even when
+another declaration evaluates undefined. An `unknown` classification prevents
+`proved` and leaves the terminal node open as an undecided successor. When no
+witness or decisive refuting evidence settles the item, that open terminal
+yields `inconclusive` with cause `undecided-successor`. If every initial state
+has a witness while the unknown terminal remains open, FR-391-AC-13 instead
+settles `inconclusive` with cause `well-definedness-unchecked` and carries the
+witnesses. If decisive refuting evidence exists anywhere in the explored graph,
+that evidence takes precedence over the unknown classification, and refuting
+evidence is selected by the ordering rule above. An `undefined`
+classification contributes the `undefined-evaluation` refutation defined
+above. FR-366's declaration order determines the reported unknown or undefined
+declaration and its locus for FR-366. For a state-graph item, the first unknown
+declaration in FR-366 terminal-row order determines the `unknown`
+classification, but the state-graph settlement exposes only its result and
+cause; it does not require the declaration name. The `Undefined` evidence for
+a combined `undefined` classification carries the selected declaration as
+specified above. This classification governs only terminal-state evaluation:
+undefined claim predicates, guards and state constraints retain the global
+rule above. A
 witness, whether sampled ([FR-392](FR-392-sample-possible-witnesses.md)) or
 explored, finds the path that makes `possible` true; it does not by itself
 settle the item. When every initial state has a witness and the exploration
@@ -227,8 +259,11 @@ is concrete and carries no canonical state or permutation, so a witnessed
 | FR-391-AC-10 | A predicate of a `possible`, `always possible` or `unique path` claim that evaluates undefined at an explored node settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation` naming the predicate, the node's state key, the expression's locus and the catalogued reason, with an `undefined` arm that carries that value and replays to it, also when a witness exists. | Test (TC-349) |
 | FR-391-AC-11 | When an exploration finds a trap node, a node that counts 2 and a node with an undefined predicate, the item settles from the one first in FR-181 discovery order: a trap discovered before the undefined node settles `refuted`, `closed-scope`, and an undefined node discovered first settles `refuted` with cause `undefined-evaluation`. | Test (TC-349) |
 | FR-391-AC-12 | A `possible` item with a sampled witness for every initial state and an undefined predicate at a reachable node off every walk settles `refuted` with cause `undefined-evaluation`, the same verdict as with `witness_samples` 0. | Test (TC-336, TC-349) |
-| FR-391-AC-13 | A `possible` item with a witness for every initial state whose exploration a limit stops, or ends with open nodes, before refuting evidence is found settles `inconclusive` with cause `well-definedness-unchecked`, carrying the witnesses and stating that well-definedness was not checked; never `proved`. | Test (TC-334, TC-336) |
-| FR-391-AC-14 | A guard, the `terminal when` predicate or a state constraint of the subject that evaluates undefined at an explored node settles every `possible`, `always possible` and `unique path` item over the subject `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, whose `where` carries the node's state key and the expression's locus, plus the FR-181 transition identity for a guard, also when a witness exists for every initial state; an undefined guard is not read as a disabled transition. | Test (TC-349) |
+| FR-391-AC-13 | A `possible` item with a witness for every initial state whose exploration a limit stops, or ends with open nodes (including an unknown terminal classification under FR-366), before refuting evidence is found settles `inconclusive` with cause `well-definedness-unchecked`, carrying the witnesses and stating that well-definedness was not checked; never `proved`. | Test (TC-297, TC-334, TC-336) |
+| FR-391-AC-14 | A guard or state constraint of the subject that evaluates undefined at an explored node settles every `possible`, `always possible` and `unique path` item over the subject `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, whose `where` carries the node's state key and the expression's locus, plus the FR-181 transition identity for a guard, also when a witness exists for every initial state; an undefined guard is not read as a disabled transition. | Test (TC-349) |
+| FR-391-AC-15 | On the selected model and terminal declarations of the intended case in FR-366-AC-12, a `possible true` state-graph item whose exploration completes settles `proved`, `decisive-witness`; the `Done` declaration evaluates undefined at the terminal state and `Stop` evaluates true, so FR-366 classifies that state `intended` and the state-graph result has no `Undefined` evidence arm ([TC-297](../../test-cases/TC-297-deadlock-freedom-vectors.md), step 11). | Test |
+| FR-391-AC-16 | On the terminal state of FR-366-AC-12, `Done`'s predicate is undefined and a second declaration's predicate evaluation is refused, hence `unknown` by FR-366. For a `possible` item whose predicate is false at every state of this unit, with no decisive refuting evidence, the unknown terminal remains open and the item settles `inconclusive` with cause `undecided-successor`. FR-366 terminal-row order determines which unknown classification applies; the state-graph result exposes only its `inconclusive` result and `undecided-successor` cause, without requiring a declaration name ([TC-297](../../test-cases/TC-297-deadlock-freedom-vectors.md), step 12). | Test |
+| FR-391-AC-17 | On the selected model and terminal state at `l = 1` in FR-366-AC-12, when both aliases' `terminal when` predicates are `q(1 - self.l) = 0`, both evaluate undefined; with no other decisive refuting evidence in the explored graph, FR-366 classifies the state `undefined` and a `possible` item whose predicate is false at every state settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with its `Undefined` evidence arm naming the first declaration in FR-366 terminal-row order and replaying to that value ([TC-297](../../test-cases/TC-297-deadlock-freedom-vectors.md), step 14). | Test |
 
 ## Dependencies
 
@@ -243,6 +278,8 @@ is concrete and carries no canonical state or permutation, so a witnessed
 - [FR-363](../temporal/FR-363-settle-every-behaviour-temporal-verdicts.md)
   owns the model-subject verdict map, its inconclusive causes and the
   undefined-evaluation rule.
+- [FR-366](../temporal/FR-366-check-deadlock-freedom.md) owns the combined
+  classification of a terminal state's declarations.
 - [FR-383](FR-383-explore-under-state-space-reduction.md) and
   [FR-385](FR-385-report-reduced-verdicts.md) own state constraints and the
   preservation table these rows extend.

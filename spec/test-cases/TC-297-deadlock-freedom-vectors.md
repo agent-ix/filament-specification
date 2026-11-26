@@ -5,6 +5,8 @@ type: TC
 relationships:
   - target: ix://agent-ix/filament-specification/FR-366
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-391
+    type: verifies
   - target: ix://agent-ix/filament-specification/FR-364
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-365
@@ -17,7 +19,8 @@ relationships:
 
 The deadlock vectors: a refuted deadlock-freedom item with a prefix that
 replays, the same model with `terminal when` covering the deadlocked state, and
-with `terminal any`, plus the rules that keep authored claims unchanged.
+with `terminal any`, plus state-graph settlement over mixed terminal
+classifications and the rules that keep authored claims unchanged.
 
 ## Test Procedure
 
@@ -48,6 +51,20 @@ successor-free.
     item under each declaration pair of that criterion, in both placements;
     then write the request for the same declarations over a unit whose
     aliases select `test/vault` and `test/vault-other`.
+11. On the same selected model and intended terminal declaration pair from
+    step 10 (`Done` undefined and `Stop` true), add a `possible true`
+    state-graph item and complete the exploration.
+12. On that same model, set `Stop`'s terminal predicate evaluation to the
+    existing typed `refused` outcome, leave `Done` undefined, and add a
+    `possible` state-graph item whose predicate is false at every state in the
+    unit. Its terminal node remains open as an undecided successor, and the
+    graph has no other refuting evidence.
+13. On the same unknown-terminal model from step 12, add a `possible true`
+    state-graph item, which has a witness at every initial state; keep the
+    unknown terminal open.
+14. On that same model and terminal state at `l = 1`, set both aliases'
+    terminal predicates to `q(1 - self.l) = 0`, add the same state-graph item,
+    and complete the exploration with no other refuting evidence.
 
 ## Expected Results
 
@@ -82,3 +99,17 @@ successor-free.
     on both: deadlocked, `kind: deadlock`. `Done` with `any`: no
     deadlock-freedom item. The two-identity unit: `unsupported`, no request
     item (FR-366-AC-12).
+11. The terminal state is `intended` under FR-366; the state-graph item is
+    `proved`, basis `decisive-witness`, with no `Undefined` evidence arm
+    (FR-391-AC-15).
+12. The terminal state is `unknown`; the no-witness state-graph item is
+    `inconclusive`, cause `undecided-successor`; FR-366 terminal-row order
+    determines the `unknown` classification, and the state-graph result does
+    not require an emitted declaration name (FR-391-AC-16).
+13. The terminal state remains open and `unknown`; the state-graph item is
+    `inconclusive`, cause `well-definedness-unchecked`, carrying the witness
+    (FR-391-AC-13).
+14. The terminal state is `undefined`; the state-graph item is `refuted`,
+    basis `decisive-counterexample`, cause `undefined-evaluation`, with the
+    `Undefined` evidence arm naming the first declaration in terminal-row
+    order and replaying to its undefined value (FR-391-AC-17).

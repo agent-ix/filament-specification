@@ -19,6 +19,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-366
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-361: Read a model subject's behaviours as temporal traces
@@ -149,9 +151,10 @@ timed subject a timed state is terminal as
 states (no discrete step enabled at it or after any admissible delay). Over a
 timed subject only a terminal state in which time can pass without bound (the
 idle tail of [FR-161](FR-161-analyze-infinite-trace-properties.md)) is
-stutter-extended; a bounded-delay terminal state has no time-divergent
-continuation, so no admitted infinite behaviour passes through it and claims at
-it hold vacuously (FR-161). Every other terminal state reads by this rule, whether the model intends it or it is a
+stutter-extended; a bounded-delay terminal state is a time-lock, and how a
+claim reads it is as
+[FR-416](FR-416-evaluate-timed-temporal-claims.md) "How claims read a
+time-lock" states. Every other terminal state reads by this rule, whether the model intends it or it is a
 deadlock ([FR-366](FR-366-check-deadlock-freedom.md)).
 
 - Under the event-position false-extension profile, a behaviour that reaches a

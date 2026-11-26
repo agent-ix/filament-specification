@@ -54,7 +54,7 @@ FR-461 Behavior 5 with the engine name `plan_search`:
 | Member | Setting | Charged |
 | --- | --- | --- |
 | `max_states` | `plan_search.max_states` | one per distinct search node admitted (below) |
-| `max_work` | `plan_search.max_work` | one per native operation/receiver/arguments invocation attempted (per applied schedule step for hybrid plans), one per policy-monitor update, one per goal or objective evaluation, one per frontier comparison |
+| `max_work` | `plan_search.max_work` | one per native operation/receiver/arguments invocation attempted (per applied schedule step for hybrid plans), one per policy-clause monitor update (one per clause, however many instances it has; FR-803), one per goal or objective evaluation, one per frontier comparison |
 | `max_certificate_entries` | `plan_search.max_certificate_entries` | one per certificate entry the search writes |
 | `max_check_work` | `plan_search.max_check_work` | one per certificate entry the core checker reads and one per distinct successor outcome it re-derives (not per invocation or raw frame trial) |
 | `max_state_key_bytes` | `plan_search.max_state_key_bytes` | FR-181's state-key byte limit, per key |
@@ -123,7 +123,8 @@ The settings are distinct from the verification planner's
 
 - A *search node* SHALL be the tuple of the FR-181 canonical state key, the
   state of every named policy clause's monitor or automaton, safety or not
-  (FR-803), the step count so far and, for
+  (FR-803; a clause's state is the states of all its instances, in instance
+  order), the step count so far and, for
   each per-step sum or count over `steps` that the goal or the objective
   reads, its accumulated exact value. Two prefixes with equal nodes have
   equal sets of admissible completions and equal objective contributions,
@@ -158,8 +159,11 @@ request alone (FR-804):
    canonical value order of their types, and each invocation's distinct
    outcomes in FR-804's `(result, post-state)` order.
 4. **Charge order.** The initial node charges one `max_states` on
-   admission, then, when 0 is in `D`, one `max_work` for the goal
-   evaluation and, when the goal holds, one for the objective evaluation.
+   admission, then one `max_work` per policy clause for its monitor's reading
+   of the initial state, in the request's `policy` order, stopping at the
+   first safety monitor that rejects; then, when no monitor rejected and 0 is
+   in `D`, one `max_work` for the goal evaluation and, when the goal holds,
+   one for the objective evaluation.
    In a native state-model search, each operation/receiver/arguments
    invocation of an expanded node charges one `max_work` before its
    precondition or invocation evaluation, including an invocation that is
@@ -173,7 +177,8 @@ request alone (FR-804):
    admitted to the search; an evaluation-accounting stop during its
    enumeration stops `incomplete`, without assigning ordinals from a
    partial list. For each admitted outcome, in canonical outcome order,
-   charge one `max_work` per policy monitor or automaton update, in the
+   charge one `max_work` per policy clause's monitor or automaton update
+   (FR-803), in the
    request's `policy` order, stopping at the first safety monitor that
    rejects; then, if a node with the same key is already admitted, one
    `max_work` for that frontier comparison and nothing more; otherwise one

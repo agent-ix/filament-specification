@@ -123,18 +123,18 @@ Over a timed subject ([FR-415](FR-415-declare-clocks-and-timed-models.md)),
 positions are those of FR-181's timed behaviours, each with its time stamp and
 clock valuation, and the analyzer reads them as follows.
 
-- **Time divergence.** A timed behaviour is admitted only when its time
-  diverges: its time stamps grow beyond every bound. A proof establishes the
-  formula for every time-divergent admitted behaviour under every profile.
-  Under `time tick O period p`, divergence is infinitely many `O` steps, and
-  the terminal stutter step counts as an `O` step.
-- **Idle tail.** A discrete state is **quiescent** when no time invariant
-  applies at it and it is not urgent. A behaviour may end its discrete steps
-  at a quiescent state and delay forever; under the infinite-trace and timed
-  profiles it is extended by the terminal stutter step, repeated forever, each
-  after a positive delay of any length, and every such choice is an admitted
-  behaviour. Under a bounded profile an idle tail closes the execution at its
-  last discrete step. The stutter step is outside every fairness constraint.
+- **Time divergence.** A timed behaviour is admitted by a claim over every
+  behaviour only when its time diverges
+  ([FR-416](FR-416-evaluate-timed-temporal-claims.md) "Time divergence"). A
+  proof establishes the formula for every time-divergent admitted behaviour
+  under every profile. Under `time tick O period p`, divergence is infinitely
+  many `O` steps, and the terminal stutter step counts as an `O` step.
+- **Idle tail.** A run that ends its discrete steps at a quiescent state, its
+  positive stutter delays and the choice among them are as
+  [FR-416](FR-416-evaluate-timed-temporal-claims.md) "Idle tail" states, under
+  the infinite-trace and timed profiles. Under a bounded profile an idle tail
+  closes the execution at its last discrete step. The stutter step is outside
+  every fairness constraint.
 - **Fairness over time.** Enabledness is read at timed states. A behaviour
   satisfies weak fairness for a constraint when from no instant onward the
   constraint stays enabled at every instant, positions and the delays between
@@ -151,8 +151,11 @@ clock valuation, and the analyzer reads them as follows.
   positive delay. Replay checks loop closure, `D > 0` and fairness, and
   evaluates the formula over the lasso unrolled until its time span covers the
   formula's time reach.
-- **Vacuity.** A proof over a timed subject whose initial state has no fair
-  time-divergent behaviour settles `inconclusive`, `no-admitted-behaviour`.
+- **Vacuity.** A proof of a claim over every behaviour of a timed subject
+  whose initial state has no fair time-divergent behaviour settles
+  `inconclusive`, `no-admitted-behaviour`, after the outcomes
+  [FR-416](FR-416-evaluate-timed-temporal-claims.md) "Outcomes decided before
+  a run is read" orders before it.
 - **Causes.** Timed analysis adds the inconclusive causes
   `no-admitted-behaviour`, `lasso-not-concretized` and `certificate-rejected` and
   the unsupported cause `punctual-interval` ([FR-416](FR-416-evaluate-timed-temporal-claims.md)),
