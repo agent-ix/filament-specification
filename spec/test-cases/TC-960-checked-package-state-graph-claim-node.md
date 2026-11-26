@@ -12,7 +12,7 @@ relationships:
 ## Description
 
 Check the `claim`/`state_graph` node body of each state-graph form, the
-obligation identity that separates forms and instances, and the reader's
+obligation identity that separates forms and subjects, and the reader's
 refusals of a malformed node.
 
 ## Test Procedure
@@ -33,7 +33,7 @@ to the body's targets, as TC-233 does for its patched vectors, and feed the pack
 | SN-04 | `possible Anything using v { true }` | admitted; `over` the empty aggregate; `target` a reference to the Boolean `value`/`literal` node of `true`; `dependencies` that node only |
 | SN-05 | SN-02 without `from`, and SN-02 with `from (true)` | one node id; `from` references the `true` literal node |
 | SN-06 | SN-01, and in a separate unit `always possible AlwaysReachesTwo using v over (c: Config::ConfigVersion) { c.versionNumber = 2 }` | different node ids and different obligation identities |
-| SN-07 | SN-01's two instances, `c = a` and `c = b`; SN-01 with different whitespace and comments | the two instances have different obligation identities; the respelled claim has SN-01's node id and identities |
+| SN-07 | SN-01 requested over its subject with `config_history` listing `[a, b]`, then `[b, a]`, then `[a]`; SN-01 with different whitespace and comments | each request has one item with one obligation identity, which binds no instance; the three identities differ; the respelled claim has SN-01's node id and identities |
 | SN-08 | SN-02 with `from` and `target` swapped in order | `invalid_semantic_graph` at the body |
 | SN-09 | SN-01 with `kind` `eventually-possible` | `invalid_package`/`invalid-value` at `/semantic_graph/nodes/{n}/body/members/0` |
 | SN-10 | SN-01 with `from` a reference to its target node | `invalid_semantic_graph` at the `from` binding |
@@ -42,7 +42,7 @@ to the body's targets, as TC-233 does for its patched vectors, and feed the pack
 | SN-13 | SN-03 with `from` the empty aggregate | `invalid_semantic_graph` at the `from` binding |
 | SN-14 | SN-01 with `over` the text literal `c` | `invalid_semantic_graph` at the `over` binding |
 | SN-15 | one unit declaring SN-01's claim twice, as `ReachesTwo` and `AlsoReachesTwo` | one node with two `claim` occurrences, ordinals 0 and 1 |
-| SN-16 | SN-01's `c = a` instance requested over filament-spec-language ADR-022 §7.1's subject with initial state `(0, 0)` and with initial state `(1, 0)` | one node id; two different obligation identities |
+| SN-16 | SN-01 requested over filament-spec-language ADR-022 §7.1's subject with initial state `(0, 0)` and with initial state `(1, 0)` | one node id; two different obligation identities |
 | SN-17 | SN-01 with `target` a reference to an added `temporal`/`temporal_clause` node, `always holds(c.versionNumber = 2)` over `c` | `ill_typed`/`operator-ineligible` at the target |
 
 ## Expected Results

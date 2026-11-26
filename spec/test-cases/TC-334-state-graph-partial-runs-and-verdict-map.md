@@ -7,6 +7,8 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-360
     type: references
+  - target: ix://agent-ix/filament-specification/FR-390
+    type: verifies
 ---
 
 # TC-334: State-graph partial runs, verdict map and reductions
@@ -35,6 +37,7 @@ Run each vector through the real local Rust boundary with the explicit-state eng
 | PR-10 | TC-331 PV-01 under an admitted symmetry over `{a, b}`, and under partial-order reduction with `versionNumber` writes visible | `proved`, `decisive-witness`, sources named, no reduction named; the witness carries no canonical state |
 | PR-12 | PR-02 with the caller cancelling the run before exploration completes | `incomplete`, cause `cancelled`; FR-360 `failed`, execution `resource-incomplete`, basis `unavailable` |
 | PR-13 | a `possible` claim `over (c: Config::ConfigVersion)` on a subject whose universe is empty | `inconclusive`, `no-instance`, before expansion |
+| PR-14 | an `always possible` claim over two admitted keys `p` then `q`, with injected per-instance results: (a) `p` `inconclusive` `bound-reached`, `q` `refuted`; (b) `p` `proved`, `q` `inconclusive` `bound-reached`; (c) `p` `inconclusive` `undecided-successor`, `q` `incomplete`; (d) `p`'s refutation failing replay, `q`'s refutation replaying; (e) `p`'s refutation failing replay, `q` `proved`; (f) both `proved`, `p` `exhaustive` `certified`, `q` `exhaustive` `uncertified` | one item and one record each: (a) `refuted` with `q`'s counterexample, `instance` `q`; (b) `q`'s record, `instance` `q`; (c) `p`'s record, `instance` `p`; (d) `refuted`, `instance` `q`; (e) `inconclusive` `replay-parity`, `instance` `p`; (f) `proved` `uncertified` with `q`'s basis, no `instance` (FR-390-AC-8, FR-390-AC-9) |
 | PR-11 | every result of PR-01 to PR-10, PR-12 and PR-13 | each label carries exactly the FR-241, FR-242 and FR-243 combination FR-360 names |
 
 ## Expected Results

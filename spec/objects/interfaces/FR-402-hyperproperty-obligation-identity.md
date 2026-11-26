@@ -15,6 +15,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-370
     type: references
+  - target: ix://agent-ix/filament-specification/FR-396
+    type: references
 ---
 
 # FR-402: Hyperproperty claim body and obligation identity
@@ -251,12 +253,16 @@ The obligation identity of a hyper item binds:
 - each variable's fairness set;
 - the match, as its conjuncts;
 - the `align skip` list;
-- the body;
-- the object parameters' instance: each parameter's universe key.
+- the body.
+
+The identity binds no single instance: one item covers every instance of the
+clause (FR-396), and the subjects' universe lists, bound above, fix the
+instances and their order, so changing a universe list, its order included,
+changes the identity.
 
 Reversing two quantifiers, moving a fairness constraint from one variable to
-another, renaming which alias a variable ranges over, or changing the
-instance gives a different obligation identity (FR-191-AC-2, FR-191-AC-4).
+another, or renaming which alias a variable ranges over gives a
+different obligation identity (FR-191-AC-2, FR-191-AC-4).
 A form and a compiler-detected copy-swap symmetry are functions of the checked
 clause, so they add no identity member. A trace variable's name is part of the
 body (its Group's `variable` and its slot names), so renaming a trace variable
@@ -362,7 +368,7 @@ order and the first failing check is its defect:
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-402-AC-1 | A hyperproperty claim node's body has exactly the seven bindings in order, with subjects in order of first naming and quantifiers in source order. | Test (TC-346) |
-| FR-402-AC-2 | Reversing two quantifiers, moving a fairness constraint between variables, changing a variable's alias, changing the match or the `align skip` list, and changing the instance key each change the obligation identity. | Test (TC-346) |
+| FR-402-AC-2 | Reversing two quantifiers, moving a fairness constraint between variables, changing a variable's alias, changing the match or the `align skip` list, and changing a subject's universe list, its order included, each change the obligation identity. | Test (TC-346) |
 | FR-402-AC-3 | Two clauses that differ only in source spelling with the same checked meaning share one obligation identity; renaming a trace variable is not spelling and gives a different node and obligation identity. | Test (TC-346) |
 | FR-402-AC-4 | A step relation's model claim and code claim have different obligation identities. | Test (TC-343, TC-346) |
 | FR-402-AC-5 | A `behaviours` clause's `quantifiers` binding is a Tuple of one quantifier Group per quantifier, each Group binding `variable`, `quantifier` and `alias` to text literals and then holding one `reference` per fairness constraint to its `temporal`/`fairness` node; with `fair weak V::Vault::step` on `a` of TC-337 HB-01, `a`'s Group holds one reference and `b`'s none; the body passes strict wire validation of FR-322's grammar with no `malformed_wire`, and the reader admits the package. A finite-domain clause's Groups bind `variable` and `quantifier` only and its `subjects` is empty. | Test (TC-346) |

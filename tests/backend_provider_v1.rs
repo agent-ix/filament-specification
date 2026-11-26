@@ -2907,6 +2907,38 @@ fn certificate_unchecked_incomplete_needs_no_task_search() {
     assert!(!stage.is_valid(&unknown), "an unregistered reason is refused");
 }
 
+/// FR-413-AC-19: the `expected-total` claim bound is admitted under both
+/// comparisons with exactly its three members, and a `StatisticalVerdict`
+/// does not carry it.
+#[trace("TC-431", "FR-413-AC-19")]
+#[test]
+fn expected_total_claim_bound_wire_forms() {
+    let bound = definition("ProbabilisticBound");
+    let half = serde_json::json!({"numerator": "1", "denominator": "2"});
+    let at_most = serde_json::json!({"type": "expected-total", "comparison": "less-or-equal", "threshold": half});
+    let at_least = serde_json::json!({"type": "expected-total", "comparison": "greater-or-equal", "threshold": half});
+    assert!(bound.is_valid(&at_most), "less-or-equal is admitted");
+    assert!(bound.is_valid(&at_least), "greater-or-equal is admitted");
+
+    let with_level = serde_json::json!({"type": "expected-total", "comparison": "less-or-equal", "threshold": half, "level": half});
+    let extra = serde_json::json!({"type": "expected-total", "comparison": "less-or-equal", "threshold": half, "reward": "energy"});
+    let strict_less = serde_json::json!({"type": "expected-total", "comparison": "less", "threshold": half});
+    let strict_greater = serde_json::json!({"type": "expected-total", "comparison": "greater", "threshold": half});
+    assert!(!bound.is_valid(&with_level), "a level is refused");
+    assert!(!bound.is_valid(&extra), "an extra member is refused");
+    assert!(!bound.is_valid(&strict_less), "`less` is refused");
+    assert!(!bound.is_valid(&strict_greater), "`greater` is refused");
+
+    let verdict = definition("StatisticalVerdict");
+    let mut judged = published_statistical_verdict();
+    judged["bound"] = serde_json::json!({"type": "probability", "comparison": "less-or-equal", "threshold": half});
+    assert!(verdict.is_valid(&judged), "a verdict with a probability bound is admitted");
+    for refused in [at_most, at_least] {
+        judged["bound"] = refused;
+        assert!(!verdict.is_valid(&judged), "a verdict does not carry expected-total");
+    }
+}
+
 /// The published `probabilistic-outcome` verdict, the base of the FR-410 wire
 /// cases below.
 fn published_statistical_verdict() -> Value {
@@ -3068,5 +3100,65 @@ fn tc_2115_mixed_weight_component_carries_a_zero_weight_pair() {
             "{}",
             case["id"]
         );
+    }
+}
+
+/// FR-331-AC-69: a non-proved state-graph result entry names its claim instance
+/// by a typed key, and a two-parameter evidence arm lists both bindings.
+#[trace("TC-431", "FR-331-AC-69")]
+#[test]
+fn tc_431_state_graph_result_instance_and_evidence_list() {
+    let result = definition("Result");
+    let key = json!({"type": "integer", "value": "1"});
+    let instance = json!({"type": "instance", "parameter": "c", "key": key});
+    let entry = json!({
+        "request_index": 0,
+        "backend": "engine",
+        "kind": "temporal-satisfaction",
+        "result": "inconclusive",
+        "cause": {"type": "undecided-successor"},
+        "instance": instance
+    });
+    assert!(result.is_valid(&entry), "{:?}", errors(&result, &entry));
+    for refused in [
+        json!({"type": "instance", "parameter": "c", "key": null}),
+        json!({"type": "instance", "parameter": "c"}),
+        json!({"type": "instance", "key": key}),
+        json!({"type": "instance", "parameter": "c", "key": key, "population": "p"}),
+    ] {
+        let mut altered = entry.clone();
+        altered["instance"] = refused.clone();
+        assert!(!result.is_valid(&altered), "{refused}");
+    }
+    let mut proved = json!({
+        "request_index": 0,
+        "backend": "engine",
+        "kind": "temporal-satisfaction",
+        "result": "proved",
+        "basis": {"type": "exhaustive"},
+        "certification": "uncertified"
+    });
+    assert!(result.is_valid(&proved), "{:?}", errors(&result, &proved));
+    proved["instance"] = instance;
+    assert!(!result.is_valid(&proved), "a proved entry names no instance");
+
+    let evidence = definition("GraphEvidence");
+    let binding = |parameter: &str| json!({"parameter": parameter, "key": key});
+    let arm = |instance: Value| {
+        json!({
+            "type": "graph-evidence",
+            "arm": "trap",
+            "instance": instance,
+            "stem": {"type": "model-path", "initial": "0", "steps": []}
+        })
+    };
+    let listed = arm(json!([binding("v"), binding("w")]));
+    assert!(evidence.is_valid(&listed), "{:?}", errors(&evidence, &listed));
+    for refused in [
+        json!([binding("v")]),
+        json!([binding("v"), {"parameter": "w", "key": null}]),
+        json!([binding("v"), {"parameter": "w", "key": key, "population": "p"}]),
+    ] {
+        assert!(!evidence.is_valid(&arm(refused.clone())), "{refused}");
     }
 }

@@ -48,6 +48,9 @@ selected reductions.
 One FR-360 label with one FR-243 basis per item, its settlement method, and
 its evidence ([FR-393](../../objects/interfaces/FR-393-state-graph-evidence.md)).
 
+The rules below settle one claim instance; FR-390 "Instances and the item's
+result" combines the instances into the item's one record.
+
 ## Open and closed nodes
 
 A node whose outgoing edges an exploration has not fully computed is

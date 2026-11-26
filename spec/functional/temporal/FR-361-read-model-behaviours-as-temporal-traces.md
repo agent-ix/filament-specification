@@ -217,8 +217,9 @@ clause holds exactly when every instance holds; but when instances refute by
 different causes, the cause follows the order, so the order is normative and
 enters the request identity through the universe lists the subject carries.
 An instance is identified by its key alone, which is why the wire forms that
-name an instance by parameter and key (the replay `over_binding`, the evidence
-`Instance` and the obligation identity) need no population member.
+name an instance by parameter and key (the replay `over_binding` and the
+evidence `Instance`) need no population member. An item's obligation identity
+binds no instance.
 
 The analyzer SHALL bind `x` at each position to the reference (`universe`,
 `object_type`, `identity`) of the object the state holds under the instance's
