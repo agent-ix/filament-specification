@@ -74,10 +74,17 @@ with:
 - `not-stochastic` over a timed subject when a racing identity's operation
   declares no `delay` declaration, at the first state where it races
   ([FR-420](FR-420-sample-stochastic-timed-models.md));
+- `not-stochastic` with the idle-tail payload `state` and `idle_tail` over a
+  timed subject, at the first sample in trace-index order whose reading depends
+  on the stutter stamps of an idle tail (FR-420 "Windows on an idle tail");
 - `time-locked-sample{state}` over a timed subject when a sample reaches a
   time-locked state before its horizon (FR-420);
 - `total-above-draw-range{total}` when a sampled choice's integer total exceeds
   `2^256`, at the first such choice (the sampler definition).
+
+A sample on a dense idle tail that the provider cannot yet decide over every
+completion stops the run and settles the item `incomplete`,
+`idle-tail-undecided{state, reason}` (FR-420 "Undecided completions").
 
 ### Tests and Bonferroni
 
