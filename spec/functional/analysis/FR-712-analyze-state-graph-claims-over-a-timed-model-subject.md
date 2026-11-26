@@ -95,6 +95,11 @@ timed form.
   it. The replay component SHALL replay it with no provider present. A
   `unique path` refutation carries the two step sequences, or the cycle and
   the node it returns to.
+- **Step delay.** Every step on a timed state-graph path SHALL carry FR-393's
+  `delay` member, the FR-181 delay before that step, a zero delay included:
+  the steps of a `ModelPath` and of a path pair's `first` and `second`. A
+  replayer needs the delay to check a timed path. The member is optional in
+  the wire schema because a step on an untimed path has no delay.
 - **Proof basis and certificate.** A zone proof settles with basis
   `zone-certified` and an FR-418 certificate covering the reachable zones.
   For `always possible` the certificate also carries a `state_graph` part
@@ -139,6 +144,7 @@ The vector is TC-369's `Rpc` model with `T = 4 ms`.
 | FR-712-AC-7 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-09's `audit(a)` guard evaluates `lookup` of absent `rz` at the initial state; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key, guard locus and FR-181 identity of `audit(a)`, and whose cause is `absent-key`; the guard is not treated as disabled. | Test (TC-1742) |
 | FR-712-AC-8 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-11's `Lost` terminal state evaluates its `terminal when` predicate by `lookup` of an absent key; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key and terminal-predicate locus, with no predicate or transition member, and whose cause is `absent-key`. | Test (TC-1742) |
 | FR-712-AC-9 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-12's selected state constraint evaluates `lookup` of absent `rz` at the initial state; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key and constraint locus, with no predicate or transition member, and whose cause is `absent-key`. | Test (TC-1742) |
+| FR-712-AC-11 | Every step of AC-1's `possible` witness carries `delay`, an exact rational `{numerator, denominator}`, a zero delay included. The `filament.backend-provider/v1` schema admits a `GraphStep` carrying `delay` `{"numerator": "0", "denominator": "1"}` and one carrying no `delay`, and refuses one whose `delay` is a string or has no `denominator`. | Test (TC-1742) |
 
 ## Dependencies
 

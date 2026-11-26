@@ -42,7 +42,10 @@ runs.
     transition identity and `post_state` the post-state's State locus
     `{"key":"<state key>"}` (FR-331), `<state key>` the state key (FR-181)
     in the unpadded base64url spelling of its canonical JCS bytes, with no
-    hash.
+    hash. A step may also carry `delay`, the FR-181 delay before the step as
+    a `{"numerator","denominator"}` exact rational in the model's unit;
+    [FR-712](../../functional/analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md)
+    requires it on every step of a timed state-graph path.
 - **Instance** — the `over` binding of the item's instance:
   `{"type":"instance","parameter":"<ident>","key":<encoded>}`, with `key`
   the bound object's universe key in FR-181 typed canonical form, or `null`
