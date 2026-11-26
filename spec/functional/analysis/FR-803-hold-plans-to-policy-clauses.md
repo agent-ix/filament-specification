@@ -72,6 +72,11 @@ states for the search node (FR-801).
   request SHALL be refused with FR-153's
   `incomplete_population`/`incomplete-scope` at `/initial`, as FR-806 states
   for a snapshot that does not admit, and SHALL NOT settle `no-instance`.
+- A population overlapping `T` that the initial snapshot omits SHALL be
+  refused the same way, with FR-153's
+  `incomplete_population`/`missing-required-artifact` at `/initial`, before
+  any search. FR-361's `requires-bound` is for an unbounded root and does not
+  apply.
 - A clause's monitor is its instances' monitors taken together, in FR-361's
   instance order. One update of it reads the instances in that order and ends
   at the first instance whose safety monitor rejects. FR-801 charges it as one
@@ -132,6 +137,7 @@ A rule whose evaluation is undefined at a position does not hold there.
 | FR-803-AC-9 | Over a variant of the counter model whose one operation is `spawn()`, which creates a `Counter` with `value` 4, with `c` at 1, domain `Int[1, 1]`, goal `true` and the policy `NotFour`, the result is `optimal` with the one-step plan `spawn`: the created object is not an instance of `NotFour`. | Test (TC-1953) |
 | FR-803-AC-10 | With the `counters` population holding no object, the policy list `["NotFour", "Nowhere"]`, where `Nowhere` names no declaration, refuses `missing_declaration`/`missing-name` at `/policy/1` and writes no plan outcome; it does not settle `no-instance`. | Test (TC-1953) |
 | FR-803-AC-11 | With the `counters` population listed `complete: false` and the policy `NotFour`, the request refuses `incomplete_population`/`incomplete-scope` at `/initial` and writes no plan outcome. | Test (TC-1953) |
+| FR-803-AC-12 | Over the counter with a snapshot that omits the `counters` population, domain `Int[0, 0]`, goal `true` and the policy `NotFour`, the request refuses with FR-153's `incomplete_population`/`missing-required-artifact` at `/initial` before any search and writes no plan outcome; it does not settle `no-instance`. | Test (TC-1953) |
 
 ## Dependencies
 
