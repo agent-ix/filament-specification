@@ -23,6 +23,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-322
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-417: Settle time-lock freedom for every timed subject

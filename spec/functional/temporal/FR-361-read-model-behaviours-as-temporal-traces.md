@@ -19,6 +19,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-366
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-361: Read a model subject's behaviours as temporal traces

@@ -25,6 +25,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-640
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-407: State probabilistic claims over events and measures
