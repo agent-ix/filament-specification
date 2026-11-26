@@ -22,3 +22,9 @@ Changes needed: one low finding.
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | low | Step 4 requests 'an inadmissible initial snapshot' and the expected result is exit 20, but FR-806 now says an admission refusal exits as its own code and AC-4 fixes 20 only for the bound violation. A snapshot listing a population complete: false is inadmissible and exits 22, so a test built that way contradicts the expected result. Say 'a snapshot that violates the population bound'. | spec/test-cases/TC-1956-plan-refusals.md:22 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | 61189d2a: TC-1956 step 4 names the population bound violation. |

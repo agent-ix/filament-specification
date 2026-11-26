@@ -23,3 +23,10 @@ Changes needed: one high finding, which needs an arch decision, and one low.
 | --- | --- | --- | --- |
 | FND-001 | high | 'The other codes these tables name are refusals, exit 20' includes unsupported_projection and unsupported_construct, whose category is unsupported, exit 21: TC-413 SV-04 and SV-10 give unsupported_construct/not-yet-implemented exit 21 and FR-806-AC-6 gives the same code and cause exit 20; FR-339-AC-7 and TC-2040 also use 21; FSL's code catalogue maps both codes to 21 (FSL FR-285, read). So one code keeps two exits by route, which the ruling removes. A planner that exits by code gives 21 for TC-2037's conflict and for an unbounded domain and fails AC-6 and TC-1956 step 1. The ruling as relayed also says other located refusals keep 20, so arch must say which holds: either state unsupported, exit 21 for the two codes in FR-806, AC-6, TC-1956 and TC-2037, or record why these routes are refusals. | spec/functional/analysis/FR-806-refuse-plan-requests-with-located-causes.md:37-41 |
 | FND-002 | low | FR-806 points to FR-301 for a code's category, but FR-301 maps no code and its incomplete row does not cover an unestablished population. Add incomplete_population (and unavailable_observation) to the row or say where a code's category is owned. | spec/functional/tooling/FR-301-expose-complete-cli.md:67 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | 61189d2a..0857b274: arch ruled exit 21 for unsupported_construct and unsupported_projection; FR-806 and AC-1, AC-6, FR-805, FR-322, FR-823, TC-1956 and TC-2037 agree, and no place found still gives these codes 20. |
+| FND-002 | fixed | 61189d2a..0857b274: FR-301's unsupported and incomplete rows now name the codes. |
