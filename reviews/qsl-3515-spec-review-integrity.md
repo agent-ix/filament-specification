@@ -34,3 +34,4 @@ Changes needed: one medium finding. Statuses, cause and exit tables agree across
 | FND | outcome | reason |
 | --- | --- | --- |
 | FND-001 | fixed | a4b3e72a: FR-801 charges one max_work per policy clause and states the node's instance states and the initial reading; matches FSL plan_search.rs. |
+| FND-002 | fixed | 4f36fe84: each population's universe is the snapshot's listed keys in list order, so FR-361's instance order is defined for a plan. |

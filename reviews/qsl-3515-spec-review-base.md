@@ -24,9 +24,16 @@ Changes needed: one medium and one low coverage finding.
 | FND-001 | medium | No criterion has a clause with two or more instances, or a key only a step creates. An implementation that monitors only the first admitted key passes AC-1 to AC-7 and reports optimal for a plan that breaks the policy at the second object. Add a two-object criterion (FSL FR-1012-AC-8 has one: a at 0, b at 4, always value != 4, goal true, domain Int[0, 0], infeasible) and its TC-1953 step. | spec/functional/analysis/FR-803-hold-plans-to-policy-clauses.md:54-64 |
 | FND-002 | low | 'It SHALL decide this after every admission refusal' has no criterion. With the counters population empty and policy ['NotFour', 'Nowhere'], an implementation that settles no-instance at the first clause, never refusing missing-name at /policy/1, passes every criterion. | spec/functional/analysis/FR-803-hold-plans-to-policy-clauses.md:67-69 |
 
+## New findings (disposition pass 2)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-003 | low | With FR-803-AC-9 removed, no criterion covers 'even when a step creates an object under it': an implementation that adds a monitor instance for a created key passes every criterion. No plan request can supply a creatable key yet (Unconfirmed on QSL-3515), so no test can be written until that is settled. | spec/functional/analysis/FR-803-hold-plans-to-policy-clauses.md:63-72 |
+
 ## Dispositions
 
 | FND | outcome | reason |
 | --- | --- | --- |
 | FND-001 | fixed | a4b3e72a: AC-8 has two instances where only the second rejects; AC-9 covers a created key (its fixture gap is SR-202611210022442313144108573 FND-002). |
 | FND-002 | fixed | a4b3e72a: AC-10 and TC-1953 step 10 require the /policy/1 refusal over no-instance. |
+| FND-003 | accepted-no-change | Code lead decision: final spec round, remaining spec lows are accepted; the creatable-key source is Unconfirmed on QSL-3515. |

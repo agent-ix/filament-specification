@@ -34,3 +34,5 @@ Changes needed: one medium finding. The status, cause spelling, category and exi
 | FND | outcome | reason |
 | --- | --- | --- |
 | FND-001 | fixed | 9507f34f: a listed complete:false population and an omitted one each refuse at /initial before no-instance (AC-11, AC-12). |
+| FND-002 | fixed | 4f36fe84: AC-9 and its TC-1953 step are removed; the source of creatable keys is recorded Unconfirmed on QSL-3515. |
+| FND-003 | fixed | 4f36fe84: FR-806 has both incomplete_population rows, states their order against the policy refusals, and AC-7 with TC-1956 step 6 tests it. |
