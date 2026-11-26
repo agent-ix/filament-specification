@@ -98,7 +98,9 @@ over all of them.
 A **time-lock** is a reachable timed state from which no time-divergent
 continuation exists. It is **local** when no positive delay is admissible and
 no discrete step is enabled at it; otherwise every continuation from it is
-Zeno. A terminal state whose admissible delay is bounded (FR-181) is a
+Zeno. A Zeno trap with no exit, a set of reachable states that a run cannot
+leave and in which time cannot diverge, therefore consists of time-locked
+states. A terminal state whose admissible delay is bounded (FR-181) is a
 time-lock. [FR-417](FR-417-settle-time-lock-freedom.md) reports time-locks.
 A run that reaches a time-lock and takes no further step **ends** there with
 time frozen: it adds no new state and no later time stamp, and a product that
@@ -135,12 +137,10 @@ on that abstraction.
   meets is never met, so the run counts 0 for it, and an `always` that every
   such position in its window satisfies holds, so the run counts 1 for it. A
   measure whose completing position the run does not have is never completed:
-  it is censored, and an `expected ... until` expectation then exceeds every
-  finite bound
-  ([FR-407](../analysis/FR-407-state-probabilistic-claims.md)). A
-  probabilistic item does not settle `no-admitted-behaviour` on account of a
-  time-lock. How a `fraction` or a long-run fraction reads a run that ends in a
-  time-lock is not decided by this requirement.
+  it is censored. A probabilistic item does not settle
+  `no-admitted-behaviour` on account of a time-lock. How a `fraction` or a
+  long-run fraction reads a run that ends in a time-lock is not decided by this
+  requirement.
 
 #### Outcomes decided before a run is read
 

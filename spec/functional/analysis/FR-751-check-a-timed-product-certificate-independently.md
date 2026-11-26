@@ -32,12 +32,14 @@ that produced the certificate, and SHALL accept the certificate only when
 FR-412's conditions hold on that rebuilt product. A `proved` result over a
 timed subject SHALL count only after such a checker accepts its certificate.
 
-The one thing the checker and the provider may share is the qualified core's
-statement of the concrete timed run (FR-416 "The timed run"): exact clock
-values, delay admissibility, the discrete step, positions and the outcome
-types. Every abstraction of that run (integer clocks, regions, zones), with
-its successor, race, monitor-progress and component code, is written
-separately in each.
+The checker and the provider may share the qualified core's statement of the
+concrete timed run (FR-416 "The timed run": exact clock values, delay
+admissibility, the discrete step, positions and the outcome types) and the one
+type, with its validator and encoder, of a certificate's wire members, a
+product state key included. Every abstraction of the run (integer clocks,
+regions, zones), with its successor, race, monitor-progress and component
+code, is written separately in each, and no fact found on an abstraction
+(divergence, an end component, a time-lock) passes from one to the other.
 
 The checker exists so that a reviewer need not trust the provider's timed
 reasoning, which is where the subtle errors live: a digital reading of a
