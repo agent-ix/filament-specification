@@ -17,13 +17,13 @@ relationships:
 
 ## Description
 
-Classify clauses into HP-1 to HP-6, settle HP-4 unsupported without running an engine, and route single-existential clauses to the possibility family.
+Classify clauses into HP-1 to HP-6, settle HP-4 unsupported without running an engine, route single-existential clauses to the possibility family, and form one result for a `hyper` clause from its instances.
 
 ## Test Procedure
 
 Admit each vector through the real local Rust boundary and record its form, its requested items and kinds, and its result; replay every witness and trap. The vault subject: model `V` with object type `Vault`, fields `h: Int[0, 1]` (secret) and `l: Int[0, 1]` (public output), population `vaults` with universe `{v}`, one operation `step(i: Int[0, 1])` with frame `modifies [l]` and no precondition, and initial snapshots `(h, l) = (0, 0)` and `(1, 0)`. The leaky model's post clause is `self.l = (i + self.h) mod 2`; the secure model's is `self.l = i`.
 
-The counter subject: model `M` with object type `Counter`, field `value: Int[0, 5]`, one population with universe `[p, q]` unless a vector states another, one operation `inc` that raises its receiver's `value` by 1 and is enabled while it is below 3, and one initial state holding both counters.
+The counter subject: model `M` with object type `Counter`, field `value: Int[0, 5]`, one population with universe `[p, q]` unless a vector states another, one operation `inc` that raises its receiver's `value` by 1 and is enabled while it is below 3, and one initial state holding both counters. A vector marked "injected" hands the stated per-instance outcomes of a clause with instances `p` then `q` to the item's settlement in place of an engine run.
 
 ## Vectors
 
@@ -41,10 +41,17 @@ The counter subject: model `M` with object type `Counter`, field `value: Int[0, 
 | HF-10 | HF-05 with `max_states` set so the product exploration stops after a witness lasso was found for every initial state | `inconclusive`, cause `well-definedness-unchecked`, with the witnesses; never `proved` |
 | HF-11 | HF-05 with body `eventually holds((lookup<V::Vault>(vaults, rw) absent undefined).l @ b = 1)`, `rw` valued a key not in `vaults` | `refuted`, `decisive-counterexample`, cause `undefined-evaluation` with `absent-key`, although a witness lasso exists for the defined part |
 | HF-12 | HF-05's witness with its lasso made unfair under a `fair weak V::Vault::step;` constraint on `b`, and HF-06's trap replayed on a model where `step` is enabled | `inconclusive`, `replay-parity` in both cases |
-| HF-13 | Over the counter subject, `exists trace a of M { always holds((v.value <= 3) @ a) }` with `v: M::Counter`, maximum depth 1, `witness_samples` 0, `p` at 0 and `q` at 4 | one item; instance `p` is `inconclusive`, `bound-reached`, and instance `q` has a trap: the item is `refuted`, `closed-scope`, at `q` |
+| HF-13 | Over the counter subject, `hyper N using inf over behaviours (v: M::Counter) exists trace a of M { always holds(v.value @ a <= 3) }`, maximum depth 1, `witness_samples` 0, `p` at 0 and `q` at 4. Precondition: within depth 1 instance `p`, first in order, is `bound-reached`, and instance `q` has a trap | one item, `refuted`, `closed-scope`, at `q` |
 | HF-14 | HF-13's clause with both counters at 4, over the universe `[p, q]` and over `[q, p]` | one item, `refuted`, at `p` for `[p, q]` and at `q` for `[q, p]` |
-| HF-15 | `exists trace a of M { always holds((v.value = w.value) @ a) }` with `(v: M::Counter, w: M::Counter)`, universe `[p, q]`, `p` at 0 and `q` at 4 | one item over 4 instances; `(p, q)` and `(q, p)` are refuted; the item reports `v = p`, `w = q` |
+| HF-15 | `hyper N using inf over behaviours (v: M::Counter, w: M::Counter) exists trace a of M { always holds(v.value @ a = w.value @ a) }`, universe `[p, q]`, `p` at 0 and `q` at 4 | one item over 4 instances; `(p, q)` and `(q, p)` are refuted; the item reports `v = p`, `w = q` |
+| HF-16 | Injected: (a) `p` `inconclusive` `induction-not-closed`, `q` `inconclusive` `vacuous-match`, then the two outcomes exchanged; (b) `p` `proved`, `q` `inconclusive` `bound-reached`; (c) `p` `inconclusive` `bound-reached`, with the caller cancelling before `q` is refuted | (a) `p`'s result each time; (b) `inconclusive`, `bound-reached`, never `proved`; (c) `incomplete`, `cancelled` |
+| HF-17 | `hyper N using inf over behaviours (v: M::Counter) forall trace a of M { always holds(v.value @ a <= 1) }`, `p` at 0 and `q` at 2 | one item, `refuted`, `decisive-counterexample`, a `lockstep` counterexample whose `instance` names `v = p` and on which `p` reaches 2, although `q` is violated at position 0 |
+| HF-18 | Injected, both `proved`: (a) `p` `certified` `exhaustive`, `q` `uncertified` `inductive{2}`; (b) `p` `certified` `exhaustive`, `q` `certified` `reduced`; (c) both `uncertified`, `inductive{1}` and `inductive{3}`; (d) both `uncertified`, `p` `inductive{1}`, `q` `bounded-complete{5}`; (e) both `uncertified`, `bounded-complete{5}` and `bounded-complete{3}` | (a) `uncertified`, `q`'s; (b) `certified`, `q`'s; (c) `p`'s; (d) `q`'s; (e) `q`'s; each with both instances' evidence |
+| HF-19 | Injected: (a) `p`'s refutation fails replay with `replay-parity` and `q`'s replays, then the two outcomes exchanged; (b) `p`'s refutation fails replay and `q` is `proved`, then exchanged; (c) HF-17's clause under an engine returning one outcome over all instances, its counterexample for `p` altered so that replay disagrees | (a) `refuted` with the confirmed instance's evidence each time; (b) `inconclusive`, `replay-parity` each time; (c) `inconclusive`, `replay-parity`, although `q` is violated |
+| HF-20 | HF-13's clause and starts, `witness_samples` 0, with `max_states` 1 and no maximum depth, over the universe `[p, q]` and over `[q, p]` | `[p, q]`: `incomplete`, `limit-reached` naming `max_states` 1, since `p` spends the item's one state; `[q, p]`: `refuted`, `closed-scope`, at `q`, whose part is closed because its unexpanded states have no run of the body's automaton, and the trap replays |
+| HF-21 | HF-14's clause over `[p, q]`, on a variant whose `inc` precondition has no value for a receiver at value 4 | never `closed-scope`; `refuted`, `undefined-evaluation` |
+| HF-22 | HF-15's clause with both counters at 3 | one item, `proved`, `decisive-witness`, with four `witness` arms in the order `(p, p)`, `(p, q)`, `(q, p)`, `(q, q)`, each naming its two-entry `instance`, and each replays |
 
 ## Expected Results
 
-Each clause has exactly one form, HP-4 never reaches an engine, and a single-existential claim is settled by the possibility family's rows.
+Each clause has exactly one form, HP-4 never reaches an engine, a single-existential claim is settled by the possibility family's rows, and a `hyper` clause has one result over its instances, never `proved` unless every instance is.

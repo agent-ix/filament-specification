@@ -54,7 +54,7 @@ The three clauses of the shared grammar's `state-graph-clause` production are
 A state-graph claim has no temporal profile, no clock, no activation and no
 fairness set. Its `over` parameter binds one object of a population of the
 subject's model, and the clause has one instance per distinct admitted key (FR-361) in the
-universe of any population overlapping the parameter's type; a clause with no `over` parameter has one instance. Where the bound
+universe of any population overlapping the parameter's type; a clause with no `over` parameter has one instance. A clause with no instance is still one requested item, which FR-391 settles. Where the bound
 object does not exist at a node, its predicates read the bound object as a
 temporal atom over a model subject reads an absent `over` object.
 
@@ -156,7 +156,7 @@ A trace monitor evaluates no state-graph claim.
 | FR-390-AC-4 | `unique path` counts paths per reachable node where `X` holds: two interleavings of independent steps give one such node two paths, a sequenced model gives one, and a cycle on a path to `Y` gives more than one. | Test (TC-333) |
 | FR-390-AC-5 | A reachable terminal node where `Q` holds and `P` does not refutes `always possible`; declaring a `terminal when` predicate that holds there changes no state-graph verdict and settles the subject's deadlock-freedom item `proved`. | Test (TC-332) |
 | FR-390-AC-6 | A request whose only items over a subject are state-graph items holds that subject's one deadlock-freedom item. | Test (TC-330) |
-| FR-390-AC-7 | Each claim instance requires `temporal-satisfaction` with its form recorded as an obligation form; a single candidate whose arm does not discharge the form settles the item `unsupported` with `unsupported_projection`/`unsupported-requested-capability`; an `over` clause yields one item per distinct admitted key (FR-361) in the universe of any population overlapping the parameter's type. | Test (TC-330) |
+| FR-390-AC-7 | Each claim instance requires `temporal-satisfaction` with its form recorded as an obligation form; a single candidate whose arm does not discharge the form settles the item `unsupported` with `unsupported_projection`/`unsupported-requested-capability`; an `over` clause yields one item per distinct admitted key (FR-361) in the universe of any population overlapping the parameter's type, and one item, settled `no-instance` or `no-initial-state` by FR-391, when there is none. | Test (TC-330) |
 
 ## Dependencies
 

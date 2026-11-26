@@ -68,15 +68,17 @@ and settled by [FR-399](FR-399-settle-hyperproperty-results.md).
   that key in every trace of that alias: objects are correlated across traces
   by universe key, never by local name. A clause over two aliases names one
   parameter per alias it reads, and its instances range over the product of
-  their admitted keys. A clause one of whose parameters has no admitted key
+  their admitted keys. Over subjects that each have an initial state, a clause
+  one of whose parameters has no admitted key
   (no population overlaps its type, every overlapping population has an empty
   universe, or no initial member record admits a key of their universes), which
   FR-361 states as zero instances, has an
   empty product and zero instances: the item is a `NoInstance` item of
   [FR-361](../temporal/FR-361-read-model-behaviours-as-temporal-traces.md)
   Instancing and settles by [FR-399](FR-399-settle-hyperproperty-results.md),
-  never `proved`, since no instance was ever evaluated. A parameter with an
-  overlapping population that has no universe is `requires-bound` first.
+  never `proved`, since no instance was ever evaluated. `requires-bound`,
+  `no-initial-state` and `conflicting-identity` come before it, in FR-399's
+  order.
 - **Indexed reads.** Every model member read in the body carries exactly one
   trace variable, written `e @ a`; one atom may read several variables.
 - **Step labels.** Inside `match`, `a.step.op` is the operation of the step
@@ -148,7 +150,8 @@ and settled by [FR-399](FR-399-settle-hyperproperty-results.md).
   prefix counts as matched, so its matched set is never empty and a `μ_U` that
   no joint visible step satisfies leaves the item deciding on the position-0
   prefix alone. A subject with no initial state is `no-initial-state`, and a
-  clause with no instance `no-instance`, as for every form.
+  clause with no instance over subjects that have one `no-instance`, as for
+  every form.
 - **Deadlocks.** A hyper item reports no deadlock. A request that holds a
   hyper item holds the one derived deadlock-freedom item
   ([FR-366](../temporal/FR-366-check-deadlock-freedom.md)) of each distinct

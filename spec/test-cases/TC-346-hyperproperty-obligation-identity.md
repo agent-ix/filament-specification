@@ -38,7 +38,7 @@ refusal and location.
 | HI-03 | PF-01 and PF-02 of TC-341 | different identities |
 | HI-04 | HB-02 and HB-02 with the aliases of its two variables swapped | different identities |
 | HI-05 | HB-01 and HB-01 with a match conjunct removed; HB-01 with and without `align skip` | different identities |
-| HI-06 | two instances of HB-02 with different universe keys | different identities |
+| HI-06 | HB-02 over subjects whose `S` universe list of `Device` is `[x, y]`, `[y, x]` and `[x]`, otherwise equal | three different identities, one item each |
 | HI-07 | HB-01 and HB-01 with different whitespace and comments | the same identity |
 | HI-08 | HB-01 with `fair weak V::Vault::step;` on `a` | `quantifiers` is a Tuple of two Groups: `a`'s binds `variable` `a`, `quantifier` `forall`, `alias` `V` and then holds one `reference` to a `temporal`/`fairness` node whose member is `{kind: "fairness", fairness_kind: "weak", granularity: "whole", target: {kind: "operation", …}}` naming `Vault`'s `step`; `b`'s binds the same three with `variable` `b` and holds no reference; strict wire validation raises no `malformed_wire`; the reader admits the package (FR-402-AC-5, FR-370-AC-21) |
 | HI-09 | `hyper H using inf over t in Q bounded 4 forall trace a { true }` | `subjects` is empty; the one Group binds `variable` `a` and `quantifier` `forall` only; `body` references a Boolean `expression` node (FR-402-AC-5) |

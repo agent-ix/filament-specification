@@ -101,13 +101,16 @@ proof the rows apply in this order: a subject with no initial state settles
 tuple is needed: a finite subject with an initial state has a fair behaviour,
 and every tuple of fair behaviours is matched.
 
-An item has one instance per admitted key (FR-361) of the populations overlapping its parameter's type, a key listed by several populations being one instance, so an
-item with no admitted key (FR-361) for any one of its parameters has no instance to
-evaluate ([FR-395](FR-395-analyze-hyperproperties-over-behaviours.md)). The
-analyzer SHALL settle it `inconclusive` with cause `no-instance` before it
-explores any state, as [FR-361](../temporal/FR-361-read-model-behaviours-as-temporal-traces.md)
-does for other items, after the `requires-bound` classification: a parameter
-with an overlapping population that has no universe is `requires-bound`, never `no-instance`.
+An item has one instance per admitted key (FR-361) of the populations
+overlapping its parameter's type, a key listed by several populations being one
+instance, and with several parameters one per tuple of such keys (FR-395). The
+analyzer SHALL decide the instancing outcomes across all of the clause's
+parameters, before it explores any state, in FR-361's order: `requires-bound`
+when an overlapping population of any parameter has no universe; then
+`no-initial-state` when a subject of the clause has an empty list of initial
+states; then `invalid_runtime_input`/`conflicting-identity`; then `no-instance`
+when every subject has an initial state and any one parameter has no admitted
+key. `no-initial-state` and `no-instance` settle `inconclusive`.
 
 An HP-5 item settles by [FR-396](FR-396-classify-hyperproperty-forms.md)'s
 single-existential rows.
@@ -167,7 +170,8 @@ checked arithmetic as the run reaches it, and reaching one stops the run and
 settles FR-331 result `incomplete` with cause `limit-reached{limit, value,
 setting}`, naming the limit, its value and its setting as
 [FR-461](../foundation/FR-461-name-the-limit-value-and-setting.md) names and renders it, so the caller raises it
-and reruns.
+and reruns. FR-396 states how the instances of one `hyper` item share these
+limits and cancellation.
 
 | Member | Counts | Setting |
 | --- | --- | --- |
@@ -208,9 +212,10 @@ steps and automaton states for hyper items.
 | FR-399-AC-8 | A body that evaluates undefined at a reachable joint step settles `refuted`, basis `decisive-counterexample`, cause `undefined-evaluation` whose `where` names the variable tuple, the joint position, each component's state key and the expression's locus and whose `cause` names the catalogued reason, after its `undefined` counterexample replays to the same undefined value. | Test (TC-348) |
 | FR-399-AC-9 | With a violation and an undefined evaluation both reachable, the reported refutation is the first in canonical order: the first false or undefined tuple in the product of canonical edge orders for HP-1, and the first violating or undefined product state in canonical breadth-first order for HP-2, HP-3 and HP-6. | Test (TC-348) |
 | FR-399-AC-10 | A guard, the `terminal when` predicate or a state constraint of a component's subject that evaluates undefined at a component state of a reachable joint step settles the item `refuted`, `decisive-counterexample`, cause `undefined-evaluation` whose `where` names that component's variable and alias, the joint position, its state key and the expression's locus, plus the FR-181 transition identity for a guard, after its `undefined` counterexample replays to the same undefined value. | Test (TC-348) |
-| FR-399-AC-11 | A hyperproperty item with no admitted key for its object parameter (no overlapping population has a key that a member record of an initial state admits) settles `inconclusive`, basis `unsettled`, cause `no-instance` before any state is explored, and never `proved` or `refuted`; a two-alias item (HB-02's `(d: S::Device, e: N::Device)`) with no admitted key for one parameter and admitted keys for the other settles the same way, so the product rule does not read only the first parameter; the same item with an overlapping population that has no universe returns `requires-bound`, not `no-instance`. | Test (TC-340) |
+| FR-399-AC-11 | A hyperproperty item over subjects that each have an initial state, with no admitted key for its object parameter (no overlapping population has a key that a member record of an initial state admits) settles `inconclusive`, basis `unsettled`, cause `no-instance` before any state is explored, and never `proved` or `refuted`; a two-alias item (HB-02's `(d: S::Device, e: N::Device)`) with no admitted key for one parameter and admitted keys for the other settles the same way, so the product rule does not read only the first parameter; the same item with an overlapping population that has no universe returns `requires-bound`, not `no-instance`. | Test (TC-340) |
 | FR-399-AC-12 | An HP-2 k-induction outcome at depth 1 whose step query has a counterexample, one whose solver returns `unknown` at depth 1, and one whose solver stops for a resource internal to it that no request limit names each settle `inconclusive`, `unsettled`, cause `induction-not-closed{depth: 1}`, never `proved`; a run stopped by a limit the request names settles `failed` with execution `resource-incomplete`, FR-331 `incomplete`, `limit-reached` naming that limit, one ended by the caller's own deadline settles `incomplete`, `cancelled{source: deadline}`, and one whose backend overruns the request's `deadline_ms` settles `incomplete`, `timed-out`, each never `induction-not-closed` (the order of FR-363 "Undecided k-induction runs"). | Test (TC-340) |
 | FR-399-AC-13 | An HP-2 k-induction outcome at depth 1 whose solver stops at `max_solver_steps` 1000 settles `failed` with execution `resource-incomplete`, FR-331 `incomplete`, `limit-reached{limit: max_solver_steps, value: 1000, setting: smt.max_solver_steps}`; one stopped at `max_solver_time` 5 settles `limit-reached{limit: max_solver_time, value: 5, setting: smt.max_solver_time}`, never `timed-out`; neither is ever `induction-not-closed`. | Test (TC-340) |
+| FR-399-AC-14 | The instancing outcomes come in order across all parameters: a missing universe with an empty list of initial states returns `requires-bound`; bounded universes with an empty list settle `no-initial-state`, never `no-instance`, also when only one of two aliases' subjects has the empty list; and a subject with an initial state and no admitted key settles `no-instance`. | Test (TC-340) |
 
 ## Dependencies
 
