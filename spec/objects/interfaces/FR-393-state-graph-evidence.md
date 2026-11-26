@@ -42,10 +42,10 @@ runs.
     transition identity and `post_state` the post-state's State locus
     `{"key":"<state key>"}` (FR-331), `<state key>` the state key (FR-181)
     in the unpadded base64url spelling of its canonical JCS bytes, with no
-    hash. A step may also carry `delay`, the FR-181 delay before the step as
-    a `{"numerator","denominator"}` exact rational in the model's unit;
-    [FR-712](../../functional/analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md)
-    requires it on every step of a timed state-graph path.
+    hash. A step of a timed state-graph path
+    ([FR-712](../../functional/analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md))
+    also carries `delay`, the FR-181 delay before the step as a
+    `{"numerator","denominator"}` exact rational in the model's unit.
 - **Instance** — the `over` binding of the item's instance:
   `{"type":"instance","parameter":"<ident>","key":<encoded>}`, with `key`
   the bound object's universe key in FR-181 typed canonical form, or `null`
@@ -120,7 +120,9 @@ member:
   catalogued undefined reason, or an `undefined` member on any other arm;
 - an `undefined` arm whose `where` carries both `predicate` and `transition`,
   or a `transition` that is not a transition of the subject enabled-tested at
-  the stem's last state.
+  the stem's last state;
+- a step of a path over a timed subject with no `delay`, or a step of a path
+  over an untimed subject that carries one.
 
 ## Acceptance Criteria
 

@@ -28,7 +28,7 @@ Scope: FR-712-AC-1 to FR-712-AC-9 and FR-712-AC-11.
 4. Name a backend listing the forms that offers neither timed method; repeat step 1 with `options.method` `digital-clocks`.
 5. Check `possible` of `phase = Replied` and of `phase = TimedOut` over the Zeno-only variant of `Rpc` (FR-712-AC-5).
 6. Run TC-349 SG-06, SG-07, SG-09, SG-11 and SG-12 on the `zones` route. For each fixture, add a clock `z` with initial value `0 ms`, invariant `z <= 0 ms` in every state, and reset `z := 0 ms` on every operation. This timed overlay preserves the fixture's state and transition graph and admits no positive delay.
-7. Read the steps of step 1's `possible` witness, and validate against the `filament.backend-provider/v1` `GraphStep` schema a step with `delay` `{"numerator": "0", "denominator": "1"}`, the same step with no `delay`, with `delay` `"0"` and with a `delay` that has no `denominator` (FR-712-AC-11).
+7. Read the steps of step 1's `possible` witness, of step 2's trap `stem` without `reset`, of step 3's path pair with `reset` (`stem`, `first` and `second`), and of the `undefined` stems of SG-07, SG-09, SG-11 and SG-12 from step 6, and validate against the `filament.backend-provider/v1` `GraphStep` schema a step with `delay` `{"numerator": "0", "denominator": "1"}`, the same step with no `delay`, with `delay` `"0"` and with a `delay` that has no `denominator` (FR-712-AC-11).
 
 ## Expected Results
 
@@ -38,4 +38,4 @@ Scope: FR-712-AC-1 to FR-712-AC-9 and FR-712-AC-11.
 - Step 4: `unsupported` `unsupported-requested-capability`; with `digital-clocks`, the same verdicts with basis `exhaustive`.
 - Step 5: `Replied` proved with `zone-certified` basis and no `admitted` member, `TimedOut` refuted, and neither is refused for a missing divergence witness.
 - Step 6: SG-06 settles from its depth-1 trap as `refuted`, `closed-scope`; SG-07 settles from its depth-1 undefined predicate as `refuted`, `decisive-counterexample`, cause `undefined-evaluation`. SG-09 settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation` with the `audit(a)` guard's transition identity and `absent-key` reason (the guard is not disabled). SG-11 settles the same cause from the undefined `Lost` terminal predicate with no predicate or transition member in `where`. SG-12 settles the same cause from the undefined initial state constraint with no predicate or transition member in `where`.
-- Step 7: every witness step carries `delay`; the schema admits the step with the rational `delay` and the step with none, and refuses the string and the `delay` with no `denominator`.
+- Step 7: every step read carries `delay`, and every step of the step 6 stems carries `{"numerator": "0", "denominator": "1"}`; the schema admits the step with the rational `delay` and the step with none, and refuses the string and the `delay` with no `denominator`.
