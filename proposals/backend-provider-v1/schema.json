@@ -1321,7 +1321,7 @@
       "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}],
       "properties": {
         "decision": {"$ref": "#/$defs/MeasuredDecision"},
-        "bound": {"$ref": "#/$defs/ProbabilisticBound"},
+        "bound": {"$ref": "#/$defs/ProbabilisticBound", "not": {"required": ["type"], "properties": {"type": {"const": "expected-total"}}}},
         "estimate": {"$ref": "#/$defs/Estimate"},
         "interval": {"$ref": "#/$defs/Interval"},
         "basis": {
@@ -1354,12 +1354,13 @@
       "additionalProperties": false
     },
     "ProbabilisticBound": {
-      "description": "FR-413 bound copied into FR-410 StatisticalVerdict: closed claim form, the claim's own comparison, and exact threshold; quantile also carries its independent level.",
+      "description": "FR-413 claim bound: closed claim form, the claim's own comparison, and exact threshold; quantile also carries its independent level. FR-410 StatisticalVerdict copies it for every form but the exact-only expected-total.",
       "oneOf": [
         {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "probability"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
         {"type": "object", "required": ["type", "comparison", "threshold", "level"], "properties": {"type": {"const": "quantile"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}, "level": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
         {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "mean-of-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
-        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "long-run-fraction"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false},
+        {"type": "object", "required": ["type", "comparison", "threshold"], "properties": {"type": {"const": "expected-total"}, "comparison": {"enum": ["greater-or-equal", "less-or-equal"]}, "threshold": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}
       ]
     },
     "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},
