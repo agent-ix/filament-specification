@@ -137,7 +137,9 @@ on that abstraction.
   meets is never met, so the run counts 0 for it, and an `always` that every
   such position in its window satisfies holds, so the run counts 1 for it. A
   measure whose completing position the run does not have is never completed:
-  it is censored. A probabilistic item does not settle
+  it is censored, and an `expected ... until` expectation whose target the run
+  has not reached is infinite, so it exceeds every finite bound
+  (FR-407). A probabilistic item does not settle
   `no-admitted-behaviour` on account of a time-lock. How a `fraction` or a
   long-run fraction reads a run that ends in a time-lock is not decided by this
   requirement.
@@ -199,10 +201,11 @@ the proof basis `zone-certified`, with an [FR-418](../../objects/interfaces/FR-4
 zone certificate the checker accepts before the item settles, or `exhaustive`
 when every clock constraint, time invariant and timed interval is closed and
 the provider decides the subject over integer-valued clocks with constants
-scaled to integers (digitization), which a provider SHALL do only for items
-whose verdict digitization preserves: TT-1 over the discrete state, deadlock
-freedom, location reachability, and claims the provider's requirement shows it
-preserves.
+scaled to integers (digitization), which a provider SHALL do only for the items
+and claim forms an admission rule names: for exact probabilistic claims,
+[FR-421](FR-421-check-probabilistic-timed-claims-exactly.md) "Closed and strict
+conditions"; for the other timed items, the route admission table of FSL
+ADR-038.
 
 Every timed refutation carries a counterexample with exact rational delays
 that replays by FR-181 timed replay. A symbolic provider concretizes a

@@ -30,8 +30,8 @@ an FR-412 `ProbabilityCertificate` whose objective also names the clock
 reading the proof used, and whose state keys are complete timed product
 states. The certificate attests one fact: the exact value it gives at the
 initial state is the claim's value on the dense-time semantics of the subject,
-over the time-divergent behaviours FR-416 admits. For an every-scheduler
-claim that value is the minimum or maximum over those behaviours' schedulers;
+over the runs and schedulers FR-416 "Time divergence" admits. For an every-scheduler
+claim that value is the minimum or maximum over those schedulers;
 under a workload it is the workload's value, or its minimum or maximum over
 the delays no distribution gives.
 

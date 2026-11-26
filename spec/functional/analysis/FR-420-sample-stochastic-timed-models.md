@@ -98,15 +98,14 @@ timed subject under the workload is a Markov chain over timed states; free
 delays make it a Markov decision process, and a bound compares the minimum
 (for `>= θ`) or the maximum (for `<= θ`) over the free delays' choices.
 
-A timed state where an identity with an unbounded window has `uniform`, or
-where no identity races, delay is bounded and some scheduled identity has a
-non-empty window (its given distribution has no mass there), has no defined
-race and settles `unsupported`, `not-stochastic{state, identity}`, `identity`
-the identity at fault, the first in the sampler's canonical identity order
-where several are. A state where delay is bounded and every window is empty has
-no identity to name: it is a time-lock, settled as "Sampling timed runs"
-states. A quiescent state where no identity races takes the idle tail
-(FR-161).
+A timed state where an identity with an unbounded window has `uniform` has no
+defined race and settles `unsupported`, `not-stochastic{state, identity}`,
+`identity` the identity at fault, the first in the sampler's canonical identity
+order where several are. A state where no identity races and delay is bounded
+is a time-lock, whether every window is empty or some window is non-empty and
+holds no mass of its given distribution; it names no identity and is settled as
+"Sampling timed runs" states. A quiescent state where no identity races takes
+the idle tail (FR-161).
 
 ### Events and measures in time
 
@@ -308,7 +307,7 @@ model and ignore distributions.
 | FR-420-AC-1 | On the `RareLate` vector, `reply` with `delay Call::reply ~ discrete { 1 ms: 90, 3 ms: 10 };` ties with `timeout` at 3 ms with probability `1/10`, the workload orders the tie evenly, and the event's exact probability is `1/20`. | Test (TC-374) |
 | FR-420-AC-2 | Every sampled delay is an exact rational from the `2^-q` grid's conditioned inverse distribution function, `q` is recorded in the basis, and each sample replays with its delays. | Test (TC-374) |
 | FR-420-AC-3 | A racing identity of an operation with no `delay` declaration settles a statistical item `unsupported`, `not-stochastic`; under exact evidence its delay is a scheduler choice and the bound compares the minimum or maximum. | Test (TC-374) |
-| FR-420-AC-4 | An identity with an unbounded window and `uniform`, or a state with bounded delay and no racing identity though an identity has a non-empty window, settles `unsupported`, `not-stochastic{state, identity}`. | Test (TC-374) |
+| FR-420-AC-4 | An identity with an unbounded window and `uniform` settles `unsupported`, `not-stochastic{state, identity}`. A state with bounded delay and no racing identity, though an identity has a non-empty window, is a time-lock where the sample ends: on `Retx` under a workload with `delay Msg::send ~ discrete { 5 ms: 1 }` (TC-374 ST-04), `probability <= 0.5 [eventually[0 ms, 4 ms] holds(m.delivered)]` has estimate 0 and settles `measured: accepted`. | Test (TC-374) |
 | FR-420-AC-5 | A sample exceeding `max_sample_steps` stops the run with `incomplete`, `limit-reached` naming `max_sample_steps`, its value and how to raise it; an omitted `max_sample_steps` is `2^24`. | Test (TC-374) |
 | FR-420-AC-6 | With `reply` under `delay Call::reply ~ uniform;` the event's probability is 0, the statistical item settles `measured: accepted`, and the every-behaviour claim `NoLateReply` settles `refuted`. | Test (TC-374) |
 | FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon ends there: on the TC-374 `Lock` model, `probability <= 0.5 [eventually[0 ms, 2 ms] holds(c.phase = B)]` has estimate 1 and settles `measured: rejected`, and `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5` settles `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |
