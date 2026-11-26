@@ -105,7 +105,11 @@ timed form.
   canonical discovery order, the zone-graph nodes holding trapped timed states
   where the form requires reaching the target, and each convex piece of a
   node's trapped timed states, for a piece that the node's canonical path can
-  end in. The first piece found is the trap and decides the instance. Where
+  end in. The analyzer MAY try the pieces of one node in any order, and a
+  `stem` that ends in any trapped piece of that node conforms: whether one
+  exists does not depend on the order or on how the states are split into
+  pieces. The first node with such a piece gives the trap and decides the
+  instance. Where
   there is none, `unique path` SHALL still search for two step sequences. With
   neither, the analyzer SHALL settle the instance `inconclusive`,
   `lasso-not-concretized`, never `refuted`.
