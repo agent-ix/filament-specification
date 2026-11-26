@@ -52,6 +52,10 @@ The models below are defined here in full; the citation names the FSL design rec
 | PF-15 | `NoFault` with `indifference 0.002`; with `alpha 1` | `invalid-confidence` naming `indifference` (`θ + ι = 1.001`); `invalid-confidence` naming `alpha` |
 | PF-16 | `LongRun` with its scheduler clause written `under Steady fair weak Server::tick`; the same with `under every scheduler fair weak Server::tick` | `invalid_syntax`/`unexpected-token` at `fair`; admitted, with the fairness set in the obligation identity |
 | PF-21 | On `Two`, parse and decide both quantile claim forms (`<=` and `>=`) at `level = 1/2`; verify the exact probability, mean-of-fraction, long-run-fraction and expected-reward forms use the comparisons admitted by FR-407 | The source operators are retained; quantile keeps `level` separate from its measure threshold and uses the two FR-407 readings |
+| PF-22 | The timed traces of FR-407-AC-21, read by unweighted fractions over time windows | `2/3`, `1/3`, 1 and `1/2` (FR-407-AC-21) |
+| PF-23 | The traces and rewards of FR-407-AC-22 and FR-407-AC-23 | `3/4` and 0; steps 2 and accumulate 4; censored; not activated |
+| PF-24 | The `time tick` behaviour of FR-407-AC-24 | `3/4`, `3/4` and `1/2` |
+| PF-25 | The idle-tail behaviours of FR-407-AC-25 | `(1 + m)/(2 + m)`; `1/2` where the idle tail begins at the window's end |
 | RT-01 | `P95` with confidence parameters naming `statistical`, then naming `exact` with no exact candidate | Routed to the statistical backend; `unsupported`, `unsupported_projection`/`unsupported-requested-capability` |
 | RT-02 | A claim `under every scheduler` naming `statistical`; `NoFault` with no confidence parameters naming `statistical`; an expected-reward claim naming `statistical` | `unsupported`, `every-scheduler`; `missing-confidence`; `exact-only-form`; no engine runs |
 | RT-03 | An item with no evidence kind; with evidence kind `approximate` | `invalid-request`, `invalid_capability`/`absent-evidence-kind`; `unknown-evidence-kind` |

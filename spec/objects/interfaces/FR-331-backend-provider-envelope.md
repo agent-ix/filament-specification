@@ -378,6 +378,16 @@ cases required by [FSL FR-187](ix://agent-ix/filament-spec-language/FR-187)
 (Description, PM-3; AC-3), consistently with
 [FR-406](../../functional/analysis/FR-406-interpret-probabilistic-models.md).
 
+The `not-stochastic` cause SHALL carry `type: "not-stochastic"`, `state` and
+exactly one of two members. Where an identity's race is undefined or its delay
+free, that member is `identity`, the `TransitionIdentity`. Where a
+statistical sample's reading depends on the stutter stamps of an idle tail
+([FR-420](../../functional/analysis/FR-420-sample-stochastic-timed-models.md)
+"Windows on an idle tail"), no identity races: the member is `idle_tail`, JSON
+`true`, in place of `identity`, and `state` is the timed state at the idle
+tail's first position. A reader SHALL refuse a `not-stochastic` cause with both
+members, with neither, or with `idle_tail` other than `true`.
+
 A disposition `invalid-request` with `invalid_capability`/`not-statistical`
 is a negotiation outcome ([FR-408](../../functional/analysis/FR-408-settle-probabilistic-claims-statistically.md))
 and carries no result.

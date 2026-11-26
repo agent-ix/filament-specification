@@ -145,8 +145,12 @@ A **measure** is a value computed from one behaviour over a finite window.
   `elapsed from holds(A) until holds(B) within h` is the time-stamp
   difference between those two positions, and `h` is a time quantity.
 - **Fraction.** `fraction holds(P) over [0, h]` is the number of positions in
-  `[0, h]` where `P` holds over `h + 1`. With `weighted by R`, each position
-  `i` counts with the reward of the step that leaves it, and the value is the
+  the window where `P` holds over the number of positions in the window. A
+  step horizon `h`, an integer, gives the window the positions 0 to `h` after
+  the activating position, so the denominator is `h + 1`; a time horizon `h`
+  gives the window "Time windows" states, and `h + 1` has no meaning for it.
+  With `weighted by R`, each position
+  `i` of the window counts with the reward of the step that leaves it, and the value is the
   weighted count over the total weight. Over a timed subject `weighted by
   delay` weights each position by the delay of the step that leaves it,
   clipped to the window: a position whose leaving step crosses the horizon
@@ -157,6 +161,30 @@ A **measure** is a value computed from one behaviour over a finite window.
   duration it covers.
 
 A window that reaches a terminal state continues on its stutter steps.
+
+**Time windows.** Where `h` is a time horizon, the **window** read from the
+activating position `a` is every position `i >= a` whose time stamp is at most
+`h` after `a`'s, inclusive. Position `a` is in the window, so the window is
+never empty. The post-state of each discrete step is its own position, several
+at one time stamp included. A delay adds no position, and the instant `h`
+after `a` adds none where no position is stamped there. A terminal stutter
+position
+([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "Time
+stamps") is a position like any other: under `time tick O period p` its stamp
+is fixed, so the window holds exactly those stamped within it; under `time
+dense` each choice of the stutter stamps is its own behaviour, so a window
+that the idle tail enters before the window's end holds any number `m >= 0` of
+stutter positions, and one whose idle tail begins at the window's end holds
+none. The positions `a` and `b` of `accumulate`, `steps` and `elapsed` within
+a time horizon are positions of this window: the first position of the window
+where `A` holds, and the first position of the window at or after it where `B`
+holds. With `weighted by R`, a window position is weighted by the reward of
+the step that leaves it even when that step lands after the window's end, and
+a position left by the terminal stutter step has weight 0
+([FR-406](FR-406-interpret-probabilistic-models.md)). A statistical sample
+whose reading depends on the choice of stutter stamps is settled as
+[FR-420](FR-420-sample-stochastic-timed-models.md) "Windows on an idle tail"
+states.
 
 ### Forms
 
@@ -304,6 +332,11 @@ carries every member of this identity in the claim's node
 | FR-407-AC-18 | A model's initial state `s0` has the action `a`, which reaches with probability `1/4` a state where `g` first holds and the event then holds with probability 1, and with probability `3/4` a state from which `g` is unreachable, and the action `b`, which reaches with probability 1 a state where `g` first holds and the event then holds with probability `1/2`. For `on each (x: T) when (g) { probability >= θ [E] }` over every scheduler, the conditioned minimum is `1/2` and the maximum is 1 (the unconditioned values `1/4` and `1/2` are wrong): `>= rational(1, 2)` holds, `>= rational(3, 5)` fails, and `<= rational(9, 10)` fails. Under a workload choosing `a` and `b` with `1/2` each, `Pr(act) = 5/8`, `Pr(E and act) = 3/8` and the value is `3/5`, so `>= rational(3, 5)` holds and `>= rational(2, 3)` fails. A variant where neither action reaches `g` holds vacuously under both scheduler clauses. | Test (TC-2060) |
 | FR-407-AC-19 | Over a timed trace with three positions at time stamps 0, 1 and 6, where `P` holds only at the second, `fraction holds(P) over [0, 4] weighted by delay` weights the first position 1 (its leaving step ends at 1) and the second `4 − 1 = 3` (its leaving step crosses the horizon 4), counts no weight for the third (stamp 6 is outside the window), and is `3/4`; the weights sum to the window's duration 4. | Test (TC-353) |
 | FR-407-AC-20 | Over a timed trace with two positions at time stamps 0 and 1, the second of which begins the idle tail (no step leaves it), where `P` holds only at the first, `fraction holds(P) over [0, 4] weighted by delay` weights the first position 1 and the idle-tail position `4 − 1 = 3`, the time the trace spends there within the window, and is `1/4`. | Test (TC-353) |
+| FR-407-AC-21 | An unweighted fraction over a time window divides by the positions of the window. With positions stamped 0, 1, 5 and 6, `P` true at those stamped 1 and 5, `fraction holds(P) over [0, 5]` is `2/3` (not `2/6`). With positions stamped 0, 5, 5 and 6, `P` true only at the first position stamped 5, it is `1/3`. With positions stamped 0, 2, 7 and 8, `P` true at those stamped 2 and 7, read from the activating position stamped 2, the window is the positions stamped 2 and 7 and the value is 1. With positions stamped 0, 0 and 1, `P` true only at the first, `fraction holds(P) over [0, 0]` is `1/2`. | Test (TC-353) |
+| FR-407-AC-22 | Over positions stamped 0, 2 and 7, the step leaving the first having reward 1 and the step leaving the second, which lands at 7, reward 3, with `P` true only at the second, `fraction holds(P) over [0, 5] weighted by R` is `3/(1 + 3) = 3/4`. With the second position instead beginning an idle tail, the value is `0/(1 + 0) = 0` for every choice of stutter stamps. | Test (TC-353) |
+| FR-407-AC-23 | Over positions stamped 0, 2, 2 and 7, the three steps having rewards 1, 3 and 2. Where `A` first holds at the first position and `B` first holds at the third, `steps from holds(A) until holds(B) within 5` is 2 and `accumulate R` is `1 + 3 = 4`; where `B` first holds at the fourth, stamped 7, both are censored. Where `A` first holds at the fourth, both are not activated. | Test (TC-353) |
+| FR-407-AC-24 | Under `time tick O period 2`, a behaviour whose initial position, where `P` is false, is left by one step of another operation to a terminal state where `P` is true has positions stamped 0, 0, 2, 4, 6 and so on. `fraction holds(P) over [0, 5]` and `over [0, 4]` are both `3/4`, and `over [0, 1]` is `1/2`. | Test (TC-353) |
+| FR-407-AC-25 | Over a `time dense` behaviour with positions stamped 0 and 2, the second beginning an idle tail, `P` true only at the second, `fraction holds(P) over [0, 5]` over the behaviour with `m` stutter positions stamped within the window is `(1 + m)/(2 + m)`: `1/2` for `m = 0`, `2/3` for `m = 1`, `3/4` for `m = 2`. Where the second position is stamped 5, `m` is 0 and the value is `1/2`. | Test (TC-353) |
 
 ## Dependencies
 
