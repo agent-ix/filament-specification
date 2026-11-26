@@ -52,7 +52,7 @@ and FR-803-AC-10 to FR-803-AC-12.
   with `states` 1 and `work` 1.
 - Step 9: `missing_declaration`/`missing-name` at `/policy/1`, no plan
   outcome.
-- Step 10: `incomplete_population`/`incomplete-scope` at `/initial`, no plan
-  outcome.
+- Step 10: `incomplete_population`/`incomplete-scope` at `/initial`, exit
+  22, no plan outcome.
 - Step 11: `incomplete_population`/`missing-required-artifact` at
-  `/initial` before any search, no plan outcome.
+  `/initial` before any search, exit 22, no plan outcome.
