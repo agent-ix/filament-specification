@@ -2368,6 +2368,7 @@
             "node": 3
           },
           "on",
+          "bare",
           "query",
           {
             "node": 0
