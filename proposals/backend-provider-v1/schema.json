@@ -798,7 +798,7 @@
       },
       "additionalProperties": false
     },
-    "GraphStep": {"description": "FR-393: a model trace step.", "type": "object", "required": ["type", "transition", "post_state"], "properties": {"type": {"const": "step"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "post_state": {"$ref": "#/$defs/State"}}, "additionalProperties": false},
+    "GraphStep": {"description": "FR-393: a model trace step.", "type": "object", "required": ["type", "transition", "post_state"], "properties": {"type": {"const": "step"}, "transition": {"$ref": "#/$defs/TransitionIdentity"}, "post_state": {"$ref": "#/$defs/State"}, "delay": {"description": "FR-181, FR-712: the delay before the step, on a timed state-graph path.", "$ref": "#/$defs/Rational"}}, "additionalProperties": false},
     "ModelPath": {"description": "FR-393 ModelPath.", "type": "object", "required": ["type", "initial", "steps"], "properties": {"type": {"const": "model-path"}, "initial": {"$ref": "#/$defs/Decimal"}, "steps": {"type": "array", "items": {"$ref": "#/$defs/GraphStep"}}}, "additionalProperties": false},
     "WitnessSource": {
       "description": "FR-393 WitnessSource.",
