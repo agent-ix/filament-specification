@@ -23,6 +23,8 @@ Classify clauses into HP-1 to HP-6, settle HP-4 unsupported without running an e
 
 Admit each vector through the real local Rust boundary and record its form, its requested items and kinds, and its result; replay every witness and trap. The vault subject: model `V` with object type `Vault`, fields `h: Int[0, 1]` (secret) and `l: Int[0, 1]` (public output), population `vaults` with universe `{v}`, one operation `step(i: Int[0, 1])` with frame `modifies [l]` and no precondition, and initial snapshots `(h, l) = (0, 0)` and `(1, 0)`. The leaky model's post clause is `self.l = (i + self.h) mod 2`; the secure model's is `self.l = i`.
 
+The counter subject: model `M` with object type `Counter`, field `value: Int[0, 5]`, one population with universe `[p, q]` unless a vector states another, one operation `inc` that raises its receiver's `value` by 1 and is enabled while it is below 3, and one initial state holding both counters.
+
 ## Vectors
 
 | Vector | Input | Expected result |
@@ -39,6 +41,9 @@ Admit each vector through the real local Rust boundary and record its form, its 
 | HF-10 | HF-05 with `max_states` set so the product exploration stops after a witness lasso was found for every initial state | `inconclusive`, cause `well-definedness-unchecked`, with the witnesses; never `proved` |
 | HF-11 | HF-05 with body `eventually holds((lookup<V::Vault>(vaults, rw) absent undefined).l @ b = 1)`, `rw` valued a key not in `vaults` | `refuted`, `decisive-counterexample`, cause `undefined-evaluation` with `absent-key`, although a witness lasso exists for the defined part |
 | HF-12 | HF-05's witness with its lasso made unfair under a `fair weak V::Vault::step;` constraint on `b`, and HF-06's trap replayed on a model where `step` is enabled | `inconclusive`, `replay-parity` in both cases |
+| HF-13 | Over the counter subject, `exists trace a of M { always holds((v.value <= 3) @ a) }` with `v: M::Counter`, maximum depth 1, `witness_samples` 0, `p` at 0 and `q` at 4 | one item; instance `p` is `inconclusive`, `bound-reached`, and instance `q` has a trap: the item is `refuted`, `closed-scope`, at `q` |
+| HF-14 | HF-13's clause with both counters at 4, over the universe `[p, q]` and over `[q, p]` | one item, `refuted`, at `p` for `[p, q]` and at `q` for `[q, p]` |
+| HF-15 | `exists trace a of M { always holds((v.value = w.value) @ a) }` with `(v: M::Counter, w: M::Counter)`, universe `[p, q]`, `p` at 0 and `q` at 4 | one item over 4 instances; `(p, q)` and `(q, p)` are refuted; the item reports `v = p`, `w = q` |
 
 ## Expected Results
 

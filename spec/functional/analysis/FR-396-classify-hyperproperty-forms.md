@@ -21,6 +21,10 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-364
     type: references
+  - target: ix://agent-ix/filament-specification/FR-361
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-399
+    type: references
 ---
 
 # FR-396: Classify hyperproperty and step-relation forms
@@ -63,13 +67,39 @@ runs for it.
 
 ## Routing
 
-Each instance of a `hyper` clause, and the model claim of a `relation`
-clause, is one requested item that requires the FR-290 kind
+A `hyper` clause, over all of its instances, and the model claim of a
+`relation` clause are each one requested item that requires the FR-290 kind
 `temporal-satisfaction` with an unbounded extent naming the clause; its form
-is recorded beside the item as an obligation form. A candidate's negotiation
+is recorded beside the item as an obligation form. An HP-5 clause is one such
+item too: the one item per claim instance of
+[FR-390](FR-390-analyze-state-graph-claims.md) is for state-graph clauses. A candidate's negotiation
 arm settles the item `supported` only when it discharges that form. A
 `relation` clause's code claim is a separate item of kind
 `operation-contract` (FR-397).
+
+## Instances and the item's result
+
+A `hyper` item has one result over the instances
+[FR-395](FR-395-analyze-hyperproperties-over-behaviours.md) gives its clause.
+
+- **Instance order.** The keys of one object parameter are in the instance
+  order of [FR-361](../temporal/FR-361-read-model-behaviours-as-temporal-traces.md),
+  over the populations of its alias's model that overlap its type. An instance
+  of a clause with several parameters takes one key for each, and instances
+  are ordered by the first declared parameter's key, then the next one's: the
+  first parameter varies slowest.
+- **Refuted.** The item is `refuted` exactly when some instance is refuted,
+  even when an instance earlier in the order is not proved. Its counterexample,
+  basis, cause and settlement method are those of the first refuted instance
+  in the instance order. The canonical order of refuting evidence of
+  [FR-399](FR-399-settle-hyperproperty-results.md) chooses the evidence within
+  that instance; it does not choose between instances.
+- **Not proved.** With no instance refuted and some instance not proved, the
+  item's result is that of the first instance in the order that is not proved,
+  with its label, basis, cause and evidence.
+- **Proved.** The item is `proved` only when every instance is proved.
+
+A clause with no instance settles as FR-399 states.
 
 ## Single-existential claims
 
@@ -123,6 +153,7 @@ body.
 | FR-396-AC-4 | An HP-5 claim with a fair lasso witness from every initial state and a completed product exploration with no undefined evaluation settles `proved`, `decisive-witness`, and the witness replays by FR-394; an HP-5 claim whose initial state's closed product part holds no fair accepting cycle settles `refuted`, `closed-scope`, and the trap replays by re-exploration. | Test (TC-342) |
 | FR-396-AC-5 | A `match` block on an HP-5 clause refuses as `unsupported_construct`/`expression-form`; a fairness set on it is admitted. | Test (TC-342) |
 | FR-396-AC-6 | An HP-5 claim with a witness for every initial state whose product exploration a limit stops before refuting evidence is found settles `inconclusive`, cause `well-definedness-unchecked`; one whose body evaluates undefined at a reachable position settles `refuted`, cause `undefined-evaluation`, also when a witness exists. | Test (TC-342) |
+| FR-396-AC-7 | A `hyper` clause with several instances is one requested item with one result. It is `refuted` when any instance is refuted, even after an instance that is not proved, and takes its counterexample, basis and cause from the first refuted instance in the instance order, the first declared parameter varying slowest; with none refuted it takes the result of the first instance that is not proved; it is `proved` only when every instance is. | Test (TC-342) |
 
 ## Dependencies
 

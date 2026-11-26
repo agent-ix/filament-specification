@@ -46,9 +46,9 @@ proof bounds).
 
 ## Outputs
 
-One result per clause instance, classified by
-[FR-396](FR-396-classify-hyperproperty-forms.md) and settled by
-[FR-399](FR-399-settle-hyperproperty-results.md).
+One result per clause, over its instances as
+[FR-396](FR-396-classify-hyperproperty-forms.md) states, classified by FR-396
+and settled by [FR-399](FR-399-settle-hyperproperty-results.md).
 
 ## Binding
 
