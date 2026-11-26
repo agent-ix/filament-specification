@@ -99,7 +99,12 @@ timed form.
   `unique path` refutation carries the two step sequences, or the cycle and
   the node it returns to, or, when a reachable node whose discrete state
   satisfies `X` has no step sequence to a `Y` node, FR-393's `trap` arm, whose
-  `stem` ends at that node (FR-391 "Trap").
+  `stem` ends at that node (FR-391 "Trap"). A `ModelPath` records a delay only
+  ahead of a step, so the analyzer SHALL NOT end a `trap` `stem` anywhere
+  but at a trapped timed state. Where the trapped timed states are reached
+  only by waiting beyond the last step of the path the analyzer has, and it has
+  no other counterexample for the instance, the analyzer SHALL settle
+  `inconclusive`, `lasso-not-concretized`, never `refuted`.
 - **Proof basis and certificate.** A zone proof settles with basis
   `zone-certified` and an FR-418 certificate covering the reachable zones.
   For `always possible` the certificate also carries a `state_graph` part
