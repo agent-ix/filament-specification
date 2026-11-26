@@ -101,8 +101,8 @@ timed form.
   `{form, ef_nodes}`: `ef_nodes` lists, in ascending order, the positions in
   `nodes` of the zones of `E(P)`, and the checker accepts it only after
   re-deriving one predecessor pass that adds no zone and finding every
-  reachable `Q` node among them. A proof by digitization of an all-closed
-  subject settles with basis `exhaustive` (FR-416).
+  reachable `Q` node among them. A `possible` proof by digitization of an
+  all-closed subject settles with basis `exhaustive` (FR-416).
 - **A subject with no time-divergent behaviour.** A state-graph item reads
   finite paths of delay and step edges and quantifies over no infinite
   behaviour, so it needs no time-divergence witness (FR-418). Over a subject
