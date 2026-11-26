@@ -12,7 +12,7 @@ relationships:
 ## Description
 
 Verify safety pruning, non-safety and bounded policies, model invariants, infeasibility under policy
-and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-7.
+and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-11.
 
 ## Test Procedure
 
@@ -28,6 +28,12 @@ and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-7.
    `SpareHolds` (`always holds(true)` over `s: M::Spare`); with `c` at 1 and
    goal value 8 plan under `["SomeTime"]` and under
    `["SomeTime", "SpareHolds"]`.
+8. Hold `a` and `b` in `counters`, set domain `Int[0, 0]` and goal `true`,
+   and plan under `NotFour` with both at 0, then with `b` at 4.
+9. Replace the operations with `spawn()`, creating a `Counter` with value 4;
+   with `c` at 1, domain `Int[1, 1]` and goal `true` plan under `NotFour`.
+10. Empty `counters` and request the policies `["NotFour", "Nowhere"]`.
+11. List `counters` with `complete: false` and request `NotFour`.
 
 ## Expected Results
 
@@ -41,3 +47,10 @@ and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-7.
   without a policy and `inconclusive` `no-instance` with `NotFour`.
 - Step 7: `optimal` `inc, inc, inc, double`, then `inconclusive`
   `no-instance`.
+- Step 8: `optimal` empty plan with `states` 1 and `work` 3; `infeasible`
+  with `states` 1 and `work` 1.
+- Step 9: `optimal` with the one-step plan `spawn`.
+- Step 10: `missing_declaration`/`missing-name` at `/policy/1`, no plan
+  outcome.
+- Step 11: `incomplete_population`/`incomplete-scope` at `/initial`, no plan
+  outcome.

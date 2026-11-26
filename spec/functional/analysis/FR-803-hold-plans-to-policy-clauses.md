@@ -15,6 +15,10 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-331
     type: references
+  - target: ix://agent-ix/filament-specification/FR-153
+    type: references
+  - target: ix://agent-ix/filament-specification/FR-801
+    type: references
 ---
 
 # FR-803: Hold every plan to the model's rules and the requested policy clauses
@@ -59,9 +63,19 @@ states for the search node (FR-801).
 - A policy clause `over (x: T)`, `T` an object type, SHALL have one instance
   for each admitted key of `T`, as FR-361 "Binding of the clause's `over`
   parameter" defines it, with the bound initial snapshot as the one initial
-  state and the keys it lists for each population as that population's
-  universe. Each instance has its own monitor or automaton. A key that only
-  a step creates is not an instance.
+  state: the admitted keys are the distinct keys of the objects the snapshot
+  holds in the populations that overlap `T`. Each instance has its own
+  monitor or automaton. A key under which the snapshot holds no object is
+  not an instance, even when a step creates an object under it.
+- A population overlapping `T` that the initial snapshot lists with
+  `complete: false` does not give that population's admitted keys. The
+  request SHALL be refused with FR-153's
+  `incomplete_population`/`incomplete-scope` at `/initial`, as FR-806 states
+  for a snapshot that does not admit, and SHALL NOT settle `no-instance`.
+- A clause's monitor is its instances' monitors taken together, in FR-361's
+  instance order. One update of it reads the instances in that order and ends
+  at the first instance whose safety monitor rejects. FR-801 charges it as one
+  update, however many instances the clause has.
 - When some policy clause the request names has no admitted key, the planner
   SHALL settle the run `inconclusive` with cause `no-instance` (FR-331),
   whatever its other policy clauses and its goal. It SHALL decide this after
@@ -114,6 +128,10 @@ A rule whose evaluation is undefined at a position does not hold there.
 | FR-803-AC-5 | With the policy `always holds(c.value != 8)` every plan reaching the goal value 8 breaks the policy at its final state, no plan is admissible, and the result is `infeasible` with an accepted closure certificate. | Test (TC-1953) |
 | FR-803-AC-6 | Over the counter with the snapshot's `counters` population holding no object, domain `Int[0, 0]` and goal `true`, a run with no policy is `optimal` with the empty plan, and the same run with the policy `NotFour`, or with `SomeTime`, is `inconclusive` with cause `no-instance`, never `optimal`; with goal `false` the run with no policy is `infeasible` and the run with `NotFour` is `inconclusive` with cause `no-instance`, never `infeasible`. | Test (TC-1953) |
 | FR-803-AC-7 | Over a variant of the counter model that adds an object type `Spare` whose population holds no object, and a temporal clause `SpareHolds` `over (s: M::Spare)` with body `always holds(true)`, with `c` at 1 and goal `Reach.final.value = 8` the policy list `["SomeTime"]` gives `optimal` `inc, inc, inc, double` and the list `["SomeTime", "SpareHolds"]` gives `inconclusive` with cause `no-instance`. | Test (TC-1953) |
+| FR-803-AC-8 | Over the counter with the `counters` population holding `a` and `b`, domain `Int[0, 0]`, goal `true` and the policy `NotFour`: with `value` 0 at both, the result is `optimal` with the empty plan and `explored` `states` 1 and `work` 3 (one policy update, one goal and one objective evaluation); with `a` at 0 and `b` at 4 it is `infeasible` with `explored` `states` 1 and `work` 1. | Test (TC-1953) |
+| FR-803-AC-9 | Over a variant of the counter model whose one operation is `spawn()`, which creates a `Counter` with `value` 4, with `c` at 1, domain `Int[1, 1]`, goal `true` and the policy `NotFour`, the result is `optimal` with the one-step plan `spawn`: the created object is not an instance of `NotFour`. | Test (TC-1953) |
+| FR-803-AC-10 | With the `counters` population holding no object, the policy list `["NotFour", "Nowhere"]`, where `Nowhere` names no declaration, refuses `missing_declaration`/`missing-name` at `/policy/1` and writes no plan outcome; it does not settle `no-instance`. | Test (TC-1953) |
+| FR-803-AC-11 | With the `counters` population listed `complete: false` and the policy `NotFour`, the request refuses `incomplete_population`/`incomplete-scope` at `/initial` and writes no plan outcome. | Test (TC-1953) |
 
 ## Dependencies
 
