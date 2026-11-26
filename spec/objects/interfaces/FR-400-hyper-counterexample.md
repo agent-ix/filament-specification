@@ -37,12 +37,13 @@ below before any replay runs.
   `TemporalCounterexample`:
   `{"type":"step","transition":<transition>,"post_state":{"key":"<state key>"}}`,
   with `transition` the FR-181 typed canonical form of the transition
-  identity, or `{"type":"terminal-stutter"}` for the terminal stutter step,
-  and `post_state` the post-state's State locus `{"key":"<state key>"}`
-  (FR-331), `<state key>` the state key in the unpadded base64url spelling of
-  its canonical JCS bytes, with no hash. A terminal-stutter step's post-state
-  is its pre-state.
-  In a `projected` counterexample every step also carries
+  identity and `post_state` the post-state's State locus
+  `{"key":"<state key>"}` (FR-331), `<state key>` the state key in the
+  unpadded base64url spelling of its canonical JCS bytes, with no hash. The
+  terminal stutter step is instead the whole object
+  `{"type":"terminal-stutter"}`, with no `transition` or `post_state` member;
+  its post-state is its pre-state.
+  In a `projected` counterexample every step, of either form, also carries
   `"mark":"skipped"` or `"mark":"visible"`.
 - **HyperTrace** — `{"type":"hyper-trace","variable":"<ident>","alias":"<ident>","initial":"<decimal>","steps":[<HyperStep>, ...]}`:
   the trace variable (or execution variable), its subject's model alias, the
