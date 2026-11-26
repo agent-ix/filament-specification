@@ -285,9 +285,11 @@ The grid `2^-q` applies to the draw value `u`, not to delays. A `uniform` or
 window by the excluded-end rule, and is never rounded to the grid. An
 `exponential(λ)` delay is first moved inside the window by the excluded-end
 rule and then rounded up to a multiple of `2^-q` of the model's unit. If the
-rounded delay is outside the window, the delay is the largest multiple of
-`2^-q` inside the window; if the window holds no such multiple the item settles
-`inconclusive`. This one rule applies to every exponential sample.
+rounded delay is outside the window interval it was drawn in, the delay is the
+largest multiple of `2^-q` inside that interval; if the interval holds no such
+multiple the sample ends as an undecided successor, so the item's `measured`
+decision is `undecided` with cause `undecided-successor` (FR-331). This one rule
+applies to every exponential sample.
 
 ### Regeneration and witnesses
 
@@ -362,7 +364,7 @@ model and ignore distributions.
 | FR-420-AC-15 | On `Idle` (TC-374), each of these settles `unsupported`, `not-stochastic` with `state` the timed state just after `send`, `idle_tail` true and no `identity`: `mean of (fraction holds(phase = 1) over [0, 5 ms]) <= 0.25` (values `(1 + m)/(2 + m)`); `probability >= 0.5 [fraction holds(phase = 1) over [0, 5 ms] <= rational(3, 5)]` (true at `m = 0`, false for large `m`); and `probability >= 0.5 [eventually[3 ms, 5 ms] holds(phase = 1)]` (false with no stutter, true with one at 4 ms). On the variant whose `send` is at 5 ms the first claim's value is `1/2` and it settles `measured: rejected`. | Test (TC-374) |
 | FR-420-AC-16 | A sampled delay is never one the window excludes. For the window `(2 ms, 4 ms]` and `uniform`, the draw at `u = 0` is `2 ms + (2 ms) / 2^(q+1)`: `3 ms` at `q = 0` and `9/4 ms` at `q = 2`; for the window `[2 ms, 4 ms]` it is `2 ms` at every `q`. | Test (TC-374) |
 | FR-420-AC-17 | An `exponential(2)` delay over the window `(2 ms, ∞)` at `u = 0` and `q = 0`: the raw delay `2 ms` is excluded, so the excluded-end rule gives `2 ms + (1/2 ms) / 2 = 9/4 ms`, which rounds up to the multiple of `2^0 ms`, `3 ms`, inside the window, and `3 ms` is the delay. A `uniform` delay is never rounded to the grid: over `(2 ms, 4 ms]` at `q = 0` it is `3 ms`, and over `(2 ms, 5/2 ms]` at `u = 0` it is `2 ms + (1/2 ms)/2 = 9/4 ms`. | Test (TC-374) |
-| FR-420-AC-18 | An `exponential` delay over a window that holds no multiple of `2^-q` ms (`[1/2 ms, 3/4 ms]` at `q = 0`: the rounded-up delay `1 ms` is outside and no multiple lies inside) settles the item `inconclusive`; over `[1/2 ms, 5/2 ms]` with a raw delay of `9/4 ms` at `q = 0`, rounding up gives `3 ms`, outside the window, so the delay is the largest multiple inside it, `2 ms`. | Test (TC-374) |
+| FR-420-AC-18 | An `exponential` delay over an interval that holds no multiple of `2^-q` ms (`[1/2 ms, 3/4 ms]` at `q = 0`: the raw delay `1/2 ms` rounds up to `1 ms`, outside the interval, and no multiple lies inside) ends the sample as an undecided successor, so the item's `measured` decision is `undecided` with cause `undecided-successor`; over `[1/2 ms, 5/2 ms]` with a raw delay of `9/4 ms` at `q = 0`, rounding up gives `3 ms`, outside the interval, so the delay is the largest multiple inside it, `2 ms`. | Test (TC-374) |
 
 ## Dependencies
 
