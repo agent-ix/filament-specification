@@ -24,13 +24,14 @@ relationships:
 
 When a stage or an analysis engine reaches a configured limit, the
 implementation SHALL report the limit, its value and the one setting name that
-raises the limit at every entry point.
+raises the limit at each entry point that exposes and consumes that bound.
 
 ## Inputs
 
 A stage's or an engine's configured limits, given through the library limits
-type, a replay request's `stage_limits` or the CLI's `--limit <name>=<value>`
-option, and the charge that a limit denied.
+type, a replay request's `stage_limits` when replay consumes that setting, or
+the CLI's `--limit <name>=<value>` option when the operation exposes it, and
+the charge that a limit denied.
 
 ## Outputs
 
@@ -126,7 +127,7 @@ setting.
 | --- | --- | --- |
 | FR-461-AC-1 | A `stage_limit_exceeded` outcome carries the stage, the counter, the configured bound, the count the denied charge would have reached, the locus where known and the setting name, and its rendering states each of them. | Test (TC-426) |
 | FR-461-AC-2 | For each stage limit, an input that exceeds its default is rerun with that limit raised through the library setter and through `--limit <name>=<value>` where those entry points expose it; for each setting replay consumes, the corresponding replay request's `stage_limits` entry raises the recompile or replay bound and the replay succeeds with the same verdict. | Test (TC-426) |
-| FR-461-AC-3 | A replay request whose `stage_limits` raises any stage limit runs that stage under the raised value, not under its default. | Test (TC-426) |
+| FR-461-AC-3 | During replay, each `stage_limits` setting permitted by FR-323-AC-8 is applied only to the recompile stage, package emission, accounting meter or replay checker that consumes it; a consumed bound with no entry runs at its published default. This criterion applies only where the selected stage or checker consumes the setting; an entry outside FR-323-AC-8 refuses under FR-461-AC-14. | Test (TC-426) |
 | FR-461-AC-4 | An unknown setting name, or a setting name naming a depth, given to `--limit` or to a replay request's `stage_limits` refuses before any stage runs and names the argument. | Test (TC-426) |
 | FR-461-AC-5 | An `incomplete` execution outcome names its `filament.value.accounting/v1` counter as its limit and, for a `ScalarLimitsV1` counter, `accounting.<counter>` as its setting, such as `accounting.work_units`, and raising that setting through each entry point lets the same run complete; a request carrying both `ScalarLimitsV1` and `PopulationAdmissionLimitsV1` that exhausts population admission's `work_units` names the setting `admission.work_units`, and raising `accounting.work_units` does not let it complete. | Test (TC-426) |
 | FR-461-AC-6 | An analysis engine item stopped at an engine limit, such as the model checker's state count, settles `incomplete` naming the limit, its value and its dotted setting name, such as `model_check.max_states`; raising that setting through the library setter and the analysis operation's `--limit` entry lets the same item finish. This does not require replay to rerun the analysis engine item. | Test (TC-426) |
@@ -136,7 +137,7 @@ setting.
 | FR-461-AC-10 | A spelling the table does not declare, such as `temporal.visits`, is absent from the ordered table (and therefore the amount table) and from the published list, and a one-sided change to either fails the comparison; `tests/value_accounting_vocabulary.rs` enforces this half. A conforming kernel's test compares its `ChargePoint::ALL` `as_str()` set with `VALUE_ACCOUNTING_CHARGE_POINT_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
 | FR-461-AC-11 | The ten `ScalarLimitsV1` counter spellings the `filament.value.accounting/v1` Limit object lists, in field order, equal the spellings of the published list `value-accounting-limit-kind-vectors.json`, which is the `ScalarLimitsV1` counter vocabulary only (the `limit_kind` values of `PopulationAdmissionLimitsV1` and `ModelNormalizationLimitsV1` are not part of it); a spelling that is not a `ScalarLimitsV1` counter, such as `unit_work` or `accounting.work_units`, is absent from the Limit object, from the published list and from every `limit_kind` the definition names, and a one-sided change fails the comparison. A conforming kernel's test compares its `LimitKind::ALL` `as_str()` set with `VALUE_ACCOUNTING_LIMIT_KIND_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
 | FR-461-AC-12 | When the CLI is given `--limit statistical.workers=4` for an analysis operation, the statistical request carries `workers` 4 and no limit row or `limit-reached` outcome names `statistical.workers`; given `--limit statistical.workers=0` it refuses with `invalid_runtime_input`/`invalid-value`. | Test (TC-426) |
-| FR-461-AC-13 | A replay request with `stage_limits` entries `emit.output_bytes`, `model_check.max_states`, `model_check.max_transitions` and `model_check.max_automaton_states` applies each value to the recompile emission or replay checker that consumes it; the replay succeeds when the raised bounds suffice and returns the corresponding typed limit outcome when a checker bound is insufficient. | Test (TC-426) |
+| FR-461-AC-13 | For every setting listed in FR-323-AC-8, a replay request's `stage_limits` entry changes only the corresponding recompile-stage, package-emission, accounting or replay-checker bound and preserves the supplied value; every bound without an entry retains its published default. `replay.input_bytes` is supplied to the replay reader separately and is not a `stage_limits` entry. | Test (TC-426) |
 | FR-461-AC-14 | A replay request whose `stage_limits` contains an engine-only setting replay does not consume, such as `exact_prob.max_states`, or a setting unavailable to replay, such as `format.output_bytes`, refuses before replay work and names the exact entry; it does not silently ignore the entry or substitute a different bound. | Test (TC-426) |
 
 ## Dependencies
