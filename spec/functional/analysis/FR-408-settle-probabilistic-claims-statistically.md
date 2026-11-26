@@ -82,6 +82,10 @@ with:
 - `total-above-draw-range{total}` when a sampled choice's integer total exceeds
   `2^256`, at the first such choice (the sampler definition).
 
+A sample on a dense idle tail that the provider cannot yet decide over every
+completion stops the run and settles the item `incomplete`,
+`idle-tail-undecided{state, reason}` (FR-420 "Undecided completions").
+
 ### Tests and Bonferroni
 
 The claim holds for every initial state and every `over` binding, so the

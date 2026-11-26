@@ -1159,7 +1159,8 @@
         {"properties": {"type": {"const": "precision-budget"}, "lower": {"$ref": "#/$defs/Rational"}, "upper": {"$ref": "#/$defs/Rational"}}, "required": ["type", "lower", "upper"], "additionalProperties": false},
         {"properties": {"type": {"const": "cancelled"}, "source": {"enum": ["requested", "deadline"]}}, "required": ["type", "source"], "additionalProperties": false},
         {"description": "FR-410: a statistical run that produced no estimate; nothing was exhausted, so it names no limit.", "properties": {"type": {"const": "no-estimate"}, "reason": {"enum": ["no-counted-sample", "no-positive-weight-cycle"]}}, "required": ["type", "reason"], "additionalProperties": false},
-        {"properties": {"type": {"const": "timed-out"}}, "required": ["type"], "additionalProperties": false}
+        {"properties": {"type": {"const": "timed-out"}}, "required": ["type"], "additionalProperties": false},
+        {"description": "FR-331, FR-420 \"Undecided completions\": a statistical sample on a dense idle tail not yet decided over every completion.", "properties": {"type": {"const": "idle-tail-undecided"}, "state": {"$ref": "#/$defs/State"}, "reason": {"enum": ["timed-formula", "clock-predicate"]}}, "required": ["type", "state", "reason"], "additionalProperties": false}
       ]
     },
     "UnsupportedCause": {

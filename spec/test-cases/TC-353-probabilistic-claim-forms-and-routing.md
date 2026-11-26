@@ -56,6 +56,7 @@ The models below are defined here in full; the citation names the FSL design rec
 | PF-23 | The traces and rewards of FR-407-AC-22 and FR-407-AC-23 | `3/4` and 0; steps 2 and accumulate 4; censored; not activated |
 | PF-24 | The `time tick` behaviour of FR-407-AC-24 | `3/4`, `3/4` and `1/2` |
 | PF-25 | The idle-tail behaviours of FR-407-AC-25 | `(1 + m)/(2 + m)`; `1/2` where the idle tail begins at the window's end |
+| PF-26 | The elapsed and steps traces of FR-407-AC-26 | 3 and censored; 4; censored; 3 and not activated; not activated |
 | RT-01 | `P95` with confidence parameters naming `statistical`, then naming `exact` with no exact candidate | Routed to the statistical backend; `unsupported`, `unsupported_projection`/`unsupported-requested-capability` |
 | RT-02 | A claim `under every scheduler` naming `statistical`; `NoFault` with no confidence parameters naming `statistical`; an expected-reward claim naming `statistical` | `unsupported`, `every-scheduler`; `missing-confidence`; `exact-only-form`; no engine runs |
 | RT-03 | An item with no evidence kind; with evidence kind `approximate` | `invalid-request`, `invalid_capability`/`absent-evidence-kind`; `unknown-evidence-kind` |

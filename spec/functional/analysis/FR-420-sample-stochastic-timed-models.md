@@ -40,7 +40,8 @@ and `StatisticalLimits`.
 
 The measure on timed behaviours under the workload, statistical results
 ([FR-408](FR-408-settle-probabilistic-claims-statistically.md)) whose samples
-are timed behaviours, or an `unsupported` result with cause `not-stochastic` or
+are timed behaviours, an `incomplete` limit or `idle-tail-undecided` stop, or an
+`unsupported` result with cause `not-stochastic` or
 `time-locked-sample`.
 
 ## Behavior
@@ -96,9 +97,14 @@ delays make it a Markov decision process, and a bound compares the minimum
 (for `>= θ`) or the maximum (for `<= θ`) over the free delays' choices.
 
 A timed state where an identity with an unbounded window has `uniform`, or
-where no identity races and delay is bounded, has no defined race and settles
-`unsupported`, `not-stochastic{state, identity}`. A quiescent state where no
-identity races takes the idle tail (FR-161).
+where no identity races, delay is bounded and some scheduled identity has a
+non-empty window (its given distribution has no mass there), has no defined
+race and settles `unsupported`, `not-stochastic{state, identity}`, `identity`
+the identity at fault, the first in the sampler's canonical identity order
+where several are. A state where delay is bounded and every window is empty has
+no identity to name: it is a time-lock, settled as "Sampling timed runs"
+states. A quiescent state where no identity races takes the idle tail
+(FR-161).
 
 ### Events and measures in time
 
@@ -124,11 +130,12 @@ A sampled delay is the declared distribution quantised to that grid, which
 changes each draw's distribution function by at most `2^-q`; the `measured`
 result is a measurement of the quantised model, and its basis records `q`. A
 sample ends when its next position's time stamp passes the end of the event's
-or measure's window, its time horizon after the activating position's stamp
-(FR-407 "Time windows"), or at an idle tail; before its activating position no
-horizon ends it. Under `weighted by R` the step that leaves a window position
-is drawn for its reward even when it lands after the window's end, and adds no
-position. A sample that reaches a time-locked
+or measure's window, or at an idle tail. The window ends its time horizon after
+the stamp of the activating position, and for `elapsed` after the stamp of the
+first position where `A` holds (FR-407 "Elapsed"); before the position it is
+measured from, no horizon ends the sample. Under `weighted by R` the step that
+leaves a window position is drawn for its reward even when it lands after the
+window's end, and adds no position. A sample that reaches a time-locked
 state before its horizon, where no positive delay is admissible and no
 transition identity is enabled, settles the item `unsupported`,
 `time-locked-sample{state}`, naming that state, and keeps no witness from it:
@@ -153,48 +160,77 @@ followed by stutter positions `p` apart.
 
 ### Windows on an idle tail
 
-A sample reads the positions of its window (FR-407 "Time windows"), a timed
-formula as well as a measure. Under `time tick` an idle tail's stutter
-positions are fixed, and the sample reads each one stamped within the window.
+A sample reads the positions of its window (FR-407 "Time windows" and
+"Elapsed"), a timed formula as well as a measure. Under `time tick` an idle
+tail's stutter positions are fixed, and the sample reads each one stamped
+within the window.
 
-Under `time dense`, where a sample reaches an idle tail before its window
-ends, every finite choice of strictly increasing stutter stamps after the idle
-tail's first position and up to the window's end, the empty choice (`m = 0`)
-included, is an admitted completion. Where the idle tail's first position is
-stamped at the window's end, the empty choice is the only one. The sample's
-**reading** is the value of a mean of a fraction, and for every other form
-whether the sample is counted, whether its event holds and, for a quantile,
-its measure's value. A sample whose reading is the same on every completion
-SHALL be settled with that reading. Otherwise the provider SHALL stop the run
-at the first such sample in trace-index order and settle the item
-`unsupported`, `not-stochastic` with the idle-tail payload below. The provider
-SHALL decide this over every completion, never over a chosen set of values of
-`m` or of stamps. Where the idle tail begins before the window's end:
+Under `time dense`, where a sample reaches an idle tail before its window ends,
+every finite choice of strictly increasing stutter stamps after the idle tail's
+first position and up to the window's end, the empty choice (`m = 0`) included,
+is an admitted completion. Where the idle tail's first position is stamped at
+the window's end, the empty choice is the only one. A sample that reaches an
+idle tail before its window has started, with predicates and a `when` guard
+over the discrete state only, never starts it: it is not activated. A `when`
+guard, or an `elapsed` measure's `A`, that reads a clock can start the window
+at a stutter position; each completion then runs to the end of the window it
+starts, and one that starts none is not activated. The sample's **reading** is
+the value of a mean of a fraction, and for every other form whether the sample
+is counted, whether its event holds and, for a quantile, its measure's value. A
+sample whose reading is the same on every completion SHALL be settled with that
+reading. Otherwise, except as "Undecided completions" admits, the provider
+SHALL stop the run at the first such sample in trace-index order and settle the
+item `unsupported`, `not-stochastic` with the idle-tail payload below. The
+provider SHALL decide this over every completion, never over a chosen set of
+values of `m` or of stamps.
 
-- **Unweighted fraction** of a predicate over the discrete state. Let `n` be
-  the number of window positions up to and including the idle tail's first
-  position (`n >= 1`), `k` the number of them where `P` holds, and `L` equal
-  to 1 where `P` holds in the idle state and 0 where it does not. With `m`
-  stutter positions the value is `(k + m·L)/(n + m)`, which is monotone in
-  `m` from `k/n` towards `L`. The value is the same for every `m` exactly when
-  `k/n = L`. A comparison of it with a threshold `c`, `0 < c < 1`, has the
-  same truth for every `m` exactly when it has the same truth at `k/n` and at
-  `L`.
+Where the idle tail begins within the window and before its end, and every
+predicate and `when` guard of the form reads the discrete state only:
+
+- **Unweighted fraction.** Let `n` be the number of window positions up to and
+  including the idle tail's first position (`n >= 1`), `k` the number of them
+  where `P` holds, and `L` equal to 1 where `P` holds in the idle state and 0
+  where it does not. With `m` stutter positions the value is
+  `(k + m·L)/(n + m)`, which is monotone in `m` from `k/n` towards `L`. The
+  value is the same for every `m` exactly when `k/n = L`. A comparison of it
+  with a threshold `c`, `0 < c < 1`, has the same truth for every `m` exactly
+  when it has the same truth at `k/n` and at `L`.
 - **Weighted fraction.** The terminal stutter step has reward 0, so a
   `weighted by R` value is the same on every completion; `weighted by delay`
-  gives the idle tail the rest of the window (FR-407), the same on every
-  completion.
-- **`accumulate`, `steps` and `elapsed`** whose predicates read only the
-  discrete state have the same value on every completion: a predicate that
-  holds at no position up to the idle tail's first holds at no stutter
-  position, so the positions `a` and `b` do not depend on `m`, and a measure
-  activated with no `b` is censored on every completion.
-- **A timed formula, and any form whose predicate reads a clock,** is read
-  over the region abstraction of the stutter stamps with the claim's monitor,
-  as [FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md)
-  "Admitted forms" reads them, from the sampled prefix. No delay is drawn on
-  an idle tail, so every completion is found by reachability, and the reading
-  is the same exactly when all completions give one.
+  gives the idle tail, where `P` is constant, the rest of the window (FR-407),
+  the same on every completion.
+- **`accumulate`, `steps` and `elapsed`** have the same value on every
+  completion: a predicate that holds at no position up to the idle tail's first
+  holds at no stutter position, so the positions `a` and `b` do not depend on
+  `m`, and a measure activated with no `b` is censored on every completion.
+
+Otherwise the completions are read as follows.
+
+- **A timed formula** is read over the region abstraction of the stutter stamps
+  with the claim's monitor, as
+  [FR-421](../temporal/FR-421-check-probabilistic-timed-claims-exactly.md)
+  "Admitted forms" reads it, from the sampled prefix. No delay is drawn on an
+  idle tail, so every completion is found by reachability.
+- **A `fraction`, `accumulate`, `steps` or `elapsed` measure whose predicate or
+  `when` guard reads a clock** is read over every completion in the same way:
+  the clock bounds of its predicates and guard cut the tail's stamps into
+  finitely many intervals on each of which their truth is constant. A
+  `weighted by R` fraction whose window starts before the idle tail and whose
+  `when` guard reads no clock is the same on every completion, as above.
+
+**Undecided completions.** The rule above is the criterion. A provider that
+cannot decide a timed formula, or a form whose predicate or `when` guard reads a
+clock, over every completion of a `time dense` idle tail MAY instead stop the
+run at that sample and settle the item `incomplete`,
+`idle-tail-undecided{state, reason}`: `state` the canonical timed state at the
+idle tail's first position, and `reason` `clock-predicate` where a predicate or
+`when` guard of the form reads a clock and `timed-formula` otherwise. A
+decision that reaches a request limit stops `incomplete`, `limit-reached`
+naming that limit, its value and the setting that raises it. Neither stop
+settles a reading, a verdict or `unsupported`, and neither satisfies a criterion
+that states one. The three forms of the first list above are always decided. A
+release whose provider takes the `idle-tail-undecided` stop names it in its
+release notes (QSL-3447).
 
 The **idle-tail payload** of `not-stochastic` is `state`, the canonical timed
 state at the idle tail's first position, and `idle_tail`, JSON `true`. No
@@ -265,7 +301,7 @@ model and ignore distributions.
 | FR-420-AC-1 | On the `RareLate` vector, `reply` with `delay Call::reply ~ discrete { 1 ms: 90, 3 ms: 10 };` ties with `timeout` at 3 ms with probability `1/10`, the workload orders the tie evenly, and the event's exact probability is `1/20`. | Test (TC-374) |
 | FR-420-AC-2 | Every sampled delay is an exact rational from the `2^-q` grid's conditioned inverse distribution function, `q` is recorded in the basis, and each sample replays with its delays. | Test (TC-374) |
 | FR-420-AC-3 | A racing identity of an operation with no `delay` declaration settles a statistical item `unsupported`, `not-stochastic`; under exact evidence its delay is a scheduler choice and the bound compares the minimum or maximum. | Test (TC-374) |
-| FR-420-AC-4 | An identity with an unbounded window and `uniform`, or a state with bounded delay and no racing identity, settles `unsupported`, `not-stochastic{state, identity}`. | Test (TC-374) |
+| FR-420-AC-4 | An identity with an unbounded window and `uniform`, or a state with bounded delay and no racing identity though an identity has a non-empty window, settles `unsupported`, `not-stochastic{state, identity}`. | Test (TC-374) |
 | FR-420-AC-5 | A sample exceeding `max_sample_steps` stops the run with `incomplete`, `limit-reached` naming `max_sample_steps`, its value and how to raise it; an omitted `max_sample_steps` is `2^24`. | Test (TC-374) |
 | FR-420-AC-6 | With `reply` under `delay Call::reply ~ uniform;` the event's probability is 0, the statistical item settles `measured: accepted`, and the every-behaviour claim `NoLateReply` settles `refuted`. | Test (TC-374) |
 | FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon settles the item `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |

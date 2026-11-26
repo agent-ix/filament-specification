@@ -143,7 +143,15 @@ A **measure** is a value computed from one behaviour over a finite window.
   reward 1 per step.
 - **Elapsed.** Under the timed profile with a `model-time` binding,
   `elapsed from holds(A) until holds(B) within h` is the time-stamp
-  difference between those two positions, and `h` is a time quantity.
+  difference between two positions, and `h` is a time quantity. The first is
+  the first position at or after the activating position where `A` holds,
+  however late: `h` sets no limit on reaching it. The elapsed time starts
+  there. The second is the first position at or after the first where `B`
+  holds, and the behaviour is censored when the elapsed time passes `h`
+  before it; a behaviour with no position where `A` holds is not activated.
+  This is the elapsed clock of
+  [FR-753](../temporal/FR-753-certify-time-divergent-and-elapsed-quantile-verdicts.md).
+  It changes no window of a formula, `fraction`, `steps` or `accumulate`.
 - **Fraction.** `fraction holds(P) over [0, h]` is the number of positions in
   the window where `P` holds over the number of positions in the window. A
   step horizon `h`, an integer, gives the window the positions 0 to `h` after
@@ -162,25 +170,26 @@ A **measure** is a value computed from one behaviour over a finite window.
 
 A window that reaches a terminal state continues on its stutter steps.
 
-**Time windows.** Where `h` is a time horizon, the **window** read from the
-activating position `a` is every position `i >= a` whose time stamp is at most
-`h` after `a`'s, inclusive. Position `a` is in the window, so the window is
-never empty. The post-state of each discrete step is its own position, several
-at one time stamp included. A delay adds no position, and the instant `h`
-after `a` adds none where no position is stamped there. A terminal stutter
-position
+**Time windows.** Where `h` is a time horizon of a formula, a `fraction`,
+`steps` or `accumulate`, the **window** read from the activating position `s`
+is every position `i >= s` whose time stamp is at most `h` after `s`'s,
+inclusive. Position `s` is in the window, so the window is never empty. The
+post-state of each discrete step is its own position, several at one time
+stamp included. A delay adds no position, and the instant `h` after `s` adds
+none where no position is stamped there. A terminal stutter position
 ([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "Time
 stamps") is a position like any other: under `time tick O period p` its stamp
 is fixed, so the window holds exactly those stamped within it; under `time
 dense` each choice of the stutter stamps is its own behaviour, so a window
 that the idle tail enters before the window's end holds any number `m >= 0` of
 stutter positions, and one whose idle tail begins at the window's end holds
-none. The positions `a` and `b` of `accumulate`, `steps` and `elapsed` within
-a time horizon are positions of this window: the first position of the window
-where `A` holds, and the first position of the window at or after it where `B`
-holds. With `weighted by R`, a window position is weighted by the reward of
-the step that leaves it even when that step lands after the window's end, and
-a position left by the terminal stutter step has weight 0
+none. The positions `a` and `b` of `accumulate` and `steps` within a time
+horizon are positions of this window: the first position of the window where
+`A` holds, and the first position of the window at or after it where `B`
+holds. The positions of `elapsed` are those its rule above states. With
+`weighted by R`, a window position is weighted by the reward of the step that
+leaves it even when that step lands after the window's end, and a position
+left by the terminal stutter step has weight 0
 ([FR-406](FR-406-interpret-probabilistic-models.md)). A statistical sample
 whose reading depends on the choice of stutter stamps is settled as
 [FR-420](FR-420-sample-stochastic-timed-models.md) "Windows on an idle tail"
@@ -337,6 +346,7 @@ carries every member of this identity in the claim's node
 | FR-407-AC-23 | Over positions stamped 0, 2, 2 and 7, the three steps having rewards 1, 3 and 2. Where `A` first holds at the first position and `B` first holds at the third, `steps from holds(A) until holds(B) within 5` is 2 and `accumulate R` is `1 + 3 = 4`; where `B` first holds at the fourth, stamped 7, both are censored. Where `A` first holds at the fourth, both are not activated. | Test (TC-353) |
 | FR-407-AC-24 | Under `time tick O period 2`, a behaviour whose initial position, where `P` is false, is left by one step of another operation to a terminal state where `P` is true has positions stamped 0, 0, 2, 4, 6 and so on. `fraction holds(P) over [0, 5]` and `over [0, 4]` are both `3/4`, and `over [0, 1]` is `1/2`. | Test (TC-353) |
 | FR-407-AC-25 | Over a `time dense` behaviour with positions stamped 0 and 2, the second beginning an idle tail, `P` true only at the second, `fraction holds(P) over [0, 5]` over the behaviour with `m` stutter positions stamped within the window is `(1 + m)/(2 + m)`: `1/2` for `m = 0`, `2/3` for `m = 1`, `3/4` for `m = 2`. Where the second position is stamped 5, `m` is 0 and the value is `1/2`. | Test (TC-353) |
+| FR-407-AC-26 | `elapsed from holds(A) until holds(B) within 4` starts its time at the first position where `A` holds. Over positions stamped 0, 3 and 6, `A` holding at the second and `B` at the third, it is `6 − 3 = 3`, while `steps from holds(A) until holds(B) within 4` over the same positions is censored. With the third position stamped 7 the elapsed value is 4; stamped 8, it is censored. Over positions stamped 0, 9 and 12, `A` at the second and `B` at the third, the elapsed value is 3 and the `steps` measure is not activated. With no position where `A` holds, the elapsed measure is not activated. | Test (TC-353) |
 
 ## Dependencies
 
