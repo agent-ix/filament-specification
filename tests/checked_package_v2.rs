@@ -22404,6 +22404,10 @@ fn schedulability_claim_carrier_vectors_match_the_closed_member_schema() {
         .find(|case| case["id"] == "ZC-30")
         .expect("TC-372 task claim certificate vector")["document"]["identity"]["node_id"]
         .clone();
+    // A claim row is a document-held id: each operand is the index segment of
+    // the `ms` unit node. The certificate identity nests that node's own id.
+    let unit_index = json!({"node": 6});
+    let unit_id = json!({"package": "package", "path": ["ms"], "ordinal": 0});
     for case in positive {
         assert_eq!(case["semantic_form"], "schedulability");
         let rows = case["rows"].as_array().expect("claim rows");
@@ -22418,11 +22422,13 @@ fn schedulability_claim_carrier_vectors_match_the_closed_member_schema() {
                     .map(|error| error.to_string())
                     .collect::<Vec<_>>()
             );
-            assert_eq!(
-                row["declaration"], task_claim,
-                "{} exact identity",
-                case["id"]
-            );
+            let mut structural = row["declaration"].clone();
+            for segment in structural["path"].as_array_mut().expect("claim path") {
+                if *segment == unit_index {
+                    *segment = unit_id.clone();
+                }
+            }
+            assert_eq!(structural, task_claim, "{} exact identity", case["id"]);
         }
         if case["id"] == "SCC-02-shared-node-two-claim-occurrences" {
             assert_eq!(rows.len(), 2);

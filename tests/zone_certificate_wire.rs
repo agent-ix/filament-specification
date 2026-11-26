@@ -145,7 +145,8 @@ fn tc_371_task_certificate_uses_finite_templates_and_rejects_exact_task_identiti
             assert_eq!(base["identity"]["ordinal"], 0);
             assert_eq!(base["identity"]["node_id"]["package"], "package");
             let identity_path = base["identity"]["node_id"]["path"].as_array().unwrap();
-            assert_eq!(identity_path.iter().filter(|part| part["node"] == 6).count(), 18);
+            let unit = json!({"package": "package", "path": ["ms"], "ordinal": 0});
+            assert_eq!(identity_path.iter().filter(|part| **part == unit).count(), 18);
             assert_eq!(base["task_product"]["queue_bounds"], json!([
                 {"taskset":"Ctl","task":"t1","arrival":"periodic","interarrival":{"numerator":"4","denominator":"1"},"relative_deadline":{"numerator":"4","denominator":"1"},"max_jitter":{"numerator":"0","denominator":"1"},"work_lower":{"numerator":"1","denominator":"1"},"work_upper":{"numerator":"1","denominator":"1"},"max_jobs":2},
                 {"taskset":"Ctl","task":"t2","arrival":"periodic","interarrival":{"numerator":"6","denominator":"1"},"relative_deadline":{"numerator":"6","denominator":"1"},"max_jitter":{"numerator":"0","denominator":"1"},"work_lower":{"numerator":"2","denominator":"1"},"work_upper":{"numerator":"2","denominator":"1"},"max_jobs":2},
@@ -271,6 +272,28 @@ fn tc_371_the_certificate_embeds_no_digest() {
         for member in row["document"].as_object().unwrap().keys() {
             assert!(!member.contains("digest") && !member.contains("hash") && !member.contains("checksum"), "{id}: {member}");
         }
+    }
+}
+
+/// The identity is the structural obligation identity: an operand of its node
+/// id is the operand node's own id (FR-412 `identity`), never a
+/// checked-package index segment or operand slot.
+#[trace("TC-371", "FR-418-AC-9")]
+#[test]
+fn tc_371_an_identity_refuses_a_checked_package_operand_segment() {
+    let valid = validator();
+    let base = vector("ZC-30")["document"].clone();
+    assert!(valid.is_valid(&base));
+    // The `period` operand after "4/1": the `ms` unit node.
+    let pointer = "/identity/node_id/path/16";
+    assert_eq!(
+        base.pointer(pointer),
+        Some(&json!({"package": "package", "path": ["ms"], "ordinal": 0}))
+    );
+    for segment in [json!({"node": 6}), json!({"operand": 0})] {
+        let mut changed = base.clone();
+        *changed.pointer_mut(pointer).expect("mutation pointer exists") = segment.clone();
+        assert!(!valid.is_valid(&changed), "{segment} is not a structural operand");
     }
 }
 
