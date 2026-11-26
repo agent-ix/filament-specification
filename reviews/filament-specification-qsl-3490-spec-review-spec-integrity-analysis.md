@@ -80,3 +80,6 @@ Head checked: 7a42b7ba1e35739ea36be9c4408d610abc5b6818.
 | FND-006 | fixed | - |
 | FND-007 | fixed | - |
 | FND-008 | fixed | - |
+| FND-009 | fixed | - |
+| FND-010 | fixed | - |
+| FND-011 | fixed | - |
