@@ -130,14 +130,19 @@ evaluation of the event, which for an undefined witness reproduces the
 undefined value with its position, locus and reason), plus two checks:
 
 1. each drawn random argument lies in its parameter's support;
-2. each draw, recomputed from the seed, trace index, step and choice index
-   with the sampler, selects the recorded scheduled identity, values and,
+2. each draw, re-derived from the recorded seed, trace index, step and
+   choice index (and `q` for a delay) by FSL FR-254's draw derivation,
+   without running the sampler over the witness, selects the recorded scheduled identity, values and,
    over a timed subject, the recorded delay.
 
 Agreement settles the witness reproduced. A value outside its support refuses
 `invalid_runtime_input`/`invalid-value`; a recomputed draw that selects another
 identity, value or delay settles `inconclusive`, `replay-parity`, for that
 witness. The item's `measured` decision is unchanged by any witness replay.
+
+A replay takes each draw from the witness record and does not run the sampler,
+but a recorded draw is never trusted: the replayer re-derives it as in check 2
+and compares. One changed recorded delay fails the recomputation.
 
 ## Identity and comparison
 
@@ -164,6 +169,7 @@ witness. The item's `measured` decision is unchanged by any witness replay.
 | FR-410-AC-10 | A `StatisticalVerdict` whose decision is `rejected` with cause `undefined-evaluation` (a drawn sample evaluated the claim undefined, FR-409) and which carries no `estimate`, in the verdict or in its test entry, is admitted; the same verdict with an `estimate` added refuses at the schema. | Test (TC-358) |
 | FR-410-AC-11 | A `StatisticalVerdict` whose decision is `undecided` with cause `undecided-successor` and which carries no `estimate`, in the verdict or in its test entry, is admitted; the same verdict with an `estimate` added refuses at the schema, while one `undecided` with cause `indifference-region` and no `estimate` refuses at the schema. | Test (TC-358) |
 | FR-410-AC-12 | Accepted, rejected and undecided verdicts each carry the same closed form-specific bound as FR-413. The four type spellings and allowed members match FR-413; comparison preserves the checked claim's operator; a quantile includes its separate `level`. A missing/extra member, unknown type/comparison, non-rational threshold or level, or a bound inconsistent with the originating claim is refused by the result reader. | Test (TC-358) |
+| FR-410-AC-13 | A sampled witness over a timed subject replays from its recorded draws without running the sampler, and the same witness with one recorded delay changed settles `inconclusive`, `replay-parity`, because the delay re-derived from the recorded seed, trace index, step, choice index and `q` differs. | Test (TC-374) |
 
 ## Dependencies
 
