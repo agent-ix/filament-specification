@@ -174,6 +174,12 @@ member:
 - Every fact is recorded whichever rule decided the item, so a reader sees
   each check FR-380 made.
 
+## Certified proofs
+
+- The `native-run/1` request MAY carry `require_certified`, a JSON boolean,
+  absent meaning `false`: the premises and the transfer result then settle
+  under the certified-proof requirement (FSL FR-1052, FR-492).
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |

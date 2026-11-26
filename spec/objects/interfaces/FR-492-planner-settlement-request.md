@@ -229,6 +229,12 @@ order:
   premise, reason}` ("Interface mismatch"); `refuted` carries no `cause`.
 - `certification` — on `proved` only: `trusted` when any deciding premise
   is `trusted`, else `uncertified` when any is, else `certified` (FR-354).
+- Under a certified-proof requirement (FSL FR-1052), a guarantee or
+  composition item that would be `proved` with `certification` `uncertified`
+  or `trusted` settles `inconclusive`, cause
+  `proof-not-certified{certification}`, with no `certification` and no
+  `conclusion`. A planner result has no proof `basis` object, so the cause
+  carries none.
 - `slots` — every slot's outcome, with its certification and extent.
 - `conclusion` (a proved guarantee item) — FR-488's conclusion record: the
   relation (`package`, `relation` node id) and the implementation sources it

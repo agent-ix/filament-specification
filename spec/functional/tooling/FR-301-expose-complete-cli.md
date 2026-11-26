@@ -99,10 +99,10 @@ in the default build:
 - `analyze`, `prove`, `monitor`, `replay` and `generate` take
   `--provider-config <file>`, the process providers to start
   ([FR-561](FR-561-configure-process-providers-through-a-provider-configuration-document.md)).
-- `analyze` takes `--require-certified`, which sets the request's
-  `require_certified` member `true` (FR-520). Without the flag the request
-  is read as written; the flag never sets the member `false`. No other verb
-  takes it.
+- `analyze`, `run` and `monitor` take `--require-certified`, which sets the
+  request's `require_certified` member `true` (FR-520; FR-824 and FR-820 for
+  `native-run/1`). Without the flag the request is read as written; the flag
+  never sets the member `false`. No other verb takes it.
 - `compile` and `run` requests carry extension definitions in their
   `extensions` member, and `parse` and `check` take `--extensions <file>`
   ([FR-562](FR-562-name-extension-definitions-to-a-command.md)).

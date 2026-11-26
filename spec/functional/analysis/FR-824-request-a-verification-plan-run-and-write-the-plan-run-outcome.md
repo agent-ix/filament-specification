@@ -243,6 +243,12 @@ the highest-severity code present under FR-301's ordering (`30`, `20`,
 `21`, `22`, `10`, `11`, `0`). There is no plan-specific ranking. A request
 with `execute` `false` settles no node and exits `0`.
 
+## Certified proofs
+
+- The `native-run/1` request member `require_certified`, a JSON boolean,
+  absent meaning `false`, requires certified proofs of every step (FSL
+  FR-1052); it is a request member, not a member of `verification_plan`.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
