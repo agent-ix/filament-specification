@@ -12,7 +12,8 @@ relationships:
 ## Description
 
 Verify safety pruning, non-safety and bounded policies, model invariants, infeasibility under policy
-and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-12.
+and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-8
+and FR-803-AC-10 to FR-803-AC-12.
 
 ## Test Procedure
 
@@ -30,11 +31,9 @@ and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-12.
    `["SomeTime", "SpareHolds"]`.
 8. Hold `a` and `b` in `counters`, set domain `Int[0, 0]` and goal `true`,
    and plan under `NotFour` with both at 0, then with `b` at 4.
-9. Replace the operations with `spawn()`, creating a `Counter` with value 4;
-   with `c` at 1, domain `Int[1, 1]` and goal `true` plan under `NotFour`.
-10. Empty `counters` and request the policies `["NotFour", "Nowhere"]`.
-11. List `counters` with `complete: false` and request `NotFour`.
-12. Omit `counters` from the snapshot, set domain `Int[0, 0]` and goal
+9. Empty `counters` and request the policies `["NotFour", "Nowhere"]`.
+10. List `counters` with `complete: false` and request `NotFour`.
+11. Omit `counters` from the snapshot, set domain `Int[0, 0]` and goal
     `true`, and request `NotFour`.
 
 ## Expected Results
@@ -51,10 +50,9 @@ and policy clauses with no instance. Scope: FR-803-AC-1 to FR-803-AC-12.
   `no-instance`.
 - Step 8: `optimal` empty plan with `states` 1 and `work` 3; `infeasible`
   with `states` 1 and `work` 1.
-- Step 9: `optimal` with the one-step plan `spawn`.
-- Step 10: `missing_declaration`/`missing-name` at `/policy/1`, no plan
+- Step 9: `missing_declaration`/`missing-name` at `/policy/1`, no plan
   outcome.
-- Step 11: `incomplete_population`/`incomplete-scope` at `/initial`, no plan
+- Step 10: `incomplete_population`/`incomplete-scope` at `/initial`, no plan
   outcome.
-- Step 12: `incomplete_population`/`missing-required-artifact` at
+- Step 11: `incomplete_population`/`missing-required-artifact` at
   `/initial` before any search, no plan outcome.

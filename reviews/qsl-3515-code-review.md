@@ -21,3 +21,16 @@ Changes needed: one medium finding. The status, cause spelling, category and exi
 | ID | Severity | Summary | Refs |
 | --- | --- | --- | --- |
 | FND-001 | medium | The instance rule takes 'the keys it lists for each population' as that universe, and says nothing of a population overlapping T that the initial snapshot omits or lists with complete false. FR-361 makes a population with no universe requires-bound, never no-instance, and FSL FR-120 gives an omitted or incomplete row no universe. Such a snapshot with a policy over T can be read as no-instance (empty list), as instances from a partial list, or as requires-bound, which has no plan status; FSL's instances_with_meter returns RequiresBound there, and plan_source policy_stop turns that into a fault (read, not run). State the outcome, and that it precedes no-instance across all named clauses as FSL FR-125 orders it. | spec/functional/analysis/FR-803-hold-plans-to-policy-clauses.md:59-64 |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-002 | medium | spawn needs a key to create under, and nothing in AC-9, TC-1953 step 9, the plan request or the snapshot supplies one: elsewhere a created key comes from the subject's universe (FR-480), and FR-803 now reads only the keys of objects the snapshot holds. A planner whose universe is those keys, as FSL's is, gives spawn no outcome, so with domain Int[1, 1] it settles infeasible where AC-9 says optimal. State where a plan's creatable keys come from, and how many there are, since several give several outcomes and ordinals. | spec/functional/analysis/FR-803-hold-plans-to-policy-clauses.md:137 |
+| FND-003 | low | The two incomplete_population refusals depend on the policy list, yet FR-806, whose request-time table FR-650 calls the complete refusal set, gains no row and no order. With counters listed complete: false and policy ['NotFour', 'Nowhere'], one implementation refuses at /initial and another missing-name at /policy/1; both conform. Add the rows to FR-806 and say they follow the policy name and type refusals (or precede them). | spec/functional/analysis/FR-803-hold-plans-to-policy-clauses.md:70-79 |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | 9507f34f: a listed complete:false population and an omitted one each refuse at /initial before no-instance (AC-11, AC-12). |
