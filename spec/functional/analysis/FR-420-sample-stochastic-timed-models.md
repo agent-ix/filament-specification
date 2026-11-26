@@ -126,12 +126,12 @@ its own choice index in the sampler preimage. A `discrete` draw selects by
 exact integer weights. A `uniform`, `uniform[a, b]` or `exponential` draw
 takes a uniform value `u` on the grid of `2^-q` from the generator and returns
 the conditioned inverse distribution function at `u`, computed as "Delay from the grid value" below states with FR-408's
-rational bounds and rounded up, so every sampled delay is an exact rational. A sampled delay is always one the
+rational bounds, so every sampled delay is an exact rational; only an `exponential` delay is rounded up to the grid. A sampled delay is always one the
 window includes. Where the quantile lands on an end the window excludes, or
 beyond it, the delay is `2^-(q+1)` of the window interval's length inside that
 end (for an unbounded interval, of the mean `1/λ` of an `exponential(λ)`), and an
 included end is kept. A window part of a single point has no mass under a
-continuous law, so a uniform or exponential law races on the rest of the window, and does not race when none of the window has mass.
+continuous law, so a law races on the rest of the window. A law with no mass in its window does not race, except that `uniform` over a window made only of points, and `uniform[a, a]`, are uniform over those points (see "Delay from the grid value").
 A sampled delay is the declared distribution quantised to that grid, which
 changes each draw's distribution function by at most `2^-q`; the `measured`
 result is a measurement of the quantised model, and its basis records `q`. A
@@ -259,7 +259,7 @@ Let the window's non-empty ranges, clipped to the law's support for
 `uniform[a, b]`, be the disjoint intervals `I1 < I2 < …` in increasing order,
 and `u` the grid value. A part of the window that is a single point has no
 mass under a continuous law; `uniform` and `uniform[a, b]` over a window made
-only of points are uniform over those points, and `exponential` over such a
+only of points are uniform over those points, chosen by FR-188's weighted choice with equal weights over the points in increasing order, and `exponential` over such a
 window does not race. The raw delay is:
 
 - `uniform`, `uniform[a, b]`: with `L` the total length of the intervals, the
@@ -362,9 +362,9 @@ model and ignore distributions.
 | FR-420-AC-13 | On `Tick` (TC-374), `time tick` with period 2 ms, `mean of (fraction holds(phase = 1) over [0, 5 ms]) <= 0.25` reads the positions stamped 0, 0, 2 and 4 ms: the estimate is `3/4` and the item settles `measured: rejected`. `probability >= 0.5 [eventually[3 ms, 5 ms] holds(phase = 1)]` has estimate 1 and settles `measured: accepted`, and with the interval `[3 ms, 3 ms]` has estimate 0 and settles `measured: rejected`. No item settles `not-stochastic`. | Test (TC-374) |
 | FR-420-AC-14 | On `Idle` (TC-374), `send` at 2 ms and then an idle tail, each of these is the same on every completion and is decided: `probability >= 0.5 [fraction holds(phase = 1) over [0, 5 ms] >= rational(2, 5)]` (estimate 1: `1/2` and the limit 1 are both at least `2/5`); the same with `<= rational(2, 5)` (estimate 0: neither `1/2` nor 1 is at most `2/5`); `mean of (fraction holds(phase = 0 or phase = 1) over [0, 5 ms]) <= 0.25` (value 1, `k/n = L = 1`, rejected); `mean of (fraction holds(phase = 2) over [0, 5 ms]) <= 0.25` (value 0, accepted); with `reward cost on send = 1`, `mean of (fraction holds(phase = 1) over [0, 5 ms] weighted by cost) <= 0.25` (value 0, accepted); `probability >= 0.5 [steps from holds(phase = 0) until holds(phase = 1) within 5 ms >= 2]` (steps 1, estimate 0); `probability >= 0.5 [steps from holds(phase = 0) until holds(phase = 2) within 5 ms <= 3]` (censored, estimate 0); `probability >= 0.5 [eventually[3 ms, 5 ms] holds(phase = 0)]` (estimate 0); and `probability >= 0.5 [always[3 ms, 5 ms] holds(phase = 1)]` (estimate 1). | Test (TC-374) |
 | FR-420-AC-15 | On `Idle` (TC-374), each of these settles `unsupported`, `not-stochastic` with `state` the timed state just after `send`, `idle_tail` true and no `identity`: `mean of (fraction holds(phase = 1) over [0, 5 ms]) <= 0.25` (values `(1 + m)/(2 + m)`); `probability >= 0.5 [fraction holds(phase = 1) over [0, 5 ms] <= rational(3, 5)]` (true at `m = 0`, false for large `m`); and `probability >= 0.5 [eventually[3 ms, 5 ms] holds(phase = 1)]` (false with no stutter, true with one at 4 ms). On the variant whose `send` is at 5 ms the first claim's value is `1/2` and it settles `measured: rejected`. | Test (TC-374) |
-| FR-420-AC-16 | A sampled delay is never one the window excludes. For the window `(2 ms, 4 ms]` and `uniform`, the draw at `u = 0` is `2 ms + (2 ms) / 2^(q+1)`: `3 ms` at `q = 0` and `9/4 ms` at `q = 2`; for the window `[2 ms, 4 ms]` it is `2 ms` at every `q`. | Test (TC-374) |
-| FR-420-AC-17 | An `exponential(2)` delay over the window `(2 ms, ∞)` at `u = 0` and `q = 0`: the raw delay `2 ms` is excluded, so the excluded-end rule gives `2 ms + (1/2 ms) / 2 = 9/4 ms`, which rounds up to the multiple of `2^0 ms`, `3 ms`, inside the window, and `3 ms` is the delay. A `uniform` delay is never rounded to the grid: over `(2 ms, 4 ms]` at `q = 0` it is `3 ms`, and over `(2 ms, 5/2 ms]` at `u = 0` it is `2 ms + (1/2 ms)/2 = 9/4 ms`. | Test (TC-374) |
-| FR-420-AC-18 | An `exponential` delay over an interval that holds no multiple of `2^-q` ms (`[1/2 ms, 3/4 ms]` at `q = 0`: the raw delay `1/2 ms` rounds up to `1 ms`, outside the interval, and no multiple lies inside) ends the sample as an undecided successor, so the item's `measured` decision is `undecided` with cause `undecided-successor`; over `[1/2 ms, 5/2 ms]` with a raw delay of `9/4 ms` at `q = 0`, rounding up gives `3 ms`, outside the interval, so the delay is the largest multiple inside it, `2 ms`. | Test (TC-374) |
+| FR-420-AC-16 | A sampled delay is never one the window excludes. For the window `(2 ms, 4 ms]` and `uniform`, the draw at `u = 0` is `2 ms + (2 ms) / 2^(q+1)`: `3 ms` at `q = 0` and `9/4 ms` at `q = 2`; for the window `[2 ms, 4 ms]` it is `2 ms` at every `q`. | Test (FSL `fsl-eval` sampler unit tests; no TC vector) |
+| FR-420-AC-17 | An `exponential(2)` delay over the window `(2 ms, ∞)` at `u = 0` and `q = 0`: the raw delay `2 ms` is excluded, so the excluded-end rule gives `2 ms + (1/2 ms) / 2 = 9/4 ms`, which rounds up to the multiple of `2^0 ms`, `3 ms`, inside the window, and `3 ms` is the delay. A `uniform` delay is never rounded to the grid: over `(2 ms, 4 ms]` at `q = 0` it is `3 ms`, and over `(2 ms, 5/2 ms]` at `q = 0` it is `2 ms + (1/2 ms)/2 = 9/4 ms`. | Test (FSL `fsl-eval` sampler unit tests; no TC vector) |
+| FR-420-AC-18 | An `exponential` delay over an interval that holds no multiple of `2^-q` ms (`[1/2 ms, 3/4 ms]` at `q = 0`: the raw delay `1/2 ms` rounds up to `1 ms`, outside the interval, and no multiple lies inside) ends the sample as an undecided successor, so the item's `measured` decision is `undecided` with cause `undecided-successor`; over `(1 ms, 9/4 ms]` for `exponential(1)` at `q = 1` (grid `1/2 ms`) and `u = 1 − 2^-20`, the raw delay lies in `(2 ms, 9/4 ms)`, rounds up to `5/2 ms`, outside the interval, so the delay is the largest multiple of `1/2 ms` inside it, `2 ms`. | Test (FSL `fsl-eval` sampler unit tests; no TC vector) |
 
 ## Dependencies
 
