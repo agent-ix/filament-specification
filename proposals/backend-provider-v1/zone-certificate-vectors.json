@@ -1025,22 +1025,38 @@
               "period",
               "4/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "deadline",
               "4/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "bcet",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet",
               "1/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet_hi",
               "criticality",
@@ -1050,12 +1066,20 @@
               "jitter",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "blocking",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "task",
               "name",
@@ -1065,22 +1089,38 @@
               "period",
               "6/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "deadline",
               "6/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "bcet",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet",
               "2/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet_hi",
               "criticality",
@@ -1090,12 +1130,20 @@
               "jitter",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "blocking",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "task",
               "name",
@@ -1105,22 +1153,38 @@
               "period",
               "12/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "deadline",
               "12/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "bcet",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet",
               "5/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet_hi",
               "criticality",
@@ -1130,12 +1194,20 @@
               "jitter",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "blocking",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               }
             ]
           },
@@ -1260,8 +1332,8 @@
           }
         }
       },
-      "canonical_text": "{\"admitted\":{\"edges\":[],\"start\":0},\"bounds\":[],\"edges\":[],\"identity\":{\"model\":\"test/litmus\",\"node_id\":{\"ordinal\":0,\"package\":\"package\",\"path\":[\"claim\",\"schedulability\",\"kind\",\"schedulable\",\"policy\",\"fixed-priority\",\"task\",\"bound\",\"tasks\",\"task\",\"name\",\"t1\",\"arrival\",\"periodic\",\"period\",\"4/1\",{\"node\":6},\"deadline\",\"4/1\",{\"node\":6},\"bcet\",\"0/1\",{\"node\":6},\"wcet\",\"1/1\",{\"node\":6},\"wcet_hi\",\"criticality\",\"lo\",\"priority\",\"1\",\"jitter\",\"0/1\",{\"node\":6},\"blocking\",\"0/1\",{\"node\":6},\"task\",\"name\",\"t2\",\"arrival\",\"periodic\",\"period\",\"6/1\",{\"node\":6},\"deadline\",\"6/1\",{\"node\":6},\"bcet\",\"0/1\",{\"node\":6},\"wcet\",\"2/1\",{\"node\":6},\"wcet_hi\",\"criticality\",\"lo\",\"priority\",\"2\",\"jitter\",\"0/1\",{\"node\":6},\"blocking\",\"0/1\",{\"node\":6},\"task\",\"name\",\"t3\",\"arrival\",\"periodic\",\"period\",\"12/1\",{\"node\":6},\"deadline\",\"12/1\",{\"node\":6},\"bcet\",\"0/1\",{\"node\":6},\"wcet\",\"5/1\",{\"node\":6},\"wcet_hi\",\"criticality\",\"lo\",\"priority\",\"3\",\"jitter\",\"0/1\",{\"node\":6},\"blocking\",\"0/1\",{\"node\":6}]},\"ordinal\":0},\"initials\":[0],\"nodes\":[{\"automaton\":0,\"state\":{\"key\":\"eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0\"},\"zone\":[[{\"bound\":\"0\",\"strict\":false}]]}],\"scale\":\"1\",\"task_product\":{\"abstraction\":\"bounded-subtraction-diagonal/v1\",\"clock_ceilings\":[],\"diagonal_constraints\":[],\"queue_bounds\":[{\"arrival\":\"periodic\",\"interarrival\":{\"denominator\":\"1\",\"numerator\":\"4\"},\"max_jitter\":{\"denominator\":\"1\",\"numerator\":\"0\"},\"max_jobs\":2,\"relative_deadline\":{\"denominator\":\"1\",\"numerator\":\"4\"},\"task\":\"t1\",\"taskset\":\"Ctl\",\"work_lower\":{\"denominator\":\"1\",\"numerator\":\"1\"},\"work_upper\":{\"denominator\":\"1\",\"numerator\":\"1\"}},{\"arrival\":\"periodic\",\"interarrival\":{\"denominator\":\"1\",\"numerator\":\"6\"},\"max_jitter\":{\"denominator\":\"1\",\"numerator\":\"0\"},\"max_jobs\":2,\"relative_deadline\":{\"denominator\":\"1\",\"numerator\":\"6\"},\"task\":\"t2\",\"taskset\":\"Ctl\",\"work_lower\":{\"denominator\":\"1\",\"numerator\":\"2\"},\"work_upper\":{\"denominator\":\"1\",\"numerator\":\"2\"}},{\"arrival\":\"periodic\",\"interarrival\":{\"denominator\":\"1\",\"numerator\":\"12\"},\"max_jitter\":{\"denominator\":\"1\",\"numerator\":\"0\"},\"max_jobs\":2,\"relative_deadline\":{\"denominator\":\"1\",\"numerator\":\"12\"},\"task\":\"t3\",\"taskset\":\"Ctl\",\"work_lower\":{\"denominator\":\"1\",\"numerator\":\"5\"},\"work_upper\":{\"denominator\":\"1\",\"numerator\":\"5\"}}],\"subtractions\":[],\"time_progress\":{\"closure\":\"recompute-all-source-successors-no-task-release/v1\",\"live_job_cap\":0,\"method\":\"closed-no-release-product/v1\"}}}",
-      "byte_length": 2454
+      "canonical_text": "{\"admitted\":{\"edges\":[],\"start\":0},\"bounds\":[],\"edges\":[],\"identity\":{\"model\":\"test/litmus\",\"node_id\":{\"ordinal\":0,\"package\":\"package\",\"path\":[\"claim\",\"schedulability\",\"kind\",\"schedulable\",\"policy\",\"fixed-priority\",\"task\",\"bound\",\"tasks\",\"task\",\"name\",\"t1\",\"arrival\",\"periodic\",\"period\",\"4/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"deadline\",\"4/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"bcet\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"wcet\",\"1/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"wcet_hi\",\"criticality\",\"lo\",\"priority\",\"1\",\"jitter\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"blocking\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"task\",\"name\",\"t2\",\"arrival\",\"periodic\",\"period\",\"6/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"deadline\",\"6/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"bcet\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"wcet\",\"2/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"wcet_hi\",\"criticality\",\"lo\",\"priority\",\"2\",\"jitter\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"blocking\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"task\",\"name\",\"t3\",\"arrival\",\"periodic\",\"period\",\"12/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"deadline\",\"12/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"bcet\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"wcet\",\"5/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"wcet_hi\",\"criticality\",\"lo\",\"priority\",\"3\",\"jitter\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]},\"blocking\",\"0/1\",{\"ordinal\":0,\"package\":\"package\",\"path\":[\"ms\"]}]},\"ordinal\":0},\"initials\":[0],\"nodes\":[{\"automaton\":0,\"state\":{\"key\":\"eyJmaWVsZHMiOlt7Im5hbWUiOiJuIiwidmFsdWUiOnsidHlwZSI6ImludGVnZXIiLCJ2YWx1ZSI6IjEifX1dLCJuYW1lIjoiU3RhdGUiLCJ0eXBlIjoicmVjb3JkIn0\"},\"zone\":[[{\"bound\":\"0\",\"strict\":false}]]}],\"scale\":\"1\",\"task_product\":{\"abstraction\":\"bounded-subtraction-diagonal/v1\",\"clock_ceilings\":[],\"diagonal_constraints\":[],\"queue_bounds\":[{\"arrival\":\"periodic\",\"interarrival\":{\"denominator\":\"1\",\"numerator\":\"4\"},\"max_jitter\":{\"denominator\":\"1\",\"numerator\":\"0\"},\"max_jobs\":2,\"relative_deadline\":{\"denominator\":\"1\",\"numerator\":\"4\"},\"task\":\"t1\",\"taskset\":\"Ctl\",\"work_lower\":{\"denominator\":\"1\",\"numerator\":\"1\"},\"work_upper\":{\"denominator\":\"1\",\"numerator\":\"1\"}},{\"arrival\":\"periodic\",\"interarrival\":{\"denominator\":\"1\",\"numerator\":\"6\"},\"max_jitter\":{\"denominator\":\"1\",\"numerator\":\"0\"},\"max_jobs\":2,\"relative_deadline\":{\"denominator\":\"1\",\"numerator\":\"6\"},\"task\":\"t2\",\"taskset\":\"Ctl\",\"work_lower\":{\"denominator\":\"1\",\"numerator\":\"2\"},\"work_upper\":{\"denominator\":\"1\",\"numerator\":\"2\"}},{\"arrival\":\"periodic\",\"interarrival\":{\"denominator\":\"1\",\"numerator\":\"12\"},\"max_jitter\":{\"denominator\":\"1\",\"numerator\":\"0\"},\"max_jobs\":2,\"relative_deadline\":{\"denominator\":\"1\",\"numerator\":\"12\"},\"task\":\"t3\",\"taskset\":\"Ctl\",\"work_lower\":{\"denominator\":\"1\",\"numerator\":\"5\"},\"work_upper\":{\"denominator\":\"1\",\"numerator\":\"5\"}}],\"subtractions\":[],\"time_progress\":{\"closure\":\"recompute-all-source-successors-no-task-release/v1\",\"live_job_cap\":0,\"method\":\"closed-no-release-product/v1\"}}}",
+      "byte_length": 3120
     }
   ],
   "malformed_vectors": [
@@ -1463,22 +1535,38 @@
               "period",
               "4/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "deadline",
               "4/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "bcet",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet",
               "1/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet_hi",
               "criticality",
@@ -1488,12 +1576,20 @@
               "jitter",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "blocking",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "task",
               "name",
@@ -1503,22 +1599,38 @@
               "period",
               "6/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "deadline",
               "6/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "bcet",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet",
               "2/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet_hi",
               "criticality",
@@ -1528,12 +1640,20 @@
               "jitter",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "blocking",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "task",
               "name",
@@ -1543,22 +1663,38 @@
               "period",
               "12/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "deadline",
               "12/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "bcet",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet",
               "5/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "wcet_hi",
               "criticality",
@@ -1568,12 +1704,20 @@
               "jitter",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               },
               "blocking",
               "0/1",
               {
-                "node": 6
+                "ordinal": 0,
+                "package": "package",
+                "path": [
+                  "ms"
+                ]
               }
             ]
           },
