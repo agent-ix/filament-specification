@@ -17,6 +17,8 @@ relationships:
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-181
     type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-420: Interpret and sample stochastic timed models
@@ -96,15 +98,14 @@ timed subject under the workload is a Markov chain over timed states; free
 delays make it a Markov decision process, and a bound compares the minimum
 (for `>= θ`) or the maximum (for `<= θ`) over the free delays' choices.
 
-A timed state where an identity with an unbounded window has `uniform`, or
-where no identity races, delay is bounded and some scheduled identity has a
-non-empty window (its given distribution has no mass there), has no defined
-race and settles `unsupported`, `not-stochastic{state, identity}`, `identity`
-the identity at fault, the first in the sampler's canonical identity order
-where several are. A state where delay is bounded and every window is empty has
-no identity to name: it is a time-lock, settled as "Sampling timed runs"
-states. A quiescent state where no identity races takes the idle tail
-(FR-161).
+A timed state where an identity with an unbounded window has `uniform` has no
+defined race and settles `unsupported`, `not-stochastic{state, identity}`,
+`identity` the identity at fault, the first in the sampler's canonical identity
+order where several are. A state where no identity races and delay is bounded
+is a time-lock, whether every window is empty or some window is non-empty and
+holds no mass of its given distribution; it names no identity and is settled as
+"Sampling timed runs" states. A quiescent state where no identity races takes
+the idle tail (FR-161).
 
 ### Events and measures in time
 
@@ -135,12 +136,17 @@ the stamp of the activating position, and for `elapsed` after the stamp of the
 first position where `A` holds (FR-407 "Elapsed"); before the position it is
 measured from, no horizon ends the sample. Under `weighted by R` the step that
 leaves a window position is drawn for its reward even when it lands after the
-window's end, and adds no position. A sample that reaches a time-locked
-state before its horizon, where no positive delay is admissible and no
-transition identity is enabled, settles the item `unsupported`,
-`time-locked-sample{state}`, naming that state, and keeps no witness from it:
-the measure is over time-divergent behaviours only, and the time-lock-freedom
-item ([FR-417](../temporal/FR-417-settle-time-lock-freedom.md)) reports the
+window's end, and adds no position. A sample that reaches a time-locked state
+before its horizon ends there and is read over the positions it has, as
+[FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "How claims read
+a time-lock" states: an event not yet met is not met, an `always` that those
+positions satisfy holds, and an `accumulate`, `steps` or `elapsed` measure
+not yet completed is censored. FR-416 does not decide how a `fraction` or a
+long-run fraction reads such a run, so a sample of one that reaches a time-lock
+before its horizon settles the item `unsupported`,
+`time-locked-sample{state}`, naming that state, and keeps no witness from it.
+The time-lock-freedom item
+([FR-417](../temporal/FR-417-settle-time-lock-freedom.md)) reports the
 time-lock. A sample that takes more steps
 than `max_sample_steps` before passing its horizon stops the run with
 `incomplete`, `limit-reached` naming `max_sample_steps`, its value and the
@@ -168,7 +174,7 @@ within the window.
 Under `time dense`, where a sample reaches an idle tail before its window ends,
 every finite choice of strictly increasing stutter stamps after the idle tail's
 first position and up to the window's end, the empty choice (`m = 0`) included,
-is an admitted completion. Where the idle tail's first position is stamped at
+is an admitted completion (FR-416 "Idle tail"). Where the idle tail's first position is stamped at
 the window's end, the empty choice is the only one. A sample that reaches an
 idle tail before its window has started, with predicates and a `when` guard
 over the discrete state only, never starts it: it is not activated. A `when`
@@ -301,14 +307,14 @@ model and ignore distributions.
 | FR-420-AC-1 | On the `RareLate` vector, `reply` with `delay Call::reply ~ discrete { 1 ms: 90, 3 ms: 10 };` ties with `timeout` at 3 ms with probability `1/10`, the workload orders the tie evenly, and the event's exact probability is `1/20`. | Test (TC-374) |
 | FR-420-AC-2 | Every sampled delay is an exact rational from the `2^-q` grid's conditioned inverse distribution function, `q` is recorded in the basis, and each sample replays with its delays. | Test (TC-374) |
 | FR-420-AC-3 | A racing identity of an operation with no `delay` declaration settles a statistical item `unsupported`, `not-stochastic`; under exact evidence its delay is a scheduler choice and the bound compares the minimum or maximum. | Test (TC-374) |
-| FR-420-AC-4 | An identity with an unbounded window and `uniform`, or a state with bounded delay and no racing identity though an identity has a non-empty window, settles `unsupported`, `not-stochastic{state, identity}`. | Test (TC-374) |
+| FR-420-AC-4 | An identity with an unbounded window and `uniform` settles `unsupported`, `not-stochastic{state, identity}`. A state with bounded delay and no racing identity, though an identity has a non-empty window, is a time-lock where the sample ends: on `Retx` under a workload with `delay Msg::send ~ discrete { 5 ms: 1 }` (TC-374 ST-04), `probability <= 0.5 [eventually[0 ms, 4 ms] holds(m.delivered)]` has estimate 0 and settles `measured: accepted`. | Test (TC-374) |
 | FR-420-AC-5 | A sample exceeding `max_sample_steps` stops the run with `incomplete`, `limit-reached` naming `max_sample_steps`, its value and how to raise it; an omitted `max_sample_steps` is `2^24`. | Test (TC-374) |
 | FR-420-AC-6 | With `reply` under `delay Call::reply ~ uniform;` the event's probability is 0, the statistical item settles `measured: accepted`, and the every-behaviour claim `NoLateReply` settles `refuted`. | Test (TC-374) |
-| FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon settles the item `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |
+| FR-420-AC-7 | A sample that reaches a state with no admissible positive delay and no enabled transition identity before its horizon ends there: on the TC-374 `Lock` model, `probability <= 0.5 [eventually[0 ms, 2 ms] holds(c.phase = B)]` has estimate 1 and settles `measured: rejected`, and `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5` settles `unsupported`, `time-locked-sample{state}` naming that state, with no witness kept. | Test (TC-374) |
 | FR-420-AC-8 | Under a workload with weight 0 on `Call::retry` and weight 1 on `Call::reply`, when both tie at the smallest delay `reply` is taken first and `retry` second; when two weight-0 operations tie with no positive-weight operation, each order has probability `1/2`. The model's `delay` declarations are read from its `delay_distribution` nodes. | Test (TC-1561) |
 | FR-420-AC-9 | A timed model with two states `Up` and `Down`, `Up` lasting `delay ~ discrete { 1 ms: 1 }` and `Down` `discrete { 3 ms: 1 }`, each step resetting the one clock, has `long_run_fraction holds(phase = Up) weighted by delay` equal to `1/4`: every cycle has `Y_k = 1` and `L_k = 4`, the estimate is `1/4` with a zero-variance cycle sample and a positive half-width, `>= 1/5` settles `measured: accepted` and `>= 1/3` `measured: rejected`, and each sampled run replays with its delays; the unweighted fraction of the same model is `1/2`. | Test (TC-374) |
 | FR-420-AC-10 | A return to the initial discrete state with a clock above 0 is not a regeneration point. Over `Loop` (state `A` initial with `x = 0`; `A` to `B` after `delay ~ discrete { 1 ms: 1 }`, no reset; `B` to `A` with weight 1 after 1 ms with no reset, or to `Z` with weight 1, `Z` to `A` after 1 ms resetting `x`), the return `B` to `A` has `x = 2 ms` and cuts no cycle, and every cut is a return `Z` to `A` where `x = 0` and no draw is pending; a variant of `Loop` in which no step resets `x` never reaches the initial key and settles `incomplete`, `limit-reached` naming `max_cycle_steps`, its value and the request setting. | Test (TC-374) |
-| FR-420-AC-11 | A model whose initial state moves with weight 1 to a terminal state where `P` holds and with weight 1 to a terminal state where `P` does not settles a delay-weighted long-run fraction `>= 1/4` with estimate the mean of the run limits `1` and `0` (value `1/2`), an interval from FR-408's fixed-sample `N` and `ι`, and `measured: accepted`; the same model's `>= 3/4` settles `measured: rejected`. A cycle of total delay 0 contributes nothing to the denominator, and a run whose every cycle has total delay 0 takes the unweighted fraction; a time-locked state settles `unsupported`, `time-locked-sample{state}` as in FR-420-AC-7. | Test (TC-374) |
+| FR-420-AC-11 | A model whose initial state moves with weight 1 to a terminal state where `P` holds and with weight 1 to a terminal state where `P` does not settles a delay-weighted long-run fraction `>= 1/4` with estimate the mean of the run limits `1` and `0` (value `1/2`), an interval from FR-408's fixed-sample `N` and `ι`, and `measured: accepted`; the same model's `>= 3/4` settles `measured: rejected`. A cycle of total delay 0 contributes nothing to the denominator, and a run whose every cycle has total delay 0 takes the unweighted fraction; a run that reaches a time-locked state settles `unsupported`, `time-locked-sample{state}` naming it. | Test (TC-374) |
 | FR-420-AC-12 | On `Send` (TC-374), `send` at 2 ms and `reply` 10 ms later, `mean of (fraction holds(phase = 1) over [0, 5 ms]) <= 0.25` reads the positions stamped 0 and 2 ms: every sample's value is `1/2`, the estimate is `1/2` and the item settles `measured: rejected`. With `reward cost` 1 on `send` and 3 on `reply`, the `weighted by cost` form reads the reward of `reply`, which lands at 12 ms, and the estimate is `3/4`. | Test (TC-374) |
 | FR-420-AC-13 | On `Tick` (TC-374), `time tick` with period 2 ms, `mean of (fraction holds(phase = 1) over [0, 5 ms]) <= 0.25` reads the positions stamped 0, 0, 2 and 4 ms: the estimate is `3/4` and the item settles `measured: rejected`. `probability >= 0.5 [eventually[3 ms, 5 ms] holds(phase = 1)]` has estimate 1 and settles `measured: accepted`, and with the interval `[3 ms, 3 ms]` has estimate 0 and settles `measured: rejected`. No item settles `not-stochastic`. | Test (TC-374) |
 | FR-420-AC-14 | On `Idle` (TC-374), `send` at 2 ms and then an idle tail, each of these is the same on every completion and is decided: `probability >= 0.5 [fraction holds(phase = 1) over [0, 5 ms] >= rational(2, 5)]` (estimate 1: `1/2` and the limit 1 are both at least `2/5`); the same with `<= rational(2, 5)` (estimate 0: neither `1/2` nor 1 is at most `2/5`); `mean of (fraction holds(phase = 0 or phase = 1) over [0, 5 ms]) <= 0.25` (value 1, `k/n = L = 1`, rejected); `mean of (fraction holds(phase = 2) over [0, 5 ms]) <= 0.25` (value 0, accepted); with `reward cost on send = 1`, `mean of (fraction holds(phase = 1) over [0, 5 ms] weighted by cost) <= 0.25` (value 0, accepted); `probability >= 0.5 [steps from holds(phase = 0) until holds(phase = 1) within 5 ms >= 2]` (steps 1, estimate 0); `probability >= 0.5 [steps from holds(phase = 0) until holds(phase = 2) within 5 ms <= 3]` (censored, estimate 0); `probability >= 0.5 [eventually[3 ms, 5 ms] holds(phase = 0)]` (estimate 0); and `probability >= 0.5 [always[3 ms, 5 ms] holds(phase = 1)]` (estimate 1). | Test (TC-374) |

@@ -25,6 +25,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-640
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-407: State probabilistic claims over events and measures
@@ -177,8 +179,8 @@ inclusive. Position `s` is in the window, so the window is never empty. The
 post-state of each discrete step is its own position, several at one time
 stamp included. A delay adds no position, and the instant `h` after `s` adds
 none where no position is stamped there. A terminal stutter position
-([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "Time
-stamps") is a position like any other: under `time tick O period p` its stamp
+([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "Idle
+tail") is a position like any other: under `time tick O period p` its stamp
 is fixed, so the window holds exactly those stamped within it; under `time
 dense` each choice of the stutter stamps is its own behaviour, so a window
 that the idle tail enters before the window's end holds any number `m >= 0` of

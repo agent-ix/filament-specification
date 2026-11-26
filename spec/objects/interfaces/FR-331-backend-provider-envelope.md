@@ -379,9 +379,9 @@ cases required by [FSL FR-187](ix://agent-ix/filament-spec-language/FR-187)
 [FR-406](../../functional/analysis/FR-406-interpret-probabilistic-models.md).
 
 The `not-stochastic` cause SHALL carry `type: "not-stochastic"`, `state` and
-exactly one of two members. Where an identity's race is undefined, its delay
-free, or its distribution without mass at a state with bounded delay and no
-racing identity, that member is `identity`, the `TransitionIdentity`. Where a
+exactly one of two members. Where an identity's race is undefined or its delay
+free,
+that member is `identity`, the `TransitionIdentity`. Where a
 statistical sample's reading depends on the stutter stamps of an idle tail
 ([FR-420](../../functional/analysis/FR-420-sample-stochastic-timed-models.md)
 "Windows on an idle tail"), no identity races: the member is `idle_tail`, JSON
