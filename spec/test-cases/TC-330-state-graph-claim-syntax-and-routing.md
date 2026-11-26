@@ -23,7 +23,7 @@ Compile each source vector through the real local Rust boundary under the comple
 
 | Vector | Input | Expected result |
 | --- | --- | --- |
-| SG-S01 | `possible Win using v over (g: G::Game) { g.phase = G::Phase::Won }` | form `possible`, one `over` parameter; one item per universe key |
+| SG-S01 | `possible Win using v over (g: G::Game) { g.phase = G::Phase::Won }` | form `possible`, one `over` parameter; one item per distinct admitted key (FR-361) |
 | SG-S02 | `always possible Rec using v over (g: G::Game) { g.phase = G::Phase::Won }` | form `always possible`, `Q` read as `true` |
 | SG-S03 | `always possible Rec using v over (g: G::Game) from (g.phase != G::Phase::Lost) { g.phase = G::Phase::Won }` | form `always possible` with its `from` predicate |
 | SG-S04 | `unique path One using v over (j: M::Job) from (not j.a) to (j.done);` | form `unique path` with `X` and `Y` |

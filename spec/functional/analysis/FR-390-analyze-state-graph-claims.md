@@ -156,7 +156,7 @@ A trace monitor evaluates no state-graph claim.
 | FR-390-AC-4 | `unique path` counts paths per reachable node where `X` holds: two interleavings of independent steps give one such node two paths, a sequenced model gives one, and a cycle on a path to `Y` gives more than one. | Test (TC-333) |
 | FR-390-AC-5 | A reachable terminal node where `Q` holds and `P` does not refutes `always possible`; declaring a `terminal when` predicate that holds there changes no state-graph verdict and settles the subject's deadlock-freedom item `proved`. | Test (TC-332) |
 | FR-390-AC-6 | A request whose only items over a subject are state-graph items holds that subject's one deadlock-freedom item. | Test (TC-330) |
-| FR-390-AC-7 | Each claim instance requires `temporal-satisfaction` with its form recorded as an obligation form; a single candidate whose arm does not discharge the form settles the item `unsupported` with `unsupported_projection`/`unsupported-requested-capability`; an `over` clause yields one item per universe key. | Test (TC-330) |
+| FR-390-AC-7 | Each claim instance requires `temporal-satisfaction` with its form recorded as an obligation form; a single candidate whose arm does not discharge the form settles the item `unsupported` with `unsupported_projection`/`unsupported-requested-capability`; an `over` clause yields one item per distinct admitted key (FR-361) in the universe of any population overlapping the parameter's type. | Test (TC-330) |
 
 ## Dependencies
 
