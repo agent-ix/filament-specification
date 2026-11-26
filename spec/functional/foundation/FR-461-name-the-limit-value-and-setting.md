@@ -61,16 +61,25 @@ setting.
    `format.output_bytes`. The budget counts every byte the operation would
    return, including formatting whitespace, comments and a terminating
    newline where the operation emits one.
-3. **One name at every entry point.** The same name raises the same limit:
+3. **One name at every entry point that consumes the limit.** The same name
+   raises the same limit:
    - in the library, through the limits type's setter for that limit
      (FR-300);
-   - in a replay request, as the `stage_limits` entry of that name
-     (FR-323);
+   - in a replay request, as a `stage_limits` entry only when that replay
+     consumes the setting, under the admission rule in Behavior 4 (FR-323);
    - on the CLI, as `--limit <name>=<value>` (FR-301).
-4. **Every stage limit can be raised at every entry point.** A replay
-   request carries every stage limit and passes each one to its stage. The
-   CLI accepts every setting name. An unknown setting name refuses before any
-   stage runs and names the argument (FR-301).
+4. **Entry points accept only the settings they consume.** The library and
+   CLI accept a setting only where the operation exposes the corresponding
+   bound. A replay request's `stage_limits` carries the FR-460/FR-461 settings
+   needed by its recompile, including `emit.output_bytes` for the checked
+   package emission, and the replay-consumed checker settings
+   `model_check.max_states`, `model_check.max_transitions` and
+   `model_check.max_automaton_states`. Each accepted entry sets that bound for
+   the recompile or replay checker that consumes it. A setting unavailable to
+   replay, including any other engine-only setting, is refused by name before
+   replay work; it is not silently ignored or treated as an alias for a
+   setting the replay does consume. Unknown names and depth names are refused
+   before any stage runs and name the argument (FR-301).
 5. **Engine limits use the same rule.** Every member of an analysis engine's
    limits type is a limit under this requirement: the model checker, the
    statistical and exact probabilistic engines, the zone checker, the
@@ -80,13 +89,14 @@ setting.
    `zone_check.max_symbolic_states`, and the tick monitor's `monitor.max_event_rate` and `monitor.max_activations` (FR-487). The FR-418 task-product certificate checker's work limit is `zone_check.max_check_work`, an unsigned 64-bit integer of at least 1 counting work units, whose published default is 100000000 work units, the default of the plan search's `plan_search.max_check_work` (FR-801). The simulator (FR-181 "Simulation bounds and their published defaults") has `simulation.max_steps`, default 16,777,216 (2^24), and `simulation.samples`, default 1, beside `explore.states` (default 10,000,000) and `identity.input_bytes` (default 16,777,216) for its state count and state-key bytes. The list of counters is open: each engine's limits
    type defines its members, and each member has exactly one setting name. An
    engine item that stops at a limit settles `incomplete` and names the limit,
-   its value and its setting, and the same name raises it at every entry
-   point. One outcome is not a configurable limit: FR-487's `atom_projection`
+   its value and its setting, and the same name raises it at each entry point
+   that executes that engine. Replay accepts only the replay-checker settings
+   Behavior 4 names. One outcome is not a configurable limit: FR-487's `atom_projection`
    (an atom with no admitted projection) has no raising setting and no CLI or
    library setter; its `value` is the denied atom's identity and its `setting`
    names the remedy, the plan-declared capture binding, so Behavior 3 and 4 do
    not apply to it.
-   The statistical worker count `statistical.workers` (FR-408 "Workers") is a resource choice, not a limit: it takes no limit row and no limit name, and no limit outcome names it. It is a request setting that the library and `--limit statistical.workers=<n>` accept as a positive integer and a replay request carries as the statistical request's `workers`; the value 0 is refused with `invalid_runtime_input`/`invalid-value` (FR-408-AC-16). The other worker counts are not registered here.
+   The statistical worker count `statistical.workers` (FR-408 "Workers") is a resource choice, not a limit: it takes no limit row and no limit name, and no limit outcome names it. It is a request setting that the library and analysis operation's `--limit statistical.workers=<n>` accept as a positive integer and the analysis request carries as the statistical request's `workers`; the value 0 is refused with `invalid_runtime_input`/`invalid-value` (FR-408-AC-16). Replay does not run a statistical request and does not carry this setting. The other worker counts are not registered here.
 6. **Execution budgets name their counter.** An `incomplete` execution
    outcome names its `filament.value.accounting/v1` counter, for example
    `work_units`, as its limit. A counter of the evaluation meter, one of the
@@ -115,17 +125,19 @@ setting.
 | ID | Criteria | Verification |
 | --- | --- | --- |
 | FR-461-AC-1 | A `stage_limit_exceeded` outcome carries the stage, the counter, the configured bound, the count the denied charge would have reached, the locus where known and the setting name, and its rendering states each of them. | Test (TC-426) |
-| FR-461-AC-2 | For each stage limit, an input that exceeds its default is rerun with that limit raised through the library setter, through the replay request's `stage_limits` entry and through `--limit <name>=<value>`, each under the setting name the outcome reported, and each rerun succeeds with the same result. | Test (TC-426) |
+| FR-461-AC-2 | For each stage limit, an input that exceeds its default is rerun with that limit raised through the library setter and through `--limit <name>=<value>` where those entry points expose it; for each setting replay consumes, the corresponding replay request's `stage_limits` entry raises the recompile or replay bound and the replay succeeds with the same verdict. | Test (TC-426) |
 | FR-461-AC-3 | A replay request whose `stage_limits` raises any stage limit runs that stage under the raised value, not under its default. | Test (TC-426) |
 | FR-461-AC-4 | An unknown setting name, or a setting name naming a depth, given to `--limit` or to a replay request's `stage_limits` refuses before any stage runs and names the argument. | Test (TC-426) |
 | FR-461-AC-5 | An `incomplete` execution outcome names its `filament.value.accounting/v1` counter as its limit and, for a `ScalarLimitsV1` counter, `accounting.<counter>` as its setting, such as `accounting.work_units`, and raising that setting through each entry point lets the same run complete; a request carrying both `ScalarLimitsV1` and `PopulationAdmissionLimitsV1` that exhausts population admission's `work_units` names the setting `admission.work_units`, and raising `accounting.work_units` does not let it complete. | Test (TC-426) |
-| FR-461-AC-6 | An engine item stopped at an engine limit, such as the model checker's state count, settles `incomplete` naming the limit, its value and its dotted setting name, such as `model_check.max_states`, and raising that setting through the library setter, the replay request and `--limit` lets the same item finish. | Test (TC-426) |
+| FR-461-AC-6 | An analysis engine item stopped at an engine limit, such as the model checker's state count, settles `incomplete` naming the limit, its value and its dotted setting name, such as `model_check.max_states`; raising that setting through the library setter and the analysis operation's `--limit` entry lets the same item finish. This does not require replay to rerun the analysis engine item. | Test (TC-426) |
 | FR-461-AC-7 | A byte-emitting lifecycle operation with an `output_bytes` limit reports the operation's `*.output_bytes` setting when the next emitted byte would exceed the configured bound, returns no partial output, succeeds at the exact output length including its terminating newline, and accepts the same bound through its typed limits field and the CLI settings operation. | Test (TC-930) |
 | FR-461-AC-8 | A backend-provider `LimitReached` cause for an exhausted execution budget with `limit` `work_units` and `setting` `accounting.work_units` validates against the provider schema; the same cause with `setting` `work_units` fails it. | Test (TC-426) |
 | FR-461-AC-9 | The spellings the `filament.value.accounting/v1` ordered charge-point table declares equal, in table order, the spellings of the published list `value-accounting-charge-point-vectors.json`, and every spelling has an amount row; the set includes `equality.plan-form`, `frame.write`, `frame.redefines-link`, `declaration.check` and `temporal.visit`. | Test (TC-426) |
 | FR-461-AC-10 | A spelling the table does not declare, such as `temporal.visits`, is absent from the ordered table (and therefore the amount table) and from the published list, and a one-sided change to either fails the comparison; `tests/value_accounting_vocabulary.rs` enforces this half. A conforming kernel's test compares its `ChargePoint::ALL` `as_str()` set with `VALUE_ACCOUNTING_CHARGE_POINT_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
 | FR-461-AC-11 | The ten `ScalarLimitsV1` counter spellings the `filament.value.accounting/v1` Limit object lists, in field order, equal the spellings of the published list `value-accounting-limit-kind-vectors.json`, which is the `ScalarLimitsV1` counter vocabulary only (the `limit_kind` values of `PopulationAdmissionLimitsV1` and `ModelNormalizationLimitsV1` are not part of it); a spelling that is not a `ScalarLimitsV1` counter, such as `unit_work` or `accounting.work_units`, is absent from the Limit object, from the published list and from every `limit_kind` the definition names, and a one-sided change fails the comparison. A conforming kernel's test compares its `LimitKind::ALL` `as_str()` set with `VALUE_ACCOUNTING_LIMIT_KIND_VECTORS` and requires each undeclared entry to fail `from_code`. | Test (TC-426) |
-| FR-461-AC-12 | When the CLI is given `--limit statistical.workers=4`, the statistical request carries `workers` 4 and no limit row or `limit-reached` outcome names `statistical.workers`; given `--limit statistical.workers=0` it refuses with `invalid_runtime_input`/`invalid-value`. | Test (TC-426) |
+| FR-461-AC-12 | When the CLI is given `--limit statistical.workers=4` for an analysis operation, the statistical request carries `workers` 4 and no limit row or `limit-reached` outcome names `statistical.workers`; given `--limit statistical.workers=0` it refuses with `invalid_runtime_input`/`invalid-value`. | Test (TC-426) |
+| FR-461-AC-13 | A replay request with `stage_limits` entries `emit.output_bytes`, `model_check.max_states`, `model_check.max_transitions` and `model_check.max_automaton_states` applies each value to the recompile emission or replay checker that consumes it; the replay succeeds when the raised bounds suffice and returns the corresponding typed limit outcome when a checker bound is insufficient. | Test (TC-426) |
+| FR-461-AC-14 | A replay request whose `stage_limits` contains an engine-only setting replay does not consume, such as `exact_prob.max_states`, or a setting unavailable to replay, such as `format.output_bytes`, refuses before replay work and names the exact entry; it does not silently ignore the entry or substitute a different bound. | Test (TC-426) |
 
 ## Dependencies
 

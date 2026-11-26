@@ -168,13 +168,14 @@ Type and Multiplicity above were derived from the retained text below. Where tha
   high-water size counters. A zero limit admits zero units. The supplied-value
   amendment below adds `limits.supplied` without adding fields to either
   existing accounting object or changing its identity, units or defaults.
-- `stage_limits` — present on a replay request: one entry per stage limit
-  of the proving run, keyed by its FR-461 setting name (for example
-  `s1.tokens` or `s3.nodes`) with its configured value. The executor runs
-  each recompile stage under exactly these values, and a stage limit the
-  request does not name under its published default (FR-460). An entry
-  whose name is not a stage-limit setting name refuses before any stage
-  runs.
+- `stage_limits` — present on a replay request and limited to settings replay
+  consumes: FR-460/FR-461 recompile settings, including `emit.output_bytes`
+  for checked-package emission, and the replay-checker settings
+  `model_check.max_states`, `model_check.max_transitions` and
+  `model_check.max_automaton_states`. The executor applies each entry to the
+  corresponding recompile stage, emission or replay checker; an omitted
+  setting uses its published default (FR-460). A setting replay does not
+  consume refuses by name before replay work.
 - `results` — one ordered typed disposition per selected item, each item settled independently; every supplied argument value and every completed value is the FR-181 typed canonical form of its declared type, and a population argument names a supplied binding ([FR-550](../../functional/runtime/FR-550-carry-native-runtime-arguments-and-per-item-results-as-typed-canonical-values.md)).
   Supplied conversion/admission limit, input, cancellation, storage and
   capacity stops carry the typed `supplied` context below, never an
@@ -334,11 +335,15 @@ population omission/default rules SHALL NOT change. A default is never
 derived from the evaluation allowance, the population admission ceiling or
 any stage setting.
 
-`stage_limits` SHALL continue to carry only FR-460/461 recompile stage settings.
-Neither supplied field is a stage setting; placing it there SHALL refuse
-under the existing unknown-stage-setting rule before stages run. Changing
-either effective supplied ceiling SHALL change request identity, not package
-identity, with package/input/selection/options otherwise fixed. Holding
+`stage_limits` SHALL carry only FR-460/461 recompile settings (including
+`emit.output_bytes`) and the replay-checker settings
+`model_check.max_states`, `model_check.max_transitions` and
+`model_check.max_automaton_states`; a setting replay does not consume SHALL
+refuse by name before replay work. Neither supplied field is in these accepted
+categories; placing it there SHALL refuse under the existing
+unknown-stage-setting rule before replay work. Changing either effective
+supplied ceiling SHALL change request identity, not package identity, with
+package/input/selection/options otherwise fixed. Holding
 both effective ceilings and those other inputs fixed SHALL retain request
 identity. Replay/non-replay structural separation is unchanged.
 
@@ -689,7 +694,7 @@ out-of-domain values and non-canonical encodings refuse before consumption.
 | FR-323-AC-5 | A replay request's `byte_provision` supplies every source and definition input the replay recompiles, each located by the `{authority, identity}` its lock `sources` entry names, and every domain-package document, an entry of the ordered provision located by the identity it declares; the executor reads no recompilation input by path, environment variable or search location. Before any recompile, a named input the provision does not carry refuses `missing_import`/`missing-selection` naming the requested `{authority, identity}`, or the requested domain-package identity, and the `package` member that names it; a second document under one key is a duplicate definition and refuses `invalid_package`/`conflicting-definition`. | Test (TC-277) |
 | FR-323-AC-6 | A replay request's `replay` property carries the `ReplaySource`, the replay target (`function`, `frame_operation` or `state_clause`), for a function request arguments keyed by parameter node id, the semantic profile selections, for a function request the failing node's occurrence key, the proof bounds and declared domains, the trace position and the `backend` member; a non-replay request carries no `replay` property. | Test (TC-278) |
 | FR-323-AC-7 | A replay request's `package` is the proved checked-package document, whose lock `sources` are the proved package's own, and the request carries one `dependencies` entry per identity in its derived closure, in ascending UTF-8 identity order, each carrying that dependency's `identity` and own lock `sources`, including transitive-only dependencies. The executor refuses by the first rule of its order: swapped or repeated entries `invalid_package`/`invalid-value` at `/dependencies` before any recompile; an entry whose source shares the authority and identity of another source `invalid_package`/`conflicting-definition` naming both; a removed entry `missing_import`/`missing-selection`; an entry no import in the dependency tree reaches `invalid_package`/`invalid-value`. An edit removing an export the proved package calls instead refuses in the recompile, `missing_declaration`/`missing-name`. None yields a result. | Test (TC-277) |
-| FR-323-AC-8 | A replay request's `stage_limits` entry raises its named stage limit for the replay recompile, a stage limit the request does not name runs at its published default, and an entry naming no stage-limit setting refuses before any stage runs. | Test (TC-426) |
+| FR-323-AC-8 | A replay request's `stage_limits` raises each named FR-460/FR-461 recompile setting (including `emit.output_bytes`) for its recompile or emission and each of `model_check.max_states`, `model_check.max_transitions` and `model_check.max_automaton_states` for its replay checker; an omitted accepted setting runs at its published default, and an entry naming a setting replay does not consume refuses `invalid_runtime_input`/`unknown-member` by its exact name before replay work. | Test (TC-426) |
 | FR-323-AC-9 | Withdrawn: the replay comparison of the recompiled checked package with a supplied one is removed; replay recompiles the supplied inputs and uses the result. | Withdrawn |
 | FR-323-AC-10 | Applicable replay/non-replay requests carry complete effective u64 `limits.supplied` A/H ceilings and B (AC-15), independent of unchanged ScalarLimitsV1, PopulationAdmissionLimitsV1 and per-argument C/occ. Zero permits no event; either changed ceiling changes request identity. Supplied fields in `stage_limits` refuse before stages run. No absent ceiling borrows evaluator/population/stage work; a ceiling omitted at the caller API resolves to its own published default 16777216, while a wire `limits.supplied` object that is incomplete or malformed refuses before consumption. | Test (TC-278) |
 | FR-323-AC-11 | A supported fixture's independently enumerated A/H event sequence denies at zero/one-less and completes at exact ceiling when other bounds fit. Its actual pre-call limit result preserves supplied phase, parameter/locus, actual event, configured ceiling, successful prefix, denied amount and checked attempted count/overflow, with zero evaluation consumption and no kernel charge_point/FunctionCall. Its evaluated counterpart retains the unchanged accounting incomplete record without supplied context. | Test (TC-278) |
