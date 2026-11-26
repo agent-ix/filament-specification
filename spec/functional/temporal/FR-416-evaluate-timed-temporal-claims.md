@@ -109,8 +109,10 @@ the proof basis `zone-certified`, with an [FR-418](../../objects/interfaces/FR-4
 zone certificate the checker accepts before the item settles, or `exhaustive`
 when every clock constraint, time invariant and timed interval is closed and
 the provider decides the subject over integer-valued clocks with constants
-scaled to integers (digitization), which gives the same verdict for TT-1 over
-the discrete state, deadlock freedom and location reachability.
+scaled to integers (digitization), which a provider SHALL do only for items
+whose verdict digitization preserves: TT-1 over the discrete state, deadlock
+freedom, location reachability, and claims the provider's requirement shows it
+preserves.
 
 Every timed refutation carries a counterexample with exact rational delays
 that replays by FR-181 timed replay. A symbolic provider concretizes a
