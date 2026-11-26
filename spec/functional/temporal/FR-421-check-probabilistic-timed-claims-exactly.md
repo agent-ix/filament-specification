@@ -96,12 +96,17 @@ non-strict, no constraint that compares two clocks, and a subject in one of
 three delay classes:
 
 - **given**: every delay is given by a `discrete` distribution;
-- **free**: no delay is given, and under a workload no two identities race at
-  one state;
-- **mixed**: both kinds occur, under a workload at most one identity with a
-  free delay races at a state, and at every state where a delay is drawn every
+- **free**: no delay is given;
+- **mixed**: both kinds occur, and at every state where a delay is drawn every
   clock that bounds a drawn identity's window holds a whole number of units on
   every run.
+
+In the free and mixed classes digital clocks further require that no
+time-lock (FR-416) is reachable: from every reachable state some scheduler
+lets time diverge with probability 1. That property is established over the
+subject's dense runs; a digital process with no time-lock does not establish
+it. This section sets no further condition on a workload race among two or more
+identities with free delays; "Delays" states how it is read.
 
 **The claim.** Over such a subject, digital clocks decide only:
 
@@ -111,20 +116,13 @@ three delay classes:
 | A deadline event `eventually[0, D] holds(P)` or `holds(A) until[0, D] holds(B)`, its `always[0, D]` complement, and a `steps` or `accumulate` measure within a time horizon, each read `on origin` | all |
 | `expected elapsed until holds(B)` | all |
 | `M <= c` of an elapsed measure whose first position is position 0 on every run | all |
-| The three rows above read from a later position (`on each`, or an elapsed measure whose first position can follow position 0) | given only |
-
-**Time-locks.** In the free and mixed classes, every quantity other than the
-maximum probability of a reachability, `until` or deadline event (equally, the
-minimum of its `always` complement) further requires that no time-lock
-(FR-416) is reachable in the subject. That property is established over the
-subject's dense runs; a digital process with no time-lock does not establish
-it.
+| A deadline event, `steps` or `accumulate` measure within a time horizon read from a later position (`on each`), and `M <= c` of an elapsed measure whose first position can follow position 0 | given only |
+| A weighted fraction over a time window, and a `weighted by delay` long-run fraction | given only |
 
 Every other claim is read through clock regions, closed or not: a strict
-constraint or interval; any other bounded-window formula; an unweighted or
-`weighted by delay` fraction over a time window; a `weighted by delay`
-long-run fraction; an `elapsed` form this table does not name; and any form
-over a subject outside the three classes. Each clock then keeps its integer
+constraint or interval; any other bounded-window formula; an unweighted
+fraction over a time window; any other `elapsed` form; and any claim over a
+subject outside these conditions. Each clock then keeps its integer
 part, capped as below, whether its fractional part is zero, and the order of
 the clocks' fractional parts, and time advances by symbolic time successor.
 The region process gives the exact minimum and maximum on the dense runs;
