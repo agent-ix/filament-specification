@@ -15,6 +15,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-153
     type: references
+  - target: ix://agent-ix/filament-specification/FR-301
+    type: depends_on
 ---
 
 # FR-806: Refuse a plan request with a typed cause and a locus
@@ -32,7 +34,11 @@ The checked `synthesis` declaration and a plan request (FR-805).
 
 ## Outputs
 
-One located refusal, exit `20`.
+One located refusal. Its exit is the exit of its code's FR-301 outcome
+category; no refusal route sets an exit of its own. `incomplete_population`
+is incomplete, exit `22`. The other codes these tables name are refusals,
+exit `20`. A refusal passed on from snapshot admission exits as its own code
+does.
 
 ## Behavior
 
@@ -69,8 +75,8 @@ it with the pointer of the member carrying the plan request (FR-805):
 | a policy name names no `temporal` declaration | `missing_declaration`/`missing-name` | `/policy/<i>` |
 | a policy clause's `over` binding is not an object of `G`'s model | `ill_typed`/`type-mismatch` | `/policy/<i>` |
 | the initial snapshot does not admit for `G`'s model | the snapshot's own admission refusal | `/initial` and the snapshot's member |
-| the initial snapshot lists a population with `complete: false` | `incomplete_population`/`incomplete-scope` (FR-153) | `/initial` |
-| the initial snapshot omits a population that overlaps a named policy clause's `over` type (FR-803) | `incomplete_population`/`missing-required-artifact` (FR-153) | `/initial` |
+| the initial snapshot lists a population with `complete: false` | `incomplete_population`/`incomplete-scope` (FR-153), exit `22` | `/initial` |
+| the initial snapshot omits a population that overlaps a named policy clause's `over` type (FR-803) | `incomplete_population`/`missing-required-artifact` (FR-153), exit `22` | `/initial` |
 | an unknown member of `limits` or `accounting` | `invalid_runtime_input`/`unknown-member` (FR-805; FR-461-AC-4 governs only an unknown `--limit` setting name on the CLI) | `/limits/<member>` or `/accounting/<counter>` |
 
 A `complete: false` population is refused by snapshot admission, so that
@@ -95,10 +101,11 @@ snapshot itself refers to is refused earlier, by snapshot admission.
 | FR-806-AC-1 | A `domain` naming `Integer`, and an operation parameter `n: Integer`, each refuse `unsupported_projection`/`unbounded-extent` at S3, located at the `domain` name and at the parameter respectively, and no plan request is read. | Test (TC-1956) |
 | FR-806-AC-2 | A goal reading `Reach.elapsed` over an untimed model refuses `missing_declaration`/`missing-name` at `elapsed`; a `domain` `Int[-1, 3]` refuses `ill_typed`/`type-mismatch`. | Test (TC-1956) |
 | FR-806-AC-3 | A `filament.plan-request/v1` document whose `declaration` names an ordinary `synthesis` over a value type refuses `missing_declaration`/`missing-name` at `/declaration`; a policy over another model refuses `ill_typed`/`type-mismatch` at `/policy/0`. | Test (TC-1956) |
-| FR-806-AC-4 | A request whose initial snapshot violates the model's population bound refuses with that snapshot's own admission cause located at `/initial`, exit `20`, and writes no plan. | Test (TC-1956) |
+| FR-806-AC-4 | A request whose initial snapshot violates the model's population bound refuses with that snapshot's own admission cause located at `/initial` and writes no plan; the bound violation is a refusal, exit `20`. This criterion fixes no exit for another admission refusal. | Test (TC-1956) |
 | FR-806-AC-5 | A goal no plan reaches exits `10` as `infeasible`, never `20`. | Test (TC-1956) |
 | FR-806-AC-6 | TC-2037's normalized shared-argument conflicts give `unsupported_construct`/`not-yet-implemented` at S3, exit `20`, at the synthesis grammar name, with the exact feature string defined by FR-322 and the existing declaration/profile cause context and deterministic parameter/operation-pair names in the diagnostic. No checked package or plan request/outcome is produced; optional `X` and required `Option<X>` do not create a conflict merely by their spelling. | Test (TC-2037) |
-| FR-806-AC-7 | Over the counter with the policy list `["NotFour", "Nowhere"]`, where `Nowhere` names no declaration: a snapshot listing `counters` with `complete: false` refuses `incomplete_population`/`incomplete-scope` at `/initial`, and a snapshot that omits `counters` refuses `missing_declaration`/`missing-name` at `/policy/1`; neither writes a plan outcome. | Test (TC-1956) |
+| FR-806-AC-7 | Over the counter with the policy list `["NotFour", "Nowhere"]`, where `Nowhere` names no declaration: a snapshot listing `counters` with `complete: false` refuses `incomplete_population`/`incomplete-scope` at `/initial`, exit `22`, and a snapshot that omits `counters` refuses `missing_declaration`/`missing-name` at `/policy/1`, exit `20`; neither writes a plan outcome. | Test (TC-1956) |
+| FR-806-AC-8 | Over the counter with the policy list `["NotFour"]` and a snapshot that omits the `counters` population and holds no reference to it, the request refuses `incomplete_population`/`missing-required-artifact` at `/initial`, exit `22`, and writes no plan. | Test (TC-1956) |
 
 ## Dependencies
 
