@@ -213,7 +213,9 @@ symbolic path canonically: at each step the least admissible delay when the
 delay set has a least element, otherwise the midpoint of a bounded delay set,
 otherwise its lower end plus one unit. A symbolic lasso is concretized by
 solving its loop's linear constraints over rational delays; when no accepting
-cycle concretizes, the item settles `inconclusive`, `lasso-not-concretized`.
+cycle concretizes, the item settles `inconclusive`, `lasso-not-concretized`. The
+same cause names a finite `trap` stem that cannot show the delay after its last
+step ([FR-712](../analysis/FR-712-analyze-state-graph-claims-over-a-timed-model-subject.md) "Evidence").
 
 ### Non-Zeno premise
 

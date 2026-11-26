@@ -76,6 +76,9 @@ settled by FR-391, with its FR-393 evidence in timed form.
   (FR-416): `E(P)` as the least fixpoint of timed and discrete predecessors of
   the `P` zones, and the forward reachable zones by FR-416's zone search,
   with a result equal to the definition above over the concrete timed states.
+  A zone holds many timed states, and an edge of a zone graph says only that
+  some of them can take its step, so neither a whole zone nor a zone-graph
+  edge stands for the timed states in it.
 - **Definedness scope.** On the timed zone route, the analyzer SHALL apply
   FR-391's undefined-evaluation rule to claim predicates and to the subject's
   guard enabled-tested at an explored state, `terminal when` predicate at an
@@ -94,7 +97,22 @@ settled by FR-391, with its FR-393 evidence in timed form.
   analyzer SHALL carry the path in FR-393 form with each step's delay before
   it. The replay component SHALL replay it with no provider present. A
   `unique path` refutation carries the two step sequences, or the cycle and
-  the node it returns to.
+  the node it returns to, or, when a reachable node whose discrete state
+  satisfies `X` has no step sequence to a `Y` node, FR-393's `trap` arm, whose
+  `stem` ends at that node (FR-391 "Trap").
+  A `ModelPath` records a delay only ahead of a step, so a `trap` `stem` SHALL
+  end at a trapped timed state. The analyzer SHALL search, in FR-391's
+  canonical discovery order, the zone-graph nodes holding trapped timed states
+  where the form requires reaching the target, and each convex piece of a
+  node's trapped timed states, for a piece that the node's canonical path can
+  end in. The analyzer MAY try the pieces of one node in any order, and a
+  `stem` that ends in any trapped piece of that node conforms: whether one
+  exists does not depend on the order or on how the states are split into
+  pieces. The first node with such a piece gives the trap and decides the
+  instance. Where
+  there is none, `unique path` SHALL still search for two step sequences. With
+  neither, the analyzer SHALL settle the instance `inconclusive`,
+  `lasso-not-concretized`, never `refuted`.
 - **Step delay.** Every step on a timed state-graph path SHALL carry FR-393's
   `delay` member, the FR-181 delay before that step, a zero delay included:
   the steps of a `ModelPath` and of a path pair's `first` and `second`. A
@@ -104,9 +122,12 @@ settled by FR-391, with its FR-393 evidence in timed form.
   `zone-certified` and an FR-418 certificate covering the reachable zones.
   For `always possible` the certificate also carries a `state_graph` part
   `{form, ef_nodes}`: `ef_nodes` lists, in ascending order, the positions in
-  `nodes` of the zones of `E(P)`, and the checker accepts it only after
-  re-deriving one predecessor pass that adds no zone and finding every
-  reachable `Q` node among them. A `possible` proof by digitization of an
+  `nodes` of the nodes whose whole zone lies in `E(P)`; a node only part of
+  whose zone lies in `E(P)` is not listed. The checker accepts it only after
+  recomputing `E(P)` over the timed states itself, as the least fixpoint of
+  timed and discrete predecessors over its own exploration, finding the
+  listing equal to the one that follows from it, and finding every reachable
+  timed state whose discrete state satisfies `Q` in `E(P)`. A `possible` proof by digitization of an
   all-closed subject settles with basis `exhaustive` (FR-416).
 - **A subject with no time-divergent behaviour.** A state-graph item reads
   finite paths of delay and step edges and quantifies over no infinite
@@ -144,7 +165,9 @@ The vector is TC-369's `Rpc` model with `T = 4 ms`.
 | FR-712-AC-7 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-09's `audit(a)` guard evaluates `lookup` of absent `rz` at the initial state; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key, guard locus and FR-181 identity of `audit(a)`, and whose cause is `absent-key`; the guard is not treated as disabled. | Test (TC-1742) |
 | FR-712-AC-8 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-11's `Lost` terminal state evaluates its `terminal when` predicate by `lookup` of an absent key; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key and terminal-predicate locus, with no predicate or transition member, and whose cause is `absent-key`. | Test (TC-1742) |
 | FR-712-AC-9 | On the `zones` route with the timed overlay of TC-1742 step 6, TC-349 SG-12's selected state constraint evaluates `lookup` of absent `rz` at the initial state; `possible` settles `refuted`, `decisive-counterexample`, cause `undefined-evaluation`, with an FR-393 `undefined` arm whose `where` names the timed state key and constraint locus, with no predicate or transition member, and whose cause is `absent-key`. | Test (TC-1742) |
+| FR-712-AC-10 | Over a subject with dense clocks `x` and `y` in which `first` runs by `y = 1 ms` and resets `x`, and from `phase` 1, bounded by `y <= 2 ms`, `zero` needs `y >= 2 ms` and `x >= 2 ms` and `one` needs `y >= 2 ms` and `x <= 1 ms`, on the `zones` route `always possible` of `phase >= 2` and `unique path` from `phase = 1` to `phase >= 2` each settle `refuted`: with `first` strictly between 0 and 1 ms neither step is ever taken. With `one`'s guard `y >= 2 ms and x < 2 ms` both settle `proved`. With `one` never enabled, the checker rejects an `always possible` certificate whose `ef_nodes` lists the zones of `phase` 0, 1 and 2. | Test (TC-1742) |
 | FR-712-AC-11 | Every step of AC-1's `possible` witness, of AC-2's trap `stem` without `reset`, and of AC-3's path pair with `reset` (its `stem`, `first` and `second`) carries `delay`, an exact rational `{numerator, denominator}`, a zero delay included; every step of the `undefined` stems of SG-07, SG-09, SG-11 and SG-12 under AC-6 to AC-9's timed overlay carries `delay` `{"numerator": "0", "denominator": "1"}`. The `filament.backend-provider/v1` schema admits a `GraphStep` carrying `delay` `{"numerator": "0", "denominator": "1"}` and one carrying no `delay`, and refuses one whose `delay` is a string or has no `denominator`. | Test (TC-1742) |
+| FR-712-AC-12 | Over a subject with a dense clock `x` in which `first` takes `phase` 0 to 1 and resets `x`, `escape` takes `phase` 1 to 2 with guard `x <= 0 ms`, and `phase` 1 is bounded by `x <= 2 ms`, `always possible` of `phase = 2` from `phase = 1` and `unique path` from `phase = 1` to `phase = 2` settle `inconclusive`, `lasso-not-concretized`, with no counterexample. With a further step from `phase` 1 to a `phase` 3 with guard `x > 1 ms`, and `phase = 3` added to each claim's source states, both settle `refuted` with `trap` evidence whose `stem` ends in `phase` 3. With instead a further step from `phase` 0 to 2, `unique path` from `phase` 0 or 1 settles `refuted` with a path pair. | Test (TC-1742) |
 
 ## Dependencies
 
