@@ -118,7 +118,8 @@ timed form.
   only a backend that decides the subject on zones and lists the form in
   `state_graph_forms` matches it; with `digital-clocks`, only a backend
   that publishes that method and lists the form matches it, and decides the
-  closed subject's integer-clock reading. A backend that decides only
+  closed subject's integer-clock reading for a `possible` item; a provider
+  may decline the other two forms (FR-416). A backend that decides only
   untimed graphs, and offers neither method, never matches. One item reaches
   one backend.
 
