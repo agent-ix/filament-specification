@@ -253,6 +253,7 @@ search ran) and `limits` are written for every status.
 | `inconclusive` | inconclusive | `22` |
 | `unsupported` | unsupported | `21` |
 | `incomplete_population` refusal (FR-806), no outcome document | incomplete | `22` |
+| `unsupported_construct` or `unsupported_projection` refusal (FR-806), no outcome document | unsupported | `21` |
 | any other refusal (FR-806) | the category of its code | that category's exit, `20` for a refusal |
 | method failure (FR-650 replay failure) | internal-failure | `30` |
 

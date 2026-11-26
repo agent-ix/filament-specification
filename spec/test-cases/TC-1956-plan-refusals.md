@@ -27,7 +27,9 @@ FR-806-AC-8.
 
 ## Expected Results
 
-- Steps 1 to 4: each refusal with its code, cause and locus, exit 20, no plan.
+- Step 1: each `unsupported_projection` refusal with its cause and locus,
+  exit 21, no plan.
+- Steps 2 to 4: each refusal with its code, cause and locus, exit 20, no plan.
 - Step 5: `infeasible`, exit 10.
 - Step 6: `incomplete_population`/`incomplete-scope` at `/initial`, exit 22,
   then `missing_declaration`/`missing-name` at `/policy/1`, exit 20; no plan

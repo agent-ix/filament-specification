@@ -35,10 +35,11 @@ The checked `synthesis` declaration and a plan request (FR-805).
 ## Outputs
 
 One located refusal. Its exit is the exit of its code's FR-301 outcome
-category; no refusal route sets an exit of its own. `incomplete_population`
-is incomplete, exit `22`. The other codes these tables name are refusals,
-exit `20`. A refusal passed on from snapshot admission exits as its own code
-does.
+category; no refusal route sets an exit of its own.
+`unsupported_construct` and `unsupported_projection` are unsupported, exit
+`21`. `incomplete_population` is incomplete, exit `22`. The other codes these
+tables name are refusals, exit `20`. A refusal passed on from snapshot
+admission exits as its own code does.
 
 ## Behavior
 
@@ -98,12 +99,12 @@ snapshot itself refers to is refused earlier, by snapshot admission.
 
 | ID | Criteria | Verification |
 | --- | --- | --- |
-| FR-806-AC-1 | A `domain` naming `Integer`, and an operation parameter `n: Integer`, each refuse `unsupported_projection`/`unbounded-extent` at S3, located at the `domain` name and at the parameter respectively, and no plan request is read. | Test (TC-1956) |
-| FR-806-AC-2 | A goal reading `Reach.elapsed` over an untimed model refuses `missing_declaration`/`missing-name` at `elapsed`; a `domain` `Int[-1, 3]` refuses `ill_typed`/`type-mismatch`. | Test (TC-1956) |
+| FR-806-AC-1 | A `domain` naming `Integer`, and an operation parameter `n: Integer`, each refuse `unsupported_projection`/`unbounded-extent` at S3, located at the `domain` name and at the parameter respectively, exit `21`, and no plan request is read. | Test (TC-1956) |
+| FR-806-AC-2 | A goal reading `Reach.elapsed` over an untimed model refuses `missing_declaration`/`missing-name` at `elapsed`; a `domain` `Int[-1, 3]` refuses `ill_typed`/`type-mismatch`; both exit `20`. | Test (TC-1956) |
 | FR-806-AC-3 | A `filament.plan-request/v1` document whose `declaration` names an ordinary `synthesis` over a value type refuses `missing_declaration`/`missing-name` at `/declaration`; a policy over another model refuses `ill_typed`/`type-mismatch` at `/policy/0`. | Test (TC-1956) |
 | FR-806-AC-4 | A request whose initial snapshot violates the model's population bound refuses with that snapshot's own admission cause located at `/initial` and writes no plan; the bound violation is a refusal, exit `20`. This criterion fixes no exit for another admission refusal. | Test (TC-1956) |
 | FR-806-AC-5 | A goal no plan reaches exits `10` as `infeasible`, never `20`. | Test (TC-1956) |
-| FR-806-AC-6 | TC-2037's normalized shared-argument conflicts give `unsupported_construct`/`not-yet-implemented` at S3, exit `20`, at the synthesis grammar name, with the exact feature string defined by FR-322 and the existing declaration/profile cause context and deterministic parameter/operation-pair names in the diagnostic. No checked package or plan request/outcome is produced; optional `X` and required `Option<X>` do not create a conflict merely by their spelling. | Test (TC-2037) |
+| FR-806-AC-6 | TC-2037's normalized shared-argument conflicts give `unsupported_construct`/`not-yet-implemented` at S3, exit `21`, at the synthesis grammar name, with the exact feature string defined by FR-322 and the existing declaration/profile cause context and deterministic parameter/operation-pair names in the diagnostic. No checked package or plan request/outcome is produced; optional `X` and required `Option<X>` do not create a conflict merely by their spelling. | Test (TC-2037) |
 | FR-806-AC-7 | Over the counter with the policy list `["NotFour", "Nowhere"]`, where `Nowhere` names no declaration: a snapshot listing `counters` with `complete: false` refuses `incomplete_population`/`incomplete-scope` at `/initial`, exit `22`, and a snapshot that omits `counters` refuses `missing_declaration`/`missing-name` at `/policy/1`, exit `20`; neither writes a plan outcome. | Test (TC-1956) |
 | FR-806-AC-8 | Over the counter with the policy list `["NotFour"]` and a snapshot that omits the `counters` population and holds no reference to it, the request refuses `incomplete_population`/`missing-required-artifact` at `/initial`, exit `22`, and writes no plan. | Test (TC-1956) |
 
