@@ -43,8 +43,8 @@ FR-652-AC-5, FR-652-AC-7 to FR-652-AC-22, FR-193-AC-22, FR-193-AC-29 and FR-193-
 
 ## Expected Results
 
-- Step 1: accepted and `certified`; rejected at rule (a), `uncertified` with `certificate-rejected`.
-- Step 2: rejected naming the step and `uncertified`; accepted and `certified`.
+- Step 1: accepted and `certified`; rejected at rule (a), `inconclusive` with `certificate-rejected`.
+- Step 2: rejected naming the step and `inconclusive`; accepted and `certified`.
 - Step 3: `refuted` and recorded in `counterexamples`; `inconclusive` three times, each cut witness rejected `witness-violation` at its last step.
 - Step 4: `invalid_result`/`invalid-value` at `/certificate`; `box-shape` at `/certificate/boxes/Moving` and at `/certificate/steps/3/apriori`; `work-limit`.
 - Step 5: accepted and `certified`; rejected `jump` at `/certificate/steps/160`; accepted; rejected `claim` at `/certificate/steps/0`.
@@ -58,8 +58,8 @@ FR-652-AC-5, FR-652-AC-7 to FR-652-AC-22, FR-193-AC-22, FR-193-AC-29 and FR-193-
 - Step 13: `Hold` accepted, then `claim` at `/certificate/steps/0` twice; `claim` at `/certificate/steps/0`; `Drop` accepted, then `claim` at `/certificate/steps/1`; `Ramp` rejected `claim` at `/certificate/steps/1`; `Decay` rejected `claim` at `/certificate/steps/0`.
 - Step 14: `witness-start` at `/certificate/dwells/0/0`; `witness-picard` at `/certificate/dwells/0/3` and `/certificate/dwells/0/7`; accepted with the matching `end`, `witness-violation` at `/certificate/dwells/0/8` with the other; `Shift` accepted, `witness-unique` at `/certificate/dwells/0/0`; `GrowJump` accepted, `witness-guard` at `/certificate/dwells/0/1` twice.
 - Step 15: each refusal at its stated code and pointer, `invalid_result` on the analyze path and `invalid_runtime_input` in the replay request; no internal fault.
-- Step 16: certificate recorded unchecked; `refuted` by exact replay with the witness unchecked; `inconclusive`, `replay-parity` with the witness unchecked; `incomplete`, `limit-reached{limit: work_units}` with the witness rejected `work-limit`; `work-limit` at `/certificate/boxes/Moving`; FR-193-AC-29's `certified`, `insufficient-horizon` with the certificate unchecked, and `uncertified` with `certificate-rejected{rule: coverage, at: /certificate/steps/0}`.
+- Step 16: certificate recorded unchecked; `refuted` by exact replay with the witness unchecked; `inconclusive`, `replay-parity` with the witness unchecked; `incomplete`, `limit-reached{limit: work_units}` with the witness rejected `work-limit`; `work-limit` at `/certificate/boxes/Moving`, the item `incomplete`; FR-193-AC-29's `certified`, `insufficient-horizon` with the certificate unchecked, and `inconclusive`, `certificate-rejected{rule: coverage, at: /certificate/steps/0}`.
 - Step 17: `picard` at `/certificate/steps/0`; `jump` at `/certificate/steps/5`; `witness-guard` at `/certificate/dwells/0/1`; `Ramp` reads `x = 1` at position 1, `Gate` keeps `x = 0`; `Decay` holds `x = 1` at position 1.
-- Step 18: `coverage` at `/certificate/steps/0`; `uncertified` with `certificate-rejected`.
-- Step 19: `d` at `/certificate`, `uncertified` with `certificate-rejected`; accepted.
+- Step 18: `coverage` at `/certificate/steps/0`; `inconclusive` with `certificate-rejected`.
+- Step 19: `d` at `/certificate`, `inconclusive` with `certificate-rejected`; accepted.
 - Step 20: `jump` at `/certificate/steps/1`.

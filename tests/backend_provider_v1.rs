@@ -1397,7 +1397,7 @@ fn tc_431_canonical_key_bindings_are_complete() {
 }
 
 // Normative rule inventory, independent of both schema and vector contents.
-const CERTIFICATE_RULES: [&str; 27] = [
+const CERTIFICATE_RULES: [&str; 38] = [
     "initial-missing",
     "successor-missing",
     "bad-state",
@@ -1425,6 +1425,17 @@ const CERTIFICATE_RULES: [&str; 27] = [
     "non-zeno-mismatch",
     "unreached-node",
     "extra-edge",
+    "box-shape",
+    "a",
+    "b",
+    "c",
+    "d",
+    "initial",
+    "picard",
+    "successor",
+    "jump",
+    "coverage",
+    "claim",
 ];
 
 /// The closed rule inventory is authored independently of the schema and

@@ -99,6 +99,10 @@ in the default build:
 - `analyze`, `prove`, `monitor`, `replay` and `generate` take
   `--provider-config <file>`, the process providers to start
   ([FR-561](FR-561-configure-process-providers-through-a-provider-configuration-document.md)).
+- `analyze` takes `--require-certified`, which sets the request's
+  `require_certified` member `true` (FR-520). Without the flag the request
+  is read as written; the flag never sets the member `false`. No other verb
+  takes it.
 - `compile` and `run` requests carry extension definitions in their
   `extensions` member, and `parse` and `check` take `--extensions <file>`
   ([FR-562](FR-562-name-extension-definitions-to-a-command.md)).
@@ -154,7 +158,8 @@ exit `20`.
 | FR-301-AC-4 | A verb the build accepts but does not route exits `21` with an outcome document naming the verb under `unsupported_operation`/`operation-not-routed` (FR-522), and no verb exits with empty machine output while its stream is open. | Driver test (TC-1082): only the CLI binary decides verb routing, so the driver code ticket QSL-1995 adds the test in the driver repository. |
 | FR-301-AC-5 | `version --format json` writes the build inventory document; `check --markdown` over a document of two native fences writes one item per fence; `compile` with a `handoff` member writes the handoff directory and `inspect --handoff` over it exits `0`; `--provider-config` naming a document with no `providers` member, and `--extensions` naming a set document with an unknown entry member, each exit `20` before any stage runs. | Test (TC-1244) |
 | FR-301-AC-6 | `check --integer-division floor` over a unit with `div` and no law header exits `0`; without the option it exits `20` with `missing_declaration`/`missing-selection`; `--integer-division ceiling` exits `20` with `unknown_profile`/`unsupported-selection` naming the option and the value before reading the source; a `run` request whose `integer_division` member is `floor` evaluates `-7 div 3` to `-3`; and `--integer-division` on `compile`, `run`, `analyze`, `prove` or `monitor` refuses as an unknown option, exit `20`. | Driver test (TC-1651): the CLI binary parses the option and renders the outcome, so the code ticket adds the test in the driver repository. |
-| FR-301-AC-7 | `export <request> --output m.tla` over the counter request exits `0`, writes the target file and writes an outcome document with operation `export`; `export <request> --evidence e.json --output m.tla` and `export --evidence e.json --output m.tla` each refuse `invalid-request` naming the options, exit `20`, with no file written; `--evidence` on `compile` and `--output` on `run` each refuse as an unknown option, exit `20`. | Driver test (TC-2021): the CLI binary parses the options and routes the verb, so the code ticket adds the test in the driver repository. |
+| FR-301-AC-7 | `export <request> --output m.tla` over the counter request exits `0`, writes the target file and writes an outcome document with operation `export`; `export <request> --evidence e.json --output m.tla` and `export --evidence e.json --output m.tla` each refuse `invalid-request` naming the options, exit `20`, with no file written; `--evidence` on `compile` and `--output` on `run` each refuse as an unknown option, exit `20`. | Driver test (TC-2021): the CLI binary parses the options and routes the verb, so the code ticket add the test in the driver repository. |
+| FR-301-AC-8 | `analyze --require-certified` over FR-520-AC-9's request without the member writes the same outcome document as the request with `"require_certified": true` and no flag; `--require-certified` on `check` refuses as an unknown option, exit `20`. | Driver test (TC-2116): the CLI binary parses the option, so the code ticket adds the test in the driver repository. |
 
 ## Dependencies
 
