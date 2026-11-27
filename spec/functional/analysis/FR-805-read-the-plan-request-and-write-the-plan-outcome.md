@@ -216,7 +216,8 @@ actual ordinals; the example reserves no declaration path or ordinal.
   only when no limit, deadline or cancellation stopped the search (FR-650), or
   `{"type": "contract-undefined", "clause": <name>}` naming the clause
   whose contract conjunction was undefined, which takes precedence over
-  `invariant-undetermined` (FR-650; FR-1012-AC-9 / UE-6), or FR-819's
+  `invariant-undetermined` and requires `plan` `null` with no accepted
+  certificate (FR-650; FR-1012-AC-9 / UE-6), or FR-819's
   `grid-exhausted{dwell_grid}` or `timed-out`), on
   `inconclusive` (FR-331's `no-instance`, written `{"type": "no-instance"}`)
   and on `unsupported` (FR-193's `unsupported_projection`/
@@ -238,7 +239,8 @@ one key set for every status and a missing member is always a defect, as
 | `feasible` | the value | the plan | `reproduced` | rejected, or `null` when none was written (or the hybrid `enclosure`) | `uncertified` (hybrid: the item's) | the bound or `null` | `null` |
 | `infeasible` | `null` | `null` | `null` | accepted `closure` or `enclosure` | `certified` | `null` | `null` |
 | `incomplete` with a best plan | the value | the best plan | `reproduced` | `null` | `uncertified` | `null` | the stop cause |
-| `incomplete` with no plan | `null` | `null` | `null` | `null`, or the rejected certificate under `certificate-rejected` | `null` | `null` | the stop cause |
+| `incomplete` with no plan from `contract-undefined` | `null` | `null` | `null` | `null` | `null` | `null` | the `contract-undefined` cause |
+| `incomplete` with no plan from another cause | `null` | `null` | `null` | `null`, or the rejected certificate under `certificate-rejected` | `null` | `null` | the stop cause |
 | `inconclusive` | `null` | `null` | `null` | `null` | `null` | `null` | `{"type": "no-instance"}` |
 | `unsupported` | `null` | `null` | `null` | `null` | `null` | `null` | the `unsupported` cause |
 
