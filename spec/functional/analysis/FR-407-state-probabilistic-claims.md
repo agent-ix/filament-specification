@@ -168,7 +168,12 @@ A **measure** is a value computed from one behaviour over a finite window.
   and an idle-tail position with no leaving step inside the window is
   weighted by `h − stamp` as well, the time the trace spends at that
   position within the window. So the weights of a window sum to the
-  duration it covers.
+  duration it covers. A run that ends in a time-lock counts 0 for a fraction
+  and for a long-run fraction, weighted or not. This is an architecture ruling
+  (QSL-3489, C1) that deliberately does not read the run positionally: a locked
+  run is no run that satisfies its positions to the end of time, and as FR-416
+  "How claims read a time-lock" reads an event not yet met as not met, the run
+  has value 0. The sampler (FR-420) and the exact route (FR-421) both apply it.
 
 A window that reaches a terminal state continues on its stutter steps.
 
