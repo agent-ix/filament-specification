@@ -68,11 +68,18 @@ One planning result: `optimal`, `feasible`, `infeasible`, `incomplete` or
   certificate, because the excluded state may begin an admissible plan
   better than the best one or the only one. A checker SHALL NOT accept a
   certificate whose derivation rests on an undetermined invariant.
+- If any contract conjunction has no value while expanding a reachable
+  state, including a precondition or postcondition, the run SHALL settle
+  `incomplete` with cause `{"type": "contract-undefined", "clause":
+  <name>}`, naming the clause (FR-1012-AC-9 / UE-6). This cause takes
+  precedence over `invariant-undetermined` when both apply. The result SHALL
+  report no plan and no accepted certificate.
 - An `incomplete` result has one cause. A work limit, the deadline or a
   cancellation that stopped the search wins: the cause is that stop, even
-  when the search had also excluded an undetermined state.
-  `invariant-undetermined` is the cause only when the search otherwise ran
-  to completion.
+  when the search had also excluded an undetermined state or encountered an
+  undefined contract conjunction. `invariant-undetermined` is the cause only
+  when the search otherwise ran to completion and no contract conjunction
+  was undefined.
 - The objective SHALL be the `minimize` or `maximize` expression; a
   declaration with none minimizes `length`. A sum of per-step costs is
   written as a collection query over `steps`; the final-state value as an
@@ -85,7 +92,7 @@ One planning result: `optimal`, `feasible`, `infeasible`, `incomplete` or
 | `optimal` | an admissible plan whose objective no admissible plan of length in `D` improves | the plan, its objective value, and an optimality certificate the core accepted |
 | `feasible` | an admissible plan whose optimality is not certified | the plan, its objective value, and the best certified bound (`lower` for `minimize`, `upper` for `maximize`) when one exists |
 | `infeasible` | no admissible plan of any length in `D` | a closure certificate the core accepted |
-| `incomplete` | a work, deadline or cancellation limit stopped the search, or the search excluded a state at which an invariant could not be decided | the FR-461 limit or the `invariant-undetermined` cause, the explored count and any best plan as `feasible` |
+| `incomplete` | a work, deadline or cancellation limit stopped the search, the search excluded a state at which an invariant could not be decided, a contract conjunction was undefined while expanding a reachable state, or a closure certificate was rejected | the stop or `invariant-undetermined` cause, the explored count and any best plan as `feasible`; `contract-undefined` with no plan and no accepted certificate; or `certificate-rejected` with no plan |
 | `inconclusive` | a policy clause the request names has no instance (FR-803) | the FR-331 cause `no-instance`, no plan and no certificate |
 
 - Every plan in a result SHALL be replayed natively from the bound initial
@@ -146,7 +153,11 @@ One planning result: `optimal`, `feasible`, `infeasible`, `incomplete` or
   is `incomplete` with cause `certificate-rejected{rule, entry}` and no plan,
   because a rejected proof of absence proves nothing and a refusal would
   blame the request. Every rejection records the first failing rule, by the
-  rule names above, and the entry it failed at.
+  rule names above, and the entry it failed at. If re-derivation reaches a
+  contract conjunction with no value while expanding a reachable state, the
+  checker SHALL instead return `contract-undefined` naming the clause, not
+  `certificate-rejected{rule, entry}`; the result reports no plan and no
+  accepted certificate.
 
 ### Test seams
 
