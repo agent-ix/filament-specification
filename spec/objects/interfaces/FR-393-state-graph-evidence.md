@@ -108,6 +108,8 @@ runs.
   - a `refuted` item carries no `evidence` member and exactly one
     `GraphEvidence` value as its `counterexample`, that of the first refuted
     instance in the instance order;
+  - any other witnessed `proved` item (FR-391, such as `possible` over several
+    instances) carries `evidence` as one `witness`-arm value, as before;
   - an `inconclusive` item with cause `well-definedness-unchecked` carries
     `evidence` as exactly one `witness`-arm value, the one of the first
     instance that is not `proved`; any other `inconclusive` item carries none;
@@ -159,7 +161,9 @@ member:
 - an `undefined` arm whose `where` carries both `predicate` and `transition`,
   or a `transition` that is not a transition of the subject enabled-tested at
   the stem's last state;
-- an `ItemEvidence` `evidence` on a `proved` item that is not an array, an
+- an `ItemEvidence` array on a `proved` item that is not a single-existential
+  `hyper` item (the schema cannot tell, so the reader checks it), an `evidence`
+  on a single-existential `hyper` proved item that is not an array, an
   empty array, an array holding an arm other than `witness`, an array whose
   length is not the item's number of instances, one whose `instance` values
   are not the item's instances in FR-361 instance order (a repeated, missing,

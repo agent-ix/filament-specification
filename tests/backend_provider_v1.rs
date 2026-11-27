@@ -3194,10 +3194,10 @@ fn tc_431_proved_witnessed_evidence_is_an_array_of_witness_arms() {
     let witnessed = json!({"type": "witnessed", "sources": [{"type": "explored"}]});
     let two = entry(witnessed.clone(), json!([arm("1"), arm("2")]));
     assert!(result.is_valid(&two), "{:?}", errors(&result, &two));
-    for refused in [json!([]), arm("1")] {
-        let altered = entry(witnessed.clone(), refused.clone());
-        assert!(!result.is_valid(&altered), "{refused}");
-    }
+    let single = entry(witnessed.clone(), arm("1"));
+    assert!(result.is_valid(&single), "{:?}", errors(&result, &single));
+    let altered = entry(witnessed.clone(), json!([]));
+    assert!(!result.is_valid(&altered), "empty array");
     let mut trap = two.clone();
     trap["evidence"][1] = json!({
         "type": "graph-evidence", "arm": "trap",

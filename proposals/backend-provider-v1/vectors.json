@@ -15003,7 +15003,7 @@
       ]
     },
     {
-      "name": "graph-evidence-array-bare-object",
+      "name": "graph-evidence-single-trap-arm",
       "base": "proved-hyper-evidence-array-outcome",
       "owner": "FR-393",
       "patch": [
@@ -15012,7 +15012,7 @@
           "path": "/results/0/evidence",
           "value": {
             "type": "graph-evidence",
-            "arm": "witness",
+            "arm": "trap",
             "instance": {
               "type": "instance",
               "parameter": "v",
@@ -15021,18 +15021,11 @@
                 "value": "1"
               }
             },
-            "paths": [
-              {
-                "path": {
-                  "type": "model-path",
-                  "initial": "0",
-                  "steps": []
-                },
-                "source": {
-                  "type": "explored"
-                }
-              }
-            ]
+            "stem": {
+              "type": "model-path",
+              "initial": "0",
+              "steps": []
+            }
           }
         }
       ]
