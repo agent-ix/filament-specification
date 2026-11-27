@@ -68,11 +68,17 @@ One planning result: `optimal`, `feasible`, `infeasible`, `incomplete` or
   certificate, because the excluded state may begin an admissible plan
   better than the best one or the only one. A checker SHALL NOT accept a
   certificate whose derivation rests on an undetermined invariant.
+- If an undefined precondition guard makes a contract conjunction have no
+  value at a reachable state, the run SHALL settle `incomplete` with cause
+  `{"type": "contract-undefined", "clause": <name>}`, naming the clause
+  (FR-1012-AC-9 / UE-6). This cause takes precedence over
+  `invariant-undetermined` when both apply.
 - An `incomplete` result has one cause. A work limit, the deadline or a
   cancellation that stopped the search wins: the cause is that stop, even
-  when the search had also excluded an undetermined state.
-  `invariant-undetermined` is the cause only when the search otherwise ran
-  to completion.
+  when the search had also excluded an undetermined state or encountered an
+  undefined contract conjunction. `invariant-undetermined` is the cause only
+  when the search otherwise ran to completion and no contract conjunction
+  was undefined.
 - The objective SHALL be the `minimize` or `maximize` expression; a
   declaration with none minimizes `length`. A sum of per-step costs is
   written as a collection query over `steps`; the final-state value as an

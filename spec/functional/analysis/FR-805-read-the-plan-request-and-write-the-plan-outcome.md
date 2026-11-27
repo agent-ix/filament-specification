@@ -214,7 +214,10 @@ actual ordinals; the example reserves no declaration path or ordinal.
   `cancelled`, FR-650's `{"type": "invariant-undetermined", "invariant":
   <name>}` naming the invariant that could not be decided, which is the cause
   only when no limit, deadline or cancellation stopped the search (FR-650), or
-  FR-819's `grid-exhausted{dwell_grid}` or `timed-out`), on
+  `{"type": "contract-undefined", "clause": <name>}` naming the clause
+  whose contract conjunction was undefined, which takes precedence over
+  `invariant-undetermined` (FR-650; FR-1012-AC-9 / UE-6), or FR-819's
+  `grid-exhausted{dwell_grid}` or `timed-out`), on
   `inconclusive` (FR-331's `no-instance`, written `{"type": "no-instance"}`)
   and on `unsupported` (FR-193's `unsupported_projection`/
   `unsupported-requested-capability`), and `null` otherwise.
