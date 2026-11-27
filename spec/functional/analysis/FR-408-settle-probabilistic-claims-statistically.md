@@ -77,9 +77,6 @@ with:
 - `not-stochastic` with the idle-tail payload `state` and `idle_tail` over a
   timed subject, at the first sample in trace-index order whose reading depends
   on the stutter stamps of an idle tail (FR-420 "Windows on an idle tail");
-- `time-locked-sample{state}` over a timed subject when a sample of a
-  `fraction` or long-run fraction reaches a time-locked state before its
-  horizon (FR-420);
 - `total-above-draw-range{total}` when a sampled choice's integer total exceeds
   `2^256`, at the first such choice (the sampler definition).
 

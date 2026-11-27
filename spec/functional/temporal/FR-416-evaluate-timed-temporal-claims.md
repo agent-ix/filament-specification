@@ -140,9 +140,10 @@ on that abstraction.
   it is censored, and an `expected ... until` expectation whose target the run
   has not reached is infinite, so it exceeds every finite bound
   (FR-407). A probabilistic item does not settle
-  `no-admitted-behaviour` on account of a time-lock. How a `fraction` or a
-  long-run fraction reads a run that ends in a time-lock is not decided by this
-  requirement.
+  `no-admitted-behaviour` on account of a time-lock. A `fraction` or a
+  long-run fraction counts a run that ends in a time-lock as 0
+  ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md),
+  [FR-421](FR-421-check-probabilistic-timed-claims-exactly.md)).
 
 #### Outcomes decided before a run is read
 
