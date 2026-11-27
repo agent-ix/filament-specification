@@ -771,6 +771,8 @@ fn located_at_patch(error: &str, patched: &str) -> bool {
 #[trace("TC-431", "FR-193-AC-20")]
 #[trace("TC-431", "FR-415-AC-26")]
 #[trace("FR-413-AC-13")]
+#[trace("TC-431", "FR-331-AC-71")]
+#[trace("TC-431", "FR-393-AC-7")]
 #[test]
 fn tc_431_adverse_vectors_are_refused() {
     let whole = validator();
@@ -3161,4 +3163,48 @@ fn tc_431_state_graph_result_instance_and_evidence_list() {
     ] {
         assert!(!evidence.is_valid(&arm(refused.clone())), "{refused}");
     }
+}
+
+/// FR-331-AC-71, FR-393-AC-7: a proved witnessed entry carries its evidence as
+/// a non-empty array of witness arms, and no other proof basis carries any.
+#[trace("TC-431", "FR-331-AC-71")]
+#[trace("TC-431", "FR-393-AC-7")]
+#[test]
+fn tc_431_proved_witnessed_evidence_is_an_array_of_witness_arms() {
+    let result = definition("Result");
+    let arm = |key: &str| {
+        json!({
+            "type": "graph-evidence",
+            "arm": "witness",
+            "instance": {"type": "instance", "parameter": "v", "key": {"type": "integer", "value": key}},
+            "paths": [{"path": {"type": "model-path", "initial": "0", "steps": []}, "source": {"type": "explored"}}]
+        })
+    };
+    let entry = |basis: Value, evidence: Value| {
+        json!({
+            "request_index": 0,
+            "backend": "engine",
+            "kind": "temporal-satisfaction",
+            "result": "proved",
+            "certification": "certified",
+            "basis": basis,
+            "evidence": evidence
+        })
+    };
+    let witnessed = json!({"type": "witnessed", "sources": [{"type": "explored"}]});
+    let two = entry(witnessed.clone(), json!([arm("1"), arm("2")]));
+    assert!(result.is_valid(&two), "{:?}", errors(&result, &two));
+    for refused in [json!([]), arm("1")] {
+        let altered = entry(witnessed.clone(), refused.clone());
+        assert!(!result.is_valid(&altered), "{refused}");
+    }
+    let mut trap = two.clone();
+    trap["evidence"][1] = json!({
+        "type": "graph-evidence", "arm": "trap",
+        "instance": {"type": "instance", "parameter": "v", "key": {"type": "integer", "value": "2"}},
+        "stem": {"type": "model-path", "initial": "0", "steps": []}
+    });
+    assert!(!result.is_valid(&trap), "an array holds witness arms only");
+    let inductive = entry(json!({"type": "inductive", "depth": 1}), json!([arm("1")]));
+    assert!(!result.is_valid(&inductive), "an inductive proof carries no evidence");
 }

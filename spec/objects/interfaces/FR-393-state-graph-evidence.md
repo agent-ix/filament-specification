@@ -95,6 +95,30 @@ runs.
   `cause` of the item's
   [FR-363](../../functional/temporal/FR-363-settle-every-behaviour-temporal-verdicts.md)
   `undefined-evaluation`, so the evidence replays on its own.
+- **ItemEvidence** — the `evidence` member of an item's one terminal record
+  (FR-390, FR-331), by the item's result:
+  - a `proved` item over the instances of a `hyper` clause (FR-396) whose
+    proof carries graph evidence, which is a single-existential claim, carries
+    `evidence` as a non-empty ordered array of `witness`-arm `GraphEvidence`
+    values, one per instance of the clause in the instance order of
+    [FR-361](../../functional/temporal/FR-361-read-model-behaviours-as-temporal-traces.md),
+    each carrying that instance in its own `instance` member and, with it, that
+    instance's own paths and sources. A `hyper` clause whose proof carries no
+    graph evidence (HP-2, HP-3, HP-6) omits `evidence`;
+  - a `refuted` item carries exactly one `GraphEvidence` value, the
+    `counterexample` of its record, which is that of the first refuted
+    instance in the instance order;
+  - an `inconclusive` item with cause `well-definedness-unchecked` carries
+    `evidence` as exactly one `witness`-arm value, the one of the first
+    instance that is not `proved`; any other `inconclusive` item carries none;
+  - an item with zero instances settles `inconclusive`, `no-instance`
+    ([FR-399](../../functional/analysis/FR-399-settle-hyperproperty-results.md))
+    and carries no `evidence` array.
+
+  The array and the single value are one type, `GraphEvidence`: an element of
+  the array is encoded exactly as the single value is, and the array adds only
+  the container and its order. A refuted or not-proved item never carries an
+  array.
 
 Every decimal is `0` or `[1-9][0-9]*`.
 
@@ -107,7 +131,9 @@ The envelope's obligation identity binds the model subject (initial states,
 universes and proof bounds) and the checked claim, including its form. A
 state-graph item and a single-existential item (FR-396) each have one identity
 over all their instances: it binds no instance, and the subject's universe
-lists fix them. The evidence carries no canonical state, permutation or reduction:
+lists fix them. An `ItemEvidence` array does not change that identity, and it
+is one value of the item's one terminal record ([FR-390](../../functional/analysis/FR-390-analyze-state-graph-claims.md)),
+never one record for each instance. The evidence carries no canonical state, permutation or reduction:
 evidence found by a reduced search is concretised before it is encoded.
 
 ## Validation
@@ -133,6 +159,12 @@ member:
 - an `undefined` arm whose `where` carries both `predicate` and `transition`,
   or a `transition` that is not a transition of the subject enabled-tested at
   the stem's last state;
+- an `ItemEvidence` `evidence` on a `proved` item that is not an array, an
+  empty array, an array holding an arm other than `witness`, an array whose
+  length is not the item's number of instances, one whose `instance` values
+  are not the item's instances in FR-361 instance order (a repeated, missing,
+  swapped or unknown instance), and an array on a `refuted` item or on an
+  `inconclusive` item;
 - a step of a path over a timed subject with no `delay`, or a step of a path
   over an untimed subject that carries one.
 
@@ -146,6 +178,7 @@ member:
 | FR-393-AC-5 | An `undefined` arm carries its `undefined-evaluation` value (state key, locus and catalogued reason, plus the predicate for a claim predicate or the FR-181 transition identity for a guard) and reads back with it; an `undefined` arm without it, with an uncatalogued reason, with both `predicate` and `transition`, with a `transition` not enabled-tested at the stem's last state, or an `undefined` member on another arm refuses before replay. | Test (TC-335, TC-349) |
 | FR-393-AC-4 | Two envelopes whose evidence is equal but whose subject or claim differs have different obligation identities. | Test (TC-335) |
 | FR-393-AC-6 | The evidence of a single-existential claim with two object parameters carries `instance` as a two-entry list in declaration order and reads back byte-identically; a one-entry list, the single-parameter form, a swapped order and a tuple that is not an instance of the item each refuse `invalid_runtime_input`/`invalid-value` before replay. | Test (TC-335) |
+| FR-393-AC-7 | A `proved` single-existential item with two instances `p` then `q` carries `evidence` as an array of exactly two `witness` arms, the first with `instance` `{"type":"instance","parameter":"v","key":<p's key>}` and the second with `<q's key>`, and the array reads back byte-identically; an empty array, a bare object, an array of one, an array in the order `q`, `p`, an array repeating `p`, an array holding a `trap` arm, and an array on a `refuted` item each refuse `invalid_runtime_input`/`invalid-value` before replay. | Test (TC-335, TC-431) |
 
 ## Dependencies
 

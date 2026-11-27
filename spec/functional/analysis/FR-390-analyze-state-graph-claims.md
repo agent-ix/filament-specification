@@ -85,7 +85,9 @@ the instance order of FR-361:
   instance carries was checked. Its certification, and the one instance whose
   proof basis with its payload, FR-243 basis, certificate and settlement
   method it takes, are chosen as FR-396 "Certification and basis of a proved
-  item" states, and its evidence is that instance's. Each instance's own
+  item" states. For a single-existential item (FR-396 HP-5) its `evidence` is
+  the FR-393 `ItemEvidence` array, one `witness` arm per instance in instance
+  order; for any other item its evidence is that instance's. Each instance's own
   record and evidence keep that instance's certification and basis.
 
 The item's label, cause, basis, certificate and evidence are those of the

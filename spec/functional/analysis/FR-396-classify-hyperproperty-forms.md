@@ -126,7 +126,12 @@ A `hyper` item has one result over the instances FR-395 gives its clause.
   every certificate an instance carries was checked. It carries every
   instance's evidence in instance order, each with that instance's own
   certification and basis; for an HP-5 clause that is one `witness` arm
-  (FR-393) per instance.
+  (FR-393) per instance, and the item's `evidence` member is the FR-393
+  `ItemEvidence` array of those arms, one for each instance in the FR-361
+  instance order, each naming its own instance. A refuted item carries exactly
+  one evidence value, that of its first refuted instance, and a not-proved item
+  exactly one, that of its first instance that is not proved; neither carries
+  the array.
 - **Limits and cancellation.** `max_states`, `max_transitions`, the work
   meter, the time budget and cancellation are the item's, shared by all its
   instances: a later instance is decided with what remains of them.
@@ -141,7 +146,8 @@ A `hyper` item has one result over the instances FR-395 gives its clause.
   `well-definedness-unchecked`, as the FR-391 rows adopted for HP-5 state,
   taking the first instance that is not proved.
 
-A clause with no instance settles as FR-399 states.
+A clause with no instance settles as FR-399 states, `inconclusive`,
+`no-instance`, and carries no `evidence` array.
 
 ### Certification and basis of a proved item
 
@@ -231,10 +237,13 @@ body.
 | FR-396-AC-5 | A `match` block on an HP-5 clause refuses as `unsupported_construct`/`expression-form`; a fairness set on it is admitted. | Test (TC-342) |
 | FR-396-AC-6 | An HP-5 claim with a witness for every initial state whose product exploration a limit stops before refuting evidence is found settles `inconclusive`, cause `well-definedness-unchecked`; one whose body evaluates undefined at a reachable position settles `refuted`, cause `undefined-evaluation`, also when a witness exists. | Test (TC-342) |
 | FR-396-AC-7 | A `hyper` clause with several instances is one requested item with one result. It is `refuted` when any instance is refuted, even after an instance that is not proved, and takes its refuting evidence (counterexample or graph evidence), basis and cause from the first refuted instance in the instance order, the first declared parameter varying slowest; with none refuted it takes the result of the first instance that is not proved; it is `proved` only when every instance is. | Test (TC-342) |
-| FR-396-AC-8 | A `proved` item over several instances takes its `certification` by FR-492's rule over its instances, and its proof basis, FR-243 basis, certificate and settlement method from one instance chosen by the five steps of "Certification and basis of a proved item"; it carries every instance's evidence in instance order, for HP-5 one `witness` arm per instance, each naming its instance. | Test (TC-342) |
+| FR-396-AC-8 | A `proved` item over several instances takes its `certification` by FR-492's rule over its instances, and its proof basis, FR-243 basis, certificate and settlement method from one instance chosen by the five steps of "Certification and basis of a proved item"; it carries every instance's evidence in instance order, for HP-5 its `evidence` member as the FR-393 `ItemEvidence` array of one `witness` arm per instance, each naming its instance (FR-396-AC-12). | Test (TC-342) |
 | FR-396-AC-9 | An instance is refuted only once its refutation replays. A refutation that does not replay never replaces or hides a confirmed refutation of another instance; the item settles `replay-parity` or `replay-refused` only when no instance's refutation is confirmed; and an engine returning one outcome over all instances whose refutation fails replay settles `replay-parity`. | Test (TC-342) |
 | FR-396-AC-10 | `max_states`, `max_transitions`, the work meter, the time budget and cancellation are shared by the item's instances, while `max_depth` is each instance's own horizon; an undecided, bounded or stopped instance does not hide a later refuted one that can be decided with what remains; and a run cancelled before it refutes an instance settles `cancelled`, or `well-definedness-unchecked` when every initial state of every instance already has a witness. | Test (TC-342) |
 | FR-396-AC-11 | A product state with no run of the body's automaton that a limit or the maximum depth left unexpanded does not keep a part from being a trap when every contract conjunction of its model state has a value, and the trap replays; with a contract conjunction undefined there the item does not settle `closed-scope`. | Test (TC-342) |
+| FR-396-AC-12 | A `proved` HP-5 item whose clause has instances `p` then `q`, both proved, carries `evidence` as an array of two `witness` arms in that order, the first naming `v = p` and the second `v = q`, and one terminal record. | Test (TC-342) |
+| FR-396-AC-13 | An HP-5 item whose instance `p` is proved and whose instance `q` is refuted settles `refuted` with exactly one evidence value, the `trap` arm naming `v = q`, and no array; with both instances refuted it carries exactly one, the `trap` arm naming `v = p`. | Test (TC-342) |
+| FR-396-AC-14 | An HP-5 clause with zero instances settles `inconclusive`, `no-instance`, never `proved`, and carries no `evidence` array. | Test (TC-342) |
 
 ## Dependencies
 
