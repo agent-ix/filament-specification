@@ -114,7 +114,23 @@ product, value or classification the provider computed; or the provider's
 claim that a verdict holds on the dense semantics. A key in the certificate
 that the rebuilt product does not reach SHALL be rejected `malformed` at
 `values`; a reachable state the certificate omits SHALL be rejected
-`malformed` at `values` for an `upper` or `exact` certificate.
+`malformed` at `values` for an `upper` or `exact` certificate, except a
+certificate of an infinite expected time (below), which names no state.
+
+### Infinite expected time
+
+The least expected elapsed time over every scheduler is infinite when no
+scheduler reaches a target with probability one from the initial state. Its
+certificate is an `exact` certificate with empty `values` and `ranking`: no
+finite value or rank exists. The checker SHALL compute, on its own rebuilt
+product and with its own graph code, the states from which some scheduler
+reaches a target with probability one. When the initial state is outside that
+set, the checker SHALL accept the certificate only for a `>=` bound that
+carries no `values` row and no `ranking` row, rejecting a `<=` bound
+`threshold-missed` and a certificate with a row `malformed`. When the initial
+state is inside it the expected time is finite, and a certificate without
+rows is rejected `malformed`. A `proved` result over such a value is
+accepted only through this check.
 
 ### Order of checks
 
@@ -133,6 +149,7 @@ first state in canonical key order, is the result.
 | FR-751-AC-3 | A certificate that omits one reachable state is rejected `malformed` at `values`; one that adds a key the rebuilt product does not reach is rejected the same way. | Test (TC-1768) |
 | FR-751-AC-4 | The checker, run in a process that contains no part of the provider, accepts the certificates of FR-752-AC-1, FR-752-AC-3, FR-753-AC-1 and FR-753-AC-4 from their bytes and the package, and rejects each with one value altered. | Test (TC-1768) |
 | FR-751-AC-5 | For each row of the route admission table and each entry of the locked-run mapping, the provider and the checker each give the expected route or value written by hand in the test, not derived from the shared declaration. | Test (TC-1768) |
+| FR-751-AC-6 | Over TC-374's `Retx`, the checker accepts the `exact` certificate with empty `values` and `ranking` of the proof of `expected elapsed until holds(false) >= 3 ms` over every scheduler; with one value row added it is rejected `certificate-rejected`, rule `malformed`; and the certificate of `expected elapsed until holds(m.delivered) >= 1 ms` with its rows removed is rejected `malformed`. | Test (TC-1768) |
 
 ## Dependencies
 

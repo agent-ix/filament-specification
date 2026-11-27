@@ -80,7 +80,7 @@ claim. Verify that a hybrid solver proof carries an FR-652 certificate in its cl
   `limit` `{"limit": "work_units", "value": "100", "setting":
   "accounting.work_units"}`); the unknown name refuses
   `missing_declaration`/`missing-name`.
-- Step 6: the object-form certificates are admitted and each altered entry is refused by the schema; the accepted certificate gives a `certified` record over an `uncertified` entry, and the rejected one a `proved`, `uncertified` record with `certificate-rejected{rule, at}` beside it.
+- Step 6: the object-form certificates are admitted and each altered entry is refused by the schema; the accepted certificate gives a `certified` record over an `uncertified` entry, and the rejected one an `inconclusive` record, `certificate-rejected{rule, at}`.
 - Step 7: the request carries the counterexample and the witness as
   `certificate`; the row settles `reproduced-with-validated-witness`,
   category `success`, with `replay` and `counterexample`; then `inconclusive`

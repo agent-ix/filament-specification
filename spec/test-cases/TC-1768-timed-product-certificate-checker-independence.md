@@ -29,6 +29,7 @@ result with the expected result.
 | CI-03 | TP-01's certificate with one reachable state removed; with one unreachable key added | `malformed` at `values` (twice) | FR-751-AC-3 |
 | CI-04 | The certificates of FR-752-AC-1, FR-752-AC-3, FR-753-AC-1 and FR-753-AC-4, each also with one value altered, in a separate process | each accepted; each altered one rejected | FR-751-AC-4 |
 | CI-05 | Each row of the route admission table and each entry of the locked-run mapping, given to the provider and to the checker | each gives the route or value the test states by hand, none derived from the shared declaration | FR-751-AC-5 |
+| CI-06 | The certificate of `expected elapsed until holds(false) >= 3 ms` over every scheduler, with empty `values` and `ranking`; the same with one value row added; the certificate of `expected elapsed until holds(m.delivered) >= 1 ms` with its rows removed | accepted; `certificate-rejected`, `malformed`; `malformed` | FR-751-AC-5 |
 
 ## Expected Results
 
