@@ -736,8 +736,9 @@ names, FR-462), `kind` and `result`, and:
   for a `lower` proof found on a partial product, which carries none and
   whose basis says `exploration: "partial"`), `evidence` (FR-419 for `closed-form`, the FR-393 witness
   arm for `well-definedness-unchecked`, and for a `proved` `witnessed` result
-  of a `hyper` item the FR-393 `ItemEvidence` array of `witness` arms, one per
-  instance), `verdict` (FR-410 for `measured`) and
+  of a single-existential `hyper` item the FR-393 `ItemEvidence` array of
+  `witness` arms, one per instance, or the single FR-391 witness arm for any
+  other witnessed result), `verdict` (FR-410 for `measured`) and
   `counterexample` (the position of the item's `counterexamples` entry, for
   `refuted`), and `task_search` (FR-419's replayable bounded-search frontier,
   on an incomplete task-automaton result only).

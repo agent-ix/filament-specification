@@ -1506,7 +1506,7 @@
         "diagnostic": {"$ref": "#/$defs/DiagnosticCause"},
         "certificate": {"oneOf": [{"$ref": "#/$defs/ProbabilityCertificate"}, {"$ref": "#/$defs/ZoneCertificate"}, {"$ref": "#/$defs/HybridCertificate"}]},
         "counterpart": {"description": "FR-411, FR-412: the other side's certificate of a value-bounds proof, checked by its own conditions and no threshold; certificate is the claim side's.", "$ref": "#/$defs/ProbabilityCertificate"},
-        "evidence": {"description": "FR-419 recomputable closed-form evidence (its owner's shape) under basis closed-form, or the FR-393 witness arm under cause well-definedness-unchecked; absent otherwise."},
+        "evidence": {"description": "FR-419 recomputable closed-form evidence (its owner's shape) under basis closed-form, or the FR-393 witness arm under cause well-definedness-unchecked, or on a proved witnessed result the FR-393 ItemEvidence array of a single-existential hyper item or the single FR-391 witness arm of any other witnessed result; absent otherwise."},
         "task_search": {"description": "FR-331/FR-419: replayable stopped-search frontier; permitted only on an incomplete task-automaton result and never proof evidence.", "$ref": "#/$defs/TaskSearchEvidence"},
         "verdict": {"$ref": "#/$defs/StatisticalVerdict"},
         "counterexample": {"description": "the zero-based position of the item's entry in counterexamples", "$ref": "#/$defs/Count"},
