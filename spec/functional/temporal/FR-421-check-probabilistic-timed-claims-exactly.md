@@ -222,7 +222,7 @@ the process with every end component that holds no delay move made transient:
 its states take the value of their best exit for the objective. An end
 component with no exit, and a state from which time cannot advance and no
 discrete move is enabled, is a time-lock. A `fraction` or long-run fraction
-counts a run that ends in a time-lock as 0, so the sampler
+counts a run that ends in a time-lock as 0 (FR-407 "Fraction"), so the sampler
 ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)) and this route
 agree. On the region process the
 progress test is the one
@@ -261,7 +261,7 @@ with the scaled constants and is bounded only by the request's `max_states`.
 | FR-421-AC-11 | Over the `Skew` model (TC-374), closed and diagonal-free with every delay free, `probability <= 0.6 [fraction holds(c.phase = U or c.phase = V2) over [0 ms, 2 ms] weighted by delay >= rational(1, 4)]` under every scheduler never settles `proved`, the maximum being 1: it settles `refuted`, or `incomplete`. | Test (TC-374) |
 | FR-421-AC-12 | Over the `Pinch` model (TC-374), closed and diagonal-free with a reachable time-lock, `expected elapsed until holds(c.phase = Done) <= 2 ms` under every scheduler never settles `proved`, the maximum being infinite: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
 | FR-421-AC-13 | Over the `FairLoop` model (TC-374), closed and diagonal-free with every delay free and no time-lock, `probability >= 0.9 [eventually holds(c.done)]` under every scheduler with `fair strong Gate::t` never settles `proved`, the minimum being 0: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
-| FR-421-AC-14 | Over the TC-374 `Lock` model, `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5` counts the run that ends in the time-lock at `(B, x = 1 ms)` as 0, so its value is 0 and it settles an exact verdict that agrees with the sampled value (FR-420-AC-19). | Test (TC-374) |
+| FR-421-AC-14 | Over the TC-374 `Lock` model, `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5` counts the run that ends in the time-lock at `(B, x = 1 ms)` as 0, so its value is 0 and it settles `proved` with an exact verdict that agrees with the sampled value (FR-420-AC-19). | Test (TC-374) |
 
 ## Dependencies
 

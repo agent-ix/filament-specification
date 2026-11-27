@@ -58,6 +58,7 @@ The models below are defined here in full; the citation names the FSL design rec
 | ST-12 | `Tick`: the claims of FR-420-AC-13 | Estimate `3/4`, `measured: rejected`; estimate 1, `measured: accepted`; estimate 0, `measured: rejected`; no `not-stochastic` (FR-420-AC-13) |
 | ST-13 | `Idle`: each claim of FR-420-AC-14, whose reading is the same on every completion | The estimate and decision FR-420-AC-14 states for each |
 | ST-14 | `Idle`: each claim of FR-420-AC-15, whose reading depends on the stutter stamps; the variant with `send` at 5 ms | `unsupported`, `not-stochastic` with `state`, `idle_tail` true and no `identity`; the variant estimate `1/2`, `measured: rejected` (FR-420-AC-15) |
+| ST-15 | FR-420-AC-19: `Lock`, `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5`, and `long_run_fraction holds(c.phase = B) <= 0.5` weighted by delay and unweighted, sampled | Each locked run counts 0 in numerator and denominator, never the unweighted fall-back: estimate 0, `measured: accepted` for each; no `time-locked-sample` result |
 | DG-01 | `Retx` `Deadline`: `probability >= 0.99 [eventually[0 ms, 4 ms] holds(m.delivered)]` under every scheduler | `proved`, `exact-value{99/100}` at equality; the maximum is `9999/10000` |
 | DG-02 | `Deadline` at 0.995 | `refuted`; a one-path set of probability `1/100` with losses at 2 and 4 ms, whose last state needs time past 4 ms for the next `send` |
 | DG-03 | `Retx` `MeanTime`: `expected elapsed until holds(m.delivered) <= 3 ms` under every scheduler | `proved`, `exact-value{20/9 ms}`; the minimum is `10/9 ms` |
@@ -71,6 +72,7 @@ The models below are defined here in full; the citation names the FSL design rec
 | DG-11 | FR-421-AC-11: `Skew`, `probability <= 0.6 [fraction holds(c.phase = U or c.phase = V2) over [0 ms, 2 ms] weighted by delay >= rational(1, 4)]` under every scheduler, exact | Never `proved` (an integer-time reading gives the false maximum `1/2`): `incomplete`, or `refuted` with value 1 |
 | DG-12 | FR-421-AC-12: `Pinch`, `expected elapsed until holds(c.phase = Done) <= 2 ms` under every scheduler, exact | Never `proved` (an integer-time reading gives the false maximum `1 ms`): `refuted`, the maximum being infinite, or `incomplete` while the region process is not built |
 | DG-13 | FR-421-AC-13: `FairLoop`, `probability >= 0.9 [eventually holds(c.done)]` under every scheduler with `fair strong Gate::t`, exact | Never `proved` (an integer-time reading gives the false minimum 1): `refuted` with value 0, or `incomplete` while the region process is not built |
+| DG-14 | FR-421-AC-14: `Lock`, `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5`, exact | `proved`, value 0, equal to the sampled value of ST-15 |
 
 ## Expected Results
 
