@@ -160,7 +160,7 @@ requirement a proof whose `certification` would be `uncertified` or
 `trusted` SHALL settle `inconclusive` with cause
 `proof-not-certified{basis, certification}`: `basis` the proof's basis
 object and `certification` the value it would have carried. The record
-carries no `certification` member. The core writes this cause on the item it
+carries no `certification` member. A planner result (FR-492) writes the cause without `basis`, since a planner result has no proof basis object; the `basis` member is optional in that variant and required everywhere else. Result and planner cause records tag the cause kind with `type`; analyze and run item records tag it with `kind`. The core writes this cause on the item it
 settles; a provider's entry that carries it is refused `invalid_result` /
 `unknown-cause` at `/cause/type`. The requirement changes no `certified`
 proof and no other result.

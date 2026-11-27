@@ -125,6 +125,7 @@ An analysis item has these members:
   could not simulate (FSL FR-634, FR-181). A `seed` is written as FR-331's
   `U64String`. The result also carries the root
   `aggregate` (`status` and `gaps`) and `registry` (FSL FR-621, FR-635).
+  An analyze or run item record tags a cause's kind with `kind`; a result or planner cause record (FR-331, FR-492) tags it with `type`.
 - **Kinds.** Every category label in the result is one FR-301 lists, and
   every temporal disposition is FR-352's `disposition.temporal` with one of
   its seventeen kinds and exactly that row's `category`, `truth`, `basis` and
