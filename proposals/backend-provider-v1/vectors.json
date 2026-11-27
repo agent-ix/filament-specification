@@ -15060,6 +15060,43 @@
           "value": "x"
         }
       ]
+    },
+    {
+      "name": "graph-evidence-array-on-inductive-proof",
+      "base": "certification-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/1/evidence",
+          "value": [
+            {
+              "type": "graph-evidence",
+              "arm": "witness",
+              "instance": {
+                "type": "instance",
+                "parameter": "v",
+                "key": {
+                  "type": "integer",
+                  "value": "1"
+                }
+              },
+              "paths": [
+                {
+                  "path": {
+                    "type": "model-path",
+                    "initial": "0",
+                    "steps": []
+                  },
+                  "source": {
+                    "type": "explored"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "reader_refusals": [

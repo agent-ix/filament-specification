@@ -759,7 +759,10 @@ omit `evidence`, including a result carrying the vacuous conditional
 certificate. The exception does not permit a certificate on `bounded-complete`,
 `inductive`, `reduced`, `witnessed` or `bounded-proof`, or evidence on
 `bounded-complete`, `inductive`, `reduced` or `bounded-proof`; a `witnessed`
-result may carry only the FR-393 `ItemEvidence` array.
+result may carry only the FR-393 `ItemEvidence` array, and only for a
+single-existential `hyper` item; every other `witnessed` result, such as a
+`possible` claim over several instances, carries no `evidence` and states its
+witness sources in `witnessed{sources}`.
 
 `task_search` is `{type: "task-search-frontier", identity, nodes, edges,
 frontier, limit?}`. It binds to the item's FR-201 certificate identity. Each

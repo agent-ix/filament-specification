@@ -105,8 +105,8 @@ runs.
     each carrying that instance in its own `instance` member and, with it, that
     instance's own paths and sources. A `hyper` clause whose proof carries no
     graph evidence (HP-2, HP-3, HP-6) omits `evidence`;
-  - a `refuted` item carries exactly one `GraphEvidence` value, the
-    `counterexample` of its record, which is that of the first refuted
+  - a `refuted` item carries no `evidence` member and exactly one
+    `GraphEvidence` value as its `counterexample`, that of the first refuted
     instance in the instance order;
   - an `inconclusive` item with cause `well-definedness-unchecked` carries
     `evidence` as exactly one `witness`-arm value, the one of the first

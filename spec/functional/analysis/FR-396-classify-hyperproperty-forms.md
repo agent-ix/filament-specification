@@ -129,7 +129,7 @@ A `hyper` item has one result over the instances FR-395 gives its clause.
   (FR-393) per instance, and the item's `evidence` member is the FR-393
   `ItemEvidence` array of those arms, one for each instance in the FR-361
   instance order, each naming its own instance. A refuted item carries exactly
-  one evidence value, that of its first refuted instance, and a not-proved item
+  one `GraphEvidence` value as its `counterexample`, that of its first refuted instance, and a not-proved item
   exactly one, that of its first instance that is not proved; neither carries
   the array.
 - **Limits and cancellation.** `max_states`, `max_transitions`, the work
@@ -242,7 +242,7 @@ body.
 | FR-396-AC-10 | `max_states`, `max_transitions`, the work meter, the time budget and cancellation are shared by the item's instances, while `max_depth` is each instance's own horizon; an undecided, bounded or stopped instance does not hide a later refuted one that can be decided with what remains; and a run cancelled before it refutes an instance settles `cancelled`, or `well-definedness-unchecked` when every initial state of every instance already has a witness. | Test (TC-342) |
 | FR-396-AC-11 | A product state with no run of the body's automaton that a limit or the maximum depth left unexpanded does not keep a part from being a trap when every contract conjunction of its model state has a value, and the trap replays; with a contract conjunction undefined there the item does not settle `closed-scope`. | Test (TC-342) |
 | FR-396-AC-12 | A `proved` HP-5 item whose clause has instances `p` then `q`, both proved, carries `evidence` as an array of two `witness` arms in that order, the first naming `v = p` and the second `v = q`, and one terminal record. | Test (TC-342) |
-| FR-396-AC-13 | An HP-5 item whose instance `p` is proved and whose instance `q` is refuted settles `refuted` with exactly one evidence value, the `trap` arm naming `v = q`, and no array; with both instances refuted it carries exactly one, the `trap` arm naming `v = p`. | Test (TC-342) |
+| FR-396-AC-13 | An HP-5 item whose instance `p` is proved and whose instance `q` is refuted settles `refuted` with exactly one `counterexample`, the `trap` arm naming `v = q`, and no `evidence` array; with both instances refuted its one `counterexample` is the `trap` arm naming `v = p`. | Test (TC-342) |
 | FR-396-AC-14 | An HP-5 clause with zero instances settles `inconclusive`, `no-instance`, never `proved`, and carries no `evidence` array. | Test (TC-342) |
 
 ## Dependencies

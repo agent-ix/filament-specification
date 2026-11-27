@@ -87,7 +87,7 @@ the instance order of FR-361:
   method it takes, are chosen as FR-396 "Certification and basis of a proved
   item" states. For a single-existential item (FR-396 HP-5) its `evidence` is
   the FR-393 `ItemEvidence` array, one `witness` arm per instance in instance
-  order; for any other item its evidence is that instance's. Each instance's own
+  order; any other `proved` item (such as `possible` over several instances) carries no `evidence` member, and its witness sources are the `witnessed{sources}` of its basis (FR-391). Each instance's own
   record and evidence keep that instance's certification and basis.
 
 The item's label, cause, basis, certificate and evidence are those of the
