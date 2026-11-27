@@ -104,7 +104,9 @@ Leaves owned by another requirement stay in that owner's shape: FR-272
 diagnostic payloads (`detail`), FR-407 bounds, FR-412 objectives, FR-413
 scheduler choices, FR-418 component reasons, FR-419 closed-form evidence (the
 only open `evidence`; under `well-definedness-unchecked` it is the FR-393
-witness arm) and FR-425 protocol-transition identities.
+witness arm, and on a `proved` `witnessed` result it is the FR-393
+`ItemEvidence` array of witness arms for a single-existential hyper item, or
+the single FR-391 witness arm for any other witnessed result) and FR-425 protocol-transition identities.
 
 `IncompleteCause` admits `bounded-search-incomplete` with reason
 `certificate-unchecked` without `task_search` (FR-331-AC-58), and the

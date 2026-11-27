@@ -10114,6 +10114,101 @@
           }
         ]
       }
+    },
+    {
+      "name": "proved-hyper-evidence-array-outcome",
+      "stage": "outcome",
+      "owners": {
+        "/results/0/evidence": "FR-393",
+        "/results/0/basis": "FR-391"
+      },
+      "description": "FR-393 ItemEvidence: a proved single-existential item over two instances p then q carries one witness arm per instance, in instance order.",
+      "document": {
+        "contract_version": "filament.backend-provider/v1",
+        "capability_vocabulary": "filament.capability-kind/v1",
+        "dispositions": [
+          {
+            "request_index": 0,
+            "disposition": "supported"
+          }
+        ],
+        "artifacts": [],
+        "results": [
+          {
+            "request_index": 0,
+            "backend": "fsl-model-check",
+            "kind": "temporal-satisfaction",
+            "result": "proved",
+            "certification": "certified",
+            "basis": {
+              "type": "witnessed",
+              "sources": [
+                {
+                  "type": "explored"
+                }
+              ]
+            },
+            "evidence": [
+              {
+                "type": "graph-evidence",
+                "arm": "witness",
+                "instance": {
+                  "type": "instance",
+                  "parameter": "v",
+                  "key": {
+                    "type": "integer",
+                    "value": "1"
+                  }
+                },
+                "paths": [
+                  {
+                    "path": {
+                      "type": "model-path",
+                      "initial": "0",
+                      "steps": []
+                    },
+                    "source": {
+                      "type": "explored"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "graph-evidence",
+                "arm": "witness",
+                "instance": {
+                  "type": "instance",
+                  "parameter": "v",
+                  "key": {
+                    "type": "integer",
+                    "value": "2"
+                  }
+                },
+                "paths": [
+                  {
+                    "path": {
+                      "type": "model-path",
+                      "initial": "0",
+                      "steps": []
+                    },
+                    "source": {
+                      "type": "explored"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "counterexamples": [],
+        "accounting": [
+          {
+            "request_index": 0,
+            "settled_by": "result",
+            "method": "exploration"
+          }
+        ]
+      }
     }
   ],
   "adverse": [
@@ -14890,6 +14985,107 @@
                 "numerator": "1",
                 "denominator": "1"
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "graph-evidence-array-empty",
+      "base": "proved-hyper-evidence-array-outcome",
+      "owner": "FR-393",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/evidence",
+          "value": []
+        }
+      ]
+    },
+    {
+      "name": "graph-evidence-single-trap-arm",
+      "base": "proved-hyper-evidence-array-outcome",
+      "owner": "FR-393",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/evidence",
+          "value": {
+            "type": "graph-evidence",
+            "arm": "trap",
+            "instance": {
+              "type": "instance",
+              "parameter": "v",
+              "key": {
+                "type": "integer",
+                "value": "1"
+              }
+            },
+            "stem": {
+              "type": "model-path",
+              "initial": "0",
+              "steps": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "graph-evidence-array-trap-arm",
+      "base": "proved-hyper-evidence-array-outcome",
+      "owner": "FR-393",
+      "patch": [
+        {
+          "op": "replace",
+          "path": "/results/0/evidence/1/arm",
+          "value": "trap"
+        }
+      ]
+    },
+    {
+      "name": "graph-evidence-array-element-extra-member",
+      "base": "proved-hyper-evidence-array-outcome",
+      "owner": "FR-393",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/0/evidence/0/extra",
+          "value": "x"
+        }
+      ]
+    },
+    {
+      "name": "graph-evidence-array-on-inductive-proof",
+      "base": "certification-outcome",
+      "owner": "FR-331",
+      "patch": [
+        {
+          "op": "add",
+          "path": "/results/1/evidence",
+          "value": [
+            {
+              "type": "graph-evidence",
+              "arm": "witness",
+              "instance": {
+                "type": "instance",
+                "parameter": "v",
+                "key": {
+                  "type": "integer",
+                  "value": "1"
+                }
+              },
+              "paths": [
+                {
+                  "path": {
+                    "type": "model-path",
+                    "initial": "0",
+                    "steps": []
+                  },
+                  "source": {
+                    "type": "explored"
+                  }
+                }
+              ]
             }
           ]
         }

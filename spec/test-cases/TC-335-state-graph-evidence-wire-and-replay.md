@@ -38,6 +38,7 @@ Encode each vector with RFC 8785 JCS through the real local Rust boundary, read 
 | GE-10 | FR-181 exhaustive exploration from the recorded state `Lost` of TC-332 | the only initial state is `Lost`; closure `{Lost}`; every explored edge retained with each state's open or closed status |
 | GE-11 | an `undefined` arm from TC-349 serialized and read back, then with its carried locus changed | byte-identical round trip carrying the `undefined-evaluation` value; with the changed locus, replay settles `inconclusive`, `replay-parity` |
 | GE-13 | a `witness` arm of TC-342 HF-15's clause with both counters at 3 (HF-22), for the instance `v = p`, `w = q`; then its `instance` cut to one entry, written in the single-parameter form, with its entries swapped, and naming a key that is not admitted | byte-identical round trip with a two-entry list; each altered value refuses `invalid_runtime_input`/`invalid-value` before replay (FR-393-AC-6) |
+| GE-14 | the four `witness` arms of TC-342 HF-22 as one `proved` item's `evidence`, then TC-342 HF-24's two-instance array; then each of: an empty array, a bare object, the array in the order `q`, `p`, the array with `p` repeated, one element only, a `trap` arm as an element, and the array on a `refuted` item | each array byte-identical on round trip with one element per instance in instance order; each altered value refuses `invalid_runtime_input`/`invalid-value` before replay (FR-393-AC-7) |
 
 ## Expected Results
 

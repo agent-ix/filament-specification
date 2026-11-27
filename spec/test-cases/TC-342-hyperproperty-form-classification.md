@@ -52,6 +52,9 @@ The counter subject: model `M` with object type `Counter`, field `value: Int[0, 
 | HF-21 | HF-14's clause over `[p, q]`, on a variant whose `inc` precondition has no value for a receiver at value 4 | never `closed-scope`; `refuted`, `undefined-evaluation` |
 | HF-22 | HF-15's clause with both counters at 3 | one item, `proved`, `decisive-witness`, with four `witness` arms in the order `(p, p)`, `(p, q)`, `(q, p)`, `(q, q)`, each naming its two-entry `instance`, and each replays |
 | HF-23 | Injected, over HF-15's clause shape with instances `p` then `q`, the caller cancelling before any instance is refuted: (a) every initial state of both instances has a witness and `p`'s exploration is incomplete; (b) `p` has a witness for every initial state and `q` has none | (a) `inconclusive`, `well-definedness-unchecked`, with `p`'s witnesses; (b) `incomplete`, `cancelled` (FR-396-AC-10) |
+| HF-24 | Over the counter subject, `hyper N using inf over behaviours (v: M::Counter) exists trace a of M { always holds(v.value @ a <= 3) }`, `p` at 0 and `q` at 1, universe `[p, q]` | one item, `proved`, `decisive-witness`, one terminal record whose `evidence` is an array of exactly two `witness` arms, the first naming `v = p` and the second `v = q`, each replaying (FR-396-AC-12) |
+| HF-25 | HF-24's clause with `p` at 0 and `q` at 4, then with both at 4 | `refuted`, `closed-scope`, with exactly one `counterexample` and no `evidence` array: the `trap` arm naming `v = q` the first time, and the `trap` arm naming `v = p` the second (FR-396-AC-13) |
+| HF-26 | HF-24's clause over a population with an empty universe, so the clause has zero instances | `inconclusive`, `no-instance`, never `proved`, with no `evidence` array (FR-396-AC-14) |
 
 ## Expected Results
 

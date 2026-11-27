@@ -735,7 +735,10 @@ names, FR-462), `kind` and `result`, and:
   (for `value-bounds`, the other side's FR-412 certificate, required except
   for a `lower` proof found on a partial product, which carries none and
   whose basis says `exploration: "partial"`), `evidence` (FR-419 for `closed-form`, the FR-393 witness
-  arm for `well-definedness-unchecked`), `verdict` (FR-410 for `measured`) and
+  arm for `well-definedness-unchecked`, and for a `proved` `witnessed` result
+  of a single-existential `hyper` item the FR-393 `ItemEvidence` array of
+  `witness` arms, one per instance, or the single FR-391 witness arm for any
+  other witnessed result), `verdict` (FR-410 for `measured`) and
   `counterexample` (the position of the item's `counterexamples` entry, for
   `refuted`), and `task_search` (FR-419's replayable bounded-search frontier,
   on an incomplete task-automaton result only).
@@ -754,8 +757,13 @@ encode vacuity as `exact-value`, a scalar zero or a zero-denominator rational;
 `exact-value` continues to require its `Rational` value. Every other
 `exhaustive` result SHALL omit `certificate`. Every `exhaustive` result SHALL
 omit `evidence`, including a result carrying the vacuous conditional
-certificate. The exception does not permit a certificate or evidence on
-`bounded-complete`, `inductive`, `reduced`, `witnessed` or `bounded-proof`.
+certificate. The exception does not permit a certificate on `bounded-complete`,
+`inductive`, `reduced`, `witnessed` or `bounded-proof`, or evidence on
+`bounded-complete`, `inductive`, `reduced` or `bounded-proof`; a `witnessed`
+result may carry the FR-393 `ItemEvidence` array for a single-existential
+`hyper` item, or, for any other witnessed item such as a `possible` claim over
+several instances, a single `witness`-arm `GraphEvidence` value (FR-391); never
+both forms on one result.
 
 `task_search` is `{type: "task-search-frontier", identity, nodes, edges,
 frontier, limit?}`. It binds to the item's FR-201 certificate identity. Each
@@ -1344,6 +1352,7 @@ and never yields a decisive refutation from unchecked evidence.
 | FR-331-AC-68 | The result schema admits a `failed` result whose cause is exactly `{"type":"tool-failure","defect":"observed-memory-limit","limit":1048576,"value":1048577}`; it refuses this cause with `limit` absent, `value` absent, an extra member, a string `limit` or a string `value`. It refuses `limit` or `value` on `crash`. | Test (TC-431) |
 | FR-331-AC-69 | The result schema admits a non-`proved` state-graph result entry carrying `instance`, the FR-393 `Instance` with a typed `key`, and refuses `instance` with a null or absent `key`, with an absent `parameter`, with an extra member, and on a `proved` entry; the `GraphEvidence` schema admits an arm whose `instance` is a two-entry list of `{parameter, key}` and refuses a one-entry list, an entry with a null `key` and an entry with an extra member. | Test (TC-431) |
 | FR-331-AC-70 | A `measured` result's sampled witness carries each step's recorded draws; a reader that re-derives each from the recorded seed, trace index, step, choice index and `q` accepts it, and a witness with one recorded draw changed settles `inconclusive`, `replay-parity`. | Test (TC-431) |
+| FR-331-AC-71 | The result schema admits a `proved` `witnessed` `temporal-satisfaction` entry whose `evidence` is a non-empty array of `witness`-arm `GraphEvidence` values, and the same entry with `evidence` one `witness`-arm value; it refuses that `evidence` as an empty array, as a single `trap` arm, holding a `trap` arm, holding an element with an extra member, and `evidence` on a `proved` `inductive` entry. | Test (TC-431) |
 
 ## Dependencies
 
