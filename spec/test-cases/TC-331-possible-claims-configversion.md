@@ -23,6 +23,9 @@ Check `possible` on the modified ConfigVersion unit, whose `attemptUpdate` advan
 
 ## Test Procedure
 
+"Each instance" below is that instance's own result; the claim's one item
+combines them as FR-390 states.
+
 Run each vector through the real local Rust boundary with the explicit-state engine, then replay every returned evidence value through the replay boundary with no engine present. Each refutation and each witnessed proof is checked by replaying its evidence, never by comparing it with one expected evidence value; the verdict, basis, settlement method and cause are compared exactly.
 
 ## Vectors

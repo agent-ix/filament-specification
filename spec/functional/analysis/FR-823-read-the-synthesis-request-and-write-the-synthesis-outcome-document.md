@@ -186,7 +186,9 @@ document does.
 | `unsupported` | `null` | `null` | `null` | `null` | `null` | `null` | the cause | unsupported | `21` |
 | `failed` | `null` | `null` | `null` | `null` | `null` | `null` | the failure | internal-failure | `30` |
 
-A refusal is FR-301's refusal, exit `20`, with no outcome document. A
+A refusal has no outcome document and exits as its code's FR-301 category
+does: `20` for a refusal, `21` for `unsupported_construct` and
+`unsupported_projection`. A
 `rejected` candidate is a method failure: the search's own evaluation and
 the independent check disagree about one value, so the synthesizer is wrong
 and no answer is given. `no-candidate` is a violation, like an `infeasible`

@@ -25,6 +25,8 @@ relationships:
     type: references
   - target: ix://agent-ix/filament-specification/FR-640
     type: references
+  - target: ix://agent-ix/filament-specification/FR-416
+    type: depends_on
 ---
 
 # FR-407: State probabilistic claims over events and measures
@@ -166,7 +168,12 @@ A **measure** is a value computed from one behaviour over a finite window.
   and an idle-tail position with no leaving step inside the window is
   weighted by `h − stamp` as well, the time the trace spends at that
   position within the window. So the weights of a window sum to the
-  duration it covers.
+  duration it covers. A run that ends in a time-lock counts 0 for a fraction
+  and for a long-run fraction, weighted or not. This is an architecture ruling
+  (QSL-3489, C1) that deliberately does not read the run positionally: a locked
+  run is no run that satisfies its positions to the end of time, and as FR-416
+  "How claims read a time-lock" reads an event not yet met as not met, the run
+  has value 0. The sampler (FR-420) and the exact route (FR-421) both apply it.
 
 A window that reaches a terminal state continues on its stutter steps.
 
@@ -177,8 +184,8 @@ inclusive. Position `s` is in the window, so the window is never empty. The
 post-state of each discrete step is its own position, several at one time
 stamp included. A delay adds no position, and the instant `h` after `s` adds
 none where no position is stamped there. A terminal stutter position
-([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "Time
-stamps") is a position like any other: under `time tick O period p` its stamp
+([FR-416](../temporal/FR-416-evaluate-timed-temporal-claims.md) "Idle
+tail") is a position like any other: under `time tick O period p` its stamp
 is fixed, so the window holds exactly those stamped within it; under `time
 dense` each choice of the stutter stamps is its own behaviour, so a window
 that the idle tail enters before the window's end holds any number `m >= 0` of

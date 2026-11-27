@@ -43,9 +43,10 @@ FR-751's result.
 
 ### Time-divergent cycles
 
-- A behaviour of a timed subject lets time diverge (FR-416), so no scheduler
-  may stay forever among moves that take no time. The checker SHALL compute
-  the maximal end components of the rebuilt product all of whose actions take
+- The checker admits schedulers under which time diverges with probability 1
+  (FR-416 "Time divergence"), so no scheduler may stay for ever among moves
+  that take no time. The checker SHALL compute the maximal end
+  components of the rebuilt product all of whose actions take
   zero time with probability one (discrete moves, races won at delay zero,
   idle observations), by its own end-component decomposition.
 - Each such component's states SHALL carry one value. That value is checked
@@ -71,9 +72,11 @@ FR-751's result.
   unit, so every end component that holds a delay move is progressive and only
   zero-time components are collapsed.
 - A component with no exit, and a state where time cannot advance and no
-  discrete move is enabled, is a time-lock (FR-417): its run ends there with
-  time frozen. The checker SHALL treat it as a terminal non-target state, so
-  a deadline not yet met is never met.
+  discrete move is enabled, is a time-lock
+  ([FR-416](FR-416-evaluate-timed-temporal-claims.md) "Time-locks"). The
+  checker SHALL read a run that ends there as FR-416 "How claims read a
+  time-lock" states: no further position, so an event not yet met is never met
+  and an `always` that the run's positions satisfy holds.
 
 ### Elapsed quantiles
 

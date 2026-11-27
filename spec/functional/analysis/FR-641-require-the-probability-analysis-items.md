@@ -76,7 +76,7 @@ required for every form of FR-407 and for both scheduler clauses:
 | Unbounded reachability | `eventually`, `until` and `always` over state predicates | workload; every scheduler, with or without a fairness set |
 | Expected reward | `expected accumulate R until holds(B)` | workload; every scheduler, with or without a fairness set |
 | Long-run | `long_run_fraction`, unweighted and weighted | workload; every scheduler, with or without a fairness set |
-| Timed | FR-421's forms through digital clocks, `expected elapsed until holds(B)` included | workload; every scheduler |
+| Timed | FR-421's forms over digital clocks or clock regions, `expected elapsed until holds(B)` included | workload; every scheduler |
 
 The result of a proof is `proved` with an `exact-value` or `value-bounds`
 proof basis and one FR-412 certificate of kind `exact`, `lower`, `upper` or

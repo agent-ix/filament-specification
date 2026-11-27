@@ -73,10 +73,16 @@ grid value `u = (v mod 2^q) / 2^q` from one accepted draw value when `q <= 256`
 at `draw = 0, 1, …` reduced modulo `2^q` when `q > 256`. It returns the
 distribution's inverse distribution function, conditioned on the window, at
 `u`: for a uniform family, the point at length `u · |W|` along the window `W`
-taken in increasing order; for `exponential(λ)`, the point `x` of `W` with
-`Pr(X <= x | X ∈ W) = u`, computed with FR-408's rational bounds and rounded
-up to a multiple of `2^-q` of the model's unit. Every sampled delay is an
-exact rational.
+taken in increasing order, never rounded to the grid; for `exponential(λ)`, the
+point `x` of `W` with `Pr(X <= x | X ∈ W) = u`, computed with FR-408's rational
+bounds as FR-420 "Delay from the grid value" states. The result is a point of
+`W`: where the point is at or past an end the window excludes, it is moved in
+to `2^-(q+1)` of the window interval's length inside that end (for an unbounded
+interval, of the mean `1/λ` of `exponential(λ)`). An `exponential` delay is then
+rounded up to a multiple of `2^-q` of the model's unit; if that is outside the
+window interval it was drawn in, the delay is the largest multiple of `2^-q`
+inside that interval, and if the interval holds none the sample ends as an
+undecided successor (FR-420). Every sampled delay is an exact rational.
 
 ## Identity
 

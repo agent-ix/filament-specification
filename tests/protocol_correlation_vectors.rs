@@ -219,10 +219,10 @@ fn check_rows(pkg: &Value, rows: &[Value]) -> Result<(), String> {
         let same_group = previous.is_some_and(|p| {
             cmp_ref(&p["control"], &row["control"]) == Ordering::Equal && p["occurrence"] == row["occurrence"]
         });
-        if let Some(p) = previous {
-            if cmp_key(p, row) != Ordering::Less {
-                return Err(format!("row {i}: key not strictly after its predecessor"));
-            }
+        if let Some(p) = previous
+            && cmp_key(p, row) != Ordering::Less
+        {
+            return Err(format!("row {i}: key not strictly after its predecessor"));
         }
         let expected = if same_group { previous.unwrap()["source_ordinal"].as_u64().unwrap() + 1 } else { 0 };
         if row["source_ordinal"].as_u64().unwrap() != expected {

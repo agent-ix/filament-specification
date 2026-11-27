@@ -33,7 +33,7 @@ FR-243 settlement basis.
 | --- | --- |
 | `accepted` | Every test of the run accepted, each with its method's error guarantee ([FR-408](../../functional/analysis/FR-408-settle-probabilistic-claims-statistically.md)). Read as "measured: accepted". Pipeline category: success; it is never proof evidence. |
 | `rejected` | At least one test rejected, with its method's error guarantee, or a drawn sample evaluated the claim undefined, with cause `undefined-evaluation` ([FR-408](../../functional/analysis/FR-408-settle-probabilistic-claims-statistically.md)). Read as "measured: rejected". Pipeline category: violation; it fails the pipeline exactly as a violated claim does, and it is never a refutation. |
-| `undecided` | The run completed its method and neither decision holds: the interval contains the threshold (`indifference-region`), or a step's contract evaluated undecided (`undecided-successor`). Read as "measured: undecided". Pipeline category: inconclusive. |
+| `undecided` | The run completed its method and neither decision holds: the interval contains the threshold (`indifference-region`), or a step's contract evaluated undecided, or a sampled exponential delay's interval holds no multiple of the delay grid (FR-420), both `undecided-successor`. Read as "measured: undecided". Pipeline category: inconclusive. |
 
 ## Combination rules
 

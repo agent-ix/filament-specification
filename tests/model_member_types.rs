@@ -1632,15 +1632,15 @@ fn read_operation_redefinitions(document: &Value) -> Result<(), Value> {
         .collect();
     for declared in array(document, "types") {
         for operation in array_or_empty(declared, "operations") {
-            if let Some(target) = operation["redefines"].as_str() {
-                if !identities.contains(target) {
-                    return Err(json!({"refused": {
-                        "code": "missing_declaration",
-                        "cause": "missing-name",
-                        "at": operation["identity"],
-                        "path": "Operation.redefines",
-                    }}));
-                }
+            if let Some(target) = operation["redefines"].as_str()
+                && !identities.contains(target)
+            {
+                return Err(json!({"refused": {
+                    "code": "missing_declaration",
+                    "cause": "missing-name",
+                    "at": operation["identity"],
+                    "path": "Operation.redefines",
+                }}));
             }
         }
     }

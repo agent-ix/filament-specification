@@ -122,7 +122,7 @@ bodies. Scope: FR-322-AC-467, FR-322-AC-468 and FR-322-AC-517 to FR-322-AC-519 a
   evidence for this edited-package refusal.
 - Step 6: admitted rows have the tabled normalized field type/presence.
   Conflicts give S3 `unsupported_construct`/`not-yet-implemented`, exit
-  `20`, at the synthesis's `grammar` name, retaining the existing
+  `21`, at the synthesis's `grammar` name, retaining the existing
   feature/owning-declaration/profile cause context and a diagnostic message
   naming the tabled parameter and operation pair. The model itself remains
   admitted but no checked package or plan outcome is emitted. Required

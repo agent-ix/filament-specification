@@ -7121,7 +7121,8 @@ fn tc_233_clause_applications_bind_a_selected_profile_law_and_one_profile_member
     );
     assert_eq!(
         refusal(&|candidate| {
-            for prefix in ["/lock"] {
+            {
+                let prefix = "/lock";
                 candidate
                     .pointer_mut(&format!("{prefix}/profile_selections"))
                     .and_then(Value::as_array_mut)
@@ -7928,7 +7929,8 @@ fn tc_233_state_clause_is_a_catalogued_operation_the_schemas_enumerate() {
     assert_eq!(entry["laws"], json!([]));
     assert_eq!(entry["mode"], Value::Null);
     assert_eq!(entry["member"], "state_clause");
-    for schema in [parsed_fixture(SCHEMA)] {
+    {
+        let schema = parsed_fixture(SCHEMA);
         assert!(
             string_set(&schema["$defs"]["OperationIdentity"]["enum"], "identities")
                 .contains("filament.op.state.clause")
@@ -8018,10 +8020,7 @@ fn tc_395_malformed_union_bodies_fail_the_published_schema() {
 
 /// A Leaf term of FR-322's body grammar.
 fn is_leaf_term(term: &Value) -> bool {
-    match term["term"].as_str() {
-        Some("literal" | "reference" | "dependency_reference") => true,
-        _ => false,
-    }
+    matches!(term["term"].as_str(), Some("literal" | "reference" | "dependency_reference"))
 }
 
 /// A Group term: an `aggregate` whose members are each a Leaf or a `binding`
@@ -8066,7 +8065,7 @@ fn is_body_term(term: &Value) -> bool {
     let all_members = |items: &Value| {
         items
             .as_array()
-            .is_some_and(|items| items.iter().all(|item| is_member_term(item)))
+            .is_some_and(|items| items.iter().all(is_member_term))
     };
     match term["term"].as_str() {
         Some("application") => all_members(&term["arguments"]),
@@ -8358,7 +8357,8 @@ fn tc_395_union_text_leaves_are_member_then_position_paths_in_member_order() {
             walk_text_leaf(&catalog, &["member:Tagged", "position:1"], "nfc"),
         ],
     );
-    for source in [SCHEMA] {
+    {
+        let source = SCHEMA;
         let segment = schema_for_def(&parsed_fixture(source), "LeafSegment");
         assert!(segment.is_valid(&json!("member:Named")));
         assert!(!segment.is_valid(&json!("member:")));
@@ -8446,7 +8446,8 @@ fn tc_395_cycles_through_records_tuples_and_unions_are_recursion_leaves() {
         "a recursion leaf carries no law"
     );
 
-    for source in [SCHEMA] {
+    {
+        let source = SCHEMA;
         let segment = schema_for_def(&parsed_fixture(source), "LeafSegment");
         for admitted in ["recursion:0", "recursion:12"] {
             assert!(
@@ -10869,7 +10870,8 @@ fn tc_233_scalar_equality_identities_and_literal_kinds_are_enumerated_and_admitt
     for (family, prefix) in [("string", "s"), ("uuid", "u"), ("timestamp", "t")] {
         for operation in ["eq", "ne"] {
             let identity = format!("filament.op.{family}.{operation}");
-            for schema in [parsed_fixture(SCHEMA)] {
+            {
+                let schema = parsed_fixture(SCHEMA);
                 assert!(
                     string_set(&schema["$defs"]["OperationIdentity"]["enum"], "identities")
                         .contains(identity.as_str()),
@@ -10901,7 +10903,8 @@ fn tc_233_scalar_equality_identities_and_literal_kinds_are_enumerated_and_admitt
             );
         }
     }
-    for schema in [parsed_fixture(SCHEMA)] {
+    {
+        let schema = parsed_fixture(SCHEMA);
         let mut enums = vec![];
         collect_value_kind_enums(&schema, &mut enums);
         assert!(!enums.is_empty());
@@ -10972,7 +10975,8 @@ fn tc_233_quantity_literals_are_typed_by_a_unit_node_and_spell_canonical_magnitu
         .unwrap()
         .push(walk_scalar("Ms", "unit"));
     let oracle = OperationOracle::for_package(&catalog, &package);
-    for schema in [parsed_fixture(SCHEMA)] {
+    {
+        let schema = parsed_fixture(SCHEMA);
         let mut enums = vec![];
         collect_value_kind_enums(&schema, &mut enums);
         assert!(!enums.is_empty());
@@ -11095,7 +11099,8 @@ fn tc_233_text_number_operations_are_catalogued_and_checked() {
     ]
     .map(|target| format!("filament.op.string.to_{target}"))
     .into();
-    for schema in [parsed_fixture(SCHEMA)] {
+    {
+        let schema = parsed_fixture(SCHEMA);
         let identities: Vec<String> = schema["$defs"]["OperationIdentity"]["enum"]
             .as_array()
             .expect("operation identities array")
@@ -12502,7 +12507,8 @@ fn tc_951_wire_graph_shape_and_name_refusals_of_the_extension_node() {
     let base = extension_package();
     let index = extension_node_index(&base, "Audit");
     // X13: four schema-level defects.
-    let defects: [(&str, Box<dyn Fn(&mut Value)>); 4] = [
+    type Defect = (&'static str, Box<dyn Fn(&mut Value)>);
+    let defects: [Defect; 4] = [
         (
             "inline literal clause value",
             Box::new(|node| {
@@ -12595,7 +12601,8 @@ fn tc_951_the_node_kind_is_body_data_so_a_second_extension_needs_no_schema_chang
         Ok(()),
         "X16: admitted under the unchanged V2 schemas"
     );
-    for schema_text in [SCHEMA] {
+    {
+        let schema_text = SCHEMA;
         assert!(
             !schema_text.contains("\"retention\"") && !schema_text.contains("\"quota\""),
             "the closed tag and form lists name no node kind"
@@ -14057,7 +14064,7 @@ fn tc_940_tuple_and_union_cases_run_from_the_published_vectors() {
                 None => mismatch(),
                 Some((_, payload)) => {
                     let supplied = case["payload"].as_array().unwrap();
-                    if supplied.iter().cloned().collect::<Vec<_>>() == payload.into_iter().collect::<Vec<_>>() {
+                    if supplied.to_vec() == payload.into_iter().collect::<Vec<_>>() {
                         json!({"admitted": true})
                     } else {
                         mismatch()
@@ -15342,10 +15349,8 @@ fn timed_clause_refusal(
     let mut unlisted: Vec<usize> =
         (0..nodes.len()).filter(|at| nodes[*at]["node_tag"] == "timed_model" && !represented.contains(&OrderedId(nodes[*at]["node_id"].clone()))).collect();
     unlisted.sort_by(|left, right| node_id_order(&nodes[*left]["node_id"], &nodes[*right]["node_id"]));
-    if on("unlisted") {
-        if let Some(at) = unlisted.first() {
-            return Some(("invalid_package", Some(REF), format!("/semantic_graph/nodes/{at}/body")));
-        }
+    if on("unlisted") && let Some(at) = unlisted.first() {
+        return Some(("invalid_package", Some(REF), format!("/semantic_graph/nodes/{at}/body")));
     }
     let mut used = BTreeSet::new();
     let mut order: Vec<usize> = (0..nodes.len()).filter(|at| nodes[*at]["node_tag"] == "timed_model").collect();
@@ -15488,7 +15493,7 @@ fn timed_clause_refusal(
                     if on("frame-modifies") && !frame_fields(&anchor).contains(first) {
                         return refuse("/members/2/value/target".into());
                     }
-                    let slots: Vec<OrderedId> = clause["body"]["members"][4]["value"]["members"].as_array().unwrap().iter().map(|s| target(s)).collect();
+                    let slots: Vec<OrderedId> = clause["body"]["members"][4]["value"]["members"].as_array().unwrap().iter().map(target).collect();
                     let mut previous: Option<usize> = None;
                     for (k, binder) in clause["body"]["members"][5]["value"]["members"].as_array().unwrap().iter().enumerate() {
                         let binder = target(binder);
@@ -19379,7 +19384,8 @@ fn tc_233_declaration_members_name_every_declaring_node_exactly_once() {
     };
     let mut undeclared = families.clone();
     let scalar = index_of(&families, "scalar_type");
-    for prefix in ["/semantic_graph/nodes"] {
+    {
+        let prefix = "/semantic_graph/nodes";
         undeclared
             .pointer_mut(&format!("{prefix}/{scalar}"))
             .and_then(Value::as_object_mut)
@@ -19392,7 +19398,8 @@ fn tc_233_declaration_members_name_every_declaring_node_exactly_once() {
     );
     let mut stray = families.clone();
     let expression = index_of(&families, "expression");
-    for prefix in ["/semantic_graph/nodes"] {
+    {
+        let prefix = "/semantic_graph/nodes";
         stray
             .pointer_mut(&format!("{prefix}/{expression}"))
             .and_then(Value::as_object_mut)
@@ -19419,7 +19426,8 @@ fn tc_233_declaration_members_name_every_declaring_node_exactly_once() {
         })
         .expect("the operation package uses a builtin scalar only as a type occurrence");
     let mut named_builtin = operations.clone();
-    for prefix in ["/semantic_graph/nodes"] {
+    {
+        let prefix = "/semantic_graph/nodes";
         named_builtin
             .pointer_mut(&format!("{prefix}/{anonymous}"))
             .and_then(Value::as_object_mut)
@@ -19453,7 +19461,7 @@ fn tc_233_declaration_members_name_every_declaring_node_exactly_once() {
     let later = [call, callee]
         .into_iter()
         .map(|index| ambiguous["semantic_graph"]["nodes"][index]["node_id"].clone())
-        .max_by(|left, right| node_id_order(left, right))
+        .max_by(node_id_order)
         .expect("two declaring nodes");
     assert_eq!(
         package_declaration_refusal(&ambiguous),
@@ -22404,6 +22412,10 @@ fn schedulability_claim_carrier_vectors_match_the_closed_member_schema() {
         .find(|case| case["id"] == "ZC-30")
         .expect("TC-372 task claim certificate vector")["document"]["identity"]["node_id"]
         .clone();
+    // A claim row is a document-held id: each operand is the index segment of
+    // the `ms` unit node. The certificate identity nests that node's own id.
+    let unit_index = json!({"node": 6});
+    let unit_id = json!({"package": "package", "path": ["ms"], "ordinal": 0});
     for case in positive {
         assert_eq!(case["semantic_form"], "schedulability");
         let rows = case["rows"].as_array().expect("claim rows");
@@ -22418,11 +22430,13 @@ fn schedulability_claim_carrier_vectors_match_the_closed_member_schema() {
                     .map(|error| error.to_string())
                     .collect::<Vec<_>>()
             );
-            assert_eq!(
-                row["declaration"], task_claim,
-                "{} exact identity",
-                case["id"]
-            );
+            let mut structural = row["declaration"].clone();
+            for segment in structural["path"].as_array_mut().expect("claim path") {
+                if *segment == unit_index {
+                    *segment = unit_id.clone();
+                }
+            }
+            assert_eq!(structural, task_claim, "{} exact identity", case["id"]);
         }
         if case["id"] == "SCC-02-shared-node-two-claim-occurrences" {
             assert_eq!(rows.len(), 2);
@@ -22945,8 +22959,8 @@ fn read_operation_effects(
         })
         .collect();
     // node key -> (document, form, type name, document type)
-    let mut declared: BTreeMap<(String, Vec<String>, u64), (&Value, String, String, Option<&Value>)> =
-        BTreeMap::new();
+    type EffectDeclared<'a> = BTreeMap<BodyNodeKey, (&'a Value, String, String, Option<&'a Value>)>;
+    let mut declared: EffectDeclared<'_> = BTreeMap::new();
     for document in documents {
         let identity = document["identity"].as_str().unwrap();
         for ty in document["types"].as_array().unwrap() {
@@ -22970,7 +22984,7 @@ fn read_operation_effects(
             );
         }
     }
-    let mut keys: Vec<(Vec<u8>, (String, Vec<String>, u64), Vec<u8>)> = Vec::new();
+    let mut keys: Vec<BodyRowKey> = Vec::new();
     for (index, row) in rows.iter().enumerate() {
         let at = |suffix: &str| format!("/operation_effects/{index}{suffix}");
         let document_id = row["document"].as_str().unwrap();
@@ -23862,7 +23876,8 @@ fn decide_monitor_plan(plan: &Value) -> Result<(), PlanRefusal> {
         let (n, d) = text.split_once('/').unwrap_or((text, "1"));
         spelled(n) && spelled(d) && denominator >= 1 && (!text.contains('/') || (denominator >= 2 && numerator != 0 && numerator.abs().gcd(&denominator) == 1))
     };
-    for (index, name) in [(10, "max_event_rate")] {
+    {
+        let (index, name) = (10, "max_event_rate");
         if !canonical(&premises[name]) {
             return refuse("invalid_package", Some("invalid-value"), format!("{}/value", at(index)));
         }
@@ -25755,8 +25770,8 @@ fn decide_body_locations(package: &Value, rows: &[Value]) -> Result<Vec<Vec<u64>
     // less its last `up` entries, then `down`.
     let mut paths: Vec<Vec<u64>> = vec![Vec::new(); rows.len()];
     let mut refusals: Vec<(usize, usize)> = Vec::new();
-    for function in 0..nodes.len() {
-        if nodes[function]["node_tag"] != "function" || body_binding(&nodes[function]).is_none() {
+    for (function, node) in nodes.iter().enumerate() {
+        if node["node_tag"] != "function" || body_binding(node).is_none() {
             continue;
         }
         let mut ranked: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
@@ -26249,12 +26264,12 @@ fn tc_2090_deep_body_vectors() {
                 _ => (1, vec![1, 0]),
             };
             entries += 1 + down.len();
-            assert!(1 + down.len() <= 3);
+            assert!(down.len() < 3);
             previous.truncate(previous.len() - up);
             previous.extend(down);
             let expected_len = if shape == "add" { k } else { k + 1 };
             assert_eq!(previous.len(), expected_len, "{shape}: row {k} length");
-            assert_eq!(previous.last().copied(), Some(0).filter(|_| expected_len > 0), "{shape}: row {k} ends at 0");
+            assert_eq!(previous.last().copied(), (expected_len > 0).then_some(0), "{shape}: row {k} ends at 0");
         }
         assert!(entries <= 2 * full + full, "{shape}: linear entries");
         if shape == "add" {
@@ -26791,9 +26806,9 @@ fn canonical_interval_text(member: &Value) -> Option<String> {
         let mut denominator: u128 = value["denominator"].as_str().unwrap().parse().unwrap();
         let mut d = denominator;
         let mut scale = 0u32;
-        while d % 2 == 0 { d /= 2; scale += 1; }
+        while d.is_multiple_of(2) { d /= 2; scale += 1; }
         let mut fives = 0u32;
-        while d % 5 == 0 { d /= 5; fives += 1; }
+        while d.is_multiple_of(5) { d /= 5; fives += 1; }
         if d != 1 {
             return format!("{numerator}/{denominator}");
         }

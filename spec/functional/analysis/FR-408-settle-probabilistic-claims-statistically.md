@@ -77,8 +77,6 @@ with:
 - `not-stochastic` with the idle-tail payload `state` and `idle_tail` over a
   timed subject, at the first sample in trace-index order whose reading depends
   on the stutter stamps of an idle tail (FR-420 "Windows on an idle tail");
-- `time-locked-sample{state}` over a timed subject when a sample reaches a
-  time-locked state before its horizon (FR-420);
 - `total-above-draw-range{total}` when a sampled choice's integer total exceeds
   `2^256`, at the first such choice (the sampler definition).
 
@@ -266,6 +264,14 @@ The bounds are computed as follows, all in integer arithmetic:
   for `δ > 1/2` the search returns an upper bound near 0, which is outward-safe
   and not within `2^-64` of the negative quantile.
 
+- `e^-x` for a rational `x >= 0` (the exponential delay of FR-420): `x = 0`
+  gives the bounds `[1, 1]`. For `0 < x < 512`, halve `x` until `y = x / 2^n <= 1/2`;
+  the alternating series `e^-y = Σ (−y)^k / k!` is summed until a term is below
+  `2^-528`, and the partial sum plus and minus that first omitted term give
+  the lower and upper bound of `e^-y`, each rounded outward to a multiple of 2^-528;
+  squaring both bounds `n` times, rounding outward to a multiple of `2^-528`
+  after each squaring, gives bounds on `e^-x` within `2^-480`. For `x >= 512`
+  the bounds are `[0, 2^-512]`. A negative `x` is an internal fault.
 - a binomial tail at a rational `p` with `0 < p < 1`: each value is held as
   a lower and an upper binary floating bound `m · 2^e`, `m` a non-negative
   integer of at most `P = 96 + ⌈log2(N + 1)⌉` bits and `e` an unbounded
@@ -379,6 +385,7 @@ is a new, independent measurement of the same obligation.
 | FR-408-AC-18 | When a run with `workers` 4 stops at `max_samples` 100, a sampler test double that counts draws started records at most 103 draws and, at every moment, at most 4 samples drawn and not yet merged; a provider that draws further ahead fails. | Test (TC-356) |
 | FR-408-AC-19 | For Okamoto `NoFault` with `N = 9,210,341`, `max_samples` 1,000,000 settles before drawing with `incomplete`, `limit-reached{limit: max_samples, value: 1,000,000, setting: statistical.max_samples, required: 9,210,341}` and zero samples/draws; setting `max_draws` to 1,000,000 instead reports `limit: max_draws` and `setting: statistical.max_draws` with the same `required`; either limit equal to N permits the run. | Test (TC-355) |
 | FR-408-AC-20 | For a delay-weighted long-run fraction over a timed subject, the regenerative method cuts at the timed regeneration key of FR-420 (discrete state and every clock, no pending draw) and weights each cycle by delay; over FR-420-AC-9's `Up`/`Down` model the estimate is `1/4`, the item settles `measured` with coverage `asymptotic` and the half-width of this section, and a model that never reaches the initial key settles `incomplete`, `limit-reached` naming `max_cycle_steps`. | Test (TC-374) |
+| FR-408-AC-21 | The bounds on `e^-x` are `[1, 1]` at `x = 0`, `[0, 2^-512]` at `x >= 512`, and elsewhere a pair within `2^-480` that contains the true value: at `x = 1` the lower bound is at least `0.367879441171442321595523770161460867445` and the upper at most `0.367879441171442321595523770161460867446`; at `x = 10` they lie within `[0.0000453999297624848515355915155605506102379, 0.0000453999297624848515355915155605506102380]`. | Test (FSL `fsl-eval` bounds unit tests; no TC vector) |
 
 ## Dependencies
 

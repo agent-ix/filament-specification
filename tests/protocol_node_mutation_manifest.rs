@@ -148,10 +148,10 @@ fn id_key(id: &Value) -> (String, Vec<Segment>, u64) {
 fn collect_targets(value: &Value, out: &mut Vec<Value>) {
     match value {
         Value::Object(map) => {
-            if map.get("term").and_then(Value::as_str) == Some("reference") {
-                if let Some(target) = map.get("target") {
-                    out.push(target.clone());
-                }
+            if map.get("term").and_then(Value::as_str) == Some("reference")
+                && let Some(target) = map.get("target")
+            {
+                out.push(target.clone());
             }
             for (key, child) in map {
                 if key != "target" {

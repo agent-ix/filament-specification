@@ -1043,7 +1043,7 @@ The requirement artifacts are indexed below.
 | [FR-418](objects/interfaces/FR-418-zone-certificate.md) | FR (value_object) | Zone certificate and its checker |
 | [FR-419](functional/analysis/FR-419-analyze-task-set-schedulability.md) | FR | Analyze task-set schedulability |
 | [FR-420](functional/analysis/FR-420-sample-stochastic-timed-models.md) | FR | Interpret and sample stochastic timed models |
-| [FR-421](functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md) | FR | Check probabilistic timed claims exactly through digital clocks |
+| [FR-421](functional/temporal/FR-421-check-probabilistic-timed-claims-exactly.md) | FR | Check probabilistic timed claims exactly |
 | [FR-640](objects/interfaces/FR-640-carry-probabilistic-model-declarations-in-the-checked-package.md) | FR | Carry probabilistic model declarations in the checked package |
 | [FR-641](functional/analysis/FR-641-require-the-probability-analysis-items.md) | FR | Require the probability analysis items and their evidence |
 | [FR-440](objects/interfaces/FR-440-checked-package-union-and-case-nodes.md) | FR | Checked-package union, union-value and case nodes, explicit union-value application selection, and the `filament.op.control.case` catalog entry |

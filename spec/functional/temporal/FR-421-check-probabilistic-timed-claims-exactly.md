@@ -1,6 +1,6 @@
 ---
 id: FR-421
-title: "Check probabilistic timed claims exactly through digital clocks"
+title: "Check probabilistic timed claims exactly"
 type: FR
 relationships:
   - target: ix://agent-ix/filament-specification/FR-640
@@ -16,21 +16,22 @@ relationships:
   - target: ix://agent-ix/filament-specification/FR-420
     type: depends_on
   - target: ix://agent-ix/filament-specification/FR-416
-    type: references
+    type: depends_on
   - target: ix://agent-ix/filament-specification/FR-322
     type: depends_on
 ---
 
-# FR-421: Check probabilistic timed claims exactly through digital clocks
+# FR-421: Check probabilistic timed claims exactly
 
 ## Description
 
 When a `probabilistic-satisfaction` item over a timed subject names `exact`
-evidence, the exact provider SHALL read the subject through digital clocks as
-a probabilistic timed automaton.
+evidence, the exact provider SHALL read the subject through the route "Closed
+and strict conditions" admits for its claim: digital clocks, as a
+probabilistic timed automaton, or clock regions.
 
-When the exact provider settles such an item through digital clocks, it SHALL
-settle only a verdict that holds on the dense model.
+When the exact provider settles such an item, it SHALL settle only a verdict
+that holds on the timed runs of FR-416.
 
 When such an item's subject has a continuous delay distribution, whose
 probabilities exact evidence cannot state, the exact provider SHALL settle the
@@ -46,11 +47,10 @@ clause ([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)).
 ## Outputs
 
 An [FR-411](../analysis/FR-411-settle-probabilistic-claims-exactly.md) exact
-verdict over the digital process, or over the region process when a
-constraint is strict or the claim is a bounded-window formula other than a
-deadline event or its `always[0, D]` complement; an `incomplete` limit stop
-while a case cannot be decided within the request's limits; or, for a continuous delay distribution only,
-`unsupported` with `delay-distribution{operation}`.
+verdict over the digital process or the region process, as "Closed and strict
+conditions" admits; an `incomplete` stop while the admitted route cannot decide
+a case; or, for a continuous delay distribution only, `unsupported` with
+`delay-distribution{operation}`.
 
 ## Behavior
 
@@ -68,59 +68,99 @@ probabilities, so the subject is a Markov decision process decided by its
 minimum and maximum.
 
 `under W` resolves the scheduled identity and, through FR-420's race, every
-delay a `discrete` distribution gives: each race outcome at a digital timed
+delay a `discrete` distribution gives: each race outcome at a timed
 state (each racing identity's delay drawn from its distribution conditioned on
 its window, the smallest winning, ties ordered by `W`'s weights) is one
 probabilistic edge with an exact rational probability. When every racing
 identity's delay is so given, the subject under `W` is a Markov chain over
-digital timed states. The delay of an operation with no `delay` declaration stays
+timed states. The delay of an operation with no `delay` declaration stays
 the scheduler's choice, and the provider decides the claim over every
 resolution of those delays, the bound read on their minimum or maximum. A
 `uniform`, `uniform[a, b]` or `exponential` distribution makes the subject a
 continuous-time process whose probabilities are in general not rational; it
 has no exact reading and settles `unsupported`, `delay-distribution{operation}`,
-and such claims are checked with statistical evidence (FR-420). A digital
+and such claims are checked with statistical evidence (FR-420). A
 timed state with no racing identity and a bounded delay is a time-lock, decided
 below.
 
 ### Closed and strict conditions
 
-When every atomic clock constraint in a guard, every time invariant and every
-timed interval of the claim is non-strict, and the claim is unbounded
-reachability or until over state predicates, a deadline event or its
-`always[0, D]` complement over state predicates (predicates over the
-discrete state, with no clock atom), an elapsed form, or a `steps` measure
-or an `accumulate` of per-step rewards within a time horizon (a reachability
-over the closed automaton: its count or sum is discrete state and its
-horizon a closed clock), the provider reads the subject through digital
-clocks. This rule does not settle the route of a `weighted by delay` fraction
-over a window, a `weighted by delay` long-run fraction or an unweighted
-fraction over a time window, which keep the rule they had before it (digital
-when every constraint is closed, clock regions otherwise) pending a ruling
-(QSL-3324). When one is strict, or the claim is any
-other bounded-window formula, it reads the subject through clock regions
-instead, closed or not: each clock keeps its integer part, capped as below,
-whether its fractional part is zero, and the order of the clocks' fractional
-parts. The region process gives the exact minimum and maximum of every
-admitted form on the dense semantics, which digital clocks do not once a
-constraint is strict, so a strict constraint keeps an exact verdict. Digital
-clocks also miss the dense extremum of a bounded-window formula whose truth
-turns on a position being absent from a window, even when every constraint
-is closed: in a model where `a` happens at a scheduler-chosen time in
-`[0, 1]` and `b` exactly 2 later, `always[1, 2] holds(false)` has dense
-maximum 1 (`a` strictly between 0 and 1) but digital maximum 0, because
-integer time stamps put `a` at 1 or `b` at 2. The equality of digital and
-dense extrema below covers reachability and expected time only.
+This section is the one rule for which route decides a claim. The provider
+SHALL read a claim through digital clocks only where this section admits it;
+every other claim is read through clock regions. The theorem that justifies
+each admitted row is recorded with the route admission table of FSL ADR-038.
 
-For some admitted forms the number of pending target times a bounded-window
-monitor keeps can grow without bound on the region process (an interval
-operator nested under another, read at arbitrarily many positions of its
-window). While the provider cannot decide such a case within the request's
-limits, the run stops `incomplete`, `limit-reached` naming the
-`ExactProbLimits` member it reached (FR-411), as any exact run does, and
-settles neither `unsupported` nor a verdict it has not decided. That stop is
-what the provider may do while it cannot decide a case; it replaces no
-criterion, and every exact value a criterion states stands.
+**The subject.** Digital clocks require every atomic clock constraint in a
+guard, every time invariant and every timed interval of the claim to be
+non-strict, no constraint that compares two clocks, and a subject in one of
+two delay classes:
+
+- **given**: every delay is given by a `discrete` distribution;
+- **free**: no delay is given.
+
+A subject in which some delays are given and others are not is in neither
+class, and every claim over it is read through clock regions. A scheduler-chosen
+delay beats a given one only by the strict comparison "chosen less than given",
+which integer times lose (the `Overtake` model of TC-374), and no theorem shows
+a narrower shape of such a subject safe. **Pending the region route:**
+FR-421-AC-6 (TC-374 DG-06) and FR-413-AC-8 are stated over such subjects; they
+keep their stated results, and until the region process is built the items stop
+`incomplete`. This section sets no further condition on a workload race among
+two or more identities with free delays; "Delays" states how it is read.
+
+**Fairness.** No row below admits a claim that states a fairness set: no cited
+statement covers fairness, and a constraint can be enabled only at instants
+that integer times skip, or never enabled densely while integer times enable it
+(FR-416 "Strong fairness over time"; the `FairLoop` model of TC-374). Such a
+claim is read through clock regions.
+
+**The claim.** Over such a subject, digital clocks decide only:
+
+| Claim form | Delay classes | Fairness set |
+| --- | --- | --- |
+| Reachability and until over state predicates (predicates over the discrete state, with no clock atom), `expected accumulate ... until`, and a step-bounded or long-run measure that reads only the sequence of discrete steps | given, free | none |
+| A deadline event `eventually[0, D] holds(P)` or `holds(A) until[0, D] holds(B)`, its `always[0, D]` complement, a `steps` or `accumulate` measure within a time horizon, and a `fraction` over `[0, h]` of a state predicate `weighted by R` for a reward `R` that reads no clock, each read `on origin` | given, free | none |
+| `expected elapsed until holds(B)` | given, free | none |
+| `M <= c` of an elapsed measure whose first position is position 0 on every run | given, free | none |
+| A deadline event, or a `steps`, `accumulate` or `weighted by R` fraction measure within a time horizon, read from a later position (`on each`), and `M <= c` of an elapsed measure whose first position can follow position 0 | given only | none |
+| A `weighted by delay` fraction over a time window, and a `weighted by delay` long-run fraction | given only | none |
+
+**Time-locks.** A free subject is further restricted when a time-lock (FR-416
+"Time-locks") is reachable. Then digital clocks decide only the maximum, over
+schedulers and with no fairness set, of the probability of a reachability or
+until event over state predicates, or of a deadline event read `on origin`,
+which is also the minimum of the
+probability of the matching `always`: the value an item takes for a `<=` bound
+on `eventually` or `until` and for a `>=` bound on `always`. Everything else
+leaves digital clocks: the minimum of such an event, the maximum of an
+`always`, the minimum and the maximum of every expectation, and every other
+measure. The `Split` and `Pinch` models of TC-374 show integer times returning
+a wrong minimum and a finite value for an infinite expectation. That no
+time-lock is reachable is established over the subject's dense runs; a digital
+process with no time-lock does not establish it. A given subject needs no such
+condition.
+
+Every other claim is read through clock regions, closed or not: a strict
+constraint or interval; any other bounded-window formula; a claim with a
+fairness set; an unweighted
+fraction over a time window; any other `elapsed` form; and any claim over a
+subject outside these conditions. Each clock then keeps its integer
+part, capped as below, whether its fractional part is zero, and the order of
+the clocks' fractional parts, and time advances by symbolic time successor.
+The region process gives the exact minimum and maximum on the dense runs;
+walking a finer grid of clock values is not a region process.
+
+Digital clocks miss dense values outside these rows. In a model where `a`
+happens at a scheduler-chosen time in `[0, 1]` and `b` exactly 2 later,
+`always[1, 2] holds(false)` has dense maximum 1 (`a` strictly between 0 and 1)
+and digital maximum 0, because integer times put `a` at 1 or `b` at 2.
+
+While the provider has not built the region process that an admitted claim
+needs, or cannot decide it within the request's limits (the pending target
+times of a nested monitor can grow without bound), the run stops `incomplete`
+(FR-411), and settles neither `unsupported` nor a verdict it has not decided,
+and never a verdict read from digital clocks. That stop replaces no criterion:
+every exact value a criterion states stands.
 
 ### Digital clocks
 
@@ -129,11 +169,19 @@ integer by their common denominator. A digital timed state is the discrete
 state with an integer value per clock, capped at the clock's largest compared
 constant plus one. A delay move adds one unit to every clock below its cap and
 is admissible when the time invariants hold after it and the state is not
-urgent; a discrete move is FR-181's timed step with integer clocks. For a
-closed, diagonal-free probabilistic timed automaton the minimum and maximum of
-a reachability probability and of an expected time to a target are equal on
-the digital and the dense semantics, so the verdict holds on the dense model,
-and every delay a witness takes is a valid dense delay.
+urgent; a discrete move is FR-181's timed step with integer clocks.
+
+Take a closed, diagonal-free probabilistic timed automaton and a scheduler
+under which time diverges with probability 1. Rounding every time stamp of a
+run with one fixed threshold gives an integer-time run with the same discrete
+steps, and for each threshold some integer-time scheduler gives each rounded
+run the probability that the dense scheduler gives the runs that round to it.
+So the minimum and maximum of a reachability probability and of an expected
+time to a target are equal on the digital and dense runs, and every delay a
+witness takes is a valid dense delay. This says nothing about a value that
+turns on the order or absence of time stamps measured from a position a
+scheduler or a draw can place off the integer grid, which is why "Closed and
+strict conditions" admits no such value outside the given class.
 
 ### Admitted forms
 
@@ -150,14 +198,11 @@ of the region process with the claim's monitor. The monitor SHALL give the formu
 pointwise value on every behaviour of the product, and SHALL keep whatever
 pending target times that value needs.
 
-Every form above, deadline events included, reads its predicates at
-positions only (FR-416 "Pointwise meaning"): the initial state, the
-post-state of each discrete step and each terminal stutter position of an
-idle tail. A delay move is not a position: it advances time, so a window it
-passes closes, but it reads no predicate. The time stamps of terminal stutter
-positions after a quiescent state are the scheduler's choice (FR-416 "Time
-stamps"), so a minimum or maximum ranges over them as over every other
-scheduler choice.
+Every form above, deadline events included, reads its predicates at the
+positions of the timed run only (FR-416 "The timed run"). The stamps of
+terminal stutter positions after a quiescent state are the scheduler's choice
+(FR-416 "Idle tail"), so a minimum or maximum ranges over them as over every
+other scheduler choice.
 
 The provider SHALL resolve the probabilistic claim's exact
 `{declaration NodeRef, occurrence}` through
@@ -169,15 +214,20 @@ is an FR-322 checked-package refusal before FR-421 evaluation.
 
 ### Time divergence
 
-A behaviour of a timed subject lets time diverge, so no scheduler stays
-forever in a cycle of discrete moves alone. The provider finds such cycles by
-a strongly connected component decomposition of the discrete-move subgraph
-and decides the item over the process with every end component that holds no
-delay move made transient: its states take the value of their best exit for
-the objective. An end component with no exit, and a state from which time
-cannot advance and no discrete move is enabled, is a time-lock: the run ends
-there with time frozen, so a deadline not yet met is never met, and the
-verdict is exact. The time-lock-freedom item
+A probabilistic item admits schedulers under which time diverges with
+probability 1 (FR-416 "Time divergence"), and reads a run that ends in a
+time-lock as FR-416 "How claims read a time-lock" states. The provider finds
+zero-time cycles by an end-component decomposition and decides the item over
+the process with every end component that holds no delay move made transient:
+its states take the value of their best exit for the objective. An end
+component with no exit, and a state from which time cannot advance and no
+discrete move is enabled, is a time-lock. A `fraction` or long-run fraction
+counts a run that ends in a time-lock as 0 (FR-407 "Fraction"), so the sampler
+([FR-420](../analysis/FR-420-sample-stochastic-timed-models.md)) and this route
+agree. On the region process the
+progress test is the one
+[FR-753](FR-753-certify-time-divergent-and-elapsed-quantile-verdicts.md)
+states. The time-lock-freedom item
 ([FR-417](FR-417-settle-time-lock-freedom.md)) reports time-locks as a
 property of their own.
 
@@ -185,7 +235,7 @@ property of their own.
 
 Under every scheduler, a witness scheduler chooses between a unit delay and
 an identity at each digital state. Under a workload with free delays, the
-witness scheduler chooses each free delay, in units, per drawn vector of the
+witness scheduler chooses each free delay, in units on a digital process, per drawn vector of the
 given delays (FR-413). A timed path of a path set carries each step's delay and
 replays by FR-181 timed replay; at its last timed state no admissible discrete
 step precedes the event's time horizon, which replay checks from the guards
@@ -205,6 +255,13 @@ with the scaled constants and is bounded only by the request's `max_states`.
 | FR-421-AC-5 | Under a workload whose every racing delay is `discrete`, the timed subject is a Markov chain and the exact value of the all-`discrete` `RareLate` variant is `1/20`. | Test (TC-374) |
 | FR-421-AC-6 | Under a workload, an operation with no `delay` declaration has its delay chosen by the scheduler, and the bound compares the minimum or maximum over those choices: on the all-`discrete` `RareLate` variant with `reply`'s delay free, the maximum is `1/2` and the minimum 0, and `probability <= 0.01` settles `refuted` with a witness scheduler that takes `reply`'s delay 3 ms. | Test (TC-374) |
 | FR-421-AC-7 | For two probabilistic claims with equal display names and source spans but distinct declaration identities, a punctual-interval form and an elapsed form of the selected declaration each settle an exact verdict reported against that declaration's identity, never `unsupported`. The selected declaration and its `claim` occurrence are resolved through FR-322-AC-297; the result retains the selected NodeRef and occurrence. | Test (TC-374) |
+| FR-421-AC-8 | Over the `Split` model (TC-374), closed and diagonal-free, whose two branches can each finish only for one end of the first delay's window and time-lock otherwise, `probability >= 0.25 [eventually[0 ms, 3 ms] holds(c.phase = Done)]` under every scheduler never settles `proved`, the minimum being 0: it settles `refuted` with `exact-value{0}`, or `incomplete` while the region process is not built. | Test (TC-374) |
+| FR-421-AC-9 | Over the `Burst` model (TC-374), `probabilistic` claim `mean of (fraction holds(phase = 1) over [0, 1 ms]) <= 0.7` never settles `proved`: stutter stamps inside one unit make the fraction `(1 + m)/(2 + m)` for every `m >= 0`, with supremum 1. | Test (TC-374) |
+| FR-421-AC-10 | Over the `Overtake` model (TC-374), closed and diagonal-free with no time-lock, whose delays are partly given and partly free, `probability <= 0.6 [eventually holds(c.phase = DDone)]` under `W` never settles `proved`, the maximum being 1: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
+| FR-421-AC-11 | Over the `Skew` model (TC-374), closed and diagonal-free with every delay free, `probability <= 0.6 [fraction holds(c.phase = U or c.phase = V2) over [0 ms, 2 ms] weighted by delay >= rational(1, 4)]` under every scheduler never settles `proved`, the maximum being 1: it settles `refuted`, or `incomplete`. | Test (TC-374) |
+| FR-421-AC-12 | Over the `Pinch` model (TC-374), closed and diagonal-free with a reachable time-lock, `expected elapsed until holds(c.phase = Done) <= 2 ms` under every scheduler never settles `proved`, the maximum being infinite: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
+| FR-421-AC-13 | Over the `FairLoop` model (TC-374), closed and diagonal-free with every delay free and no time-lock, `probability >= 0.9 [eventually holds(c.done)]` under every scheduler with `fair strong Gate::t` never settles `proved`, the minimum being 0: it settles `refuted`, or `incomplete` while the region process is not built. | Test (TC-374) |
+| FR-421-AC-14 | Over the TC-374 `Lock` model, `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5` counts the run that ends in the time-lock at `(B, x = 1 ms)` as 0, so its value is 0 and it settles `proved` with an exact verdict that agrees with the sampled value (FR-420-AC-19). | Test (TC-374) |
 
 ## Dependencies
 
@@ -221,7 +278,8 @@ with the scaled constants and is bounded only by the request's `max_states`.
 
 ## References
 
-- FSL ADR-028 TA-1, TA-1a, TA-2 to TA-7, RU-6; FSL ADR-026 SS-7.
+- FSL ADR-038 (route admission table); FSL ADR-028 TA-1, TA-1a, TA-2 to TA-7,
+  RU-6; FSL ADR-026 SS-7.
 - Owner ruling recorded on QSL-371: a workload that gives delays makes the
   timed subject a Markov chain, exact on the exact engine, and leftover delay
   nondeterminism is a minimum or maximum.
