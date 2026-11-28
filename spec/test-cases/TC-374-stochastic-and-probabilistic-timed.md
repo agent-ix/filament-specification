@@ -13,6 +13,8 @@ relationships:
     type: verifies
   - target: ix://agent-ix/filament-specification/FR-413
     type: verifies
+  - target: ix://agent-ix/filament-specification/FR-410
+    type: verifies
 ---
 
 # TC-374: Stochastic delays, timed sampling and exact digital checking
@@ -59,6 +61,7 @@ The models below are defined here in full; the citation names the FSL design rec
 | ST-13 | `Idle`: each claim of FR-420-AC-14, whose reading is the same on every completion | The estimate and decision FR-420-AC-14 states for each |
 | ST-14 | `Idle`: each claim of FR-420-AC-15, whose reading depends on the stutter stamps; the variant with `send` at 5 ms | `unsupported`, `not-stochastic` with `state`, `idle_tail` true and no `identity`; the variant estimate `1/2`, `measured: rejected` (FR-420-AC-15) |
 | ST-15 | FR-420-AC-19: `Lock`, `mean of (fraction holds(c.phase = B) over [0 ms, 2 ms]) <= 0.5`, and `long_run_fraction holds(c.phase = B) <= 0.5` weighted by delay and unweighted, sampled | Each locked run counts 0 in numerator and denominator, never the unweighted fall-back: estimate 0, `measured: accepted` for each; no `time-locked-sample` result |
+| ST-16 | FR-410-AC-13 and FR-410-AC-15: `Race`: `time Race dense unit ms;`, one object `c: Gate { phase: P, x: Clock }`, `P` one of `Start`, `A` and `B`, initially `phase = Start` and `x = 0`, with `workload One on Race { weight Gate::a = 1; weight Gate::b = 1; }`; `Gate::a` has pre `phase = Start and x >= 1 ms` and sets `phase = A`, `Gate::b` has pre `phase = Start and x >= 2 ms` and sets `phase = B`; `time invariant when phase = Start { x <= 3 ms }`; `delay Gate::a ~ discrete { 1 ms: 1, 3 ms: 1 };` and `delay Gate::b ~ uniform;`. Claim `probabilistic Early using timed on Race under One on origin with alpha 0.01, beta 0.01, indifference 0.05 { probability <= 0.4 [ eventually[0 ms, 3 ms] holds(c.phase = A) ] }`, statistical with `max_witnesses` 1. The first witness takes `a` at 1 ms, so `b` (window `[2 ms, 3 ms]`) lost with a recorded delay `d`. Replay it; then replay it with `b`'s recorded delay replaced by `d' = 5/2 ms` when `d != 5/2 ms` and by `d' = 9/4 ms` otherwise; then with `a`'s recorded delay replaced by `3 ms` | The event probability is `1/2`; the witness's first step records two delay draws, `a`'s then `b`'s (canonical transition order), each with its choice index, and `end` `{"type": "idle-tail"}` (`A` is terminal before 3 ms). The unchanged witness is reproduced. Each changed witness settles `inconclusive`, `replay-parity`, because the delay re-derived at the changed draw's recorded choice index differs from the recorded one; each replaced delay lies in its window and support, so neither refuses `invalid-value`; the item's `measured` decision is unchanged |
 | DG-01 | `Retx` `Deadline`: `probability >= 0.99 [eventually[0 ms, 4 ms] holds(m.delivered)]` under every scheduler | `proved`, `exact-value{99/100}` at equality; the maximum is `9999/10000` |
 | DG-02 | `Deadline` at 0.995 | `refuted`; a one-path set of probability `1/100` with losses at 2 and 4 ms, whose last state needs time past 4 ms for the next `send` |
 | DG-03 | `Retx` `MeanTime`: `expected elapsed until holds(m.delivered) <= 3 ms` under every scheduler | `proved`, `exact-value{20/9 ms}`; the minimum is `10/9 ms` |

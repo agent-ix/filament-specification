@@ -297,7 +297,9 @@ applies to every exponential sample.
 
 The regenerative method cuts a timed run at each return to the initial
 discrete state with every clock 0. A sampled witness over a timed subject
-carries each step's delay and replays by FR-181 timed replay plus the draw
+carries each step's delay, its draws (every racing identity's delay, the
+losers included), its rewards and the run end, as FR-410 "Sampled witness"
+states, and replays by FR-181 timed replay plus the draw
 recomputation of FR-410, which recomputes each delay from the seed, trace
 index, step, choice index and `q`.
 
