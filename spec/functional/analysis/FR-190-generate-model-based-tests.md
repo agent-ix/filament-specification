@@ -7,6 +7,20 @@ relationships:
     type: implements
   - target: ix://agent-ix/filament-specification/AD-009
     type: references
+  - target: ix://agent-ix/filament-specification/FR-331
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-364
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-485
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-322
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-181
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-461
+    type: depends_on
+  - target: ix://agent-ix/filament-specification/FR-272
+    type: depends_on
 ---
 
 # FR-190: Generate and shrink model-based tests
@@ -85,9 +99,11 @@ method is never negotiated, and no engine supplies an unbounded extent.
 
 ## Value domains
 
-A *generation root* is a value-clause parameter, an operation parameter
+A *generation root* is a value-clause parameter (path `[p]`, its position
+in declaration order, under the clause), an operation parameter
 (path `[1, o, p]`), a state field (`[0, f]`) or a population, after the
-composite decomposition of FSL's model transition system. An operation
+composite decomposition of FSL's model transition system; the paths other
+than `[p]` are under the model. An operation
 result (`[2, o]`) is computed by the native runtime, never generated: it has
 no partitions and no draws, but its domain for candidate results is chosen
 by the same classes, so a result of a type with no finite bound takes the
@@ -117,16 +133,21 @@ magnitude bit length of a mathematical integer with `bits(0) = 1`. A value of
 a class S type lies in `S_b` when every unbounded integer measure of the value
 has `bits ≤ b`:
 
-| Type | Unbounded measures |
-| --- | --- |
-| `Integer` | the value `n`, so `S_b` is `[-(2^b - 1), 2^b - 1]` |
-| unbounded exact rational carrier | the reduced numerator and the positive denominator |
-| unbounded decimal carrier | the coefficient `c` and the scale `k` of its canonical `(c, k)` form |
-| `String` | the length in Unicode scalars |
-| `Bytes` | the length in bytes |
-| `JsonObject` | the length in bytes of its RFC 8785 form, which bounds every value inside |
-| collection or map with no declared maximum | the element or entry count, and the measures of each element, key and value of class S |
-| recursive value type | the occurrence count `occ(v)` of value accounting, and the measures of each class S component |
+| Type | Unbounded measures | `measures` in the record |
+| --- | --- | --- |
+| `Integer` | the value `n`, so `S_b` is `[-(2^b - 1), 2^b - 1]` | `["value"]` |
+| unbounded exact rational carrier | the reduced numerator and the positive denominator | `["numerator", "denominator"]` |
+| unbounded decimal carrier | the coefficient `c` and the scale `k` of its canonical `(c, k)` form | `["coefficient", "scale"]` |
+| `String` | the length in Unicode scalars | `["length"]` |
+| `Bytes` | the length in bytes | `["length"]` |
+| `JsonObject` | the length in bytes of its RFC 8785 form, which bounds every value inside | `["length"]` |
+| collection or map with no declared maximum | the element or entry count, and the measures of each element, key and value of class S | `["count"]` |
+| recursive value type | the occurrence count `occ(v)` of value accounting, and the measures of each class S component | `["occurrences"]` |
+
+The last column is the root's `measures` in the provenance's `size_bounded`
+entry ("Case accounting"). It names the root type's own measures. The
+measures of a class S component are bounded by the same `b` and are not
+listed.
 
 - `b` SHALL be an integer from 1 to 64. Any other value refuses the request
   `invalid_runtime_input`/`invalid-value` naming `max_value_bits`. A request
@@ -435,40 +456,120 @@ the one of the first skipped point in trace order.
   `precondition-false` and `invariant-false` to the number of skipped check
   points.
 - Each `partitions` entry SHALL be `{root, kind, value, status, ...}`, `root`
-  `{node, path}`, in generation order. `status` is `covered` with
+  `{node, path}`, in generation order. `node` is the FR-322 `NodeId` of the
+  declaration the root is under (the clause for a value-clause parameter,
+  the model otherwise) and `path` the root's path ("Value domains"), an
+  array of integers. `kind` is the partition's name from "Partitions".
+  `value` is the partition value's FR-181 typed value; for a Text root it
+  is the `text` value, never its length, and the record has no separate
+  text member. `status` is a string, and the members beside it depend on
+  it. `status` is `covered` with
   `first_case` when an evaluated (passing or failing) case holds the value
   at its root; `refused` with `first_case` when its refusal case was refused
   as required; or `uncovered` with `reason` and `bounds`, the reason one of
   `precondition-false`, `unreachable`, `unreachable-within-bound`,
-  `not-generated` or `undetermined` (the last naming the FR-461 limit).
+  `not-generated` or `undetermined`. An `undetermined` entry, of a
+  partition or of an operation, also carries `stopped_by`, the FR-331
+  incomplete cause that stopped the exploration: `limit-reached{limit,
+  value, setting}` naming the FR-461 limit, or `cancelled{source}`.
   `partition_coverage` is `{status, uncovered}`, summarized as the operation
-  `coverage` member is.
+  `coverage` member is: `status` is `complete` when no entry is
+  `uncovered`, so a `refused` entry does not make it `partial`.
 - A discarded case never covers an operation or a partition.
-- The provenance SHALL record `max_value_bits` (`null` with no class S root);
+- The provenance SHALL record `seed`, as a canonical unsigned decimal
+  string (no sign, no leading zero), as the draw coordinates are written,
+  because a 64-bit seed above 2^53 has no exact RFC 8785 number form;
+  `max_value_bits` (`null` with no
+  class S root);
   `size_bounded`, one `{root, measures, values}` per class S root in root
-  order, `values` being `|S_b|` as a decimal string; and `value_bound_cuts`
+  order, `root` as a partition's, `measures` the root type's row of the
+  "Size measure" table, `values` being `|S_b|` as a decimal string; and,
+  for a clause over a state model, `value_bound_cuts`
   `{count, first}`, where `first` is the shortest enabled prefix in canonical
   step order to the first cut application together with that application's
-  transition identity, or `null` when `count` is 0. No truncation of a domain
-  is left out of the record.
+  transition identity, or `null` when `count` is 0. `first` is
+  `{initial_state, prefix, transition}`: `initial_state` the index of the
+  prefix's initial state as FR-364's `initial_state` gives it, `prefix` the
+  FR-181 transition identities of the prefix in step order, and
+  `transition` the cut application's FR-181 transition identity. No
+  truncation of a domain is left out of the record.
 
 ## Result
 
 The method SHALL return one result record holding the clause identity, the
-generator profile, seed, every limit, the number of passing, failing and
+generator profile, seed, the request's case limits (`max_cases`,
+`max_trace_length` and `max_value_bits`), the number of passing, failing and
 discarded cases, the partitions covered, the operation coverage ("Operation coverage") and either no failure or one retained
 counterexample. Its settlement is the member `result`, an FR-331 result
 value (`tested`, `refuted`, `inconclusive`, `unsupported`, `incomplete` or
 `failed`), with the `cause` or `diagnostic` FR-331's result-entry table gives
 that value; `unsupported` is the settlement of a `frame` clause with no
-contract-level reading ("Case accounting"), reached before any case. The method is
+contract-level reading ("Case accounting"), reached before any case, and
+carries the diagnostic FR-485 "Frame" states for that item, and no
+`cause`.
+Every `cause` is an
+FR-331 cause object discriminated by its `type` member, never a bare
+string and never a `kind` member: `{"type": "no-evaluated-case"}`,
+`{"type": "limit-reached", "limit": …, "value": …, "setting": …}`,
+`{"type": "tool-failure", "defect": …}`, or, on a `refuted` record whose
+failing case evaluated undefined, the FR-364 `undefined-evaluation`
+envelope. For a value clause or pure Boolean predicate its `where` carries
+exactly `locus`, since the case has no trace position; for a clause over a
+state model it carries `position`, `state_key` and `locus`. The
+method is
 not negotiated and no provider writes it, so in a verification plan this
-record is the `model_based_test` step's `result` (FR-824).
+record is the `model_based_test` step's `result` (FR-824). "Result record"
+gives the record's members.
 
-- A retained counterexample SHALL be a shrunk failing case that serializes as
-  an FR-364 `TemporalCounterexample`, an FR-485 contract counterexample or a
-  value assignment, and that native replay reproduces; only then does the
-  clause settle `refuted`.
+- A retained counterexample SHALL be a shrunk failing case that native
+  replay reproduces; only then does the clause settle `refuted`. It
+  serializes by the clause kind: for a value clause or a pure Boolean
+  predicate, as FR-331 canonical assignments (`{"type": "assignments",
+  "values": [...]}`, one `{parameter, value}` per parameter in declaration
+  order, `parameter` its FR-322 `NodeId` and `value` its FR-181 typed
+  value); for a state clause or a temporal clause over a state model, as an
+  FR-364 `TemporalCounterexample` with the test-trace members below; for a
+  `postcondition`, `precondition` or `frame` clause of `o`, as an FR-485
+  contract counterexample with the obligation FR-485 gives the clause. No
+  other form, and no implementation's debug text, stands for a value.
+- A *test-trace counterexample* has `trace` `model`; `kind` `formula`, or
+  the undefined-evaluation envelope when the failing case evaluated
+  undefined; `initial_state` the index of the trace's initial state in the
+  subject's ordered initial-state list; `prefix` the shrunk trace's steps,
+  `{transition, post_state}` each, up to the failing position; `loop` as
+  stated next; `over_binding` the FR-181 typed reference of the object the
+  clause's `over` parameter is bound to in the case, `null` for a clause
+  with no `over` parameter; `fairness` `[]`, because a test trace is a
+  generated finite behaviour with no resolved fairness set; `interval`
+  `null`, because a test trace has no decisive instant; and
+  `trace_position` the position at which the evaluator returns false, or
+  for the envelope the position of its `where`. A test trace is finite,
+  so FR-364 "Shapes" gives the refutation's shape. A state clause, a
+  bounded-profile clause and an infinite-trace safety clause are refuted by
+  a finite prefix, `loop` `[]`. A trace that ends early at a terminal state
+  (no operation enabled) is the lasso whose loop is the one terminal
+  stutter step, so a liveness clause false on it is refuted with that
+  `loop`. A trace that ends at a non-terminal state, at `max_trace_length`,
+  is a finite prefix that FR-363 evaluates three-valued under
+  infinite-trace; a liveness formula has no bad prefix, so its verdict
+  there is true or unknown, never false. Its check point is evaluated and
+  does not fail, so the case passes ("Case accounting"), and a run whose
+  only liveness counterexamples would need longer traces settles `tested`,
+  never `refuted`: `tested` asserts only that no generated case refuted the
+  clause.
+- Beside the counterexample, the record SHALL carry `retained`
+  `{minimality, replay, disposition}`, which states what the "Shrinking
+  guarantee" established for it: `minimality` `1-minimal` (guarantee 4),
+  `replay` `reproduced` (guarantee 3), and `disposition` the failing
+  disposition every accepted shrink step preserved, `predicate-false` for a
+  value clause or pure Boolean predicate that is false, `invariant-violated`
+  for a state clause false at a state of the trace,
+  `undefined-evaluation` for a value clause, pure Boolean predicate or
+  state clause whose failing case evaluated undefined (its envelope is the
+  `cause`), and `model-check-failed` for a
+  temporal clause whose verdict on the trace fails or a contract clause of
+  `o` that fails at a check point. None of the three is a member of the
+  counterexample, whose form its owner closes.
 - With no failure and at least one passing case, the clause SHALL NOT settle
   `proved`: testing establishes no proof, and the result is evidence of the
   kind `tested` with its case counts.
@@ -478,7 +579,11 @@ record is the `model_based_test` step's `result` (FR-824).
 - The record SHALL hold `cases` `{generated, passed, failed, discarded,
   discarded_by}`, `checks` `{evaluated, skipped}`, `partitions` and
   `partition_coverage`, and the provenance members, as "Case accounting"
-  states.
+  states, and every other member "Result record" lists. The run's FR-461
+  work and deadline settings (`accounting.*` and the exploration and
+  deadline limits) are not recorded as members; a stop on one is recorded
+  by the `limit-reached` cause or `stopped_by` that names the limit, its
+  value and its setting.
 - A completed run with no failing and no passing case, every generated case
   discarded, SHALL settle `inconclusive` with the cause `no-evaluated-case`
   (FR-331), never `tested` and never `proved`; its category is
@@ -493,13 +598,129 @@ record is the `model_based_test` step's `result` (FR-824).
   `tested` or `refuted` result: like operation coverage, they are evidence
   about the suite.
 
+### Result record
+
+The record is one JSON object with exactly the members below. The sections
+named in the last column define each value; this table fixes only the
+names, presence and `null`.
+
+- **Presence.** *always*: present in every record, whatever `result` is; a
+  run that settles before any case writes zero counts and empty arrays.
+  *state model*: present exactly when the clause is over a state model (a
+  state clause, an operation contract or a temporal clause), and absent for
+  a value clause or a pure Boolean predicate, which has no such member.
+  *by result*: present exactly when FR-331's result-entry table gives the
+  member for `result`, and absent otherwise. Where that table allows a
+  `cause` or a `diagnostic`, "Result" chooses: an `unsupported` record
+  carries `diagnostic` and no `cause`, and every other record that carries
+  one carries `cause` and no `diagnostic`.
+- **Absent and `null`.** A member the clause kind or the result does not
+  define is absent: it is never written as `null`, `[]` or `{}`. `null`
+  means the member is defined and has no value, and it appears only where
+  the `null` column allows it.
+- A reader SHALL refuse a record that lacks a member the table requires,
+  carries a member the table makes absent or does not list, or has `null`
+  where the table does not allow it, naming the member.
+
+| Member | Presence | `null` | Value |
+| --- | --- | --- | --- |
+| `package` | always | never | the identity of the checked package the run is over, the string FR-824's outcome writes as `package`; for a clause declared in a dependency it differs from `clause.package` |
+| `clause` | always | never | the clause's FR-322 `NodeId`, whose `package` is the package that declares the clause |
+| `profile` | always | never | the generator profile's FR-322 `DefinitionRef` ("Seeded draws") |
+| `result` | always | never | the FR-331 result value ("Result") |
+| `cause` | by result | never | the FR-331 cause object ("Result") |
+| `diagnostic` | by result | never | the FR-272 diagnostic of an `unsupported` record ("Result") |
+| `counterexample` | by result: `refuted` | never | the retained counterexample, in its clause kind's form ("Result") |
+| `retained` | with `counterexample` | never | `{minimality, replay, disposition}` ("Result") |
+| `cases` | always | never | `{generated, passed, failed, discarded, discarded_by}`; `discarded_by` has exactly the four reasons, each `{count, first_case}` ("Case accounting") |
+| `cases.discarded_by.<reason>.first_case` | always | when `count` is 0 | the index of the reason's first case |
+| `checks` | always | never | `{evaluated, skipped}`; `skipped` has exactly `precondition-false` and `invariant-false` ("Case accounting") |
+| `limits` | always | never | `{max_cases}`, plus `max_trace_length` for a clause over a state model: the request's case limits ("Result") |
+| `limits.max_cases` | always | never | the request's `max_cases`, an FR-331 `Count` (an integer from 1 to 2^53 − 1) |
+| `limits.max_trace_length` | state model | never | the request's `max_trace_length`, a canonical unsigned decimal string, as `provenance.seed` |
+| `provenance` | always | never | `{seed, max_value_bits, size_bounded, value_bound_cuts}` ("Case accounting") |
+| `provenance.seed` | always | never | the request's seed, a canonical unsigned decimal string ("Case accounting") |
+| `provenance.max_value_bits` | always | with no class S root | the request's `max_value_bits` |
+| `provenance.size_bounded` | always | never | one `{root, measures, values}` per class S root; `[]` with none |
+| `provenance.value_bound_cuts` | state model | never | `{count, first}` |
+| `provenance.value_bound_cuts.first` | with `value_bound_cuts` | when `count` is 0 | `{initial_state, prefix, transition}` |
+| `partitions` | always | never | the entries in generation order, each `{root, kind, value, status}` with the members its `status` adds ("Case accounting"); `[]` with none |
+| `partition_coverage` | always | never | `{status, uncovered}` ("Case accounting") |
+| `operations` | state model | when the record settled before the coverage exploration ran | one entry per operation ("Operation coverage") |
+| `coverage` | state model | exactly when `operations` is `null` | `{status, uncovered}` ("Operation coverage") |
+
+`max_value_bits` is recorded once, in `provenance`. The record has no
+`status`, `evidence` or `verdict` member: `result` is the one settlement,
+and the evidence kind and verdict are read from it. It has no `domain`
+member: `package` takes its place. The `null` rule of this table covers the
+record's own members, the members of `cases`, `checks`, `limits`,
+`provenance`, `partitions`, `partition_coverage`, `retained`, the
+`operations` entries and `coverage`: among them no member is `null` except
+`first_case` in `discarded_by`, `max_value_bits` and `first` in
+`provenance`, and `operations` and `coverage` as the table states. The
+values the record carries from another owner, `cause`, `diagnostic`,
+`counterexample` and every FR-181 typed value or transition identity,
+follow their owner's own `null` rules (for example FR-364's
+`over_binding` and `interval`, and a typed value's `null` form).
+
+For example, the value clause `Nonneg` with one parameter `q: Int[0, 3]`
+and body `q >= 0`, run with seed 7 and `max_cases` 10, has four partition
+cases: the refusal cases 0 (`q` = -1) and 3 (`q` = 4), discarded
+`domain-refusal`, and the cases 1 (`q` = 0) and 2 (`q` = 3), which pass.
+Cases 4 to 9 are seeded and pass, because every member of the domain
+satisfies the body. Its record, over a checked package `example` that declares the clause, with
+`C` standing for the clause's `NodeId` object, is:
+
+```text
+{
+  "package": "example",
+  "clause": C,
+  "profile": {"authority": "agent-ix", "identity": "filament.simulation.sampler/v1"},
+  "result": "tested",
+  "cases": {
+    "generated": 10, "passed": 8, "failed": 0, "discarded": 2,
+    "discarded_by": {
+      "domain-refusal": {"count": 2, "first_case": 0},
+      "precondition-false": {"count": 0, "first_case": null},
+      "invariant-false": {"count": 0, "first_case": null},
+      "no-check-point": {"count": 0, "first_case": null}
+    }
+  },
+  "checks": {"evaluated": 8, "skipped": {"precondition-false": 0, "invariant-false": 0}},
+  "limits": {"max_cases": 10},
+  "provenance": {"seed": "7", "max_value_bits": null, "size_bounded": []},
+  "partitions": [
+    {"root": {"node": C, "path": [0]}, "kind": "lower-refusal", "value": {"type": "integer", "value": "-1"}, "status": "refused", "first_case": 0},
+    {"root": {"node": C, "path": [0]}, "kind": "lower-endpoint", "value": {"type": "integer", "value": "0"}, "status": "covered", "first_case": 1},
+    {"root": {"node": C, "path": [0]}, "kind": "upper-endpoint", "value": {"type": "integer", "value": "3"}, "status": "covered", "first_case": 2},
+    {"root": {"node": C, "path": [0]}, "kind": "upper-refusal", "value": {"type": "integer", "value": "4"}, "status": "refused", "first_case": 3}
+  ],
+  "partition_coverage": {"status": "complete", "uncovered": {}}
+}
+```
+
+It has no `cause`, `diagnostic`, `counterexample` or `retained` member,
+because `tested` carries none, and no `limits.max_trace_length`,
+`value_bound_cuts`, `operations` or `coverage` member, because the clause is
+a value clause. With body `q <= 2` instead, case 2 fails; `q` = 3 is
+1-minimal, because its one-step decrease `q` = 2 passes. That record has
+`"result": "refuted"`, still no `cause`, and, with `P` standing for `q`'s
+`NodeId`:
+
+```text
+"retained": {"minimality": "1-minimal", "replay": "reproduced", "disposition": "predicate-false"},
+"counterexample": {"type": "assignments", "values": [{"parameter": P, "value": {"type": "integer", "value": "3"}}]}
+```
+
 ## Operation coverage
 
 For a clause over a state model, the result record SHALL hold one
 `operations` entry for each operation the subject's model declares, in the
 model's canonical declaration order, so that a reader can tell which
 operations the generated suite exercised. A value clause or a pure Boolean
-predicate has no test trace, and its record has no `operations` member.
+predicate has no test trace, and its record has no `operations` member
+and no `coverage` member: both are absent, never `null`, `[]` or a
+summary of no entries.
 
 - **Covered.** An operation is *covered* when at least one evaluated case
   (passing or failing, never a discarded one) applies an invocation of it,
@@ -507,7 +728,9 @@ predicate has no test trace, and its record has no `operations` member.
   within `max_trace_length` invocations of the initial state. The entry is
   `{operation, status: covered, first_case}`: `operation` is
   `{identity, name}`, the operation's checked declaration identity and its
-  declared name (the name is for reading; entries are keyed by identity), and `first_case` is the index
+  declared name (the name is for reading; entries are keyed by identity),
+  both strings, `identity` being the string an FR-181 transition identity
+  of the operation carries as its `operation`, and `first_case` is the index
   of the first case that applies it. A refused or discarded attempt to
   invoke an operation never covers it.
 - **Uncovered.** Every other operation is *uncovered*. The entry is
@@ -517,8 +740,8 @@ predicate has no test trace, and its record has no `operations` member.
   | --- | --- | --- |
   | `unreachable` | no state reachable from the initial-state domain, at any trace length, enables the operation | exploration of the model's reachable state set (FSL's model transition system) finished without reaching a state that enables it |
   | `unreachable-within-bound` | no state reachable within the request's bounds enables it: `max_trace_length` invocations, and `S_b` when a root is of class S ("Value domains"); a longer trace or a larger `max_value_bits` may | exploration of every trace of at most `max_trace_length` invocations within those domains finished without such a state, and the reachable state set beyond the bounds was not exhausted |
-  | `not-generated` | some state reachable within the bound enables it, but no evaluated case applied it before `max_cases` | the exploration reached an enabling state within the bound; the entry carries `enabled_at`, the shortest invocation prefix that reaches one, which native replay reproduces |
-  | `undetermined` | exploration stopped before it decided reachability within the bound | the entry names the FR-461 limit that stopped it and the value used |
+  | `not-generated` | some state reachable within the bound enables it, but no evaluated case applied it before `max_cases` | the exploration reached an enabling state within the bound; the entry carries `enabled_at` `{initial_state, prefix}`, the shortest invocation prefix that reaches one: `initial_state` the index of its initial state as FR-364's `initial_state` gives it, and `prefix` its FR-181 transition identities in step order, which native replay reproduces from that state |
+  | `undetermined` | exploration stopped before it decided reachability within the bound | the entry carries `stopped_by` ("Case accounting"), which names the FR-461 limit that stopped it and the value used |
 
   `unreachable` and `unreachable-within-bound` are proved facts about the
   model under the request's bound; `not-generated` is a fact about the
@@ -583,7 +806,8 @@ failing clause is rejected and never retained.
   `invalid_model_binding`/`malformed-declaration` naming the empty domain,
   before any case runs.
 - A request naming no clause, an unknown clause identity, a `max_cases` or
-  `max_trace_length` of 0, or a seed that is not a 64-bit unsigned integer
+  `max_trace_length` of 0, a `max_cases` above 2^53 − 1 (the FR-331
+  `Count` range the record writes it in), or a seed that is not a 64-bit unsigned integer
   SHALL refuse the whole request before any case runs, naming the member.
   A request over a root whose domain has no finite bound and that
   carries no `max_value_bits` refuses the same way, naming that member, and
@@ -603,7 +827,7 @@ failing clause is rejected and never retained.
 | FR-190-AC-6 | Over a state model whose operation `inc` raises a counter in `Int[0, 5]` and a state clause `value <= 3`, a generated test trace applies only enabled invocations, its states are the native runtime's, and the retained counterexample is the 1-minimal trace of four `inc` invocations from `value = 0`, which native replay fails on the same clause. | Test (TC-1600) |
 | FR-190-AC-7 | A run with no failing case reports its passing and discarded counts and the `tested` evidence kind, and the clause is never settled `proved`; a run stopped by its work limit before `max_cases` is `incomplete` naming that limit. | Test (TC-1600) |
 | FR-190-AC-8 | A parameter typed `Integer` with no bound is generated by size-bounded enumeration up to the request's `max_value_bits`, and the bound appears in the provenance; a request without `max_value_bits` for such a parameter refuses naming the member. | Test (TC-1600) |
-| FR-190-AC-9 | A clause over an empty domain refuses `invalid_model_binding`/`malformed-declaration` before any case; `max_cases` 0, `max_trace_length` 0 and an unknown clause identity each refuse the request naming the member. | Test (TC-1600) |
+| FR-190-AC-9 | A clause over an empty domain refuses `invalid_model_binding`/`malformed-declaration` before any case; `max_cases` 0, `max_cases` 9007199254740992 (2^53), `max_trace_length` 0 and an unknown clause identity each refuse the request naming the member, and `max_cases` 9007199254740991 (2^53 − 1) is admitted. | Test (TC-1600) |
 | FR-190-AC-10 | Two runs with the same package, clause, generator profile, seed and limits produce byte-equal result records, including the retained counterexample. | Test (TC-1600) |
 | FR-190-AC-11 | Over a state model with `inc` raising `value` in `Int[0, 5]` (enabled when `value < 5`), `reset` (enabled when `value = 5`) and `jam` (enabled when `value > 5`), a run with `max_trace_length` 8 reports `operations` in declaration order: `inc` and `reset` `covered` with the index of the first case applying each, and `jam` `uncovered`, reason `unreachable`, naming `jam`'s declaration identity; `coverage` is `{status: partial, uncovered: {unreachable: 1}}`. `jam` is never reported `covered`. | Test (TC-2004) |
 | FR-190-AC-12 | The same model with `max_trace_length` 3 reports `reset` `uncovered`, reason `unreachable-within-bound` with `bounds` `["max_trace_length"]`, and never `unreachable`; with a work limit too small to finish the bounded exploration, the entry is `undetermined` naming that limit, and the run's case counts and verdict are those of the unlimited run. | Test (TC-2004) |
@@ -611,12 +835,36 @@ failing clause is rejected and never retained.
 | FR-190-AC-14 | Over a value clause with parameters `x: Integer` and `t: Text[0, 4]`, a clause every case passes, seed 7, `max_cases` 30 and `max_value_bits` 8: every case's `x` lies in `[-255, 255]`; `x`'s partitions are, in order, `size-least` 0, `size-unit` -1 and 1, `size-extreme-low` -255 and `size-extreme-high` 255, and no partition of `x` has a kind ending in `-refusal`; `t`'s partitions are `empty`, `singleton`, `upper-endpoint` (length 4) and `upper-refusal` (length 5), followed by the `normalization` partitions of its profile (FR-190-AC-19); `provenance.max_value_bits` is 8 and `provenance.size_bounded` has exactly one entry, for `x`, with `values` `"511"`. With `max_value_bits` 1, `x` lies in `[-1, 1]` and `t`'s partitions are unchanged. `max_value_bits` 0 and 65 each refuse `invalid_runtime_input`/`invalid-value`, its absence `missing-member`, and `max_value_bits` 8 over a clause whose one parameter is `q: Int[0, 3]` `unknown-member`; each names `max_value_bits` and runs no case. | Test (TC-1600) |
 | FR-190-AC-15 | Over a state model with `value` in `Int[0, 5]` (initial 0) and `inc(by: Int[1, 6])` (enabled when `value + by <= 5`), the postcondition clause of `inc`, seed 7, `max_cases` 100 and `max_trace_length` 8: cases 0 to 7 are the partitions of `value` (-1, 0, 5, 6) followed by those of `by` (0, 1, 6, 7); the cases for `value` -1 and 6 and `by` 0 and 7 are refusal cases, their partitions `refused`, and `cases.discarded_by.domain-refusal` is `{count: 4, first_case: 0}`; the `by` 6 case is discarded `precondition-false`, `discarded_by.precondition-false` is `{count: 1, first_case: 6}`, and its partition is `uncovered` with reason `precondition-false` and `bounds` `[]`; the `value` 0 case (the initial state, no `inc`) is discarded `no-check-point`; `cases.generated` is 100 and equals `passed + failed + discarded`; the run is `tested`. | Test (TC-1600) |
 | FR-190-AC-16 | AC-15's model with an added operation `jam()` (enabled when `value > 5`): the postcondition clause of `jam` discards every one of its 100 cases, with `discarded_by` `domain-refusal` `{count: 4, first_case: 0}`, `precondition-false` `{count: 1, first_case: 6}` (the `by` 6 partition case), `invariant-false` `{count: 0, first_case: null}` and `no-check-point` `{count: 95, first_case: 1}`, `cases.passed` and `cases.failed` 0, and settles `inconclusive` with cause `no-evaluated-case`, exit `22`, never `tested` or `proved`; the precondition clause of `inc` has `discarded_by.precondition-false.count` 0 and the `by` 6 partition `covered`, because a false precondition is a defined, passing point; with a test-double argument admission that accepts `by` 7, the run settles `failed` with `{"type": "tool-failure", "defect": "oracle-disagreement"}`, exit `30`. | Test (TC-1600) |
-| FR-190-AC-17 | Over a state model with `value: Integer` (initial 0), `add(by: Int[1, 100])` (`value' = value + by`) and `big()` (enabled when `value >= 300`), seed 7, `max_cases` 100, `max_trace_length` 8 and `max_value_bits` 8: `big` is `uncovered` with reason `unreachable-within-bound` and `bounds` `["max_value_bits"]`, never `unreachable`; `provenance.value_bound_cuts.count` is at least 1 and `first` names an `add` application from a state where `value + by` exceeds 255; the run is `tested`. With `max_value_bits` 10, `big` is `covered`, or `not-generated` with an `enabled_at` prefix of `add` invocations whose arguments sum to at least 300. | Test (TC-2004) |
+| FR-190-AC-17 | Over a state model with `value: Integer` (initial 0), `add(by: Int[1, 100])` (`value' = value + by`) and `big()` (enabled when `value >= 300`), seed 7, `max_cases` 100, `max_trace_length` 8 and `max_value_bits` 8: `big` is `uncovered` with reason `unreachable-within-bound` and `bounds` `["max_value_bits"]`, never `unreachable`; `provenance.value_bound_cuts.count` is at least 1 and `first` names an `add` application from a state where `value + by` exceeds 255; the run is `tested`. With `max_value_bits` 10, `big` is `covered`, or `not-generated` with an `enabled_at.prefix` of `add` invocations whose arguments sum to at least 300. | Test (TC-2004) |
 | FR-190-AC-18 | `unrank` ("Text domains") gives exactly these values. `Text[0, 2; unicode-scalars]` has a domain of 1236687452161; `unrank(0)` is the empty text, `unrank(1)` U+0000, `unrank(2)` U+0000 U+0000, `unrank(3)` U+0000 U+0001, `unrank(1112066)` U+0001, `unrank(61492746241)` U+E000 (the surrogates are not in `Σ`, so U+E000 follows U+D7FF) and `unrank(1236687452160)` U+10FFFF U+10FFFF, and `rank` of each is its index. `Text[0, 3; binary-utf8]` has a domain of 2668545 (`W` = 1, 128, 18304, 2650112); `unrank(18434)` is U+0001, `unrank(2359425)` U+0080, `unrank(2607105)` U+0800 and `unrank(2668544)` U+FFFF. Over `Text[0, 1]`, `unrank(193)` is U+00C0 under `unicode-scalars` and `nfc` and U+00C6 under `nfd` (U+00C0 to U+00C5 decompose), and `unrank(161)` is U+00A0 under `nfc` and U+00A1 under `nfkc` (U+00A0 has a compatibility decomposition). Every value is computed from exact integers and is the same on every platform the tests run on. | Test (TC-1600) |
 | FR-190-AC-19 | Over `t: Text[0, 4]`, the `normalization` partitions after `upper-refusal` are, in order: under `unicode-scalars` the eight witness spellings themselves, so U+00E9 and U+0065 U+0301, U+0064 U+0307 U+0323 and U+0064 U+0323 U+0307, and U+AC00 and U+1100 U+1161 are six distinct cases; under `binary-utf8` the encodings `C3 A9`, `65 CC 81`, `EA B0 80`, `E2 84 AB` and `EF AC 81` (witnesses 3, 4 and 6 are 5 or 6 bytes long and skipped); under `nfc` U+00E9, U+1E0D U+0307, U+AC00, U+00C5 and U+FB01; under `nfd` U+0065 U+0301, U+0064 U+0323 U+0307, U+1100 U+1161, U+0041 U+030A and U+FB01; under `nfkc` U+00E9, U+1E0D U+0307, U+AC00, U+00C5 and U+0066 U+0069; and under `nfkd` U+0065 U+0301, U+0064 U+0323 U+0307, U+1100 U+1161, U+0041 U+030A and U+0066 U+0069. Over `Text[0, 1; nfd]` no `normalization` partition is generated except U+FB01, every other normal form being 2 or 3 scalars long. `t`'s `empty`, `singleton` and `upper-endpoint` values are U+0000 repeated 0, 1 and 4 times. | Test (TC-1600) |
 | FR-190-AC-20 | A value clause over `t: Text[0, 13; unicode-scalars]` (more than `2^256` members), a clause every case passes, seed 7 and `max_cases` 30 settles `tested` with `cases.generated` 30, every seeded case a member of length at most 13 that is `unrank(i)` for the index the profile's uniform choice drew; it is never `unsupported` `total-above-draw-range` and no draw is truncated to fewer members. Two runs with equal inputs give equal `t` values in every case. | Test (TC-1600) |
 | FR-190-AC-21 | Seeded draws use `filament.simulation.sampler/v1`'s draw function with the coordinates "Seeded draws" binds. Over the value clause `Square` with parameter `x: Integer`, seed 7 and `max_value_bits` 8, the first seeded case is case 5 (after the five partition cases), and its one draw value is `SHA-256` of `{"choice":"0","draw":"0","seed":"7","step":"0","trace":"5"}`, `870d79a5aa0eeb2e99ebcf1b9bfd2c96fb3776efa3f045d4bec328c7b676eb65`, which is below `511 · ⌊2^256 / 511⌋`, so it is accepted; its value modulo 511 is 116, and size index 116 is `x` = 53. Over the value clause with parameter `t: Text[0, 2; unicode-scalars]` and seed 7, the first seeded case is case 10 (after `empty`, `singleton`, `upper-endpoint`, `upper-refusal` and the six `normalization` partitions of witnesses 1, 2, 5, 6, 7 and 8), and its draw value is `SHA-256` of `{"choice":"0","draw":"0","seed":"7","step":"0","trace":"10"}`, `018f5797cdbae46b5c12df4e591c545d037f369afd8b6ac8ffdd46bda1bbb5dd`, accepted; its value modulo 1236687452161 is 968414557300, and `unrank(968414557300)` is U+D51A9 U+87AC9. Every computation uses integers only, and the same seed gives the same values on every platform. | Test (TC-1600) |
-| FR-190-AC-22 | A value clause over `t: Text[0, 1099511627776; nfc]` (`max` 2^40), body `size(t) >= 0`, seed 7, `max_cases` 30 and `accounting.work_units` 1000000 settles `incomplete` with `{"kind": "limit-reached", "limit": "work_units", "setting": "accounting.work_units", "value": 1000000}` and `cases.generated` 0; it does not abort, is not `unsupported`, and `provenance.size_bounded` is empty. The same clause under `unicode-scalars` settles the same way, and over `Text[0, 4; nfc]` under the same limits it is `tested` with `cases.generated` 30. Over `Text[0, 4; nfc]` with `accounting.work_units` 2559, one below the 2560 its count table charges, the run settles `incomplete` naming `accounting.work_units` with value 2559 and `cases.generated` 0. | Test (TC-1600) |
+| FR-190-AC-22 | A value clause over `t: Text[0, 1099511627776; nfc]` (`max` 2^40), body `size(t) >= 0`, seed 7, `max_cases` 30 and `accounting.work_units` 1000000 settles `incomplete` with `{"type": "limit-reached", "limit": "work_units", "setting": "accounting.work_units", "value": 1000000}` and `cases.generated` 0; it does not abort, is not `unsupported`, and `provenance.size_bounded` is empty. The same clause under `unicode-scalars` settles the same way, and over `Text[0, 4; nfc]` under the same limits it is `tested` with `cases.generated` 30. Over `Text[0, 4; nfc]` with `accounting.work_units` 2559, one below the 2560 its count table charges, the run settles `incomplete` naming `accounting.work_units` with value 2559 and `cases.generated` 0. | Test (TC-1600) |
+| FR-190-AC-23 | The `Nonneg` run of "Result record" (`q: Int[0, 3]`, body `q >= 0`, seed 7, `max_cases` 10, over the package `example`) writes exactly the example record there, `package` `"example"` and `provenance.seed` `"7"` included. | Test (TC-1600) |
+| FR-190-AC-24 | A strict reader refuses the `Nonneg` record with `cases` removed, naming `cases`, and with `provenance.max_value_bits` removed, naming `provenance.max_value_bits`. | Test (TC-1600) |
+| FR-190-AC-25 | A strict reader refuses the `Nonneg` record with an added `status`, `evidence`, `verdict` or `domain` member, each naming that member. | Test (TC-1600) |
+| FR-190-AC-26 | A strict reader refuses the `Nonneg` record with `"operations": null`, `"coverage": null`, `"cause": null` or `"limits": {"max_cases": 10, "max_trace_length": "8"}`, each naming the member that the table makes absent for a value clause or a `tested` record. | Test (TC-1600) |
+| FR-190-AC-27 | FR-190-AC-15's postcondition run, a clause over a state model, has `limits` `{"max_cases": 100, "max_trace_length": "8"}`, `provenance.value_bound_cuts` `{"count": 0, "first": null}`, an `operations` array and a `coverage` object. | Test (TC-1600) |
+| FR-190-AC-28 | The `Nonneg` run with seed 18446744073709551615 has `provenance.seed` `"18446744073709551615"`; the `Nonneg` record with `provenance.seed` the number 7, and FR-190-AC-15's record with `limits.max_trace_length` the number 8, are each refused naming that member. | Test (TC-1600) |
+| FR-190-AC-29 | A value clause declared in a dependency library `lib` and run over a checked package `app` that imports it has `package` `"app"` and `clause.package` `"lib"`. | Test (TC-1600) |
+| FR-190-AC-30 | With body `q <= 2`, the `Nonneg` clause settles `refuted` with no `cause`, `retained` `{"minimality": "1-minimal", "replay": "reproduced", "disposition": "predicate-false"}` and `counterexample` `{"type": "assignments", "values": [{"parameter": P, "value": {"type": "integer", "value": "3"}}]}`, `P` being `q`'s `NodeId`; no counterexample carries `minimality`, `replay` or `disposition`. | Test (TC-1600) |
+| FR-190-AC-31 | The value clause `Recip` with one parameter `q: Int[0, 3]` and body `6 / q >= 1`, seed 7 and `max_cases` 10, settles `refuted` with `cause` `{"type": "undefined-evaluation", "where": {"locus": L}, "cause": "division-by-zero"}`, `L` the locus of `6 / q`, `retained.disposition` `undefined-evaluation`, and `counterexample` the assignments of `q` = 0: case 1 (`q` = 0, the `lower-endpoint` partition) is the first failing case, and 0 is the least member, so it is 1-minimal. | Test (TC-1600) |
+| FR-190-AC-32 | FR-190-AC-6's run retains an FR-364 `TemporalCounterexample` with `trace` `model`, `kind` `formula`, `initial_state` 0, a `prefix` of four model steps whose transition identities name `inc`, `loop` `[]`, `fairness` `[]`, `interval` `null`, `over_binding` as "Result" gives it and `trace_position` 4, and `retained.disposition` `invariant-violated`. | Test (TC-1600) |
+| FR-190-AC-33 | Over a state model with `value` in `Int[0, 2]` (initial 0) and `inc` (enabled when `value < 2`), the infinite-trace liveness clause `eventually holds(value = 3)`, seed 7, `max_cases` 30 and `max_trace_length` 8 settles `refuted` with a counterexample whose `prefix` is two `inc` steps and whose `loop` is the one terminal-stutter step `{"transition": {"type": "terminal-stutter"}, "post_state": S}`, `S` the state with `value` 2. | Test (TC-1600) |
+| FR-190-AC-34 | FR-190-AC-11's model (`inc`, `reset`, `jam`; never terminal), the infinite-trace liveness clause `eventually holds(value = 6)`, seed 7, `max_cases` 30 and `max_trace_length` 8 settles `tested` with no `counterexample`: every trace ends at a non-terminal state, where the verdict is unknown, never false, so every evaluated case passes. | Test (TC-1600) |
+| FR-190-AC-35 | Every written `cause` is a `type`-keyed object: FR-190-AC-16's `jam` run has `cause` exactly `{"type": "no-evaluated-case"}`, its accepting-admission run `{"type": "tool-failure", "defect": "oracle-disagreement"}`, and FR-190-AC-22's first run `{"type": "limit-reached", "limit": "work_units", "setting": "accounting.work_units", "value": 1000000}`. | Test (TC-1600) |
+| FR-190-AC-36 | A strict reader refuses a record whose `cause` is the bare string `"no-evaluated-case"`, and one whose `cause` is keyed by `kind` instead of `type`, naming `cause`. | Test (TC-1600) |
+| FR-190-AC-37 | The `frame` clause of an operation with no implementation binding settles `unsupported` with no `cause` and with `diagnostic` byte-equal to the one FR-485 "Frame" states for a frame item with no implementation binding. | Test (TC-1600) |
+| FR-190-AC-38 | In FR-190-AC-15's run, the `by` 6 partition entry is `{"root": {"node": M, "path": [1, 0, 0]}, "kind": "upper-endpoint", "value": {"type": "integer", "value": "6"}, "status": "uncovered", "reason": "precondition-false", "bounds": []}`, `M` being the model's `NodeId`, and the `value` -1 entry is `{"root": {"node": M, "path": [0, 0]}, "kind": "lower-refusal", "value": {"type": "integer", "value": "-1"}, "status": "refused", "first_case": 0}`. | Test (TC-1600) |
+| FR-190-AC-39 | In FR-190-AC-15's run, `checks.skipped` is an object with exactly the members `precondition-false` and `invariant-false`, each a count. | Test (TC-1600) |
+| FR-190-AC-40 | In FR-190-AC-14's run, `provenance.size_bounded` is `[{"root": {"node": C, "path": [0]}, "measures": ["value"], "values": "511"}]`, `C` being the clause's `NodeId`. | Test (TC-1600) |
+| FR-190-AC-41 | In FR-190-AC-14's run, `t`'s `upper-endpoint` partition entry has `value` `{"type": "text", "value": "\u0000\u0000\u0000\u0000"}` and no text member beside it. | Test (TC-1600) |
+| FR-190-AC-42 | A value clause over `t: Text[0, 4]` with body `size(t) < 4` settles `refuted` and retains `t` as a `{"type": "text", "value": …}` typed value of length 4. | Test (TC-1600) |
+| FR-190-AC-43 | In FR-190-AC-17's run with `max_value_bits` 8, `provenance.value_bound_cuts.first` is `{initial_state, prefix, transition}` with `initial_state` 0, a `prefix` of FR-181 transition identities of `add`, and a `transition` naming `add`, from whose pre-state `value + by` exceeds 255. | Test (TC-2004) |
+| FR-190-AC-44 | In FR-190-AC-12's work-limited run, the `reset` entry is `{operation, status: "uncovered", reason: "undetermined", stopped_by}`, `stopped_by` a `limit-reached` cause naming that limit, its value and its setting, with no `limit`, `value` or `setting` member beside `stopped_by`. | Test (TC-2004) |
+| FR-190-AC-45 | FR-190-AC-15's run with an exploration limit too small for the coverage exploration to finish writes the `by` 6 partition entry `uncovered` with `reason` `undetermined`, `bounds` `[]` and `stopped_by` a `limit-reached` cause naming that limit, its value and its setting; the partition's own `value` member stays `{"type": "integer", "value": "6"}`. | Test (TC-1600) |
+| FR-190-AC-46 | FR-190-AC-17's model with `max_value_bits` 10 and `max_cases` 1 reports `big` `uncovered`, `reason` `not-generated`, with `enabled_at` `{"initial_state": 0, "prefix": [A, A, A]}`, `A` the FR-181 transition identity of `add` with argument `{"type": "integer", "value": "100"}`: three `add` of 100 is the only invocation prefix of length 3 that reaches `value >= 300`. | Test (TC-2004) |
 
 ## Dependencies
 
