@@ -6139,9 +6139,13 @@ fn model_correspondence_uses_a_closed_type_table_body() {
         "body": body
     });
     let correspondence_schema = schema_for_def(&schema, "CorrespondenceNode");
+    let node_errors = correspondence_schema
+        .iter_errors(&correspondence)
+        .map(|error| format!("{} at {}", error, error.instance_path))
+        .collect::<Vec<_>>();
     assert!(
-        correspondence_schema.is_valid(&correspondence),
-        "correspondence node uses the compact body"
+        node_errors.is_empty(),
+        "correspondence node uses the compact body: {node_errors:?}"
     );
 
     let old_body = json!({
