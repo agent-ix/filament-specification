@@ -3383,6 +3383,7 @@
                     },
                     "semantic_form": {
                       "enum": [
+                        "model_correspondence",
                         "abstraction_relation",
                         "implementation_guarantee",
                         "component_composition"
@@ -3395,8 +3396,9 @@
                   ]
                 },
                 "then": {
-                  "description": "FR-451, FR-490, FR-491: each semantic_form takes its own body.",
+                  "description": "FR-322, FR-451, FR-490, FR-491: each semantic_form takes its own body.",
                   "allOf": [
+                    {"if": {"properties": {"semantic_form": {"const": "model_correspondence"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ModelCorrespondenceBody"}}}},
                     {"if": {"properties": {"semantic_form": {"const": "abstraction_relation"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/AbstractionRelationBody"}, "occurrences": {"items": {"properties": {"role": {"const": "declaration"}}}}}}},
                     {"if": {"properties": {"semantic_form": {"const": "implementation_guarantee"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ImplementationGuaranteeBody"}, "occurrences": {"items": {"properties": {"role": {"const": "declaration"}}}}}}},
                     {"if": {"properties": {"semantic_form": {"const": "component_composition"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ComponentCompositionBody"}}}}
@@ -6870,25 +6872,6 @@
                 "implementation_guarantee",
                 "component_composition"
               ]
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "semantic_form": {
-                "const": "model_correspondence"
-              }
-            },
-            "required": [
-              "semantic_form"
-            ]
-          },
-          "then": {
-            "properties": {
-              "body": {
-                "$ref": "#/$defs/ModelCorrespondenceBody"
-              }
             }
           }
         }
