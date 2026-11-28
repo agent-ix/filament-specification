@@ -6738,6 +6738,23 @@ is carried by two `protocol` node forms.
   `invalid_semantic_graph` at `/dependencies`. A non-conforming body or an
   extra member fails the V2 schema.
 
+### Model-correspondence literal type table
+
+A `correspondence`/`model_correspondence` node uses a closed body with
+`term: "model_correspondence"`, `literal_types` and `members`. `literal_types`
+is a nonempty array of distinct `NodeRef` values, ordered by ascending byte
+order of each reference's encoded NodeRef object. Each member is a closed
+`{type_ref, value_kind, value}` object: `type_ref` is a zero-based `u32`
+index into `literal_types`, and `value_kind` and `value` have the same meaning
+as on a literal semantic term. Every table entry is used by at least one
+member. A reader resolves each member's exact type through its table entry and
+checks the value against that type; it does not infer a type from `value_kind`.
+The body does not use the generic aggregate form with a repeated `type` on
+each literal. That old body fails the V2 schema and is refused by a strict
+reader with its existing typed wire refusal. The strict read charges table
+lookup and per-member value validation to the caller's read budget, as
+the checked-package reader's budgeted-read requirement specifies.
+
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
@@ -7146,6 +7163,7 @@ is carried by two `protocol` node forms.
 | FR-322-AC-548 | In `positive-state-transition.json`, the `state`/`transition` node path is `["state", "transition", "anchor", {"operand": 8}, "subject", {"operand": 10}, "inputs", {"operand": 7}, "pre", {"operand": 11}, "post", {"operand": 12}, "filament.op.state.transition", "filament.protocol.finite-global/v1", "transition", "state_transition", {"operand": 4}]`: the five binding names and operands precede operation identity, selected profile definition, member operator, operator and one `result_type` operand. There is no additional `semantic_type` segment for a `state`/`transition` node. | Test |
 | FR-322-AC-549 | A `record_value` node whose sole value edge targets itself is a body-walk-only cycle. Even if the node has `recursion_group: "G"`, admission refuses `invalid_semantic_graph`, with no cause, in the graph-shape step at `/semantic_graph/nodes/{i}` for that node, and returns no package. | Test |
 | FR-322-AC-550 | A two-node body-walk-only cycle in one `recursion_group: "G"`, where a `tuple_value` node's element targets an `option_value` node and that option's payload targets the tuple, refuses `invalid_semantic_graph`, with no cause, in the graph-shape step at `/semantic_graph/nodes/{i}` for the lower-`node_id` cycle member, and returns no package. | Test |
+| FR-322-AC-553 | A `correspondence`/`model_correspondence` body has `term: "model_correspondence"`, a nonempty `literal_types` table of distinct `NodeRef` objects in ascending encoded-NodeRef byte order, and `members` with exact `type_ref`, `value_kind` and `value` fields. Every `type_ref` is in range, every table entry is used, and each member's literal value is validated against the exact type named by its table entry. The V2 schema admits the positive compact body and refuses the old aggregate body that repeats `type` on each literal, a missing or extra body field, and a duplicate table entry. A strict reader refuses a non-canonically ordered or unused table entry, an out-of-range reference, and a value inconsistent with its resolved type. | Test |
 
 ### FR-322-AC-467
 

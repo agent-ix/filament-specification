@@ -3383,6 +3383,7 @@
                     },
                     "semantic_form": {
                       "enum": [
+                        "model_correspondence",
                         "abstraction_relation",
                         "implementation_guarantee",
                         "component_composition"
@@ -3395,8 +3396,9 @@
                   ]
                 },
                 "then": {
-                  "description": "FR-451, FR-490, FR-491: each semantic_form takes its own body.",
+                  "description": "FR-322, FR-451, FR-490, FR-491: each semantic_form takes its own body.",
                   "allOf": [
+                    {"if": {"properties": {"semantic_form": {"const": "model_correspondence"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ModelCorrespondenceBody"}}}},
                     {"if": {"properties": {"semantic_form": {"const": "abstraction_relation"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/AbstractionRelationBody"}, "occurrences": {"items": {"properties": {"role": {"const": "declaration"}}}}}}},
                     {"if": {"properties": {"semantic_form": {"const": "implementation_guarantee"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ImplementationGuaranteeBody"}, "occurrences": {"items": {"properties": {"role": {"const": "declaration"}}}}}}},
                     {"if": {"properties": {"semantic_form": {"const": "component_composition"}}}, "then": {"properties": {"body": {"$ref": "#/$defs/ComponentCompositionBody"}}}}
@@ -6874,6 +6876,76 @@
           }
         }
       ]
+    },
+    "ModelCorrespondenceBody": {
+      "type": "object",
+      "required": [
+        "term",
+        "literal_types",
+        "members"
+      ],
+      "properties": {
+        "term": {
+          "const": "model_correspondence"
+        },
+        "literal_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/NodeRef"
+          }
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "type_ref",
+              "value_kind",
+              "value"
+            ],
+            "properties": {
+              "type_ref": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4294967295
+              },
+              "value_kind": {
+                "enum": [
+                  "boolean",
+                  "integer",
+                  "rational",
+                  "decimal",
+                  "float32_bits",
+                  "float64_bits",
+                  "text",
+                  "string",
+                  "uuid",
+                  "timestamp",
+                  "bytes",
+                  "json_object",
+                  "enum",
+                  "none",
+                  "quantity",
+                  "reference"
+                ]
+              },
+              "value": {
+                "type": [
+                  "boolean",
+                  "string",
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "SemanticNode": {
       "oneOf": [
