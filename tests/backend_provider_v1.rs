@@ -3154,7 +3154,25 @@ fn sampled_witness_draws_rewards_and_end() {
     refused(&with(&untimed, witness(vec![step.clone()], Some(time_lock.clone()))), "a witness with end and no grid");
     refused(&with(&timed, witness(vec![step.clone()], Some(json!({"type": "time-lock", "state": state(2)})))), "a time-lock end without stamp");
     refused(&with(&timed, witness(vec![step.clone()], Some(json!({"type": "crossing"})))), "a crossing end without step");
-    refused(&with(&timed, witness(vec![step], Some(json!({"type": "horizon"})))), "an unknown end type");
+    refused(&with(&timed, witness(vec![step.clone()], Some(json!({"type": "horizon"})))), "an unknown end type");
+
+    // A stutter step consumes no draw and earns no reward (a schema rule).
+    let stutter = json!({"type": "stutter"});
+    let stutter_step = json!({"transition": stutter, "post_state": state(1), "scheduled": stutter, "random": [], "draws": [], "rewards": []});
+    assert!(verdict.is_valid(&with(&timed, witness(vec![step.clone(), stutter_step.clone()], Some(time_lock.clone())))), "a stutter step with no draws and no rewards is admitted");
+    let mut drawn_stutter = stutter_step.clone();
+    drawn_stutter["draws"] = json!([{"choice": 0, "item": 0}]);
+    refused(&with(&timed, witness(vec![step.clone(), drawn_stutter], Some(time_lock.clone()))), "a stutter step with a draw");
+    let mut rewarded_stutter = stutter_step;
+    rewarded_stutter["rewards"] = rewarded["rewards"].clone();
+    refused(&with(&timed, witness(vec![step, rewarded_stutter], Some(time_lock.clone()))), "a stutter step with a reward");
+
+    // Reward order, duplicates and one entry per declared reward are replay
+    // checks: the schema admits a reward named twice.
+    let mut twice = rewarded.clone();
+    let reward = twice["rewards"][0].clone();
+    twice["rewards"].as_array_mut().unwrap().push(reward);
+    assert!(verdict.is_valid(&with(&timed, witness(vec![twice], Some(time_lock)))), "a reward named twice is left to replay");
 }
 
 /// FR-418-AC-19: a task-product certificate's unreached node and extra edge

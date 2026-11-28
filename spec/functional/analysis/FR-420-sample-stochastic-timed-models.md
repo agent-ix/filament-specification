@@ -279,8 +279,10 @@ window does not race. The raw delay is:
   logarithm bounds.
 
 The sampled delay is the raw delay moved inside the interval as the excluded
-end rule below states. The re-derivation of a recorded delay (FR-410) repeats
-this procedure exactly, so two readers agree on the rational.
+end rule below states. The re-derivation of a recorded delay (FR-410) applies
+this derivation rule exactly, in the record checker's own code and without
+running the sampler's step or race procedure, so two readers agree on the
+rational.
 
 The grid `2^-q` applies to the draw value `u`, not to delays. A `uniform` or
 `uniform[a, b]` delay is the exact point at length `u · L`, moved inside the
