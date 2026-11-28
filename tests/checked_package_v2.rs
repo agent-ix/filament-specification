@@ -6102,7 +6102,7 @@ fn tc_233_all_checked_semantic_node_families_are_admitted_by_the_public_schema()
     }
 }
 
-#[trace("FR-322-AC-530")]
+#[trace("FR-322-AC-553")]
 #[test]
 fn model_correspondence_uses_a_closed_type_table_body() {
     let schema = parsed_fixture(SCHEMA);
