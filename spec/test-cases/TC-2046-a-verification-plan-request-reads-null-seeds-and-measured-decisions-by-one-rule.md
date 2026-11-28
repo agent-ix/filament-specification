@@ -35,12 +35,12 @@ FR-824-AC-6 and FR-824-AC-7.
 
 - Step 1: `wrong-value-kind`, then `invalid-value` three times, each at
   `/request/verification_plan/seed`, exit 20.
-- Step 2: `Release` runs with `inputs` `{"initial": null, "seed": "0", "max_trace_length": 8, "max_value_bits": null}`; then
+- Step 2: `Release` runs with `inputs` `{"initial": null, "seed": "0", "max_trace_length": "8", "max_value_bits": null}`; then
   `wrong-value-kind` at `/request/verification_plan`, exit 20.
 - Step 3: the disposition's members are exactly `status`, `method`,
   `evidence`, `blocked_by` and `result`; `result.verdict.decision.type` is
   `accepted`, `rejected` and `undecided` in turn.
 - Step 4: `status` `null`, `dispositions` `null`, exit 0.
 - Step 5: `missing-member` at `/request/verification_plan/max_trace_length` naming `tested`; `invalid-value` three times and `wrong-value-kind` there; `unknown-member` at `/request/verification_plan/max_value_bits` and at `/request/verification_plan/max_trace_length`; each exit 20, no step run.
-- Step 6: `missing-member` naming `s`, then `invalid-value` twice, at `/request/verification_plan/max_value_bits`, exit 20; then `s` runs and `inputs.max_value_bits` is 8.
+- Step 6: `missing-member` naming `s`, then `invalid-value` twice, at `/request/verification_plan/max_value_bits`, exit 20; then `s` runs, `inputs.max_value_bits` is 8 and `inputs.max_trace_length` is `"8"`.
 - Step 7: the step `inconclusive` with `result.cause` `{"type": "no-evaluated-case"}`, its dependent `blocked` by it, exit 22.

@@ -505,12 +505,8 @@ value (`tested`, `refuted`, `inconclusive`, `unsupported`, `incomplete` or
 `failed`), with the `cause` or `diagnostic` FR-331's result-entry table gives
 that value; `unsupported` is the settlement of a `frame` clause with no
 contract-level reading ("Case accounting"), reached before any case, and
-carries exactly the FR-272 diagnostic `{"code": "unsupported_projection",
-"cause": "unsupported-requested-capability", "detail": {"kind":
-"operation-contract", "form": "frame", "reason":
-"no-contract-level-reading"}}`: FR-272's `unsupported-requested-capability`
-cause for an obligation form the arm does not discharge, with FR-485
-"Frame"'s reason, the same diagnostic the FR-485 arm writes for that item.
+carries the diagnostic FR-485 "Frame" states for that item, and no
+`cause`.
 Every `cause` is an
 FR-331 cause object discriminated by its `type` member, never a bare
 string and never a `kind` member: `{"type": "no-evaluated-case"}`,
@@ -640,7 +636,7 @@ names, presence and `null`.
 | `cases.discarded_by.<reason>.first_case` | always | when `count` is 0 | the index of the reason's first case |
 | `checks` | always | never | `{evaluated, skipped}`; `skipped` has exactly `precondition-false` and `invariant-false` ("Case accounting") |
 | `limits` | always | never | `{max_cases}`, plus `max_trace_length` for a clause over a state model: the request's case limits ("Result") |
-| `limits.max_cases` | always | never | the request's `max_cases`, an integer |
+| `limits.max_cases` | always | never | the request's `max_cases`, an FR-331 `Count` (an integer from 1 to 2^53 − 1) |
 | `limits.max_trace_length` | state model | never | the request's `max_trace_length`, a canonical unsigned decimal string, as `provenance.seed` |
 | `provenance` | always | never | `{seed, max_value_bits, size_bounded, value_bound_cuts}` ("Case accounting") |
 | `provenance.seed` | always | never | the request's seed, a canonical unsigned decimal string ("Case accounting") |
@@ -810,7 +806,8 @@ failing clause is rejected and never retained.
   `invalid_model_binding`/`malformed-declaration` naming the empty domain,
   before any case runs.
 - A request naming no clause, an unknown clause identity, a `max_cases` or
-  `max_trace_length` of 0, or a seed that is not a 64-bit unsigned integer
+  `max_trace_length` of 0, a `max_cases` above 2^53 − 1 (the FR-331
+  `Count` range the record writes it in), or a seed that is not a 64-bit unsigned integer
   SHALL refuse the whole request before any case runs, naming the member.
   A request over a root whose domain has no finite bound and that
   carries no `max_value_bits` refuses the same way, naming that member, and
@@ -858,7 +855,7 @@ failing clause is rejected and never retained.
 | FR-190-AC-34 | FR-190-AC-11's model (`inc`, `reset`, `jam`; never terminal), the infinite-trace liveness clause `eventually holds(value = 6)`, seed 7, `max_cases` 30 and `max_trace_length` 8 settles `tested` with no `counterexample`: every trace ends at a non-terminal state, where the verdict is unknown, never false, so every evaluated case passes. | Test (TC-1600) |
 | FR-190-AC-35 | Every written `cause` is a `type`-keyed object: FR-190-AC-16's `jam` run has `cause` exactly `{"type": "no-evaluated-case"}`, its accepting-admission run `{"type": "tool-failure", "defect": "oracle-disagreement"}`, and FR-190-AC-22's first run `{"type": "limit-reached", "limit": "work_units", "setting": "accounting.work_units", "value": 1000000}`. | Test (TC-1600) |
 | FR-190-AC-36 | A strict reader refuses a record whose `cause` is the bare string `"no-evaluated-case"`, and one whose `cause` is keyed by `kind` instead of `type`, naming `cause`. | Test (TC-1600) |
-| FR-190-AC-37 | The `frame` clause of an operation with no implementation binding settles `unsupported` with no `cause` and `diagnostic` exactly `{"code": "unsupported_projection", "cause": "unsupported-requested-capability", "detail": {"kind": "operation-contract", "form": "frame", "reason": "no-contract-level-reading"}}`. | Test (TC-1600) |
+| FR-190-AC-37 | The `frame` clause of an operation with no implementation binding settles `unsupported` with no `cause` and with `diagnostic` byte-equal to the one FR-485 "Frame" states for a frame item with no implementation binding. | Test (TC-1600) |
 | FR-190-AC-38 | In FR-190-AC-15's run, the `by` 6 partition entry is `{"root": {"node": M, "path": [1, 0, 0]}, "kind": "upper-endpoint", "value": {"type": "integer", "value": "6"}, "status": "uncovered", "reason": "precondition-false", "bounds": []}`, `M` being the model's `NodeId`, and the `value` -1 entry is `{"root": {"node": M, "path": [0, 0]}, "kind": "lower-refusal", "value": {"type": "integer", "value": "-1"}, "status": "refused", "first_case": 0}`. | Test (TC-1600) |
 | FR-190-AC-39 | In FR-190-AC-15's run, `checks.skipped` is an object with exactly the members `precondition-false` and `invariant-false`, each a count. | Test (TC-1600) |
 | FR-190-AC-40 | In FR-190-AC-14's run, `provenance.size_bounded` is `[{"root": {"node": C, "path": [0]}, "measures": ["value"], "values": "511"}]`, `C` being the clause's `NodeId`. | Test (TC-1600) |

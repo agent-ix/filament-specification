@@ -7,6 +7,8 @@ relationships:
     type: implements
   - target: ix://agent-ix/filament-specification/FR-483
     type: references
+  - target: ix://agent-ix/filament-specification/FR-272
+    type: references
   - target: ix://agent-ix/filament-specification/FR-290
     type: references
   - target: ix://agent-ix/filament-specification/FR-353
@@ -115,7 +117,7 @@ A `postcondition` with an implementation binding whose value the arm cannot run 
 
 ### Frame
 
-The goal of a `frame` item is that, from every `(s, a)` that satisfies the pre-state premises, every outcome of the implementation leaves every location outside the frame equal. A frame item with no implementation binding for its operation has no contract-level reading, because the contract relation assumes the frame; the arm settles it `unsupported` with reason `no-contract-level-reading`. A provider with no implementation engine settles a bound frame item `unsupported` with reason `no-implementation-engine`.
+The goal of a `frame` item is that, from every `(s, a)` that satisfies the pre-state premises, every outcome of the implementation leaves every location outside the frame equal. A frame item with no implementation binding for its operation has no contract-level reading, because the contract relation assumes the frame; the arm settles it `unsupported` with reason `no-contract-level-reading`, and its diagnostic is exactly the FR-272 cause `{"code": "unsupported_projection", "cause": "unsupported-requested-capability", "detail": {"kind": "operation-contract", "form": "frame", "reason": "no-contract-level-reading"}}`. This is the one statement of that diagnostic; FR-190's model-based test record carries it for a `frame` clause with no binding. A provider with no implementation engine settles a bound frame item `unsupported` with reason `no-implementation-engine`.
 
 ### Step relation
 
