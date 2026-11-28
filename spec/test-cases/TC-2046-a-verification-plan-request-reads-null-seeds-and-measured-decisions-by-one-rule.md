@@ -35,7 +35,7 @@ FR-824-AC-6 and FR-824-AC-7.
 
 - Step 1: `wrong-value-kind`, then `invalid-value` three times, each at
   `/request/verification_plan/seed`, exit 20.
-- Step 2: `Release` runs with `inputs` `{"initial": null, "seed": 0, "max_trace_length": 8, "max_value_bits": null}`; then
+- Step 2: `Release` runs with `inputs` `{"initial": null, "seed": "0", "max_trace_length": 8, "max_value_bits": null}`; then
   `wrong-value-kind` at `/request/verification_plan`, exit 20.
 - Step 3: the disposition's members are exactly `status`, `method`,
   `evidence`, `blocked_by` and `result`; `result.verdict.decision.type` is
