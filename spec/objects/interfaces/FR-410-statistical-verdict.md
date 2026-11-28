@@ -141,18 +141,26 @@ which the claim evaluates undefined (FR-408). It carries:
     `weighted by R` measure reads its reward (FR-420 "Sampling timed
     runs");
   - `{"type": "time-lock", "state": k, "stamp": t}`: no step is drawn from
-    the last position and its timed state is time-locked before the window's
-    end (FR-420). `k` is the key of the time-locked timed state and `t` the
-    exact time stamp, a `Rational` in the model's unit, at which the run
-    reaches it, so a race that advances time and takes no step is recorded;
+    the last position and its timed state is time-locked (FR-420), before
+    the window's end or before the window has started: a run that time-locks
+    before its window starts also ends `time-lock`, since FR-420 ends a
+    sample at a time-lock reached before its horizon and no stutter position
+    follows a time-lock. `k` is the key of the time-locked timed state and
+    `t` the exact time stamp, a `Rational` in the model's unit, at which the
+    run reaches it, so a race that advances time and takes no step is
+    recorded;
   - `{"type": "idle-tail"}`: no step is drawn, the state is quiescent and not
-    time-locked, the subject is `time dense`, and the window has started and
-    its end lies strictly after the last position's stamp, so a dense idle
-    tail begins before the window's end;
+    time-locked, the subject is `time dense`, and either the window has
+    started and its end lies strictly after the last position's stamp, or
+    the window has not started and a `when` guard or an `elapsed` measure's
+    `A` that reads a clock can still start it at a stutter position of the
+    idle tail. Its readings are then those of every completion (FR-420
+    "Windows on an idle tail");
   - `{"type": "complete"}`: no step is drawn and none of the above holds:
     a `time tick` terminal state whose stutter positions fill the window, a
-    quiescent state stamped at or after the window's end, or a run whose
-    window never started;
+    quiescent state stamped at or after the window's end, or a quiescent
+    state before a window that never starts because its predicates and
+    `when` guard read the discrete state only;
 - the path probability: the exact rational product of its step probabilities;
 - the event's value, or the measure's value, on the sample, or the undefined
   value with its position, expression locus and catalogued reason. A measure
@@ -237,7 +245,7 @@ racer's delay as well as the winner's.
 | FR-410-AC-12 | Accepted, rejected and undecided verdicts each carry the same closed form-specific bound as FR-413. The four type spellings and allowed members match FR-413; comparison preserves the checked claim's operator; a quantile includes its separate `level`. A missing/extra member, unknown type/comparison, non-rational threshold or level, or a bound inconsistent with the originating claim is refused by the result reader. | Test (TC-358) |
 | FR-410-AC-13 | A sampled witness over a timed subject replays from its recorded draws without running the sampler, and the same witness with one recorded delay changed settles `inconclusive`, `replay-parity`, because the delay re-derived from the recorded seed, trace index, step, choice index and `q` differs. | Test (TC-374) |
 | FR-410-AC-14 | A `StatisticalVerdict` whose `basis` has a `grid` and whose witness step records `draws` `[{"choice": 0, "delay": {"identity": reply, "delay": 1}}, {"choice": 1, "delay": {"identity": timeout, "delay": 5/2}}]` (the losing `timeout` included), `rewards` `[]` and `end` `{"type": "time-lock", "state": k, "stamp": 7/2}` is admitted, as are the `crossing` (with a witness step), `idle-tail` and `complete` ends, a delay draw with `choice` `null`, and, with no `grid`, a witness with `{"choice": 0, "item": 1}` draws and no `end`. Each of these refuses at the schema: a step without `draws` or without `rewards`; a draw with both `delay` and `item`, an item draw with `choice` `null`, a delay draw without `identity`; a reward without `name`; a witness without `end` under a `grid`, or with `end` and no `grid`; a `time-lock` end without `stamp`, a `crossing` end without `step`, an unknown end type, and a stutter step with a non-empty `draws` or `rewards`. A step whose `rewards` names one reward twice is admitted by the schema: reward order, duplicates and one entry per declared reward are checked at replay, not by the schema. | Test (TC-431) |
-| FR-410-AC-15 | A sampled witness over a timed subject whose step records two racing identities, with the losing racer's recorded delay replaced by another delay of its window and support, settles `inconclusive`, `replay-parity`, because the delay re-derived at that draw's recorded choice index differs; the winner, the step and the item's `measured` decision are unchanged. | Test (TC-374) |
+| FR-410-AC-15 | A sampled witness over a timed subject whose step records two racing identities, with the losing racer's recorded delay replaced by another delay of its window and support, settles `inconclusive`, `replay-parity`, because the delay re-derived at that draw's recorded choice index differs; the winner, the step and the item's `measured` decision are unchanged. A witness whose step's `rewards` names a declared reward twice, lists two rewards out of bytewise name order or omits a declared reward refuses `invalid_runtime_input`/`invalid-value`, and one whose recorded reward value differs from the replayed step's settles `inconclusive`, `replay-parity`; these are checked at replay (the FSL record checker), not by the schema. | Test (TC-374) |
 
 ## Dependencies
 
