@@ -22,7 +22,7 @@ Catches a generator that narrows a declared finite domain by `max_value_bits`, e
 1. Over a counter model with operation `inc` on `Int[0, 5]` and the state clause `value <= 3`, run model-based testing with a fixed seed, `max_cases` 100 and `max_trace_length` 8.
 2. Run it over a clause every case passes, and again with a work limit smaller than 100 cases.
 3. Run it over a value clause with an unbounded `Integer` parameter, with and without `max_value_bits`.
-4. Run it over an empty domain, with `max_cases` 0, `max_trace_length` 0 and an unknown clause identity.
+4. Run it over an empty domain, with `max_cases` 0, `max_cases` 9007199254740992, `max_cases` 9007199254740991, `max_trace_length` 0 and an unknown clause identity.
 5. Repeat step 1 with the same inputs and compare the result records byte for byte.
 6. Over FR-190-AC-14's value clause (`x: Integer`, `t: Text[0, 4]`), run with seed 7, `max_cases` 30 and `max_value_bits` 8, then 1; then send `max_value_bits` 0, 65 and none, and `max_value_bits` 8 over a clause whose one parameter is `q: Int[0, 3]`.
 7. Over FR-190-AC-15's `inc(by: Int[1, 6])` model, run the postcondition clause of `inc` with seed 7, `max_cases` 100 and `max_trace_length` 8.
@@ -41,7 +41,7 @@ Catches a generator that narrows a declared finite domain by `max_value_bits`, e
 - Step 1: every generated invocation is enabled where applied; the retained counterexample is four `inc` from `value = 0`, 1-minimal, and native replay fails `value <= 3`.
 - Step 2: the passing run reports `tested` evidence and counts, never `proved`; the limited run is `incomplete` naming the limit.
 - Step 3: the bound appears in provenance; without it the request refuses naming `max_value_bits`.
-- Step 4: `invalid_model_binding`/`malformed-declaration` for the empty domain; each other request refused naming its member.
+- Step 4: `invalid_model_binding`/`malformed-declaration` for the empty domain; `max_cases` 9007199254740991 admitted; each other request, `max_cases` 9007199254740992 included, refused naming its member.
 - Step 5: byte-equal records.
 - Step 6: with 8, every `x` in `[-255, 255]`; `x`'s partitions 0, -1, 1, -255, 255 with no refusal kind; `t`'s `empty`, `singleton`, `upper-endpoint`, `upper-refusal`, then its `normalization` partitions as FR-190-AC-19 gives them for its profile; one `size_bounded` entry with `values` `"511"`. With 1, `x` in `[-1, 1]` and `t`'s partitions unchanged. Then `invalid-value` twice, `missing-member` and `unknown-member`, each naming `max_value_bits`, with no case run.
 - Step 7: `domain-refusal` `{count: 4, first_case: 0}`; `precondition-false` `{count: 1, first_case: 6}` with the `by` 6 partition `uncovered`, reason `precondition-false`, `bounds` `[]`; the `value` 0 case `no-check-point`; `cases.generated` 100 = `passed + failed + discarded`; `tested`.
