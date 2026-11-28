@@ -168,7 +168,10 @@ undefined value with its position, locus and reason), plus two checks:
    values; over a timed subject the racing identities are exactly those that
    race at the replayed timed state, the least recorded delay is the step's
    `delay`, ties ordered by the recorded tie-break draws, and the replayed
-   run ends as `end` records.
+   run ends as `end` records. The re-derivation of each recorded draw is the
+   checker's own code, run from the recorded seed, trace index, step and `q`,
+   and never the sampler, so the record checker is independent of the
+   sampler (FSL FR-1051).
 
 Agreement settles the witness reproduced. A value outside its support refuses
 `invalid_runtime_input`/`invalid-value`; a recomputed draw that selects another
