@@ -1321,7 +1321,7 @@
       "description": "FR-410 StatisticalVerdict.",
       "type": "object",
       "required": ["decision", "bound", "basis", "provenance", "tests", "witnesses"],
-      "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}],
+      "allOf": [{"description": "FR-410/FR-409: estimate is required except when the decision is a rejection by an undefined sample or undecided with cause undecided-successor, where it is absent.", "if": {"required": ["decision"], "properties": {"decision": {"anyOf": [{"required": ["type", "cause"], "properties": {"type": {"const": "rejected"}}}, {"required": ["type", "cause"], "properties": {"type": {"const": "undecided"}, "cause": {"required": ["type"], "properties": {"type": {"const": "undecided-successor"}}}}}]}}}, "then": {"not": {"required": ["estimate"]}}, "else": {"required": ["estimate"]}}, {"description": "FR-410: a witness records its run end exactly when the basis has a grid (a timed run).", "if": {"required": ["basis"], "properties": {"basis": {"required": ["grid"]}}}, "then": {"properties": {"witnesses": {"items": {"required": ["end"]}}}}, "else": {"properties": {"witnesses": {"items": {"not": {"required": ["end"]}}}}}}],
       "properties": {
         "decision": {"$ref": "#/$defs/MeasuredDecision"},
         "bound": {"$ref": "#/$defs/ProbabilisticBound", "not": {"required": ["type"], "properties": {"type": {"const": "expected-total"}}}},
@@ -1367,6 +1367,25 @@
       ]
     },
     "WitnessStutter": {"description": "FR-410: a sampled witness stutter step, which continues a window past a terminal state (FR-407); it names no operation and no arguments.", "type": "object", "required": ["type"], "properties": {"type": {"const": "stutter"}}, "additionalProperties": false},
+    "SampledWitnessStep": {"description": "FR-410 sampled witness step: the FR-181 step content, its scheduled identity and random arguments, over a timed subject its winning delay, the draws it consumed in consumption order and its rewards.", "type": "object", "required": ["transition", "post_state", "scheduled", "random", "draws", "rewards"], "allOf": [{"description": "FR-410: a stutter step consumes no draw and earns no reward.", "if": {"required": ["transition"], "properties": {"transition": {"required": ["type"], "properties": {"type": {"const": "stutter"}}}}}, "then": {"properties": {"draws": {"maxItems": 0}, "rewards": {"maxItems": 0}}}}], "properties": {"transition": {"oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "post_state": {"$ref": "#/$defs/State"}, "scheduled": {"description": "FR-410/FR-405: the scheduled identity, the transition identity carrying only its non-random arguments; the random arguments are the step's random member. A stutter step writes the stutter form here as in transition.", "oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "random": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}, "delay": {"$ref": "#/$defs/Rational"}, "draws": {"type": "array", "items": {"$ref": "#/$defs/SampledDraw"}}, "rewards": {"type": "array", "items": {"type": "object", "required": ["name", "value"], "properties": {"name": {"$ref": "#/$defs/Identifier"}, "value": {"$ref": "#/$defs/TypedValue"}}, "additionalProperties": false}}}, "additionalProperties": false},
+    "SampledDraw": {
+      "description": "FR-410: one draw a witness step consumed. A delay draw names the racing identity and its exact delay, with choice null when it drew no draw value; any other draw is the selected item index at its choice index.",
+      "oneOf": [
+        {"type": "object", "required": ["choice", "delay"], "properties": {"choice": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/Count"}]}, "delay": {"type": "object", "required": ["identity", "delay"], "properties": {"identity": {"$ref": "#/$defs/TransitionIdentity"}, "delay": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}}, "additionalProperties": false},
+        {"type": "object", "required": ["choice", "item"], "properties": {"choice": {"$ref": "#/$defs/Count"}, "item": {"$ref": "#/$defs/Count"}}, "additionalProperties": false}
+      ]
+    },
+    "SampledRunEnd": {
+      "description": "FR-410: how a timed sampled run ends after its last position: the crossing step drawn for its reward, a dense idle tail, a window read in full, or a time-lock with its state key and exact time stamp.",
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        {"properties": {"type": {"const": "crossing"}, "step": {"$ref": "#/$defs/SampledWitnessStep"}}, "required": ["type", "step"], "additionalProperties": false},
+        {"properties": {"type": {"const": "idle-tail"}}, "required": ["type"], "additionalProperties": false},
+        {"properties": {"type": {"const": "complete"}}, "required": ["type"], "additionalProperties": false},
+        {"properties": {"type": {"const": "time-lock"}, "state": {"$ref": "#/$defs/State"}, "stamp": {"$ref": "#/$defs/Rational"}}, "required": ["type", "state", "stamp"], "additionalProperties": false}
+      ]
+    },
     "SampledWitness": {
       "description": "FR-410 sampled witness.",
       "type": "object",
@@ -1374,7 +1393,8 @@
       "properties": {
         "test": {"$ref": "#/$defs/Count"},
         "trace_index": {"$ref": "#/$defs/Decimal"},
-        "steps": {"type": "array", "items": {"type": "object", "required": ["transition", "post_state", "scheduled", "random"], "properties": {"transition": {"oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "post_state": {"$ref": "#/$defs/State"}, "scheduled": {"description": "FR-410/FR-405: the scheduled identity, the transition identity carrying only its non-random arguments; the random arguments are the step's random member. A stutter step writes the stutter form here as in transition.", "oneOf": [{"$ref": "#/$defs/TransitionIdentity"}, {"$ref": "#/$defs/WitnessStutter"}]}, "random": {"type": "array", "items": {"$ref": "#/$defs/TypedValue"}}, "delay": {"$ref": "#/$defs/Rational"}}, "additionalProperties": false}},
+        "steps": {"type": "array", "items": {"$ref": "#/$defs/SampledWitnessStep"}},
+        "end": {"$ref": "#/$defs/SampledRunEnd"},
         "probability": {"$ref": "#/$defs/Rational"},
         "value": {"oneOf": [
           {"type": "object", "required": ["type", "value"], "properties": {"type": {"const": "event"}, "value": {"type": "boolean"}}, "additionalProperties": false},

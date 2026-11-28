@@ -2990,7 +2990,7 @@ fn statistical_verdict_wire_forms() {
     let send = serde_json::json!({"type": "transition", "operation": "Server::send", "receiver": null, "arguments": [{"type": "integer", "value": "1"}]});
     let stutter = serde_json::json!({"type": "stutter"});
     let step = |transition: &Value, scheduled: &Value, random: Value| serde_json::json!({
-        "transition": transition, "post_state": base["provenance"]["tests"][0]["initial_state"], "scheduled": scheduled, "random": random
+        "transition": transition, "post_state": base["provenance"]["tests"][0]["initial_state"], "scheduled": scheduled, "random": random, "draws": [], "rewards": []
     });
     let sample = |steps: Vec<Value>, value: Value| serde_json::json!({
         "test": 0, "trace_index": "0", "steps": steps, "probability": {"numerator": "1", "denominator": "2"}, "value": value
@@ -3076,6 +3076,103 @@ fn statistical_verdict_wire_forms() {
     }
     let indifference = without(serde_json::json!({"type": "undecided", "cause": {"type": "indifference-region"}}));
     assert!(!verdict.is_valid(&indifference), "AC-11: indifference-region needs an estimate");
+}
+
+/// FR-410-AC-14: a sampled witness records each step's draws in consumption
+/// order, the losing racer's delay included, its rewards, and under a grid
+/// the run end; the schema decides each shape.
+#[trace("TC-431", "FR-410-AC-14")]
+#[test]
+fn sampled_witness_draws_rewards_and_end() {
+    let verdict = definition("StatisticalVerdict");
+    let rational = |n: &str, d: &str| json!({"numerator": n, "denominator": d});
+    let identity = |operation: &str| json!({"type": "transition", "operation": operation, "receiver": null, "arguments": []});
+    let delay_draw = |choice: Value, operation: &str, delay: Value| json!({"choice": choice, "delay": {"identity": identity(operation), "delay": delay}});
+    // Two racers at one step: `reply` wins at 1, the losing `timeout` drew 5/2.
+    let step = json!({
+        "transition": identity("Call::reply"), "post_state": state(1), "scheduled": identity("Call::reply"), "random": [],
+        "delay": rational("1", "1"),
+        "draws": [delay_draw(json!(0), "Call::reply", rational("1", "1")), delay_draw(json!(1), "Call::timeout", rational("5", "2"))],
+        "rewards": []
+    });
+    let time_lock = json!({"type": "time-lock", "state": state(2), "stamp": rational("7", "2")});
+    let witness = |steps: Vec<Value>, end: Option<Value>| {
+        let mut w = json!({"test": 0, "trace_index": "0", "steps": steps, "probability": rational("1", "2"), "value": {"type": "event", "value": false}});
+        if let Some(end) = end {
+            w["end"] = end;
+        }
+        w
+    };
+    let mut timed = published_statistical_verdict();
+    timed["basis"]["grid"] = json!(16);
+    let with = |base: &Value, w: Value| {
+        let mut v = base.clone();
+        v["witnesses"] = json!([w]);
+        v
+    };
+
+    let admitted = with(&timed, witness(vec![step.clone()], Some(time_lock.clone())));
+    assert!(verdict.is_valid(&admitted), "a timed witness with a loser draw and a time-lock end is admitted");
+    for end in [json!({"type": "crossing", "step": step.clone()}), json!({"type": "idle-tail"}), json!({"type": "complete"})] {
+        assert!(verdict.is_valid(&with(&timed, witness(vec![step.clone()], Some(end.clone())))), "end {end} is admitted");
+    }
+    let mut free_point = step.clone();
+    free_point["draws"][1]["choice"] = Value::Null;
+    assert!(verdict.is_valid(&with(&timed, witness(vec![free_point], Some(time_lock.clone())))), "a delay draw that drew no value has choice null");
+    let mut rewarded = step.clone();
+    rewarded["rewards"] = json!([{"name": "duration", "value": {"type": "rational", "numerator": "1", "denominator": "1", "unit": "ms"}}]);
+    assert!(verdict.is_valid(&with(&timed, witness(vec![rewarded.clone()], Some(time_lock.clone())))), "a step reward is admitted");
+
+    let untimed = published_statistical_verdict();
+    assert!(untimed["basis"].get("grid").is_none(), "the published verdict has no grid");
+    let send = identity("Server::send");
+    let untimed_step = json!({
+        "transition": send, "post_state": state(1), "scheduled": send, "random": [],
+        "draws": [{"choice": 0, "item": 1}], "rewards": []
+    });
+    assert!(verdict.is_valid(&with(&untimed, witness(vec![untimed_step], None))), "an untimed witness with item draws and no end is admitted");
+
+    let refused = |v: &Value, why: &str| assert!(!verdict.is_valid(v), "{why} is refused");
+    for member in ["draws", "rewards"] {
+        let mut missing = step.clone();
+        missing.as_object_mut().unwrap().remove(member);
+        refused(&with(&timed, witness(vec![missing], Some(time_lock.clone()))), &format!("a step without {member}"));
+    }
+    let mut both = step.clone();
+    both["draws"][0]["item"] = json!(0);
+    refused(&with(&timed, witness(vec![both], Some(time_lock.clone()))), "a draw with delay and item");
+    let mut null_item = step.clone();
+    null_item["draws"] = json!([{"choice": null, "item": 0}]);
+    refused(&with(&timed, witness(vec![null_item], Some(time_lock.clone()))), "an item draw with choice null");
+    let mut no_identity = step.clone();
+    no_identity["draws"][1]["delay"].as_object_mut().unwrap().remove("identity");
+    refused(&with(&timed, witness(vec![no_identity], Some(time_lock.clone()))), "a delay draw without identity");
+    let mut nameless = rewarded.clone();
+    nameless["rewards"][0].as_object_mut().unwrap().remove("name");
+    refused(&with(&timed, witness(vec![nameless], Some(time_lock.clone()))), "a reward without name");
+    refused(&with(&timed, witness(vec![step.clone()], None)), "a witness without end under a grid");
+    refused(&with(&untimed, witness(vec![step.clone()], Some(time_lock.clone()))), "a witness with end and no grid");
+    refused(&with(&timed, witness(vec![step.clone()], Some(json!({"type": "time-lock", "state": state(2)})))), "a time-lock end without stamp");
+    refused(&with(&timed, witness(vec![step.clone()], Some(json!({"type": "crossing"})))), "a crossing end without step");
+    refused(&with(&timed, witness(vec![step.clone()], Some(json!({"type": "horizon"})))), "an unknown end type");
+
+    // A stutter step consumes no draw and earns no reward (a schema rule).
+    let stutter = json!({"type": "stutter"});
+    let stutter_step = json!({"transition": stutter, "post_state": state(1), "scheduled": stutter, "random": [], "draws": [], "rewards": []});
+    assert!(verdict.is_valid(&with(&timed, witness(vec![step.clone(), stutter_step.clone()], Some(time_lock.clone())))), "a stutter step with no draws and no rewards is admitted");
+    let mut drawn_stutter = stutter_step.clone();
+    drawn_stutter["draws"] = json!([{"choice": 0, "item": 0}]);
+    refused(&with(&timed, witness(vec![step.clone(), drawn_stutter], Some(time_lock.clone()))), "a stutter step with a draw");
+    let mut rewarded_stutter = stutter_step;
+    rewarded_stutter["rewards"] = rewarded["rewards"].clone();
+    refused(&with(&timed, witness(vec![step, rewarded_stutter], Some(time_lock.clone()))), "a stutter step with a reward");
+
+    // Reward order, duplicates and one entry per declared reward are replay
+    // checks: the schema admits a reward named twice.
+    let mut twice = rewarded.clone();
+    let reward = twice["rewards"][0].clone();
+    twice["rewards"].as_array_mut().unwrap().push(reward);
+    assert!(verdict.is_valid(&with(&timed, witness(vec![twice], Some(time_lock)))), "a reward named twice is left to replay");
 }
 
 /// FR-418-AC-19: a task-product certificate's unreached node and extra edge
