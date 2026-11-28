@@ -6102,6 +6102,52 @@ fn tc_233_all_checked_semantic_node_families_are_admitted_by_the_public_schema()
     }
 }
 
+#[trace("FR-322-AC-522")]
+#[test]
+fn model_correspondence_uses_a_closed_type_table_body() {
+    let schema = parsed_fixture(SCHEMA);
+    let validator = schema_for_def(&schema, "ModelCorrespondenceBody");
+    let type_ref = json!({
+        "package": "example",
+        "path": ["scalar_type", "integer"],
+        "ordinal": 0
+    });
+    let body = json!({
+        "term": "model_correspondence",
+        "literal_types": [type_ref],
+        "members": [{
+            "type_ref": 0,
+            "value_kind": "integer",
+            "value": "7"
+        }]
+    });
+
+    assert!(validator.is_valid(&body), "compact body passes schema");
+
+    let old_body = json!({
+        "term": "aggregate",
+        "members": [{
+            "term": "literal",
+            "type": type_ref,
+            "value_kind": "integer",
+            "value": "7"
+        }]
+    });
+    assert!(!validator.is_valid(&old_body), "old repeated-type body is refused");
+
+    let mut extra_field = body.clone();
+    extra_field["extra"] = json!(true);
+    assert!(!validator.is_valid(&extra_field), "body is closed");
+
+    let mut duplicate_type = body.clone();
+    duplicate_type["literal_types"] = json!([type_ref, type_ref]);
+    assert!(!validator.is_valid(&duplicate_type), "type table entries are unique");
+
+    let mut extra_member_field = body;
+    extra_member_field["members"][0]["type"] = type_ref;
+    assert!(!validator.is_valid(&extra_member_field), "member is closed");
+}
+
 /// FR-340-AC-8: `ModelNode.semantic_form` names all five of FR-208's
 /// systems meanings (FR-152), not only the ten business-model meanings
 /// FR-340 already covers, so a systems-model declaration is never
