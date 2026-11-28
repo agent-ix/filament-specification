@@ -6141,7 +6141,7 @@ fn model_correspondence_uses_a_closed_type_table_body() {
     let correspondence_schema = schema_for_def(&schema, "CorrespondenceNode");
     let node_errors = correspondence_schema
         .iter_errors(&correspondence)
-        .map(|error| format!("{} at {}", error, error.instance_path))
+        .map(|error| format!("{} at {}", error, error.instance_path()))
         .collect::<Vec<_>>();
     assert!(
         node_errors.is_empty(),
