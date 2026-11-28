@@ -6124,6 +6124,26 @@ fn model_correspondence_uses_a_closed_type_table_body() {
 
     assert!(validator.is_valid(&body), "compact body passes schema");
 
+    let correspondence = json!({
+        "node_id": {
+            "package": "example",
+            "path": ["correspondence", "model_correspondence"],
+            "ordinal": 0
+        },
+        "schema_version": "filament.checked-semantic-graph/v2",
+        "node_tag": "correspondence",
+        "semantic_form": "model_correspondence",
+        "semantic_type": type_ref,
+        "dependencies": [],
+        "occurrences": [{"role": "expression", "ordinal": 0}],
+        "body": body
+    });
+    let correspondence_schema = schema_for_def(&schema, "CorrespondenceNode");
+    assert!(
+        correspondence_schema.is_valid(&correspondence),
+        "correspondence node uses the compact body"
+    );
+
     let old_body = json!({
         "term": "aggregate",
         "members": [{
@@ -6134,6 +6154,12 @@ fn model_correspondence_uses_a_closed_type_table_body() {
         }]
     });
     assert!(!validator.is_valid(&old_body), "old repeated-type body is refused");
+    let mut old_correspondence = correspondence;
+    old_correspondence["body"] = old_body.clone();
+    assert!(
+        !correspondence_schema.is_valid(&old_correspondence),
+        "correspondence node refuses the old body"
+    );
 
     let mut extra_field = body.clone();
     extra_field["extra"] = json!(true);
